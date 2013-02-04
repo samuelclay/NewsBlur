@@ -54,7 +54,8 @@ ul.segmented-control {
     border-bottom-left-radius: 3px;
 }
 
-.segmented-control li:last-child {
+.segmented-control li:last-child,
+.segmented-control li.NB-last {
     -webkit-border-top-right-radius: 3px;
     -webkit-border-bottom-right-radius: 3px;
     -moz-border-radius-topright: 3px;

@@ -123,6 +123,7 @@ stylesheets:
         - media/css/status.css
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
+        - media/css/vendor/bootstrap-progressbar.css
         - media/css/*.css
     mobile:
         - media/css/mobile/jquery.mobile-1.0b1.css

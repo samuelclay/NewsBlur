@@ -1,0 +1,34 @@
+{% load utils_tags %}
+
+<div class="NB-module NB-module-account">
+    <h5 class="NB-module-header">
+        {# <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a> #}
+        Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
+    </h5>
+
+    <div class="NB-module-item">
+        <h3 class="NB-module-content-header">
+            <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
+            <div class="NB-module-content-account-realtime" title=""></div>
+            {% if user_profile.is_premium %}
+            Premium Account
+            {% else %}
+            Free Account
+            {% endif %}
+        </h3>
+        <div class="NB-module-stats-counts">
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
+                <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
+            </div>
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ social_profile.following_count|commify }}</div>
+                <div class="NB-module-stats-count-description">Following</div>
+            </div>
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
+                <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
+            </div>
+        </div>
+    </div>
+</div>

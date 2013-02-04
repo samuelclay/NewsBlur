@@ -743,12 +743,6 @@ var classifier_prototype = {
         });
     },
     
-    update_homepage_counts: function() {
-      var $count = $('.NB-module-account-trainer-count');
-      
-      $count.text(_.size(this.model.get_feeds()) - (this.trainer_data.length - this.trainer_iterator) - 1);
-    },
-    
     end: function() {
         this.model.preference('has_trained_intelligence', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -813,7 +807,6 @@ var classifier_prototype = {
                 e.preventDefault();
                 self.save(true);
                 self.load_next_feed_in_trainer();
-                self.update_homepage_counts();
             });
 
             $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){

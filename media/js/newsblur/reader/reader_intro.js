@@ -98,15 +98,15 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 'There are too many sites to process...',
                                 $.make('br'),
                                 'You will be emailed within a minute or three.'
+                            ]),
+                            $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
+                                $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
+                                $.make('div', { className: 'NB-intro-import' }, [
+                                    NEWSBLUR.generate_bookmarklet(),
+                                    $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Drag this bookmarklet into your bookmarks bar')
+                                ])
                             ])
                         ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
-                    $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
-                    $.make('div', { className: 'NB-intro-import' }, [
-                        NEWSBLUR.generate_bookmarklet(),
-                        $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Drag this bookmarklet into your bookmarks bar')
                     ])
                 ])
             ]),

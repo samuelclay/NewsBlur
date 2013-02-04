@@ -75,14 +75,14 @@ def index(request, **kwargs):
 def dashboard(request, **kwargs):
     user              = request.user
     feed_count        = UserSubscription.objects.filter(user=request.user).count()
-    active_count      = UserSubscription.objects.filter(user=request.user, active=True).count()
-    train_count       = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False,
-                                                        feed__stories_last_month__gte=1).count()
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
-                                                       approved_date__lte=datetime.datetime.now())\
-                                                       .select_related('feed')[:2]
-    unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
-                                                       declined_date__isnull=True).select_related('feed')[:2]
+                                                       approved_date__lte=datetime.datetime.now()
+                                                       ).select_related('feed')[:2]
+    unmoderated_feeds = []
+    if user.is_staff:
+        unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
+                                                           declined_date__isnull=True
+                                                           ).select_related('feed')[:2]
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
 
@@ -93,8 +93,6 @@ def dashboard(request, **kwargs):
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
-        'active_count'      : active_count,
-        'train_count'       : active_count - train_count,
         'account_images'    : range(1, 4),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
@@ -522,14 +520,17 @@ def load_single_feed(request, feed_id):
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
                                             story_id__in=story_ids
-                                            ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
+                                            ).only('story_id').hint([('user_id', 1), 
+                                                                     ('feed_id', 1), 
+                                                                     ('story_id', 1)])
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
-                                                story_guid__in=story_ids).only('story_guid', 'starred_date')
+                                                story_guid__in=story_ids
+                                                ).only('story_guid', 'starred_date')
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_feed_id=feed_id, 
-                                              story_guid__in=story_ids)\
-                                     .only('story_guid', 'shared_date', 'comments')
+                                              story_guid__in=story_ids
+                                              ).only('story_guid', 'shared_date', 'comments')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
         shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
                                for story in shared_stories])
@@ -685,8 +686,8 @@ def load_starred_stories(request):
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
     shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                          story_guid__in=story_ids)\
-                                 .only('story_guid', 'shared_date', 'comments')
+                                          story_guid__in=story_ids
+                                          ).only('story_guid', 'shared_date', 'comments')
     shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
                            for story in shared_stories])
 
@@ -1457,7 +1458,7 @@ def send_story_email(request):
         }
         text    = render_to_string('mail/email_story_text.xhtml', params)
         html    = render_to_string('mail/email_story_html.xhtml', params)
-        subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
+        subject = '%s is sharing a story with you: "%s"' % (from_name, story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]

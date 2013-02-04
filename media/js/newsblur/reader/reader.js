@@ -2215,18 +2215,6 @@
             NEWSBLUR.intro = new NEWSBLUR.ReaderIntro(options);
         },
         
-        hide_intelligence_trainer: function() {
-          var $trainer = $('.NB-module-account-trainer');
-          
-          $trainer.addClass('NB-done');
-        },
-        
-        hide_find_friends: function() {
-          var $findfriends = $('.NB-module-find-friends');
-          
-          $findfriends.addClass('NB-done');
-        },
-        
         check_hide_getting_started: function(force) {
             var friends = this.model.preference('has_found_friends');
             var trained = this.model.preference('has_trained_intelligence');
@@ -2245,15 +2233,13 @@
               });
               this.model.preference('hide_getting_started', true);
             } else {
-              var $intro = $('.NB-module-item-intro');
-              var $findfriends = $('.NB-module-find-friends');
-              var $trainer = $('.NB-module-account-trainer');
+              var $sites = $('.NB-intro-goal-sites');
+              var $findfriends = $('.NB-intro-goal-friends');
+              var $trainer = $('.NB-intro-goal-train');
           
-              $intro.toggleClass('NB-done', feeds);
+              $sites.toggleClass('NB-done', feeds);
               $findfriends.toggleClass('NB-done', friends);
-              $findfriends.toggleClass('NB-hidden', !feeds);
               $trainer.toggleClass('NB-done', trained);
-              $trainer.toggleClass('NB-hidden', !feeds);
             }
         },
         
@@ -3494,17 +3480,20 @@
         toggle_focus_in_slider: function() {
             var $slider = this.$s.$intelligence_slider;
             var $focus = $(".NB-intelligence-slider-green", $slider);
+            var $unread = $(".NB-intelligence-slider-yellow", $slider);
             var show_focus = this.model.preference('lock_green_slider') || 
                              NEWSBLUR.assets.feeds.any(function(feed) { 
                 return feed.get('ps');
             });
-
+            
             $focus.css('display', show_focus ? 'block' : 'none');
             if (!show_focus) {
+                $unread.addClass("NB-last");
                 if (NEWSBLUR.assets.preference('unread_view') > 0) {
                     this.slide_intelligence_slider(0);
                 }
             } else {
+                $unread.removeClass("NB-last");
                 this.model.preference('lock_green_slider', true);
             }
         },

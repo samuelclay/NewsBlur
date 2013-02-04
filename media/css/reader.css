@@ -3094,13 +3094,15 @@ background: transparent;
 
 .NB-feeds-header-user {
     font-size: 13px;
+    padding: 0 56px 0 32px;
+    height: 36px;
 }
 
 .NB-feeds-header-dashboard {
-  height: 15px;
-  font-size: 11px;
-  padding: 0 0 2px 0;
-  border-top: 1px solid #FFF;
+    height: 15px;
+    font-size: 11px;
+    padding: 0 0 2px 0;
+    border-top: 1px solid #FFF;
 }
 
 .NB-feeds-header-user,
@@ -3110,14 +3112,15 @@ background: transparent;
     overflow: hidden;
     text-transform: uppercase;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#E8EBE4));
-    background-image: -moz-linear-gradient(center top , #FFF 0%, #E8EBE4 100%);
-    background-image: linear-gradient(top, #FFF, #E8EBE4);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
+    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
+    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
     border-bottom: 1px solid #C2C5BE;
 }
 .NB-feeds-header-user .NB-feeds-header-user-image {
-    line-height: 0;
-    float: left;
+    position: absolute;
+    left: 0;
+    top: 0;
     padding: 4px;
 }
 .NB-feeds-header-user .NB-feeds-header-user-image img {
@@ -3128,10 +3131,16 @@ background: transparent;
 .NB-feeds-header-user-interactions,
 .NB-feeds-header-user-dashboard {
     cursor: pointer;
-    padding: 10px 8px 8px;
-    float: right;
+    padding: 10px 0 10px;
+    width: 28px;
+    position: absolute;
+    top: 0;
+    right: 0;
     line-height: 0;
-    position: relative;
+    text-align: center;
+}
+.NB-feeds-header-user-dashboard {
+    right: 28px;
 }
 .NB-feeds-header-user-interactions img,
 .NB-feeds-header-user-dashboard img {
@@ -3160,9 +3169,10 @@ background: transparent;
     cursor: default;
 }
 .NB-feeds-header-user .NB-feeds-header-user-name {
-    float: left;
     padding: 10px 0 0 6px;
     font-weight: bold;
+    overflow: hidden;
+    height: 24px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-right {
   float: right;
@@ -4708,21 +4718,6 @@ form.opml_import_form input {
 .NB-module .NB-module-item.NB-last {
     margin-bottom: 0;
 }
-.NB-module .NB-module-item .NB-done-label {
-    display: none;
-    padding-left: 20px;
-    text-transform: uppercase;
-    font-weight: bold;
-    background: transparent url(/media/embed/icons/silk/accept.png) no-repeat 0 0;
-    color: #808080;
-    font-size: 13px;
-}
-.NB-module .NB-module-item.NB-done .NB-modal-submit {
-    display: none;
-}
-.NB-module .NB-module-item.NB-done .NB-done-label {
-    display: block;
-}
 .NB-module .NB-module-item-image {
     position: absolute;
     left: 0;
@@ -4769,10 +4764,6 @@ form.opml_import_form input {
 }
 .NB-account .NB-module .NB-module-item .NB-modal-submit-button.NB-javascript {
   opacity: .2;
-}
-
-.NB-account .NB-module .NB-module-account-trainer.NB-hidden {
-    display: none;
 }
 
 .NB-account .NB-module.NB-module-account .NB-module-account-stats {
@@ -4879,6 +4870,117 @@ form.opml_import_form input {
 
 .NB-account .NB-module-gettingstarted {
     margin-bottom: 24px;
+}
+
+.NB-module-gettingstarted .NB-module-item-intro {
+    border: 1px solid #F7E7BC;
+    background-color: #FFFCF3;
+    padding: 12px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+.NB-module-gettingstarted .NB-intro-avatar {
+    margin: 12px auto;
+}
+.NB-module-gettingstarted .NB-intro-avatar-bezel {
+    padding: 3px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+    background-color: #F7F8F5;
+    border-radius: 3px;
+    width: 48px;
+    line-height: 0;
+    margin: 0 auto;
+}
+.NB-module-gettingstarted .NB-intro-avatar img {
+    width: 48px;
+    height: 48px;
+}
+.NB-module-gettingstarted .NB-intro-progress {
+    position: relative;
+    margin: 24px 64px;
+}
+.NB-module-gettingstarted .NB-intro-progress .progress {
+    height: 10px;
+    margin-top: -30px;
+}
+.NB-module-gettingstarted .NB-intro-progress-goal {
+    top: -10px;
+    left: 0px;
+    position: absolute;
+    border-radius: 16px;
+    background-color: #FFF;
+    border: 1px solid rgba(0, 0, 0, .2);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    width: 28px;
+    height: 28px;
+    z-index: 1;
+}
+.NB-module-gettingstarted .NB-intro-progress-goal.NB-1 {
+    left: 0;
+    background: #fff url(/media/embed/icons/silk/accept.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-intro-progress-goal.NB-2 {
+    margin: 0 auto;
+    left: auto;
+    position: relative;
+    background: #fff url(/media/embed/icons/silk/exclamation.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-intro-progress-goal.NB-3 {
+    left: auto;
+    right: 0;
+    background: #fff url(/media/embed/icons/silk/flag_yellow.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-intro-goals {
+    margin: 24px 0 0;
+    overflow: hidden;
+}
+.NB-module-gettingstarted .NB-intro-goal {
+    width: 33.33%;
+    float: left;
+    text-align: center;
+    font-size: 12px;
+    color: #5E6062;
+    padding: 0 6px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-module-gettingstarted .NB-icon {
+    display: inline-block;
+    margin: 0 2px 0 0;
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+}
+.NB-module-gettingstarted .NB-modal-submit-button {
+    padding: 4px 6px;
+}
+.NB-module-gettingstarted .NB-module-launch-intro .NB-icon {
+    background: transparent url(/media/embed/icons/silk/lorry.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-module-friends-button .NB-icon {
+    background: transparent url(/media/embed/icons/silk/rainbow.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-module-account-train .NB-icon {
+    background: transparent url(/media/embed/icons/silk/plugin.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-intro-goal .NB-not-done {
+    margin: 6px auto;
+    float: none;
+}
+.NB-module-gettingstarted .NB-intro-goal .NB-done {
+    color: #7CB621;
+    font-weight: bold;
+    padding: 12px 0;
+}
+.NB-module-gettingstarted .NB-done .NB-not-done,
+.NB-module-gettingstarted .NB-not-done .NB-done {
+    display: none;
 }
 
 /* ================ */
@@ -6337,7 +6439,7 @@ form.opml_import_form input {
 
 .NB-modal-intro .NB-carousel {
     position: relative;
-    height: 240px;
+    height: 312px;
     overflow: hidden;
 }
 .NB-modal-intro .NB-carousel-inner {
@@ -6394,7 +6496,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-intro .NB-page-2 h4 {
-    margin: 16px 0 22px;
+    margin: 24px 0 32px;
     font-size: 24px;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button {
@@ -6428,9 +6530,13 @@ form.opml_import_form input {
     line-height: 13px;
 }
 .NB-modal-intro .NB-intro-import h3 {
-    height: 24px;
+    height: 42px;
     font-size: 32px;
-    line-height: 23px;
+    line-height: 36px;
+    margin: 36px 0;
+}
+.NB-modal-intro .NB-intro-import h3 img {
+    margin-top: 6px;
 }
 .NB-modal-intro .NB-add-google-reader-arrow {
     width: 16px;
@@ -6443,6 +6549,7 @@ form.opml_import_form input {
     padding: 0 48px;
     width: 100%;
     overflow: hidden;
+    margin: 40px 0 0;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -6461,7 +6568,7 @@ form.opml_import_form input {
     float: none;
 }
 .NB-modal-intro .NB-intro-imports-progress h4 {
-    margin: 72px 0 36px;
+    margin: 92px 0 48px;
 }
 .NB-modal-intro .NB-intro-imports-sites h4 {
     margin: 72px 0 36px;
