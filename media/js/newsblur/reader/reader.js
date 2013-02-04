@@ -2216,12 +2216,12 @@
         },
         
         check_hide_getting_started: function(force) {
+            var feeds = this.model.preference('has_setup_feeds');
             var friends = this.model.preference('has_found_friends');
             var trained = this.model.preference('has_trained_intelligence');
-            var feeds = this.model.preference('has_setup_feeds');
             
             if (force ||
-                friends && trained && feeds) {
+                (friends && trained && feeds)) {
                 var $gettingstarted = $('.NB-module-gettingstarted');
                 $gettingstarted.animate({
                 'opacity': 0
@@ -2233,13 +2233,21 @@
               });
               this.model.preference('hide_getting_started', true);
             } else {
-              var $sites = $('.NB-intro-goal-sites');
-              var $findfriends = $('.NB-intro-goal-friends');
-              var $trainer = $('.NB-intro-goal-train');
-          
-              $sites.toggleClass('NB-done', feeds);
-              $findfriends.toggleClass('NB-done', friends);
-              $trainer.toggleClass('NB-done', trained);
+                var $progress = $(".NB-intro-progress");
+                var $sites = $('.NB-intro-goal-sites');
+                var $findfriends = $('.NB-intro-goal-friends');
+                var $trainer = $('.NB-intro-goal-train');
+
+                $sites.toggleClass('NB-done', feeds);
+                $findfriends.toggleClass('NB-done', friends);
+                $trainer.toggleClass('NB-done', trained);
+                
+                $sites.toggleClass('NB-not-done', !feeds);
+                $findfriends.toggleClass('NB-not-done', !friends);
+                $trainer.toggleClass('NB-not-done', !trained);
+
+                $(".bar-first", $progress).toggleClass('bar-striped', !feeds);
+                $(".bar-second", $progress).toggleClass('bar-striped', !friends);
             }
         },
         
@@ -4613,7 +4621,7 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-intro' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_intro_modal();
+                    self.open_intro_modal({page_number: 1});
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
@@ -4889,7 +4897,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-launch-intro' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_intro_modal();
+                    self.open_intro_modal({page_number: 2});
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function($t, $p){

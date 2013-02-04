@@ -18,8 +18,8 @@
             <div class="NB-intro-progress-goal NB-2 NB-intro-goal-friends {% if user_profile.has_found_friends %}NB-done{% else %}NB-not-done{% endif %}"></div>
             <div class="NB-intro-progress-goal NB-3 NB-intro-goal-train {% if user_profile.has_trained_intelligence %}NB-done{% else %}NB-not-done{% endif %}"></div>
             <div class="progress active">
-                <div class="bar {% if not user_profile.has_setup_feeds %}bar-striped{% endif %} bar-warning" style="width: 50%;"></div>
-                <div class="bar {% if not user_profile.has_found_friends %}bar-striped{% endif %} bar-warning " style="width: 50%;"></div>
+                <div class="bar-first bar {% if not user_profile.has_setup_feeds %}bar-striped{% endif %} bar-warning" style="width: 50%;"></div>
+                <div class="bar-second bar {% if not user_profile.has_found_friends %}bar-striped{% endif %} bar-warning " style="width: 50%;"></div>
             </div>
         </div>
 

@@ -4922,18 +4922,21 @@ form.opml_import_form input {
 }
 .NB-module-gettingstarted .NB-intro-progress-goal.NB-1 {
     left: 0;
-    background: #fff url(/media/embed/icons/silk/accept.png) no-repeat center center;
+    background: #fff url(/media/embed/icons/silk/flag_blue.png) no-repeat center center;
 }
 .NB-module-gettingstarted .NB-intro-progress-goal.NB-2 {
     margin: 0 auto;
     left: auto;
     position: relative;
-    background: #fff url(/media/embed/icons/silk/exclamation.png) no-repeat center center;
+    background: #fff url(/media/embed/icons/silk/flag_green.png) no-repeat center center;
 }
 .NB-module-gettingstarted .NB-intro-progress-goal.NB-3 {
     left: auto;
     right: 0;
     background: #fff url(/media/embed/icons/silk/flag_yellow.png) no-repeat center center;
+}
+.NB-module-gettingstarted .NB-intro-progress-goal.NB-done {
+    background: #fff url(/media/embed/icons/silk/accept.png) no-repeat center center;
 }
 .NB-module-gettingstarted .NB-intro-goals {
     margin: 24px 0 0;

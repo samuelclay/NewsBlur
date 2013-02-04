@@ -72,6 +72,9 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal();
             
+        this.model.preference('has_trained_intelligence', true);
+        NEWSBLUR.reader.check_hide_getting_started();
+        
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
     },
     
@@ -799,8 +802,6 @@ var classifier_prototype = {
         if (this.options['training']) {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-begin' }, function($t, $p){
                 e.preventDefault();
-                self.model.preference('has_trained_intelligence', true);
-                NEWSBLUR.reader.check_hide_getting_started();
                 self.load_next_feed_in_trainer();
             });
             $.targetIs(e, { tagSelector: '.NB-modal-submit-save.NB-modal-submit-next' }, function($t, $p){

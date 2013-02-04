@@ -281,6 +281,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             }
         }, this), 1000);
         _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
+        
+        NEWSBLUR.assets.preference('has_found_friends', true);
+        NEWSBLUR.reader.check_hide_getting_started();
     },
     
     disconnect: function(service) {
@@ -312,8 +315,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             this.fetch_friends();
             _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
         }
-        NEWSBLUR.assets.preference('has_found_friends', true);
-        NEWSBLUR.reader.check_hide_getting_started();
     },
     
     // ==========
@@ -338,7 +339,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
       } else if (page_number > page_count) {
-          NEWSBLUR.assets.preference('has_setup_feeds', true);
           NEWSBLUR.reader.check_hide_getting_started();
           this.close(_.bind(function() {
               NEWSBLUR.reader.open_dialog_after_feeds_loaded({delayed_import: this.flags.delayed_import});
@@ -392,6 +392,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
         
         if (page >= 2) {
+            NEWSBLUR.assets.preference('has_setup_feeds', true);
+            NEWSBLUR.reader.check_hide_getting_started();
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
         
