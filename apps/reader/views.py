@@ -419,6 +419,16 @@ def refresh_feeds(request):
         'interactions_count': interactions_count,
     }
 
+@json.json_view
+def interactions_count(request):
+    user = get_user(request)
+
+    interactions_count = MInteraction.user_unread_count(user.pk)
+
+    return {
+        'interactions_count': interactions_count,
+    }
+    
 @never_cache
 @json.json_view
 def feed_unread_count(request):

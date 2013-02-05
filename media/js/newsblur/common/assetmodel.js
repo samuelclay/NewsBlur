@@ -741,6 +741,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    interactions_count: function(callback, error_callback) {
+        this.make_request('/reader/interactions_count', {}, callback, error_callback, {
+            'request_type': 'GET'
+        });
+    },
+    
     count_unfetched_feeds: function() {
         var counts = this.feeds.reduce(function(counts, feed) {
             if (feed.get('active')) {

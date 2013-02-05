@@ -102,6 +102,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         });
         var tipsy = $like.data('tipsy');
         _.defer(function() {
+            if (!tipsy) return;
             tipsy.enable();
             tipsy.show();
         });
@@ -112,7 +113,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             'duration': 850,
             'queue': false,
             'complete': function() {
-                if (tipsy.enabled) {
+                if (tipsy && tipsy.enabled) {
                     tipsy.hide();
                     tipsy.disable();
                 }

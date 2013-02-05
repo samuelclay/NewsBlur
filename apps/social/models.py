@@ -2311,7 +2311,18 @@ class MInteraction(mongo.Document):
             'story_feed_id': self.story_feed_id,
             'content_id': self.content_id,
         }
-        
+    
+    @classmethod
+    def publish_update_to_subscribers(self, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            listeners_count = r.publish(user.username, 'interaction:new')
+            if listeners_count:
+                logging.debug("   ---> ~FMPublished to %s subscribers" % (listeners_count))
+        except redis.ConnectionError:
+            logging.debug("   ***> ~BMRedis is unavailable for real-time.")
+
     @classmethod
     def user(cls, user_id, page=1, limit=None, categories=None):
         user_profile = Profile.objects.get(user=user_id)
@@ -2367,6 +2378,8 @@ class MInteraction(mongo.Document):
             logging.debug(" ---> ~FRDeleting dupe follow interactions. %s found." % dupes.count())
             for dupe in dupes[1:]:
                 dupe.delete()
+        
+        cls.publish_update_to_subscribers(followee_user_id)
     
     @classmethod
     def new_comment_reply(cls, user_id, reply_user_id, reply_content, story_id, story_feed_id, story_title=None, original_message=None):
@@ -2392,6 +2405,8 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+        
+        cls.publish_update_to_subscribers(user_id)
             
     @classmethod
     def remove_comment_reply(cls, user_id, reply_user_id, reply_content, story_id, story_feed_id):
@@ -2406,6 +2421,8 @@ class MInteraction(mongo.Document):
         }
         original = cls.objects.filter(**params)
         original.delete()
+        
+        cls.publish_update_to_subscribers(user_id)
     
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
@@ -2418,6 +2435,8 @@ class MInteraction(mongo.Document):
                                     "title": story_title,
                                     "content": comments,
                                   })
+        
+        cls.publish_update_to_subscribers(comment_user_id)
 
     @classmethod
     def new_reply_reply(cls, user_id, comment_user_id, reply_user_id, reply_content, story_id, story_feed_id, story_title=None, original_message=None):
@@ -2443,6 +2462,8 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+        
+        cls.publish_update_to_subscribers(user_id)
             
     @classmethod
     def remove_reply_reply(cls, user_id, comment_user_id, reply_user_id, reply_content, story_id, story_feed_id):
@@ -2457,6 +2478,8 @@ class MInteraction(mongo.Document):
         }
         original = cls.objects.filter(**params)
         original.delete()
+        
+        cls.publish_update_to_subscribers(user_id)
         
     @classmethod
     def new_reshared_story(cls, user_id, reshare_user_id, comments, story_title, story_feed_id, story_id, original_comments=None):
@@ -2474,14 +2497,16 @@ class MInteraction(mongo.Document):
             params['content'] = original_comments
             original = cls.objects.filter(**params).limit(1)
             if original:
-                original = original[0]
-                original.content = comments
-                original.save()
+                interaction = original[0]
+                interaction.content = comments
+                interaction.save()
             else:
                 original_comments = None
 
         if not original_comments:
             cls.objects.create(**params)
+        
+        cls.publish_update_to_subscribers(user_id)
 
 class MActivity(mongo.Document):
     user_id      = mongo.IntField()

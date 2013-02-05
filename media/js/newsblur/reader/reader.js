@@ -3787,6 +3787,8 @@
                                 NEWSBLUR.log(['Real-time user update', username, feed_id]);
                                 this.feed_unread_count(feed_id);
                             }
+                        } else if (feed_id == "interaction:new") {
+                            this.update_interactions_count();
                         }
                     }, this));
                 
@@ -3920,6 +3922,12 @@
             if (!feed_id) return;
             
             this.model.feed_unread_count(feed_id);
+        },
+        
+        update_interactions_count: function() {
+            this.model.interactions_count(function(data) {
+                NEWSBLUR.app.sidebar_header.update_interactions_count(data.interactions_count);
+            }, $.noop);
         },
         
         // ===================

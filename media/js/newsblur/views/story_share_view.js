@@ -224,7 +224,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
     
     post_share_story: function(shared, data) {
-        this.model.set("shared", shared);
+        this.model.set("shared", shared, {silent: true});
+        this.model.trigger('change:shared');
         
         var $share_star = this.model.story_title_view && this.model.story_title_view.$('.NB-storytitles-share');
         var $share_button = this.$('.NB-sideoption-share-save');

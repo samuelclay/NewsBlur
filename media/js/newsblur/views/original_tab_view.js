@@ -470,7 +470,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         if (this.iframe_scroll
             && this.flags.iframe_scroll_snap_back_prepared 
             && this.$el.contents().scrollTop() == 0) {
-            // NEWSBLUR.log(['Snap back, loaded, scroll', this.iframe_scroll]);
+            NEWSBLUR.log(['Snap back, loaded, scroll', this.iframe_scroll]);
             this.$el.contents().scrollTop(this.iframe_scroll);
             if (iframe_loaded) {
                 this.flags.iframe_scroll_snap_back_prepared = false;

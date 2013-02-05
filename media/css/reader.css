@@ -868,6 +868,7 @@ body {
 
 .unread_count_negative {
     background-color: #CC2A2E;
+    text-shadow: none;
 /*    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);*/
 }
 
@@ -2565,7 +2566,7 @@ background: transparent;
 }
 #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-comments {
     margin: 0 8px 4px 0;
-    width: 62%;
+    width: 50%;
     display: block;
     float: left;
     font-size: 12px;
@@ -3469,6 +3470,7 @@ background: transparent;
 }
 #story_taskbar .feed_counts_floater .unread_count {
     margin-top: 1px;
+    text-shadow: none;
 }
 #story_taskbar .NB-taskbar {
     margin: 5px 0 0 0;
