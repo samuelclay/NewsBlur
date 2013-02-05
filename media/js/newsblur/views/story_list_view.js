@@ -36,26 +36,29 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     
     render: function() {
         var collection = this.collection;
-        var $stories = this.collection.map(function(story) {
+        var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryDetailView({
                 model: story,
                 collection: collection
-            }).render().el;
+            }).render();
         });
-        this.$el.html($stories);
+        this.$el.html(_.pluck(stories, 'el'));
+        _.invoke(stories, 'watch_images_for_story_height');
         this.show_correct_feed_in_feed_title_floater();
     },
     
     add: function(options) {
         if (options.added) {
             var collection = this.collection;
-            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var added = this.collection.models.slice(-1 * options.added);
+            var stories = _.compact(_.map(added, function(story) {
                 return new NEWSBLUR.Views.StoryDetailView({
                     model: story,
                     collection: collection
-                }).render().el;
+                }).render();
             }));
-            this.$el.append($stories);
+            this.$el.append(_.pluck(stories, 'el'));
+            _.invoke(stories, 'watch_images_for_story_height');
         } else {
             this.show_no_more_stories();
         }

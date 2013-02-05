@@ -520,6 +520,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Story changes'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-1', type: 'radio', name: 'truncate_story', value: 'social' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-1' }, [
+                                    'Only truncate long shared stories in blurblogs'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-2', type: 'radio', name: 'truncate_story', value: 'all' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-2' }, [
+                                    'Force all tall stories to have a max height'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-3', type: 'radio', name: 'truncate_story', value: 'none' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-3' }, [
+                                    'Show the entire story, even if really, really long'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Truncate stories'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -666,6 +691,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=hide_story_changes]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=truncate_story]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.truncate_story) {
                 $(this).attr('checked', true);
                 return false;
             }

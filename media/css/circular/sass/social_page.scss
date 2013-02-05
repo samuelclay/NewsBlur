@@ -240,7 +240,7 @@ blockquote {
     top: 0;
     z-index: 10;
     position: fixed;
-    @include background-image(linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0));
+    @include background-image(linear-gradient(#F3F3EE, #F3F3EE 70%, #E8EBE4));
     height: 44px;
     bottom: 0;
     

@@ -3,7 +3,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     tagName: 'li',
     
     className: 'NB-feed-story',
+
+    FUDGE_CONTENT_HEIGHT_OVERAGE: 260,
     
+    STORY_CONTENT_MAX_HEIGHT: 300, // ALSO CHANGE IN reader.css
+        
     events: {
         "click .NB-feed-story-content a"        : "click_link_in_story",
         "click .NB-feed-story-share-container a": "click_link_in_story",
@@ -19,7 +23,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
         "click .NB-feed-story-save"             : "star_story",
-        "click .NB-story-comments-label"        : "scroll_to_comments"
+        "click .NB-story-comments-label"        : "scroll_to_comments",
+        "click .NB-story-content-expander"      : "expand_story"
     },
     
     initialize: function() {
@@ -88,7 +93,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             title            : this.make_story_title(),
             authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
             tags_score       : this.classifiers && this.classifiers.tags,
-            options          : this.options
+            options          : this.options,
+            truncatable      : NEWSBLUR.reader.is_truncatable()
         };
     },
     
@@ -147,10 +153,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     template: _.template('\
         <%= story_header %>\
         <div class="NB-feed-story-shares-container"></div>\
-        <div class="NB-feed-story-content">\
-            <% if (!options.skip_content) { %>\
-                <%= story.get("story_content") %>\
-            <% } %>\
+        <div class="NB-story-content-container">\
+            <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
+                <div class="NB-feed-story-content">\
+                    <% if (!options.skip_content) { %>\
+                        <%= story.get("story_content") %>\
+                    <% } %>\
+                </div>\
+                <div class="NB-story-content-expander">\
+                    <div class="NB-story-content-expander-inner">\
+                        <div class="NB-story-cutoff"></div>\
+                        <div class="NB-story-content-expander-text">Read the whole story</div>\
+                        <div class="NB-story-content-expander-pages"></div>\
+                    </div>\
+                </div>\
+            </div>\
         </div>\
         <div class="NB-feed-story-comments-container"></div>\
         <div class="NB-feed-story-sideoptions-container">\
@@ -293,6 +310,85 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.reader.flags['temporary_story_view']) {
             NEWSBLUR.reader.switch_to_correct_view();
         }
+    },
+    
+    // ============
+    // = Expander =
+    // ============
+    
+    truncate_story_height: function() {
+        if (this._truncated) return;
+        
+        var $expander = this.$(".NB-story-content-expander");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
+        var $wrapper = this.$(".NB-story-content-wrapper");
+        var $content = this.$(".NB-feed-story-content");
+        var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
+        var content_height = $content.outerHeight(true);
+        
+        if (content_height > max_height && 
+            content_height < max_height + this.FUDGE_CONTENT_HEIGHT_OVERAGE) {
+            console.log(["Height over but within fudge", this.model.get('story_title').substr(0, 30), content_height, max_height]);
+            $wrapper.addClass('NB-story-content-wrapper-height-fudged');
+        } else if (content_height > max_height) {
+            $expander.css('display', 'block');
+            $expander_cutoff.css('display', 'block');
+            $wrapper.removeClass('NB-story-content-wrapper-height-fudged');
+            $wrapper.addClass('NB-story-content-wrapper-height-truncated');
+            var pages = Math.round(content_height / max_height, true);
+            var dots = _.map(_.range(pages), function() { return '&middot;'; }).join(' ');
+            
+            console.log(["Height over, truncating...", this.model.get('story_title').substr(0, 30), content_height, max_height, pages]);
+            this.$(".NB-story-content-expander-pages").html(dots);
+            this._truncated = true;
+        } else {
+            console.log(["Height under.", this.model.get('story_title').substr(0, 30), content_height, max_height]);
+        }
+    },
+    
+    watch_images_for_story_height: function() {
+        this.truncate_story_height();
+
+        this.$('img').load(_.bind(function() {
+            this.truncate_story_height();
+        }, this));
+    },
+    
+    expand_story: function(options) {
+        options = options || {};
+        var $expander = this.$(".NB-story-content-expander");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
+        var $wrapper = this.$(".NB-story-content-wrapper");
+        var $content = this.$(".NB-feed-story-content");
+        var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
+        var content_height = $content.outerHeight(true);
+        var height_ratio = content_height / max_height;
+        
+        if (content_height < max_height) return;
+        // $wrapper.removeClass('NB-story-content-wrapper-height-truncated');
+        // console.log(["max height", max_height, content_height, content_height / max_height]);
+        this._fetch_interval = setInterval(function() {
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+        }, 250);
+        
+        $wrapper.animate({
+            maxHeight: content_height
+        }, {
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart',
+            complete: _.bind(function() {
+                clearInterval(this._fetch_interval);
+                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+            }, this)
+        });
+        
+        $expander.add($expander_cutoff).animate({
+            bottom: -1 * $expander.outerHeight() - 48
+        }, {
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart'
+        });
+        
     },
     
     // ===========

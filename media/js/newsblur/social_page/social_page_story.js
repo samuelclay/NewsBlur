@@ -95,7 +95,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $content = this.$(".NB-story-content");
         
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
-        var content_height = this.$(".NB-story-content").outerHeight(true);
+        var content_height = $content.outerHeight(true);
         
         if (content_height > max_height && 
             content_height < max_height + this.FUDGE_CONTENT_HEIGHT_OVERAGE) {
@@ -251,7 +251,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
-        var content_height = this.$(".NB-story-content").outerHeight(true);
+        var content_height = $content.outerHeight(true);
         var height_ratio = content_height / max_height;
         
         if (content_height < max_height) return;
@@ -265,7 +265,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         });
         
         $expander.add($expander_cutoff).animate({
-            bottom: -1 * $expander.outerHeight() - 25
+            bottom: -1 * $expander.outerHeight() - 48
         }, {
             duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
             easing: 'easeInOutQuart'

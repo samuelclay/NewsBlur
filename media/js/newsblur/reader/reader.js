@@ -462,6 +462,12 @@
             }
         },
         
+        is_truncatable: function() {
+            return NEWSBLUR.assets.preference("truncate_story") == 'all' || 
+                   (NEWSBLUR.assets.preference("truncate_story") == 'social' &&
+                    this.flags['social_view']);
+        },
+        
         // ==============
         // = Navigation =
         // ==============
@@ -3777,10 +3783,10 @@
                             if (this.active_folder && this.active_folder.length) {
                                 active_feed_ids = this.active_folder.feed_ids_in_folder();
                             }
-                            if (message != this.active_feed && 
-                                !_.contains(active_feed_ids, message)) {
-                                NEWSBLUR.log(['Real-time user update', username, message]);
-                                this.feed_unread_count(message);
+                            if (feed_id != this.active_feed && 
+                                !_.contains(active_feed_ids, feed_id)) {
+                                NEWSBLUR.log(['Real-time user update', username, feed_id]);
+                                this.feed_unread_count(feed_id);
                             }
                         } else if (_.string.contains(message, 'social:')) {
                             if (message != this.active_feed) {
