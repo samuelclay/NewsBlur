@@ -252,7 +252,7 @@
                 south__resizable:       false,
                 enableCursorHotkey:     false,
                 togglerLength_open:     0,
-                south__spacing_open:    1
+                south__spacing_open:    0
             });
             
             this.layout.leftCenterLayout = $('.left-center').layout({
@@ -3769,25 +3769,25 @@
                     }, this));
                     
                     this.socket.removeAllListeners(NEWSBLUR.Globals.username);
-                    this.socket.on('user:update', _.bind(function(username, feed_id) {
+                    this.socket.on('user:update', _.bind(function(username, message) {
                         if (this.flags.social_view) return;
-                        if (_.string.contains(feed_id, 'feed:')) {
-                            feed_id = parseInt(feed_id.replace('feed:', ''), 10);
+                        if (_.string.contains(message, 'feed:')) {
+                            feed_id = parseInt(message.replace('feed:', ''), 10);
                             var active_feed_ids = [];
                             if (this.active_folder && this.active_folder.length) {
                                 active_feed_ids = this.active_folder.feed_ids_in_folder();
                             }
-                            if (feed_id != this.active_feed && 
-                                !_.contains(active_feed_ids, feed_id)) {
-                                NEWSBLUR.log(['Real-time user update', username, feed_id]);
-                                this.feed_unread_count(feed_id);
+                            if (message != this.active_feed && 
+                                !_.contains(active_feed_ids, message)) {
+                                NEWSBLUR.log(['Real-time user update', username, message]);
+                                this.feed_unread_count(message);
                             }
-                        } else if (_.string.contains(feed_id, 'social:')) {
-                            if (feed_id != this.active_feed) {
-                                NEWSBLUR.log(['Real-time user update', username, feed_id]);
-                                this.feed_unread_count(feed_id);
+                        } else if (_.string.contains(message, 'social:')) {
+                            if (message != this.active_feed) {
+                                NEWSBLUR.log(['Real-time user update', username, message]);
+                                this.feed_unread_count(message);
                             }
-                        } else if (feed_id == "interaction:new") {
+                        } else if (message == "interaction:new") {
                             this.update_interactions_count();
                         }
                     }, this));
