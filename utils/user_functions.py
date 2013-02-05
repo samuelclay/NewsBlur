@@ -107,5 +107,7 @@ def extract_user_agent(request):
         platform = 'WP7'
     elif 'WP8' in user_agent:
         platform = 'WP8'
+    elif 'Pluggio' in user_agent:
+        platform = 'Pluggio'
     
     return platform
