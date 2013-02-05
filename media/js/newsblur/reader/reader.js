@@ -4387,9 +4387,9 @@
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
             
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
-              $.make('div', { className: 'NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button' }, 'Add')
+              $.make('div', { className: 'NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button' }, 'Subscribe')
             ]).css({'opacity': 0});
-            this.$s.$story_taskbar.find('.NB-taskbar').append($add);
+            this.$s.$story_taskbar.append($add);
             $add.animate({'opacity': 1}, {'duration': 600});
         },
         
@@ -4405,7 +4405,7 @@
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button' }, 'Follow')
             ]).css({'opacity': 0});
-            this.$s.$story_taskbar.find('.NB-taskbar').append($add);
+            this.$s.$story_taskbar.append($add);
             $add.animate({'opacity': 1}, {'duration': 600});
         },
         

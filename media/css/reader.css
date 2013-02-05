@@ -1841,8 +1841,6 @@ background: transparent;
 #story_pane {
     font-size: 12px;
     line-height: 1.5em;
-    width: auto !important;
-    height: auto !important;
 }
 .NB-theme-sans-serif.NB-theme-size-xs #story_pane {
     font-size: 11px;    
@@ -2001,6 +1999,25 @@ background: transparent;
 /* =============================== */
 /* = Story content modifications = */
 /* =============================== */
+
+#story_pane {
+    color: #2b2b2b;
+}
+
+#story_pane p {
+    clear: both;
+}
+
+#story_pane blockquote {
+    background-color: #F0F0F0;
+    border-left: 5px solid #BABABA;
+    padding: .5em 2em;
+    margin: 0px;
+}
+
+.NB-feed-story .NB-feed-story-content iframe {
+    max-width: 99% !important;
+}
 
 .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
@@ -2314,7 +2331,6 @@ background: transparent;
 /* = Story content expansion = */
 /* =========================== */
 
-
 .NB-story-content-container {
     overflow: hidden;
 }
@@ -2335,7 +2351,7 @@ background: transparent;
     position: absolute;
     bottom: -28px;
     left: 0;
-    width: 100%;
+    width: 110%;
     cursor: pointer;
     color: #1a9fff;
     font-size: 12px;
@@ -3118,21 +3134,6 @@ background: transparent;
 /* = Story Modifications = */
 /* ======================= */
 
-#story_pane {
-    color: #2b2b2b;
-}
-
-#story_pane p {
-    clear: both;
-}
-
-#story_pane blockquote {
-    background-color: #F0F0F0;
-    border-left: 5px solid #BABABA;
-    padding: .5em 2em;
-    margin: 0px;
-}
-
 .content-pane .feed_counts_floater {
     position: absolute;
     bottom: 1px;
@@ -3656,7 +3657,7 @@ background: transparent;
 #story_taskbar .NB-tryfeed-follow,
 #story_taskbar .NB-tryout-signup {
     margin: 6px auto 0px;
-    width: 60px;
+    width: 80px;
     height: 14px;
     text-align: center;
     cursor: pointer;
