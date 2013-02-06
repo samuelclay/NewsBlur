@@ -469,15 +469,16 @@ def refresh_feed(request, feed_id):
 @never_cache
 @json.json_view
 def load_single_feed(request, feed_id):
-    start        = time.time()
-    user         = get_user(request)
-    offset       = int(request.REQUEST.get('offset', 0))
-    limit        = int(request.REQUEST.get('limit', 6))
-    page         = int(request.REQUEST.get('page', 1))
-    order        = request.REQUEST.get('order', 'newest')
-    read_filter  = request.REQUEST.get('read_filter', 'all')
-    query        = request.REQUEST.get('query')
-
+    start                   = time.time()
+    user                    = get_user(request)
+    offset                  = int(request.REQUEST.get('offset', 0))
+    limit                   = int(request.REQUEST.get('limit', 6))
+    page                    = int(request.REQUEST.get('page', 1))
+    order                   = request.REQUEST.get('order', 'newest')
+    read_filter             = request.REQUEST.get('read_filter', 'all')
+    query                   = request.REQUEST.get('query')
+    include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
+    
     dupe_feed_id = None
     userstories_db = None
     user_profiles = []
@@ -549,6 +550,8 @@ def load_single_feed(request, feed_id):
     checkpoint4 = time.time()
     
     for story in stories:
+        if not include_story_content:
+            del story['story_content']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)

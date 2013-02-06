@@ -111,7 +111,7 @@
         - key: feed_ids
           desc: " Array of feed ids. Leave empty to retrieve all active (enabled) feeds."
           optional: true
-          example: "[1, 2, 3]"
+          example: "feed_ids=12&feed_ids=24"
   
     - url: /reader/page/:id
       method: GET
@@ -163,7 +163,7 @@
         - key: term
           desc: "Phrase to search for in feed address, url, and title."
           optional: true
-          example: "[1, 2, 3]"
+          example: "tech"
 
 
 - stories:
@@ -188,6 +188,13 @@
           optional: true
           default: all
           example: unread
+        - key: include_story_content
+          desc: >
+            If you're just checking for story ids and meta-data, you don't
+            need the story content, thus reducing bandwidth.
+          optional: true
+          default: "true"
+          example: "false"
   
     - url: /reader/starred_stories
       method: GET
@@ -211,7 +218,7 @@
         - key: feeds
           desc: "Feed ids to use in the river. Usually every feed in a folder with unread stories."
           required: true
-          example: "[12, 24, 36]"
+          example: "feeds=12&feeds=24"
         - key: page
           desc: "Page of stories, starting from 1."
           optional: true
@@ -238,8 +245,7 @@
           desc: "List of story ids to mark as read."
           required: true
           example: >
-            ["http://blog.newsblur.com/post/1",
-             "http://blog.newsblur.com/post/2"]
+            story_id=http://blog.newsblur.com/post/1&story_id=http://blog.newsblur.com/post/2
         - key: feed_id
           desc: "Feed id that each story is from."
           required: true
@@ -316,7 +322,7 @@
         - key: feed_id
           desc: "List of feed ids to mark as read."
           required: true
-          example: "[12, 24, 36]"
+          example: "feed_id=12&feed_id=24"
       tips:
         - "To mark a folder as read, send the ids of each feed inside the folder."
     
@@ -346,7 +352,7 @@
         - key: social_user_ids
           desc: "User ids to use in the river."
           required: true
-          example: "[12, 24, 36]"
+          example: "feed_id=12&feed_id=24"
         - key: page
           desc: "Page of stories, starting from 1."
           optional: true
@@ -384,7 +390,7 @@
         - key: post_to_services
           desc: "List of services to cross-post to. Can be 'twitter' and/or 'facebook'."
           optional: true
-          example: "['twitter', 'facebook']"
+          example: "post_to_services=twitter&post_to_service=facebook"
         - key: format
           desc: "Return JSON or a HTML template"
           optional: true
@@ -882,7 +888,7 @@
         - key: feed_id
           desc: "List of feed ids in the folder that's being deleted. These feeds also get removed."
           optional: true
-          example: "[12, 24, 36]"
+          example: "feed_id=12&feed_id=24"
 
   
     - url: /reader/save_feed_order
