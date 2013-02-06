@@ -328,7 +328,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (content_height > max_height && 
             content_height < max_height + this.FUDGE_CONTENT_HEIGHT_OVERAGE) {
-            console.log(["Height over but within fudge", this.model.get('story_title').substr(0, 30), content_height, max_height]);
+            // console.log(["Height over but within fudge", this.model.get('story_title').substr(0, 30), content_height, max_height]);
             $wrapper.addClass('NB-story-content-wrapper-height-fudged');
         } else if (content_height > max_height) {
             $expander.css('display', 'block');
@@ -338,11 +338,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var pages = Math.round(content_height / max_height, true);
             var dots = _.map(_.range(pages), function() { return '&middot;'; }).join(' ');
             
-            console.log(["Height over, truncating...", this.model.get('story_title').substr(0, 30), content_height, max_height, pages]);
+            // console.log(["Height over, truncating...", this.model.get('story_title').substr(0, 30), content_height, max_height, pages]);
             this.$(".NB-story-content-expander-pages").html(dots);
             this._truncated = true;
         } else {
-            console.log(["Height under.", this.model.get('story_title').substr(0, 30), content_height, max_height]);
+            // console.log(["Height under.", this.model.get('story_title').substr(0, 30), content_height, max_height]);
         }
     },
     

@@ -90,20 +90,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     update_feed: function(setting) {
         var changed = NEWSBLUR.assets.view_setting(this.options.feed_id, setting);
-        
         if (!changed) return;
         
-        if (this.options.feed_id == NEWSBLUR.reader.active_feed &&
-            NEWSBLUR.reader.flags.social_view) {
-            NEWSBLUR.reader.open_social_stories(this.options.feed_id);
-        } else if (this.options.feed_id == NEWSBLUR.reader.active_feed &&
-                   NEWSBLUR.reader.flags.river_view) {
-            var folder = NEWSBLUR.reader.active_folder;
-            $feed = folder.folder_view.$el;
-            NEWSBLUR.reader.open_river_stories($feed, folder);
-        } else if (this.options.feed_id == NEWSBLUR.reader.active_feed) {
-            NEWSBLUR.reader.open_feed(this.options.feed_id);
-        }
+        NEWSBLUR.reader.reload_feed();
     }
 
     

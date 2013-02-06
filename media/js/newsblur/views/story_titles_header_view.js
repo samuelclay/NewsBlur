@@ -9,7 +9,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     initialize: function() {
         this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
             NEWSBLUR.reader.active_folder && 
-            NEWSBLUR.reader.active_folder.get('fake');
+            (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
     },
     
     render: function() {
@@ -28,14 +28,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             }).render();
             $view.append(this.view.$el);
         } else if (this.showing_fake_folder) {
-            var title = "All Site Stories";
-            if (NEWSBLUR.reader.flags['social_view']) {
-                if (NEWSBLUR.reader.flags['global_blurblogs']) {
-                    title = "Global Shared Stories";
-                } else {
-                    title = "All Shared Stories";
-                }
-            }
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-story-title-indicator">\
@@ -44,16 +36,20 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     </div>\
                     <div class="NB-folder-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text"><%= folder_title %></div>\
-                    <span class="NB-feedbar-options">\
-                        <div class="NB-icon"></div>\
-                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
-                        &middot;\
-                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
-                    </span>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <% if (show_options) { %>\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
+                            &middot;\
+                            <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
+                        </span>\
+                    <% } %>\
                 </div>\
             ', {
-                folder_title: title
+                folder_title: this.fake_folder_title(),
+                folder_id: NEWSBLUR.reader.active_folder.id,
+                show_options: !NEWSBLUR.reader.active_folder.get('fake')
             }));
         } else if (NEWSBLUR.reader.flags['river_view'] && 
                    NEWSBLUR.reader.active_folder &&
@@ -78,6 +74,19 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         this.show_feed_hidden_story_title_indicator();
         
         return this;
+    },
+    
+    fake_folder_title: function() {
+        var title = "All Site Stories";
+        if (NEWSBLUR.reader.flags['social_view']) {
+            if (NEWSBLUR.reader.flags['global_blurblogs']) {
+                title = "Global Shared Stories";
+            } else {
+                title = "All Shared Stories";
+            }
+        }
+        
+        return title;
     },
     
     remove: function() {
@@ -174,7 +183,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
-            feed_id: this.model.id
+            feed_id: NEWSBLUR.reader.active_feed
         });
     }
 
