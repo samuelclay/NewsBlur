@@ -4,6 +4,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         "click .NB-user-tab"        : "open_user_dropdown",
         "tap .NB-user-tab"          : "open_user_dropdown",
         "click .NB-menu-logout"     : "logout",
+        "click .NB-menu-newsblur"   : "open_in_newsblur",
         "click .NB-login-button"    : "login",
         "click .NB-signup-button"   : "signup",
         "click .NB-switch-login-button"  : "switch_login",
