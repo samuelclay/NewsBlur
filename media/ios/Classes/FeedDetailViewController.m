@@ -333,7 +333,7 @@
                                     NEWSBLUR_URL,
                                     self.feedPage];
             }
-        } else if (appDelegate.activeFolder == @"saved_stories") {
+        } else if ([appDelegate.activeFolder isEqual:@"saved_stories"]) {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"http://%@/reader/starred_stories/?page=%d",
                                 NEWSBLUR_URL,

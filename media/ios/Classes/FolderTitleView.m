@@ -56,7 +56,7 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
@@ -104,7 +104,7 @@
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [@"Saved Stories" uppercaseString];
     } else {
         folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
@@ -135,7 +135,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && folderName != @"saved_stories") {
+        if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
             if (!isFolderCollapsed) {
                 disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
@@ -169,7 +169,7 @@
         } else {
             folderImageViewX = 7;
         }
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;

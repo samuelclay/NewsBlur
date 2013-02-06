@@ -771,7 +771,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
-    if (keyPath == @"contentOffset") {
+    if ([keyPath isEqual:@"contentOffset"]) {
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1)) {
             // Pulling
             if (!pullingScrollview) {

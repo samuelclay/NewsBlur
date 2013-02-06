@@ -798,7 +798,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 0 && folderName != @"saved_stories") {
+    if (!visibleFeeds && section != 2 && section != 0 && ![folderName isEqual:@"saved_stories"]) {
         return 0;
     }
     

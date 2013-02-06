@@ -969,16 +969,16 @@
     int total = 0;
     NSArray *folder;
     
-    if (folderName == @"river_blurblogs" ||
-        (!folderName && self.activeFolder == @"river_blurblogs")) {
+    if ([folderName isEqual:@"river_blurblogs"] ||
+        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
-    } else if (folderName == @"river_global" ||
-               (!folderName && self.activeFolder == @"river_global")) {
+    } else if ([folderName isEqual:@"river_global"] ||
+               (!folderName && [self.activeFolder isEqual:@"river_global"])) {
         total = 0;
-    } else if (folderName == @"everything" ||
-               (!folderName && self.activeFolder == @"everything")) {
+    } else if ([folderName isEqual:@"everything"] ||
+               (!folderName && [self.activeFolder isEqual:@"everything"])) {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -1036,16 +1036,16 @@
         return counts;
     }
     
-    if (folderName == @"river_blurblogs" ||
-        (!folderName && self.activeFolder == @"river_blurblogs")) {
+    if ([folderName isEqual:@"river_blurblogs"] ||
+        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
-    } else if (folderName == @"river_global" ||
-            (!folderName && self.activeFolder == @"river_global")) {
+    } else if ([folderName isEqual:@"river_global"] ||
+            (!folderName && [self.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
-    } else if (folderName == @"everything" ||
-               (!folderName && self.activeFolder == @"everything")) {
+    } else if ([folderName isEqual:@"everything"] ||
+               (!folderName && [self.activeFolder isEqual:@"everything"])) {
         for (id feedId in self.dictFeeds) {
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
@@ -1416,7 +1416,7 @@
 }
 
 - (void)markActiveFolderAllRead {
-    if (self.activeFolder == @"everything") {
+    if ([self.activeFolder isEqual:@"everything"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -1483,7 +1483,7 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        folderName == @"everything") {
+        [folderName isEqual:@"everything"]) {
         folderName = @"";
     }
     
@@ -1499,7 +1499,7 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        folderName == @"everything") {
+        [folderName isEqual:@"everything"]) {
         folderName = @"";
     }
     if ([folderName containsString:@" - "]) {

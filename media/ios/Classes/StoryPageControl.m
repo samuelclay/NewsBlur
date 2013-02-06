@@ -423,7 +423,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        keyPath == @"contentOffset" &&
+        [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
         CGFloat pageWidth = self.scrollView.frame.size.width;
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
