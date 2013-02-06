@@ -413,14 +413,14 @@ blockquote {
   background: url('/../../../media/img/circular/header/icon_follow_active.png?1360004615') no-repeat center bottom;
   background-size: 17px;
 }
-.NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab {
+.NB-header .NB-header-tabs .NB-header-tab.NB-user-tab {
   background: url('/../../../media/img/circular/header/icon_circular_active.png?1360004615') no-repeat -9999px -9999px;
 }
-.NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab .NB-icon {
+.NB-header .NB-header-tabs .NB-header-tab.NB-user-tab .NB-icon {
   background: url('/../../../media/img/circular/header/icon_circular.png?1360004615') no-repeat center bottom;
   background-size: 17px;
 }
-.NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-circular-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab:hover .NB-icon {
+.NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-user-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-user-tab:hover .NB-icon {
   background: url('/../../../media/img/circular/header/icon_circular_active.png?1360004615') no-repeat center bottom;
   background-size: 17px;
 }

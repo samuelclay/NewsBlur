@@ -384,16 +384,16 @@ blockquote {
                 background-size: 17px;
             }
             
-            &.NB-circular-tab {
+            &.NB-user-tab {
                 background: image-url('header/icon_circular_active.png') no-repeat -9999px -9999px;
             }
-            &.NB-circular-tab .NB-icon {
+            &.NB-user-tab .NB-icon {
                 background: image-url('header/icon_circular.png') no-repeat center bottom;
                 background-size: 17px;
             }
             
-            &.NB-active.NB-circular-tab .NB-icon,
-            &.NB-circular-tab:hover .NB-icon {
+            &.NB-active.NB-user-tab .NB-icon,
+            &.NB-user-tab:hover .NB-icon {
                 background: image-url('header/icon_circular_active.png') no-repeat center bottom;
                 background-size: 17px;
             }

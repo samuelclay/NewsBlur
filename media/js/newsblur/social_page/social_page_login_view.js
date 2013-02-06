@@ -17,7 +17,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     setup_login_popover: function() {
-        this.login_popover = this.$(".NB-circular-tab").clickover({
+        this.login_popover = this.$(".NB-user-tab").clickover({
             html: true,
             placement: "bottom",
             content: this.$(".NB-circular-popover-content").html(),
@@ -28,12 +28,12 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     on_show_popover: function() {
-        this.$('.NB-circular-tab').addClass('NB-active');
+        this.$('.NB-user-tab').addClass('NB-active');
         this.$('.popover input[name=login_username]').focus();
     },
     
     on_hide_popover: function() {
-        this.$('.NB-circular-tab').removeClass('NB-active');
+        this.$('.NB-user-tab').removeClass('NB-active');
     },
     
     toggle_login_dialog: function(options) {
@@ -60,9 +60,11 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 });
             });
             $button.addClass('open');
+            this.toggle_login_dialog();
         } else {
             $button.removeClass('open');
         }
+        
     },
     
     // ==========
