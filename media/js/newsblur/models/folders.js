@@ -241,7 +241,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         this.counts = counts;
         
         if (sum_total) {
-            var unread_view = this.get_unread_view_name();
+            var unread_view = NEWSBLUR.reader.get_unread_view_name();
             if (unread_view == 'positive') return counts['ps'];
             if (unread_view == 'neutral')  return counts['ps'] + counts['nt'];
             if (unread_view == 'negative') return counts['ps'] + counts['nt'] + counts['ng'];

@@ -3605,7 +3605,7 @@
                 }
                 return total;
             } else if (this.flags['river_view'] && !this.flags['social_view']) {
-                return this.active_folder.unread_counts(true);
+                return this.active_folder.folders.unread_counts(true);
             } else if (this.flags['river_view'] && this.flags['social_view']) {
                 var unread_score = this.get_unread_view_score();
                 return NEWSBLUR.assets.social_feeds.reduce(function(m, feed) { 
