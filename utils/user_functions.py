@@ -85,6 +85,8 @@ def extract_user_agent(request):
         platform = 'Androd'
     elif 'Metroblur' in user_agent:
         platform = 'Metrob'
+    elif 'Pluggio' in user_agent:
+        platform = 'Plugio'
     elif 'MSIE' in user_agent:
         platform = 'IE'
         if 'MSIE 9' in user_agent:
@@ -107,7 +109,5 @@ def extract_user_agent(request):
         platform = 'WP7'
     elif 'WP8' in user_agent:
         platform = 'WP8'
-    elif 'Pluggio' in user_agent:
-        platform = 'Pluggio'
     
     return platform
