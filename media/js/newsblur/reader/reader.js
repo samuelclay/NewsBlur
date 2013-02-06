@@ -1541,7 +1541,8 @@
             
             this.active_feed = feed.id;
             this.next_feed = feed.id;
-            this.flags.river_view = true;
+            this.flags.river_view = false;
+            this.flags.social_view = true;
             if (options.story_id) {
                 this.flags['select_story_in_feed'] = options.story_id;
             }
@@ -1551,7 +1552,6 @@
             feed.set('selected', true, options);
             this.make_feed_title_in_stories();
             this.$s.$body.addClass('NB-view-river');
-            this.flags.social_view = true;
             
             this.set_correct_story_view_for_feed(this.active_feed);
             
@@ -1610,6 +1610,7 @@
                     this.show_last_unread_story(true);
                 }
                 if (first_load) {
+                    this.make_story_titles_pane_counter();
                     this.find_story_with_action_preference_on_open_feed();
                 }
                 this.hide_stories_progress_bar();
@@ -3438,7 +3439,7 @@
             }
             $('.NB-menu-manage-title', $share).text(text);
             $confirm.slideUp(500, _.bind(function() {
-                if (shared) {
+                if (shared && story) {
                     this.hide_manage_menu('story', story.story_title_view.$el, true);
                 }
             }, this));

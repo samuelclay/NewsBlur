@@ -1547,6 +1547,30 @@ background: transparent;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
+#story_titles .NB-storytitles-shares {
+    position: absolute;
+    height: 16px;
+    right: 2px;
+    top: 2px;
+    max-width: 56px;
+}
+#story_titles .NB-storytitles-shares .NB-icon {
+    float: right;
+    width: 12px;
+    height: 12px;
+    margin: 2px 4px 0 0;
+    background: transparent url('/media/embed/icons/silk/rainbow.png') no-repeat 0 0;
+    background-size: 12px 12px;
+}
+#story_titles .NB-storytitles-shares .NB-user-avatar {
+    float: right;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin: 2px 2px 0 0;
+    display: block;
+}
+
 #story_titles .story .story_title .NB-storytitles-tags {
     padding-left: 12px;
     font-weight: normal;

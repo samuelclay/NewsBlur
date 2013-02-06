@@ -85,7 +85,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     get_render_params: function() {
         this.feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
         this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
-        var show_feed_title = NEWSBLUR.reader.flags.river_view || this.options.show_feed_title;
+        var show_feed_title = NEWSBLUR.reader.flags.river_view || 
+                              NEWSBLUR.reader.flags.social_view || 
+                              this.options.show_feed_title;
         return {
             story            : this.model,
             feed             : show_feed_title && this.feed,
@@ -258,7 +260,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
         
-        this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view);
+        this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view ||
+                                               NEWSBLUR.reader.flags.social_view);
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
                 

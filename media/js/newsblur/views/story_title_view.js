@@ -7,6 +7,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         "click"                         : "select_story",
         "contextmenu"                   : "show_manage_menu",
         "click .NB-story-manage-icon"   : "show_manage_menu",
+        "click .NB-storytitles-shares"  : "select_story_shared",
         "mouseenter"                    : "mouseenter_manage_icon",
         "mouseleave"                    : "mouseleave_manage_icon"
     },
@@ -23,7 +24,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             story    : this.model,
-            feed     : NEWSBLUR.reader.flags.river_view && NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
+            feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
+                        NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
             tag      : _.first(this.model.get("story_tags")),
             options  : this.options
         }));
@@ -53,6 +55,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <% } %>\
         </a>\
         <span class="story_date"><%= story.get("short_parsed_date") %></span>\
+        <% if (story.get("comment_count_friends")) { %>\
+            <div class="NB-storytitles-shares">\
+                <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
+                    <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
+                <% }) %>\
+            </div>\
+        <% } %>\
         <div class="NB-story-manage-icon"></div>\
     '),
     
@@ -211,7 +220,22 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.model.story_view.open_story_in_new_tab();
         }
     },
+    
+    select_story_shared: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        this.model.set('selected', true, {'click_on_story_title': true});
+        if (NEWSBLUR.reader.story_view == 'page') {
+            NEWSBLUR.reader.switch_taskbar_view('feed', {skip_save_type: 'page'});
+        }
 
+        NEWSBLUR.app.story_list.scroll_to_selected_story(this.model, {
+            scroll_to_comments: true,
+            scroll_offset: -50
+        });
+    },
+    
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
