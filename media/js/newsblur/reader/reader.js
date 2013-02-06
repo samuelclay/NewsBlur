@@ -5262,6 +5262,10 @@
                     scroll_offset: -50
                 });
             });
+            $document.bind('keydown', 'x', function(e) {
+                e.preventDefault();
+                NEWSBLUR.reader.active_story.story_view.expand_story();
+            });
             $document.bind('keydown', 'm', function(e) {
                 e.preventDefault();
                 self.show_last_unread_story();

@@ -2039,7 +2039,8 @@ background: transparent;
     margin: 0px;
 }
 
-.NB-feed-story .NB-feed-story-content iframe {
+.NB-feed-story .NB-feed-story-content iframe,
+.NB-feed-story .NB-feed-story-content table {
     max-width: 99% !important;
 }
 
