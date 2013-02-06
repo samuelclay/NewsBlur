@@ -462,12 +462,6 @@
             }
         },
         
-        is_truncatable: function() {
-            return NEWSBLUR.assets.preference("truncate_story") == 'all' || 
-                   (NEWSBLUR.assets.preference("truncate_story") == 'social' &&
-                    this.flags['social_view']);
-        },
-        
         // ==============
         // = Navigation =
         // ==============
