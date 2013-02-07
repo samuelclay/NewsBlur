@@ -48,7 +48,7 @@ env.roledefs ={
            'db05.newsblur.com',
            ],
     'task': ['task01.newsblur.com', 
-             # 'task02.newsblur.com', 
+             'task02.newsblur.com', 
              'task03.newsblur.com', 
              'task04.newsblur.com', 
              # 'task05.newsblur.com', 
