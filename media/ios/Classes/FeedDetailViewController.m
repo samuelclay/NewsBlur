@@ -888,7 +888,8 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
+    if (appDelegate.isRiverView && includeHidden &&
+        [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
                                NEWSBLUR_URL];
@@ -1036,7 +1037,7 @@
 //        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
         if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
 //        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
-
+        
         if (showVisible && showEntire) {
             if (buttonIndex == 0) {
                 [self markFeedsReadWithAllStories:NO];
