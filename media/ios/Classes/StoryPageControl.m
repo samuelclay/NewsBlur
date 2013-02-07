@@ -230,9 +230,9 @@
 }
 
 - (void)refreshPages {
+    int pageIndex = currentPage.pageIndex;
     [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
-    int pageIndex = currentPage.pageIndex;
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
