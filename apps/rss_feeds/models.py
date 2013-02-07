@@ -1233,8 +1233,10 @@ class Feed(models.Model):
         
         if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
-            if self.active_premium_subscribers <= 1 and self.average_stories_per_month == 0:
-                total = total * random.randint(1, 18)
+
+        if (self.active_premium_subscribers <= 1 and 
+            (self.stories_last_month == 0 or self.average_stories_per_month == 0)):
+            total = total * random.randint(1, 12)
         
         if self.is_push:
             total = total * 20
