@@ -1074,7 +1074,6 @@ heightForHeaderInSection:(NSInteger)section {
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
-            
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
             [Utilities saveImage:faviconImage feedId:feed_id];

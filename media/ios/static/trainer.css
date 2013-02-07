@@ -152,7 +152,7 @@
 }
 
 .NB-classifier .feed_favicon {
-  margin-top: -2px;
+  vertical-align: bottom;
   width: 16px;
   height: 16px;
 }

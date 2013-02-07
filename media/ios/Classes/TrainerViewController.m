@@ -9,6 +9,8 @@
 #import "TrainerViewController.h"
 #import "NBContainerViewController.h"
 #import "StringHelper.h"
+#import "Utilities.h"
+#import "Base64.h"
 
 @implementation TrainerViewController
 
@@ -317,6 +319,12 @@
     int publisherScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"feeds"] objectForKey:feedId] intValue];
     
+    UIImage *favicon = [Utilities getImage:feedId];
+    NSData *faviconData = UIImagePNGRepresentation(favicon);
+    NSString *feedImageUrl = [NSString stringWithFormat:@"data:image/png;charset=utf-8;base64,%@",
+                              [faviconData base64Encoding]];
+    NSString *publisherTitle = [NSString stringWithFormat:@"<img class=\"feed_favicon\" src=\"%@\"> %@",
+                                feedImageUrl, feedTitle];
     NSString *storyPublisher = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                                 "  <div class=\"NB-trainer-section-title\">Publisher</div>"
                                 "  <div class=\"NB-trainer-section-body\">"
@@ -328,7 +336,9 @@
                                 "</div",
                                 feedId,
                                 publisherScore > 0 ? @"positive" : publisherScore < 0 ? @"negative" : @"",
-                                [self makeClassifier:feedTitle withType:@"publisher" score:publisherScore]];
+                                [self makeClassifier:publisherTitle
+                                            withType:@"publisher"
+                                               score:publisherScore]];
     
     return storyPublisher;
 }
