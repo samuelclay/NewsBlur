@@ -952,7 +952,10 @@ heightForHeaderInSection:(NSInteger)section {
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
-    NSIndexPath *topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    NSIndexPath *topRow;
+    if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
+        topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    }
     int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
@@ -988,14 +991,16 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable reloadData];
 
     NSIndexPath *newMiddleRow;
-    if ([self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
+    if (topRow && [self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
         newMiddleRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
-    } else {
+    } else if (topRow) {
         newMiddleRow = [NSIndexPath indexPathForRow:0 inSection:topRow.section];
     }
-    [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
-                                atScrollPosition:UITableViewScrollPositionTop
-                                        animated:NO];
+    if (newMiddleRow) {
+        [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
+                                    atScrollPosition:UITableViewScrollPositionTop
+                                            animated:NO];
+    }
     [self.feedTitlesTable
      reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
      withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];

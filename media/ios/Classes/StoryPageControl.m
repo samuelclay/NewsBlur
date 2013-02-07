@@ -554,13 +554,17 @@
     }
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSLog(@"Error in story detail: %@", [request error]);
+- (void)requestFailed:(id)request {
     NSString *error;
-    if ([request error]) {
-        error = [NSString stringWithFormat:@"%@", [request error]];
+    if ([request class] == [ASIHTTPRequest class]) {
+        NSLog(@"Error in story detail: %@", [request error]);
+        if ([request error]) {
+            error = [NSString stringWithFormat:@"%@", [request error]];
+        } else {
+            error = @"The server barfed!";
+        }
     } else {
-        error = @"The server barfed!";
+        error = request;
     }
     [self informError:error];
 }
@@ -784,6 +788,14 @@
 - (void)finishMarkAsUnread:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
+    }
+    
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc]
+                             initWithDictionary:[responseString JSONValue]];
+    
+    if ([[results objectForKey:@"code"] intValue] < 0) {
+        return [self requestFailed:[results objectForKey:@"message"]];
     }
     
     [appDelegate markActiveStoryUnread];
