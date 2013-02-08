@@ -79,19 +79,15 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $last = this.$('.NB-story-title:visible:last');
         var container_height = NEWSBLUR.reader.$s.$story_titles.height();
 
-        if (($last.length == 0 ||
-             (NEWSBLUR.reader.$s.$story_titles.scrollTop() == 0 && 
-              $last.position().top + $last.height() - 13 < container_height))) {
-            if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
-                !NEWSBLUR.assets.flags['no_more_stories']) {
-                // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, NEWSBLUR.reader.$s.$story_titles.scrollTop()]);
-                NEWSBLUR.reader.counts['page_fill_outs'] += 1;
-                _.delay(function() {
-                    NEWSBLUR.reader.load_page_of_feed_stories({show_loading: false});
-                }, 50);
-            } else {
-                this.show_no_more_stories();
-            }
+        if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
+            !NEWSBLUR.assets.flags['no_more_stories']) {
+            // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, NEWSBLUR.reader.$s.$story_titles.scrollTop()]);
+            NEWSBLUR.reader.counts['page_fill_outs'] += 1;
+            _.delay(_.bind(function() {
+                this.scroll();
+            }, this), 10);
+        } else {
+            this.show_no_more_stories();
         }
     },
     
@@ -201,14 +197,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        var $last_story = this.$('.story').last();
         var container_offset = $story_titles.position().top;
-        var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
         var visible_height = $story_titles.height();
         var scroll_y = $story_titles.scrollTop();
-    
-        // Fudge factor is simply because it looks better at 13 pixels off.
-        if ((visible_height + 13) >= full_height) {
+        var total_height = this.$el.outerHeight(true) + NEWSBLUR.reader.$s.$feedbar.outerHeight(true);
+        
+        // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height]);
+        if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories();
         }
     }

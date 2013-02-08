@@ -208,6 +208,17 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         });
     },
     
+    last_visible: function(score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+        
+        for (var i=this.size(); i >= 0; i--) {
+            var story = this.at(i);
+            if (story.score() >= score || story.get('visible')) {
+                return story;
+            }
+        }
+    },
+    
     visible_and_unread: function(score, include_active_story) {
         var active_story_id = this.active_story && this.active_story.id;
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;

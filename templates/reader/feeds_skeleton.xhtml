@@ -155,52 +155,55 @@
 
     <div class="right-pane">
 
-        <div id="story_titles" class="right-north">
-            <div class="NB-feedbar"></div>
-            <div class="NB-story-titles"></div>
-        </div>
-        <div class="content-pane">
-            <div id="story_taskbar" class="NB-taskbar-container content-north">
-                <ul class="segmented-control NB-taskbar NB-taskbar-view">
-                    <li class="NB-taskbar-button task_view_page">
-                        <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Original</span>
-                        <span class="NB-task-original-return NB-task-title">
-                            Return
-                        </span>
-                        <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
-                    </li>
-                    <li class="NB-taskbar-button task_view_feed NB-active">
-                        <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Feed</span>
-                        <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
-                    </li>
-                    <li class="NB-taskbar-button task_view_text">
-                        <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Text</span>
-                        <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
-                    </li>
-                    <li class="NB-taskbar-button task_view_story">
-                        <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Story</span>
-                        <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
-                    </li>
-                </ul>
-                
-                <ul class="segmented-control segmented-control-active NB-taskbar NB-taskbar-nav">
-                    <li class="NB-taskbar-button NB-task-story-previous NB-active">
-                        <div class="NB-task-image"></div>
-                    </li>
-                    <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
-                        <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Next Unread</span>
-                    </li>
-                    <li class="NB-taskbar-button NB-task-story-next NB-active">
-                        <div class="NB-task-image"></div>
-                    </li>
-                </ul>
-            </div>
-
+        <div id="story_taskbar" class="NB-taskbar-container content-north">
+            <ul class="segmented-control NB-taskbar NB-taskbar-view">
+                <li class="NB-taskbar-button task_view_page">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Original</span>
+                    <span class="NB-task-original-return NB-task-title">
+                        Return
+                    </span>
+                    <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                </li>
+                <li class="NB-taskbar-button task_view_feed NB-active">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Feed</span>
+                    <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
+                </li>
+                <li class="NB-taskbar-button task_view_text">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Text</span>
+                    <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
+                </li>
+                <li class="NB-taskbar-button task_view_story">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Story</span>
+                    <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
+                </li>
+            </ul>
+            
+            <ul class="segmented-control segmented-control-active NB-taskbar NB-taskbar-nav">
+                <li class="NB-taskbar-button NB-task-story-previous NB-active">
+                    <div class="NB-task-image"></div>
+                </li>
+                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Next Unread</span>
+                </li>
+                <li class="NB-taskbar-button NB-task-story-next NB-active">
+                    <div class="NB-task-image"></div>
+                </li>
+            </ul>
+            
+            <ul class="segmented-control NB-taskbar NB-taskbar-layout">
+                <li class="NB-taskbar-button NB-task-layout-split NB-active">
+                    <div class="NB-task-image"></div>
+                </li>
+                <li class="NB-taskbar-button NB-task-layout-list">
+                    <div class="NB-task-image"></div>
+                </li>
+            </ul>
+            
             {% if not user.is_authenticated %}
             <div class="NB-callout-ftux-signup NB-callout">
                 <div class="NB-callout-container">
@@ -209,7 +212,15 @@
                 </div>
             </div>
             {% endif %}
+        </div>
 
+        <div class="content-pane">
+            
+            <div id="story_titles" class="right-north">
+                <div class="NB-feedbar"></div>
+                <div class="NB-story-titles"></div>
+            </div>
+        
             <div id="story_pane" class="content-center">
                 <div id="mouse-indicator">
                     <div class="NB-callout-mouse-indicator NB-callout">

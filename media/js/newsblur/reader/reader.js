@@ -13,6 +13,7 @@
             NEWSBLUR.assets = new NEWSBLUR.AssetModel();
             this.model = NEWSBLUR.assets;
             this.story_view = 'page';
+            this.story_layout = 'list';
             this.options = _.extend({}, defaults, options);
             this.$s = {
                 $body: $('body'),
@@ -183,10 +184,15 @@
                                                             }, 2000);
             this.flags.fetch_story_locations_in_feed_view();
             
-            if ((NEWSBLUR.reader.layout.contentLayout.panes.north &&
-                 NEWSBLUR.reader.layout.contentLayout.panes.north.width() < 600) ||
-                (NEWSBLUR.reader.layout.contentLayout.panes.center &&
-                 NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 700)) {
+            var north, center;
+            if (this.story_layout == 'split') {
+                north = NEWSBLUR.reader.layout.contentLayout.panes.north;
+                center = NEWSBLUR.reader.layout.contentLayout.panes.center;
+            } else if (this.story_layout == 'list') {
+                center = NEWSBLUR.reader.layout.rightLayout.panes.center;
+            }
+            if ((north && north.width() < 600) ||
+                (center && center.width() < 700)) {
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.addClass('NB-feed-story-view-narrow');
             } else {
@@ -275,34 +281,63 @@
                 togglerLength_open:     0
             });
             
-            var rightLayoutOptions = { 
-                resizeWhileDragging:    true,
-                center__paneSelector:   ".content-pane",
-                spacing_open:           story_anchor == 'west' ? 1 : 4,
-                resizerDragOpacity:     0.6,
-                enableCursorHotkey:     false,
-                togglerLength_open:     0,
-                fxName:                 "slideOffscreen",
-                fxSettings:             { duration: 560, easing: "easeInOutQuint" }
-            };
-            rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
-            rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
-            rightLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
-            rightLayoutOptions[story_anchor+'__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
-            rightLayoutOptions[story_anchor+'__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
-            this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
+            if (this.story_layout == 'split') {
+                var rightLayoutOptions = { 
+                    resizeWhileDragging:    true,
+                    center__paneSelector:   ".content-pane",
+                    spacing_open:           0,
+                    resizerDragOpacity:     0.6,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0,
+                    fxName:                 "slideOffscreen",
+                    fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                    north__paneSelector:    ".content-north",
+                    north__size:            37
+                };
 
-            var contentLayoutOptions = { 
-                resizeWhileDragging:    true,
-                center__paneSelector:   ".content-center",
-                spacing_open:           0,
-                resizerDragOpacity:     0.6,
-                enableCursorHotkey:     false,
-                togglerLength_open:     0,
-                north__paneSelector:    ".content-north",
-                north__size:            37
-            };
-            this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
+                this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
+
+                var contentLayoutOptions = { 
+                    resizeWhileDragging:    true,
+                    center__paneSelector:   ".content-center",
+                    spacing_open:           story_anchor == 'west' ? 1 : 4,
+                    resizerDragOpacity:     0.6,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0
+                };
+                contentLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
+                contentLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
+                contentLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
+                contentLayoutOptions[story_anchor+'__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
+                contentLayoutOptions[story_anchor+'__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
+                this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
+            } else if (this.story_layout == 'list') {
+                var rightLayoutOptions = { 
+                    resizeWhileDragging:    true,
+                    center__paneSelector:   ".content-pane",
+                    spacing_open:           0,
+                    resizerDragOpacity:     0.6,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0,
+                    fxName:                 "slideOffscreen",
+                    fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                    north__paneSelector:    ".content-north",
+                    north__size:            37
+                    
+                };
+                this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
+                
+                var contentLayoutOptions = { 
+                    resizeWhileDragging:    true,
+                    center__paneSelector:   ".right-north",
+                    spacing_open:           0,
+                    resizerDragOpacity:     0.6,
+                    enableCursorHotkey:     false,
+                    togglerLength_open:     0
+                };
+                this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
+                
+            }
 
             if (refresh) {
                 this.$s.$feed_stories.append(feed_stories_bin.children());
@@ -1245,7 +1280,29 @@
 
             this.story_view = view;
         },
+        
+        // ================
+        // = Story Layout =
+        // ================
+        
+        switch_story_layout: function(layout) {
+            if (layout == this.story_layout) return;
+            var $split = $(".NB-task-layout-split");
+            var $list = $(".NB-task-layout-list");
             
+            if (layout == 'list') {
+                $split.removeClass('NB-active');
+                $list.addClass('NB-active');
+            } else if (layout == 'split') {
+                $split.addClass('NB-active');
+                $list.removeClass('NB-active');
+            }
+            
+            this.story_layout = layout;
+            
+            this.apply_resizable_layout(true);
+        },
+        
         // ===============
         // = Feed Header =
         // ===============
@@ -2269,7 +2326,7 @@
                 return;
             }
 
-            var $taskbar_buttons = $('.NB-taskbar .NB-taskbar-button');
+            var $taskbar_buttons = $('.NB-taskbar-view .NB-taskbar-button');
             var $feed_view = this.$s.$feed_view;
             var $feed_iframe = this.$s.$feed_iframe;
             var $to_feed_arrow = $('.NB-taskbar .NB-task-view-to-feed-arrow');
@@ -3996,6 +4053,8 @@
         },
         
         position_mouse_indicator: function() {
+            if (this.story_layout != 'split') return;
+            
             var position = this.model.preference('lock_mouse_indicator');
             var container = this.layout.contentLayout.state.container.innerHeight - 30;
 
@@ -4927,6 +4986,14 @@
             $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-previous' }, function($t, $p){
                 e.preventDefault();
                 self.show_previous_story();
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-layout-split' }, function($t, $p){
+                e.preventDefault();
+                self.switch_story_layout('split');
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-layout-list' }, function($t, $p){
+                e.preventDefault();
+                self.switch_story_layout('list');
             }); 
             $.targetIs(e, { tagSelector: '.NB-intelligence-slider-control' }, function($t, $p){
                 e.preventDefault();
