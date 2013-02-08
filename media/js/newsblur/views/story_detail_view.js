@@ -6,7 +6,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     FUDGE_CONTENT_HEIGHT_OVERAGE: 260,
     
-    STORY_CONTENT_MAX_HEIGHT: 300, // ALSO CHANGE IN reader.css
+    STORY_CONTENT_MAX_HEIGHT: 460, // ALSO CHANGE IN reader.css: .NB-story-content-wrapper-height-truncated
         
     events: {
         "click .NB-feed-story-content a"        : "click_link_in_story",

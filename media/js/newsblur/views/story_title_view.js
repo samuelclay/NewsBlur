@@ -1,6 +1,6 @@
 NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
-    className: 'story NB-story-title',
+    className: 'story NB-story-title-container',
     
     events: {
         "dblclick"                      : "open_story_in_story_view",
@@ -29,6 +29,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             tag      : _.first(this.model.get("story_tags")),
             options  : this.options
         }));
+        this.$st = this.$(".NB-story-title");
         this.toggle_classes();
         this.toggle_read_status();
         
@@ -36,34 +37,56 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     template: _.template('\
-        <div class="NB-storytitles-sentiment"></div>\
-        <a href="<%= story.get("story_permalink") %>" class="story_title">\
-            <% if (feed) { %>\
-                <div class="NB-story-feed">\
-                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                    <span class="feed_title"><%= feed.get("feed_title") %></span>\
+        <div class="NB-story-title">\
+            <div class="NB-storytitles-sentiment"></div>\
+            <a href="<%= story.get("story_permalink") %>" class="story_title">\
+                <% if (feed) { %>\
+                    <div class="NB-story-feed">\
+                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                    </div>\
+                <% } %>\
+                <div class="NB-storytitles-star"></div>\
+                <div class="NB-storytitles-share"></div>\
+                <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+                <% if (tag) { %>\
+                    <span class="NB-storytitles-tags">\
+                        <span class="NB-storytitles-tag"><%= tag %></span>\
+                    </span>\
+                <% } %>\
+            </a>\
+            <span class="story_date"><%= story.get("short_parsed_date") %></span>\
+            <% if (story.get("comment_count_friends")) { %>\
+                <div class="NB-storytitles-shares">\
+                    <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
+                        <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
+                    <% }) %>\
                 </div>\
             <% } %>\
-            <div class="NB-storytitles-star"></div>\
-            <div class="NB-storytitles-share"></div>\
-            <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
-            <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
-            <% if (tag) { %>\
-                <span class="NB-storytitles-tags">\
-                    <span class="NB-storytitles-tag"><%= tag %></span>\
-                </span>\
-            <% } %>\
-        </a>\
-        <span class="story_date"><%= story.get("short_parsed_date") %></span>\
-        <% if (story.get("comment_count_friends")) { %>\
-            <div class="NB-storytitles-shares">\
-                <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
-                    <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
-                <% }) %>\
-            </div>\
-        <% } %>\
-        <div class="NB-story-manage-icon"></div>\
+            <div class="NB-story-manage-icon"></div>\
+        </div>\
+        <div class="NB-story-detail"></div>\
     '),
+    
+    render_inline_story_detail: function() {
+        this.story_detail = new NEWSBLUR.Views.StoryDetailView({
+            model: this.model,
+            collection: this.model.collection
+        }).render();
+        
+        this.$(".NB-story-detail").html(this.story_detail.$el);
+        this.$st.hide();
+
+        this.story_detail.watch_images_for_story_height();
+    },
+    
+    destroy_inline_story_detail: function() {
+        if (!this.story_detail) return;
+        
+        this.$st.show();
+        this.story_detail.destroy();
+    },
     
     // ============
     // = Bindings =
@@ -80,9 +103,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
 
-        this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
-        this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
-        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
+        this.$st.toggleClass('NB-story-starred', !!story.get('starred'));
+        this.$st.toggleClass('NB-story-shared', !!story.get('shared'));
+        this.$st.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
                 .addClass('NB-story-'+story.score_name(score));
 
         if (unread_view > score) {
@@ -99,13 +122,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     toggle_intelligence: function() {
         var score = this.model.score();
-        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
+        this.$st.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
                 .addClass('NB-story-'+this.model.score_name(score));
     },
     
     toggle_read_status: function(model, read_status, options) {
         options = options || {};
-        this.$el.toggleClass('read', !!this.model.get('read_status'));
+        this.$st.toggleClass('read', !!this.model.get('read_status'));
         
         if (options.error_marking_unread) {
             var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
@@ -141,10 +164,20 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_selected: function(model, selected, options) {
-        this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        this.$st.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (this.model.get('selected')) {
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+            var options;
+            if (NEWSBLUR.reader.story_layout == 'list') {
+                options = {
+                    force: true,
+                    align_top: true
+                };
+                this.render_inline_story_detail();
+            }
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
+        } else {
+            this.destroy_inline_story_detail();
         }
     },
     
@@ -180,8 +213,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 }
             });
         } else {
-            this.$el.one('mouseout', _.bind(function() {
-                this.$el.removeClass('NB-unstarred');
+            this.$st.one('mouseout', _.bind(function() {
+                this.$st.removeClass('NB-unstarred');
             }, this));
             $star.attr({'title': 'Removed'});
         
@@ -240,7 +273,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
         // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
-        NEWSBLUR.reader.show_manage_menu('story', this.$el, {
+        NEWSBLUR.reader.show_manage_menu('story', this.$st, {
             story_id: this.model.id,
             feed_id: this.model.get('story_feed_id'),
             rightclick: e.which >= 2
@@ -251,12 +284,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     mouseenter_manage_icon: function() {
         var menu_height = 270;
         if (this.$el.offset().top > $(window).height() - menu_height) {
-            this.$el.addClass('NB-hover-inverse');
+            this.$st.addClass('NB-hover-inverse');
         }
     },
     
     mouseleave_manage_icon: function() {
-        this.$el.removeClass('NB-hover-inverse');
+        this.$st.removeClass('NB-hover-inverse');
     },
     
     open_story_in_story_view: function(e) {
