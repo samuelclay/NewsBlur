@@ -1301,6 +1301,7 @@ background: transparent;
 /* ============================= */
 
 #story_titles .NB-feedbar .NB-story-title-indicator {
+    display: none;
     position: absolute;
     right: 206px;
     top: 2px;

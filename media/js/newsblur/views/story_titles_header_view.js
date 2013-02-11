@@ -128,8 +128,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             return;
         }
         
-        $indicator.css({'display': 'block', 'opacity': 0});
         if (is_feed_load) {
+            $indicator.css({'display': 'block', 'opacity': 0});
             _.delay(function() {
                 $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
             }, 500);
@@ -153,7 +153,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             return story.score() < 0;
         });
         
-        NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
+        // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
         
         // First click, open neutral. Second click, open negative.
         if (unread_view_name == 'positive' && 

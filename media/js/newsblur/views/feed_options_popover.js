@@ -9,7 +9,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         offset: {
             top: -3,
             left: -100
-        }
+        },
+        overlay_top: true
     },
     
     events: {
@@ -24,6 +25,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 top: 10,
                 left: -100
             };
+            this.options.overlay_top = false;
         }
         
         this.options = _.extend({}, this.options, options);
