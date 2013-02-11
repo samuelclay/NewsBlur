@@ -43,7 +43,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // this.$el.bind('mouseenter', this.mouseenter);
         // this.$el.bind('mouseleave', this.mouseleave);
         
-        if (!this.options.feed_floater && !this.options.text_view) {
+        if (!this.options.feed_floater && 
+            !this.options.text_view &&
+            !this.options.inline_story_title) {
             this.model.story_view = this;
         }
     },

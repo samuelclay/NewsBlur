@@ -1312,6 +1312,14 @@
             NEWSBLUR.assets.preference('story_layout', story_layout);
             
             this.apply_resizable_layout(true);
+            this.switch_to_correct_view();
+            if (this.active_story && story_layout == 'list') {
+                this.active_story.story_title_view.render_inline_story_detail();
+            } else if (this.active_story && story_layout == 'split') {
+                NEWSBLUR.app.story_list.scroll_to_selected_story();
+                this.active_story.story_title_view.destroy_inline_story_detail();
+            }
+            NEWSBLUR.app.story_titles.scroll_to_selected_story();
         },
         
         // ===============

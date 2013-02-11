@@ -38,7 +38,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     template: _.template('\
         <div class="NB-story-title">\
             <div class="NB-storytitles-sentiment"></div>\
-            <a href="<%= story.get("story_permalink") %>" class="story_title">\
+            <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
@@ -50,7 +50,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                 <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
             </a>\
-            <span class="story_date"><%= story.get("short_parsed_date") %></span>\
+            <span class="story_date NB-hidden-fade"><%= story.get("short_parsed_date") %></span>\
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
                     <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
@@ -66,7 +66,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render_inline_story_detail: function() {
         this.story_detail = new NEWSBLUR.Views.StoryDetailView({
             model: this.model,
-            collection: this.model.collection
+            collection: this.model.collection,
+            tagName: 'div',
+            inline_story_title: true
         }).render();
         
         this.$(".NB-story-detail").html(this.story_detail.$el);
@@ -164,7 +166,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                 this.render_inline_story_detail();
             }
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
         } else {
             this.destroy_inline_story_detail();
         }

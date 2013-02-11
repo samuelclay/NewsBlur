@@ -1356,9 +1356,9 @@ background: transparent;
   line-height: 8px;
 }
 
-.NB-intelligence-positive #story_titles .NB-story-title.NB-story-neutral.NB-story-hidden-visible,
-.NB-intelligence-positive #story_titles .NB-story-title.NB-story-negative.NB-story-hidden-visible,
-.NB-intelligence-neutral #story_titles .NB-story-title.NB-story-negative.NB-story-hidden-visible {
+.NB-intelligence-positive .NB-story-title.NB-story-neutral.NB-story-hidden-visible .NB-hidden-fade,
+.NB-intelligence-positive .NB-story-title.NB-story-negative.NB-story-hidden-visible .NB-hidden-fade,
+.NB-intelligence-neutral .NB-story-title.NB-story-negative.NB-story-hidden-visible .NB-hidden-fade {
   opacity: .5;
 }
 

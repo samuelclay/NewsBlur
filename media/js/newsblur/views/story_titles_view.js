@@ -179,7 +179,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (!story_title_view) return;
         
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
-        if (!story_title_visisble || options.force) {
+        if (!story_title_visisble || options.force || 
+            NEWSBLUR.assets.preference('story_layout') == 'list') {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
             var scroll = story_title_view.$el.position().top;
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
