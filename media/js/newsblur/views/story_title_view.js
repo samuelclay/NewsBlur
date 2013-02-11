@@ -158,19 +158,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_selected: function(model, selected, options) {
-        console.log(["toggle_selected", model, selected, options]);
         this.$st.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (this.model.get('selected')) {
-            var options;
-            if (NEWSBLUR.reader.story_layout == 'list') {
-                options = {
-                    force: true,
-                    align_top: true
-                };
+            if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                 this.render_inline_story_detail();
             }
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
         } else {
             this.destroy_inline_story_detail();
         }

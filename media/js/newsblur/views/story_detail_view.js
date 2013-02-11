@@ -278,10 +278,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
                 
-        if (unread_view > score) {
-            this.$el.css('display', 'none');
-        }
-
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             this.$('.NB-story-sentiment').tipsy({
                 delayIn: 375,

@@ -186,7 +186,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             var position = scroll+container-height/5;
             
-            if (options.align_top) {
+            if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                 position = scroll+container;
             }
 

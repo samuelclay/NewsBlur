@@ -103,9 +103,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     // ===========
     
     show_feed_hidden_story_title_indicator: function(is_feed_load) {
-        if (is_feed_load && NEWSBLUR.reader.flags['unread_threshold_temporarily']) return;
-        else NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
+        if (!is_feed_load) return;
         if (!NEWSBLUR.reader.active_feed) return;
+        NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
