@@ -66,34 +66,24 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
-            <% if (type == "story") { %>\
-                <div class="NB-story-title-indicator">\
-                    <div class="NB-story-title-indicator-count"></div>\
-                    <span class="NB-story-title-indicator-text">show hidden stories</span>\
-                </div>\
-            <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-                <span class="NB-feedbar-options">\
-                    <div class="NB-icon"></div>\
-                    <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
-                    &middot;\
-                    <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
-                </span>\
+                <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
-            <div class="NB-feedbar-last-updated">\
-              <span class="NB-feedbar-last-updated-label">Updated:</span>\
-              <span class="NB-feedbar-last-updated-date">\
-                <% if (feed.get("updated")) { %>\
-                  <%= feed.get("updated") %> ago\
-                <% } else { %>\
-                  Loading...\
-                <% } %>\
-              </span>\
-            </div>\
-            <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+              <div class="NB-story-title-indicator">\
+                  <div class="NB-story-title-indicator-count"></div>\
+                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
+              </div>\
+              <div class="NB-feedbar-options-container">\
+                  <span class="NB-feedbar-options">\
+                      <div class="NB-icon"></div>\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                      &middot;\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                  </span>\
+              </div>\
           <% } %>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\

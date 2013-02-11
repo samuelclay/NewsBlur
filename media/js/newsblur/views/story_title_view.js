@@ -1,15 +1,15 @@
 NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
-    className: 'story NB-story-title-container',
+    className: 'NB-story-title-container',
     
     events: {
-        "dblclick"                      : "open_story_in_story_view",
-        "click"                         : "select_story",
-        "contextmenu"                   : "show_manage_menu",
+        "dblclick .NB-story-title"      : "open_story_in_story_view",
+        "click .NB-story-title"         : "select_story",
+        "contextmenu .NB-story-title"   : "show_manage_menu",
         "click .NB-story-manage-icon"   : "show_manage_menu",
         "click .NB-storytitles-shares"  : "select_story_shared",
-        "mouseenter"                    : "mouseenter_manage_icon",
-        "mouseleave"                    : "mouseleave_manage_icon"
+        "mouseenter .NB-story-title"    : "mouseenter_manage_icon",
+        "mouseleave .NB-story-title"    : "mouseleave_manage_icon"
     },
     
     initialize: function() {
@@ -26,7 +26,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             story    : this.model,
             feed     : (NEWSBLUR.reader.flags.river_view || NEWSBLUR.reader.flags.social_view) &&
                         NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
-            tag      : _.first(this.model.get("story_tags")),
             options  : this.options
         }));
         this.$st = this.$(".NB-story-title");
@@ -50,11 +49,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <div class="NB-storytitles-share"></div>\
                 <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                 <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
-                <% if (tag) { %>\
-                    <span class="NB-storytitles-tags">\
-                        <span class="NB-storytitles-tag"><%= tag %></span>\
-                    </span>\
-                <% } %>\
             </a>\
             <span class="story_date"><%= story.get("short_parsed_date") %></span>\
             <% if (story.get("comment_count_friends")) { %>\
@@ -109,7 +103,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 .addClass('NB-story-'+story.score_name(score));
 
         if (unread_view > score) {
-            this.$el.css('display', 'none');
+            this.$st.addClass("NB-hidden");
         }
 
         if (NEWSBLUR.assets.preference('show_tooltips')) {
@@ -164,6 +158,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_selected: function(model, selected, options) {
+        console.log(["toggle_selected", model, selected, options]);
         this.$st.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (this.model.get('selected')) {
@@ -246,7 +241,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
-
+        
         this.model.set('selected', true, {'click_on_story_title': true});
 
         if (NEWSBLUR.hotkeys.command) {

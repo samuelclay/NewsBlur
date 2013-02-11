@@ -110,12 +110,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <span class="NB-feedbar-options">\
-                        <div class="NB-icon"></div>\
-                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
-                        &middot;\
-                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
-                    </span>\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
+                            &middot;\
+                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                        </span>\
+                    </div>\
                     <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
               <% } %>\
             </div>\

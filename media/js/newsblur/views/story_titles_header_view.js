@@ -38,12 +38,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-feedlist-manage-icon"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                     <% if (show_options) { %>\
-                        <span class="NB-feedbar-options">\
-                            <div class="NB-icon"></div>\
-                            <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
-                            &middot;\
-                            <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
-                        </span>\
+                        <div class="NB-feedbar-options-container">\
+                            <span class="NB-feedbar-options">\
+                                <div class="NB-icon"></div>\
+                                <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
+                                &middot;\
+                                <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
+                            </span>\
+                        </div>\
                     <% } %>\
                 </div>\
             ', {
@@ -151,7 +153,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             return story.score() < 0;
         });
         
-        // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
+        NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
         
         // First click, open neutral. Second click, open negative.
         if (unread_view_name == 'positive' && 

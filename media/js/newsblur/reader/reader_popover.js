@@ -20,7 +20,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     render: function($content) {
         var self = this;
         this._open = true;
-        console.log(["popover render", this.$el, this.options.animate]);
+
         this.$popover = $.make("div", { className: "NB-popover popover fade" }, [
             $.make('div', { className: "arrow" }),
             $.make('div', { className: "popover-inner" }, [

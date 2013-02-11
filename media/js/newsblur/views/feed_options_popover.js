@@ -5,10 +5,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     options: {
         'width': 236,
         'anchor': '.NB-feedbar-options',
-        'placement': 'top',
+        'placement': 'bottom right',
         offset: {
-            top: 6,
-            left: 1
+            top: -3,
+            left: -100
         }
     },
     
@@ -17,11 +17,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     initialize: function(options) {
+        if (NEWSBLUR.reader.story_layout == 'split' &&
+            NEWSBLUR.assets.preference('story_pane_anchor') == 'south') {
+            this.options.placement = 'top right';
+            this.options.offset = {
+                top: 10,
+                left: -100
+            };
+        }
+        
         this.options = _.extend({}, this.options, options);
-        NEWSBLUR.ReaderPopover.prototype.initialize.call(this);
+        NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
         this.render();
-        
         this.show_correct_feed_view_options_in_menu();
     },
     

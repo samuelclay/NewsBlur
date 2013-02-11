@@ -24,7 +24,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-train"            : "open_story_trainer",
         "click .NB-feed-story-save"             : "star_story",
         "click .NB-story-comments-label"        : "scroll_to_comments",
-        "click .NB-story-content-expander"      : "expand_story"
+        "click .NB-story-content-expander"      : "expand_story",
+        "click .NB-feed-story-header-collapse"  : "collapse_story"
     },
     
     initialize: function() {
@@ -66,6 +67,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
+        this.setup_classes();
         this.toggle_classes();
         this.toggle_read_status();
         this.toggle_score();
@@ -148,6 +150,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% }) %>\
                     </div>\
                 <% } %>\
+                <div class="NB-feed-story-header-collapse"></div>\
             </div>\
         </div>\
     '),
@@ -170,22 +173,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     </div>\
                 </div>\
             </div>\
-        </div>\
-        <div class="NB-feed-story-comments-container"></div>\
-        <div class="NB-feed-story-sideoptions-container">\
-            <div class="NB-sideoption NB-feed-story-train">\
-                <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title">Train this story</div>\
+            <div class="NB-feed-story-comments-container"></div>\
+            <div class="NB-feed-story-sideoptions-container">\
+                <div class="NB-sideoption NB-feed-story-train">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title">Train this story</div>\
+                </div>\
+                <div class="NB-sideoption NB-feed-story-save">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
+                </div>\
+                <div class="NB-sideoption NB-feed-story-share">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
+                </div>\
+                <%= story_share_view %>\
             </div>\
-            <div class="NB-sideoption NB-feed-story-save">\
-                <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
-            </div>\
-            <div class="NB-sideoption NB-feed-story-share">\
-                <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
-            </div>\
-            <%= story_share_view %>\
         </div>\
     '),
     
@@ -262,6 +265,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             // NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
         }
         
+        this.setup_classes();
+    },
+    
+    setup_classes: function() {
         var story = this.model;
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
@@ -400,6 +407,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             easing: 'easeInOutQuart'
         });
         
+    },
+    
+    collapse_story: function() {
+        this.model.set('selected', false);
+        NEWSBLUR.app.story_titles.fill_out();
     },
     
     // ===========
