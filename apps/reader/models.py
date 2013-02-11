@@ -309,6 +309,12 @@ class UserSubscription(models.Model):
         return feeds
         
     def mark_feed_read(self):
+        if (self.unread_count_negative == 0
+            and self.unread_count_neutral == 0
+            and self.unread_count_positive == 0
+            and not self.needs_unread_recalc):
+            return
+        
         now = datetime.datetime.utcnow()
         
         # Use the latest story to get last read time.
