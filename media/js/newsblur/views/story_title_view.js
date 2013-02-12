@@ -64,12 +64,26 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     render_inline_story_detail: function() {
-        this.story_detail = new NEWSBLUR.Views.StoryDetailView({
-            model: this.model,
-            collection: this.model.collection,
-            tagName: 'div',
-            inline_story_title: true
-        }).render();
+        if (NEWSBLUR.reader.story_view == 'text') {
+            this.story_detail = new NEWSBLUR.Views.StoryDetailView({
+                model: this.model,
+                collection: this.model.collection,
+                tagName: 'div',
+                inline_story_title: true,
+                show_feed_title: true,
+                skip_content: true,
+                text_view: true
+            }).render();
+            NEWSBLUR.app.text_tab_view.setElement(this.$(".NB-story-detail"));
+            NEWSBLUR.app.text_tab_view.load_story();
+        } else {
+            this.story_detail = new NEWSBLUR.Views.StoryDetailView({
+                model: this.model,
+                collection: this.model.collection,
+                tagName: 'div',
+                inline_story_title: true
+            }).render();
+        }
         this.$(".NB-story-detail").html(this.story_detail.$el);
         this.$st.hide();
 

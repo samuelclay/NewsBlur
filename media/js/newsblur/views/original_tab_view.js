@@ -427,6 +427,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             
             setTimeout(function() {
                 self.$el.load(function() {
+                    self.flags.iframe_scroll_snap_back_prepared = true;
                     self.return_to_snapback_position(true);
                 });
             }, 50);
@@ -467,9 +468,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     },
     
     return_to_snapback_position: function(iframe_loaded) {
+        console.log(["return_to_snapback_position", iframe_loaded, this.flags.iframe_scroll_snap_back_prepared, this.iframe_scroll]);
         if (this.iframe_scroll
-            && this.flags.iframe_scroll_snap_back_prepared 
-            && this.$el.contents().scrollTop() == 0) {
+            && this.flags.iframe_scroll_snap_back_prepared) {
             NEWSBLUR.log(['Snap back, loaded, scroll', this.iframe_scroll]);
             this.$el.contents().scrollTop(this.iframe_scroll);
             if (iframe_loaded) {

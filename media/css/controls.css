@@ -43,7 +43,8 @@ ul.segmented-control {
     text-align: center;
 }
 
-.segmented-control li:first-child {
+.segmented-control li:first-child,
+.segmented-control li.NB-first {
     margin-left: 0;
     
     -webkit-border-top-left-radius: 3px;

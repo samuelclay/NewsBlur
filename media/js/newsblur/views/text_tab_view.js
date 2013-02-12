@@ -1,5 +1,7 @@
 NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
+    el: ".NB-text-view-detail",
+    
     events: {
         "click .NB-premium-only a" : function(e) {
             e.preventDefault();
@@ -10,7 +12,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     initialize: function() {
         this.setElement(NEWSBLUR.reader.$s.$text_view);
         this.collection.bind('change:selected', this.select_story, this);
-        this.$story = this.$('.NB-text-view-detail');
+        this.$story = this.$el;
     },
     
     // ===========
@@ -19,6 +21,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     load_story: function(story, is_temporary) {
         if (!story) story = NEWSBLUR.reader.active_story;
+        console.log(["load_story", story, is_temporary, this.story == story]);
         if (!story && is_temporary) {
             NEWSBLUR.reader.show_next_story(1);
             story = NEWSBLUR.reader.active_story;
@@ -48,18 +51,18 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     render: function(data) {
-        if (data.story_id != this.story.get('id') || 
-            data.feed_id != this.story.get('story_feed_id')) {
+        if (data && (data.story_id != this.story.get('id') || 
+                     data.feed_id != this.story.get('story_feed_id'))) {
             return;
         }
         
-        var original_text = data.original_text;
         this.hide_loading();
         var $content = this.$('.NB-feed-story-content');
-        if (original_text.length < (this.story.get('story_content').length / 3)) {
+        if (!this.story.get('original_text') || 
+            this.story.get('original_text').length < (this.story.get('story_content').length / 3)) {
             this.error();
         } else {
-            $content.html(original_text);
+            $content.html(this.story.get('original_text'));
             NEWSBLUR.reader.make_story_titles_pane_counter();
         }
         $content.css('opacity', 0);
@@ -77,8 +80,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     unload: function() {
-        var $content = this.$('.NB-text-view-detail');
-        $content.empty();
+        this.story = null;
+        this.$story.empty();
     },
     
     show_loading: function() {

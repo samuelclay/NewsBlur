@@ -1384,10 +1384,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     fetch_original_text: function(story_id, feed_id, callback, error_callback) {
+        var story = this.get_story(story_id);
         this.make_request('/rss_feeds/original_text', {
             story_id: story_id,
             feed_id: feed_id
-        }, callback, error_callback, {
+        }, function(data) {
+            story.set('original_text', data.original_text);
+            callback(data);
+        }, error_callback, {
             request_type: 'GET',
             ajax_group: 'statistics'
         });
