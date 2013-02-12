@@ -35,6 +35,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // ==========
     
     render: function() {
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
+        
         var collection = this.collection;
         var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryDetailView({
@@ -48,6 +50,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     add: function(options) {
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
+        
         if (options.added) {
             var collection = this.collection;
             var added = this.collection.models.slice(-1 * options.added);
@@ -64,12 +68,17 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
     
+    clear: function() {
+        this.$el.empty();
+    },
+    
     // ===========
     // = Actions =
     // ===========
     
     scroll_to_selected_story: function(story, options) {
         options = options || {};
+        if (!story) story = NEWSBLUR.reader.active_story;
         if (!story || !story.story_view) return;
         var $story = story.story_view.$el;
 
@@ -178,6 +187,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     prefetch_story_locations_in_feed_view: function() {
         var self = this;
         var stories = NEWSBLUR.assets.stories;
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
         
         // NEWSBLUR.log(['Prefetching Feed', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length, _.values(this.flags.feed_view_images_loaded), this.is_feed_loaded_for_location_fetch()]);
 
@@ -191,6 +201,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             });
         
             NEWSBLUR.assets.stories.any(_.bind(function(story) {
+                if (!story.story_view) return;
                 this.determine_feed_view_story_position(story);
                 var $story = story.story_view.$el;
                 if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) {
@@ -215,6 +226,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     
     fetch_story_locations_in_feed_view: function(options) {
         options = options || {};
+        
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
         var stories = NEWSBLUR.assets.stories;
         if (!stories || !stories.length) return;
         if (options.reset_timer) this.counts['positions_timer'] = 0;
@@ -238,6 +251,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     determine_feed_view_story_position: function(story) {
+        if (!story.story_view) return;
         var $story = story.story_view.$el;
         if (story && $story.is(':visible')) {
             var position_original = parseInt($story.position().top, 10);
@@ -268,6 +282,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     reset_story_positions: function(models) {
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
+        
         if (!models || !models.length) {
             models = NEWSBLUR.assets.stories;
         }
@@ -280,6 +296,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
 
         models.each(_.bind(function(story) {
+            if (!story.story_view) return;
             var image_count = story.story_view.$('.NB-feed-story-content img').length;
             if (!image_count) {
                 // NEWSBLUR.log(["No images", story.get('story_title')]);

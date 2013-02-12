@@ -9431,20 +9431,27 @@ form.opml_import_form input {
     width: 85px;
 }
 
+.NB-feedbar-options-stat {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 6px;
+}
+.NB-feedbar-options-stat:last-child {
+    margin-bottom: 0;
+}
 .NB-feedbar-options-stat .NB-icon {
     clear: both;
-    float: left;
-    width: 16px;
-    height: 16px;
+    left: 0;
+    top: 0;
     background: white url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
     background-size: 16px;
-    margin: 0 4px 4px 0;
     vertical-align: bottom;
+    width: 16px;
+    height: 16px;
+    position: absolute;
 }
 .NB-feedbar-options-stat .NB-stat {
-    float: left;
-    margin-bottom: 4px;
-    font-size: 12px;
+    font-size: 11px;
     color: #6F716A;
 }
 .NB-filter-popover-stats-icon {

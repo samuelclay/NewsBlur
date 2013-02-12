@@ -47,6 +47,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             !this.options.text_view &&
             !this.options.inline_story_title) {
             this.model.story_view = this;
+        } else if (this.options.inline_story_title) {
+            this.model.inline_story_detail_view = this;
         }
     },
     
@@ -248,6 +250,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     destroy: function() {
         this.model.unbind(null, null, this);
+        delete this.model.inline_story_detail_view;
         this.remove();
     },
     

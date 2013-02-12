@@ -69,6 +69,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, Inflector.pluralize('subscriber', feed.get('num_subscribers'), true))
                 ]),
+                (feed.get('is_push') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-realtime' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, "Stories arrive in real-time")
+                ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')

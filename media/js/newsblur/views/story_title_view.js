@@ -70,7 +70,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             tagName: 'div',
             inline_story_title: true
         }).render();
-        
         this.$(".NB-story-detail").html(this.story_detail.$el);
         this.$st.hide();
 

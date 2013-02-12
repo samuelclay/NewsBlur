@@ -1312,14 +1312,21 @@
             NEWSBLUR.assets.preference('story_layout', story_layout);
             
             this.apply_resizable_layout(true);
-            this.switch_to_correct_view();
+            
             if (this.active_story && story_layout == 'list') {
                 this.active_story.story_title_view.render_inline_story_detail();
+                NEWSBLUR.app.story_list.clear();
             } else if (this.active_story && story_layout == 'split') {
-                NEWSBLUR.app.story_list.scroll_to_selected_story();
+                NEWSBLUR.app.story_list.render();
                 this.active_story.story_title_view.destroy_inline_story_detail();
             }
-            NEWSBLUR.app.story_titles.scroll_to_selected_story();
+            
+            this.switch_to_correct_view();
+            
+            _.defer(function() {
+                NEWSBLUR.app.story_titles.scroll_to_selected_story();
+                NEWSBLUR.app.story_list.scroll_to_selected_story();
+            });
         },
         
         // ===============
@@ -3741,7 +3748,7 @@
                 // If the user switches to feed/page, then no animation is happening 
                 // and this will work anyway.
                 var active_story = this.active_story;
-                var $active_story = this.active_story && this.active_story.story_view.$el;
+                var $active_story = this.active_story && this.active_story.story_view && this.active_story.story_view.$el;
                 if ($active_story && $active_story.length || true) {
                   $stories_show = $stories_show.not('.NB-feed-story');
                   $stories_hide = $stories_hide.not('.NB-feed-story');
