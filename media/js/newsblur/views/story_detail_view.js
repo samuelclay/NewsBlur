@@ -384,7 +384,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var height_ratio = content_height / max_height;
         
         if (content_height < max_height) return;
-        // $wrapper.removeClass('NB-story-content-wrapper-height-truncated');
         // console.log(["max height", max_height, content_height, content_height / max_height]);
         this._fetch_interval = setInterval(function() {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
@@ -398,6 +397,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             complete: _.bind(function() {
                 clearInterval(this._fetch_interval);
                 NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                $wrapper.removeClass('NB-story-content-wrapper-height-truncated');
             }, this)
         });
         
