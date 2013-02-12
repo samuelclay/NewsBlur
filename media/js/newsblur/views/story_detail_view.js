@@ -595,13 +595,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     star_story: function() {
-        this.model.set('starred', !this.model.get('starred'));
-        if (this.model.get('starred')) {
-            NEWSBLUR.assets.mark_story_as_starred(this.model.id);
-        } else {
-            NEWSBLUR.assets.mark_story_as_unstarred(this.model.id);
-        }
-        NEWSBLUR.reader.update_starred_count();
+        this.model.star_story();
     },
     
     open_story_in_new_tab: function() {

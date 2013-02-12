@@ -43,6 +43,17 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return NEWSBLUR.assets.stories.mark_read(this, options);
     },
     
+    star_story: function() {
+        this.set('starred', !this.get('starred'));
+        if (this.get('starred')) {
+            NEWSBLUR.assets.mark_story_as_starred(this.id);
+        } else {
+            NEWSBLUR.assets.mark_story_as_unstarred(this.id);
+        }
+        NEWSBLUR.reader.update_starred_count();
+    },
+
+    
     change_selected: function(model, selected) {
         if (model.collection) {
             model.collection.detect_selected_story(model, selected);

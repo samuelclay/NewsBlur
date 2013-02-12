@@ -1,7 +1,5 @@
 NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
-    el: ".NB-text-view-detail",
-    
     events: {
         "click .NB-premium-only a" : function(e) {
             e.preventDefault();
@@ -10,18 +8,23 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     initialize: function() {
-        this.setElement(NEWSBLUR.reader.$s.$text_view);
-        this.collection.bind('change:selected', this.select_story, this);
-        this.$story = this.$el;
+        _.bindAll(this, 'render', 'error');
+        
+        if (this.collection) {
+            this.collection.bind('change:selected', this.select_story, this);
+        }
+    },
+    
+    destroy: function() {
+        this.remove();
     },
     
     // ===========
     // = Actions =
     // ===========
     
-    load_story: function(story, is_temporary) {
+    fetch_and_render: function(story, is_temporary) {
         if (!story) story = NEWSBLUR.reader.active_story;
-        console.log(["load_story", story, is_temporary, this.story == story]);
         if (!story && is_temporary) {
             NEWSBLUR.reader.show_next_story(1);
             story = NEWSBLUR.reader.active_story;
@@ -37,17 +40,19 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         if (this.story == story) return;
         
         this.story = story;
-        this.$story.html(new NEWSBLUR.Views.StoryDetailView({
+        this.$el.html(new NEWSBLUR.Views.StoryDetailView({
             model: this.story,
             show_feed_title: true,
             skip_content: true,
-            text_view: true
+            text_view: true,
+            tagName: 'div'
         }).render().el);
-        NEWSBLUR.reader.$s.$text_view.scrollTop(0);
+        this.$el.scrollTop(0);
         this.show_loading();
         NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
-                                            _.bind(this.render, this), 
-                                            _.bind(this.error, this));
+                                            this.render, this.error);
+                                            
+        return this;
     },
     
     render: function(data) {
@@ -58,6 +63,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         
         this.hide_loading();
         var $content = this.$('.NB-feed-story-content');
+
         if (!this.story.get('original_text') || 
             this.story.get('original_text').length < (this.story.get('story_content').length / 3)) {
             this.error();
@@ -81,7 +87,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     unload: function() {
         this.story = null;
-        this.$story.empty();
+        this.$el.empty();
     },
     
     show_loading: function() {
@@ -129,11 +135,12 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     // ==========
     
     select_story: function(story, selected) {
-        if (selected && NEWSBLUR.reader.story_view == 'text') {
+        if (selected && NEWSBLUR.reader.story_view == 'text' &&
+            NEWSBLUR.assets.preference('story_layout') == 'split') {
             if (NEWSBLUR.reader.flags['temporary_story_view']) {
                 NEWSBLUR.reader.switch_to_correct_view();
             }
-            this.load_story(story);
+            this.fetch_and_render(story);
         }
     }
     

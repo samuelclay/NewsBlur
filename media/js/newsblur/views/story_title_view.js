@@ -65,17 +65,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     render_inline_story_detail: function() {
         if (NEWSBLUR.reader.story_view == 'text') {
-            this.story_detail = new NEWSBLUR.Views.StoryDetailView({
-                model: this.model,
-                collection: this.model.collection,
-                tagName: 'div',
-                inline_story_title: true,
-                show_feed_title: true,
-                skip_content: true,
-                text_view: true
-            }).render();
-            NEWSBLUR.app.text_tab_view.setElement(this.$(".NB-story-detail"));
-            NEWSBLUR.app.text_tab_view.load_story();
+            this.text_view = new NEWSBLUR.Views.TextTabView({
+                el: null
+            });
+            this.text_view.fetch_and_render(this.model);
+            this.$(".NB-story-detail").html(this.text_view.$el);
         } else {
             this.story_detail = new NEWSBLUR.Views.StoryDetailView({
                 model: this.model,
@@ -83,18 +77,21 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 tagName: 'div',
                 inline_story_title: true
             }).render();
+            this.$(".NB-story-detail").html(this.story_detail.$el);
+            this.story_detail.watch_images_for_story_height();
         }
-        this.$(".NB-story-detail").html(this.story_detail.$el);
-        this.$st.hide();
 
-        this.story_detail.watch_images_for_story_height();
+        this.$st.hide();
     },
     
     destroy_inline_story_detail: function() {
-        if (!this.story_detail) return;
-        
         this.$st.show();
-        this.story_detail.destroy();
+
+        if (this.story_detail) {
+            this.story_detail.destroy();
+        } else if (this.text_view) {
+            this.text_view.destroy();
+        }
     },
     
     // ============
