@@ -1285,17 +1285,6 @@ background: transparent;
     display: none;
 }
 
-.NB-filter-popover .segmented-control {
-    margin: 4px 0 0;
-    line-height: 18px;
-}
-.NB-filter-popover .segmented-control li {
-    padding: 2px 12px 0;
-    font-size: 11px;
-    width: 82px;
-}
-
-
 /* ============================= */
 /* = Story Titles Hidden Count = */
 /* ============================= */
@@ -1352,7 +1341,7 @@ background: transparent;
 
 #story_titles .NB-story-title-indicator .feed_counts_floater .unread_count {
   padding: 1px 3px 1px;
-  margin: 0 2px 0 0;
+  margin: 0 4px 0 0;
   line-height: 8px;
 }
 
@@ -1846,40 +1835,29 @@ background: transparent;
     font-weight: bold;
     font-size: 16px;
     padding: 0 206px 0 28px;
-    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.36, rgba(212, 212, 212, 250)),
-        color-stop(0.84, rgba(244, 244, 244, 250))
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        rgb(212, 212, 212) 36%,
-        rgb(244, 244, 244) 84%
-    );
+
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
+    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
+    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
+
     border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
+
+    -webkit-transition: all .22s ease-in-out;
+    -moz-transition: all .22s ease-in-out;
+    -o-transition: all .22s ease-in-out;
+    -ms-transition: all .22s ease-in-out;
+    transition: all .22s ease-in-out;
 }
 .NB-feed-story-view-narrow .NB-feed-story .NB-feed-story-header-info {
     padding-right: 28px;
 }
 
 .NB-feed-story.read .NB-feed-story-header-info {
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.36, rgba(240, 240, 240, 250)),
-        color-stop(0.84, rgba(250, 250, 250, 250))
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        rgb(240, 240, 240) 36%,
-        rgb(250, 250, 250) 84%
-    );
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F8F8F6));
+    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F8F8F6 100%);
+    background-image: linear-gradient(top, #FEFEFE, #F8F8F6);
 }
 
 .NB-feed-story-header-info .NB-feed-story-header-collapse {
@@ -1901,7 +1879,7 @@ background: transparent;
     opacity: 1;
 }
 
-.NB-feed-story .NB-feed-story-header-feed {
+.NB-feed-story-header-feed {
     background: #404040 url('/media/embed/reader/feed_view_feed_background.png') repeat-x 0 0;
     background-image: -webkit-gradient(
         linear,
@@ -1920,26 +1898,27 @@ background: transparent;
     border-bottom: 1px solid #000;
     border-top: 1px solid #707070;
     z-index: 2;
+    line-height: 18px;
 }
-.NB-feed-story .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
+.NB-feed-story-header-feed.NB-feed-story-river-same-feed {
     z-index: 0;
 }
-.NB-feed-story .NB-feed-story-header-feed.NB-floater {
+.NB-feed-story-header-feed.NB-floater {
     z-index: 0;
 }
 
-.NB-feed-story .NB-feed-story-feed {
+.NB-feed-story-feed {
     padding: 2px 0;
     color: white;
     font-size: 13px;
 /*    text-shadow: 0 1px 0 #000;*/
 }
-.NB-feed-story.NB-inverse .NB-feed-story-feed {
+.NB-inverse .NB-feed-story-feed {
     color: black;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
-.NB-feed-story .NB-feed-story-feed .feed_favicon {
+.NB-feed-story-feed .feed_favicon {
     position: absolute;
     left: 6px;
     top: 5px;
@@ -1947,16 +1926,16 @@ background: transparent;
     height: 16px;
 }
 
-.NB-feed-story .NB-feed-story-feed .NB-feed-story-header-title {
+.NB-feed-story-feed .NB-feed-story-header-title {
     cursor: pointer;
     font-weight: bold;
 }
-.NB-feed-story .NB-feed-story-feed .NB-feed-story-header-title:hover {
+.NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #DFE2F3;
 /*    text-shadow: 0 1px 0 #000;*/
 }
 
-.NB-feed-story.NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
+.NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #274C63;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
@@ -2072,7 +2051,7 @@ background: transparent;
 }
 
 .NB-feed-story.read a.NB-feed-story-title {
-    color: #56585F;
+    color: #8C8E88;
 }
 
 .NB-feed-story a.NB-feed-story-title:hover,
@@ -2314,6 +2293,7 @@ background: transparent;
 }
 .NB-story-content-wrapper.NB-story-content-wrapper-height-truncated {
     max-height: 460px;
+    overflow: hidden;
 }
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
     max-height: none;
@@ -9434,6 +9414,46 @@ form.opml_import_form input {
     margin-left: 200px;
 }
 
+/* ======================== */
+/* = Feed Options Popover = */
+/* ======================== */
+
+.NB-filter-popover-container .popover-content {
+    padding: 0;
+}
+.NB-filter-popover .segmented-control {
+    margin: 4px 0 0;
+    line-height: 18px;
+}
+.NB-filter-popover .segmented-control li {
+    padding: 2px 12px 0;
+    font-size: 11px;
+    width: 85px;
+}
+
+.NB-feedbar-options-stat .NB-icon {
+    clear: both;
+    float: left;
+    width: 16px;
+    height: 16px;
+    background: white url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background-size: 16px;
+    margin: 0 4px 4px 0;
+    vertical-align: bottom;
+}
+.NB-feedbar-options-stat .NB-stat {
+    float: left;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: #6F716A;
+}
+.NB-filter-popover-stats-icon {
+    background: transparent url('/media/embed/icons/silk/chart_curve.png') no-repeat center center;    
+}
+.NB-filter-popover-filter-icon {
+    background: transparent url("/media/embed/icons/silk/cog.png") no-repeat center center;
+}
+
 /* =========== */
 /* = Popover = */
 /* =========== */
@@ -9445,6 +9465,29 @@ form.opml_import_form input {
     z-index: 10;
     
     background-color: #FFF;
+}
+
+.NB-popover-section-title {
+    color: #585A55;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.NB-popover-section {
+    padding: 12px;
+    border-bottom: 1px solid #E8EAE4;
+    overflow: hidden;
+}
+.NB-popover-section:last-child {
+    border-bottom: none;
+}
+.NB-section-icon {
+    float: right;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background-size: 16px;
 }
 
 .popover {

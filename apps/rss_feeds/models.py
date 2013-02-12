@@ -128,6 +128,7 @@ class Feed(models.Model):
             'num_subscribers': self.num_subscribers,
             'updated': relative_timesince(self.last_update),
             'updated_seconds_ago': seconds_timesince(self.last_update),
+            'min_to_decay': self.min_to_decay,
             'subs': self.num_subscribers,
             'is_push': self.is_push,
             'fetched_once': self.fetched_once,

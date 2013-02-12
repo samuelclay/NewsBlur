@@ -165,6 +165,27 @@ NEWSBLUR.utils = {
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);
         });
+    },
+    
+    calculate_update_interval: function(update_interval_minutes) {
+        if (!update_interval_minutes) return '&nbsp;';
+        
+        var interval_start = update_interval_minutes;
+        var interval_end = update_interval_minutes * 1.25;
+        var interval = '';
+        if (interval_start < 60) {
+            interval = interval_start + ' to ' + interval_end + ' minutes';
+        } else {
+            var interval_start_hours = parseInt(interval_start / 60, 10);
+            var interval_end_hours = parseInt(interval_end / 60, 10);
+            var dec_start = interval_start % 60;
+            var dec_end = interval_end % 60;
+            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+        }
+        
+        return interval;
     }
+    
+
   
 };

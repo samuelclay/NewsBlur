@@ -85,8 +85,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     },
     
     make_stats: function(data) {
-        var update_interval = this.calculate_update_interval(data['update_interval_minutes']);
-        var premium_update_interval = this.calculate_update_interval(data['premium_update_interval_minutes']);
+        var update_interval = NEWSBLUR.utils.calculate_update_interval(data['update_interval_minutes']);
+        var premium_update_interval = NEWSBLUR.utils.calculate_update_interval(data['premium_update_interval_minutes']);
         
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
@@ -145,25 +145,6 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         ]);
         
         return $stats;
-    },
-    
-    calculate_update_interval: function(update_interval_minutes) {
-        if (!update_interval_minutes) return '&nbsp;';
-        
-        var interval_start = update_interval_minutes;
-        var interval_end = update_interval_minutes * 1.25;
-        var interval = '';
-        if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
-        } else {
-            var interval_start_hours = parseInt(interval_start / 60, 10);
-            var interval_end_hours = parseInt(interval_end / 60, 10);
-            var dec_start = interval_start % 60;
-            var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
-        }
-        
-        return interval;
     },
     
     make_classifier_count: function(facet, data) {

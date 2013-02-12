@@ -3,18 +3,21 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-filter-popover",
     
     options: {
-        'width': 236,
+        'width': 246,
         'anchor': '.NB-feedbar-options',
         'placement': 'bottom right',
-        offset: {
-            top: -3,
+        'offset': {
+            top: 16,
             left: -100
         },
-        overlay_top: true
+        'overlay_top': true,
+        'popover_class': 'NB-filter-popover-container'
     },
     
     events: {
-        "click .NB-view-setting-option": "change_view_setting"
+        "click .NB-view-setting-option": "change_view_setting",
+        "click .NB-filter-popover-filter-icon": "open_site_settings",
+        "click .NB-filter-popover-stats-icon": "open_site_statistics"
     },
     
     initialize: function(options) {
@@ -37,23 +40,44 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     close: function() {
         NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
-        NEWSBLUR.ReaderPopover.prototype.close.call(this);
+        NEWSBLUR.ReaderPopover.prototype.close.apply(this, arguments);
     },
 
     render: function() {
         var self = this;
+        var feed = NEWSBLUR.assets.active_feed;
         
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
         
         this.$el.html($.make('div', [
-            $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, 'Unread only')
+            $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' }),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
+                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, 'Unread only')
+                ]),
+                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, 'Newest first'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, 'Oldest')
+                ])
             ]),
-            $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, 'Newest first'),
-                $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, 'Oldest')
-            ])
+            (feed && $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Site Stats'),
+                $.make('div', { className: 'NB-feedbar-options-stat NB-stat-subscribers' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize('subscriber', feed.get('num_subscribers'), true))
+                ]),
+                (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')
+                ])),
+                (feed.get('min_to_decay') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-decay' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
+                ]))
+            ]))
         ]));
         
         return this;
@@ -103,6 +127,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         if (!changed) return;
         
         NEWSBLUR.reader.reload_feed();
+    },
+    
+    open_site_settings: function() {
+        this.close(function() {
+            NEWSBLUR.reader.open_feed_exception_modal();
+        });
+    },
+    
+    open_site_statistics: function() {
+        this.close(function() {
+            console.log(["stats"]);
+            NEWSBLUR.reader.open_feed_statistics_modal();
+        });
     }
 
     
