@@ -2,6 +2,7 @@ import os
 import base64
 import urlparse
 import datetime
+import lxml.html
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -253,6 +254,10 @@ def share_story(request, token):
             feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
         if feed:
             feed_id = feed.pk
+    
+    content = lxml.html.fromstring(content)
+    content.make_links_absolute(story_url)
+    content = lxml.html.tostring(content)
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 
