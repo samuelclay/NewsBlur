@@ -36,6 +36,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // ==========
     
     render: function() {
+        console.log(["Rendering story list", NEWSBLUR.assets.preference('story_layout')]);
         if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
         
         var collection = this.collection;
@@ -74,6 +75,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     clear: function() {
+        console.log(["Clearing story list"]);
         _.invoke(this.stories, 'destroy');
         this.$el.empty();
     },

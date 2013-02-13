@@ -648,7 +648,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             !options.selected_in_original &&
             !options.selected_by_scrolling) {
             var found = this.scroll_to_selected_story(model);
-            NEWSBLUR.reader.switch_to_correct_view(found);
+            NEWSBLUR.reader.switch_to_correct_view({
+                story_not_found: !found
+            });
             if (!found) {
                 NEWSBLUR.app.story_list.scroll_to_selected_story(model);
             }

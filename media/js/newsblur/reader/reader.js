@@ -1332,12 +1332,16 @@
             
             this.apply_resizable_layout(true);
             
-            if (this.active_story && story_layout == 'list') {
-                this.active_story.story_title_view.render_inline_story_detail();
+            if (story_layout == 'list') {
+                if (this.active_story) {
+                    this.active_story.story_title_view.render_inline_story_detail();
+                }
                 NEWSBLUR.app.story_list.clear();
-            } else if (this.active_story && story_layout == 'split') {
+            } else if (story_layout == 'split') {
                 NEWSBLUR.app.story_list.render();
-                this.active_story.story_title_view.destroy_inline_story_detail();
+                if (this.active_story) {
+                    this.active_story.story_title_view.destroy_inline_story_detail();
+                }
             }
             
             this.switch_to_correct_view();
@@ -1853,13 +1857,14 @@
         // = Story Pane - All Views =
         // ==========================
         
-        switch_to_correct_view: function(found_story_in_page) {
-            // NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
+        switch_to_correct_view: function(options) {
+            options = options || {};
+            // NEWSBLUR.log(['Found story', this.story_view, options.found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
             if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                 if (this.story_view == 'page' || this.story_view == 'story') {
                     this.switch_taskbar_view('feed', {skip_save_type: 'layout'});
                 }
-            } else if (found_story_in_page === false) {
+            } else if (options.story_not_found) {
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
                     // NEWSBLUR.log(['turn on feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);

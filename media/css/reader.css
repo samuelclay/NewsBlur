@@ -1840,7 +1840,7 @@ background: transparent;
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
     background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
 
-    border-bottom: 1px solid #ADADAD;
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
     position: relative;
     overflow: hidden;
 
@@ -2051,7 +2051,8 @@ background: transparent;
 }
 
 .NB-feed-story.read a.NB-feed-story-title {
-    color: #8C8E88;
+    font-weight: normal;
+    color: #41423F;
 }
 
 .NB-feed-story a.NB-feed-story-title:hover,
@@ -2686,19 +2687,20 @@ background: transparent;
 }
 
 .NB-story-comments-shares-teaser {
-    background-color: whiteSmoke;
-    background-image: -moz-linear-gradient(center bottom , #EBEBEC 10%, #F5F5F5 84%);
-    color: #202020;
+    background-color: #F5F5EF;
+    color: #898989;
     cursor: default;
     text-shadow: 0 1px 0 #FFF;
-    font-weight: bold;
+    font-weight: normal;
     text-transform: uppercase;
     font-size: 10px;
     padding: 8px 12px 0px 28px;
     overflow: hidden;
     height: 27px;
-    border-bottom: 1px solid #898989;
-    border-top: 1px solid #FFFFFF;
+    border-bottom: 1px solid #E3E3DF;
+    -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
+    box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2751,7 +2753,7 @@ background: transparent;
     cursor: pointer;
 }
 .NB-story-comments-label b {
-    font-size: 12px;
+/*    font-size: 12px;*/
 }
 .NB-story-share-label {
     float: right;
