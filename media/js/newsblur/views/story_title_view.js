@@ -251,7 +251,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.set('selected', true, {'click_on_story_title': true});
 
         if (NEWSBLUR.hotkeys.command) {
-            this.model.story_view.open_story_in_new_tab();
+            this.model.open_story_in_new_tab();
         }
     },
     

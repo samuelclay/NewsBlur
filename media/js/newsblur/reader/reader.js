@@ -4908,7 +4908,7 @@
                 if (!self.flags['showing_confirm_input_on_manage_menu']) {
                     var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
                     var story = self.model.get_story(story_id);
-                    story.story_view.open_story_in_new_tab();
+                    story.open_story_in_new_tab();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
@@ -5454,7 +5454,7 @@
                 var story_id = self.active_story;
                 if (!story_id) return;
                 var story = self.model.get_story(story_id);
-                story.story_view.open_story_in_new_tab();
+                story.open_story_in_new_tab();
             });
             $document.bind('keypress', 'e', function(e) {
                 e.preventDefault();

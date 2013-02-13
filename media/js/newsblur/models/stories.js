@@ -52,7 +52,12 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         }
         NEWSBLUR.reader.update_starred_count();
     },
-
+    
+    open_story_in_new_tab: function() {
+        this.mark_read({skip_delay: true});
+        window.open(this.get('story_permalink'), '_blank');
+        window.focus();
+    },
     
     change_selected: function(model, selected) {
         if (model.collection) {
