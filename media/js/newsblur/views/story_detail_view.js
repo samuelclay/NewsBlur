@@ -249,6 +249,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     destroy: function() {
+        clearTimeout(this.truncate_delay_function);
+        this.images_to_load = null;
         this.model.unbind(null, null, this);
         delete this.model.inline_story_detail_view;
         this.remove();
@@ -336,6 +338,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     truncate_story_height: function() {
         if (this._truncated) return;
         
+        // console.log(["Checking truncate", this.$el, this.images_to_load, this.truncate_delay / 1000 + " sec delay"]);
         var $expander = this.$(".NB-story-content-expander");
         var $expander_cutoff = this.$(".NB-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
@@ -361,14 +364,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         } else {
             // console.log(["Height under.", this.model.get('story_title').substr(0, 30), content_height, max_height]);
         }
+        
+        if (this.images_to_load > 0) {
+            this.truncate_delay *= 1 + Math.random();
+            clearTimeout(this.truncate_delay_function);
+            this.truncate_delay_function = _.delay(_.bind(this.truncate_story_height, this), this.truncate_delay);
+        }
     },
     
     watch_images_for_story_height: function() {
         if (!this.is_truncatable()) return;
         
+        this.truncate_delay = 100;
+        this.images_to_load = this.$('img').length;
         this.truncate_story_height();
 
         this.$('img').load(_.bind(function() {
+            this.images_to_load -= 1;
             this.truncate_story_height();
         }, this));
     },

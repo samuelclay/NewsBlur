@@ -15,6 +15,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     reset_flags: function() {
+        this.clear();
         this.cache = {
             story_pane_position: null,
             feed_title_floater_feed_id: null,
@@ -47,6 +48,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.$el.html(_.pluck(stories, 'el'));
         _.invoke(stories, 'watch_images_for_story_height');
         this.show_correct_feed_in_feed_title_floater();
+
+        this.stories = stories;
     },
     
     add: function(options) {
@@ -63,12 +66,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             }));
             this.$el.append(_.pluck(stories, 'el'));
             _.invoke(stories, 'watch_images_for_story_height');
+            
+            this.stories = this.stories.concat(stories);
         } else {
             this.show_no_more_stories();
         }
     },
     
     clear: function() {
+        _.invoke(this.stories, 'destroy');
         this.$el.empty();
     },
     
