@@ -89,7 +89,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
         if (this.story_detail) {
             this.story_detail.destroy();
-        } else if (this.text_view) {
+        }
+        if (this.text_view) {
             this.text_view.destroy();
         }
     },
