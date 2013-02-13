@@ -335,7 +335,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
     if page: 
         offset = limit * (page - 1)
-        limit = page * limit
+        limit = page * limit - 1
     user_social_profile = None
     user_social_services = None
     user_following_social_profile = None
