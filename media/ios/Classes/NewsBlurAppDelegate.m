@@ -436,7 +436,7 @@
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:NO];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)loadFeedDetailView {
@@ -463,7 +463,7 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;        
         [navController pushViewController:feedDetailViewController animated:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
@@ -607,7 +607,7 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:feedDetailViewController animated:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
@@ -750,7 +750,7 @@
         //self.storyDetailViewController.navigationItem.titleView = nil;
         [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
     
 }
@@ -777,10 +777,10 @@
     UILabel *label = [[UILabel alloc] init];
     [label setFont:[UIFont boldSystemFontOfSize:16.0]];
     [label setBackgroundColor:[UIColor clearColor]];
-    [label setTextColor:[UIColor whiteColor]];
+    [label setTextColor:UIColorFromRGB(0x404040)];
     [label setText:title];
     [label setShadowOffset:CGSizeMake(0, -1)];
-    [label setShadowColor:UIColorFromRGB(0x306070)];
+    [label setShadowColor:UIColorFromRGB(0xFAFAFA)];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
 }
@@ -1527,6 +1527,37 @@
 
 #pragma mark -
 #pragma mark Feed Templates
+
++ (CGGradientRef)makeGradientCGRef:(UIColor *)startColor endColor:(UIColor *)endColor {
+    CGGradientRef result;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[2] = {0.0f, 1.0f};
+    CGFloat startRed, startGreen, startBlue, startAlpha;
+    CGFloat endRed, endGreen, endBlue, endAlpha;
+    
+    [startColor getRed:&startRed green:&startGreen blue:&startBlue alpha:&startAlpha];
+    [endColor getRed:&endRed green:&endGreen blue:&endBlue alpha:&endAlpha];
+    
+    CGFloat components[8] = {
+        startRed, startGreen, startBlue, startAlpha,
+        endRed, endGreen, endBlue, endAlpha
+    };
+    result = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
+    CGColorSpaceRelease(colorSpace);
+    return result;
+}
+
++ (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    UIGraphicsPushContext(context);
+    CGGradientRef gradient = [self makeGradientCGRef:startColor endColor:endColor];
+    
+    CGPoint startPoint = CGPointMake(CGRectGetMinX(r), r.origin.y);
+    CGPoint endPoint = CGPointMake(startPoint.x, r.origin.y + r.size.height);
+    
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    UIGraphicsPopContext();
+}
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
     UIView *gradientView = [[UIView alloc] initWithFrame:rect];

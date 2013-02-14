@@ -72,12 +72,15 @@
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
     // Background
-    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
-    [backgroundColor set];
-    CGContextFillRect(context, rect);
+    [NewsBlurAppDelegate fillGradient:rect
+                           startColor:UIColorFromRGB(0xEAECE5)
+                             endColor:UIColorFromRGB(0xDCDFD6)];
+//    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
+//    [backgroundColor set];
+//    CGContextFillRect(context, rect);
     
     // Borders
-    UIColor *topColor = UIColorFromRGB(0xE7EDF6);
+    UIColor *topColor = UIColorFromRGB(0xFDFDFD);
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
@@ -86,7 +89,7 @@
     CGContextStrokePath(context);
     
     // bottom border
-    UIColor *bottomColor = UIColorFromRGB(0xB7BDC6);
+    UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, 0, rect.size.height - .5f);

@@ -308,8 +308,8 @@ div + p {
     font-size: 22px;
     line-height: 1.2em;
     font-weight: 600;
-    background-color: #E0E0E0;
-    border-bottom: 1px solid #A0A0A0;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
+    border-bottom: 1px solid #C2C5BE;
     text-shadow: 1px 1px 0 #EFEFEF;
     overflow: hidden;
     max-width: none;

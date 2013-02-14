@@ -55,17 +55,19 @@ static UIFont *indicatorFont = nil;
     
     CGRect rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
-
-    // set the background color
-    UIColor *backgroundColor;
-    if (highlighted) {
-        backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
-    } else {
+    
+    if (!highlighted) {
+        UIColor *backgroundColor;
         backgroundColor = UIColorFromRGB(0xf4f4f4);
+        [backgroundColor set];
     }
-    [backgroundColor set];
     
     CGContextFillRect(context, r);
+    
+    if (highlighted) {
+        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFDEF) endColor:UIColorFromRGB(0xFFFDDF)];
+    }
+    
     // set site title
     UIColor *textColor;
     UIFont *font;
@@ -188,7 +190,7 @@ static UIFont *indicatorFont = nil;
     CGContextSetLineWidth(context, 1.0f);
     if (highlighted) {
         // top border
-        UIColor *blue = UIColorFromRGB(0x6eadf5);
+        UIColor *blue = UIColorFromRGB(0xEFEEC3);
         
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         

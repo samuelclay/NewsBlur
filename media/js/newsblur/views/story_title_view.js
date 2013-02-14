@@ -31,12 +31,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$st = this.$(".NB-story-title");
         this.toggle_classes();
         this.toggle_read_status();
+        this.color_feedbar();
         
         return this;
     },
     
     template: _.template('\
         <div class="NB-story-title">\
+            <div class="NB-storytitles-feed-border-inner"></div>\
+            <div class="NB-storytitles-feed-border-outer"></div>\
             <div class="NB-storytitles-sentiment"></div>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                 <% if (feed) { %>\
@@ -98,7 +101,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     // ============
     // = Bindings =
     // ============
-
+    
+    color_feedbar: function() {
+        var $inner = this.$st.find(".NB-storytitles-feed-border-inner");
+        var $outer = this.$st.find(".NB-storytitles-feed-border-outer");
+        var feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+        
+        $inner.css('background-color', '#' + feed.get('favicon_fade'));
+        $outer.css('background-color', '#' + feed.get('favicon_color'));
+    },
+    
     toggle_classes: function() {
         var changes = this.model.changedAttributes();
         

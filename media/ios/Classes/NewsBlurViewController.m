@@ -75,7 +75,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [super viewDidLoad];
     popoverClass = [WEPopoverController class];
     
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0xE8EBE4);
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -779,7 +779,7 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+    button.backgroundColor = UIColorFromRGB(0xB97B0A);
 }
 
 - (IBAction)sectionUntapped:(UIButton *)button {

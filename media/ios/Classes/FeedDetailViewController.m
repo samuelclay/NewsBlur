@@ -88,7 +88,9 @@
             
     // set center title
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
-    titleLabel.shadowColor = UIColorFromRGB(0x306070);
+    [titleLabel setTextColor:UIColorFromRGB(0x404040)];
+    [titleLabel setShadowOffset:CGSizeMake(0, -1)];
+    [titleLabel setShadowColor:UIColorFromRGB(0xFAFAFA)];
     self.navigationItem.titleView = titleLabel;
     
     // set right avatar title image
@@ -686,10 +688,10 @@
     
     // feed color bar border
     unsigned int colorBorder = 0;
-    NSString *faviconColor = [feed valueForKey:@"favicon_color"];
+    NSString *faviconColor = [feed valueForKey:@"favicon_fade"];
 
     if ([faviconColor class] == [NSNull class]) {
-        faviconColor = @"505050";
+        faviconColor = @"707070";
     }    
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
     [scannerBorder scanHexInt:&colorBorder];
@@ -697,7 +699,7 @@
     cell.feedColorBar = UIColorFromRGB(colorBorder);
     
     // feed color bar border
-    NSString *faviconFade = [feed valueForKey:@"favicon_border"];
+    NSString *faviconFade = [feed valueForKey:@"favicon_color"];
     if ([faviconFade class] == [NSNull class]) {
         faviconFade = @"505050";
     }    

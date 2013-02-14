@@ -72,15 +72,18 @@ static UIFont *textFont = nil;
     
     backgroundColor = highlighted ?
                       UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
-                      [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+                      self.isSocial ? UIColorFromRGB(0xE6ECE8) :
+                      UIColorFromRGB(0xF7F8F5);
 
     [backgroundColor set];
     CGContextFillRect(context, r);
     
     if (highlighted) {
+        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
+        
         // top border
-        UIColor *blue = UIColorFromRGB(0x6eadf5);
-        CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
+        UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
+        CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
         
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, 0.5f);
@@ -101,7 +104,7 @@ static UIFont *textFont = nil;
     
     UIColor *textColor = highlighted ? 
                          [UIColor blackColor]:
-                         [UIColor blackColor];
+                         UIColorFromRGB(0x4a4a4a);
 
     [textColor set];
     UIFont *font;
