@@ -106,6 +106,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var $inner = this.$st.find(".NB-storytitles-feed-border-inner");
         var $outer = this.$st.find(".NB-storytitles-feed-border-outer");
         var feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+        if (!feed) return;
         
         $inner.css('background-color', '#' + feed.get('favicon_fade'));
         $outer.css('background-color', '#' + feed.get('favicon_color'));
