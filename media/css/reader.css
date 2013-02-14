@@ -1973,10 +1973,10 @@ background: transparent;
 }
 
 .NB-feed-story blockquote {
-    background-color: #F0F0F0;
-    border-left: 5px solid #BABABA;
-    padding: .5em 2em;
+    border-left: 5px solid #C2C5BE;
+    padding: 0 1.5em;
     margin: 0px;
+    color: rgba(10, 12, 38, .6);
 }
 
 .NB-feed-story .NB-feed-story-content iframe,
@@ -2022,7 +2022,7 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 .NB-feed-story.read .NB-feed-story-sentiment {
-    opacity: .2;
+    opacity: .06;
 }
 .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-sentiment {
   display: none;
