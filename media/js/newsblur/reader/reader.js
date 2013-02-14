@@ -2448,6 +2448,7 @@
                     only_if_hidden: options.resize
                 });
                 NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
+                NEWSBLUR.app.story_titles.scroll_to_selected_story(this.active_story);
                 
                 $story_pane.animate({
                     'left': -1 * $feed_iframe.width()
@@ -2464,6 +2465,8 @@
                     this.active_story.story_title_view.render_inline_story_detail();
                 }
             } else if (view == 'text') {
+                NEWSBLUR.app.story_titles.scroll_to_selected_story(this.active_story);
+                
                 $story_pane.animate({
                     'left': -2 * $feed_iframe.width()
                 }, {
