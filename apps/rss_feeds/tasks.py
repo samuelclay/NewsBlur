@@ -160,4 +160,15 @@ class ScheduleImmediateFetches(Task):
             feed_ids = [feed_ids]
         
         Feed.schedule_feed_fetches_immediately(feed_ids)
+
+
+class SchedulePremiumSetup(Task):
+    
+    def run(self, feed_ids, **kwargs):
+        from apps.rss_feeds.models import Feed
+        
+        if not isinstance(feed_ids, list):
+            feed_ids = [feed_ids]
+        
+        Feed.setup_feeds_for_premium_subscribers(feed_ids)
         
