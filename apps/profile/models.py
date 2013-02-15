@@ -5,6 +5,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
 from django.db.models.signals import post_save
+from django.db.models import Sum, Avg, Count
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -530,3 +531,19 @@ class PaymentHistory(models.Model):
             'payment_amount': self.payment_amount,
             'payment_provider': self.payment_provider,
         }
+    
+    @classmethod
+    def report(cls, months=12):
+        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
+        print "Total: $%s" % total['sum']
+        
+        for m in range(months):
+            now = datetime.datetime.now()
+            start_date = now - datetime.timedelta(days=(m+1)*30)
+            end_date = now - datetime.timedelta(days=m*30)
+            payments = cls.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
+            payments = payments.aggregate(avg=Avg('payment_amount'), 
+                                          sum=Sum('payment_amount'), 
+                                          count=Count('user'))
+            print "%s months ago: avg=$%s sum=$%s users=%s" % (
+                m, payments['avg'], payments['sum'], payments['count'])
