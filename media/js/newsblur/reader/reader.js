@@ -1469,6 +1469,9 @@
             var feeds;
             if (visible_only) {
                 feeds = _.pluck(this.active_folder.feeds_with_unreads(), 'id');
+                if (!feeds.length) {
+                    feeds = this.active_folder.feed_ids_in_folder();
+                }
             } else {
                 feeds = this.active_folder.feed_ids_in_folder();
             }

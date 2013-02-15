@@ -1242,6 +1242,10 @@ class Feed(models.Model):
         if self.is_push:
             total = total * 20
         
+        # 1 month max
+        if total > 60*24*30:
+            total = 60*24*30 
+        
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
                                                 self.num_subscribers, self.active_subscribers,
