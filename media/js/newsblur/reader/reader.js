@@ -1410,6 +1410,9 @@
             var feeds;
             if (visible_only) {
                 feeds = this.list_feeds_with_unreads_in_folder(this.active_folder.folders, false, visible_only);
+                if (!feeds.length) {
+                    feeds = this.active_folder.feed_ids_in_folder();
+                }
             } else {
                 feeds = this.active_folder.feed_ids_in_folder();
             }

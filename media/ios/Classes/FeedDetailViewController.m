@@ -115,7 +115,9 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                 inSection:0];
 //        NSLog(@"Read story: %d", [i intValue]);
-        [indexPaths addObject:indexPath];
+        if (![indexPaths containsObject:indexPath]) {
+            [indexPaths addObject:indexPath];
+        }
     }
     if ([indexPaths count] > 0) {
         [self.storyTitlesTable beginUpdates];
