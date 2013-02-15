@@ -344,6 +344,15 @@ class Feed(models.Model):
             self.save_popular_authors()
             self.save_popular_tags()
     
+    @classmethod
+    def setup_feeds_for_premium_subscribers(cls, feed_ids):
+        logging.info(" ---> ~SN~FMScheduling immediate premium setup of ~SB%s~SN feeds..." % 
+             len(feed_ids))
+        
+        feeds = Feed.objects.filter(pk__in=feed_ids)
+        for feed in feeds:
+            feed.setup_feed_for_premium_subscribers()
+
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
         self.set_next_scheduled_update()

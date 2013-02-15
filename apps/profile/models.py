@@ -16,6 +16,7 @@ from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
+from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter
 from utils import log as logging
 from utils import json_functions as json
@@ -135,12 +136,17 @@ class Profile(models.Model):
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
+            if sub.active: continue
             sub.active = True
             try:
                 sub.save()
-                sub.feed.setup_feed_for_premium_subscribers()
             except IntegrityError, Feed.DoesNotExist:
                 pass
+        
+        scheduled_feeds = [sub.feed.pk for sub in subs]
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
         self.queue_new_feeds()
         self.setup_premium_history()
