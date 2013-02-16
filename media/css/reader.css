@@ -2240,11 +2240,11 @@ background: transparent;
     text-shadow: none;
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes {
-    width: 16px;
+    width: 24px;
     height: 16px;
     background: transparent url('/media/embed/reader/code_icon.png') no-repeat 0 0;
     float: left;
-    margin: 1px 8px 0px 0px;
+    margin: 1px 0 0px 0px;
     opacity: .6;
     cursor: pointer;
 }
@@ -2270,26 +2270,26 @@ background: transparent;
 .NB-feed-story .NB-feed-story-view-narrow .NB-feed-story-content {
     margin-right: 28px;
 }
+.NB-pref-hide-changes .NB-feed-story-content ins,
+.NB-story-hide-changes .NB-feed-story-content ins {
+    text-decoration: none;
+    color: inherit;
+}
+.NB-pref-hide-changes .NB-feed-story-content del,
+.NB-story-hide-changes .NB-feed-story-content del {
+    display: none;
+}
 .NB-modal-preferences ins,
-.NB-feed-story .NB-feed-story-content ins,
-.NB-pref-hide-changes .NB-feed-story .NB-story-show-changes .NB-feed-story-content ins {
+.NB-feed-story-content ins,
+.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content ins {
     text-decoration: underline;
     color: #27652F;
 }
 .NB-modal-preferences del,
-.NB-feed-story .NB-feed-story-content del,
-.NB-pref-hide-changes .NB-feed-story .NB-story-show-changes .NB-feed-story-content del {
+.NB-feed-story-content del,
+.NB-pref-hide-changes .NB-story-show-changes .NB-feed-story-content del {
     display: inline;
     color: #861616;
-}
-.NB-pref-hide-changes .NB-feed-story .NB-feed-story-content ins,
-.NB-feed-story .NB-story-hide-changes .NB-feed-story-content ins {
-    text-decoration: none;
-    color: inherit;
-}
-.NB-pref-hide-changes .NB-feed-story .NB-feed-story-content del,
-.NB-feed-story .NB-story-hide-changes .NB-feed-story-content del {
-    display: none;
 }
 
 /* =========================== */

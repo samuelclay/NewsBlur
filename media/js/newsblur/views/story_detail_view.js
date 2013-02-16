@@ -562,7 +562,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             // this.$('ins').css({'text-decoration': 'none'});
             // this.$('del').css({'display': 'none'});
         }
-        $button.css('opacity', 1).fadeOut(400);
+        $button.css('opacity', 1).animate({
+            'width': 0,
+            'opacity': 0
+        }, {
+            'queue': false,
+            'duration': 500
+        });
         $button.tipsy('hide').tipsy('disable');
         NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
     },
