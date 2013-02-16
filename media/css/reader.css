@@ -9256,13 +9256,18 @@ form.opml_import_form input {
     list-style: none;
     position: relative;
     margin: 0 0 0 0;
-    padding: 6px 12px 6px 40px;
+    padding: 6px 12px 6px 62px;
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid #F2F2EE;
     overflow: hidden;
     cursor: pointer;
+    min-height: 44px;
+}
+.NB-activities-container .NB-interaction {
+    padding-left: 40px;
+    min-height: none;
 }
 .NB-interaction.NB-disabled {
     cursor: default;
@@ -9279,12 +9284,16 @@ form.opml_import_form input {
 }
 .NB-interaction-photo {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 36px;
+    height: 36px;
     border-radius: 3px;
     left: 12px;
     top: 10px;
     cursor: pointer;
+}
+.NB-activities-container .NB-interaction-photo {
+    width: 16px;
+    height: 16px;
 }
 .NB-interaction-date {
     color: #B0B0B0;

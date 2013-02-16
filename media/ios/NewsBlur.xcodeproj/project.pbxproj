@@ -1108,12 +1108,6 @@
 				431B858015A23C6B00DCE497 /* ProfileBadge.m */,
 				438FEDE615D5B15F00E3B3C9 /* FollowGrid.h */,
 				438FEDE715D5B15F00E3B3C9 /* FollowGrid.m */,
-				437F976D15AE21280007136B /* ActivityModule.h */,
-				437F976E15AE21280007136B /* ActivityModule.m */,
-				43F6A79B15B0CDC60092EE91 /* ActivityCell.h */,
-				43F6A79C15B0CDC60092EE91 /* ActivityCell.m */,
-				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
-				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
 				43A4BAF015C89BF600F3B8D4 /* FindSitesViewController.h */,
 				43A4BAF115C89BF600F3B8D4 /* FindSitesViewController.m */,
 				43A4BAF215C89BF600F3B8D4 /* FindSitesViewController.xib */,
@@ -1435,6 +1429,12 @@
 				437F977115AE70E30007136B /* InteractionsModule.m */,
 				43ABBCA815B53A1400EA3111 /* InteractionCell.h */,
 				43ABBCA915B53A1400EA3111 /* InteractionCell.m */,
+				437F976D15AE21280007136B /* ActivityModule.h */,
+				437F976E15AE21280007136B /* ActivityModule.m */,
+				43F6A79B15B0CDC60092EE91 /* ActivityCell.h */,
+				43F6A79C15B0CDC60092EE91 /* ActivityCell.m */,
+				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
+				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
 			);
 			name = Dashboard;
 			sourceTree = "<group>";

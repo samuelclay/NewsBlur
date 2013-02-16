@@ -2539,8 +2539,8 @@ class MActivity(mongo.Document):
             'content': self.content,
             'user_id': self.user_id,
             'with_user_id': self.with_user_id or self.user_id,
-            'feed_id': self.feed_id,
-            'story_feed_id': self.story_feed_id,
+            'feed_id': self.feed_id or self.story_feed_id,
+            'story_feed_id': self.story_feed_id or self.feed_id,
             'content_id': self.content_id,
         }
         

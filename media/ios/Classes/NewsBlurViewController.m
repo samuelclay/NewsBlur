@@ -154,6 +154,7 @@ static const CGFloat kFolderTitleHeight = 28;
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
         [self.feedTitlesTable reloadData];
+        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
         [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                                           animated:NO 
@@ -314,10 +315,10 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
-    // set title only if on currestont controller
-    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
-        [appDelegate setTitle:[results objectForKey:@"user"]];
-    }
+//    // set title only if on currestont controller
+//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
+//        [appDelegate setTitle:[results objectForKey:@"user"]];
+//    }
 
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
@@ -325,19 +326,16 @@ static const CGFloat kFolderTitleHeight = 28;
     NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage * userAvatarImage = [UIImage imageWithData:imageData];
     userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
-    
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
+    userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
-
-
-    UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
-                                   initWithCustomView:userAvatarButton];
+    UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
+                                          initWithCustomView:userAvatarButton];
     
-    self.navigationItem.leftBarButtonItem = userAvatar;
+    self.navigationItem.leftBarButtonItem = userInfoBarButton;
     [self setUserAvatarLayout:orientation];
     
     // adding settings button to right
@@ -473,6 +471,7 @@ static const CGFloat kFolderTitleHeight = 28;
     
     [self calculateFeedLocations];
     [self.feedTitlesTable reloadData];
+    [self refreshHeaderCounts];
 
     // assign categories for FTUX
     
@@ -1241,6 +1240,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
+    [self refreshHeaderCounts];
 }
 
 // called when the date shown needs to be updated, optional
@@ -1304,6 +1304,55 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.titleView = nil;
     self.navigationItem.rightBarButtonItem = nil;
+}
+
+- (void)refreshHeaderCounts {
+    UIView *userInfoView = [[UIView alloc]
+                            initWithFrame:CGRectMake(0, 0,
+                                                     self.navigationController.view.frame.size.width,
+                                                     self.navigationController.toolbar.frame.size.height)];
+    //    userInfoView.backgroundColor = [UIColor cyanColor];
+    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 6, userInfoView.frame.size.width, 16)];
+    userLabel.text = appDelegate.activeUsername;
+    userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    userLabel.textColor = UIColorFromRGB(0x404040);
+    userLabel.backgroundColor = [UIColor clearColor];
+    userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
+    [userInfoView addSubview:userLabel];
+    
+    [appDelegate.folderCountCache removeObjectForKey:@"everything"];
+    UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
+    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet_yellow.png"]];
+    yellow.frame = CGRectMake(-4, userLabel.frame.origin.y + userLabel.frame.size.height, 16, 16);
+    [userInfoView addSubview:yellow];
+    
+    UILabel *neutralCount = [[UILabel alloc] init];
+    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x - 2,
+                                    yellow.frame.origin.y + 1, 100, 16);
+    neutralCount.text = [NSString stringWithFormat:@"%d", counts.nt];
+    neutralCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    neutralCount.textColor = UIColorFromRGB(0x707070);
+    neutralCount.backgroundColor = [UIColor clearColor];
+    [neutralCount sizeToFit];
+    [userInfoView addSubview:neutralCount];
+    
+    UIImageView *green = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet_green.png"]];
+    green.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 4,
+                             yellow.frame.origin.y, 16, 16);
+    [userInfoView addSubview:green];
+    
+    UILabel *positiveCount = [[UILabel alloc] init];
+    positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x - 2,
+                                     green.frame.origin.y + 1, 100, 16);
+    positiveCount.text = [NSString stringWithFormat:@"%d", counts.ps];
+    positiveCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    positiveCount.textColor = UIColorFromRGB(0x707070);
+    positiveCount.backgroundColor = [UIColor clearColor];
+    [positiveCount sizeToFit];
+    [userInfoView addSubview:positiveCount];
+    
+    
+    self.navigationItem.titleView = userInfoView;
 }
 
 

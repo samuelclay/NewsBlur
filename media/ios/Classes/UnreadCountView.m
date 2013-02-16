@@ -90,7 +90,7 @@ const int COUNT_HEIGHT = 15;
                 rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, COUNT_HEIGHT);
             }
         } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 7, psWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 8, psWidth, COUNT_HEIGHT);
         } else {
             rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, COUNT_HEIGHT);
         }
@@ -141,7 +141,7 @@ const int COUNT_HEIGHT = 15;
                 rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, COUNT_HEIGHT);
             }
         } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 7, ntWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 8, ntWidth, COUNT_HEIGHT);
         } else {
             rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, COUNT_HEIGHT);
         }

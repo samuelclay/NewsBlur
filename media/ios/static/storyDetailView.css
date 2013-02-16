@@ -285,9 +285,9 @@ a {
 }
 
 .NB-story blockquote {
-    background-color: #F0F0F0;
-    border-left: 1px solid #9B9B9B;
-    padding: 10px 20px;
+    border-left: 5px solid #C2C5BE;
+    padding: 0 1.5em;
+    color: rgba(10, 12, 38, .6);
     margin: 20px 0;
 }
 

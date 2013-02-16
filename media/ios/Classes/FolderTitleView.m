@@ -112,11 +112,11 @@
     } else {
         folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
-    UIColor *shadowColor = UIColorFromRGB(0xE7EDF6);
+    UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
     
     [folderTitle
-     drawInRect:CGRectMake(36.0, 9, rect.size.width - 36 - 36 - countWidth, 14)
+     drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation
      alignment:UITextAlignmentLeft];
@@ -190,7 +190,7 @@
             folderImageViewX = 7;
         }
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 5, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

@@ -68,13 +68,12 @@ static UIFont *indicatorFont = nil;
         [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFDEF) endColor:UIColorFromRGB(0xFFFDDF)];
     }
     
-    // set site title
     UIColor *textColor;
     UIFont *font;
 
     if (self.isRead) {
         font = [UIFont fontWithName:@"Helvetica" size:11];
-        textColor = UIColorFromRGB(0xc0c0c0);
+        textColor = UIColorFromRGB(0x808080);
     } else {
         font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
         textColor = UIColorFromRGB(0x606060);
@@ -94,7 +93,7 @@ static UIFont *indicatorFont = nil;
         
         if (self.isRead) {
             font = [UIFont fontWithName:@"Helvetica" size:12];
-            textColor = UIColorFromRGB(0xc0c0c0);
+            textColor = UIColorFromRGB(0x606060);
             
         } else {
             textColor = UIColorFromRGB(0x333333);
@@ -129,7 +128,7 @@ static UIFont *indicatorFont = nil;
     // story author style
 
     if (self.isRead) {
-        textColor = UIColorFromRGB(0xc0c0c0);
+        textColor = UIColorFromRGB(0x808080);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
         textColor = UIColorFromRGB(0x959595);

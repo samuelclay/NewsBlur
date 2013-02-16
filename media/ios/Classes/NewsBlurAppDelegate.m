@@ -194,6 +194,16 @@
 //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
     
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                UIColorFromRGB(0x404040),
+                                UITextAttributeTextColor,
+                                UIColorFromRGB(0xFAFAFA),
+                                UITextAttributeTextShadowColor, nil];
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes: attributes
+                                                forState: UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes: attributes
+                                                forState: UIControlStateHighlighted];
 //    [self showFirstTimeUser];
 	return YES;
 }
@@ -1015,12 +1025,8 @@
     }
     
     counts.ps += [[feed objectForKey:@"ps"] intValue];
-    if ([self selectedIntelligence] <= 0) {
-        counts.nt += [[feed objectForKey:@"nt"] intValue];
-    }
-    if ([self selectedIntelligence] <= -1) {
-        counts.ng += [[feed objectForKey:@"ng"] intValue];
-    }
+    counts.nt += [[feed objectForKey:@"nt"] intValue];
+    counts.ng += [[feed objectForKey:@"ng"] intValue];
     
     return counts;
 }
@@ -1544,6 +1550,7 @@
     };
     result = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
     CGColorSpaceRelease(colorSpace);
+    
     return result;
 }
 

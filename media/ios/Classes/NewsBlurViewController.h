@@ -93,6 +93,7 @@ UIPopoverControllerDelegate> {
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)resetToolbar;
+- (void)refreshHeaderCounts;
 
 
 @end
