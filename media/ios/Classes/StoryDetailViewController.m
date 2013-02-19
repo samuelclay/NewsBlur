@@ -156,7 +156,6 @@
     
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
                     

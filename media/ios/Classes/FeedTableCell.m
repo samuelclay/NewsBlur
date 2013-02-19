@@ -104,7 +104,7 @@ static UIFont *textFont = nil;
     
     UIColor *textColor = highlighted ? 
                          [UIColor blackColor]:
-                         UIColorFromRGB(0x4a4a4a);
+                         UIColorFromRGB(0x3a3a3a);
 
     [textColor set];
     UIFont *font;
