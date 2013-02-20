@@ -1449,7 +1449,12 @@ class MStory(mongo.Document):
 
     meta = {
         'collection': 'stories',
-        'indexes': [('story_feed_id', '-story_date')],
+        'indexes': [('story_feed_id', '-story_date'),
+                    {'fields': ['story_hash'], 
+                     'unique': True,
+                     'sparse': True, 
+                     'types': False, 
+                     'drop_dups': True }],
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -1462,11 +1467,13 @@ class MStory(mongo.Document):
 
     @property
     def feed_guid_hash(self):
-        return hashlib.sha1("%s:%s" % (self.story_feed_id, self.story_guid)).hexdigest()[:6]
+        return "%s:%s" % (self.story_feed_id, self.guid_hash)
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
+        self.story_hash = self.feed_guid_hash
+        
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
