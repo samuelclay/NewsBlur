@@ -333,7 +333,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
                 }
 
-                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id) || NEWSBLUR.assets.get_feed(feed_id);
                 
                 if (!data || data.code < 0 || !data.new_feed_id) {
                     var error = data.message || "There was a problem fetching the feed from this URL.";
