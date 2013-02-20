@@ -903,7 +903,7 @@ class MSocialSubscription(mongo.Document):
 
         unread_ranked_stories_keys  = 'zU:%s:social' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
-            story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
+            story_guids = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
             if story_guids:
                 return zip(*story_guids)
             else:
