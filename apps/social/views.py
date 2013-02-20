@@ -365,7 +365,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                  offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
-                                                 everything_unread=True)
+                                                 everything_unread=True,
+                                                 cache=request.user.is_authenticated())
         if len(story_ids) > limit:
             has_next_page = True
             story_ids = story_ids[:-1]
@@ -382,7 +383,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         if feed_id:
             params['story_feed_id'] = feed_id
 
-        mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:limit+1]
+        mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories)
 
         if len(stories) > limit:
