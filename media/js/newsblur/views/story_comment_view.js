@@ -35,21 +35,21 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
                     NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id')).render().el
                 ])),
-                (has_likes && $.make('div', { className: 'NB-story-comment-likes NB-right' }, [
-                    $.make('div', { className: 'NB-story-comment-like ' + (liked ? 'NB-active' : '') }),
-                    this.render_liking_users()
-                ])),
                 $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),
-                (this.model.get('user_id') == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
-                    $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
-                ])),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, [
                         (this.user.get('protected') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' })),
                         'reply'
                     ])
                 ]),
+                (this.model.get('user_id') == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
+                    $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
+                ])),
+                (has_likes && $.make('div', { className: 'NB-story-comment-likes NB-right' }, [
+                    $.make('div', { className: 'NB-story-comment-like ' + (liked ? 'NB-active' : '') }),
+                    this.render_liking_users()
+                ])),
                 (!has_likes && this.model.get('user_id') != NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-likes NB-left' }, [
                     $.make('div', { className: 'NB-story-comment-like' })
                 ])),

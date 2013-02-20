@@ -2433,10 +2433,8 @@ background: transparent;
 
 .NB-feed-story-comments {
     margin: 0 236px 32px 28px;
-/*    padding: 1px 0 0;*/
     max-width: 700px;
-    border-top: 2px solid #353535;
-    border-bottom: 1px solid #353535;
+/*    border-bottom: 1px solid #EAECE8;*/
     clear: both;
     background-color: white;
     position: relative;
@@ -2445,10 +2443,9 @@ background: transparent;
     margin-right: 28px;
 }
 .NB-story-comment {
-    border-top: 1px solid #A6A6A6;
-    background-color: #FCFCFC;
+    border-bottom: 1px solid #EAECE8;
     position: relative;
-    padding: 0 12px 2px 54px;
+    padding: 0 0 2px 54px;
     line-height: 20px;
     overflow: hidden;
 }
@@ -2498,16 +2495,14 @@ background: transparent;
     cursor: pointer;
 }
 .NB-story-comment .NB-story-comment-date {
-    text-transform: uppercase;
     font-size: 10px;
     color: #9D9D9D;
-    font-weight: bold;
     float: left;
 }
 .NB-story-comment .NB-story-comment-likes {
     overflow: hidden;
     height: 14px;
-    margin: 3px 2px 0;
+    margin: 4px 2px 0;
 }
 .NB-story-comment .NB-story-comment-like {
     float: left;
@@ -2542,7 +2537,7 @@ background: transparent;
 }
 .NB-story-comment .NB-story-comment-reply-button {
     padding: 4px 8px 4px 12px;
-    float: left;
+    float: right;
     cursor: pointer;
 }
 .NB-story-comment .NB-story-comment-reply-button img {
@@ -2582,7 +2577,7 @@ background: transparent;
 }
 
 .NB-story-comment-reply {
-    border-top: 1px solid #E0E0E0;
+    border-top: 1px solid #EAECE8;
     padding: 4px 0;
     overflow: hidden;
     clear: both;
@@ -2601,8 +2596,8 @@ background: transparent;
 }
 
 .NB-story-comment-edit-button {
-    padding: 3px 8px 5px 12px;
-    float: left;
+    padding: 4px 8px 4px 12px;
+    float: right;
     cursor: pointer;
 }
 .NB-story-comment-edit-button .NB-story-comment-edit-button-wrapper {
@@ -2665,58 +2660,25 @@ background: transparent;
     font-weight: bold;
     clear: both;
 }
-.NB-story-comments-public-teaser-wrapper,
-.NB-story-comments-public-header-wrapper {
-    border-top: 1px solid #353535;
-    padding: 1px 0;
+
+/* =================== */
+/* = Comments Header = */
+/* =================== */
+
+.NB-story-comments-public-teaser-wrapper {
     cursor: pointer;
 }
-.NB-story-comments-public-header-wrapper:first-child {
-    border-top: none;
-}
-
+.NB-story-comments-public-teaser-wrapper,
 .NB-story-comments-public-header-wrapper {
-    cursor: default;
+    margin-top: 12px;
 }
 .NB-story-comments-public-teaser,
 .NB-story-comments-public-header {
-    background-color: #B1B6B4;
-    color: white;
-    text-shadow: 0 1px 0 #505050;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 10px;
-    padding: 2px 12px;
-    overflow: hidden;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
 }
-.NB-story-comments-public-header {
-    background-color: #A0A0A0;
-    color: #FFF;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
-    
-    background-image: -webkit-gradient(
-      linear,
-      left bottom,
-      left top,
-      color-stop(0.10, #878787),
-      color-stop(0.84, #A0A0A0)
-    );
-    background-image: -moz-linear-gradient(
-      center bottom,
-      #878787 10%,
-      #A0A0A0 84%
-    );
-}
-
-.NB-story-comments-shares-teaser-wrapper {
-    border-top: 0;
-    padding-top: 0;
-}
-
 .NB-story-comments-shares-teaser {
     background-color: #F5F5EF;
     color: #898989;
@@ -2756,7 +2718,6 @@ background: transparent;
     vertical-align: top;
     height: 24px;
     padding-top: 2px;
-    margin-top: -4px;
     overflow: hidden;
 }
 .NB-story-share-profiles.NB-story-share-profiles-shares {
@@ -3172,7 +3133,6 @@ background: transparent;
     cursor: default;
     color: #505050;
     overflow: hidden;
-    text-transform: uppercase;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
     background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
@@ -3194,7 +3154,7 @@ background: transparent;
 .NB-feeds-header-user-dashboard {
     cursor: pointer;
     padding: 10px 0 10px;
-    width: 28px;
+    width: 32px;
     position: absolute;
     top: 0;
     right: 0;
@@ -3202,12 +3162,12 @@ background: transparent;
     text-align: center;
 }
 .NB-feeds-header-user-dashboard {
-    right: 28px;
+    right: 32px;
 }
 .NB-feeds-header-user-interactions img,
 .NB-feeds-header-user-dashboard img {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     opacity: .7;
 }
 .NB-feeds-header-user-interactions:hover img,
@@ -3230,6 +3190,7 @@ background: transparent;
     color: white;
     opacity: .95;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+    z-index: 1;
 }
 .NB-feeds-header-user-dashboard {
     opacity: .3;

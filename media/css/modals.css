@@ -81,7 +81,8 @@
 }
 
 .NB-modal h5,
-.NB-module h5 {
+.NB-module h5,
+.NB-module-header {
     margin: 0;
     padding: 6px 12px 6px;
 
