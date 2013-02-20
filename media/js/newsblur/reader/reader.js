@@ -2821,7 +2821,6 @@
                 $manage_menu.data('$feed', $item);
                 if (feed_id && unread_count == 0) {
                     $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
-                    $('.NB-menu-manage-feed-unreadtabs', $manage_menu).addClass('NB-disabled');
                 }
             } else if (type == 'socialfeed') {
                 var feed = this.model.get_feed(feed_id);
@@ -2872,7 +2871,6 @@
                 $manage_menu.data('$feed', $item);
                 if (feed_id && unread_count == 0) {
                     $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
-                    $('.NB-menu-manage-feed-unreadtabs', $manage_menu).addClass('NB-disabled');
                 }
             } else if (type == 'folder') {
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-folder' }, [
@@ -5057,10 +5055,6 @@
             $.targetIs(e, { tagSelector: '.NB-task-return' }, function($t, $p){
                 e.preventDefault();
                 NEWSBLUR.app.original_tab_view.load_feed_iframe();
-            });         
-            $.targetIs(e, { tagSelector: '.NB-task-feed-settings' }, function($t, $p){
-                e.preventDefault();
-                self.open_feed_exception_modal();
             });         
             $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-next-unread' }, function($t, $p){
                 e.preventDefault();

@@ -128,6 +128,9 @@ body {
     opacity: 1;
     cursor: pointer;
 }
+.NB-show-reader .NB-feeds-header-user-dashboard:hover img {
+    opacity: .9;
+}
 
 .NB-splash-heading {
     display: none;
@@ -506,15 +509,17 @@ body {
 }
 
 .NB-feedlist li.folder .NB-folder-icon {
-    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
     width: 16px;
     height: 16px;
+    background-size: 16px;
     position: absolute;
     left: 2px;
     top: 2px;
 }
 .NB-feedlist li.folder.NB-folder-collapsed .NB-folder-icon{
-    background: transparent url('/media/embed/icons/silk/folder_feed.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
@@ -860,8 +865,7 @@ body {
 }
 
 .unread_count_neutral {
-    color: #303030;
-    background-color: #FEE692;
+    background-color: #B3B6AD;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     text-shadow: none;
 }
@@ -1404,7 +1408,7 @@ background: transparent;
 }
 #story_titles .NB-story-title.read .NB-storytitles-feed-border-inner,
 #story_titles .NB-story-title.read .NB-storytitles-feed-border-outer {
-    opacity: .2;
+    opacity: .06;
 }
 #story_titles .NB-story-title .NB-storytitles-feed-border-inner {
     left: 4px;
@@ -1419,15 +1423,18 @@ background: transparent;
 }
 
 #story_titles .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 6px 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
+    background-size: 8px;
 }
 
 #story_titles .NB-story-title.NB-story-neutral .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 6px 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 13px 6px;
+    background-size: 8px;
 }
 
 #story_titles .NB-story-title.NB-story-negative .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 6px 2px;
+    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 13px 6px;
+    background-size: 8px;
 }
 
 #story_titles .NB-story-title.NB-story-starred .NB-storytitles-star,
@@ -1568,7 +1575,7 @@ background: transparent;
     top: 2px;
     width: 28px;
     height: 22px;
-    background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 7px 2px;
+    background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 10px 2px;
 }
 
 #story_titles .NB-story-title:hover .NB-story-manage-icon {
@@ -1576,11 +1583,11 @@ background: transparent;
 }
 
 #story_titles .NB-story-title:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
+    background: transparent url('/media/embed/icons/silk/bullet_arrow_down.png') no-repeat 10px 1px;
     cursor: pointer;
 }
 #story_titles .NB-story-title.NB-hover-inverse:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
+    background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 10px 1px;
     cursor: pointer;
 }
 
@@ -2011,15 +2018,18 @@ background: transparent;
 }
   
 .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 4px 4px;
+    background-size: 8px;
 }
 
 .NB-feed-story.NB-story-neutral .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px 4px;
+    background-size: 8px;
 }
 
 .NB-feed-story.NB-story-negative .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 4px 4px;
+    background-size: 8px;
 }
 .NB-feed-story.read .NB-feed-story-sentiment {
     opacity: .06;
@@ -2713,9 +2723,9 @@ background: transparent;
     text-shadow: 0 1px 0 #FFF;
     font-weight: normal;
     font-size: 10px;
-    padding: 8px 12px 0px 28px;
+    padding: 4px 12px 4px 28px;
+    line-height: 26px;
     overflow: hidden;
-    height: 27px;
     border-bottom: 1px solid #E3E3DF;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
     -moz-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
@@ -3195,8 +3205,13 @@ background: transparent;
 }
 .NB-feeds-header-user-interactions img,
 .NB-feeds-header-user-dashboard img {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
+    opacity: .7;
+}
+.NB-feeds-header-user-interactions:hover img,
+.NB-feeds-header-user-dashboard:hover img {
+    opacity: .9;
 }
 .NB-feeds-header-user-interactions .NB-feeds-header-user-interactions-badge {
     position: absolute;
@@ -3218,6 +3233,10 @@ background: transparent;
 .NB-feeds-header-user-dashboard {
     opacity: .3;
     cursor: default;
+}
+.NB-feeds-header-user-dashboard img,
+.NB-feeds-header-user-dashboard:hover img {
+    opacity: .7;
 }
 .NB-feeds-header-user .NB-feeds-header-user-name {
     padding: 10px 0 0 6px;
@@ -3246,14 +3265,16 @@ background: transparent;
     color: #B0B0B0;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-negative {
+    background: transparent url('/media/embed/icons/circular/g_icn_negative.png') no-repeat 6px 3px;
     display: none;
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 2px -1px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-neutral {
-    background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 2px -1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 6px 3px;
+    background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-positive {
-    background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 2px -1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 6px 3px;
+    background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-right {
     position: relative;
@@ -3505,10 +3526,12 @@ background: transparent;
     height: 16px;
 }
 .NB-feed-taskbar .NB-task-add .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/add.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/nav_icn_add.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-feed-taskbar .NB-task-manage .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/nav_icn_settings.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 /* =================== */
@@ -3559,9 +3582,9 @@ background: transparent;
 }
 .NB-taskbar .NB-task-image {
     vertical-align: top;
-    width: 16px;
-    height: 16px;
-    margin: 1px 0 0 0;
+    width: 18px;
+    height: 14px;
+    margin: 2px 0 0 0;
     display: inline-block;
 
     filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
@@ -3576,7 +3599,35 @@ background: transparent;
 }
 
 .NB-taskbar .task_view_page .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/application_view_tile.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/nav_story_orginal_active.png') no-repeat center center;
+    background-size: 18px 14px;
+}
+.NB-taskbar .task_view_feed .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_feed_active.png') no-repeat center center;
+    background-size: 18px 14px;
+}
+.NB-taskbar .task_view_story .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_story_active.png') no-repeat center center;
+    background-size: 18px 14px;
+}
+.NB-taskbar .task_view_text .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_text_active.png') no-repeat center center;
+    background-size: 18px 14px;
+}
+.NB-taskbar .task_view_story.NB-disabled-page .NB-task-image {
+    background-image: url('/media/embed/icons/silk/error.png');
+}
+.NB-taskbar .NB-task-story-next-positive .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat center center; 
+    background-size: 8px;
+}
+.NB-taskbar .NB-task-story-next-neutral .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;  
+    background-size: 8px;
+}
+.NB-taskbar .NB-task-story-next-negative .NB-task-image {
+    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat center center; 
+    background-size: 8px;
 }
 .NB-taskbar .task_view_page.NB-exception-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/exclamation.png');
@@ -3584,41 +3635,21 @@ background: transparent;
 .NB-taskbar .task_view_page.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/error.png');
 }
-.NB-taskbar .task_view_feed .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/application_view_list.png') no-repeat 0 0;
-}
-.NB-taskbar .task_view_story .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
-}
-.NB-taskbar .task_view_text .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/application_view_columns.png') no-repeat 0 0;
-}
-.NB-taskbar .task_view_story.NB-disabled-page .NB-task-image {
-    background-image: url('/media/embed/icons/silk/error.png');
-}
-.NB-taskbar .NB-task-feed-settings .NB-task-image {
-    left: 12px;
-    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
-}
-.NB-view-river .NB-task-feed-settings {
-    display: none;
-}
-.NB-taskbar .NB-task-story-next-positive .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
-}
-.NB-taskbar .NB-task-story-next-neutral .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 0;
-}
-.NB-taskbar .NB-task-story-next-negative .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
-}
 .NB-taskbar .NB-task-story-previous .NB-task-image {
     left: 12px;
-    background: transparent url('/media/embed/icons/silk/arrow_left.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-taskbar .NB-task-story-next .NB-task-image {
     left: 12px;
-    background: transparent url('/media/embed/icons/silk/arrow_down.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-taskbar .NB-task-layout-split .NB-task-image {
@@ -4107,12 +4138,12 @@ form.opml_import_form input {
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-neutral {
     right: 45px;
-    background: transparent url(/media/embed/icons/silk/bullet_yellow.png) no-repeat 0 0;
+    background: transparent url(/media/embed/icons/circular/g_icn_unread.png) no-repeat 0 0;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-positive {
     right: -4px;
-    background: transparent url(/media/embed/icons/silk/bullet_green.png) no-repeat 0 0;
+    background: transparent url(/media/embed/icons/circular/g_icn_focus.png) no-repeat 0 0;
 }
 
 .NB-intelligence-slider {
@@ -4123,23 +4154,22 @@ form.opml_import_form input {
     width: auto;
 }
 .NB-intelligence-slider .NB-intelligence-slider-control {
-    height: 17px;
-    line-height: 17px;
+    line-height: 16px;
     position: relative;
-    padding: 1px 8px;
+    padding: 3px 8px 1px;
 }
 .NB-narrow .NB-intelligence-slider .NB-intelligence-label {
     display: none;
 }
 .NB-intelligence-slider img {
-    width: 16px;
-    height: 16px;
-    margin: 1px 0 0 -8px;
+    width: 8px;
+    height: 8px;
+    margin: 3px 5px 0 -2px;
     float: left;
     vertical-align: bottom;
 }
 .NB-narrow .NB-intelligence-slider img {
-    margin: 1px 3px 0;
+    margin: 3px 8px 5px;
 }
 /* ===================== */
 /* = Add Feeds/Folders = */
@@ -5431,12 +5461,12 @@ form.opml_import_form input {
     cursor: pointer;
     clear: both;
     position: relative;
-    background-color: #BAE3A8;
+    background-color: white;
 }
 
 .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active),
 .NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
-    background-color: #639510;
+    background-color: #D4D9CE;
     color: white;
 }
 
@@ -5550,44 +5580,40 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-feed-info .feed_title {
 }
 
-.NB-menu-manage .NB-menu-manage-feed-manage .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/book_open.png') no-repeat 0 2px;    
-}
-
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/bricks.png') no-repeat  0 2px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/award_star_bronze_3.png') no-repeat  0 1px;    
 }
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/bricks.png') no-repeat  0 2px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-settings .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_settings.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/car.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch.png') no-repeat 0 0;
+    background-size: 18px;
 }
-
 .NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/chart_curve.png') no-repeat  0 2px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_stats.png') no-repeat 0 0;
+    background-size: 18px;
 }
-
-.NB-menu-manage .NB-menu-manage-feed-unreadtabs .NB-menu-manage-image {
-    left: 9px;
-    top: 6px;
-    background: transparent url('/media/embed/icons/silk/application_cascade_go.png') no-repeat 0 0;    
-}
-
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/cut.png') no-repeat  0 2px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_markread.png') no-repeat 0 0;
+    background-size: 18px; 
 }
 .NB-menu-manage .NB-menu-manage-folder-subscribe .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/add.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/nav_icn_add.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-folder-subfolder .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_move.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-social-profile .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
@@ -5603,7 +5629,8 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-delete .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/bin_closed.png') no-repeat  -2px 1px;  
+    background: transparent url('/media/embed/icons/circular/menu_icn_delete.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-delete.NB-menu-manage-feed-delete-cancel .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
@@ -5613,7 +5640,8 @@ form.opml_import_form input {
     font-weight: bold; 
 }
 .NB-menu-manage .NB-menu-manage-move .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/arrow_branch.png') no-repeat  0px 2px;  
+    background: transparent url('/media/embed/icons/circular/menu_icn_move.png') no-repeat 0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-move.NB-active .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/accept.png') no-repeat  0 2px;
@@ -5622,7 +5650,8 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
 }
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/font.png') no-repeat  0px 2px;  
+    background: transparent url('/media/embed/icons/circular/menu_icn_rename.png') no-repeat 0 0;  
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-rename.NB-active .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/accept.png') no-repeat  0 2px;
@@ -5735,10 +5764,10 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share .NB-modal-submit-button {
 }
 .NB-menu-manage .NB-menu-manage-site-mark-read .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/control_fastforward_blue.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_markread.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/bricks.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/package_green.png') no-repeat  0 1px;
@@ -5895,7 +5924,8 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-unread .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background-size: 8px;
 }
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
@@ -8057,7 +8087,7 @@ form.opml_import_form input {
   padding-left: 24px;
 }
 .NB-static-about ul.NB-about-server li {
-  background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 3px;
+  background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 3px;
   padding-left: 24px;
 }
 .NB-static-about ul.NB-about-client li {
@@ -9489,10 +9519,10 @@ form.opml_import_form input {
     color: #6F716A;
 }
 .NB-filter-popover-stats-icon {
-    background: transparent url('/media/embed/icons/silk/chart_curve.png') no-repeat center center;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_stats.png') no-repeat center center;    
 }
 .NB-filter-popover-filter-icon {
-    background: transparent url("/media/embed/icons/silk/cog.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 
 /* =========== */
@@ -9525,10 +9555,10 @@ form.opml_import_form input {
 }
 .NB-section-icon {
     float: right;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
-    background-size: 16px;
+    background-size: 18px;
 }
 
 .popover {

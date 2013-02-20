@@ -143,7 +143,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                   ' are stories you like',
                   $.make('br'),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
                   ' are stories you have not yet rated',
                   $.make('br'),
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
@@ -154,11 +154,11 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                         $.make('ul', { className: 'segmented-control' }, [
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-red' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png' }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png' }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
                             ]),
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-yellow' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png' }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
                             ]),
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-green' }, [
