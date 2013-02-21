@@ -145,14 +145,16 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
             UIImage *titleImage;
-            if (appDelegate.isSocialRiverView) {
-                titleImage = [UIImage imageNamed:@"group_white.png"];
+            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_global"]) {
+                titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_blurblogs"]) {
+                titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
-                titleImage = [UIImage imageNamed:@"archive_white.png"];
+                titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
-                titleImage = [UIImage imageNamed:@"clock_white.png"];
+                titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder_white.png"];
+                titleImage = [UIImage imageNamed:@"ak-icon-folder-open.png"];
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];

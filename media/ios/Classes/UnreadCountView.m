@@ -12,9 +12,7 @@
 
 static UIFont *indicatorFont = nil;
 static UIColor *indicatorWhiteColor = nil;
-static UIColor *indicatorWhiteShadowColor = nil;
 static UIColor *indicatorBlackColor = nil;
-static UIColor *indicatorBlackShadowColor = nil;
 static UIColor *positiveBackgroundColor = nil;
 static UIColor *neutralBackgroundColor = nil;
 static UIColor *positiveBackgroundShadowColor = nil;
@@ -36,18 +34,16 @@ const int COUNT_HEIGHT = 15;
         indicatorFont = [UIFont boldSystemFontOfSize:12];
         indicatorWhiteColor = [UIColor whiteColor];
         indicatorBlackColor = [UIColor blackColor];
-        indicatorWhiteShadowColor = UIColorFromRGB(0xFFF6B2);
-        indicatorBlackShadowColor = UIColorFromRGB(0x4E872A);
         
         UIColor *ps = UIColorFromRGB(0x6EA74A);
-        UIColor *nt = UIColorFromRGB(0xFEE692);
+        UIColor *nt = UIColorFromRGB(0xB3B6AD);
         UIColor *ng = UIColorFromRGB(0xCC2A2E);
         UIColor *blue = UIColorFromRGB(0x11448B);
         positiveBackgroundColor = ps;
         neutralBackgroundColor = nt;
         positiveBackgroundShadowColor = UIColorFromRGB(0x4E872A);
         negativeBackgroundColor = ng;
-        neutralBackgroundShadowColor = UIColorFromRGB(0xDEC672);
+        neutralBackgroundShadowColor = UIColorFromRGB(0x93968D);
         blueBackgroundColor = blue;
         blueBackgroundShadowColor = UIColorFromRGB(0x01346B);
         //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
@@ -119,7 +115,7 @@ const int COUNT_HEIGHT = 15;
         if (blueCount) {
             [indicatorBlackColor set];
         } else {
-            [indicatorBlackShadowColor set];
+            [positiveBackgroundShadowColor set];
         }
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
@@ -161,12 +157,12 @@ const int COUNT_HEIGHT = 15;
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
         
-        [indicatorWhiteShadowColor set];
+        [neutralBackgroundShadowColor set];
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
          withFont:indicatorFont];
         
-        [indicatorBlackColor set];
+        [indicatorWhiteColor set];
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];

@@ -291,7 +291,6 @@
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 
-+ (CGGradientRef)makeGradientCGRef:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;

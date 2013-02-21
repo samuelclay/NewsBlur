@@ -518,7 +518,7 @@ body {
     top: 2px;
 }
 .NB-feedlist li.folder.NB-folder-collapsed .NB-folder-icon{
-    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_rss.png') no-repeat 0 0;
     background-size: 16px;
 }
 
@@ -3320,7 +3320,18 @@ background: transparent;
 }
 
 .NB-feeds-header-river-container .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/silk/images.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/ak-icon-allstories.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-feeds-header-river-global .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/ak-icon-global.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-feeds-header-river-blurblogs .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/ak-icon-blurblogs.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-feeds-header-river-container .NB-feeds-header-count {

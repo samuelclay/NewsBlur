@@ -1338,13 +1338,13 @@ heightForHeaderInSection:(NSInteger)section {
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
-    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet_yellow.png"]];
-    yellow.frame = CGRectMake(-4, userLabel.frame.origin.y + userLabel.frame.size.height, 16, 16);
+    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
     UILabel *neutralCount = [[UILabel alloc] init];
-    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x - 2,
-                                    yellow.frame.origin.y + 1, 100, 16);
+    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
+                                    yellow.frame.origin.y - 3, 100, 16);
     neutralCount.text = [NSString stringWithFormat:@"%d", counts.nt];
     neutralCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     neutralCount.textColor = UIColorFromRGB(0x707070);
@@ -1352,14 +1352,14 @@ heightForHeaderInSection:(NSInteger)section {
     [neutralCount sizeToFit];
     [userInfoView addSubview:neutralCount];
     
-    UIImageView *green = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bullet_green.png"]];
-    green.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 4,
-                             yellow.frame.origin.y, 16, 16);
+    UIImageView *green = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
+    green.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
+                             yellow.frame.origin.y, 8, 8);
     [userInfoView addSubview:green];
     
     UILabel *positiveCount = [[UILabel alloc] init];
-    positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x - 2,
-                                     green.frame.origin.y + 1, 100, 16);
+    positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x + 2,
+                                     green.frame.origin.y - 3, 100, 16);
     positiveCount.text = [NSString stringWithFormat:@"%d", counts.ps];
     positiveCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     positiveCount.textColor = UIColorFromRGB(0x707070);

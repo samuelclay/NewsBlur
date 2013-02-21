@@ -1052,8 +1052,10 @@
         // Nothing for global
     } else if ([folderName isEqual:@"everything"] ||
                (!folderName && [self.activeFolder isEqual:@"everything"])) {
-        for (id feedId in self.dictFeeds) {
-            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+        for (NSArray *folder in [self.dictFolders allValues]) {
+            for (id feedId in folder) {
+                [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+            }
         }
     } else {
         if (!folderName) {
@@ -1534,8 +1536,11 @@
 #pragma mark -
 #pragma mark Feed Templates
 
-+ (CGGradientRef)makeGradientCGRef:(UIColor *)startColor endColor:(UIColor *)endColor {
-    CGGradientRef result;
++ (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    UIGraphicsPushContext(context);
+    
+    CGGradientRef gradient;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGFloat locations[2] = {0.0f, 1.0f};
     CGFloat startRed, startGreen, startBlue, startAlpha;
@@ -1548,21 +1553,14 @@
         startRed, startGreen, startBlue, startAlpha,
         endRed, endGreen, endBlue, endAlpha
     };
-    result = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
+    gradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
     CGColorSpaceRelease(colorSpace);
-    
-    return result;
-}
-
-+ (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    UIGraphicsPushContext(context);
-    CGGradientRef gradient = [self makeGradientCGRef:startColor endColor:endColor];
     
     CGPoint startPoint = CGPointMake(CGRectGetMinX(r), r.origin.y);
     CGPoint endPoint = CGPointMake(startPoint.x, r.origin.y + r.size.height);
     
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGGradientRelease(gradient);
     UIGraphicsPopContext();
 }
 
@@ -1692,14 +1690,16 @@
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (self.isSocialRiverView) {
-            titleImage = [UIImage imageNamed:@"group_white.png"];
+        if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_global"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        } else if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_blurblogs"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
-            titleImage = [UIImage imageNamed:@"archive_white.png"];
+            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
-            titleImage = [UIImage imageNamed:@"clock_white.png"];
+            titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (self.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder_white.png"];
+            titleImage = [UIImage imageNamed:@"ak-icon-folder-open.png"];
         } else {
             titleImage = [Utilities getImage:feedIdStr];
         }

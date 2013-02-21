@@ -158,15 +158,22 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     
-    if (section == 0 || section == 1) {
-        folderImage = [UIImage imageNamed:@"group.png"];
+    if (section == 0) {
+        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if (section == 1) {
+        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if (section == 2) {
-        folderImage = [UIImage imageNamed:@"archive.png"];
+        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
@@ -181,9 +188,9 @@
         }
     } else {
         if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"folder_collapsed.png"];
+            folderImage = [UIImage imageNamed:@"g_icn_folder_rss"];
         } else {
-            folderImage = [UIImage imageNamed:@"folder_2.png"];
+            folderImage = [UIImage imageNamed:@"g_icn_folder"];
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         } else {
