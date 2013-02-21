@@ -180,7 +180,7 @@
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderImage = [UIImage imageNamed:@"clock.png"];
+        folderImage = [UIImage imageNamed:@"clock2.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {

@@ -1697,9 +1697,9 @@
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
-            titleImage = [UIImage imageNamed:@"clock.png"];
+            titleImage = [UIImage imageNamed:@"clock2.png"];
         } else if (self.isRiverView) {
-            titleImage = [UIImage imageNamed:@"ak-icon-folder-open.png"];
+            titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
         } else {
             titleImage = [Utilities getImage:feedIdStr];
         }

@@ -395,6 +395,7 @@
 		FF85BF8116D6AF43002D334D /* g_icn_focus.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7E16D6AF43002D334D /* g_icn_focus.png */; };
 		FF85BF8216D6AF43002D334D /* g_icn_hidden.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7F16D6AF43002D334D /* g_icn_hidden.png */; };
 		FF85BF8316D6AF43002D334D /* g_icn_unread.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF8016D6AF43002D334D /* g_icn_unread.png */; };
+		FF85BF8516D6C2B7002D334D /* clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF8416D6C2B7002D334D /* clock2.png */; };
 		FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
@@ -949,6 +950,7 @@
 		FF85BF7E16D6AF43002D334D /* g_icn_focus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_focus.png; sourceTree = "<group>"; };
 		FF85BF7F16D6AF43002D334D /* g_icn_hidden.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_hidden.png; sourceTree = "<group>"; };
 		FF85BF8016D6AF43002D334D /* g_icn_unread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_unread.png; sourceTree = "<group>"; };
+		FF85BF8416D6C2B7002D334D /* clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock2.png; sourceTree = "<group>"; };
 		FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "StoryPageControl~ipad.xib"; path = "Resources-iPad/Classes/StoryPageControl~ipad.xib"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
@@ -1223,6 +1225,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF85BF8416D6C2B7002D334D /* clock2.png */,
 				FF85BF7A16D6AD6F002D334D /* g_icn_folder_rss.png */,
 				FF85BF7B16D6AD6F002D334D /* g_icn_folder.png */,
 				FF85BF7616D6AB7E002D334D /* ak-icon-folder-closed.png */,
@@ -2268,6 +2271,7 @@
 				FF85BF8116D6AF43002D334D /* g_icn_focus.png in Resources */,
 				FF85BF8216D6AF43002D334D /* g_icn_hidden.png in Resources */,
 				FF85BF8316D6AF43002D334D /* g_icn_unread.png in Resources */,
+				FF85BF8516D6C2B7002D334D /* clock2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

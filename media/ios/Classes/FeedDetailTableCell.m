@@ -173,14 +173,14 @@ static UIFont *indicatorFont = nil;
     }
     CGContextSetLineWidth(context, 4.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 3.0f, 1.0f);
-    CGContextAddLineToPoint(context, 3.0f, self.frame.size.height - 1);
+    CGContextMoveToPoint(context, 2.0f, 1.0f);
+    CGContextAddLineToPoint(context, 2.0f, self.frame.size.height - 1);
     CGContextStrokePath(context);
 
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 7.0f, 1.0f);
-    CGContextAddLineToPoint(context, 7.0, self.frame.size.height - 1);
+    CGContextMoveToPoint(context, 6.0f, 1.0f);
+    CGContextAddLineToPoint(context, 6.0, self.frame.size.height - 1);
     CGContextStrokePath(context);
     
     // reset for borders
