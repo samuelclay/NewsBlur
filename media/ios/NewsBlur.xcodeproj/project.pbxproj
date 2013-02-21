@@ -382,6 +382,9 @@
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */; };
+		FF85BF6116D5A587002D334D /* nav_icn_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF5F16D5A587002D334D /* nav_icn_settings.png */; };
+		FF85BF6316D5A5A8002D334D /* nav_icn_add.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF6216D5A5A8002D334D /* nav_icn_add.png */; };
 		FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
@@ -923,6 +926,9 @@
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
 		FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataDecompressor.m; sourceTree = "<group>"; };
+		FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nav_icn_activity_hover.png; sourceTree = "<group>"; };
+		FF85BF5F16D5A587002D334D /* nav_icn_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nav_icn_settings.png; sourceTree = "<group>"; };
+		FF85BF6216D5A5A8002D334D /* nav_icn_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nav_icn_add.png; sourceTree = "<group>"; };
 		FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "StoryPageControl~ipad.xib"; path = "Resources-iPad/Classes/StoryPageControl~ipad.xib"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
@@ -1197,6 +1203,9 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF85BF6216D5A5A8002D334D /* nav_icn_add.png */,
+				FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */,
+				FF85BF5F16D5A587002D334D /* nav_icn_settings.png */,
 				FF4130AA162F3C2F00DDB6A7 /* archive_white.png */,
 				FF4130A8162F3BD300DDB6A7 /* clock_white.png */,
 				FF4130A4162F3AA900DDB6A7 /* clock.png */,
@@ -2216,6 +2225,9 @@
 				FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */,
 				FF67D3BB168A70630057A7DA /* trainer.css in Resources */,
 				FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */,
+				FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */,
+				FF85BF6116D5A587002D334D /* nav_icn_settings.png in Resources */,
+				FF85BF6316D5A5A8002D334D /* nav_icn_add.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

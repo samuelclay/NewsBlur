@@ -61,6 +61,8 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
 @synthesize inPullToRefresh_;
+@synthesize addBarButton;
+@synthesize settingsBarButton;
 
 #pragma mark -
 #pragma mark Globals
@@ -338,6 +340,20 @@ static const CGFloat kFolderTitleHeight = 28;
     self.navigationItem.leftBarButtonItem = userInfoBarButton;
     [self setUserAvatarLayout:orientation];
     
+    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    addButton.bounds = CGRectMake( 0, 0, addImage.size.width, addImage.size.height );
+    [addButton setImage:addImage forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
+    [addBarButton setCustomView:addButton];
+    
+    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    settingsButton.bounds = CGRectMake( 0, 0, settingsImage.size.width, settingsImage.size.height );
+    [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+    [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
+    [settingsBarButton setCustomView:settingsButton];
+    
     // adding settings button to right
 
 //    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
@@ -349,10 +365,10 @@ static const CGFloat kFolderTitleHeight = 28;
 //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
 //                                   initWithCustomView:settings];
     
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsPopover:)];
+    UIBarButtonItem *activityButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_activity_hover.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsPopover:)];
 
     
-    self.navigationItem.rightBarButtonItem = settingsButton;
+    self.navigationItem.rightBarButtonItem = activityButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -552,7 +568,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [appDelegate showAddSiteModal:sender];
 }
 
-- (void)showSettingsPopover:(id)sender {
+- (IBAction)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFeedMenuPopover:sender];
     } else {
@@ -570,8 +586,8 @@ static const CGFloat kFolderTitleHeight = 28;
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                       permittedArrowDirections:UIPopoverArrowDirectionUp
+        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
     }
 }

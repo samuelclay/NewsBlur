@@ -38,6 +38,8 @@ UIPopoverControllerDelegate> {
 	UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
     UIBarButtonItem * homeButton;
+    UIBarButtonItem * addBarButton;
+    UIBarButtonItem * settingsBarButton;
     UISegmentedControl * intelligenceControl;
     WEPopoverController *popoverController;
 	Class popoverClass;
@@ -49,6 +51,8 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
@@ -87,7 +91,7 @@ UIPopoverControllerDelegate> {
 - (void)refreshFeedList:(id)feedId;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)showUserProfile;
-- (void)showSettingsPopover:(id)sender;
+- (IBAction)showSettingsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
 - (IBAction)tapAddSite:(id)sender;
