@@ -1110,6 +1110,11 @@ background: transparent;
     padding: 0 4px 0 8px;
     line-height: 14px;
     margin: 2px 0 0;
+    
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
 }
 #story_titles .NB-feedbar .NB-feedbar-options:hover,
 #story_titles .NB-feedbar .NB-feedbar-options.NB-active {
@@ -1147,26 +1152,29 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
-    background-color: #909090;
-    color: #F0F0F0;
     cursor: pointer;
-    position: absolute;
-    right: 95px;
-    top: 2px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
-    margin: 3px 11px 2px;
+    margin: 2px 11px -2px;
     padding: 0px 4px 0;
-    text-transform: uppercase;
-    display: none;
-    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    display: inline-block;
+    background: transparent url('/media/embed/icons/circular/nav_icn_markread.png') no-repeat center center;    
+    background-size: 18px;
+    width: 26px;
+    height: 14px;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
 }
+#story_titles .NB-feedbar .NB-feedbar-mark-feed-read:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
 .NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     position: static;
     float: left;
@@ -1308,6 +1316,11 @@ background: transparent;
     padding: 0 8px;
     line-height: 14px;
     margin: 2px 12px 0;
+    
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
 }
 #story_titles .NB-story-title-indicator:hover {
     background-color: rgba(0, 0, 0, .1);
@@ -1348,6 +1361,10 @@ background: transparent;
   padding: 1px 3px 1px;
   margin: 0 4px 0 0;
   line-height: 8px;
+    -webkit-transition: opacity .12s ease-out;
+    -moz-transition: opacity .12s ease-out;
+    -o-transition: opacity .12s ease-out;
+    -ms-transition: opacity .12s ease-out;
 }
 
 .NB-intelligence-positive .NB-story-title.NB-story-neutral.NB-story-hidden-visible .NB-hidden-fade,
@@ -3556,36 +3573,42 @@ background: transparent;
 .NB-taskbar .NB-task-image {
     vertical-align: top;
     width: 18px;
-    height: 14px;
+    height: 15px;
     margin: 2px 0 0 0;
     display: inline-block;
-
-    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
-    filter: gray; /* IE6-9 */
-    -webkit-filter: grayscale(100%);
-}
-
-.NB-taskbar .NB-active .NB-task-image,
-.NB-taskbar.segmented-control-active .NB-task-image {
-    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
-    -webkit-filter: grayscale(0%);
 }
 
 .NB-taskbar .task_view_page .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/nav_story_orginal_active.png') no-repeat center center;
-    background-size: 18px 14px;
+    background: transparent url('/media/embed/icons/circular/nav_story_original.png') no-repeat center center;
+    background-size: 18px 15px;
+}
+.NB-taskbar .task_view_page.NB-active .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_original_active.png') no-repeat center center;
+    background-size: 18px 15px;
 }
 .NB-taskbar .task_view_feed .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_feed.png') no-repeat center center;
+    background-size: 18px 15px;
+}
+.NB-taskbar .task_view_feed.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_feed_active.png') no-repeat center center;
-    background-size: 18px 14px;
+    background-size: 18px 15px;
 }
 .NB-taskbar .task_view_story .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_story.png') no-repeat center center;
+    background-size: 18px 15px;
+}
+.NB-taskbar .task_view_story.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_story_active.png') no-repeat center center;
-    background-size: 18px 14px;
+    background-size: 18px 15px;
 }
 .NB-taskbar .task_view_text .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/nav_story_text.png') no-repeat center center;
+    background-size: 18px 15px;
+}
+.NB-taskbar .task_view_text.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_text_active.png') no-repeat center center;
-    background-size: 18px 14px;
+    background-size: 18px 15px;
 }
 .NB-taskbar .task_view_story.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/error.png');
@@ -3619,19 +3642,19 @@ background: transparent;
 }
 .NB-taskbar .NB-task-story-previous .NB-task-image {
     left: 12px;
-    width: 16px;
-    height: 16px;
-    margin-top: 1px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 0 0;
-    background-size: 16px;
+    width: 12px;
+    height: 12px;
+    margin-top: 2px;
+    background: transparent url('/media/embed/icons/circular/nav_prev.png') no-repeat 0 0;
+    background-size: 12px;
 }
 .NB-taskbar .NB-task-story-next .NB-task-image {
     left: 12px;
-    width: 16px;
-    height: 16px;
-    margin-top: 1px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 0 0;
-    background-size: 16px;
+    width: 12px;
+    height: 12px;
+    margin-top: 3px;
+    background: transparent url('/media/embed/icons/circular/nav_next.png') no-repeat 0 0;
+    background-size: 12px;
 }
 
 .NB-taskbar .NB-task-layout-split .NB-task-image {

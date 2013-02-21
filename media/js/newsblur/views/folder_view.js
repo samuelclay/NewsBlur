@@ -118,7 +118,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+                    <div class="NB-feedbar-mark-feed-read"></div>\
               <% } %>\
             </div>\
         <% } %>\

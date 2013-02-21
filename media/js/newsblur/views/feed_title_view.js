@@ -68,7 +68,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-                <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+                <div class="NB-feedbar-mark-feed-read"></div>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
