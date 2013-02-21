@@ -6,18 +6,26 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.Story;
+import com.newsblur.domain.ValueMultimap;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.MarkAllStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class AllStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
+	private APIManager apiManager;
 	private boolean stopLoading = false;
 
 	@Override
@@ -27,6 +35,7 @@ public class AllStoriesItemsList extends ItemsList {
 		setTitle(getResources().getString(R.string.all_stories));
 
 		feedIds = new ArrayList<String>();
+		apiManager = new APIManager(this);
 
 		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 
@@ -76,8 +85,37 @@ public class AllStoriesItemsList extends ItemsList {
 
 
 	@Override
-	public void markItemListAsRead() { }
+	public void markItemListAsRead() {
+		Cursor stories = getContentResolver().query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		ValueMultimap storiesToMarkAsRead = new ValueMultimap();
+		for (int i = 0; i < stories.getCount(); i++) {
+	      stories.moveToNext();
+		  Story story = Story.fromCursor(stories);
+		  storiesToMarkAsRead.put(story.feedId, story.id);
+		}
+		
+		new MarkAllStoriesAsReadTask(apiManager) {
+			@Override
+			protected void onPostExecute(Boolean result) {
+				// TODO does main view refresh?
+				if (result) {
+					setResult(RESULT_OK); 
+					Toast.makeText(AllStoriesItemsList.this, R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
+					finish();
+				} else {
+					Toast.makeText(AllStoriesItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+				}
+			}
+		}.execute(storiesToMarkAsRead);
+	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.allstories_itemslist, menu);
+		return true;
+	}
 
 	@Override
 	public void setNothingMoreToUpdate() {
