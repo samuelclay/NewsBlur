@@ -258,7 +258,7 @@
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 animatePaneSizing:      true,
                 north__paneSelector:    ".left-north",
-                north__size:            56,
+                north__size:            37,
                 north__resizeable:      false,
                 north__spacing_open:    0,
                 center__paneSelector:   ".left-center",

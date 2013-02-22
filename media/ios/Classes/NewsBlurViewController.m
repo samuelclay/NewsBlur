@@ -344,34 +344,27 @@ static const CGFloat kFolderTitleHeight = 28;
     
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
     UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.bounds = CGRectMake( 0, 0, addImage.size.width, addImage.size.height );
+    addButton.bounds = CGRectMake( 0, 0, addImage.size.width, addImage.size.height);
     [addButton setImage:addImage forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
     [addBarButton setCustomView:addButton];
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    settingsButton.bounds = CGRectMake( 0, 0, settingsImage.size.width, settingsImage.size.height );
+    settingsButton.bounds = CGRectMake( 0, 0, settingsImage.size.width, settingsImage.size.height);
     [settingsButton setImage:settingsImage forState:UIControlStateNormal];
     [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    [settingsBarButton setCustomView:settingsButton];
+    [settingsBarButton setCustomView:settingsButton];    
     
-    // adding settings button to right
-
-//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-//    settings.bounds = CGRectMake(0, 0, 32, 32);
-//    [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-//    [settings setImage:settingsImage forState:UIControlStateNormal];
-//    
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                   initWithCustomView:settings];
-    
-    UIBarButtonItem *activityButton = [[UIBarButtonItem alloc]
-                                       initWithImage:[UIImage imageNamed:@"nav_icn_activity_hover.png"]
-                                       style:UIBarButtonItemStylePlain
-                                       target:self action:@selector(showInteractionsPopover:)];
-    self.navigationItem.rightBarButtonItem = activityButton;
+    UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
+    UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    activityButton.bounds = CGRectMake( 0, 0, activityImage.size.width / 2, activityImage.size.height / 2);
+    [activityButton setImage:activityImage forState:UIControlStateNormal];
+    [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
+    activityButton.contentEdgeInsets = UIEdgeInsetsMake(0, -10, 0, 10);
+    UIBarButtonItem *activityBarButton = [[UIBarButtonItem alloc]
+                                          initWithCustomView:activityButton];
+    self.navigationItem.rightBarButtonItem = activityBarButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -821,7 +814,7 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    button.backgroundColor = UIColorFromRGB(0xB97B0A);
+    button.backgroundColor = UIColorFromRGB(0x214607);
 }
 
 - (IBAction)sectionUntapped:(UIButton *)button {

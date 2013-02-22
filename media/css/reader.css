@@ -430,6 +430,7 @@ body {
     border-bottom-color: #E6ECE8;    
 }
 .NB-feedlists .NB-socialfeeds {
+    display: none;
     border-bottom: 1px solid #B7BBAA;
 }
 .NB-feedlists .NB-socialfeeds .feed .feed_title {
@@ -3163,20 +3164,12 @@ background: transparent;
 }
 
 .NB-feeds-header-user {
-    font-size: 13px;
+    font-size: 12px;
     padding: 0 56px 0 32px;
     height: 36px;
 }
 
-.NB-feeds-header-dashboard {
-    height: 15px;
-    font-size: 11px;
-    padding: 0 0 2px 0;
-    border-top: 1px solid #FFF;
-}
-
-.NB-feeds-header-user,
-.NB-feeds-header-dashboard {
+.NB-feeds-header-user {
     cursor: default;
     color: #505050;
     overflow: hidden;
@@ -3248,23 +3241,15 @@ background: transparent;
     opacity: .7;
 }
 .NB-feeds-header-user .NB-feeds-header-user-name {
-    padding: 10px 0 0 6px;
+    padding: 4px 0 0 6px;
     font-weight: bold;
     overflow: hidden;
-    height: 24px;
-}
-.NB-feeds-header-dashboard .NB-feeds-header-right {
-  float: right;
-}
-.NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-right {
-    display: none;
+    height: 16px;
 }
 
-.NB-feeds-header-dashboard .NB-feeds-header-left {
-  float: left;
-  padding-top: 1px;
+.NB-feeds-header-dashboard {
+    font-size: 10px;
 }
-
 .NB-feeds-header-dashboard .NB-feeds-header-count {
   padding: 0 0 0 16px;
   text-align: left;

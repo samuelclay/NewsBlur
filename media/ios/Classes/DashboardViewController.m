@@ -110,6 +110,9 @@
 # pragma mark Interactions
 
 - (void)refreshInteractions {
+    appDelegate.userInteractionsArray = nil;
+    [self.interactionsModule.interactionsTable reloadData];
+    [self.interactionsModule.interactionsTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     [self.interactionsModule fetchInteractionsDetail:1];    
 }
 
@@ -117,6 +120,9 @@
 # pragma mark Activities
 
 - (void)refreshActivity {
+    appDelegate.userActivitiesArray = nil;
+    [self.activitiesModule.activitiesTable reloadData];
+    [self.activitiesModule.activitiesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     [self.activitiesModule fetchActivitiesDetail:1];    
 }
 

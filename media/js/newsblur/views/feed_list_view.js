@@ -26,17 +26,18 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
+            this.update_dashboard_count();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('reset', _.bind(function() {
             this.make_social_feeds();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('change:selected', this.selected, this);
         NEWSBLUR.assets.feeds.bind('change:selected', this.selected, this);
-
         if (!NEWSBLUR.assets.folders.size()) {
             NEWSBLUR.assets.load_feeds();
         }
-
+        NEWSBLUR.assets.feeds.bind('add', this.update_dashboard_count, this);
+        NEWSBLUR.assets.feeds.bind('remove', this.update_dashboard_count, this);
     },
     
     make_feeds: function(options) {
@@ -183,6 +184,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
         }
+    },
+    
+    update_dashboard_count: function() {
+        $(".NB-module-stats-count-number-sites").html(NEWSBLUR.assets.feeds.size());
     },
     
     // ===========

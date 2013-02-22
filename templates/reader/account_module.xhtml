@@ -18,12 +18,12 @@
         </h3>
         <div class="NB-module-stats-counts">
             <div class="NB-module-stats-count">
-                <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
-                <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
+                <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
+                <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>
             </div>
             <div class="NB-module-stats-count">
-                <div class="NB-module-stats-count-number">{{ social_profile.following_count|commify }}</div>
-                <div class="NB-module-stats-count-description">Following</div>
+                <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
+                <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
             </div>
             <div class="NB-module-stats-count">
                 <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>

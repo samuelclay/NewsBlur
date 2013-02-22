@@ -71,12 +71,12 @@ def render_getting_started(context):
 @register.inclusion_tag('reader/account_module.xhtml', takes_context=True)
 def render_account_module(context):
     user    = get_user(context['user'])
-    profile = MSocialProfile.profile(user.pk)
 
     return {
         'user': user,
         'user_profile': user.profile,
-        'social_profile': profile,
+        'social_profile': context['social_profile'],
+        'feed_count': context['feed_count'],
     }
 
 @register.filter
