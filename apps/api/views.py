@@ -70,14 +70,14 @@ def add_site_load_script(request, token):
     usf = None
     profile = None;
     user_profile = None;
-    def image_base64(image_name, path='icons/silk/'):
+    def image_base64(image_name, path='icons/circular/'):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
         return base64.b64encode(image_file.read())
     
-    accept_image     = image_base64('accept.png')
-    error_image      = image_base64('error.png')
-    new_folder_image = image_base64('arrow_down_right.png')
-    add_image        = image_base64('add.png')
+    accept_image     = image_base64('newuser_icn_setup.png')
+    error_image      = image_base64('newuser_icn_sharewith_active.png')
+    new_folder_image = image_base64('g_icn_arrow_right.png')
+    add_image        = image_base64('g_icn_expand_hover.png')
 
     try:
         profiles = Profile.objects.filter(secret_token=token)

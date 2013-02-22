@@ -9,6 +9,7 @@
 #import "InteractionsModule.h"
 #import "NewsBlurAppDelegate.h"
 #import "InteractionCell.h"
+#import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
@@ -177,7 +178,12 @@
         return MINIMUM_INTERACTION_HEIGHT;
     }
     
-    InteractionCell *interactionCell = [[InteractionCell alloc] init];
+    InteractionCell *interactionCell;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        interactionCell = [[InteractionCell alloc] init];
+    } else {
+        interactionCell = [[SmallInteractionCell alloc] init];
+    }
     int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
@@ -199,10 +205,14 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    InteractionCell *cell = [tableView 
+    InteractionCell *cell = [tableView
                              dequeueReusableCellWithIdentifier:@"InteractionCell"];
     if (cell == nil) {
-        cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        } else {
+            cell = [[SmallInteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        }
     }
     
     if (indexPath.row >= [appDelegate.userInteractionsArray count]) {

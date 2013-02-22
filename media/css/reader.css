@@ -5367,18 +5367,11 @@ form.opml_import_form input {
   .NB-module-recommended .NB-javascript.NB-recommended-intelligence {
     opacity: .2;
   }
-  .NB-module-recommended .NB-recommended-intelligence {
-    margin: 2px 8px 0 0;
-    float: right;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    background: transparent url("/media/embed/icons/circular/train.png") no-repeat center center;
-    background-size: 16px;
-  }
   .NB-module-recommended .NB-recommended-statistics {
     margin: 2px 0 0 0;
-    float: right;
+    position: absolute;
+    left: -26px;
+    top: 3px;
     width: 16px;
     height: 16px;
     cursor: pointer;
@@ -5408,6 +5401,7 @@ form.opml_import_form input {
     margin: 8px 0 0 0;
   }
   .NB-module-recommended .NB-recommended-subscribers {
+      position: relative;
     float: right;
     text-transform: uppercase;
     font-size: 11px;
@@ -5421,7 +5415,8 @@ form.opml_import_form input {
   }
   .NB-module-recommended .NB-recommended-added {
     padding: 6px 0 0 20px;
-    background: transparent url('/media/embed/icons/silk/accept.png') no-repeat 0 6px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat 0 2px;
+    background-size: 18px;
     font-size: 12px;
     font-weight: bold;
     color: #123B00;

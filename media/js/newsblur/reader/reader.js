@@ -3135,8 +3135,8 @@
                         left = toplevel ? 2 : -22;
                         top = toplevel ? 1 : 3;
                     } else if (type == 'socialfeed') {
-                        left = 1;
-                        top = 1;
+                        left = 2;
+                        top = 2;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -21;
                         top = toplevel ? 3 : 3;
@@ -3165,8 +3165,8 @@
                         top = toplevel ? 20 : 19;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'socialfeed') {
-                        left = toplevel ? 2 : -18;
-                        top = toplevel ? 21 : 21;
+                        left = toplevel ? 0 : -18;
+                        top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -22;

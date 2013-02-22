@@ -49,6 +49,7 @@
 @synthesize pageFinished;
 @synthesize intelligenceControl;
 @synthesize actionSheet_;
+@synthesize finishedAnimatingIn;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -83,6 +84,7 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     
+    self.finishedAnimatingIn = NO;
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
             
@@ -152,7 +154,7 @@
         [self.storyTitlesTable reloadData];
         int location = appDelegate.locationOfActiveStory;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
-        if (indexPath) {
+        if (indexPath && location >= 0) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
         }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
@@ -165,6 +167,9 @@
         [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
+    
+    self.finishedAnimatingIn = YES;
+    [self testForTryFeed];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -530,8 +535,21 @@
     }
         
     self.pageFetching = NO;
+        
+    if (self.finishedAnimatingIn) {
+        [self testForTryFeed];
+    }
     
-    // test for tryfeed
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController syncNextPreviousButtons];
+    }
+    
+    [self performSelector:@selector(checkScroll)
+               withObject:nil
+               afterDelay:5.2];
+}
+
+- (void)testForTryFeed {
     if (appDelegate.inFindingStoryMode && appDelegate.tryFeedStoryId) {
         for (int i = 0; i < appDelegate.activeFeedStories.count; i++) {
             NSString *storyIdStr = [[appDelegate.activeFeedStories objectAtIndex:i] objectForKey:@"id"];
@@ -545,26 +563,18 @@
                 }
                 int locationOfStoryId = [appDelegate locationOfStoryId:storyIdStr];
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
-
+                
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
                 
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
                 
                 // found the story, reset the two flags.
-//                appDelegate.tryFeedStoryId = nil;
+                //                appDelegate.tryFeedStoryId = nil;
                 appDelegate.inFindingStoryMode = NO;
             }
         }
     }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController syncNextPreviousButtons];
-    }
-    
-    [self performSelector:@selector(checkScroll)
-               withObject:nil
-               afterDelay:0.2];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

@@ -27,6 +27,7 @@
     int feedPage;
     BOOL pageFetching;
     BOOL pageFinished;
+    BOOL finishedAnimatingIn;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
@@ -50,6 +51,7 @@
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
+@property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;
@@ -57,6 +59,7 @@
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
+- (void)testForTryFeed;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;

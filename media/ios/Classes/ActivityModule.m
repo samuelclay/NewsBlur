@@ -261,23 +261,38 @@
             [appDelegate showUserProfileModal:cell];
         } else if ([category isEqualToString:@"comment_reply"] ||
                    [category isEqualToString:@"comment_like"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@",
+                                      [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:YES
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:YES];
             appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"sharedstory"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [appDelegate.dictUserProfile objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@",
+                                      [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:YES
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:YES];
             appDelegate.tryFeedCategory = category;
-
         } else if ([category isEqualToString:@"feedsub"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [activity objectForKey:@"feed_id"]];
             NSString *contentIdStr = nil;
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"] showFindingStory:NO];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:NO
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:NO];
             appDelegate.tryFeedCategory = category;
-
-        } 
+        }
 
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];

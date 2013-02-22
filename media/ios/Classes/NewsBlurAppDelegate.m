@@ -485,6 +485,9 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
+        }
     }
     
     NSDictionary *feed = nil;
