@@ -54,7 +54,6 @@
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */; };
 		437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
-		437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437F974B15ACA0ED0007136B /* DashboardViewController.xib */; };
 		437F976F15AE21290007136B /* ActivityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F976E15AE21280007136B /* ActivityModule.m */; };
 		437F977215AE70E30007136B /* InteractionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F977115AE70E30007136B /* InteractionsModule.m */; };
 		43821AD315D8703F0034A4EF /* 258-checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 43821AD115D8703F0034A4EF /* 258-checkmark.png */; };
@@ -288,6 +287,8 @@
 		78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F211CA94900055C312 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F411CA94900055C312 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */; };
+		FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */; };
 		FF2D8B331487250200057B80 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8B321487250200057B80 /* Security.framework */; };
 		FF2D8B351487250C00057B80 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8B341487250C00057B80 /* MessageUI.framework */; };
 		FF2D8C191487EFF000057B80 /* DefaultSHKConfigurator.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8B4B1487EFF000057B80 /* DefaultSHKConfigurator.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -464,7 +465,6 @@
 		437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "ShareViewController~ipad.xib"; path = "Classes/ShareViewController~ipad.xib"; sourceTree = "<group>"; };
 		437F974915ACA0ED0007136B /* DashboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashboardViewController.h; sourceTree = "<group>"; };
 		437F974A15ACA0ED0007136B /* DashboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashboardViewController.m; sourceTree = "<group>"; };
-		437F974B15ACA0ED0007136B /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DashboardViewController.xib; path = Classes/DashboardViewController.xib; sourceTree = "<group>"; };
 		437F976D15AE21280007136B /* ActivityModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityModule.h; sourceTree = "<group>"; };
 		437F976E15AE21280007136B /* ActivityModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ActivityModule.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		437F977015AE70E30007136B /* InteractionsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractionsModule.h; sourceTree = "<group>"; };
@@ -771,6 +771,8 @@
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-iPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardViewController.xib; sourceTree = "<group>"; };
+		FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "DashboardViewController~ipad.xib"; path = "Resources-iPad/Classes/DashboardViewController~ipad.xib"; sourceTree = "<group>"; };
 		FF2D8B321487250200057B80 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		FF2D8B341487250C00057B80 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		FF2D8B4A1487EFF000057B80 /* DefaultSHKConfigurator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultSHKConfigurator.h; sourceTree = "<group>"; };
@@ -1525,6 +1527,7 @@
 		43B8F017156603170008733D /* Resources-iPhone */ = {
 			isa = PBXGroup;
 			children = (
+				FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */,
 				43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */,
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
@@ -1549,9 +1552,9 @@
 			isa = PBXGroup;
 			children = (
 				433323B5158901A40025064D /* Images */,
-				437F974B15ACA0ED0007136B /* DashboardViewController.xib */,
 				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
+				FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
 				FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */,
@@ -2062,7 +2065,6 @@
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
-				437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */,
 				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
 				43A4C44215B00A26008787B5 /* 06-arrow-south.png in Resources */,
 				43A4C44315B00A26008787B5 /* 06-arrow-south@2x.png in Resources */,
@@ -2272,6 +2274,8 @@
 				FF85BF8216D6AF43002D334D /* g_icn_hidden.png in Resources */,
 				FF85BF8316D6AF43002D334D /* g_icn_unread.png in Resources */,
 				FF85BF8516D6C2B7002D334D /* clock2.png in Resources */,
+				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
+				FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

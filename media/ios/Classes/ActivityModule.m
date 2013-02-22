@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "ActivityCell.h"
+#import "SmallActivityCell.h"
 
 @implementation ActivityModule
 
@@ -174,7 +175,12 @@
         return MINIMUM_ACTIVITY_HEIGHT;
     }
     
-    ActivityCell *activityCell = [[ActivityCell alloc] init];
+    id activityCell;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        activityCell = [[ActivityCell alloc] init];
+    } else {
+        activityCell = [[SmallActivityCell alloc] init];
+    }
     
     NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
     [userProfile setValue:@"You" forKey:@"username"];
@@ -189,13 +195,19 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ActivityCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:@"ActivityCell"];
+    ActivityCell *cell = [tableView
+                          dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
-        cell = [[ActivityCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:@"ActivityCell"];
-    } 
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cell = [[ActivityCell alloc]
+                     initWithStyle:UITableViewCellStyleDefault 
+                     reuseIdentifier:@"ActivityCell"];
+        } else {
+            cell = [[SmallActivityCell alloc]
+                    initWithStyle:UITableViewCellStyleDefault
+                    reuseIdentifier:@"ActivityCell"];
+        }
+    }
     
     if (indexPath.row >= [appDelegate.userActivitiesArray count]) {
         // add in loading cell

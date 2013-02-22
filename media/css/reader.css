@@ -652,36 +652,44 @@ body {
     top: -1px;
     width: 20px;
     height: 22px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 3px 4px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 4px 6px;
     background-size: 8px;
 }
 .NB-feedlist .folder_title .NB-feedlist-manage-icon {
-    background-position: 3px 5px;
+    background-position: 4px 6px;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon:hover,
 .NB-feedlist .folder_title .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 3px 4px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 4px 6px;
     background-size: 8px;
 }
 .NB-feedlist .folder_title .NB-feedlist-manage-icon:hover {
-    background-position: 3px 5px;
+    background-position: 4px 5px;
 }
 .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
 .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 3px 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 8px;
     background-size: 8px;
 }
-
+.NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+    background-position: 6px 8px;
+}
+.NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+    background-position: 4px 8px;
+}
+.NB-feedlist .feed.NB-toplevel.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+    background-position: 5px 7px;    
+}
 .NB-feedlist .feed.NB-toplevel .NB-feedlist-manage-icon,
 .NB-feedlist .folder_title.NB-toplevel .NB-feedlist-manage-icon {
     left: 0;
     opacity: 1;
     display: none;
-    background-position: 5px 4px;
+    background-position: 6px 7px;
 }
 .NB-feedlist .folder_title.NB-toplevel .NB-feedlist-manage-icon {
-    background-position: 5px 5px;
+    background-position: 6px 8px;
 }
 .NB-feedlist .feed:hover .NB-feedlist-manage-icon,
 .NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
@@ -1127,7 +1135,7 @@ background: transparent;
     float: right;
     width: 16px;
     height: 12px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 0 -1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 4px 2px;
     background-size: 8px;
     margin: 0 0 0 4px;
 }
@@ -1605,7 +1613,7 @@ background: transparent;
     top: 2px;
     width: 28px;
     height: 22px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 10px 2px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 13px 6px;
     background-size: 8px;
 }
 
@@ -1614,12 +1622,12 @@ background: transparent;
 }
 
 #story_titles .NB-story-title:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 10px 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
 #story_titles .NB-story-title.NB-hover-inverse:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 10px 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
@@ -2042,7 +2050,7 @@ background: transparent;
 .NB-feed-story .NB-feed-story-sentiment {
     position: absolute;
     top: 1px;
-    left: -22px;
+    left: -19px;
     width: 16px;
     height: 16px;
 }
@@ -2080,7 +2088,7 @@ background: transparent;
 }
 
 .NB-feed-story .NB-feed-story-manage-icon {
-    background: url("/media/embed/icons/circular/g_icn_arrow_right.png") no-repeat scroll 7px 2px transparent;
+    background: url("/media/embed/icons/circular/g_icn_arrow_right.png") no-repeat scroll 13px 6px transparent;
     background-size: 8px;
     display: none;
     height: 22px;
@@ -2094,12 +2102,12 @@ background: transparent;
 }
 
 .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 7px 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
 .NB-feed-story.NB-hover-inverse .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 7px 1px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 13px 6px;
     background-size: 8px;
 }
 
@@ -5469,7 +5477,7 @@ form.opml_import_form input {
 .NB-menu-manage-container .NB-menu-manage-arrow {
   width: 19px;
   height: 20px;
-  background: #F0FFF0 url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 2px 2px;
+  background: #F0FFF0 url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 5px 6px;
     background-size: 8px;
     border-top: 1px solid #8ABCBE;
     border-left: 1px solid #8ABCBE;

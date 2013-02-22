@@ -150,7 +150,7 @@
         appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }
     
-
+    
     [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
 

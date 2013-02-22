@@ -3132,17 +3132,17 @@
                 if (inverse) {
                     var $align = $item;
                     if (type == 'feed') {
-                        left = toplevel ? 2 : -20;
-                        top = toplevel ? 1 : 1;
+                        left = toplevel ? 2 : -22;
+                        top = toplevel ? 1 : 3;
                     } else if (type == 'socialfeed') {
                         left = 1;
                         top = 1;
                     } else if (type == 'folder') {
-                        left = toplevel ? 0 : -20;
-                        top = toplevel ? 1 : 1;
+                        left = toplevel ? 0 : -21;
+                        top = toplevel ? 3 : 3;
                     } else if (type == 'story') {
-                        left = 4;
-                        top = 2;
+                        left = 7;
+                        top = 1;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
                             $align = $('.NB-storytitles-sentiment', $item);
@@ -3161,19 +3161,19 @@
                 } else {
                     var $align = $item;
                     if (type == 'feed') {
-                        left = toplevel ? 2 : 0;
-                        top = toplevel ? 21 : 21;
+                        left = toplevel ? 0 : -2;
+                        top = toplevel ? 20 : 19;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'socialfeed') {
                         left = toplevel ? 2 : -18;
                         top = toplevel ? 21 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
-                        left = toplevel ? 2 : -20;
-                        top = toplevel ? 22 : 22;
+                        left = toplevel ? 0 : -22;
+                        top = toplevel ? 21 : 18;
                     } else if (type == 'story') {
-                        left = 4;
-                        top = 18;
+                        left = 7;
+                        top = 19;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
                             $align = $('.NB-storytitles-sentiment', $item);

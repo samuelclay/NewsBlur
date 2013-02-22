@@ -582,7 +582,7 @@ static NSDictionary *sharersDictionary = nil;
 
 + (id)allocWithZone:(NSZone *)zone
 {	
-    return [[self currentHelper] retain];	
+    return [[self currentHelper] retain];
 }
 
 - (id)copyWithZone:(NSZone *)zone

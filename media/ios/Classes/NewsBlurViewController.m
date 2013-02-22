@@ -10,6 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
 #import "DashboardViewController.h"
+#import "InteractionsModule.h"
+#import "ActivityModule.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
@@ -365,9 +367,10 @@ static const CGFloat kFolderTitleHeight = 28;
 //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
 //                                   initWithCustomView:settings];
     
-    UIBarButtonItem *activityButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_activity_hover.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsPopover:)];
-
-    
+    UIBarButtonItem *activityButton = [[UIBarButtonItem alloc]
+                                       initWithImage:[UIImage imageNamed:@"nav_icn_activity_hover.png"]
+                                       style:UIBarButtonItemStylePlain
+                                       target:self action:@selector(showInteractionsPopover:)];
     self.navigationItem.rightBarButtonItem = activityButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -591,6 +594,30 @@ static const CGFloat kFolderTitleHeight = 28;
                                                        animated:YES];
     }
 }
+
+- (IBAction)showInteractionsPopover:(id)sender {    
+    if (self.popoverController == nil) {
+        self.popoverController = [[WEPopoverController alloc]
+                                  initWithContentViewController:appDelegate.dashboardViewController];
+        
+        self.popoverController.delegate = self;
+    } else {
+        [self.popoverController dismissPopoverAnimated:YES];
+        self.popoverController = nil;
+    }
+    
+    if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+        [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+    }
+    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 20, self.view.frame.size.height - 60)];
+    [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                                   permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                   animated:YES];
+    
+    [appDelegate.dashboardViewController refreshInteractions];
+    [appDelegate.dashboardViewController refreshActivity];
+}
+
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 2) {

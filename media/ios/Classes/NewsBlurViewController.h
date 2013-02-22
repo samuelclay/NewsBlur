@@ -92,6 +92,7 @@ UIPopoverControllerDelegate> {
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)showUserProfile;
 - (IBAction)showSettingsPopover:(id)sender;
+- (IBAction)showInteractionsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
 - (IBAction)tapAddSite:(id)sender;
