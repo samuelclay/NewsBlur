@@ -119,6 +119,7 @@
             });
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
             NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
+            NEWSBLUR.app.dashboard_search = new NEWSBLUR.Views.DashboardSearch();
             
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();

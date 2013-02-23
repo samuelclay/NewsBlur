@@ -161,6 +161,8 @@ class Feed(models.Model):
         if not self.has_page:
             feed['disabled_page'] = True
         if full:
+            feed['average_stories_per_month'] = self.average_stories_per_month
+            feed['tagline'] = self.data.feed_tagline
             feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
             feed['feed_authors'] = json.decode(self.data.popular_authors) if self.data.popular_authors else []
 

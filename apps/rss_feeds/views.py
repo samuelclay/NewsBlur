@@ -70,8 +70,9 @@ def load_feed_favicon(request, feed_id):
 
 @json.json_view
 def feed_autocomplete(request):
-    query = request.GET.get('term')
+    query = request.GET.get('term') or request.GET.get('query')
     version = int(request.GET.get('v', 1))
+    format = request.GET.get('format', 'autocomplete')
     
     if not query:
         return dict(code=-1, message="Specify a search 'term'.")
@@ -93,13 +94,16 @@ def feed_autocomplete(request):
                 'num_subscribers'
             ).select_related("data").order_by('-num_subscribers')[:5]
     
-    feeds = [{
-        'id': feed.pk,
-        'value': feed.feed_address,
-        'label': feed.feed_title,
-        'tagline': feed.data and feed.data.feed_tagline,
-        'num_subscribers': feed.num_subscribers,
-    } for feed in feeds]
+    if format == 'autocomplete':
+        feeds = [{
+            'id': feed.pk,
+            'value': feed.feed_address,
+            'label': feed.feed_title,
+            'tagline': feed.data and feed.data.feed_tagline,
+            'num_subscribers': feed.num_subscribers,
+        } for feed in feeds]
+    else:
+        feeds = [feed.canonical(full=True) for feed in feeds]
     
     feed_ids = [f['id'] for f in feeds]
     feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))

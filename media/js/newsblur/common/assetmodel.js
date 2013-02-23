@@ -500,7 +500,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             callback && callback();
         }, this);
         
-        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
+        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {
+            request_type: 'GET'
+        });
     },
     
     fetch_starred_stories: function(page, callback, error_callback, first_load) {
@@ -1278,6 +1280,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.add_user_profiles(data.profiles);
             callback(data);
         }, this), callback, {
+            request_type: 'GET'
+        });
+    },
+    
+    search_for_feeds: function(query, callback) {
+        this.make_request('/rss_feeds/feed_autocomplete', {
+            'query': query,
+            'format': 'full',
+            'v': 2
+        }, callback, callback, {
+            ajax_group: 'feed',
             request_type: 'GET'
         });
     },

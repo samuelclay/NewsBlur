@@ -1470,7 +1470,7 @@ background: transparent;
 }
 
 #story_titles .NB-story-title.NB-story-negative .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 13px 6px;
     background-size: 8px;
 }
 
@@ -2070,7 +2070,7 @@ background: transparent;
 }
 
 .NB-feed-story.NB-story-negative .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 4px 4px;
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 4px 4px;
     background-size: 8px;
 }
 .NB-feed-story.read .NB-feed-story-sentiment {
@@ -3259,7 +3259,7 @@ background: transparent;
     color: #B0B0B0;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-negative {
-    background: transparent url('/media/embed/icons/circular/g_icn_negative.png') no-repeat 6px 3px;
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 6px 3px;
     display: none;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-neutral {
@@ -3644,7 +3644,7 @@ background: transparent;
     margin-top: 5px;
 }
 .NB-taskbar .NB-task-story-next-negative .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0; 
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 0 0; 
     background-size: 8px;
     width: 8px;
     height: 8px;
@@ -4154,17 +4154,20 @@ form.opml_import_form input {
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-negative {
     right: 94px;
-    background: transparent url(/media/embed/icons/silk/bullet_red.png) no-repeat 0 0;
+    background: transparent url(/media/embed/icons/circular/g_icn_hidden.png) no-repeat 0 0;
+    background-size: 8px;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-neutral {
     right: 45px;
     background: transparent url(/media/embed/icons/circular/g_icn_unread.png) no-repeat 0 0;
+    background-size: 8px;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-positive {
     right: -4px;
     background: transparent url(/media/embed/icons/circular/g_icn_focus.png) no-repeat 0 0;
+    background-size: 8px;
 }
 
 .NB-intelligence-slider {
@@ -9033,7 +9036,7 @@ form.opml_import_form input {
 }
 .NB-profile-badge table {
     clear: both;
-    padding: 12px 12px 12px 12px;
+    padding: 12px;
     position: relative;
     font-size: 13px;
     line-height: 17px;
@@ -9089,15 +9092,21 @@ form.opml_import_form input {
     padding: 4px 0 0 12px;
 }
 .NB-profile-badge .NB-profile-badge-website {
+    display: none;
     float: left;
     padding-left: 12px;
     font-size: 11px;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-website {
     padding: 4px 0 0 12px;
+    display: block;
 }
 .NB-profile-badge .NB-profile-badge-bio {
     clear: left;
+    padding: 2px 0;
+    font-size: 11px;
+    color: #878787;
+    line-height: 17px;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-bio {
     font-size: 15px;
@@ -9138,7 +9147,8 @@ form.opml_import_form input {
     border-color: #C0C0C0;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-self,
-.NB-profile-badge-actions .NB-modal-submit-button {
+.NB-profile-badge-actions .NB-modal-submit-button,
+.NB-badge-actions .NB-modal-submit-button {
     width: 90px;
     text-align: center;
     text-transform: uppercase;
@@ -9147,6 +9157,7 @@ form.opml_import_form input {
     float: right;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-preview,
+.NB-badge-actions .NB-badge-action-add,
 .NB-profile-badge-actions .NB-profile-badge-action-ignore {
     color: #404040;
     line-height: 1;
@@ -9768,4 +9779,139 @@ form.opml_import_form input {
     background: -ms-linear-gradient(rgba(16, 16, 28, 0.01),rgba(16, 16, 28, 0.3) 40%,rgba(16, 16, 28, 0.3));
     background: -o-linear-gradient(rgba(16, 16, 28, 0.01),rgba(16, 16, 28, 0.3) 40%,rgba(16, 16, 28, 0.3));
     background: linear-gradient(rgba(16, 16, 28, 0.01),rgba(16, 16, 28, 0.3) 40%,rgba(16, 16, 28, 0.3));
+}
+
+/* ================= */
+/* = Search Module = */
+/* ================= */
+
+.NB-module-search .NB-module-search-sites {
+    float: left;
+}
+.NB-module-search .NB-module-search-people {
+    float: right;
+}
+.NB-module-search .NB-module-search-input {
+    overflow: hidden;
+    padding: 12px;
+    position: relative;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-module-search .NB-module-search-input.NB-active .NB-search-close {
+    display: block;
+    top: 24px;
+    right: 16px;
+}
+.NB-module-search .NB-module-search-input.NB-active .NB-search-close {
+    
+}
+.NB-module-search-input input {
+    width: 190px;
+    float: left;
+    font-size: 13px;
+    padding: 4px 20px 4px 6px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-module-search .NB-module-search-results {
+    padding: 12px;
+}
+
+.NB-module-search-input.NB-active input {
+    background: white url('/media/embed/reader/clos.gif') no-repeat right 4px;
+}
+.NB-module-search-input input.NB-active {
+    background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 4px;
+}
+.NB-module-search-input label img {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin: 7px 6px 0 0;
+}
+
+.NB-feed-badge {
+    padding: 12px 0;
+    position: relative;
+    font-size: 13px;
+    background-color: white;
+    clear: both;
+    overflow: hidden;
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-feed-badge:last-child {
+    border-bottom: none;
+}
+
+.NB-feed-badge .NB-feed-badge-title {
+}
+.NB-feed-badge .NB-feed-badge-title img {
+    float: left;
+    margin: 0 4px 0 0;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-feed-badge .NB-feed-badge-tagline {
+    padding: 6px 0;
+    font-size: 11px;
+    color: #878787;
+    line-height: 17px;
+}
+.NB-feed-badge .NB-feed-badge-stats {
+    float: left;
+    font-size: 11px;
+}
+.NB-feed-badge .NB-feed-badge-stats b {
+    padding-right: 4px;
+}
+.NB-feed-badge .NB-feed-badge-stats .NB-icon {
+    vertical-align: middle;
+    display: inline;
+}
+.NB-feed-badge .NB-icon-stats {
+    margin: 2px 0 0 0;
+    position: absolute;
+    left: -26px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: transparent url("/media/embed/icons/circular/menu_icn_stats.png") no-repeat center center;
+    background-size: 16px;
+}
+.NB-feed-badge .NB-feed-badge-stats {
+    position: relative;
+    float: right;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #808080;
+    margin: 0 0 0 0;
+}
+.NB-feed-badge .NB-modal-submit-button {
+    float: left;
+    margin-left: 0 !important;
+    margin-right: 8px !important;
+}
+.NB-feed-badge .NB-added {
+    padding: 6px 0 0 20px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat 0 2px;
+    background-size: 18px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #123B00;
+    overflow: hidden;
+}
+.NB-feed-badge .NB-subscribed {
+    padding: 6px 0 0 20px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat 0 2px;
+    background-size: 18px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #123B00;
+    overflow: hidden;
 }

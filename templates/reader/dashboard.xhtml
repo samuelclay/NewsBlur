@@ -48,6 +48,26 @@
         {% if user.is_staff and unmoderated_feeds %}
             {% render_recommended_feed unmoderated_feeds 1 %}
         {% endif %}
+        
+        <div class="NB-module-search NB-module">
+            <h5 class="NB-module-header">
+                Search Sites and People
+            </h5>
+            
+            <div class="NB-module-search-container">
+                <div class="NB-module-search-input NB-module-search-sites">
+                    <div class="NB-search-close"></div>
+                    <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
+                    <input id="search_site" name="search_site" placeholder="Site name or address...">
+                </div>
+                <div class="NB-module-search-input NB-module-search-people">
+                    <div class="NB-search-close"></div>
+                    <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
+                    <input id="search_people" name="search_people" placeholder="Username or email...">
+                </div>
+                <div class="NB-module-search-results"></div>
+            </div>
+        </div>
 
   </div>
 

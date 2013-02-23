@@ -546,7 +546,7 @@
     
     [self performSelector:@selector(checkScroll)
                withObject:nil
-               afterDelay:5.2];
+               afterDelay:0.1];
 }
 
 - (void)testForTryFeed {

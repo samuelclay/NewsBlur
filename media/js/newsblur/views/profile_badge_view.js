@@ -203,12 +203,17 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     preview_user: function() {
         if (this.$('.NB-profile-badge-action-preview').hasClass('NB-disabled')) return;
-        
-        $.modal.close(_.bind(function() {
+        var open_preview = _.bind(function() {
             window.ss = this.model;
             var socialsub = NEWSBLUR.reader.model.add_social_feed(this.model);
             NEWSBLUR.reader.load_social_feed_in_tryfeed_view(socialsub);
-        }, this));
+        }, this);
+        
+        if (!_.keys($.modal.impl.d).length) {
+            open_preview();
+        } else {
+            $.modal.close(open_preview);
+        }
     },
     
     open_profile: function() {
