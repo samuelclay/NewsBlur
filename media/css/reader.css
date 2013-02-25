@@ -3194,7 +3194,7 @@ background: transparent;
 .NB-feeds-header-user-dashboard {
     cursor: pointer;
     padding: 10px 0 10px;
-    width: 32px;
+    width: 36px;
     position: absolute;
     top: 0;
     right: 0;
@@ -3259,15 +3259,15 @@ background: transparent;
     color: #B0B0B0;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-negative {
-    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 6px 3px;
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 6px 2px;
     display: none;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-neutral {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 6px 3px;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 6px 2px;
     background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-positive {
-    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 6px 3px;
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 6px 2px;
     background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-right {

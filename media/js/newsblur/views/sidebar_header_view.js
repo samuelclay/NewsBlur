@@ -35,10 +35,9 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
                 <span class="NB-feeds-header-count NB-feeds-header-positive <% if (!positive_count) { %>NB-empty<% } %>"><%= positive_count %></span>\
             </div>\
         ', {
-            feeds_count     : (this.feeds_count ? Inflector.pluralize(' site', this.feeds_count, true) : '&nbsp;'),
-            positive_count  : this.unread_counts['ps'],
-            neutral_count   : this.unread_counts['nt'],
-            negative_count  : this.unread_counts['ng'],
+            positive_count  : Inflector.commas(this.unread_counts['ps']),
+            neutral_count   : Inflector.commas(this.unread_counts['nt']),
+            negative_count  : Inflector.commas(this.unread_counts['ng']),
             hide_read_feeds : !!hide_read_feeds
         });
             
@@ -57,7 +56,6 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     count: function() {
         this.unread_counts = NEWSBLUR.assets.folders.unread_counts();
-        this.feeds_count = this.count_feeds();
           
         if (!NEWSBLUR.Globals.is_authenticated) return;
         if (!NEWSBLUR.assets.preference('title_counts')) return;
@@ -65,16 +63,16 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         var counts = [];
         var unread_view = _.isNumber(this.options.unread_view) && this.options.unread_view || NEWSBLUR.assets.preference('unread_view');
         if (unread_view <= -1) {
-            counts.push(this.unread_counts['ng']);
+            counts.push(Inflector.commas(this.unread_counts['ng']));
         }
         if (unread_view <= 0) {
-            counts.push(this.unread_counts['nt']);
+            counts.push(Inflector.commas(this.unread_counts['nt']));
         }
         if (unread_view <= 1) {
-            counts.push(this.unread_counts['ps']);
+            counts.push(Inflector.commas(this.unread_counts['ps']));
         }
         if (!this.unread_counts['ng'] && !this.unread_counts['ps']) {
-            counts = [this.unread_counts['nt']];
+            counts = [Inflector.commas(this.unread_counts['nt'])];
         }
         var title = "NewsBlur";
         if (_.any(counts)) {
