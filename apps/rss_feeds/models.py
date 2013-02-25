@@ -338,9 +338,13 @@ class Feed(models.Model):
 
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
+        
         count_extra = False
-        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
+        elif self.average_stories_per_month == 0 and self.stories_last_month > 0:
+            count_extra = True
+            
         if force or (full and count_extra):
             self.count_stories()
             self.save_popular_authors()
@@ -536,7 +540,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
-        # self.save_feed_story_history_statistics()
+        self.save_feed_story_history_statistics()
     
     def _split_favicon_color(self):
         color = self.favicon_color
@@ -1452,7 +1456,12 @@ class MStory(mongo.Document):
 
     meta = {
         'collection': 'stories',
-        'indexes': [('story_feed_id', '-story_date')],
+        'indexes': [('story_feed_id', '-story_date'),
+                    {'fields': ['story_hash'], 
+                     'unique': True,
+                     'sparse': True, 
+                     'types': False, 
+                     'drop_dups': True }],
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -1465,11 +1474,13 @@ class MStory(mongo.Document):
 
     @property
     def feed_guid_hash(self):
-        return hashlib.sha1("%s:%s" % (self.story_feed_id, self.story_guid)).hexdigest()[:6]
+        return "%s:%s" % (self.story_feed_id, self.guid_hash)
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
+        self.story_hash = self.feed_guid_hash
+        
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
