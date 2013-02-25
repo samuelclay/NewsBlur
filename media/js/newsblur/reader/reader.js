@@ -1777,7 +1777,7 @@
                 if (data.status == 502) {
                     message = "NewsBlur is down right now. <br> Try again soon.";
                 } else if (data.status == 503) {
-                    message = "NewsBlur is in maintenace mode. <br> Try again soon.";
+                    message = "NewsBlur is in maintenance mode. <br> Try again soon.";
                     this.show_maintenance_page();
                 }
             }

@@ -34,6 +34,7 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 
             'app02.newsblur.com', 
+            'app03.newsblur.com',
             'app04.newsblur.com',
             ],
     'dev': ['dev.newsblur.com'],
