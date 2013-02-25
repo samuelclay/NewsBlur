@@ -59,6 +59,13 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         window.focus();
     },
     
+    open_share_dialog: function(e) {
+        var $story = this.latest_story_detail_view.$el;
+        this.latest_story_detail_view.share_view.toggle_feed_story_share_dialog({
+            animate_scroll: true
+        });
+    },
+    
     change_selected: function(model, selected) {
         if (model.collection) {
             model.collection.detect_selected_story(model, selected);

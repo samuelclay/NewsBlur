@@ -3146,7 +3146,7 @@
                         top = 1;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
-                            $align = $('.NB-storytitles-sentiment', $item);
+                            $align = $('.NB-storytitles-sentiment,.NB-feed-story-sentiment', $item);
                         }
                     }
                     
@@ -3177,7 +3177,7 @@
                         top = 19;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
-                            $align = $('.NB-storytitles-sentiment', $item);
+                            $align = $('.NB-storytitles-sentiment,.NB-feed-story-sentiment', $item);
                         }
                     }
                     $manage_menu_container.align($align, '-bottom -left', {
@@ -5499,10 +5499,7 @@
             $document.bind('keydown', 'shift+s', function(e) {
                 e.preventDefault();
                 if (self.active_story) {
-                    var $story_title = self.active_story.story_title_view.$el;
-                    self.active_story.story_title_view.mouseenter_manage_icon();
-                    self.show_manage_menu('story', $story_title, {story_id: self.active_story.id});
-                    self.show_confirm_story_share_menu_item(self.active_story.id);
+                    self.active_story.open_share_dialog(e);
                 }
             });
         }

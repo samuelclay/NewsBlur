@@ -197,9 +197,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_starred: function() {
+        var story_titles_visible = NEWSBLUR.assets.preference('story_layout') == 'split';
         var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
-        NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+        
+        if (story_titles_visible) {
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+        }
         
         if (this.model.get('starred')) {
             $star.attr({'title': 'Saved!'});

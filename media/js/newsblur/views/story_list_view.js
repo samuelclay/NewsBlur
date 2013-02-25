@@ -239,7 +239,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var stories = NEWSBLUR.assets.stories;
         if (!stories || !stories.length) return;
         if (options.reset_timer) this.counts['positions_timer'] = 0;
-
+        
         $.extend(this.cache, {
             'feed_view_story_positions': {},
             'feed_view_story_positions_keys': []

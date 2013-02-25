@@ -51,6 +51,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.model.story_view = this;
             this.model.inline_story_detail_view = this;
         }
+        this.model.latest_story_detail_view = this;
     },
     
     // =============
@@ -60,10 +61,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render: function() {
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
-        params['story_share_view'] = new NEWSBLUR.Views.StoryShareView({
+        this.share_view = new NEWSBLUR.Views.StoryShareView({
             model: this.model, 
             el: this.el
-        }).template({
+        });
+        params['story_share_view'] = this.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
@@ -133,9 +135,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% } %>\
                         <%= story.get("long_parsed_date") %>\
                     </div>\
-                    <% if (story.get("starred_date")) { %>\
-                        <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
-                    <% } %>\
                 <% } %>\
                 <% if (story.get("story_authors")) { %>\
                     <div class="NB-feed-story-author-wrapper">\
@@ -154,6 +153,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             </div>\
                         <% }) %>\
                     </div>\
+                <% } %>\
+                <% if (story.get("starred_date")) { %>\
+                    <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
                 <% } %>\
                 <div class="NB-feed-story-header-collapse"></div>\
             </div>\

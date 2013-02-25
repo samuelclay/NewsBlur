@@ -2898,6 +2898,15 @@ background: transparent;
     text-shadow: 0 1px 0 #000;
     margin-top: 1px;
     border-bottom: 1px solid #A9A9A9;
+    background-color: #DCDCDC;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 .NB-feed-story-view-narrow .NB-sideoption {
     float: left;
@@ -2911,7 +2920,6 @@ background: transparent;
     float: right;
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px 5px;
     background-size: 16px;
-    border-left: 1px solid #92A6C0;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2930,16 +2938,10 @@ background: transparent;
     padding: 4px 36px 4px 6px;
     color: white;
     text-shadow: none;
-    background-color: #DCDCDC;
-    border-left: 1px solid #DCDCDC;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
 }
 .NB-feed-story-view-narrow .NB-sideoption .NB-sideoption-title {
     padding: 4px 42px 4px 8px;
@@ -2947,6 +2949,13 @@ background: transparent;
 .NB-sideoption:hover {
     cursor: pointer;
 }
+.NB-sideoption:hover,
+.NB-sideoption.NB-active,
+.NB-story-starred .NB-sideoption.NB-feed-story-save,
+.NB-story-shared .NB-sideoption.NB-feed-story-share {
+    background-color: #2B478C;
+}
+
 .NB-sideoption:hover .NB-sideoption-icon,
 .NB-sideoption:hover .NB-sideoption-title,
 .NB-sideoption.NB-active .NB-sideoption-icon,
@@ -2955,19 +2964,15 @@ background: transparent;
 .NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-title,
 .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-icon,
 .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-title {
-    background-color: #2B478C;
     color: #D7DDF7;
     opacity: 1;
     text-shadow: 0 1px 0 #101010;
-    border-left: 1px solid #2B478C;
 }
 .NB-sideoption-share-wrapper {
-    background-color: #EBF6FA;
     height: 0;
     overflow: hidden;
 }
 .NB-menu-manage .NB-sideoption-share-wrapper {
-    background-color: #EBF6DA;
 }
 .NB-feed-story-view-narrow .NB-sideoption-share-wrapper {
     clear: both;
@@ -3029,7 +3034,10 @@ background: transparent;
     line-height: 16px;
 }
 .NB-sideoption-share .NB-sideoption-share-comments {
-    width: 100%;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
     height: 52px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
@@ -3039,7 +3047,10 @@ background: transparent;
   color: white;
   padding: 2px 6px;
   margin: 2px 0;
-  width: 92%;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   background-color: #639510;
   cursor: pointer;
   -moz-box-shadow: 2px 2px 0 #C9DBE2;
@@ -3058,7 +3069,10 @@ background: transparent;
     font-size: 11px;
     padding: 2px 6px;
     margin: 6px 0;
-    width: 92%;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     font-weight: normal;
     -moz-box-shadow: 1px 1px 0 #95AB76;
     -webkit-box-shadow: 1px 1px 0 #95AB76;
