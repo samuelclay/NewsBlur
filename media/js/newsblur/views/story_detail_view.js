@@ -129,8 +129,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-date">\
                         <% if (story.has_modifications()) { %>\
                             <div class="NB-feed-story-hide-changes" \
-                                 title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %>\
-                                        story modifications">\
+                                 title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
                             </div>\
                         <% } %>\
                         <%= story.get("long_parsed_date") %>\

@@ -3535,6 +3535,11 @@ background: transparent;
 .NB-feed-taskbar .NB-task-button:hover {
     opacity: 1;
 }
+.NB-feed-taskbar .NB-task-button.NB-disabled,
+.NB-feed-taskbar .NB-task-button.NB-disabled:hover {
+    opacity: .2;
+    cursor: default;
+}
 .NB-feed-taskbar .NB-task-add {
     float: left;
 }
@@ -6852,7 +6857,7 @@ form.opml_import_form input {
     border-bottom: none;
 }
 .NB-modal-intro .NB-intro-uptodate-follow iframe {
-    margin: 6px auto 0;
+    margin: 6px -20px 0 18px;
 }
 .NB-modal-intro .NB-intro-uptodate-follow .NB-modal-submit-button {
     width: 100px;
@@ -6862,6 +6867,7 @@ form.opml_import_form input {
 .NB-modal-intro .NB-intro-uptodate-follow .NB-subscribed,
 .NB-modal-intro .NB-intro-uptodate-follow.NB-active .NB-modal-submit-button {
     display: none;
+    clear: both;
 }
 .NB-modal-intro .NB-intro-uptodate-follow .NB-subscribed {
     margin: 12px auto 6px;

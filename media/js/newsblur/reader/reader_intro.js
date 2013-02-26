@@ -339,7 +339,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       } else if (page_number > page_count) {
           NEWSBLUR.reader.check_hide_getting_started();
           this.close(_.bind(function() {
-              NEWSBLUR.reader.open_dialog_after_feeds_loaded({delayed_import: this.flags.delayed_import});
+              NEWSBLUR.reader.open_dialog_after_feeds_loaded({
+                  delayed_import: this.flags.delayed_import,
+                  finished_intro: true
+              });
           }, this));
           return;
       } else if (page_number == 1) {

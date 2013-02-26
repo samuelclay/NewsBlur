@@ -938,9 +938,10 @@
                 !NEWSBLUR.assets.preference('has_setup_feeds')) {
                 if (options.delayed_import || this.flags.delayed_import) {
                     this.setup_ftux_add_feed_callout("Check your email...");
-                } else if (NEWSBLUR.assets.preference('has_setup_feeds')) {
+                } else if (options.finished_intro || NEWSBLUR.assets.preference('has_setup_feeds')) {
                     this.setup_ftux_add_feed_callout();
                 } else if (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open) {
+                    NEWSBLUR.assets.preference('intro_page', 2);
                     _.defer(_.bind(this.open_intro_modal, this), 100);
                 }
             } else if (!NEWSBLUR.assets.flags['has_chosen_feeds'] &&
@@ -4284,7 +4285,7 @@
                 'display': 'block'
             }).animate({
                 'opacity': 1,
-                'bottom': 6
+                'bottom': 36
             }, {
                 'duration': 750,
                 'easing': 'easeInOutQuint'
