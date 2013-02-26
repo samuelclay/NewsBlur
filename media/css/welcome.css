@@ -533,7 +533,7 @@
     clear: both;
     margin: 48px 0 0;
     padding: 36px 0;
-    background-color: #F8FBFE;
+    background-color: #FAFAFA;
     border-top: 1px solid #F0F0F0;
     border-bottom: 1px solid #F0F0F0;
 }
@@ -587,6 +587,17 @@
 .NB-welcome-activity .NB-graph-value {
     width: 4px;
 }
+.NB-welcome-activity .NB-module-stats-count {
+    float: left;
+    width: 33%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-welcome-activity .NB-module-stats-count-graph {
+    width: auto;
+    margin-left: 16px;
+}
 
 /* ========== */
 /* = Footer = */
@@ -633,7 +644,7 @@
     height: 32px;
     position: relative;
     bottom: -4px;
-    opacity: .8;
+    opacity: .5;
     -webkit-transition: all .25s ease-in-out;
     -moz-transition: all .25s ease-in-out;
     -o-transition: all .25s ease-in-out;
