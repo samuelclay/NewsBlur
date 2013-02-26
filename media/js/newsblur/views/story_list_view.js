@@ -277,13 +277,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var last_story = NEWSBLUR.assets.stories.last();
             var $last_story = last_story.story_view.$el;
             var container_offset = this.$el.position().top;
-            var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
+            var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;
             var visible_height = this.$el.height();
             var scroll_y = this.$el.scrollTop();
         
-            // Fudge factor is simply because it looks better at 13 pixels off.
-            if ((visible_height + 26) >= full_height) {
-                NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
+            // Fudge factor is simply because it looks better at 64 pixels off.
+            if ((visible_height + 64) >= full_height) {
+                // NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
                 NEWSBLUR.reader.load_page_of_feed_stories();
             }
         }
