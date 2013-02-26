@@ -59,11 +59,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     $.make('div', { className: 'NB-carousel-inner NB-intro-imports' }, [
                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-start' }, [
                             $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
-                            $.make('div', { className: 'NB-intro-import-container NB-left' }, [
+                            $.make('div', { className: 'NB-intro-module-container NB-left' }, [
                                 $.make('h3', { className: 'NB-module-content-header' }, 'Import from'),
-                                $.make('div', { className: 'NB-intro-import NB-intro-import-google' }, [
+                                $.make('div', { className: 'NB-intro-module NB-intro-import-google' }, [
                                     $.make('h3', [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.gif' })
+                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.png', width: 115, height: 40 })
                                     ]),
                                     $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
                                         'Connect to Google'
@@ -71,9 +71,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                     $.make('div', { className: 'NB-error' })
                                 ])
                             ]),
-                            $.make('div', { className: 'NB-intro-import-container NB-right' }, [
+                            $.make('div', { className: 'NB-intro-module-container NB-right' }, [
                                 $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
-                                $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
+                                $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
                                     $.make('h3', 'OPML'),
                                     $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                         $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
@@ -116,55 +116,42 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
                 $.make('h4', { className: 'NB-page-4-started' }, "Keep up-to-date with NewsBlur"),
-                $.make('div', { className: 'NB-intro-section' }, [
-                    $.make('div', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter NB-right' }, [
-                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
-                        $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
-                            $.make('span', [
-                                'Follow @newsblur on', 
-                                $.make('br'), 
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/twitter_icon.png' }),
-                                'Twitter'
-                            ])
+                $.make('table', { className: 'NB-intro-follows', cellpadding: 0, cellspacing: 0 }, [
+                    $.make('tr', [
+                        $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
+                            $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
+                                $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
+                                $.make('span', '@samuelclay')
+                            ]),
+                            $.make('a', { href: "https://twitter.com/samuelclay", className: "twitter-follow-button", "data-show-count": true }, "Follow @samuelclay"),
+                            $.make('script', '!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");')
+                        ]),
+                        $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
+                            $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
+                                $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
+                                $.make('span', '@newsblur')
+                            ]),
+                            $.make('a', { href: "https://twitter.com/newsblur", className: "twitter-follow-button", "data-show-count": true }, "Follow @newsblur")
                         ])
                     ]),
-                    $.make('div', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
-                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
-                        $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
-                            $.make('span', [
-                                'Follow @samuelclay on', 
-                                $.make('br'), 
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/twitter_icon.png' }),
-                                'Twitter'
-                            ])
-                        ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-intro-section' }, [
-                    $.make('div', { className: 'NB-intro-uptodate-follow NB-right' }, [
-                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-popular' }),
-                        $.make('label', { 'for': 'NB-intro-uptodate-follow-popular' }, [
-                            $.make('span', [
-                                'Subscribe to', 
-                                $.make('br'), 
-                                $.make('img', { src: '/media/img/favicon.png' }),
-                                'Popular Shared Stories'
-                            ])
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-intro-uptodate-follow' }, [
-                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-blog' }),
-                        $.make('label', { 'for': 'NB-intro-uptodate-follow-blog' }, [
-                            $.make('span', [
-                                'Subscribe to', 
-                                $.make('br'), 
-                                $.make('img', { src: '/media/img/favicon.png' }),
-                                'The NewsBlur Blog'
-                            ])
+                    $.make('tr', { className: 'NB-intro-uptodate-subscribe' }, [
+                        $.make('td', { className: 'NB-intro-uptodate-follow' }, [
+                            $.make('img', { src: '/media/img/favicon.png' }),
+                            'Popular Shared Stories',
+                            $.make('div', { className: 'NB-intro-uptodate-follow-popular NB-modal-submit-green NB-modal-submit-button' }, [
+                                'Subscribe'
+                            ]),
+                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
+                        ]),
+                        $.make('td', { className: 'NB-intro-uptodate-follow' }, [
+                            $.make('img', { src: '/media/img/favicon.png' }),
+                            'The NewsBlur Blog',
+                            $.make('div', { className: 'NB-intro-uptodate-follow-blog NB-modal-submit-green NB-modal-submit-button' }, [
+                                'Subscribe'
+                            ]),
+                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
                         ])
                     ])
                 ]),
@@ -204,23 +191,30 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
             if (this.services && this.services[service][service+'_uid'] && !this.services[service].syncing) {
-                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connected' }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Connected'
+                $service = $.make('div', { className: 'NB-intro-module-container NB-friends-service NB-connected NB-friends-service-'+service }, [
+                    $.make('h3', { className: 'NB-module-content-header' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-intro-module NB-intro-module-'+service }, [
+                        $.make('h3', [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
+                        ]),
+                        $.make('div', { className: 'NB-friends-service-connected' }, [
+                            'Connected'
+                        ])
                     ])
                 ]);
-                
             } else {
                 var syncing = this.services && this.services[service] && this.services[service].syncing;
                 if (syncing) service_syncing = true;
                 
-                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service + (syncing ? ' NB-friends-service-syncing' : '') }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
+                $service = $.make('div', { className: 'NB-intro-module-container NB-friends-service NB-friends-service-'+service + (syncing ? ' NB-friends-service-syncing' : '') }, [
+                    $.make('h3', { className: 'NB-module-content-header' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-intro-module NB-intro-module-'+service }, [
+                        $.make('h3', [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
+                        ]),
+                        $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
+                            (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
+                        ])
                     ])
                 ]);
             }
@@ -302,6 +296,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         console.log(["Intro post_connect", data]);
         clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();
+        $(".NB-note", this.$modal).hide();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
                 $.make('span', { className: 'NB-raquo' }, '&raquo; '),
@@ -597,33 +592,21 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     subscribe_to_feed: function(feed) {
-        var $input = $('#NB-intro-uptodate-follow-'+feed, this.$modal);
-        var $button = $input.closest('.NB-intro-uptodate-follow');
+        var $button = $('.NB-intro-uptodate-follow-'+feed);
+        var $parent = $button.closest(".NB-intro-uptodate-follow");
         var blog_url = 'http://blog.newsblur.com/rss';
         var popular_username = 'social:popular';
-        
-        if ($input.is(':checked')) {
-            $button.addClass('NB-active');
-            if (feed == 'blog') {
-                NEWSBLUR.assets.save_add_url(blog_url, "", function() {
-                    NEWSBLUR.assets.load_feeds();
-                }, {auto_active: false, skip_fetch: true});
-            } else if (feed == 'popular') {
-                NEWSBLUR.assets.follow_user(popular_username, function() {
-                    NEWSBLUR.app.feed_list.make_social_feeds();
-                });
-            }
-        } else {
-            $button.removeClass('NB-active');
-            if (feed == 'blog') {
-                NEWSBLUR.assets.delete_feed_by_url(blog_url, "", function() {
-                    NEWSBLUR.assets.load_feeds();
-                });
-            } else if (feed == 'popular') {
-                NEWSBLUR.assets.unfollow_user(popular_username, function() {
-                    NEWSBLUR.app.feed_list.make_social_feeds();
-                });
-            }
+        console.log(["subscribe_to_feed", feed, $button, $parent]);
+        $parent.addClass('NB-active');
+        if (feed == 'blog') {
+            NEWSBLUR.assets.save_add_url(blog_url, "", function() {
+                NEWSBLUR.assets.load_feeds();
+            }, {auto_active: false, skip_fetch: true});
+            
+        } else if (feed == 'popular') {
+            NEWSBLUR.assets.follow_user(popular_username, function() {
+                NEWSBLUR.app.feed_list.make_social_feeds();
+            });
         }
     },
     
@@ -681,6 +664,13 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 self.connect(service);
             }
         });
+        
+        $.targetIs(e, { tagSelector: '.NB-intro-uptodate-follow-blog' }, function($t, $p) {
+            self.subscribe_to_feed('blog');
+        });
+        $.targetIs(e, { tagSelector: '.NB-intro-uptodate-follow-popular' }, function($t, $p) {
+            self.subscribe_to_feed('popular');
+        });
     },
     
     handle_change: function(elem, e) {
@@ -699,12 +689,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         });
         $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-samuelclay' }, function($t, $p) {
             self.follow_twitter_account('samuelclay');
-        });
-        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-blog' }, function($t, $p) {
-            self.subscribe_to_feed('blog');
-        });
-        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-popular' }, function($t, $p) {
-            self.subscribe_to_feed('popular');
         });
     }
     

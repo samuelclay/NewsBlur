@@ -3179,7 +3179,7 @@ background: transparent;
 
 .NB-feeds-header-user {
     font-size: 12px;
-    padding: 0 56px 0 32px;
+    padding: 0 64px 0 32px;
     height: 36px;
 }
 
@@ -6633,7 +6633,7 @@ form.opml_import_form input {
     text-align: center;
     display: none;
 }
-.NB-modal-intro .NB-intro-import-container {
+.NB-modal-intro .NB-intro-module-container {
     width: 46%;
     text-align: center;
 }
@@ -6642,7 +6642,7 @@ form.opml_import_form input {
     padding: 4px 0;
     margin: 0;
 }
-.NB-modal-intro .NB-intro-import {
+.NB-modal-intro .NB-intro-module {
     border-radius: 3px;
     background-color: #F7F8F5;
     border: 1px solid #DFE2DA;
@@ -6654,7 +6654,7 @@ form.opml_import_form input {
     margin: 24px 0 32px;
     font-size: 24px;
 }
-.NB-modal-intro .NB-intro-import .NB-modal-submit-button {
+.NB-modal-intro .NB-intro-module .NB-modal-submit-button {
     margin: 0;
     font-weight: bold;
     position: relative;
@@ -6664,7 +6664,7 @@ form.opml_import_form input {
     overflow: hidden;
     line-height: 11px;
 }
-.NB-modal-intro .NB-intro-import .NB-modal-submit-button input[type=file] {
+.NB-modal-intro .NB-intro-module .NB-modal-submit-button input[type=file] {
     position: absolute;
     right: 0px;
     top: 0px;
@@ -6676,22 +6676,19 @@ form.opml_import_form input {
     opacity: 0;
     z-index: 10;
 }
-.NB-modal-intro .NB-intro-import.NB-intro-import-opml {
+.NB-modal-intro .NB-intro-module.NB-intro-import-opml {
     position: relative;
 }
-.NB-modal-intro .NB-intro-import .NB-error  {
+.NB-modal-intro .NB-intro-module .NB-error  {
     margin: 12px 12px -24px;
     font-size: 11px;
     line-height: 13px;
 }
-.NB-modal-intro .NB-intro-import h3 {
+.NB-modal-intro .NB-intro-module h3 {
     height: 42px;
     font-size: 32px;
     line-height: 36px;
     margin: 36px 0;
-}
-.NB-modal-intro .NB-intro-import h3 img {
-    margin-top: 6px;
 }
 .NB-modal-intro .NB-add-google-reader-arrow {
     width: 16px;
@@ -6738,7 +6735,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-intro .NB-page-3-started {
-    margin-bottom: 4px;
+    margin: 4px;
 }
 .NB-modal-intro .NB-intro-services .NB-error {
     display: block;
@@ -6748,11 +6745,19 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-friends-service {
     width: 50%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     display: inline-block;
     text-align: center;
-    padding: 12px 0 0;
-    height: 108px;
+    padding: 12px;
     overflow: hidden;
+}
+.NB-modal-intro .NB-friends-service h3 {
+    margin: 12px 0 24px;
+}
+.NB-modal-intro .NB-friends-service .NB-module-content-header {
+    margin: 0;
 }
 .NB-modal-intro .NB-friends-service .NB-friends-service-title {
     margin-bottom: 20px;
@@ -6768,9 +6773,8 @@ form.opml_import_form input {
     line-height: 11px;
 }
 .NB-modal-intro .NB-friends-service-facebook {
-    border-left: 1px solid #E6E6E6;
     position: relative;
-    width: 49%;
+    width: 50%;
 }
 .NB-modal-intro .NB-friends-autofollow {
     text-align: center;
@@ -6824,62 +6828,69 @@ form.opml_import_form input {
   color: #808080;
   clear: both;
 }
-.NB-modal-intro .NB-intro-uptodate-follow {
-    float: left;
-    width: 47%;
-    background-color: #FED655;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FED655), to(#F3BE00));
-    background: -moz-linear-gradient(center bottom, #F3BE00 0%, #FED655 100%);
+.NB-modal-intro .NB-page-4-started {
+    margin: 12px 24px;
+}
+.NB-modal-intro .NB-intro-follows {
     border-radius: 6px;
-    text-shadow: 0 1px 0 #FEEA95;
-    border: 1px solid #FFFDE0;
+    border: 1px solid #DFE2DA;
+    background-color: #F7F8F5;
+    width: 100%;
 }
-.NB-modal-intro .NB-intro-uptodate-follow:hover,
-.NB-modal-intro .NB-intro-uptodate-follow.NB-active {
-    background-color: #ED6D00;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ED6D00), to(#DD5A00));
-    background: -moz-linear-gradient(center bottom, #DD5A00 0%, #ED6D00 100%);
-    color: white;
-    text-shadow: 0 1px 0 #303030;
-    border: 1px solid #ED6D00;
+.NB-modal-intro .NB-intro-uptodate-follow {
+    width: 50%;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    border-right: 1px solid #DFE2DA;
+    border-bottom: 1px solid #DFE2DA;
+    padding: 12px;
 }
-.NB-modal-intro .NB-intro-uptodate-follow.NB-active {
-    border: 1px solid #813600;
-     -moz-box-shadow:2px 2px 0 #DCDCDC;
-    box-shadow:2px 2px 0 #DCDCDC;
+.NB-modal-intro .NB-intro-uptodate-follow:last-child {
+    border-right: none;
 }
-.NB-modal-intro .NB-intro-uptodate-follow.NB-right {
-    float: right;
+.NB-modal-intro .NB-intro-uptodate-subscribe .NB-intro-uptodate-follow {
+    border-bottom: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow .NB-modal-submit-button {
+    width: 100px;
+    text-shadow: none;
+    margin: 12px auto 6px;
+}
+.NB-modal-intro .NB-intro-uptodate-follow .NB-subscribed,
+.NB-modal-intro .NB-intro-uptodate-follow.NB-active .NB-modal-submit-button {
+    display: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow .NB-subscribed {
+    margin: 12px auto 6px;
+    height: 19px;
+}
+.NB-modal-intro .NB-intro-uptodate-follow.NB-active .NB-subscribed {
+    display: inline-block;
 }
 .NB-modal-intro .NB-intro-uptodate-follow input {
     float: left;
     margin: 26px 8px 0;
-    cursor: pointer;
 }
 .NB-modal-intro .NB-intro-uptodate-follow span {
-    font-size: 13px;
     font-weight: bold;
-    margin: 8px 0;
-    line-height: 20px;
-    display: block;
 }
 .NB-modal-intro .NB-intro-uptodate-follow img {
-    float: left;
+    margin: 4px 12px;
     width: 48px;
     height: 48px;
-    margin: 4px 0;
-    vertical-align: text-top;
+    display: inline-block;
+    vertical-align: middle;
 }
-.NB-modal-intro .NB-intro-uptodate-follow span img {
+.NB-modal-intro .NB-intro-uptodate-subscribe img {
     width: 16px;
     height: 16px;
-    margin: 0 4px;
+    margin: 2px 4px;
     float: none;
+    vertical-align: top;
 }
 .NB-modal-intro .NB-intro-uptodate-follow label {
     display: block;
-    padding: 4px 16px;
-    cursor: pointer;
+    padding: 4px 2px;
 }
 .NB-modal-intro .NB-intro-uptodate-follow .NB-intro-uptodate-newwindow {
     width: 10px;
@@ -9920,7 +9931,7 @@ form.opml_import_form input {
     color: #123B00;
     overflow: hidden;
 }
-.NB-feed-badge .NB-subscribed {
+.NB-subscribed {
     padding: 6px 0 0 20px;
     background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat 0 2px;
     background-size: 18px;
