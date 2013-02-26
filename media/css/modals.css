@@ -200,148 +200,82 @@
 }
 
 
-.NB-modal-submit input[type=submit],
 .NB-modal-submit-button {
-    border: 1px solid #606060;
     font-size: 12px;
     padding: 4px 12px;
-    text-transform: uppercase;
     margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    border-radius: 4px;
-    -moz-border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+    text-transform: uppercase;
+    border: 1px solid #606060;
+    border-color: #E5E5E5 #CDCDCD #CDCDCD #E5E5E5;
+    background: #DCDCDC;
+    background: linear-gradient(top, #DCDCDC, #D2D2D2);
+    background: -webkit-gradient(linear, left top, left bottom, from(#DCDCDC), to(#D2D2D2));
 }
 
 .NB-modal-submit-green {
+    border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
     background-color: #217412;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #216200),
-        color-stop(0.84, #217412)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #216200 16%,
-        #217412 84%
-    );
+    background-image: linear-gradient(bottom, #216200, #217412);
+    background-image: -webkit-linear-gradient(bottom, #216200, #217412);
     font-weight: bold;
     color: #FCFCFC;
 }
 .NB-modal-submit-green:hover {
     background-color: #216200;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #1E5000),
-        color-stop(0.84, #216200)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #1E5000 16%,
-        #216200 84%
-    );
-    font-weight: bold;
-    color: #FCFCFC;
+    background-image: linear-gradient(bottom, #1E5000, #216200);
+    background-image: -webkit-linear-gradient(bottom, #1E5000, #216200);
 }
 .NB-modal-submit-green:active {
     background-color: #1E5000;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #1B3F00),
-        color-stop(0.84, #1E5000)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #1B3F00 16%,
-        #1E5000 84%
-    );
-    font-weight: bold;
-    color: #FCFCFC;
+    background-image: linear-gradient(bottom, #1B3F00, #1E5000);
+    background-image: -webkit-linear-gradient(bottom, #1B3F00, #1E5000);
 }
-.NB-modal-submit-save.NB-disabled,
-.NB-modal-submit-green.NB-disabled,
-.NB-modal-submit-button.NB-disabled,
+
 .NB-modal-submit-back,
 .NB-modal-submit-reset,
 .NB-modal-submit-close,
 .NB-modal-submit-grey {
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, .3);
+    border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
     background-color: #d5d4dB;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #CBCAD3),
-        color-stop(0.84, #d5d4dB)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #CBCAD3 16%,
-        #d5d4dB 84%
-    );
-    color: #909090;
-}
-.NB-modal-submit-save.NB-disabled:hover,
-.NB-modal-submit-green.NB-disabled:hover,
-.NB-modal-submit-button.NB-disabled:hover {
-    background-color: #d5d4dB;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #CBCAD3),
-        color-stop(0.84, #d5d4dB)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #CBCAD3 16%,
-        #d5d4dB 84%
-    );
+    background-image: linear-gradient(bottom, #CBCAD3, #d5d4dB);
+    background-image: -webkit-linear-gradient(bottom, #CBCAD3, #d5d4dB);
+    color: #505050;
 }
 .NB-modal-submit-back:hover,
 .NB-modal-submit-reset:hover,
 .NB-modal-submit-close:hover,
 .NB-modal-submit-grey:hover {
     background-color: #CBCAD3;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #BDBCC7),
-        color-stop(0.84, #CBCAD3)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #BDBCC7 16%,
-        #CBCAD3 84%
-    );
+    background-image: linear-gradient(bottom, #BDBCC7, #CBCAD3);
+    background-image: -webkit-linear-gradient(bottom, #BDBCC7, #CBCAD3);
 }
 .NB-modal-submit-back:active,
 .NB-modal-submit-reset:active,
 .NB-modal-submit-close:active,
 .NB-modal-submit-grey:active {
     background-color: #BDBCC7;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #ADACBB),
-        color-stop(0.84, #BDBCC7)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #ADACBB 16%,
-        #BDBCC7 84%
-    );
+    background-image: linear-gradient(bottom, #ADACBB, #BDBCC7);
+    background-image: -webkit-linear-gradient(bottom, #ADACBB, #BDBCC7);
+}
+.NB-modal-submit-save.NB-disabled,
+.NB-modal-submit-green.NB-disabled,
+.NB-modal-submit-button.NB-disabled,
+.NB-modal-submit-save.NB-disabled:hover,
+.NB-modal-submit-green.NB-disabled:hover,
+.NB-modal-submit-button.NB-disabled:hover,
+.NB-modal-submit-save.NB-disabled:active,
+.NB-modal-submit-green.NB-disabled:active,
+.NB-modal-submit-button.NB-disabled:active {
+    background-image: none;
+    background-color: #d5d4dB;
+    color: rgba(0, 0, 0, .2);
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0);
+    cursor: default;
 }
 
 .NB-modal-submit-close {
@@ -399,26 +333,11 @@
     color: #E4E4E4;
     font-weight: bold;
 }
-.NB-modal-submit-delete {
-    background-color: #7E020D;
-    font-weight: bold;
-    color: #FCFCFC;
-}
-.NB-modal-submit-red:hover,
-.NB-modal-submit-delete:hover {
+.NB-modal-submit-red:hover {
     background-color: #4D000A;
 }
-.NB-modal-submit-red:active,
-.NB-modal-submit-delete:active {
+.NB-modal-submit-red:active {
     background-color: #1E0007;
-}
-.NB-modal-submit .NB-disabled {
-    background-color: #d5d4dB;
-    color: #909090;
-    border: 1px solid #A0A0A0;
-    -moz-box-shadow:2px 2px 0 #E6E6E6;
-    -webkit-box-shadow:2px 2px 0 #E6E6E6;
-    box-shadow:2px 2px 0 #E6E6E6;
 }
 
 .NB-modal .NB-modal-submit {

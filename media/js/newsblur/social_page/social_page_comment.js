@@ -73,7 +73,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
             $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply_comments }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
-            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-delete' }, 'Delete'))
+            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, 'Delete'))
         ]);
         this.remove_social_comment_reply_form();
         

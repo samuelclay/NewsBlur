@@ -132,7 +132,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('input', { type: 'submit', value: 'Retry fetching and parsing', className: 'NB-modal-submit-green NB-modal-submit-retry' }),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-retry' }, 'Retry fetching and parsing'),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -153,7 +153,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed.get('feed_address') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-address' }, 'Parse this RSS/XML Feed'),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-feed-history' })
                     ]))
@@ -175,7 +175,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed.get('feed_link') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-link' }, 'Fetch Feed From Website'),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-page-history' })
                     ]))
@@ -189,7 +189,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('input', { type: 'submit', value: 'Delete It. It Just Won\'t Work!', className: 'NB-modal-submit-red NB-modal-submit-delete' }),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-modal-submit-delete' }, 'Delete It. It Just Won\'t Work!'),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])

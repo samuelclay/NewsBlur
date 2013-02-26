@@ -126,7 +126,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
@@ -146,7 +146,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' }, this.profile.get('custom_css'))
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
@@ -573,29 +573,25 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     
     enable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
-            .removeClass('NB-modal-submit-grey')
-            .addClass('NB-modal-submit-green')
+            .removeClass('NB-disabled')
             .text('Save My Profile');
     },
     
     enable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
-            .removeClass('NB-modal-submit-grey')
-            .addClass('NB-modal-submit-green')
+            .removeClass('NB-disabled')
             .text('Save My Blurblog Settings');
     },
     
     disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
-            .addClass('NB-modal-submit-grey')
-            .removeClass('NB-modal-submit-green')
+            .addClass('NB-disabled')
             .text('Change what you like above...');
     },
     
     disable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
-            .addClass('NB-modal-submit-grey')
-            .removeClass('NB-modal-submit-green')
+            .addClass('NB-disabled')
             .text('Change what you like above...');
     }
     

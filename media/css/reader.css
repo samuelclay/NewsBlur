@@ -251,28 +251,6 @@ body {
     border-color: #739BBE;
 }
 
-.NB-account input[type=submit] {
-    outline: none;
-    width: 146px; /* 174=input-width + 5*2=padding + 2=border */
-    margin: 4px 5px 0 0;
-    padding: 4px 10px 5px;
-    text-shadow: 0 -1px 0 #C7C9D2;
-    font-weight: bold;
-    font-size: 13px;
-    border: 1px solid #ABAEB5;
-    color: #202020;
-    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
-    cursor: pointer;
-}
-
-
-.NB-account input[type=submit]:hover {
-/*    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;*/
-    color: #000;
-    border-color: #6F7283;
-/*    font-weight: bold;*/
-}
-
 .NB-account input[type=hidden] {
     display: none;
 }
@@ -3051,20 +3029,13 @@ background: transparent;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  background-color: #639510;
   cursor: pointer;
-  -moz-box-shadow: 2px 2px 0 #C9DBE2;
-  -webkit-box-shadow: 2px 2px 0 #C9DBE2;
-  box-shadow: 2px 2px 0 #C9DBE2;
-  text-shadow: 0 1px 0 #101010;
 }
 .NB-sideoption-share .NB-sideoption-share-save.NB-saving {
     background-color: #b5b4bB;
     text-shadow: none;
 }
 .NB-sideoption-share .NB-sideoption-share-unshare {
-    color: #404040;
-    text-shadow: 0 1px 0 #E0E0E0;
     line-height: 1;
     font-size: 11px;
     padding: 2px 6px;
@@ -3074,9 +3045,6 @@ background: transparent;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     font-weight: normal;
-    -moz-box-shadow: 1px 1px 0 #95AB76;
-    -webkit-box-shadow: 1px 1px 0 #95AB76;
-    box-shadow: 1px 1px 0 #95AB76;
 }
 .NB-sideoption-share .NB-error {
     font-size: 10px;
@@ -7079,7 +7047,9 @@ form.opml_import_form input {
   width: 400px;
   margin: 0 0 12px 104px;
 }
-
+.NB-modal-exception .NB-modal-submit-button {
+    float: left;
+}
 .NB-modal-exception .NB-exception-submit-wrapper {
     margin: 0 0 2px 100px;
 }
@@ -9186,6 +9156,7 @@ form.opml_import_form input {
     width: 90px;
     text-align: center;
     text-transform: uppercase;
+    text-shadow: none;
     margin: 0 0 4px;
     clear: right;
     float: right;

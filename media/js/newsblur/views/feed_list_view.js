@@ -27,6 +27,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
             this.update_dashboard_count();
+            this.scroll_to_selected();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('reset', _.bind(function() {
             this.make_social_feeds();
@@ -277,6 +278,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             var height = $feed_lists.outerHeight();
             $feed_lists.scrollTop(scroll+container-height/5);
         }        
+    },
+    
+    scroll_to_selected: function() {
+        this.scroll_to_show_selected_feed();
+        this.scroll_to_show_selected_folder();
     },
     
     start_sorting: function() {
