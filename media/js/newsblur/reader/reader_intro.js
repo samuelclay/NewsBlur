@@ -137,16 +137,20 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     ]),
                     $.make('tr', { className: 'NB-intro-uptodate-subscribe' }, [
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
-                            $.make('img', { src: '/media/img/favicon.png' }),
-                            'Popular Shared Stories',
+                            $.make('div', [
+                                $.make('img', { src: '/media/img/favicon.png' }),
+                                'Popular Shared Stories'
+                            ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-popular NB-modal-submit-green NB-modal-submit-button' }, [
                                 'Subscribe'
                             ]),
                             $.make('div', { className: 'NB-subscribed' }, "Subscribed")
                         ]),
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
-                            $.make('img', { src: '/media/img/favicon.png' }),
-                            'The NewsBlur Blog',
+                            $.make('div', [
+                                $.make('img', { src: '/media/img/favicon.png' }),
+                                'The NewsBlur Blog'
+                            ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-blog NB-modal-submit-green NB-modal-submit-button' }, [
                                 'Subscribe'
                             ]),
