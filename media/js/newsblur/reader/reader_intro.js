@@ -124,7 +124,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
                                 $.make('span', '@samuelclay')
                             ]),
-                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=samuelclay", width: 230, height: 20 })
+                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=samuelclay", width: 240, height: 20 })
                         ]),
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
@@ -132,7 +132,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
                                 $.make('span', '@newsblur')
                             ]),
-                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=newsblur", width: 230, height: 20 })
+                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=newsblur", width: 240, height: 20 })
                         ])
                     ]),
                     $.make('tr', { className: 'NB-intro-uptodate-subscribe' }, [
