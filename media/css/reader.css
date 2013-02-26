@@ -4043,6 +4043,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/thumbs_down.png') no-repeat right 2px;
 }
 
+.NB-modal-classifiers .NB-modal-submit-button {
+    float: left;
+}
+
 .simplemodal-wrap {
     overflow-y: auto;
     overflow-x: hidden;
