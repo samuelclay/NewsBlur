@@ -6495,7 +6495,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-intro .NB-modal-loading {
-    margin: 8px 8px 0 0;
+    margin: 16px 8px 0 0;
 }
 .NB-modal-intro .NB-intro-section {
     padding: 24px 4px;
@@ -6829,7 +6829,7 @@ form.opml_import_form input {
   clear: both;
 }
 .NB-modal-intro .NB-page-4-started {
-    margin: 12px 24px;
+    margin: 6px 0 18px;
 }
 .NB-modal-intro .NB-intro-follows {
     border-radius: 6px;
@@ -6850,6 +6850,9 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-intro-uptodate-subscribe .NB-intro-uptodate-follow {
     border-bottom: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow iframe {
+    margin: 6px auto 0;
 }
 .NB-modal-intro .NB-intro-uptodate-follow .NB-modal-submit-button {
     width: 100px;

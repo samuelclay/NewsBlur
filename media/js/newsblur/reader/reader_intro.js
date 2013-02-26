@@ -101,7 +101,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             ]),
                             $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
                                 $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
-                                $.make('div', { className: 'NB-intro-import' }, [
+                                $.make('div', { className: 'NB-intro-import NB-intro-module' }, [
                                     NEWSBLUR.generate_bookmarklet(),
                                     $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Drag this bookmarklet into your bookmarks bar')
                                 ])
@@ -124,8 +124,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
                                 $.make('span', '@samuelclay')
                             ]),
-                            $.make('a', { href: "https://twitter.com/samuelclay", className: "twitter-follow-button", "data-show-count": true }, "Follow @samuelclay"),
-                            $.make('script', '!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");')
+                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=samuelclay", width: 230, height: 20 })
                         ]),
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
@@ -133,7 +132,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
                                 $.make('span', '@newsblur')
                             ]),
-                            $.make('a', { href: "https://twitter.com/newsblur", className: "twitter-follow-button", "data-show-count": true }, "Follow @newsblur")
+                            $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=newsblur", width: 230, height: 20 })
                         ])
                     ]),
                     $.make('tr', { className: 'NB-intro-uptodate-subscribe' }, [
