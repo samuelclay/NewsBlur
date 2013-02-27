@@ -2,6 +2,8 @@ package com.newsblur.activity;
 
 import java.util.ArrayList;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ public class AllStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
+	private ContentResolver resolver;
 	private boolean stopLoading = false;
 
 	@Override
@@ -36,8 +39,9 @@ public class AllStoriesItemsList extends ItemsList {
 
 		feedIds = new ArrayList<String>();
 		apiManager = new APIManager(this);
-
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		resolver = getContentResolver();
+		
+		Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
@@ -97,8 +101,15 @@ public class AllStoriesItemsList extends ItemsList {
 		new MarkAllStoriesAsReadTask(apiManager) {
 			@Override
 			protected void onPostExecute(Boolean result) {
-				// TODO does main view refresh?
 				if (result) {
+					// mark all feed IDs as read
+					ContentValues values = new ContentValues();
+					values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
+					values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
+					values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
+					for (String feedId : feedIds) {
+						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
+					}
 					setResult(RESULT_OK); 
 					Toast.makeText(AllStoriesItemsList.this, R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
 					finish();
