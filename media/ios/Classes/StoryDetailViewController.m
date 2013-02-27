@@ -54,17 +54,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-
-    // settings button to right
-//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-//    settings.bounds = CGRectMake(0, 0, 32, 32);
-//    [settings addTarget:self action:@selector(toggleFontSize:) forControlEvents:UIControlEventTouchUpInside];
-//    [settings setImage:settingsImage forState:UIControlStateNormal];
-//    
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                       initWithCustomView:settings];
-
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     self.webView.scalesPageToFit = YES;

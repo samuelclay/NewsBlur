@@ -163,7 +163,7 @@
         } else {
             cell.textLabel.text = [@"Mark as read" uppercaseString];
         }
-        cell.imageView.image = [UIImage imageNamed:@"bullet_orange"];
+        cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
     } else if (indexPath.row == 2) {
         cell.textLabel.text = [@"Send to..." uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"email"];

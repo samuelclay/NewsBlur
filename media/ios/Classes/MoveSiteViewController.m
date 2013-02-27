@@ -35,10 +35,10 @@
 }
 
 - (void)viewDidLoad {    
-    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
     [toFolderInput setLeftView:folderImage];
     [toFolderInput setLeftViewMode:UITextFieldViewModeAlways];
-    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
     [fromFolderInput setLeftView:folderImage2];
     [fromFolderInput setLeftViewMode:UITextFieldViewModeAlways];
         
