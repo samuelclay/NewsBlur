@@ -65,6 +65,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize inPullToRefresh_;
 @synthesize addBarButton;
 @synthesize settingsBarButton;
+@synthesize activitiesButton;
 
 #pragma mark -
 #pragma mark Globals
@@ -93,11 +94,59 @@ static const CGFloat kFolderTitleHeight = 28;
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
     
-    [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
+    
+    UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
+                                          resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
+                                               forState:UIControlStateNormal
+                                             barMetrics:UIBarMetricsDefault];
+    UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
+                                        resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
+                                               forState:UIControlStateSelected
+                                             barMetrics:UIBarMetricsDefault];
+    UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
+                                    resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
+                                 forLeftSegmentState:UIControlStateNormal
+                                   rightSegmentState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
+                                  resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
+                                 forLeftSegmentState:UIControlStateSelected
+                                   rightSegmentState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
+                                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
+                                 forLeftSegmentState:UIControlStateNormal
+                                   rightSegmentState:UIControlStateSelected
+                                          barMetrics:UIBarMetricsDefault];
+    [[UISegmentedControl appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [UIFont boldSystemFontOfSize:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x505050), UITextAttributeTextColor,
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateNormal];
+    [[UISegmentedControl appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [UIFont boldSystemFontOfSize:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x505050), UITextAttributeTextColor,
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateSelected];
+    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
+    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
 
+    
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
 }
 
@@ -344,27 +393,30 @@ static const CGFloat kFolderTitleHeight = 28;
     
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
     UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.bounds = CGRectMake( 0, 0, addImage.size.width, addImage.size.height);
+    [addButton sizeToFit];
     [addButton setImage:addImage forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
     [addBarButton setCustomView:addButton];
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    settingsButton.bounds = CGRectMake( 0, 0, settingsImage.size.width, settingsImage.size.height);
+    [settingsButton sizeToFit];
     [settingsButton setImage:settingsImage forState:UIControlStateNormal];
     [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
     [settingsBarButton setCustomView:settingsButton];    
     
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                       target:nil action:nil];
+    spacer.width = 12;
     UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
     UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    activityButton.bounds = CGRectMake( 0, 0, activityImage.size.width / 2, activityImage.size.height / 2);
     [activityButton setImage:activityImage forState:UIControlStateNormal];
+    [activityButton sizeToFit];
     [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    activityButton.contentEdgeInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-    UIBarButtonItem *activityBarButton = [[UIBarButtonItem alloc]
-                                          initWithCustomView:activityButton];
-    self.navigationItem.rightBarButtonItem = activityBarButton;
+    activitiesButton = [[UIBarButtonItem alloc]
+                        initWithCustomView:activityButton];
+    self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -602,8 +654,8 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
         [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
     }
-    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 20, self.view.frame.size.height - 60)];
-    [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36, self.view.frame.size.height - 60)];
+    [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
                                    permittedArrowDirections:UIPopoverArrowDirectionUp
                                                    animated:YES];
     

@@ -211,27 +211,27 @@
     border: 1px solid #606060;
     border-color: #E5E5E5 #CDCDCD #CDCDCD #E5E5E5;
     background: #DCDCDC;
-    background: linear-gradient(top, #DCDCDC, #D2D2D2);
     background: -webkit-gradient(linear, left top, left bottom, from(#DCDCDC), to(#D2D2D2));
+    background: linear-gradient(to top, #DCDCDC, #D2D2D2);
 }
 
 .NB-modal-submit-green {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
     background-color: #217412;
-    background-image: linear-gradient(bottom, #216200, #217412);
     background-image: -webkit-linear-gradient(bottom, #216200, #217412);
+    background-image: linear-gradient(to top, #216200, #217412);
     font-weight: bold;
     color: #FCFCFC;
 }
 .NB-modal-submit-green:hover {
     background-color: #216200;
-    background-image: linear-gradient(bottom, #1E5000, #216200);
     background-image: -webkit-linear-gradient(bottom, #1E5000, #216200);
+    background-image: linear-gradient(to top, #1E5000, #216200);
 }
 .NB-modal-submit-green:active {
     background-color: #1E5000;
-    background-image: linear-gradient(bottom, #1B3F00, #1E5000);
     background-image: -webkit-linear-gradient(bottom, #1B3F00, #1E5000);
+    background-image: linear-gradient(to top, #1B3F00, #1E5000);
 }
 
 .NB-modal-submit-back,
@@ -241,8 +241,8 @@
     text-shadow: 0 -1px 0 rgba(255, 255, 255, .3);
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
     background-color: #d5d4dB;
-    background-image: linear-gradient(bottom, #CBCAD3, #d5d4dB);
     background-image: -webkit-linear-gradient(bottom, #CBCAD3, #d5d4dB);
+    background-image: linear-gradient(to top, #CBCAD3, #d5d4dB);
     color: #505050;
 }
 .NB-modal-submit-back:hover,
@@ -250,16 +250,16 @@
 .NB-modal-submit-close:hover,
 .NB-modal-submit-grey:hover {
     background-color: #CBCAD3;
-    background-image: linear-gradient(bottom, #BDBCC7, #CBCAD3);
     background-image: -webkit-linear-gradient(bottom, #BDBCC7, #CBCAD3);
+    background-image: linear-gradient(to top, #BDBCC7, #CBCAD3);
 }
 .NB-modal-submit-back:active,
 .NB-modal-submit-reset:active,
 .NB-modal-submit-close:active,
 .NB-modal-submit-grey:active {
     background-color: #BDBCC7;
-    background-image: linear-gradient(bottom, #ADACBB, #BDBCC7);
     background-image: -webkit-linear-gradient(bottom, #ADACBB, #BDBCC7);
+    background-image: linear-gradient(to top, #ADACBB, #BDBCC7);
 }
 .NB-modal-submit-save.NB-disabled,
 .NB-modal-submit-green.NB-disabled,

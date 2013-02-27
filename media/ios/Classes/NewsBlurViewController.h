@@ -40,6 +40,7 @@ UIPopoverControllerDelegate> {
     UIBarButtonItem * homeButton;
     UIBarButtonItem * addBarButton;
     UIBarButtonItem * settingsBarButton;
+    UIBarButtonItem * activitiesButton;
     UISegmentedControl * intelligenceControl;
     WEPopoverController *popoverController;
 	Class popoverClass;
@@ -53,6 +54,7 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;

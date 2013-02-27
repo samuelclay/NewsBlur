@@ -94,7 +94,6 @@
 								<string key="NSFrame">{{70, 8}, {180, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -155,7 +154,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="816230383">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">38</float>
+								<float key="IBUIWidth">22</float>
 								<reference key="IBUIToolbar" ref="895374018"/>
 							</object>
 							<object class="IBUIBarButtonItem" id="403674562">
@@ -175,7 +174,7 @@
 							</object>
 							<object class="IBUIBarButtonItem" id="934474311">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">38</float>
+								<float key="IBUIWidth">22</float>
 								<reference key="IBUIToolbar" ref="895374018"/>
 							</object>
 						</object>
@@ -2169,6 +2168,7 @@
 							<string>sectionUntapped:</string>
 							<string>sectionUntappedOutside:</string>
 							<string>selectIntelligence</string>
+							<string>showInteractionsPopover:</string>
 							<string>showSettingsPopover:</string>
 							<string>tapAddSite:</string>
 						</object>
@@ -2177,6 +2177,7 @@
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -2190,6 +2191,7 @@
 							<string>sectionUntapped:</string>
 							<string>sectionUntappedOutside:</string>
 							<string>selectIntelligence</string>
+							<string>showInteractionsPopover:</string>
 							<string>showSettingsPopover:</string>
 							<string>tapAddSite:</string>
 						</object>
@@ -2212,6 +2214,10 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">showInteractionsPopover:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">showSettingsPopover:</string>
 								<string key="candidateClassName">id</string>
 							</object>
@@ -2225,6 +2231,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activitiesButton</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2239,6 +2246,7 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UISlider</string>
@@ -2256,6 +2264,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activitiesButton</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2270,6 +2279,10 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">activitiesButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">addBarButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
@@ -2906,9 +2919,9 @@
 			</object>
 			<object class="NSArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{80, 16}</string>
-				<string>{80, 16}</string>
-				<string>{57, 16}</string>
+				<string>{19, 9}</string>
+				<string>{54, 10}</string>
+				<string>{58, 10}</string>
 			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">2083</string>

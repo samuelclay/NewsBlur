@@ -186,15 +186,11 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    UIFont *font = [UIFont boldSystemFontOfSize:11.0f];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:UITextAttributeFont];
     
     orderSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                              kMenuOptionHeight - 7*2);
     [orderSegmentedControl setTitle:[@"Newest first" uppercaseString] forSegmentAtIndex:0];
     [orderSegmentedControl setTitle:[@"Oldest" uppercaseString] forSegmentAtIndex:1];
-    [orderSegmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    [orderSegmentedControl setTintColor:UIColorFromRGB(0x738570)];
     
     [cell addSubview:orderSegmentedControl];
     
@@ -205,15 +201,10 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    UIFont *font = [UIFont boldSystemFontOfSize:11.0f];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:UITextAttributeFont];
-    
     readFilterSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                                   kMenuOptionHeight - 7*2);
     [readFilterSegmentedControl setTitle:[@"All stories" uppercaseString] forSegmentAtIndex:0];
     [readFilterSegmentedControl setTitle:[@"Unread only" uppercaseString] forSegmentAtIndex:1];
-    [readFilterSegmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    [readFilterSegmentedControl setTintColor:UIColorFromRGB(0x738570)];
     
     [cell addSubview:readFilterSegmentedControl];
     
