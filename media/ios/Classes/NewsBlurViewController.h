@@ -68,6 +68,7 @@ UIPopoverControllerDelegate> {
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;

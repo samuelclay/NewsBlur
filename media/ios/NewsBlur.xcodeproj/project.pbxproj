@@ -285,6 +285,14 @@
 		FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C216DEDF9D0013E84B /* markread@2x.png */; };
 		FF4151C716DEF1A80013E84B /* original_button.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C516DEF1A80013E84B /* original_button.png */; };
 		FF4151C816DEF1A80013E84B /* original_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C616DEF1A80013E84B /* original_button@2x.png */; };
+		FF4151E916DEF9960013E84B /* back_button_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E116DEF9960013E84B /* back_button_background.png */; };
+		FF4151EA16DEF9960013E84B /* back_button_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E216DEF9960013E84B /* back_button_background@2x.png */; };
+		FF4151EB16DEF9960013E84B /* back_button_landscape_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E316DEF9960013E84B /* back_button_landscape_background.png */; };
+		FF4151EC16DEF9960013E84B /* back_button_landscape_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */; };
+		FF4151ED16DEF9960013E84B /* back_button_landscape_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */; };
+		FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */; };
+		FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E716DEF9960013E84B /* back_button_selected_background.png */; };
+		FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */; };
 		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
@@ -758,6 +766,14 @@
 		FF4151C216DEDF9D0013E84B /* markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markread@2x.png"; sourceTree = "<group>"; };
 		FF4151C516DEF1A80013E84B /* original_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = original_button.png; sourceTree = "<group>"; };
 		FF4151C616DEF1A80013E84B /* original_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "original_button@2x.png"; sourceTree = "<group>"; };
+		FF4151E116DEF9960013E84B /* back_button_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_background.png; sourceTree = "<group>"; };
+		FF4151E216DEF9960013E84B /* back_button_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_background@2x.png"; sourceTree = "<group>"; };
+		FF4151E316DEF9960013E84B /* back_button_landscape_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_landscape_background.png; sourceTree = "<group>"; };
+		FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_landscape_background@2x.png"; sourceTree = "<group>"; };
+		FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_landscape_selected_background.png; sourceTree = "<group>"; };
+		FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_landscape_selected_background@2x.png"; sourceTree = "<group>"; };
+		FF4151E716DEF9960013E84B /* back_button_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_selected_background.png; sourceTree = "<group>"; };
+		FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_selected_background@2x.png"; sourceTree = "<group>"; };
 		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
@@ -1071,6 +1087,14 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF4151E116DEF9960013E84B /* back_button_background.png */,
+				FF4151E216DEF9960013E84B /* back_button_background@2x.png */,
+				FF4151E316DEF9960013E84B /* back_button_landscape_background.png */,
+				FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */,
+				FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */,
+				FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */,
+				FF4151E716DEF9960013E84B /* back_button_selected_background.png */,
+				FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */,
 				FF4151C516DEF1A80013E84B /* original_button.png */,
 				FF4151C616DEF1A80013E84B /* original_button@2x.png */,
 				FF4151C116DEDF9D0013E84B /* markread.png */,
@@ -1966,6 +1990,14 @@
 				FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */,
 				FF4151C716DEF1A80013E84B /* original_button.png in Resources */,
 				FF4151C816DEF1A80013E84B /* original_button@2x.png in Resources */,
+				FF4151E916DEF9960013E84B /* back_button_background.png in Resources */,
+				FF4151EA16DEF9960013E84B /* back_button_background@2x.png in Resources */,
+				FF4151EB16DEF9960013E84B /* back_button_landscape_background.png in Resources */,
+				FF4151EC16DEF9960013E84B /* back_button_landscape_background@2x.png in Resources */,
+				FF4151ED16DEF9960013E84B /* back_button_landscape_selected_background.png in Resources */,
+				FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */,
+				FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */,
+				FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

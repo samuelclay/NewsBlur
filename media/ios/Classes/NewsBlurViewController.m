@@ -147,6 +147,41 @@ static const CGFloat kFolderTitleHeight = 28;
     [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
 
     
+    UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
+                                                      forState:UIControlStateNormal
+                                                    barMetrics:UIBarMetricsDefault];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
+                                                      forState:UIControlStateNormal
+                                                    barMetrics:UIBarMetricsLandscapePhone];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
+                                                      forState:UIControlStateHighlighted
+                                                    barMetrics:UIBarMetricsDefault];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
+                                                      forState:UIControlStateHighlighted 
+                                                    barMetrics:UIBarMetricsLandscapePhone];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateHighlighted];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
+
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
 }
 
@@ -244,6 +279,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [self setUserAvatarLayout:toInterfaceOrientation];
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
@@ -281,6 +317,16 @@ static const CGFloat kFolderTitleHeight = 28;
     // e.g. self.myOutlet = nil;
 }
 
+- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
+    self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
+    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
+    self.intelligenceControl.frame = CGRectMake(self.intelligenceControl.frame.origin.x,
+                                                self.intelligenceControl.frame.origin.y,
+                                                self.intelligenceControl.frame.size.width,
+                                                self.feedViewToolbar.frame.size.height -
+                                                (UIInterfaceOrientationIsPortrait(interfaceOrientation) ? 16 : 8));
+}
 
 
 #pragma mark -
