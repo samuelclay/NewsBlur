@@ -44,7 +44,8 @@
 @synthesize popoverController;
 @synthesize storyTitlesTable, feedMarkReadButton;
 @synthesize settingsBarButton;
-@synthesize spacerBarButton, separatorBarButton;
+@synthesize separatorBarButton;
+@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
 @synthesize stories;
 @synthesize rightToolbar;
 @synthesize appDelegate;
@@ -68,12 +69,18 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     
     rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 80,
+                    initWithFrame:CGRectMake(0, 0, 76,
                                              self.navigationController.view.frame.size.height)];
     
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacerBarButton.width = -16;
+    spacerBarButton.width = -12;
+    spacer2BarButton = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer2BarButton.width = -4;
+    spacer3BarButton = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer3BarButton.width = -4;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
@@ -125,14 +132,18 @@
         [rightToolbar setItems: [NSArray arrayWithObjects:
                                  spacerBarButton,
                                  feedMarkReadButton,
+                                 spacer2BarButton,
                                  separatorBarButton,
+                                 spacer3BarButton,
                                  titleImageBarButton, nil]];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     } else {
         [rightToolbar setItems: [NSArray arrayWithObjects:
                                  spacerBarButton,
                                  feedMarkReadButton,
+                                 spacer2BarButton,
                                  separatorBarButton,
+                                 spacer3BarButton,
                                  settingsBarButton, nil]];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
