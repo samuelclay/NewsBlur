@@ -10,6 +10,7 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "WEPopoverController.h"
+#import "TransparentToolbar.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
@@ -27,6 +28,7 @@
     UIActivityIndicatorView *loadingIndicator;
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
+    TransparentToolbar * rightToolbar;
     
     WEPopoverController *popoverController;
 	Class popoverClass;
@@ -52,6 +54,11 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
+@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;

@@ -23,6 +23,8 @@
 #import "DataUtilities.h"
 #import "JSON.h"
 #import "SHK.h"
+#import "TransparentToolbar.h"
+#import "UIBarButtonItem+Image.h"
 
 @implementation StoryPageControl
 
@@ -30,7 +32,9 @@
 @synthesize currentPage, nextPage, previousPage;
 @synthesize progressView;
 @synthesize progressViewContainer;
-@synthesize toolbar;
+@synthesize separatorBarButton;
+@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
+@synthesize toolbar, rightToolbar;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -89,20 +93,29 @@
     [self.progressViewContainer addGestureRecognizer:tap];
     self.progressViewContainer.hidden = YES;
     
+    rightToolbar = [[TransparentToolbar alloc]
+                    initWithFrame:CGRectMake(0, 0, 68,
+                                             self.toolbar.frame.size.height)];
     
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleFontSize:)];
+    spacerBarButton = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacerBarButton.width = -12;
+    spacer2BarButton = [[UIBarButtonItem alloc]
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer2BarButton.width = -4;
+    spacer3BarButton = [[UIBarButtonItem alloc]
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer3BarButton.width = -4;
     
-    self.fontSettingsButton = settingsButton;
+    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
+    [separatorBarButton setEnabled:NO];
     
-    // original button for iPhone
-    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Original"
-                                       style:UIBarButtonItemStyleBordered
-                                       target:self
-                                       action:@selector(showOriginalSubview:)
-                                       ];
+    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(toggleFontSize:)];
     
-    self.originalStoryButton = originalButton;
+    UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
+    originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(showOriginalSubview:)];
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
@@ -119,12 +132,19 @@
     self.buttonBack = backButton;
     
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalButton, settingsButton, nil];
-    } else {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    }
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 fontSettingsButton,
+                                 spacer2BarButton,
+                                 separatorBarButton,
+                                 spacer3BarButton,
+                                 originalStoryButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
+//    } else {
+//        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//    }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -528,9 +548,9 @@
     self.bottomPlaceholderToolbar.hidden = YES;
     self.progressViewContainer.hidden = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
-    }
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
+//    }
     
     [self setNextPreviousButtons];
     [appDelegate changeActiveFeedDetailRow];

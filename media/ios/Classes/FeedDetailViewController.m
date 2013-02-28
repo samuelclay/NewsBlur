@@ -105,6 +105,7 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self checkScroll];
+    [appDelegate.storyPageControl refreshPages];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
