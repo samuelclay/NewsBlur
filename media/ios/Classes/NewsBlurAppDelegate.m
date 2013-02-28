@@ -426,7 +426,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentModalViewController:trainerViewController animated:YES];        
-        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsButton];
+        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsBarButton];
     } else {
         [navController presentModalViewController:trainerViewController animated:YES];
     }

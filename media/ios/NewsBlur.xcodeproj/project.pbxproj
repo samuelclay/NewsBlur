@@ -278,6 +278,11 @@
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
 		FF4130A0162CECAE00DDB6A7 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309F162CECAE00DDB6A7 /* email.png */; };
 		FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */; };
+		FF4151BC16DED7D10013E84B /* bar-separator.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151BA16DED7D10013E84B /* bar-separator.png */; };
+		FF4151BD16DED7D10013E84B /* bar-separator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151BB16DED7D10013E84B /* bar-separator@2x.png */; };
+		FF4151C016DED9660013E84B /* UIBarButtonItem+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4151BF16DED9660013E84B /* UIBarButtonItem+Image.m */; };
+		FF4151C316DEDF9D0013E84B /* markread.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C116DEDF9D0013E84B /* markread.png */; };
+		FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C216DEDF9D0013E84B /* markread@2x.png */; };
 		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
@@ -743,6 +748,12 @@
 		FF41309F162CECAE00DDB6A7 /* email.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = email.png; sourceTree = "<group>"; };
 		FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewCell.h; sourceTree = "<group>"; };
 		FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTableViewCell.m; sourceTree = "<group>"; };
+		FF4151BA16DED7D10013E84B /* bar-separator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bar-separator.png"; sourceTree = "<group>"; };
+		FF4151BB16DED7D10013E84B /* bar-separator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bar-separator@2x.png"; sourceTree = "<group>"; };
+		FF4151BE16DED9660013E84B /* UIBarButtonItem+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIBarButtonItem+Image.h"; path = "Other Sources/UIBarButtonItem+Image.h"; sourceTree = "<group>"; };
+		FF4151BF16DED9660013E84B /* UIBarButtonItem+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIBarButtonItem+Image.m"; path = "Other Sources/UIBarButtonItem+Image.m"; sourceTree = "<group>"; };
+		FF4151C116DEDF9D0013E84B /* markread.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = markread.png; sourceTree = "<group>"; };
+		FF4151C216DEDF9D0013E84B /* markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markread@2x.png"; sourceTree = "<group>"; };
 		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
@@ -901,6 +912,8 @@
 				43A4C3D415B00966008787B5 /* TransparentToolbar.m */,
 				43A4C3D515B00966008787B5 /* UIView+TKCategory.h */,
 				43A4C3D615B00966008787B5 /* UIView+TKCategory.m */,
+				FF4151BE16DED9660013E84B /* UIBarButtonItem+Image.h */,
+				FF4151BF16DED9660013E84B /* UIBarButtonItem+Image.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -1054,6 +1067,10 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF4151C116DEDF9D0013E84B /* markread.png */,
+				FF4151C216DEDF9D0013E84B /* markread@2x.png */,
+				FF4151BA16DED7D10013E84B /* bar-separator.png */,
+				FF4151BB16DED7D10013E84B /* bar-separator@2x.png */,
 				FF29708816DD7AA400E92F85 /* segmented */,
 				FF85BF8416D6C2B7002D334D /* clock2.png */,
 				FF85BF7A16D6AD6F002D334D /* g_icn_folder_rss.png */,
@@ -1937,6 +1954,10 @@
 				FF29709616DD9F2600E92F85 /* nav_icn_settings@2x.png in Resources */,
 				FF29709816DD9F7400E92F85 /* nav_icn_add@2x.png in Resources */,
 				FF29709A16DDA02200E92F85 /* nav_icn_activity_hover@2x.png in Resources */,
+				FF4151BC16DED7D10013E84B /* bar-separator.png in Resources */,
+				FF4151BD16DED7D10013E84B /* bar-separator@2x.png in Resources */,
+				FF4151C316DEDF9D0013E84B /* markread.png in Resources */,
+				FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2089,6 +2110,7 @@
 				FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 				FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */,
+				FF4151C016DED9660013E84B /* UIBarButtonItem+Image.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

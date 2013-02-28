@@ -12,6 +12,7 @@
 #import "BaseViewController.h"
 #import "Utilities.h"
 #import "WEPopoverController.h"
+#import "TransparentToolbar.h"
 
 @class NewsBlurAppDelegate;
 @class FeedDetailTableCell;
@@ -30,21 +31,18 @@
     BOOL finishedAnimatingIn;
                
     UITableView * storyTitlesTable;
-    UIToolbar * feedViewToolbar;
-    UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
-    UISegmentedControl * intelligenceControl;
     WEPopoverController *popoverController;
     Class popoverClass;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
-@property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
-@property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * settingsButton;
-@property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
+@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 
 @property (nonatomic) NSArray * stories;
@@ -63,7 +61,6 @@
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
-- (IBAction)selectIntelligence;
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;

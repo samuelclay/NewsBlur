@@ -23,6 +23,8 @@
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "WEPopoverController.h"
+#import "UIBarButtonItem+Image.h"
+#import "TransparentToolbar.h"
 
 
 #define kTableViewRowHeight 61;
@@ -40,14 +42,15 @@
 @implementation FeedDetailViewController
 
 @synthesize popoverController;
-@synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
-@synthesize settingsButton;
+@synthesize storyTitlesTable, feedMarkReadButton;
+@synthesize settingsBarButton;
+@synthesize spacerBarButton, separatorBarButton;
 @synthesize stories;
+@synthesize rightToolbar;
 @synthesize appDelegate;
 @synthesize feedPage;
 @synthesize pageFetching;
 @synthesize pageFinished;
-@synthesize intelligenceControl;
 @synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
 
@@ -63,6 +66,24 @@
     
     popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    
+    rightToolbar = [[TransparentToolbar alloc]
+                    initWithFrame:CGRectMake(0, 0, 80,
+                                             self.navigationController.view.frame.size.height)];
+    
+    spacerBarButton = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacerBarButton.width = -16;
+    
+    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
+    [separatorBarButton setEnabled:NO];
+    
+    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsActionSheet:)];
+    
+    UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
+    feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -101,9 +122,19 @@
         [titleImageButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
                                                  initWithCustomView:titleImageButton];
-        self.navigationItem.rightBarButtonItem = titleImageBarButton;
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 feedMarkReadButton,
+                                 separatorBarButton,
+                                 titleImageBarButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     } else {
-        self.navigationItem.rightBarButtonItem = nil;
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 feedMarkReadButton,
+                                 separatorBarButton,
+                                 settingsBarButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
 
     
@@ -138,9 +169,9 @@
          (appDelegate.isRiverView &&
           [appDelegate.activeFolder isEqualToString:@"everything"]) ||
          [appDelegate.activeFolder isEqualToString:@"saved_stories"])) {
-        settingsButton.enabled = NO;
+        settingsBarButton.enabled = NO;
     } else {
-        settingsButton.enabled = YES;
+        settingsBarButton.enabled = YES;
     }
     
     if (appDelegate.isSocialRiverView || 
@@ -195,14 +226,14 @@
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && appDelegate.isSocialView) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            UIButton *avatar = (UIButton *)self.navigationItem.rightBarButtonItem.customView; 
+            UIButton *avatar = (UIButton *)[(UIBarButtonItem *)[[rightToolbar items] lastObject] customView];
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(32, 32);
             avatar.frame = buttonFrame;
         } else {
-            UIButton *avatar = (UIButton *)self.navigationItem.rightBarButtonItem.customView; 
+            UIButton *avatar = (UIButton *)[(UIBarButtonItem *)[[rightToolbar items] lastObject] customView];
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(28, 28);
             avatar.frame = buttonFrame;
@@ -823,15 +854,6 @@
     }
 }
 
-- (IBAction)selectIntelligence {
-    NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-    [self changeIntelligence:newLevel];
-    
-    [self performSelector:@selector(checkScroll)
-                withObject:nil
-                afterDelay:1.0];
-}
-
 - (void)changeIntelligence:(NSInteger)newLevel {
     NSInteger previousLevel = [appDelegate selectedIntelligence];
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
@@ -1100,8 +1122,8 @@
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
         [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 4 : 38 * 6)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionDown
+        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];
     }
 
@@ -1384,12 +1406,6 @@
 	props.leftArrowImageName = @"popoverArrowLeft.png";
 	props.rightArrowImageName = @"popoverArrowRight.png";
 	return props;
-}
-
-- (void)resetToolbar {
-    self.navigationItem.leftBarButtonItem = nil;
-    self.navigationItem.titleView = nil;
-    self.navigationItem.rightBarButtonItem = nil;
 }
 
 
