@@ -341,11 +341,18 @@ static const CGFloat kFolderTitleHeight = 28;
     CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
     self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
+
+    int height = 16;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+        UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+        height = 8;
+    }
+
     self.intelligenceControl.frame = CGRectMake(self.intelligenceControl.frame.origin.x,
                                                 self.intelligenceControl.frame.origin.y,
                                                 self.intelligenceControl.frame.size.width,
                                                 self.feedViewToolbar.frame.size.height -
-                                                (UIInterfaceOrientationIsPortrait(interfaceOrientation) ? 16 : 8));
+                                                height);
 }
 
 
@@ -471,18 +478,20 @@ static const CGFloat kFolderTitleHeight = 28;
     [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
     [settingsBarButton setCustomView:settingsButton];
     
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
-                                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                       target:nil action:nil];
-    spacer.width = 12;
-    UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
-    UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [activityButton setImage:activityImage forState:UIControlStateNormal];
-    [activityButton sizeToFit];
-    [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:activityButton];
-    self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                                           initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                           target:nil action:nil];
+        spacer.width = 12;
+        UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
+        UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [activityButton setImage:activityImage forState:UIControlStateNormal];
+        [activityButton sizeToFit];
+        [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
+        activitiesButton = [[UIBarButtonItem alloc]
+                            initWithCustomView:activityButton];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
+    }
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -679,12 +688,12 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [appDelegate showAddSiteModal:sender];
+    [appDelegate showAddSiteModal:self.addBarButton];
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFeedMenuPopover:sender];
+        [appDelegate.masterContainerViewController showFeedMenuPopover:self.settingsBarButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]

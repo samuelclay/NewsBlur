@@ -67,10 +67,10 @@
     
     popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    
+
     rightToolbar = [[TransparentToolbar alloc]
                     initWithFrame:CGRectMake(0, 0, 76,
-                                             self.navigationController.view.frame.size.height)];
+                                             44)];
     
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -109,7 +109,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    // 
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     
@@ -202,6 +201,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyPageControl resetPages];
@@ -260,6 +260,7 @@
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
+    
 }
 
 - (void)reloadPage {
@@ -1116,7 +1117,7 @@
 
 - (IBAction)doOpenSettingsActionSheet:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFeedDetailMenuPopover:sender];
+        [appDelegate.masterContainerViewController showFeedDetailMenuPopover:self.settingsBarButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]

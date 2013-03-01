@@ -194,15 +194,25 @@
 //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
     
-    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"] forBarMetrics:UIBarMetricsDefault];
-    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"] forBarMetrics:UIBarMetricsLandscapePhone];
-    [[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar_background.png"] forToolbarPosition:0 barMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
+     forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
+     forBarMetrics:UIBarMetricsLandscapePhone];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"toolbar_background.png"]
+     forToolbarPosition:UIToolbarPositionBottom barMetrics:UIBarMetricsDefault];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
+     forToolbarPosition:UIToolbarPositionTop barMetrics:UIBarMetricsDefault];
 
     [[UINavigationBar appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0x404040), UITextAttributeTextColor,
                              UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
+                             UITextAttributeTextShadowOffset,
                              nil]];
     
 //    [self showFirstTimeUser];
@@ -453,29 +463,25 @@
 - (void)loadFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
-    
-    self.inFeedDetail = YES;
-
-    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
-    
+    self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
-    
-    [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
     } else {
     
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
-                                                                         action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
+                                          initWithTitle: @"All"
+                                          style: UIBarButtonItemStyleBordered
+                                          target: nil
+                                          action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
         UINavigationController *navController = self.navigationController;        
         [navController pushViewController:feedDetailViewController animated:YES];
-//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
+    
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -520,7 +526,7 @@
     [self loadFeedDetailView];
     
     if (showHUD) {
-        [self.storyPageControl showShareHUD:@"Loading story"];
+        [self.storyPageControl showShareHUD:@"Finding story..."];
     }
 }
 
@@ -621,7 +627,6 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:feedDetailViewController animated:YES];
-//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
