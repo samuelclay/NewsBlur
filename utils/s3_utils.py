@@ -6,8 +6,8 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from utils.image_functions import ImageOps
 
-if '/home/sclay/newsblur' not in ' '.join(sys.path):
-    sys.path.append("/home/sclay/newsblur")
+if '/srv/newsblur' not in ' '.join(sys.path):
+    sys.path.append("/srv/newsblur")
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.conf import settings

@@ -3,8 +3,8 @@ from boto.s3.key import Key
 import os
 import sys
 
-if '/home/sclay/newsblur' not in ' '.join(sys.path):
-    sys.path.append("/home/sclay/newsblur")
+if '/srv/newsblur' not in ' '.join(sys.path):
+    sys.path.append("/srv/newsblur")
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.conf import settings
