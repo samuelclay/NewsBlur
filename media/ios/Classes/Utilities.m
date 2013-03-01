@@ -42,7 +42,7 @@ static NSMutableDictionary *imageCache;
     
     // Save image to memory-based cache, for performance when reading.
 //    NSLog(@"Saving %@", [imageCache allKeys]);
-    if (image) {
+    if (image && [filename class] != [NSNull class]) {
         [imageCache setObject:image forKey:filename];
     } else {
 //        NSLog(@"%@ has no image!!!", filename);
@@ -57,7 +57,7 @@ static NSMutableDictionary *imageCache;
     UIImage *image;
     image = [imageCache objectForKey:filename];
     
-    if (!image) {
+    if (!image || [image class] == [NSNull class]) {
         // Image not in cache, search on disk.
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *cacheDirectory = [paths objectAtIndex:0];

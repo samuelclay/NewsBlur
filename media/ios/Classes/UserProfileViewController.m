@@ -44,7 +44,6 @@
     self.contentSizeForViewInPopover = self.view.frame.size;
 
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
     self.profileTable = profiles;

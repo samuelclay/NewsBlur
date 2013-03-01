@@ -94,7 +94,7 @@
     self.progressViewContainer.hidden = YES;
     
     rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 68,
+                    initWithFrame:CGRectMake(0, 0, 80,
                                              self.toolbar.frame.size.height)];
     
     spacerBarButton = [[UIBarButtonItem alloc]
@@ -105,7 +105,7 @@
     spacer2BarButton.width = -4;
     spacer3BarButton = [[UIBarButtonItem alloc]
                         initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer3BarButton.width = -4;
+    spacer3BarButton.width = -10;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];

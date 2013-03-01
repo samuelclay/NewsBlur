@@ -329,6 +329,16 @@
 		FF85BF8516D6C2B7002D334D /* clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF8416D6C2B7002D334D /* clock2.png */; };
 		FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
+		FFCF51A316E020DD008C7C42 /* toolbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A116E020DD008C7C42 /* toolbar_background.png */; };
+		FFCF51A416E020DD008C7C42 /* toolbar_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */; };
+		FFCF51A716E028B0008C7C42 /* navbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A516E028B0008C7C42 /* navbar_background.png */; };
+		FFCF51A816E028B0008C7C42 /* navbar_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */; };
+		FFCF51AB16E029E6008C7C42 /* navbar_landscape_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */; };
+		FFCF51AC16E029E6008C7C42 /* navbar_landscape_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */; };
+		FFCF51C516E0300F008C7C42 /* button_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C116E0300F008C7C42 /* button_selected.png */; };
+		FFCF51C616E0300F008C7C42 /* button_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C216E0300F008C7C42 /* button_selected@2x.png */; };
+		FFCF51C716E0300F008C7C42 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C316E0300F008C7C42 /* button.png */; };
+		FFCF51C816E0300F008C7C42 /* button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C416E0300F008C7C42 /* button@2x.png */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
 		FFDE35CC161B8F870034BFDE /* FolderTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35CB161B8F870034BFDE /* FolderTitleView.m */; };
@@ -815,6 +825,16 @@
 		FF85BF8416D6C2B7002D334D /* clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock2.png; sourceTree = "<group>"; };
 		FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "StoryPageControl~ipad.xib"; path = "Resources-iPad/Classes/StoryPageControl~ipad.xib"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		FFCF51A116E020DD008C7C42 /* toolbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toolbar_background.png; sourceTree = "<group>"; };
+		FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_background@2x.png"; sourceTree = "<group>"; };
+		FFCF51A516E028B0008C7C42 /* navbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbar_background.png; sourceTree = "<group>"; };
+		FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_background@2x.png"; sourceTree = "<group>"; };
+		FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbar_landscape_background.png; sourceTree = "<group>"; };
+		FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_landscape_background@2x.png"; sourceTree = "<group>"; };
+		FFCF51C116E0300F008C7C42 /* button_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_selected.png; sourceTree = "<group>"; };
+		FFCF51C216E0300F008C7C42 /* button_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button_selected@2x.png"; sourceTree = "<group>"; };
+		FFCF51C316E0300F008C7C42 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
+		FFCF51C416E0300F008C7C42 /* button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button@2x.png"; sourceTree = "<group>"; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		FFD1D7301459B63500E46F89 /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
@@ -1087,6 +1107,16 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFCF51C116E0300F008C7C42 /* button_selected.png */,
+				FFCF51C216E0300F008C7C42 /* button_selected@2x.png */,
+				FFCF51C316E0300F008C7C42 /* button.png */,
+				FFCF51C416E0300F008C7C42 /* button@2x.png */,
+				FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */,
+				FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */,
+				FFCF51A516E028B0008C7C42 /* navbar_background.png */,
+				FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */,
+				FFCF51A116E020DD008C7C42 /* toolbar_background.png */,
+				FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */,
 				FF4151E116DEF9960013E84B /* back_button_background.png */,
 				FF4151E216DEF9960013E84B /* back_button_background@2x.png */,
 				FF4151E316DEF9960013E84B /* back_button_landscape_background.png */,
@@ -1998,6 +2028,16 @@
 				FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */,
 				FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */,
 				FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */,
+				FFCF51A316E020DD008C7C42 /* toolbar_background.png in Resources */,
+				FFCF51A416E020DD008C7C42 /* toolbar_background@2x.png in Resources */,
+				FFCF51A716E028B0008C7C42 /* navbar_background.png in Resources */,
+				FFCF51A816E028B0008C7C42 /* navbar_background@2x.png in Resources */,
+				FFCF51AB16E029E6008C7C42 /* navbar_landscape_background.png in Resources */,
+				FFCF51AC16E029E6008C7C42 /* navbar_landscape_background@2x.png in Resources */,
+				FFCF51C516E0300F008C7C42 /* button_selected.png in Resources */,
+				FFCF51C616E0300F008C7C42 /* button_selected@2x.png in Resources */,
+				FFCF51C716E0300F008C7C42 /* button.png in Resources */,
+				FFCF51C816E0300F008C7C42 /* button@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2237,6 +2277,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -2259,6 +2300,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

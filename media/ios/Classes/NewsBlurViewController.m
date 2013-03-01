@@ -171,6 +171,26 @@ static const CGFloat kFolderTitleHeight = 28;
     [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
                                                       forState:UIControlStateHighlighted 
                                                     barMetrics:UIBarMetricsLandscapePhone];
+    
+    UIImage *b1 = [[UIImage imageNamed:@"button.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    
+    [[UIBarButtonItem appearance] setBackgroundImage:b1
+                                            forState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:b2
+                                            forState:UIControlStateHighlighted
+                                          barMetrics:UIBarMetricsDefault];
+
+    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateNormal];    
     [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
@@ -439,17 +459,17 @@ static const CGFloat kFolderTitleHeight = 28;
     
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
     UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [addButton sizeToFit];
+    addButton.bounds = CGRectMake(0, 0, 34, 44);
     [addButton setImage:addImage forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
     [addBarButton setCustomView:addButton];
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [settingsButton sizeToFit];
+    settingsButton.bounds = CGRectMake(0, 0, 34, 44);
     [settingsButton setImage:settingsImage forState:UIControlStateNormal];
     [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    [settingsBarButton setCustomView:settingsButton];    
+    [settingsBarButton setCustomView:settingsButton];
     
     UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
                                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace

@@ -35,7 +35,6 @@
     [super viewDidLoad];
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
-    navBar.tintColor = UIColorFromRGB(0x183353);
     [self hideGradientBackground:webView];
     [self.webView.scrollView setDelaysContentTouches:YES];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -58,7 +57,6 @@
                    nil]];
     
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
-    titleLabel.shadowColor = UIColorFromRGB(0x306070);
     navBar.topItem.titleView = titleLabel;
     
     NSString *path = [[NSBundle mainBundle] bundlePath];

@@ -194,16 +194,17 @@
 //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
     
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                UIColorFromRGB(0x404040),
-                                UITextAttributeTextColor,
-                                UIColorFromRGB(0xFAFAFA),
-                                UITextAttributeTextShadowColor, nil];
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"] forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"] forBarMetrics:UIBarMetricsLandscapePhone];
+    [[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar_background.png"] forToolbarPosition:0 barMetrics:UIBarMetricsDefault];
+
+    [[UINavigationBar appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]];
     
-    [[UIBarButtonItem appearance] setTitleTextAttributes: attributes
-                                                forState: UIControlStateNormal];
-    [[UIBarButtonItem appearance] setTitleTextAttributes: attributes
-                                                forState: UIControlStateHighlighted];
 //    [self showFirstTimeUser];
 	return YES;
 }
@@ -1681,10 +1682,10 @@
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
-    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.textColor = UIColorFromRGB(0x404040);
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     titleLabel.numberOfLines = 1;
-    titleLabel.shadowColor = [UIColor blackColor];
+    titleLabel.shadowColor = UIColorFromRGB(0xF5F5F5);
     titleLabel.shadowOffset = CGSizeMake(0, -1);
     titleLabel.center = CGPointMake(0, -2);
     [titleLabel sizeToFit];

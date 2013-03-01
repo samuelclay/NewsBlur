@@ -77,10 +77,10 @@
     spacerBarButton.width = -12;
     spacer2BarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer2BarButton.width = -4;
+    spacer2BarButton.width = -10;
     spacer3BarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer3BarButton.width = -4;
+    spacer3BarButton.width = -10;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
@@ -119,9 +119,6 @@
             
     // set center title
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
-    [titleLabel setTextColor:UIColorFromRGB(0x404040)];
-    [titleLabel setShadowOffset:CGSizeMake(0, -1)];
-    [titleLabel setShadowColor:UIColorFromRGB(0xFAFAFA)];
     self.navigationItem.titleView = titleLabel;
     
     // set right avatar title image
