@@ -684,20 +684,20 @@ body {
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     position: absolute;
-    top: 3px;
-    right: 4px;
+    top: 5px;
+    right: 3px;
     width: 16px;
     height: 16px;
-    background: transparent url('/media/embed/reader/toggle_minus.png') no-repeat 0 0;
-    background-size: 16px;
+    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat 0 0;
+    background-size: 13px 12px;
     opacity: .6;
     display: none;
 }
 
 .NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header.NB-folder-collapsed .NB-feedlist-collapse-icon {
-    background-image: url('/media/embed/reader/toggle_plus.png');
-    background-size: 16px;
+    background-image: url('/media/embed/icons/circular/folder_expand.png');
+    background-size: 13px 12px;
 }
 
 .NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon:hover,
@@ -5635,13 +5635,16 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
 }
 .NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/keyboard.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_keyboard.png') no-repeat  0 1px;    
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-tutorial .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/map.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/menu_icn_tips.png') no-repeat  0 1px;    
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-exception .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/exclamation.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/newuser_icn_sharewith_active.png') no-repeat  0 1px;    
+    background-size: 18px;
 }
 
 .NB-menu-manage .NB-menu-manage-delete .NB-menu-manage-image {
@@ -5790,20 +5793,24 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/package_green.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_goodies.png') no-repeat  0 1px;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/share.png') no-repeat 0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_followers.png') no-repeat 2px 1px;
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-profile-editor .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png') no-repeat  0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/color_wheel.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_preferences.png') no-repeat  0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/weather_sun.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_profile.png') no-repeat  0 0;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feedchooser .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/color_swatch.png') no-repeat  0 2px;
