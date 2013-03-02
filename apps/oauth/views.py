@@ -180,8 +180,10 @@ def appdotnet_connect(request):
         social_services.syncing_appdotnet = True
         social_services.save()
         
-        SyncAppdotnetFriends.delay(user_id=request.user.pk)
-
+        # SyncAppdotnetFriends.delay(user_id=request.user.pk)
+        # XXX TODO: Remove below and uncomment above. Only for www->dev.
+        social_services.sync_appdotnet_friends()
+        
         logging.user(request, "~BB~FRFinishing App.net connect")
         return {}
     else:
