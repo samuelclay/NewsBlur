@@ -1,5 +1,16 @@
 NEWSBLUR.utils = {
-
+    
+    service_name: function(service) {
+        switch (service) {
+            case 'twitter':
+            return 'Twitter';
+            case 'facebook':
+            return 'Facebook';
+            case 'appdotnet':
+            return 'App.net';
+        }
+    },
+    
     compute_story_score: function(story) {
       var score = 0;
       var intelligence = story.get('intelligence');

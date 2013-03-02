@@ -101,22 +101,25 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $services = $('.NB-friends-services', this.$modal).empty();
         var service_syncing = false;
         
-        _.each(['twitter', 'facebook'], _.bind(function(service) {
+        _.each(['twitter', 'facebook', 'appdotnet'], _.bind(function(service) {
             var $service;
             
             if (this.services && this.services[service][service+'_uid']) {
                 var syncing = this.services[service].syncing;
                 if (syncing) service_syncing = true;
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
+                    $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service.png' }),
+                        syncing ? 'Fetching...' : 'Disconnect'
+                    ])
                 ]);
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Find ' + _.string.capitalize(service) + ' Friends'
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service_off.png' }),
+                        'Find ' + NEWSBLUR.utils.service_name(service) + ' Friends'
                     ])
                 ]);
             }
@@ -393,6 +396,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 service = 'twitter';
             } else if ($service.hasClass('NB-friends-service-facebook')) {
                 service = 'facebook';
+            } else if ($service.hasClass('NB-friends-service-appdotnet')) {
+                service = 'appdotnet';
             }
             if ($service.hasClass('NB-connected')) {
                 self.disconnect(service);

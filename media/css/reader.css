@@ -8685,7 +8685,6 @@ form.opml_import_form input {
     margin: 0;
     padding: 12px 12px 0 0;
     overflow: hidden;
-    float: left;
 }
 .NB-modal-friends .NB-friends-service-title {
     float: left;
@@ -8699,8 +8698,10 @@ form.opml_import_form input {
     margin-top: -2px;
 }
 .NB-modal-friends .NB-modal-submit-button img {
-    vertical-align: bottom;
-    margin: 0 4px 0 0;
+    vertical-align: top;
+    margin: 1px 12px 0 0;
+    width: 12px;
+    height: 12px;
 }
 .NB-modal-friends .NB-friends-autofollow {
     width: auto;
