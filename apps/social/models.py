@@ -1775,6 +1775,8 @@ class MSharedStory(mongo.Document):
             posted = social_service.post_to_twitter(self)
         elif service == 'facebook':
             posted = social_service.post_to_facebook(self)
+        elif service == 'appdotnet':
+            posted = social_service.post_to_appdotnet(self)
         
         if posted:
             self.posted_to_services.append(service)
@@ -2341,14 +2343,14 @@ class MSocialServices(mongo.Document):
     
     def post_to_twitter(self, shared_story):
         message = shared_story.generate_post_to_service_message()
-
+        
         try:
             api = self.twitter_api()
             api.update_status(status=message)
         except tweepy.TweepError, e:
             print e
             return
-
+            
         return True
             
     def post_to_facebook(self, shared_story):
@@ -2370,8 +2372,24 @@ class MSocialServices(mongo.Document):
         except facebook.GraphAPIError, e:
             print e
             return
-
+            
         return True
+
+    def post_to_appdotnet(self, shared_story):
+        message = shared_story.generate_post_to_service_message()
+        
+        try:
+            api = self.appdotnet_api()
+            api.createPost(text=message, links=[{
+                'text': shared_story.story_title,
+                'url': shared_story.blurblog_permalink()
+            }])
+        except Exception, e:
+            print e
+            return
+            
+        return True
+        
 
 class MInteraction(mongo.Document):
     user_id      = mongo.IntField()

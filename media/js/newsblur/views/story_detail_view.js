@@ -65,6 +65,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model: this.model, 
             el: this.el
         });
+        
         params['story_share_view'] = this.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,

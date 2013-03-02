@@ -2973,35 +2973,48 @@ background: transparent;
     overflow: hidden;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook,
+.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet {
     float: left;
-    width: 16px;
-    height: 16px;
+    width: 32px;
+    height: 24px;
     margin: 0 6px 0 0;
     opacity: 1;
     cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, .05);
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
-    background: transparent url('/media/embed/reader/twitter_icon_gray.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/twitter_service_off.png') no-repeat center center;
+    background-size: 12px;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    background: transparent url('/media/embed/reader/facebook_icon_gray.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/facebook_service_off.png') no-repeat center center;
+    background-size: 12px;
 }
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
-    opacity: .7;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
-    opacity: 1;
+.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet {
+    background: transparent url('/media/embed/reader/appdotnet_service_off.png') no-repeat center center;
+    background-size: 12px;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover {
-    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/twitter_service.png') no-repeat center center;
+    background-size: 12px;
+    border-color: #4E8ECD;
+    background-color: rgba(78, 142, 205, .1);
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
-    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/facebook_service.png') no-repeat center center;
+    background-size: 12px;
+    border-color: #6884CD;
+    background-color: rgba(104, 132, 205, .1);
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet.NB-active,
+.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet:hover {
+    background: transparent url('/media/embed/reader/appdotnet_service.png') no-repeat center center;
+    background-size: 12px;
+    border-color: #D16857;
+    background-color: rgba(209, 104, 87, .1);
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-text {
     font-size: 9px;
@@ -8740,7 +8753,7 @@ form.opml_import_form input {
     clear: both;
 }
 .NB-friends-service.NB-friends-service-syncing .NB-friends-service-title {
-    padding-right: 18px;
+    padding-right: 28px;
     background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
     margin-right: 8px;
 }

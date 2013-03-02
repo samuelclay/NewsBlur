@@ -179,8 +179,7 @@ def appdotnet_connect(request):
         social_services.syncing_appdotnet = True
         social_services.save()
         
-        # SyncAppdotnetFriends.delay(user_id=request.user.pk)
-        social_services.sync_appdotnet_friends()
+        SyncAppdotnetFriends.delay(user_id=request.user.pk)
 
         logging.user(request, "~BB~FRFinishing App.net connect")
         return {}
