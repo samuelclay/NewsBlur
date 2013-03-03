@@ -104,10 +104,11 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [self adjustCommentField];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
         [self.commentField becomeFirstResponder];
-        [self adjustCommentField];
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
@@ -122,24 +123,31 @@
 }
 
 - (void)adjustCommentField {
+    CGSize v = self.view.frame.size;
+    int bP = 8;
+    int bW = 32;
+    int bH = 24;
+    int k = 0;
+    int stOffset = 6;
+    int stHeight = 0;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication]
                                                                       statusBarOrientation];
-        CGSize v = self.view.frame.size;
-        int k = UIInterfaceOrientationIsPortrait(orientation) ? 216 : 162;
-        int bP = 8;
-        int bW = 32;
-        int bH = 24;
-        self.storyTitle.frame = CGRectMake(20, 6, v.width - 20*2, 24);
-        self.commentField.frame = CGRectMake(20, self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height + 6,
-                                             v.width - 20*2,
-                                             v.height - k - bH - bP*2 - 12 - self.storyTitle.frame.size.height);
-        CGPoint o = self.commentField.frame.origin;
-        CGSize c = self.commentField.frame.size;
-        self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
-        self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
-        self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
+        k = UIInterfaceOrientationIsPortrait(orientation) ? 216 : 162;
+        self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
+        stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
+        stHeight = self.storyTitle.frame.size.height;
     }
+
+    self.commentField.frame = CGRectMake(20, stOffset + 4,
+                                         v.width - 20*2,
+                                         v.height - k - bH - bP*2 - 12 - stHeight);
+    CGPoint o = self.commentField.frame.origin;
+    CGSize c = self.commentField.frame.size;
+    self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
+    self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
+    self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -148,34 +156,28 @@
 
 - (IBAction)doToggleButton:(id)sender {
     UIButton *button = (UIButton *)sender;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     button.selected = !button.selected;
     int selected = button.selected ? 1 : 0;
     
     if (button.tag == 1) {
-        [userPreferences setInteger:selected forKey:@"shareToTwitter"];
         if (selected) {
             button.layer.borderColor = [UIColorFromRGB(0x4E8ECD) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
     } else if (button.tag == 2) {
-        [userPreferences setInteger:selected forKey:@"shareToFacebook"];
         if (selected) {
             button.layer.borderColor = [UIColorFromRGB(0x6884CD) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
     } else if (button.tag == 3) {
-        [userPreferences setInteger:selected forKey:@"shareToAppdotnet"];
         if (selected) {
             button.layer.borderColor = [UIColorFromRGB(0xD16857) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
     }
-        
-    [userPreferences synchronize];
 }
 
 - (void)setSiteInfo:(NSString *)type
@@ -211,6 +213,7 @@
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
+        appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
         if (![self.currentType isEqualToString:@"share"] &&
@@ -222,6 +225,7 @@
         self.currentType = nil;
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
+        appdotnetButton.hidden = NO;
         
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
@@ -238,6 +242,7 @@
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
+        appdotnetButton.hidden = NO;
         [submitButton setTitle:@"Share this story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
         if (![self.currentType isEqualToString:@"share"] &&
@@ -251,6 +256,9 @@
 - (void)clearComments {
     self.commentField.text = nil;
     self.currentType = nil;
+    self.twitterButton.selected = NO;
+    self.facebookButton.selected = NO;
+    self.appdotnetButton.selected = NO;
 }
 
 # pragma mark
@@ -270,12 +278,14 @@
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
-    if ([userPreferences integerForKey:@"shareToFacebook"]){
+    if (facebookButton.selected) {
         [request addPostValue:@"facebook" forKey:@"post_to_services"];     
     }
-    if ([userPreferences integerForKey:@"shareToTwitter"]){
-        [request addPostValue:@"twitter" forKey:@"post_to_services"];     
+    if (twitterButton.selected) {
+        [request addPostValue:@"twitter" forKey:@"post_to_services"];
+    }
+    if (appdotnetButton.selected) {
+        [request addPostValue:@"appdotnet" forKey:@"post_to_services"];
     }
     
     if (appDelegate.isSocialRiverView) {
