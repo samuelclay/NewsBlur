@@ -35,6 +35,13 @@
     [super viewDidLoad];
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
+    UIBarButtonItem *done = [[UIBarButtonItem alloc]
+                             initWithTitle:@"Done Training"
+                             style:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(doCloseDialog:)];
+    self.navigationItem.rightBarButtonItem = done;
+    
     [self hideGradientBackground:webView];
     [self.webView.scrollView setDelaysContentTouches:YES];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];

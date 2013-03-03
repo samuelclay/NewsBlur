@@ -48,6 +48,7 @@
 @synthesize navigationController;
 @synthesize modalNavigationController;
 @synthesize shareNavigationController;
+@synthesize trainNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -206,6 +207,9 @@
     [[UIToolbar appearance]
      setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
      forToolbarPosition:UIToolbarPositionTop barMetrics:UIBarMetricsDefault];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
+     forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsLandscapePhone];
 
     [[UINavigationBar appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -439,7 +443,11 @@
 //        [navController presentModalViewController:trainerViewController animated:YES];        
         [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsBarButton];
     } else {
-        [navController presentModalViewController:trainerViewController animated:YES];
+        if (self.trainNavigationController == nil) {
+            self.trainNavigationController = [[UINavigationController alloc]
+                                              initWithRootViewController:self.trainerViewController];
+        }
+        [navController presentModalViewController:self.trainNavigationController animated:YES];
     }
 }
 
@@ -450,7 +458,11 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showTrainingPopover:sender];
     } else {
-        [navController presentModalViewController:trainerViewController animated:YES];
+        if (self.trainNavigationController == nil) {
+            self.trainNavigationController = [[UINavigationController alloc]
+                                              initWithRootViewController:self.trainerViewController];
+        }
+        [navController presentModalViewController:self.trainNavigationController animated:YES];
     }
 }
 

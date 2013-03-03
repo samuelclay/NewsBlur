@@ -20,11 +20,13 @@
 
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize appdotnetButton;
 @synthesize submitButton;
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
 @synthesize currentType;
+@synthesize storyTitle;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -66,23 +68,16 @@
     commentField.layer.cornerRadius = 4;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences integerForKey:@"shareToFacebook"]){
-        facebookButton.selected = YES;
-    }
-    if ([userPreferences integerForKey:@"shareToTwitter"]){
-        twitterButton.selected = YES;
-    }
+    twitterButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+    twitterButton.layer.borderWidth = 1.0f;
+    twitterButton.layer.cornerRadius = 1.0f;
+    facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+    facebookButton.layer.borderWidth = 1.0f;
+    facebookButton.layer.cornerRadius = 1.0f;
+    appdotnetButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+    appdotnetButton.layer.borderWidth = 1.0f;
+    appdotnetButton.layer.cornerRadius = 1.0f;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f
-                                                                            green:0.36f
-                                                                             blue:0.46
-                                                                            alpha:0.9];
-    } else {
-        self.submitButton.tintColor = UIColorFromRGB(0x709d3c);
-    }
-
     [super viewDidLoad];
 }
 
@@ -110,21 +105,40 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
         [self.commentField becomeFirstResponder];
         [self adjustCommentField];
+        
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                               [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+        UIImage *titleImage  = [Utilities getImage:feedIdStr];
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+        titleImageView.hidden = YES;
+        titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.navigationItem.titleView = titleImageView;
+        titleImageView.hidden = NO;
     }
 }
 
 - (void)adjustCommentField {
-	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
-    if (UIInterfaceOrientationIsPortrait(orientation)){
-        self.commentField.frame = CGRectMake(20, 20, 280, 124);
-        self.twitterButton.frame = CGRectMake(228, 152, 32, 32);
-        self.facebookButton.frame = CGRectMake(268, 152, 32, 32);
-    } else {
-        self.commentField.frame = CGRectMake(60, 20, 400, 74);
-        self.twitterButton.frame = CGRectMake(15, 20, 32, 32);
-        self.facebookButton.frame = CGRectMake(15, 63, 32, 32);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication]
+                                                                      statusBarOrientation];
+        CGSize v = self.view.frame.size;
+        int k = UIInterfaceOrientationIsPortrait(orientation) ? 216 : 162;
+        int bP = 8;
+        int bW = 32;
+        int bH = 24;
+        self.storyTitle.frame = CGRectMake(20, 6, v.width - 20*2, 24);
+        self.commentField.frame = CGRectMake(20, self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height + 6,
+                                             v.width - 20*2,
+                                             v.height - k - bH - bP*2 - 12 - self.storyTitle.frame.size.height);
+        CGPoint o = self.commentField.frame.origin;
+        CGSize c = self.commentField.frame.size;
+        self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
+        self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
+        self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
     }
 }
 
@@ -140,10 +154,27 @@
     
     if (button.tag == 1) {
         [userPreferences setInteger:selected forKey:@"shareToTwitter"];
+        if (selected) {
+            button.layer.borderColor = [UIColorFromRGB(0x4E8ECD) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
     } else if (button.tag == 2) {
         [userPreferences setInteger:selected forKey:@"shareToFacebook"];
+        if (selected) {
+            button.layer.borderColor = [UIColorFromRGB(0x6884CD) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
+    } else if (button.tag == 3) {
+        [userPreferences setInteger:selected forKey:@"shareToAppdotnet"];
+        if (selected) {
+            button.layer.borderColor = [UIColorFromRGB(0xD16857) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
     }
-    
+        
     [userPreferences synchronize];
 }
 
@@ -157,6 +188,7 @@
         [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
+        appdotnetButton.hidden = YES;
 //        self.navigationItem.title = @"Edit Your Reply";
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
@@ -179,7 +211,6 @@
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-//        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
         [submitButton setAction:(@selector(doReplyToComment:))];
         
         if (![self.currentType isEqualToString:@"share"] &&

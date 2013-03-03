@@ -49,6 +49,7 @@
     UINavigationController *modalNavigationController;
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
+    UINavigationController *trainNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -135,6 +136,7 @@
 @property (nonatomic) IBOutlet UINavigationController *navigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
+@property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;

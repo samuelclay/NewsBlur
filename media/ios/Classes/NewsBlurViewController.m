@@ -176,6 +176,10 @@ static const CGFloat kFolderTitleHeight = 28;
                    resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
     UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
                    resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
     
     [[UIBarButtonItem appearance] setBackgroundImage:b1
                                             forState:UIControlStateNormal
@@ -183,6 +187,12 @@ static const CGFloat kFolderTitleHeight = 28;
     [[UIBarButtonItem appearance] setBackgroundImage:b2
                                             forState:UIControlStateHighlighted
                                           barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:b3
+                                            forState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsLandscapePhone];
+    [[UIBarButtonItem appearance] setBackgroundImage:b4
+                                            forState:UIControlStateHighlighted
+                                          barMetrics:UIBarMetricsLandscapePhone];
 
     [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
