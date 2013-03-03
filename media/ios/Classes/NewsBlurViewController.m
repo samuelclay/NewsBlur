@@ -348,9 +348,13 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
-    self.feedViewToolbar.frame = CGRectMake(-10.0f,
-                                            CGRectGetHeight(self.view.bounds) - toolbarSize.height,
-                                            toolbarSize.width + 20, toolbarSize.height);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.feedViewToolbar.frame = CGRectMake(-10.0f,
+                                                CGRectGetHeight(self.view.bounds) - toolbarSize.height,
+                                                toolbarSize.width + 20, toolbarSize.height);
+    } else {
+        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
+    }
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
 
     int height = 16;
