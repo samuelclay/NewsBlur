@@ -25,6 +25,7 @@
 @property (nonatomic) NSString* currentType;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight;
 
+- (void)setCommentType:(NSString *)type;
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;

@@ -139,10 +139,12 @@
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;
     }
-
+    NSLog(@"Share type: %@", self.currentType);
+    BOOL showingShareButtons = [self.currentType isEqualToString:@"share"] ||
+                               [self.currentType isEqualToString:@"edit-share"];
     self.commentField.frame = CGRectMake(20, stOffset + 4,
                                          v.width - 20*2,
-                                         v.height - k - bH - bP*2 - 12 - stHeight);
+                                         v.height - k - (showingShareButtons ? bH + bP*2 : 6) - 12 - stHeight);
     CGPoint o = self.commentField.frame.origin;
     CGSize c = self.commentField.frame.size;
     self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
@@ -180,13 +182,17 @@
     }
 }
 
+- (void)setCommentType:(NSString *)type {
+    self.currentType = type;
+}
+
 - (void)setSiteInfo:(NSString *)type
           setUserId:(NSString *)userId
         setUsername:(NSString *)username
          setReplyId:(NSString *)replyId {
+    NSLog(@"SetSiteInfo: %@", type);
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
-        self.currentType = nil;
         [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
@@ -219,10 +225,8 @@
         if (![self.currentType isEqualToString:@"share"] &&
             ![self.currentType isEqualToString:@"reply"]) {
             self.commentField.text = @"";
-            self.currentType = type;
         }
     } else if ([type isEqualToString: @"edit-share"]) {
-        self.currentType = nil;
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         appdotnetButton.hidden = NO;
@@ -248,7 +252,6 @@
         if (![self.currentType isEqualToString:@"share"] &&
             ![self.currentType isEqualToString:@"reply"]) {
             self.commentField.text = @"";
-            self.currentType = type;
         }
     }
 }

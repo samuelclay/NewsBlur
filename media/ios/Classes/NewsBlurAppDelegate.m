@@ -335,6 +335,7 @@
           setUsername:(NSString *)username 
       setReplyId:(NSString *)replyId {
     
+    [self.shareViewController setCommentType:type];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
     } else {
@@ -343,9 +344,10 @@
                                                 initWithRootViewController:self.shareViewController];
             self.shareNavigationController = shareNav;
         }
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
         [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
     }
-    
+
     [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
