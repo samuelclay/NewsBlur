@@ -265,7 +265,6 @@ static const CGFloat kFolderTitleHeight = 28;
         }
     }
     
-    
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
@@ -309,6 +308,7 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [self setUserAvatarLayout:toInterfaceOrientation];
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
+    [self refreshHeaderCounts:toInterfaceOrientation];
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
@@ -368,6 +368,7 @@ static const CGFloat kFolderTitleHeight = 28;
                                                 self.intelligenceControl.frame.size.width,
                                                 self.feedViewToolbar.frame.size.height -
                                                 height);
+    [self refreshHeaderCounts];
 }
 
 
@@ -1485,12 +1486,24 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)refreshHeaderCounts {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self refreshHeaderCounts:orientation];
+}
+
+- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation {
+    if (!appDelegate.activeUsername) return;
+    
     UIView *userInfoView = [[UIView alloc]
                             initWithFrame:CGRectMake(0, 0,
-                                                     self.navigationController.view.frame.size.width,
+                                                     self.view.bounds.size.width,
                                                      self.navigationController.toolbar.frame.size.height)];
     //    userInfoView.backgroundColor = [UIColor cyanColor];
-    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 6, userInfoView.frame.size.width, 16)];
+    int yOffset = 6;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+        UIInterfaceOrientationIsPortrait(orientation)) {
+        yOffset = 0;
+    }
+    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     userLabel.textColor = UIColorFromRGB(0x404040);

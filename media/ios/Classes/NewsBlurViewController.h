@@ -102,6 +102,7 @@ UIPopoverControllerDelegate> {
 
 - (void)resetToolbar;
 - (void)refreshHeaderCounts;
+- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
 
 
 @end
