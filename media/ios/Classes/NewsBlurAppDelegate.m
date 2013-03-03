@@ -137,6 +137,7 @@
     
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
+    self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -480,18 +481,18 @@
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
     
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
+                                      initWithTitle: @"All"
+                                      style: UIBarButtonItemStyleBordered
+                                      target: nil
+                                      action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
     } else {
-    
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
-                                          initWithTitle: @"All"
-                                          style: UIBarButtonItemStyleBordered
-                                          target: nil
-                                          action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
-        UINavigationController *navController = self.navigationController;        
-        [navController pushViewController:feedDetailViewController animated:YES];
+        [navigationController pushViewController:feedDetailViewController
+                                        animated:YES];
     }
     
     [feedDetailViewController resetFeedDetail];
@@ -790,20 +791,15 @@
 
 - (void)navigationController:(UINavigationController *)navController 
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (viewController == feedDetailViewController) {
-        UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
-        UIButton *myBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [myBackButton setFrame:CGRectMake(0,0,70,35)];
-        [myBackButton setImage:[UIImage imageNamed:@"toolbar_back_button.png"] forState:UIControlStateNormal];
-        [myBackButton setEnabled:YES];
-        [myBackButton addTarget:viewController.navigationController action:@selector(popViewControllerAnimated:) forControlEvents:UIControlEventTouchUpInside];
-        [backButtonView addSubview:myBackButton];
-        UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithCustomView:backButtonView];
-        viewController.navigationItem.leftBarButtonItem = backButton;
-        navController.navigationItem.leftBarButtonItem = backButton;
-        viewController.navigationItem.hidesBackButton = YES;
-        navController.navigationItem.hidesBackButton = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+         [viewController viewWillAppear:animated];
     }
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [viewController viewDidAppear:animated];
+    }    
 }
 
 - (void)setTitle:(NSString *)title {

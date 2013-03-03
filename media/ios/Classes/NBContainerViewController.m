@@ -492,7 +492,6 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
-            
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
@@ -507,8 +506,9 @@
         self.storyPageControl.navigationItem.titleView = titleLabel;
     } else {
         // CASE: story titles on left
-        [self.masterNavigationController pushViewController:self.feedDetailViewController animated:YES];
-
+        [self.masterNavigationController
+         pushViewController:self.feedDetailViewController
+         animated:YES];
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
                                                                vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
                                                                vb.size.height);

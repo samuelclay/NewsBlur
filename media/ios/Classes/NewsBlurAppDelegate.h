@@ -42,7 +42,7 @@
 @class FindSitesViewController;
 @class UnreadCounts;
 
-@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
+@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
