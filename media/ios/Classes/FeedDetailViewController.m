@@ -69,8 +69,7 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
     rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 76,
-                                             44)];
+                    initWithFrame:CGRectMake(0, 0, 76, 44)];
     
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];

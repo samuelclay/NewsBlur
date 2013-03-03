@@ -25,7 +25,6 @@
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 
-
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
 #define kBlurblogTableViewRowHeight 32;
@@ -349,7 +348,9 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
-    self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
+    self.feedViewToolbar.frame = CGRectMake(-10.0f,
+                                            CGRectGetHeight(self.view.bounds) - toolbarSize.height,
+                                            toolbarSize.width + 20, toolbarSize.height);
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
 
     int height = 16;
@@ -480,7 +481,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [addButton setImage:addImage forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
     [addBarButton setCustomView:addButton];
-    
+
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     settingsButton.bounds = CGRectMake(0, 0, 34, 44);

@@ -197,7 +197,6 @@
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
         appdotnetButton.hidden = YES;
-//        self.navigationItem.title = @"Edit Your Reply";
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
         
@@ -222,10 +221,7 @@
         appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
-        if (![self.currentType isEqualToString:@"share"] &&
-            ![self.currentType isEqualToString:@"reply"]) {
-            self.commentField.text = @"";
-        }
+        self.commentField.text = @"";
     } else if ([type isEqualToString: @"edit-share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
@@ -234,13 +230,6 @@
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            self.navigationItem.title = @"Edit Your Comment";
-//            [submitButton setTitle:@"Save your comments"];
-//        } else {
-//            self.navigationItem.title = @"Edit Comment";
-//            [submitButton setTitle:@"Save"];
-//        }
         [submitButton setTitle:@"Save your comments"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {        

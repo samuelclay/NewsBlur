@@ -244,7 +244,7 @@
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="816230383"/>
 					</object>
-					<int key="connectionID">109</int>
+					<int key="connectionID">120</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -252,7 +252,7 @@
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="934474311"/>
 					</object>
-					<int key="connectionID">110</int>
+					<int key="connectionID">121</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -286,14 +286,6 @@
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">64</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">showSettingsPopover:</string>
-						<reference key="source" ref="934474311"/>
-						<reference key="destination" ref="372490531"/>
-					</object>
-					<int key="connectionID">108</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -451,7 +443,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">110</int>
+			<int key="maxID">121</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1958,6 +1950,14 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">NSLayoutConstraint</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurAppDelegate</string>
 					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
@@ -2240,6 +2240,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activitiesButton</string>
+							<string>addBar</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2248,12 +2249,18 @@
 							<string>homeButton</string>
 							<string>innerView</string>
 							<string>intelligenceControl</string>
+							<string>leftToolbar</string>
 							<string>noFocusMessage</string>
+							<string>rightToolbar</string>
+							<string>settingsBar</string>
 							<string>settingsBarButton</string>
+							<string>spacer2BarButton</string>
+							<string>spacerBarButton</string>
 							<string>toolbarLeftMargin</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
@@ -2263,7 +2270,12 @@
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
 							<string>UISegmentedControl</string>
+							<string>TransparentToolbar</string>
 							<string>UIView</string>
+							<string>TransparentToolbar</string>
+							<string>UIBarButtonItem</string>
+							<string>UIBarButtonItem</string>
+							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -2273,6 +2285,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activitiesButton</string>
+							<string>addBar</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2281,14 +2294,23 @@
 							<string>homeButton</string>
 							<string>innerView</string>
 							<string>intelligenceControl</string>
+							<string>leftToolbar</string>
 							<string>noFocusMessage</string>
+							<string>rightToolbar</string>
+							<string>settingsBar</string>
 							<string>settingsBarButton</string>
+							<string>spacer2BarButton</string>
+							<string>spacerBarButton</string>
 							<string>toolbarLeftMargin</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
 								<string key="name">activitiesButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addBar</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -2324,11 +2346,31 @@
 								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">leftToolbar</string>
+								<string key="candidateClassName">TransparentToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">noFocusMessage</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">rightToolbar</string>
+								<string key="candidateClassName">TransparentToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">settingsBar</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">settingsBarButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">spacer2BarButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">spacerBarButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -2531,16 +2573,22 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>appdotnetButton</string>
 							<string>commentField</string>
 							<string>facebookButton</string>
+							<string>keyboardHeight</string>
+							<string>storyTitle</string>
 							<string>submitButton</string>
 							<string>twitterButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
+							<string>UIButton</string>
 							<string>UITextView</string>
 							<string>UIButton</string>
+							<string>NSLayoutConstraint</string>
+							<string>UILabel</string>
 							<string>UIBarButtonItem</string>
 							<string>UIButton</string>
 						</object>
@@ -2550,8 +2598,11 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>appdotnetButton</string>
 							<string>commentField</string>
 							<string>facebookButton</string>
+							<string>keyboardHeight</string>
+							<string>storyTitle</string>
 							<string>submitButton</string>
 							<string>twitterButton</string>
 						</object>
@@ -2562,12 +2613,24 @@
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">appdotnetButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">commentField</string>
 								<string key="candidateClassName">UITextView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">facebookButton</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">keyboardHeight</string>
+								<string key="candidateClassName">NSLayoutConstraint</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">storyTitle</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">submitButton</string>
