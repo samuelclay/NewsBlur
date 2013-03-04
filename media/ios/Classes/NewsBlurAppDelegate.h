@@ -227,7 +227,6 @@
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
 
-- (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
 - (void)openTrainSite;
 - (void)openTrainStory:(id)sender;

@@ -260,7 +260,7 @@ NEWSBLUR.log = function(msg) {
             else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
             else if (_.isNumber(feed)) return NEWSBLUR.URLs.favicon.replace('{id}', feed);
             else if (feed.get('favicon_url')) return feed.get('favicon_url');
-            return NEWSBLUR.Globals.MEDIA_URL + '/img/silk/icons/world.png';
+            return NEWSBLUR.Globals.MEDIA_URL + '/img/silk/circular/world.png';
         },
         
         deepCopy: function(obj) {

@@ -150,9 +150,11 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             change: function(e, ui) {
             }
         }).data("autocomplete")._renderItem = function(ul, item) {
+            var feed = new NEWSBLUR.Models.Feed(item);
             return $.make('li', [
                 $.make('a', [
                     $.make('div', { className: 'NB-add-autocomplete-subscribers'}, item.num_subscribers + Inflector.pluralize(' subscriber', item.num_subscribers)),
+                    $.make('img', { className: 'NB-add-autocomplete-favicon', src: $.favicon(feed) }),
                     $.make('div', { className: 'NB-add-autocomplete-title'}, item.label),
                     $.make('div', { className: 'NB-add-autocomplete-address'}, item.value)
                 ])

@@ -54,9 +54,10 @@
 								<reference key="NSSuperview" ref="684340155"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="895374018"/>
-								<object class="NSColor" key="IBUIBackgroundColor" id="620312898">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MQA</bytes>
+								<object class="NSColor" key="IBUIBackgroundColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MSAxIDEgMC42AA</bytes>
+									<string key="IBUIColorCocoaTouchKeyPath">lightTextColor</string>
 								</object>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -189,7 +190,10 @@
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="684340155"/>
-				<reference key="IBUIBackgroundColor" ref="620312898"/>
+				<object class="NSColor" key="IBUIBackgroundColor">
+					<int key="NSColorSpace">3</int>
+					<bytes key="NSWhite">MQA</bytes>
+				</object>
 				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -2240,7 +2244,6 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activitiesButton</string>
-							<string>addBar</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2249,18 +2252,12 @@
 							<string>homeButton</string>
 							<string>innerView</string>
 							<string>intelligenceControl</string>
-							<string>leftToolbar</string>
 							<string>noFocusMessage</string>
-							<string>rightToolbar</string>
-							<string>settingsBar</string>
 							<string>settingsBarButton</string>
-							<string>spacer2BarButton</string>
-							<string>spacerBarButton</string>
 							<string>toolbarLeftMargin</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
@@ -2270,12 +2267,7 @@
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
 							<string>UISegmentedControl</string>
-							<string>TransparentToolbar</string>
 							<string>UIView</string>
-							<string>TransparentToolbar</string>
-							<string>UIBarButtonItem</string>
-							<string>UIBarButtonItem</string>
-							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -2285,7 +2277,6 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activitiesButton</string>
-							<string>addBar</string>
 							<string>addBarButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
@@ -2294,23 +2285,14 @@
 							<string>homeButton</string>
 							<string>innerView</string>
 							<string>intelligenceControl</string>
-							<string>leftToolbar</string>
 							<string>noFocusMessage</string>
-							<string>rightToolbar</string>
-							<string>settingsBar</string>
 							<string>settingsBarButton</string>
-							<string>spacer2BarButton</string>
-							<string>spacerBarButton</string>
 							<string>toolbarLeftMargin</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
 								<string key="name">activitiesButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">addBar</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -2346,31 +2328,11 @@
 								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">leftToolbar</string>
-								<string key="candidateClassName">TransparentToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">noFocusMessage</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">rightToolbar</string>
-								<string key="candidateClassName">TransparentToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">settingsBar</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">settingsBarButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">spacer2BarButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">spacerBarButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">

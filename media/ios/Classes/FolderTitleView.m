@@ -140,7 +140,9 @@
         // Add collapse button to all folders except Everything
         if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
             if (!isFolderCollapsed) {
-                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
+                UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
+                [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
+//                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
             
             disclosureButton.tag = section;

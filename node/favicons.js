@@ -58,7 +58,7 @@
           "Content-Type": "image/png"
         });
       } else {
-        return res.redirect('/media/img/icons/silk/world.png');
+        return res.redirect('/media/img/icons/circular/world.png');
       }
     });
   });

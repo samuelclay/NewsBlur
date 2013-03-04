@@ -4362,6 +4362,12 @@ form.opml_import_form input {
   overflow: hidden;
   padding: 2px 0 0 4px;
 }
+.ui-autocomplete li a .NB-add-autocomplete-favicon {
+    float: left;
+    margin: 2px 4px 0 2px;
+    width: 16px;
+    height: 16px;
+}
 .ui-autocomplete li a .NB-add-autocomplete-address {
   display: block;
   clear: both;

@@ -52,13 +52,17 @@
 
 - (void)viewDidLoad {    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+    folderImage.frame = CGRectMake(0, 0, 16, 16);
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
+    folderImage2.frame = CGRectMake(0, 0, 16, 16);
     [addFolderInput setLeftView:folderImage2];
     [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
     UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
+    urlImage.frame = CGRectMake(0, 0, 16, 16);
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     

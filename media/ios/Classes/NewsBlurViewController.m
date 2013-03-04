@@ -24,6 +24,7 @@
 #import "Base64.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
+#import "AddSiteViewController.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -704,7 +705,30 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [appDelegate showAddSiteModal:self.addBarButton];
+    [appDelegate.addSiteViewController reload];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
+    } else {
+        if (self.popoverController == nil) {
+            self.popoverController = [[WEPopoverController alloc]
+                                      initWithContentViewController:appDelegate.addSiteViewController];
+            
+            self.popoverController.delegate = self;
+        } else {
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
+        }
+        
+        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+        }
+        [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
+                                                                 self.view.frame.size.height - 28)];
+        [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionDown
+                                                       animated:YES];
+    }
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
@@ -745,7 +769,8 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
         [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
     }
-    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36, self.view.frame.size.height - 60)];
+    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
+                                                             self.view.frame.size.height - 60)];
     [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
                                    permittedArrowDirections:UIPopoverArrowDirectionUp
                                                    animated:YES];
@@ -1497,10 +1522,9 @@ heightForHeaderInSection:(NSInteger)section {
                             initWithFrame:CGRectMake(0, 0,
                                                      self.view.bounds.size.width,
                                                      self.navigationController.toolbar.frame.size.height)];
-    //    userInfoView.backgroundColor = [UIColor cyanColor];
     int yOffset = 6;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
+        UIInterfaceOrientationIsLandscape(orientation)) {
         yOffset = 0;
     }
     UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
