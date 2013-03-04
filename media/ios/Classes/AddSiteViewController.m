@@ -9,10 +9,12 @@
 #import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlurViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "NBContainerViewController.h"
 #import "JSON.h"
+#import "Base64.h"
 
 @interface AddSiteViewController()
 
@@ -66,8 +68,6 @@
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
-    navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
     addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                       siteAddressInput.frame.origin.y, 
                                       siteAddressInput.frame.size.width, 
@@ -101,7 +101,6 @@
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
-    [self showFolderPicker];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.siteTable.hidden = NO;
@@ -125,8 +124,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController hidePopover];
     } else {
-        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
-        
+        [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
+        appDelegate.feedsViewController.popoverController = nil;
     }
 }
 
@@ -139,7 +138,7 @@
 }
 
 - (void)reload {
-    [inFolderInput setText:@""];
+    [inFolderInput setText:@"— Top Level —"];
     [siteAddressInput setText:@""];
     [addFolderInput setText:@""];
     [folderPicker reloadAllComponents];
@@ -301,8 +300,8 @@
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.masterContainerViewController hidePopover];
         } else {
-            [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
-            
+            [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
+            appDelegate.feedsViewController.popoverController = nil;            
         }
         [appDelegate reloadFeedsView:NO];
     }
@@ -334,7 +333,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
-    if (![parent_folder isEqualToString:@"- Top Level -"]) {
+    if (![parent_folder isEqualToString:@"— Top Level —"]) {
         [request setPostValue:parent_folder forKey:@"parent_folder"]; 
     }
     [request setPostValue:[addFolderInput text] forKey:@"folder"]; 
@@ -425,7 +424,7 @@
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView
 numberOfRowsInComponent:(NSInteger)component {
-    return [[appDelegate dictFoldersArray] count] - 1;
+    return [[appDelegate dictFoldersArray] count] - 2;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView
@@ -434,7 +433,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         return @"— Top Level —";
     } else {
-        return [[appDelegate dictFoldersArray] objectAtIndex:row + 1];
+        return [[appDelegate dictFoldersArray] objectAtIndex:row + 2];
     }
 }
 
@@ -443,9 +442,9 @@ numberOfRowsInComponent:(NSInteger)component {
        inComponent:(NSInteger)component {
     NSString *folder_title;
     if (row == 0) {
-        folder_title = @"- Top Level -";
+        folder_title = @"— Top Level —";
     } else {
-        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row + 1];        
+        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row + 2];
     }
     [inFolderInput setText:folder_title];
 }
@@ -498,10 +497,20 @@ numberOfRowsInComponent:(NSInteger)component {
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setPositiveFormat:@"#,###"];
 	NSNumber *theScore = [NSNumber numberWithInt:subs];
+    NSString *favicon = [result objectForKey:@"favicon"];
+    UIImage *faviconImage;
+    if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+        NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+        faviconImage = [UIImage imageWithData:imageData];
+    } else {
+        faviconImage = [UIImage imageNamed:@"world.png"];
+    }
+
     cell.feedTitle.text = [result objectForKey:@"label"];
     cell.feedUrl.text = [result objectForKey:@"value"];
-    cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@", 
-                          [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
+    cell.feedSubs.text = [[NSString stringWithFormat:@"%@ subscriber%@",
+                          [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
+    cell.feedFavicon.image = faviconImage;
     
     return cell;
 }

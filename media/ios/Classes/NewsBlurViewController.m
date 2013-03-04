@@ -705,8 +705,6 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [appDelegate.addSiteViewController reload];
-
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
     } else {
@@ -729,6 +727,8 @@ static const CGFloat kFolderTitleHeight = 28;
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
     }
+    
+    [appDelegate.addSiteViewController reload];
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
