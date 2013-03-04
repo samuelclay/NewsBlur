@@ -34,18 +34,14 @@
     UIActivityIndicatorView *siteActivityIndicator;
     UILabel *addingLabel;
     UILabel *errorLabel;
-    UISegmentedControl *addTypeControl;
 }
 
 - (void)reload;
 - (IBAction)addSite;
 - (void)autocompleteSite:(ASIHTTPRequest *)request;
-- (IBAction)addFolder;
-- (IBAction)selectAddTypeSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
-- (void)animateLoop;
 - (void)showFolderPicker;
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
@@ -71,6 +67,5 @@
 @property (nonatomic) IBOutlet UIActivityIndicatorView *siteActivityIndicator;
 @property (nonatomic) IBOutlet UILabel *addingLabel;
 @property (nonatomic) IBOutlet UILabel *errorLabel;
-@property (nonatomic) IBOutlet UISegmentedControl *addTypeControl;
 
 @end

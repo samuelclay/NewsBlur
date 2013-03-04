@@ -1084,6 +1084,8 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
+    folder = request.POST.get('folder', '')
+    new_folder = request.POST.get('new_folder')
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
     feed = None
@@ -1092,7 +1094,11 @@ def add_url(request):
         code = -1
         message = 'Enter in the website address or the feed URL.'
     else:
-        folder = request.POST.get('folder', '')
+        if new_folder:
+            usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+            usf.add_folder(folder, new_folder)
+            folder = new_folder
+
         code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)

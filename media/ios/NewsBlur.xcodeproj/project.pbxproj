@@ -373,8 +373,8 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = NewsBlurAppDelegate.h; path = Classes/NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = NewsBlurAppDelegate.m; path = Classes/NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		1D6058910D05DD3D006BFB54 /* NewsBlur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsBlur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -921,6 +921,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FF22FE5216E52BAD0046165A /* Foundation */,
 				43D8189F15B9404D00733444 /* Models */,
 				437F974715ACA0C50007136B /* Dashboard */,
 				431B857315A131C300DCE497 /* Feeds */,
@@ -928,14 +929,6 @@
 				431B857415A1324200DCE497 /* Story */,
 				431B857115A1317000DCE497 /* FTUX */,
 				431B857015A1315F00DCE497 /* Social */,
-				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
-				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
-				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
-				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
-				43D818A115B940C200733444 /* DataUtilities.h */,
-				43D818A215B940C200733444 /* DataUtilities.m */,
-				436ACA8B15BF1088004E01CC /* NBContainerViewController.h */,
-				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -951,8 +944,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
-				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				4307BE511565EDF8007A932A /* Resources */,
 				43D0451C1565BC090085F811 /* Resources-iPad */,
@@ -1502,6 +1493,23 @@
 			);
 			name = JSON;
 			path = Source;
+			sourceTree = "<group>";
+		};
+		FF22FE5216E52BAD0046165A /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
+				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
+				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
+				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
+				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
+				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
+				43D818A115B940C200733444 /* DataUtilities.h */,
+				43D818A215B940C200733444 /* DataUtilities.m */,
+				436ACA8B15BF1088004E01CC /* NBContainerViewController.h */,
+				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
+			);
+			name = Foundation;
 			sourceTree = "<group>";
 		};
 		FF29708816DD7AA400E92F85 /* segmented */ = {

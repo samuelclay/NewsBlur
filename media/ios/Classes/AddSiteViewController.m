@@ -41,7 +41,6 @@
 @synthesize siteActivityIndicator;
 @synthesize addingLabel;
 @synthesize errorLabel;
-@synthesize addTypeControl;
 @synthesize activeTerm_;
 @synthesize searchResults_;
 @synthesize addFolderButton;
@@ -68,11 +67,6 @@
     urlImage.frame = CGRectMake(0, 0, 16, 16);
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
-    
-    addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
-                                      siteAddressInput.frame.origin.y, 
-                                      siteAddressInput.frame.size.width, 
-                                      siteAddressInput.frame.size.height);
     
     self.activeTerm_ = @"";
     self.searchResults_ = [[NSMutableDictionary alloc] init];
@@ -107,7 +101,7 @@
         self.siteTable.hidden = NO;
         self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
                                            self.siteScrollView.frame.origin.y,
-                                           320,
+                                           self.view.frame.size.width,
                                            295);
     }
 }
@@ -131,11 +125,7 @@
 }
 
 - (IBAction)doAddButton {
-    if ([self.addTypeControl selectedSegmentIndex] == 0) {
-        return [self addSite];
-    } else {
-        return [self addFolder];
-    }
+    return [self addSite];
 }
 
 - (void)reload {
@@ -174,8 +164,6 @@
         } else {
             [self addSite];            
         }
-    } else if (textField == addFolderInput) {
-        [self addFolder];
     }
 	return YES;
 }
@@ -277,7 +265,10 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
     [request setPostValue:parent_folder forKey:@"folder"]; 
-    [request setPostValue:[siteAddressInput text] forKey:@"url"]; 
+    [request setPostValue:[siteAddressInput text] forKey:@"url"];
+    if (addFolderButton.selected && [addFolderInput.text length]) {
+        [request setPostValue:[addFolderInput text] forKey:@"new_folder"];
+    }
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -315,6 +306,10 @@
     if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
     }
+    int top_level_loc = [parent_folder rangeOfString:@" Top Level " options:NSBackwardsSearch].location;
+    if (parent_folder.length && top_level_loc != NSNotFound) {
+        parent_folder = @"";
+    }
     return parent_folder;
 }
 
@@ -324,57 +319,29 @@
 - (IBAction)toggleAddFolder:(id)sender {
     if (!addFolderButton.selected) {
         addFolderButton.selected = YES;
-        addFolderInput.hidden = NO;
-        siteScrollView.hidden = YES;
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             addFolderInput.alpha = 1;
+                             self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
+                                                                    self.siteScrollView.frame.origin.y + 40,
+                                                                    self.view.frame.size.width,
+                                                                    self.siteScrollView.frame.size.height);
+                         } completion:nil];
+
     } else {
         addFolderButton.selected = NO;
-        addFolderInput.hidden = YES;
-        siteScrollView.hidden = NO;
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction
+                         animations:^{
+                             addFolderInput.alpha = 0;
+                             self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
+                                                                    self.siteScrollView.frame.origin.y - 40,
+                                                                    self.view.frame.size.width,
+                                                                    self.siteScrollView.frame.size.height);
+                         } completion:nil];
     }
 }
 
-- (IBAction)addFolder {
-    [self hideFolderPicker];
-    [addFolderInput resignFirstResponder];
-    [self.addingLabel setHidden:NO];
-    [self.addingLabel setText:@"Adding Folder..."];
-    [self.errorLabel setHidden:YES];
-    [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *parent_folder = [self extractParentFolder];
-    if (![parent_folder isEqualToString:@"— Top Level —"]) {
-        [request setPostValue:parent_folder forKey:@"parent_folder"]; 
-    }
-    [request setPostValue:[addFolderInput text] forKey:@"folder"]; 
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddFolder:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
-}
-
-- (void)finishAddFolder:(ASIHTTPRequest *)request {
-    [self.addingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    // int statusCode = [request responseStatusCode];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        [self.errorLabel setText:[results valueForKey:@"message"]];   
-        [self.errorLabel setHidden:NO];
-    } else {
-        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView:YES];
-    }
-    
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     [self.addingLabel setHidden:YES];
     [self.errorLabel setHidden:NO];
     [self.activityIndicator stopAnimating];
@@ -382,49 +349,6 @@
     NSLog(@"Error: %@", error);
     [self.errorLabel setText:error.localizedDescription];
     self.siteTable.hidden = YES;
-}
-
-#pragma mark -
-#pragma mark Page Controls
-
-- (IBAction)selectAddTypeSignup {
-    [self animateLoop];
-}
-
-- (void)animateLoop {
-    if ([self.addTypeControl selectedSegmentIndex] == 0) {
-        [addButton setTitle:@"Add Site"];
-        [addFolderInput resignFirstResponder];
-        [UIView animateWithDuration:0.5 animations:^{
-            siteAddressInput.frame = CGRectMake(addFolderInput.frame.origin.x, 
-                                                siteAddressInput.frame.origin.y, 
-                                                siteAddressInput.frame.size.width, 
-                                                siteAddressInput.frame.size.height);
-            addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
-                                              siteAddressInput.frame.origin.y, 
-                                              siteAddressInput.frame.size.width, 
-                                              siteAddressInput.frame.size.height);
-        }];
-    } else {
-        [addButton setTitle:@"Add Folder"];
-        [siteAddressInput resignFirstResponder];
-        addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
-                                          siteAddressInput.frame.origin.y, 
-                                          siteAddressInput.frame.size.width, 
-                                          siteAddressInput.frame.size.height);
-        [UIView animateWithDuration:0.5 animations:^{
-            addFolderInput.frame = CGRectMake(siteAddressInput.frame.origin.x, 
-                                              siteAddressInput.frame.origin.y, 
-                                              siteAddressInput.frame.size.width, 
-                                              siteAddressInput.frame.size.height);
-            siteAddressInput.frame = CGRectMake(-1 * (siteAddressInput.frame.origin.x + 
-                                                      siteAddressInput.frame.size.width), 
-                                                siteAddressInput.frame.origin.y, 
-                                                siteAddressInput.frame.size.width, 
-                                                siteAddressInput.frame.size.height);
-            siteScrollView.alpha = 0;
-        }];
-    }
 }
 
 #pragma mark -
