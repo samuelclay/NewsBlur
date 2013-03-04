@@ -463,7 +463,7 @@
     self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
     self.storyPageControl.progressViewContainer.hidden = YES;
-    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
+//    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {

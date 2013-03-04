@@ -4248,7 +4248,7 @@ form.opml_import_form input {
     margin: 11px 0 0 4px;
     width: 16px;
     height: 16px;
-    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;    
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;    
     background-size: 16px;
     cursor: pointer;
 }

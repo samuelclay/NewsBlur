@@ -241,6 +241,7 @@
         if ([folder isEqualToString:@"everything"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder isEqualToString:@"saved_stories"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
         if (appDelegate.isRiverView) {
             if (![folder containsString:appDelegate.activeFolder]) {

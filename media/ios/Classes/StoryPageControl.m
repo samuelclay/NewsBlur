@@ -851,7 +851,7 @@
 
 - (IBAction)toggleFontSize:(id)sender {    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFontSettingsPopover:sender];
+        [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]

@@ -47,6 +47,7 @@
 - (IBAction)checkSiteAddress;
 - (void)reloadSearchResults;
 - (IBAction)toggleAddFolder:(id)sender;
+- (NSArray *)folders;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;

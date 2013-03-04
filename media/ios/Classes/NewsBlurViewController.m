@@ -159,6 +159,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
                                                       forState:UIControlStateNormal
                                                     barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
+
     
     [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
                                                       forState:UIControlStateNormal
@@ -194,21 +196,28 @@ static const CGFloat kFolderTitleHeight = 28;
                                             forState:UIControlStateHighlighted
                                           barMetrics:UIBarMetricsLandscapePhone];
 
-    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+    [[UIBarButtonItem appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0x404040), UITextAttributeTextColor,
                              UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]
      forState:UIControlStateNormal];
-    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+    [[UIBarButtonItem appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
                              UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]
-     forState:UIControlStateHighlighted|UIControlStateSelected];
-    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+     forState:UIControlStateSelected];
+    [[UIBarButtonItem appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateHighlighted];
+    [[UIBarButtonItem appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
                              UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,

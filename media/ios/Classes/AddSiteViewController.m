@@ -354,13 +354,21 @@
 #pragma mark -
 #pragma mark Folder Picker
 
+- (NSArray *)folders {
+    return _.without([appDelegate dictFoldersArray],
+                     @[@"saved_stories",
+                       @"river_blurblogs",
+                       @"river_global",
+                       @"everything"]);
+}
+
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     return 1;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView
 numberOfRowsInComponent:(NSInteger)component {
-    return [[appDelegate dictFoldersArray] count] - 2;
+    return [[self folders] count];
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView
@@ -369,7 +377,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         return @"— Top Level —";
     } else {
-        return [[appDelegate dictFoldersArray] objectAtIndex:row + 2];
+        return [[self folders] objectAtIndex:row];
     }
 }
 
@@ -380,7 +388,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         folder_title = @"— Top Level —";
     } else {
-        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row + 2];
+        folder_title = [[self folders] objectAtIndex:row];
     }
     [inFolderInput setText:folder_title];
 }

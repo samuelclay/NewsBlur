@@ -47,9 +47,13 @@ static const CGFloat kButtonWidth   = 48.0f;
 @property (nonatomic) IBOutlet UITextField *pageUrl;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (IBAction) doCloseOriginalStoryViewController;
 - (IBAction) doOpenActionSheet;
 - (IBAction)loadAddress:(id)sender;
+- (IBAction)webViewGoBack:(id)sender;
+- (IBAction)webViewGoForward:(id)sender;
+- (IBAction)webViewRefresh:(id)sender;
 - (void)updateTitle:(UIWebView*)aWebView;
 - (void)updateAddress:(NSURLRequest*)request;
 - (void)updateButtons;
