@@ -200,14 +200,21 @@ static const CGFloat kFolderTitleHeight = 28;
                              UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]
-     forState:UIControlStateNormal];    
+     forState:UIControlStateNormal];
     [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                              UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
                              UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]
-     forState:UIControlStateHighlighted];
+     forState:UIControlStateHighlighted|UIControlStateSelected];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateDisabled];
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];

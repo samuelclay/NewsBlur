@@ -1273,7 +1273,9 @@
                 $(this).tipsy('disable');
             });
 
-            if (feed && feed.get('disabled_page')) {
+            if (feed && 
+                (feed.get('disabled_page') ||
+                 NEWSBLUR.utils.is_url_iframe_buster(feed.get('feed_link')))) {
                 view = 'feed';
                 $original_tabs.addClass('NB-disabled-page')
                               .addClass('NB-disabled')
@@ -2382,7 +2384,8 @@
               this.open_feed_exception_modal();
               return;
             } else if (_.contains(['page', 'story'], view) && 
-                       feed && feed.get('disabled_page')) {
+                       feed && (feed.get('disabled_page') ||
+                                NEWSBLUR.utils.is_url_iframe_buster(feed.get('feed_link')))) {
                 view = 'feed';
             } else if ($('.task_view_'+view).hasClass('NB-disabled') ||
                        $('.task_view_'+view).hasClass('NB-hidden')) {
