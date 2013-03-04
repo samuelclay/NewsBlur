@@ -170,6 +170,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_goodies_modal();
         } else if (next == 'friends') {
             NEWSBLUR.reader.open_friends_modal();
+        } else if (next == 'account') {
+            NEWSBLUR.reader.open_account_modal();
         } else if (next == 'chooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
         } else if (next == 'password') {
