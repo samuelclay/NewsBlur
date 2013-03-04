@@ -27,6 +27,7 @@
     UIPickerView *folderPicker;
     UITableView *siteTable;
     UIScrollView *siteScrollView;
+    UIButton *addFolderButton;
     
     UINavigationBar *navBar;
     UIActivityIndicatorView *activityIndicator;
@@ -49,6 +50,7 @@
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 - (void)reloadSearchResults;
+- (IBAction)toggleAddFolder:(id)sender;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;
@@ -60,6 +62,7 @@
 @property (nonatomic) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic) IBOutlet UITableView *siteTable;
 @property (nonatomic) IBOutlet UIScrollView *siteScrollView;
+@property (nonatomic) IBOutlet UIButton *addFolderButton;
 @property (nonatomic) NSMutableData * jsonString;
 @property (nonatomic) NSMutableArray *autocompleteResults;
 

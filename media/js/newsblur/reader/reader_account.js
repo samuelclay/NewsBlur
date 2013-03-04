@@ -85,7 +85,14 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         (NEWSBLUR.Globals.is_premium && $.make('div', [
                             'Thank you! You have a ',
                             $.make('b', 'premium account'),
-                            '.'
+                            '.',
+                            $.make('div', { className: 'NB-block' }, 'Your premium account will expire on:'),
+                            $.make('div', { className: 'NB-block' }, [
+                                $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+                                ' ',
+                                NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
+                            ]),
+                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, 'Renew and change your payment amount')
                         ]))
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
@@ -295,6 +302,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var self = this;
         
         $.targetIs(e, { tagSelector: '.NB-account-premium-modal' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close_and_load_premium();
+        });        
+        $.targetIs(e, { tagSelector: '.NB-account-premium-renew' }, function($t, $p) {
             e.preventDefault();
             
             self.close_and_load_premium();

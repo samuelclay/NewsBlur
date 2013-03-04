@@ -636,7 +636,7 @@ blockquote {
 }
 
 .NB-story-content-wrapper {
-  max-height: 300px;
+  max-height: 400px;
   position: relative;
   clear: both;
 }

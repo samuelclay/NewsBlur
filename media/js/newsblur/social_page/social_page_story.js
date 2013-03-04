@@ -2,7 +2,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     FUDGE_CONTENT_HEIGHT_OVERAGE: 250,
     
-    STORY_CONTENT_MAX_HEIGHT: 300, // ALSO CHANGE IN social_page.css
+    STORY_CONTENT_MAX_HEIGHT: 400, // ALSO CHANGE IN social_page.css
     
     flags: {},
     

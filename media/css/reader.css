@@ -7954,7 +7954,9 @@ form.opml_import_form input {
   line-height: 30px;
   text-decoration: none;
 }
-
+.NB-modal-account .NB-preference-premium .NB-block {
+    margin: 8px 0;
+}
 .NB-modal-account .NB-account-payments {
     margin: 0;
     padding: 0;

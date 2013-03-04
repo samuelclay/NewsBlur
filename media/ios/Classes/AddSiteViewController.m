@@ -44,6 +44,7 @@
 @synthesize addTypeControl;
 @synthesize activeTerm_;
 @synthesize searchResults_;
+@synthesize addFolderButton;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     
@@ -320,6 +321,17 @@
 #pragma mark -
 #pragma mark Add Folder
 
+- (IBAction)toggleAddFolder:(id)sender {
+    if (!addFolderButton.selected) {
+        addFolderButton.selected = YES;
+        addFolderInput.hidden = NO;
+        siteScrollView.hidden = YES;
+    } else {
+        addFolderButton.selected = NO;
+        addFolderInput.hidden = YES;
+        siteScrollView.hidden = NO;
+    }
+}
 
 - (IBAction)addFolder {
     [self hideFolderPicker];
