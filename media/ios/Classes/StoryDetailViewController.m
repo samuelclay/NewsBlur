@@ -379,7 +379,15 @@
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
-
+        
+        NSString *commentHeader = [NSString stringWithFormat:@
+                                   "<div class=\"NB-story-comments-friends-header-wrapper\">"
+                                   "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                   "</div>",
+                                   [[story objectForKey:@"comment_count_friends"] intValue],
+                                   [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+        
+        comments = [comments stringByAppendingString:commentHeader];
         // add friends comments
         for (int i = 0; i < friendsCommentsArray.count; i++) {
             NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
@@ -389,14 +397,15 @@
         if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
-                                             "<div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
+                                             "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
                                              "</div>",
                                              [[story objectForKey:@"comment_count_public"] intValue],
                                              [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
             
+            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:publicCommentHeader];
-            
-            // add friends comments
+            comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
+            // add public comments
             for (int i = 0; i < publicCommentsArray.count; i++) {
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
@@ -404,7 +413,7 @@
         }
 
 
-        comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
+        comments = [comments stringByAppendingString:@"</div>"];
     }
     
     return comments;

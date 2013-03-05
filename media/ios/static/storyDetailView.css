@@ -60,6 +60,7 @@
 
 .NB-ipad-wide#story_pane .nb-story-comments-public-teaser, 
 .NB-ipad-wide#story_pane .nb-story-comments-public-header,
+.NB-ipad-wide#story_pane .nb-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
     padding-left: 90px;
     padding-right: 90px;
@@ -69,11 +70,20 @@
     padding: 0 90px 2px 150px;
 }
 
-.NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar { 
+.NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar,
+.NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 88px;
 }
 .NB-ipad-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
     left: 108px;
+}
+
+.NB-ipad-wide#story_pane .NB-story-comment .NB-button-wrapper {
+    margin-top: -5px;
+}
+
+.NB-ipad-wide .NB-button.NB-share-button a {
+    font-size: 14px;
 }
 
 /**
@@ -94,6 +104,7 @@
 
 .NB-ipad-narrow#story_pane .nb-story-comments-public-teaser, 
 .NB-ipad-narrow#story_pane .nb-story-comments-public-header,
+.NB-ipad-narrow#story_pane .nb-story-comments-friends-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
     padding-left: 30px;
     padding-right: 30px;
@@ -111,6 +122,14 @@
 
 .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     left: 26px;
+}
+
+.NB-ipad-narrow#story_pane .NB-story-comment .NB-button-wrapper {
+    margin-top: -5px;
+}
+
+.NB-ipad-narrow .NB-button.NB-share-button a {
+    font-size: 14px;
 }
 
 /**
@@ -369,10 +388,6 @@ div + p {
     margin: 2px;
 }
 
-.NB-feed-story-comments {
-    clear: both;
-}
-
 ins {
     text-decoration: none;
 }
@@ -387,6 +402,9 @@ del {
     margin: 0 !important;
     clear: both !important;
     max-width: none !important;
+}
+.NB-feed-story-comments:last-child {
+    border-bottom: 1px solid #EAECE8;   
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -454,20 +472,9 @@ a.NB-show-profile {
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
-.NB-button.NB-share-button {
-    line-height: 20px;
-    font-family: Helvetica, sans-serif;
-    font-size: 14px;
-    color: #606060;
-    float: none;
-    display: block;
-    text-shadow:
-    0px 0px 0px rgba(000,000,000,0),
-    0px 1px 0px rgba(255,255,255,1);
-}
-
 .NB-button.NB-share-button a {
     display: block;
+    font-size: 11px;
 }
 
 .NB-share-button.active,
@@ -483,6 +490,12 @@ a.NB-show-profile {
     cursor: pointer;
     white-space: nowrap;
     float: right;
+    
+    line-height: 20px;
+    font-family: Helvetica, sans-serif;
+    font-size: 14px;
+    display: block;
+    text-shadow: 0px 1px 0px rgba(255,255,255,1);
 }
 
 .NB-button.NB-share-button {
@@ -496,20 +509,45 @@ a.NB-show-profile {
     float: right;
 }
 
-.NB-button div {
-    padding: 2px 6px;
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#F0F0F0),
-        color-stop(0.50, #EBEBEB),
-        color-stop(0.50, #E4E4E4),
-        to(#C0C0C0));
-
-    border-radius: 3px;
-    border: 1px solid #949494;
-    box-shadow: inset 0px 1px 0px rgba(255,255,255,1);
+.NB-button a {
+    display: inline-block;
+    padding-top: 1px;
+    line-height: 16px;
+    font-family: Helvetica, sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, .8);
+    text-shadow: 0px 1px 0px rgba(0, 0, 0, .1);
+    text-transform: uppercase;
 }
 
+.NB-button.selected a {  
+    text-shadow: none;
+}
+
+.NB-button div {
+    padding: 2px 6px 2px;
+    height: 16px;
+    background: -webkit-gradient(
+        linear, left top, left bottom, 
+        from(#E9AF86),
+        color-stop(0.50, #E9AF86),
+        color-stop(0.50, #E5A87F),
+        to(#E5A87F));
+        
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
+    border-radius: 2px;
+}
+
+.NB-button.NB-share-button div {
+    background: -webkit-gradient(
+        linear, left top, left bottom, 
+        from(#DCDCDC),
+        color-stop(0.50, #DCDCDC),
+        color-stop(0.50, #D8D8D8),
+        to(#D8D8D8));
+}
 .NB-iphone .NB-button div {
     padding: 0px 5px 0px;
 }
@@ -520,26 +558,23 @@ a.NB-show-profile {
 
 .NB-button.NB-share-button div { 
     padding: 8px 0px 8px;
-    border-radius: 5px;
+    border-radius: 2px;
     text-align: center;
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#42aaff),
-        to(#1e78c1));
-    box-shadow: inset 0 0 0px 1px rgba(255, 255, 255, .6);
-    text-shadow: 0 1px 0 #003366;
 }
 
 .NB-button.NB-share-button .NB-icon {
-    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACGUlEQVR42o2TTUsbYRSFZ+MvcNn/0EU1rSCCgkSxVRCLFgyiqFSE1tDSpNKoEaQJiAvBryDZGCVQKWIpWIeAFMHWL1qKjUJ3KRQSNUgSJzPR5PieMRMqjuLibAaec+577xkJwJ30p0jqEloXiglpQlmh3F3AaaEogWhnMw6dPTgafIljtx3i262gTSgSKbuPQ8dzxEfsSEw6kHBV4NRThrOVAaSd0o2wX0iJdj9D3PMaJ/1WKF4LtMlHyExf6jw0CO2dZAovCmWOBl4gMeFAyv0AmTyoLVRCXa1H+nsLtMgUktslpsmZ46E+JGedUMcsl2CwCumvTVD22qAcdOjS/vmQ3LVce7PCZMLa+EMdVj/XQflp06G/ezZ8/NYAV6gKUz+GcM8vXTGI8M0c20hW5QYo4XacCnhxox5dK+Wo+1SKmuUSeHdcKJ6VrpwqF3//Cqnh0kIy4djvNoyuVeNJHmwNONDrCyIg/8LjN0sFgyhPlfK/5cL4Zo7NZB2uFWDjh6fonQliXg5jQd7H3JcwDQoNy/LOPBXT9YXlx2YyYXcgpIPe+S10emTCqtAmDdbZMJaEd+apuG0ujG/m2EwmbB9fM0CrsTsaxFhPNozpvDPTuW0ujG/m2EwmbID/G2jsNutJA5aEBjyVnu7T042xrWYGWf4Y7DbryYaxJLwzT8Vtc2FGuplBTog/BrvNerJhLAnvTNDQppnBBZHZrv4ITeFuAAAAAElFTkSuQmCC") no-repeat top right;
-    width: 23px;
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAC+0lEQVRYCe1Y3U4TQRTesyVtjRipXPoe+hKaKHgpESQhMbI/xDZESWzqXyCtYZcam3ihmHgpYKIvIe+iVEWhjXQ8s93dsmd3Z6ZrSbhgkmXmfOfv25kzs0OBMaadpqafJjKcizIhx3Em+DPsCwzrB7IlW3uzdrHYyb1FIjfx4ev7SdcKc4Zh/BSR8/y6uXfoccPzA23nMH80v7yw/EPkNyZSct25bs5FFlO+HWA/xbRuG/t5H0vsip0xB/nzl+ANkNh0sZvjL3HXQ1L+SJcMa3467ssSMGrFblEEWPhiVBXKUkJouR9a+wOcsV8US5Az+SkQYs14MtaKY1EEZ/ZVFMEFZNprilFZWtToAOsbdVPXYRbrgBf1pmWUOUk+FjVwmw0DDWZ9IyU/FUKipCPXKSzZyHMKA54REk4PKqUHoyiA69avabpuY31f7dvBV63Xcyyr8kXkJ9JlLmq3+bKGRB4nB4cnlvGgmqwTox6hWq2Wn7h0vo6mM3jI/8ENvdX+/rtSrVa7Se79mYHPSboQ67HraTMlyucVtU/GxGAlJHMZe7M0Od4Ig9OBt0wUJLLARpQv2GUzJByequw2xQZyUDMDJD4S2qTmCwgdxAOeKJKaLyD0kaYHgA8UG8i4m+RtV2CSms8jxAsYCfDv0x5/+Hjv2345NSBu7VRdoOix9WBIe1G+E9n2ANpTc7GcciRQelE5MyEext/+Szi84ofd1XBm0ra7byPs/ouQMHJGZVDUGd1H73ZGSDanKl/7/hUW4A4GwwOcbdpmhd+Xh7nCctv3KldfaVG7zfojvFY/j74ZW7GMyosoFpWcjcYKbv9nx9EeYw+XzMrqcYyOFWoI+EWdNLhHgJiIZBYpqAPcpxiVFQhp49QJ/329QLEEOZOflBC+6RZNxkDbplhchtj3SsVPSuggf2RhMk6AFyZ/tnVWwGuruB0W/tp42dtBq9APf2zgp7qwSYs68A5+irFtux1gKn2rtVrqdIpM1U+ZkEryUdhIl2wUSYaJ8Q+9fxfZlVEwfwAAAABJRU5ErkJggg==") no-repeat top right;
+    background-size: 16px;
+    width: 25px;
     display: inline-block;
     height: 16px;
-    margin: 0 2px -2px -12px;
+    margin: 0 2px 0 -12px;
+    vertical-align: text-bottom;
 }
 
 .NB-button.NB-train-button .NB-icon {
-    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACxElEQVR42qWT30+SURzG6a553d/QdffOq7Y2t4xEhgSYvCIM5ddUfi0QdcsMp6Ij8EcFgkoiGqFUCGYyp2Kp02XOzDUVGypcsKJYNzy9nM0517jq4tnOzvt9Pt/ne95zGAD+S/9sfHjcWhQ1qovfqRX8uIjCUWU5UbymGnNq+f2oQV2crykI2NA3xVIqJZJSCU5pU1qvR1qtJuukrA6pBhXWdI2xgoCvPHbuh9GIrLUfp9JaxLksInpN9vLfvnDKchGN4joBtDpNRRpbU7HKIufrxpU4YN1Gxu1GSl6PMxFFTOewM4kYCUpAj8QEDbhBAA8cmlh70AiTXwu9T4VD9h38CQTxy25Dsl5CIqcalfgu4OXNZJQjbvkFQDZcm7OEH8G9PAjjlDpPJ4CMvR8ZqxXp7i6cCAXEfEJVEcClBGJnFeZ3ZmEJd0A/2YD9exWkc8Y+gJ99fUh3mpGo5ueNBHBMd99ll+a0JvtNXZeniCEdFmL12xJmt4OYWB3FkK8NiwoKB9y75E/QKchZHPO52GeVYl4kRIvZg4ahKGTtYzFGnasGS3sLmNmcQmDDB0/MAe2EAiaDDTGKhzgNOuAwEavm4qG+F5LeCCwzWzC4l8HUe3MMmVOU8697MbnmgXfVDefSINReGZjGl3gV20eb8z3E3SFiokUA0r45CDvfgmUKgNFoUZbI7dKEfESCwQUrRlcc5CzKTX7MbcbhW9yDI/QJzSMrUA1EITC/IeaanjDYrQGQy5PNZq+oehUisY3K1LtFqHNRhB5aP8TYwi5e0Hoe3oawK0TMVHeIAEgC4LKUPfJrSov8KqdlKueMfIYjsoNndIIndPwqM+lMAJy2aZRpxnMFX5nE2F/CNwwnuHSh2fcRtuAWRD0R8Dpeo0znA0fzNElprbcKAC5GkzYP1VbqXRlO6zQd2Y8Kjeu3UGdrOq/5C7Lktmdg8uWWAAAAAElFTkSuQmCC") no-repeat top right;
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAI9SURBVFiF7Zg/aFNRFMa/c+99SRsjlurmItGCUUQncbQIbkV07RbIYtI0VsVBBAd1sYUkTbpkiIvBTRFxcXF0cPIPRQRBBEHwXwkVbO69xymgry+Jva8vzZBvPB/nuz8Oj3sPj5gZwySx0wB+jYD6aeiAqJdZqtzt+cUXC1c39VdrpevatG9tta8j5wkRkelitVwzgRBAQsg3QXVt9BN3nFATEo+C6sXClQ9CyLWBAwGIdzMI9Ms11BmI2Z7r5lk2+1xzlWujMTpdrZUeG2uuzc9dXgWA8vJSWgrZ0KbtDRwIALRpzwCYKVcWGQRmtkIbGyYyHFBHDCZw7zvtf6UAoF6vj//eWH/A4KMEem/Z3ijkF15uxwFBKlUWU0RQUngLDHsWgCbQzXyu2KRGo7F/rfX1E3y3tpLec23ap6MAEkK2rDW7/XUlvVnRWv/xyg8DAFHBAEAQDABYthVhrZmM6uCtylqzd+heeyGE/LnTEB1JoT6LZGLihN8gkFXSC3yrtuVgqVYB/LPaEJEZiyePiUwm83HX+ERCqdh9Jb0XSsXuHUwdjudzxfNRAc3lLh05lErHlIo1pVTvlPSeJsb2JLPZ7PdQC5qrIlnQolJoICW9FSKaIqIppWLN0HkhYS7kc8WHf5Vmqyvlt1pv3HbNdJ6Qkt4zHwwAIH9x/o4U8svAgUD0uof3zTXWHYj5VHfLHnCNdQYyVp8MqldrpTPW2sTAgZhZVZaXjm8yiKZdMwGARr9j+mgE1E9DB/QHYMm3tWURH1YAAAAASUVORK5CYII=") no-repeat top right;
+    background-size: 16px;
 }
 
 .NB-iphone .NB-button .NB-story-comment-like-button-wrapper,
@@ -559,38 +594,8 @@ a.NB-show-profile {
 
 .NB-button.selected div { 
     background: #2379bf;
-    background: -webkit-gradient(
-    linear, left top, left bottom, 
-    from(#1e78c1),
-    to(#2379bf));
     box-shadow: none;
 }
-
-.NB-button.NB-share-button.selected div{ 
-    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1);
-}
-
-.NB-button a {
-    display: inline-block;
-    padding-top: 1px;
-    line-height: 16px;
-    font-family: Helvetica, sans-serif;
-    font-size: 11px;
-    color: #606060;
-    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8);
-}
-
-.NB-button.NB-share-button a {
-    color: #FFF;
-    text-shadow: none;
-    font-size: 14px;
-}
-
-.NB-button.selected a {
-    color: rgba(255,255,255,1);    
-    text-shadow: none;
-}
-
 
 
 /* Story Comments */
@@ -600,8 +605,8 @@ a.NB-show-profile {
 }
 
 #story_pane .NB-story-comment {
-    border-top: 1px solid #A6A6A6;
-    background:#f5f9fb;
+    border-bottom: 1px solid #EAECE8;
+    background:#FAFBF8;
     position: relative;
     padding: 0 12px 2px 64px;
     line-height: 20px;
@@ -609,7 +614,9 @@ a.NB-show-profile {
     min-height: 72px;
     box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
-
+#story_pane .NB-story-comment:last-child {
+    border-bottom: none;
+}
 .NB-header,
 #NB-share-bar-wrapper {
     -webkit-user-select: none;
@@ -664,17 +671,15 @@ a.NB-show-profile {
     font-size: 11px;
     color: #1D4BA6;
     font-weight: bold;
-    margin: 0 4px 0 0;
+    margin: 0 10px 0 0;
     text-shadow: 0 -1px 0 #F0F0F0;
     cursor: pointer;
     line-height: 17px;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
-    text-transform: uppercase;
     font-size: 10px;
     color: #9D9D9D;
-    font-weight: bold;
-    float: right;
+    float: left;
     line-height: 17px;
     margin: 0 0 0;
 }
@@ -711,7 +716,7 @@ a.NB-show-profile {
 #story_pane .NB-story-comment .NB-story-comment-location {
     text-transform: uppercase;
     font-size: 10px;
-    color: #BECDD7;
+    color: rgba(0, 0, 0, .2);
     font-weight: bold;
     float: left;
     clear: both;
@@ -723,6 +728,7 @@ a.NB-show-profile {
     overflow: hidden;
     white-space: nowrap;
     float: right;
+    margin-top: -2px;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
@@ -733,7 +739,7 @@ a.NB-show-profile {
 
 
 #story_pane .NB-story-comment-reply {
-    border-top: 1px solid #E0E0E0;
+    border-top: 1px solid #EAECE8;
     padding: 4px 0;
     overflow: hidden;
     clear: both;
@@ -786,13 +792,10 @@ a.NB-show-profile {
     clear: both;
 }
 #story_pane .NB-story-comments-public-teaser-wrapper,
-#story_pane .NB-story-comments-public-header-wrapper {
-    border-top: 1px solid #353535;
+#story_pane .NB-story-comments-public-header-wrapper,
+#story_pane .NB-story-comments-friends-header-wrapper {
+    clear: both;
     padding: 1px 0;
-    cursor: pointer;
-}
-#story_pane .NB-story-comments-public-header-wrapper {
-    cursor: default;
 }
 #story_pane .NB-story-comments-shares-teaser-wrapper {
     border-top: 0;
@@ -800,7 +803,8 @@ a.NB-show-profile {
 }
 
 #story_pane .NB-story-comments-public-teaser,
-#story_pane .NB-story-comments-public-header {
+#story_pane .NB-story-comments-public-header,
+#story_pane .NB-story-comments-friends-header {
     background-color: #B1B6B4;
     color: white;
     text-shadow: 0 1px 0 #505050;
@@ -809,12 +813,13 @@ a.NB-show-profile {
     font-size: 10px;
     padding: 2px 12px;
     overflow: hidden;
-}
-
-#story_pane .NB-story-comments-public-header {
-    background-color: whiteSmoke;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0));
+    padding: 6px 12px 6px;
     color: #404040;
     text-shadow: 0 1px 0 white;
+    border: 1px solid transparent;
+    border-color: rgba(0, 0, 0, .1) transparent rgba(0, 0, 0, .1);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
 }
 #story_pane .NB-story-comments-shares-teaser {
     background-color: #F5F5EF;
