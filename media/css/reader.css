@@ -2167,9 +2167,10 @@ background: transparent;
 }
 
 .NB-feed-story .NB-feed-story-tags {
-    margin: 9px 0 6px;
+    margin: 7px 0 6px;
     line-height: 12px;
     height: 16px;
+    overflow: hidden;
 }
 .NB-feed-story .NB-feed-story-tags .NB-middot {
     color: #A0A0A0;
@@ -2187,7 +2188,7 @@ background: transparent;
     border-radius: 4px;
     
     padding: 1px 5px;
-    margin: -2px 4px 4px 0;
+    margin: 0 4px 4px 0;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
