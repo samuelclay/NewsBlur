@@ -2168,29 +2168,31 @@ background: transparent;
 
 .NB-feed-story .NB-feed-story-tags {
     margin: 9px 0 6px;
-    overflow: hidden;
     line-height: 12px;
-    height: 14px;
+    height: 16px;
 }
 .NB-feed-story .NB-feed-story-tags .NB-middot {
     color: #A0A0A0;
     font-size: 10px;
-    padding-right: 4px;
+    padding-right: 8px;
     float: left;
     font-weight: normal;
 }
 .NB-feed-story .NB-feed-story-tag {
     /* Grey */
     float: left;
+    cursor: pointer;
     font-weight: normal;
     font-size: 9px;
-    padding: 0px 4px 1px;
-    margin: 0 2px 2px;
-    background-color: #D8DEE2;
-    color: #9D9A95;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     border-radius: 4px;
-    cursor: pointer;
+    
+    padding: 1px 5px;
+    margin: -2px 4px 4px 0;
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 } 
 .NB-feed-story .NB-feed-story-tag:first-child {
     margin-left: 0;

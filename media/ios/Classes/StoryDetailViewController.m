@@ -206,7 +206,7 @@
                             footerString
                             ];
     
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -282,7 +282,7 @@
             int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
-            storyAuthor = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
+            storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
                            "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>",
                            author,
                            authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
@@ -329,15 +329,13 @@
     
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-date\">%@</div>"
                              "<div class=\"NB-story-title\">%@</div>"
+                             "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
                              "</div></div>",
-                             [storyTags length] ?
-                             [self.activeStory objectForKey:@"long_parsed_date"] :
-                             [self.activeStory objectForKey:@"short_parsed_date"],
                              storyTitle,
+                             [self.activeStory objectForKey:@"long_parsed_date"],
                              storyAuthor,
                              storyTags];
     return storyHeader;

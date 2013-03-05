@@ -43,7 +43,7 @@
  */
 
 .NB-ipad-wide .NB-header {
-    padding: 15px 0 5px;
+    padding: 15px 0;
 }
 
 .NB-ipad-wide .NB-header .NB-header-inner {
@@ -81,7 +81,7 @@
  */
 
 .NB-ipad-narrow .NB-header {
-    padding: 15px 30px 5px;
+    padding: 12px 30px;
 }
 
 .NB-ipad-narrow .NB-story {
@@ -118,7 +118,7 @@
  */
 
 .NB-iphone .NB-header {
-    padding: 12px 12px 5px;
+    padding: 8px 12px;
 }
 
 .NB-iphone .NB-story {
@@ -153,14 +153,47 @@ body.NB-iphone {
     line-height: 110%;
 }
 
+
+/* ========== */
+/* = Header = */
+/* ========== */
+
+.NB-story-title {
+    clear: left;
+    margin: 2px 0 4px;
+    color: #313330;
+}
+
+.NB-story-title-positive {
+    color: #58A353;
+    text-shadow: 0 1px 0 #E9F6E9;
+}
+.NB-story-title-negative {
+    color: #B85044;
+    text-shadow: 0 1px 0 #F6E9E9;
+}
+.NB-story-date {
+    display: inline;
+    color: #818776;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.NB-middot {
+    display: inline-block;
+    color: #A0A0A0;
+    padding: 0 8px 0;
+    line-height: 8px;
+    font-weight: normal;
+}
+
 .NB-story-author {
-    color: #969696;
+    display: inline;
+    font-size: 11px;
+    color: #959B8B;
     text-decoration: none;
-    text-transform: uppercase;
-    margin: 4px 8px 0px 0;
-    margin-bottom: 8px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
-    float: left;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     position: relative;
 }
 .NB-story-author-positive {
@@ -171,24 +204,28 @@ body.NB-iphone {
     color: #B85044;
     text-shadow: 0 1px 0 #F6E9E9;
 }
+
 .NB-story-tags {
     overflow: hidden;
-    padding: 5px 2px 2px 2px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+    padding: 5px 2px 2px 0;
+    line-height: 12px;
+    height: 14px;
 }
 
 .NB-story-tag {
     float: left;
     text-decoration: none;
     font-weight: normal;
-    padding: 0px 4px 0px;
+    padding: 1px 5px;
     margin: 0px 4px 4px 0;
-    background-color: #C9CBC6;
-    color: #505050;
-    text-shadow: 0 1px 0 #E0E8DB;
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     -webkit-border-radius: 4px;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
     position: relative;
+    font-size: 9px;
 }
 .NB-story-tag-positive {
     background-color: #88B383;
@@ -219,29 +256,6 @@ body.NB-iphone {
 .NB-show-profile.pressed .NB-highlight {
     display: block;
     
-}
-
-.NB-story-date {
-    color: #454D6C;
-}
-
-.NB-story-author {
-    font-size: 10px;
-    line-height: 12px
-}
-
-.NB-story-tags {
-    line-height: 12px;
-    height: 12px;
-}
-
-.NB-story-tag {
-    font-size: 9px;
-}
-
-.NB-story-date {
-    font-size: 11px;
-    line-height: 13px;
 }
 
 .NB-story h1, 
@@ -307,10 +321,9 @@ div + p {
 .NB-header {
     font-size: 22px;
     line-height: 1.2em;
-    font-weight: 600;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     border-bottom: 1px solid #C2C5BE;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     overflow: hidden;
     max-width: none;
     
@@ -318,7 +331,7 @@ div + p {
 }
 
 .NB-iphone .NB-header {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .NB-story {
@@ -360,19 +373,6 @@ div + p {
     clear: both;
 }
 
-.NB-story-title {
-    clear: left;
-    margin: 8px 0 4px;
-}
-
-.NB-story-title-positive {
-    color: #58A353;
-    text-shadow: 0 1px 0 #E9F6E9;
-}
-.NB-story-title-negative {
-    color: #B85044;
-    text-shadow: 0 1px 0 #F6E9E9;
-}
 ins {
     text-decoration: none;
 }
