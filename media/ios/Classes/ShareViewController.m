@@ -120,6 +120,23 @@
         self.navigationItem.titleView = titleImageView;
         titleImageView.hidden = NO;
     }
+    
+    if (twitterButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
+          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
+        [self doToggleButton:twitterButton];
+    }
+    if (facebookButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
+          objectForKey:@"facebook_uid"] class] == [NSNull class]) {
+        [self doToggleButton:facebookButton];
+    }
+    if (appdotnetButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
+          objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
+        [self doToggleButton:appdotnetButton];
+    }
+
 }
 
 - (void)adjustCommentField {
@@ -161,24 +178,43 @@
     button.selected = !button.selected;
     int selected = button.selected ? 1 : 0;
     
-    if (button.tag == 1) {
+    if (button.tag == 1) { // Twitter
         if (selected) {
+            [self checkService:@"twitter"];
             button.layer.borderColor = [UIColorFromRGB(0x4E8ECD) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
-    } else if (button.tag == 2) {
+    } else if (button.tag == 2) { // Facebook
         if (selected) {
+            [self checkService:@"facebook"];
             button.layer.borderColor = [UIColorFromRGB(0x6884CD) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
-    } else if (button.tag == 3) {
+    } else if (button.tag == 3) { // App.net
         if (selected) {
+            [self checkService:@"appdotnet"];
             button.layer.borderColor = [UIColorFromRGB(0xD16857) CGColor];
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
+    }
+}
+
+- (void)checkService:(NSString *)service {
+    if ([service isEqualToString:@"twitter"] &&
+        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
+          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
+    } else if ([service isEqualToString:@"facebook"] &&
+              [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
+                objectForKey:@"facebook_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
+    } else if ([service isEqualToString:@"appdotnet"] &&
+              [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
+                objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
     }
 }
 

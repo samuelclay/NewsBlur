@@ -74,7 +74,7 @@
 - (void)fetchActivitiesDetail:(int)page {
     
     // if there is no social profile, we are DONE
-//    if ([[appDelegate.dictUserProfile allKeys] count] == 0) {
+//    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
 //        [self.activitiesTable reloadData];
 //        return;
@@ -97,7 +97,7 @@
                                "http://%@/social/activities?user_id=%@&page=%i&limit=10"
                                "&category=signup&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                                NEWSBLUR_URL,
-                               [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                               [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
         NSURL *url = [NSURL URLWithString:urlString];
@@ -182,7 +182,7 @@
         activityCell = [[SmallActivityCell alloc] init];
     }
     
-    NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+    NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
     [userProfile setValue:@"You" forKey:@"username"];
     
     int height = [activityCell setActivity:[appDelegate.userActivitiesArray 
@@ -214,7 +214,7 @@
         return [self makeLoadingCell];
     } else {
 
-        NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+        NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
         [userProfile setValue:@"You" forKey:@"username"];
         
         NSDictionary *activitiy = [appDelegate.userActivitiesArray 
@@ -273,7 +273,7 @@
             appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"sharedstory"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                                   [appDelegate.dictUserProfile objectForKey:@"id"]];
+                                   [appDelegate.dictSocialProfile objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@",
                                       [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr

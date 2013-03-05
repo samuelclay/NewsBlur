@@ -337,6 +337,7 @@ def load_feeds_flat(request):
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
+    social_services = MSocialServices.profile(user.pk)
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     categories = None
@@ -351,6 +352,7 @@ def load_feeds_flat(request):
         "feeds": feeds,
         "social_feeds": social_feeds,
         "social_profile": social_profile,
+        "social_services": social_services,
         "user": user.username,
         "user_profile": user.profile,
         "iphone_version": iphone_version,

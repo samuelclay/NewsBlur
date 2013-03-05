@@ -121,7 +121,9 @@
     NSMutableDictionary * dictFeeds;
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
+    NSDictionary * dictSocialProfile;
     NSDictionary * dictUserProfile;
+    NSDictionary * dictSocialServices;
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
@@ -207,7 +209,9 @@
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
+@property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
+@property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
@@ -252,6 +256,8 @@
 - (NSString *)orderKey;
 - (NSString *)readFilterKey;
 - (void)confirmLogout;
+- (void)showConnectToService:(NSString *)serviceName;
+- (void)refreshUserProfile:(void(^)())callback;
 
 - (int)indexOfNextUnreadStory;
 - (int)locationOfNextUnreadStory;

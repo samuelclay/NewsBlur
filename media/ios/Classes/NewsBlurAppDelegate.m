@@ -37,6 +37,8 @@
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
+#import "AuthorizeServicesViewController.h"
+
 
 @implementation NewsBlurAppDelegate
 
@@ -121,7 +123,9 @@
 @synthesize dictFeeds;
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
+@synthesize dictSocialProfile;
 @synthesize dictUserProfile;
+@synthesize dictSocialServices;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -568,6 +572,47 @@
                                                   otherButtonTitles:@"Logout", nil];
     [logoutConfirm show];
     [logoutConfirm setTag:1];
+}
+
+- (void)showConnectToService:(NSString *)serviceName {
+    AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
+    service.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
+    service.type = serviceName;
+    service.fromStory = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        service.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self.masterContainerViewController presentModalViewController:service animated:YES];
+    } else {
+        [self.shareNavigationController pushViewController:service animated:YES];
+    }
+}
+
+- (void)refreshUserProfile:(void(^)())callback {
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/social/load_user_profile",
+                                       NEWSBLUR_URL]];
+    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+    __weak ASIHTTPRequest *request = _request;
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed user profile");
+        callback();
+    }];
+    [request setCompletionBlock:^(void) {
+        NSString *responseString = [request responseString];
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions
+                                 error:&error];
+        
+        self.dictUserProfile = [results objectForKey:@"user_profile"];
+        self.dictSocialServices = [results objectForKey:@"services"];
+        callback();
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

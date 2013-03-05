@@ -504,7 +504,7 @@
     }
     // add self to user profiles
     if (self.feedPage == 1) {
-        newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictUserProfile];
+        newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictSocialProfile];
     }
     
     if ([newUserProfiles count]){

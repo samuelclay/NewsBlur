@@ -133,7 +133,7 @@
     
     self.userProfile = [results objectForKey:@"user_profile"];  
     
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];   
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictSocialProfile objectForKey:@"user_id"]];   
     NSString *profileUserId = [NSString stringWithFormat:@"%@", [self.userProfile objectForKey:@"user_id"]];   
     
     // check follow button status    

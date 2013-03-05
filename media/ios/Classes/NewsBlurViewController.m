@@ -529,8 +529,10 @@ static const CGFloat kFolderTitleHeight = 28;
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictUserProfile and userActivitiesArray
-    appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
+    // Set up dictSocialProfile and userActivitiesArray
+    appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
+    appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
+    appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
     // Only update the dashboard if there is a social profile
@@ -714,8 +716,8 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (void)showUserProfile {
-    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];
+    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
+    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
     [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }

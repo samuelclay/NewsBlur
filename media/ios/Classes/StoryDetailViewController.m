@@ -491,7 +491,7 @@
     NSString *userEditButton = @"";
     NSString *userLikeButton = @"";
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSArray *likingUsersArray = [commentDict objectForKey:@"liking_users"];
     NSString *likingUsers = @"";
     
@@ -671,7 +671,7 @@
             NSString *userEditButton = @"";
             NSString *replyUserId = [NSString stringWithFormat:@"%@", [replyDict objectForKey:@"user_id"]];
             NSString *replyId = [replyDict objectForKey:@"reply_id"];
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             
             if ([replyUserId isEqualToString:currentUserId]) {
                 userEditButton = [NSString stringWithFormat:@
@@ -994,7 +994,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
         } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"] ||
@@ -1120,7 +1120,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // test to see if the user has commented
     // search for the comment from friends comments
     NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     for (int i = 0; i < friendComments.count; i++) {
         NSString *userId = [NSString stringWithFormat:@"%@",
                             [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
@@ -1216,7 +1216,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                    dispatch_get_current_queue(), ^{
         if (!replyId) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@",
-                                       [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+                                       [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             NSString *jsFlashString = [[NSString alloc]
                                        initWithFormat:@"slideToComment('%@', true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
@@ -1266,7 +1266,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)scrolltoComment {
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }

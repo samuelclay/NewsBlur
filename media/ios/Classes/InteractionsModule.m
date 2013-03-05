@@ -76,7 +76,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // if there is no social profile, we are DONE
-//    if ([[appDelegate.dictUserProfile allKeys] count] == 0) {
+//    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
 //        [self.interactionsTable reloadData];
 //        return;
@@ -100,7 +100,7 @@
                                "http://%@/social/interactions?user_id=%@&page=%i&limit=10"
                                "&category=follow&category=comment_reply&category=comment_like&category=reply_reply&category=story_reshare",
                                NEWSBLUR_URL,
-                               [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                               [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
         NSURL *url = [NSURL URLWithString:urlString];

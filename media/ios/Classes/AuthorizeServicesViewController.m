@@ -17,6 +17,7 @@
 @synthesize webView;
 @synthesize url;
 @synthesize type;
+@synthesize fromStory;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,7 +43,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    
     if ([type isEqualToString:@"google"]) {
         self.navigationItem.title = @"Google Reader";
     } else if ([type isEqualToString:@"facebook"]) {
@@ -67,28 +67,32 @@
     NSLog(@"URL STRING IS %@", URLString);
     
     if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/", NEWSBLUR_URL]]) {
-        
-        
         NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
         
-        [self.navigationController popViewControllerAnimated:YES];
-        if ([type isEqualToString:@"google"]) {
-            if (error.length) {
-                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
-            } else {
-                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
-            }
-        } else if ([type isEqualToString:@"facebook"]) {
-            if (error.length) {
-                [self showError:error];
-            } else {
-                [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
-            }
-        } else if ([type isEqualToString:@"twitter"]) {
-            if (error.length) {
-                [self showError:error];
-            } else {
-                [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+        if (self.fromStory) {
+            [appDelegate refreshUserProfile:^{
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
+            if ([type isEqualToString:@"google"]) {
+                if (error.length) {
+                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
+                } else {
+                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
+                }
+            } else if ([type isEqualToString:@"facebook"]) {
+                if (error.length) {
+                    [self showError:error];
+                } else {
+                    [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+                }
+            } else if ([type isEqualToString:@"twitter"]) {
+                if (error.length) {
+                    [self showError:error];
+                } else {
+                    [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+                }
             }
         }
         return NO;
