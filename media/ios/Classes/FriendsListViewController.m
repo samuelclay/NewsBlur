@@ -57,15 +57,6 @@
     
     self.view.frame = CGRectMake(0, 0, 320, 416);
     self.contentSizeForViewInPopover = self.view.frame.size;
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-
-//    UISearchBar *newSearchBar = [[UISearchBar alloc] init];
-//    newSearchBar.frame = CGRectMake(0,0,0,38);
-//    newSearchBar.placeholder = @"Search by username or email";
-//    newSearchBar.delegate = self;
-//    self.friendSearchBar = newSearchBar;
-//    self.friendsTable.tableHeaderView = newSearchBar;
-
 }
 
 - (void)viewDidUnload

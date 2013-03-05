@@ -301,7 +301,6 @@
     
     self.friendsListViewController = friendsBVC;    
     self.modalNavigationController = friendsNav;
-    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -385,8 +384,6 @@
     
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
-    ftux.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
     self.ftuxNavigationController = ftux;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -453,7 +450,6 @@
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:NO];
-//    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)loadFeedDetailView {
@@ -572,15 +568,19 @@
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
-    AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
-    service.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
-    service.type = serviceName;
-    service.fromStory = YES;
+    AuthorizeServicesViewController *serviceVC = [[AuthorizeServicesViewController alloc] init];
+    serviceVC.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
+    serviceVC.type = serviceName;
+    serviceVC.fromStory = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        service.modalPresentationStyle = UIModalPresentationFormSheet;
-        [self.masterContainerViewController presentModalViewController:service animated:YES];
+        UINavigationController *connectNav = [[UINavigationController alloc]
+                                              initWithRootViewController:serviceVC];
+        self.modalNavigationController = connectNav;
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self.masterContainerViewController presentModalViewController:modalNavigationController
+                                                              animated:YES];
     } else {
-        [self.shareNavigationController pushViewController:service animated:YES];
+        [self.shareNavigationController pushViewController:serviceVC animated:YES];
     }
 }
 

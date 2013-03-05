@@ -56,10 +56,25 @@
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
     [self.webView loadRequest:requestObj];
+
+    if (self.fromStory) {
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
+                                         initWithTitle: @"Cancel"
+                                         style: UIBarButtonSystemItemCancel
+                                         target: self
+                                         action: @selector(doCancelButton)];
+        self.navigationItem.leftBarButtonItem = cancelButton;
+        self.view.frame = CGRectMake(0, 0, 320, 416);
+        self.contentSizeForViewInPopover = self.view.frame.size;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
+}
+
+- (void)doCancelButton {
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {

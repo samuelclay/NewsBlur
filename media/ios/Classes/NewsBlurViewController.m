@@ -80,7 +80,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [super viewDidLoad];
     popoverClass = [WEPopoverController class];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0xE8EBE4);
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];

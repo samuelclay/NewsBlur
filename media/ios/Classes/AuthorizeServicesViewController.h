@@ -24,5 +24,7 @@
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
+- (void)doCancelButton;
 - (void)showError:(NSString *)error;
+
 @end
