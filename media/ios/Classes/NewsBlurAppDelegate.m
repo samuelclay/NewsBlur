@@ -19,7 +19,6 @@
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
-#import "FindSitesViewController.h"
 #import "MoveSiteViewController.h"
 #import "TrainerViewController.h"
 #import "OriginalStoryViewController.h"
@@ -27,7 +26,6 @@
 #import "UserProfileViewController.h"
 #import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
-#import "findSitesViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -66,7 +64,6 @@
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
-@synthesize findSitesViewController;
 @synthesize moveSiteViewController;
 @synthesize trainerViewController;
 @synthesize originalStoryViewController;

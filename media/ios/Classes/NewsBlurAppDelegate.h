@@ -39,7 +39,6 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
-@class FindSitesViewController;
 @class UnreadCounts;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
@@ -71,7 +70,6 @@
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
-    FindSitesViewController *findSitesViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
@@ -152,7 +150,6 @@
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
-@property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
