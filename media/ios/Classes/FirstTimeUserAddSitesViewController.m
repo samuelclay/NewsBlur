@@ -70,7 +70,7 @@
     self.categoriesTable.backgroundView = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.instructionLabel.font = [UIFont systemFontOfSize:14];
+        self.instructionLabel.font = [UIFont systemFontOfSize:20];
     }
     
     
@@ -164,7 +164,7 @@
     [self.googleReaderButton setTitle:@"Importing sites..." forState:UIControlStateNormal];
     self.instructionLabel.textColor = UIColorFromRGB(0x333333);
     self.googleReaderButton.userInteractionEnabled = NO;
-    self.instructionLabel.text = @"This might take a minute.  Feel free to continue...";
+    self.instructionLabel.text = @"This might take a minute.\nFeel free to continue...";
     [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/import/import_from_google_reader/",
@@ -200,7 +200,7 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = @"And just like that, we're done!\nAdd more categories or move on...";
+    self.instructionLabel.text = [NSString stringWithFormat:@"You are subscribed to %d sites", [[appDelegate.dictFeeds allKeys] count]];
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];
@@ -250,9 +250,7 @@
         self.nextButton.enabled = NO;
     }
     
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(tag - 1000, 1)];
-
-    [self.categoriesTable reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+    [self.categoriesTable reloadData];
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
@@ -286,7 +284,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return appDelegate.categories.count + 1;
+    return appDelegate.categories.count + 2;
 }
 
 //- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -296,17 +294,19 @@
 //}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
-    if (section == 0 ) {
+    if (section == 0) {
         return 1;
+    } else if (section == 1) {
+        return 0;
     } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
+        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 2];
         NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
         return categorySiteList.count;
     }
     return 0;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 26;
 }
 
@@ -314,13 +314,23 @@
     return 54.0;
 }
 
-- (UIView *)tableView:(UITableView *)tableView 
-viewForHeaderInSection:(NSInteger)section {
-
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        UIView* categoryTitleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 20.0, 300.0, 34.0)];
+        UILabel *categoryTitleLabel = [[UILabel alloc] initWithFrame:categoryTitleView.frame];
+        categoryTitleLabel.text = @"Choose categories to subscribe to:";
+        categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:19];
+        [categoryTitleView addSubview:categoryTitleLabel];
+        categoryTitleLabel.backgroundColor = [UIColor clearColor];
+        categoryTitleView.backgroundColor = [UIColor clearColor];
+        categoryTitleLabel.textAlignment = NSTextAlignmentCenter;
+        
+        return categoryTitleView;
+    }
+    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 34.0)];
     customView.tag = section;
-    
     
     UIImage *buttonImage =[[UIImage imageNamed:@"google.png"] stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
     UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -335,7 +345,7 @@ viewForHeaderInSection:(NSInteger)section {
     if (section == 0) {
         categoryTitle = @"Google Reader";
     } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
+        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 2];
         categoryTitle = [category objectForKey:@"title"];
         
         BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
@@ -351,23 +361,12 @@ viewForHeaderInSection:(NSInteger)section {
             checkmarkView.tag = 100;
             [headerBtn addSubview:checkmarkView];
         }
-
     }
     
-
     [headerBtn setTitle:categoryTitle forState:UIControlStateNormal];
-
     [headerBtn addTarget:self action:@selector(addCategory:) forControlEvents:UIControlEventTouchUpInside];
-    
-       
-    
     [customView addSubview:headerBtn];
-    
-    
 
-
-    
-    
     return customView;
 }
 
@@ -389,7 +388,7 @@ viewForHeaderInSection:(NSInteger)section {
         cell.feedColorBar = nil;
         cell.feedColorBarTopBorder = nil;
     } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:indexPath.section - 1];
+        NSDictionary *category = [appDelegate.categories objectAtIndex:indexPath.section - 2];
         NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
         NSString * feedId = [NSString stringWithFormat:@"%@", [categorySiteList objectAtIndex:indexPath.row ]];
         

@@ -48,8 +48,10 @@
     } else if ([type isEqualToString:@"facebook"]) {
         self.navigationItem.title = @"Facebook";
     } else if ([type isEqualToString:@"twitter"]) {
-        self.navigationItem.title = @"Twitter";    
-    }    
+        self.navigationItem.title = @"Twitter";
+    } else if ([type isEqualToString:@"appdotnet"]) {
+        self.navigationItem.title = @"App.net";
+    }
     NSString *urlAddress = [NSString stringWithFormat:@"http://%@%@", NEWSBLUR_URL, url];
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
@@ -76,14 +78,12 @@
             } else {
                 [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
             }
-
         } else if ([type isEqualToString:@"facebook"]) {
             if (error.length) {
                 [self showError:error];
             } else {
                 [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
             }
-            
         } else if ([type isEqualToString:@"twitter"]) {
             if (error.length) {
                 [self showError:error];

@@ -54,13 +54,10 @@
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Get Started" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
-    
-    self.navigationItem.title = @"Welcome";
-    
+        
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logo.frame = CGRectMake(80, 90, 160, 160);
         header.font = [UIFont systemFontOfSize:22];
-        footer.font = [UIFont systemFontOfSize:16];
+        footer.font = [UIFont systemFontOfSize:22];
     }
     
     UITapGestureRecognizer *singleFingerTap = 
@@ -87,7 +84,7 @@
     UIImage *logoImg = [UIImage imageNamed:@"logo_512"];
     UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logoView.frame = CGRectMake(80, 90, 160, 160);
+        logoView.frame = CGRectMake(50, 100, 220, 220);
     } else {
         logoView.frame = CGRectMake(150, 99, 240, 240);
     }

@@ -43,11 +43,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Find Friends";
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.friendsLabel.font = [UIFont systemFontOfSize:14];
-    }
+    self.navigationItem.title = @"Friends";
 }
 
 - (void)viewDidUnload {

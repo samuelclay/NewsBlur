@@ -133,7 +133,7 @@
     self.buttonBack = backButton;
     
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
         [rightToolbar setItems: [NSArray arrayWithObjects:
                                  spacerBarButton,
                                  fontSettingsButton,
@@ -142,10 +142,7 @@
                                  spacer3BarButton,
                                  originalStoryButton, nil]];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
-//    } else {
-//        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-//        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-//    }
+    }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -576,7 +573,14 @@
     self.progressViewContainer.hidden = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 fontSettingsButton,
+                                 spacer2BarButton,
+                                 separatorBarButton,
+                                 spacer3BarButton,
+                                 originalStoryButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
     
     [self setNextPreviousButtons];
