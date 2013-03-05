@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
+#import "ShareViewController.h"
 
 @implementation AuthorizeServicesViewController
 
@@ -57,7 +58,7 @@
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
     [self.webView loadRequest:requestObj];
 
-    if (self.fromStory) {
+    if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
                                          style: UIBarButtonSystemItemCancel
@@ -74,6 +75,7 @@
 }
 
 - (void)doCancelButton {
+    [appDelegate.shareViewController adjustShareButtons];
     [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 
@@ -86,7 +88,12 @@
         
         if (self.fromStory) {
             [appDelegate refreshUserProfile:^{
-                [self.navigationController popViewControllerAnimated:YES];
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    [appDelegate.shareNavigationController viewWillAppear:YES];
+                    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+                } else {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
             }];
         } else {
             [self.navigationController popViewControllerAnimated:YES];

@@ -68,13 +68,10 @@
     commentField.layer.cornerRadius = 4;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
     
-    twitterButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     twitterButton.layer.borderWidth = 1.0f;
     twitterButton.layer.cornerRadius = 1.0f;
-    facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     facebookButton.layer.borderWidth = 1.0f;
     facebookButton.layer.cornerRadius = 1.0f;
-    appdotnetButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     appdotnetButton.layer.borderWidth = 1.0f;
     appdotnetButton.layer.cornerRadius = 1.0f;
     
@@ -105,7 +102,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self adjustCommentField];
-
+    [self adjustShareButtons];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
         [self.commentField becomeFirstResponder];
@@ -120,23 +118,35 @@
         self.navigationItem.titleView = titleImageView;
         titleImageView.hidden = NO;
     }
-    
+}
+
+- (void)adjustShareButtons {
     if (twitterButton.selected &&
         [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
           objectForKey:@"twitter_uid"] class] == [NSNull class]) {
         [self doToggleButton:twitterButton];
+    } else {
+        twitterButton.selected = NO;
+        twitterButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     }
+    
     if (facebookButton.selected &&
         [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
           objectForKey:@"facebook_uid"] class] == [NSNull class]) {
         [self doToggleButton:facebookButton];
+    } else {
+        facebookButton.selected = NO;
+        facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     }
+    
     if (appdotnetButton.selected &&
         [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
           objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
         [self doToggleButton:appdotnetButton];
+    } else {
+        appdotnetButton.selected = NO;
+        appdotnetButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     }
-
 }
 
 - (void)adjustCommentField {
