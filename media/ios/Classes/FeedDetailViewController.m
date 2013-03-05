@@ -67,7 +67,8 @@
     
     popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-
+    self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    
     rightToolbar = [[TransparentToolbar alloc]
                     initWithFrame:CGRectMake(0, 0, 76, 44)];
     

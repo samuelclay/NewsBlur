@@ -94,7 +94,7 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
-    self.view.backgroundColor = [UIColor blackColor]; 
+    self.view.backgroundColor = UIColorFromRGB(0xC2C5BE);
     
     self.masterNavigationController = appDelegate.navigationController;
     self.feedsViewController = appDelegate.feedsViewController;
@@ -463,7 +463,7 @@
     self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
     self.storyPageControl.progressViewContainer.hidden = YES;
-//    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
+    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {

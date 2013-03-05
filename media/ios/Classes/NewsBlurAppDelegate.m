@@ -802,7 +802,9 @@
 }
 
 - (void)closeOriginalStory {
-    [originalStoryViewController dismissModalViewControllerAnimated:YES];
+    if (![[self modalViewController] isBeingDismissed]) {
+        [originalStoryViewController dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)hideStoryDetailView {

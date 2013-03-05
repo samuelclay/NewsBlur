@@ -189,7 +189,7 @@ static UIFont *indicatorFont = nil;
     CGContextSetLineWidth(context, 1.0f);
     if (highlighted) {
         // top border
-        UIColor *blue = UIColorFromRGB(0xEFEEC3);
+        UIColor *blue = UIColorFromRGB(0xF9F8F4);
         
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         

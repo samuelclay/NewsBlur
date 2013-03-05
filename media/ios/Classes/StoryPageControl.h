@@ -35,6 +35,7 @@
     
     BOOL isDraggingScrollview;
     BOOL waitingForNextUnreadFromServer;
+    UIInterfaceOrientation _orientation;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -72,6 +73,7 @@
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;

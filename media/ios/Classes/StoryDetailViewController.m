@@ -107,7 +107,12 @@
 }
 
 - (void)drawStory {
-    if (self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self drawStory:NO withOrientation:orientation];
+}
+
+- (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
+    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
         NSLog(@"Already drawn story. Ignoring.");
 //        return;
     }
@@ -135,9 +140,9 @@
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     
-    if (contentWidth > 700) {
+    if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 480) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";
@@ -201,7 +206,7 @@
                             footerString
                             ];
     
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -824,7 +829,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
     }
     
-    NSLog(@"Tapped url: %@", url);
+//    NSLog(@"Tapped url: %@", url);
     // HACK: Using ios.newsblur.com to intercept the javascript share, reply, and edit events.
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light

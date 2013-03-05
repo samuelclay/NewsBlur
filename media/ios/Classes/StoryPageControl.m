@@ -93,6 +93,7 @@
     [self.progressViewContainer addGestureRecognizer:tap];
     self.progressViewContainer.hidden = YES;
     
+    toolbar.autoresizingMask = toolbar.autoresizingMask | UIViewAutoresizingFlexibleHeight;
     rightToolbar = [[TransparentToolbar alloc]
                     initWithFrame:CGRectMake(0, 0, 80,
                                              self.toolbar.frame.size.height)];
@@ -149,6 +150,8 @@
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
+    
+    _orientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -199,6 +202,9 @@
     }
     
     previousPage.view.hidden = YES;
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -218,7 +224,28 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        
+        
+        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        
+    } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
+        
+        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+    }
     [self refreshPages];
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
+}
+
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if (interfaceOrientation != _orientation) {
+        _orientation = interfaceOrientation;
+        [self refreshPages];
+        previousPage.view.hidden = YES;
+    }
 }
 
 - (void)resetPages {
@@ -548,9 +575,9 @@
     self.bottomPlaceholderToolbar.hidden = YES;
     self.progressViewContainer.hidden = NO;
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
-//    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
+    }
     
     [self setNextPreviousButtons];
     [appDelegate changeActiveFeedDetailRow];
