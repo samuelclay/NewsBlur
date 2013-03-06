@@ -328,6 +328,14 @@
 		FF67D3CD168A73380057A7DA /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BF168A708D0057A7DA /* zepto.js */; };
 		FF67D3CE168A73380057A7DA /* trainer.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C4168A71870057A7DA /* trainer.js */; };
 		FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C6168A71B30057A7DA /* fastTouch.js */; };
+		FF688E4616E6ADB1003B7B42 /* traverse_next.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4416E6ADB1003B7B42 /* traverse_next.png */; };
+		FF688E4716E6ADB1003B7B42 /* traverse_next@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4516E6ADB1003B7B42 /* traverse_next@2x.png */; };
+		FF688E4A16E6AFD3003B7B42 /* traverse_previous.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4816E6AFD3003B7B42 /* traverse_previous.png */; };
+		FF688E4B16E6AFD3003B7B42 /* traverse_previous@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4916E6AFD3003B7B42 /* traverse_previous@2x.png */; };
+		FF688E4E16E6B3E1003B7B42 /* traverse_done.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4C16E6B3E1003B7B42 /* traverse_done.png */; };
+		FF688E4F16E6B3E1003B7B42 /* traverse_done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */; };
+		FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5016E6B8D0003B7B42 /* traverse_background.png */; };
+		FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -860,6 +868,14 @@
 		FF67D3BF168A708D0057A7DA /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../static/zepto.js; sourceTree = "<group>"; };
 		FF67D3C4168A71870057A7DA /* trainer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = trainer.js; path = ../static/trainer.js; sourceTree = "<group>"; };
 		FF67D3C6168A71B30057A7DA /* fastTouch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fastTouch.js; path = ../static/fastTouch.js; sourceTree = "<group>"; };
+		FF688E4416E6ADB1003B7B42 /* traverse_next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_next.png; sourceTree = "<group>"; };
+		FF688E4516E6ADB1003B7B42 /* traverse_next@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_next@2x.png"; sourceTree = "<group>"; };
+		FF688E4816E6AFD3003B7B42 /* traverse_previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_previous.png; sourceTree = "<group>"; };
+		FF688E4916E6AFD3003B7B42 /* traverse_previous@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_previous@2x.png"; sourceTree = "<group>"; };
+		FF688E4C16E6B3E1003B7B42 /* traverse_done.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_done.png; sourceTree = "<group>"; };
+		FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_done@2x.png"; sourceTree = "<group>"; };
+		FF688E5016E6B8D0003B7B42 /* traverse_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_background.png; sourceTree = "<group>"; };
+		FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_background@2x.png"; sourceTree = "<group>"; };
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
@@ -1169,6 +1185,14 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF688E5016E6B8D0003B7B42 /* traverse_background.png */,
+				FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */,
+				FF688E4C16E6B3E1003B7B42 /* traverse_done.png */,
+				FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */,
+				FF688E4816E6AFD3003B7B42 /* traverse_previous.png */,
+				FF688E4916E6AFD3003B7B42 /* traverse_previous@2x.png */,
+				FF688E4416E6ADB1003B7B42 /* traverse_next.png */,
+				FF688E4516E6ADB1003B7B42 /* traverse_next@2x.png */,
 				FF22FE7416E557D80046165A /* toolbar_tall_background.png */,
 				FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */,
 				FF22FE7016E554FD0046165A /* barbutton_sendto.png */,
@@ -2197,6 +2221,14 @@
 				FF22FE7316E554FD0046165A /* barbutton_sendto@2x.png in Resources */,
 				FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */,
 				FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */,
+				FF688E4616E6ADB1003B7B42 /* traverse_next.png in Resources */,
+				FF688E4716E6ADB1003B7B42 /* traverse_next@2x.png in Resources */,
+				FF688E4A16E6AFD3003B7B42 /* traverse_previous.png in Resources */,
+				FF688E4B16E6AFD3003B7B42 /* traverse_previous@2x.png in Resources */,
+				FF688E4E16E6B3E1003B7B42 /* traverse_done.png in Resources */,
+				FF688E4F16E6B3E1003B7B42 /* traverse_done@2x.png in Resources */,
+				FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */,
+				FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

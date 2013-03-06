@@ -21,9 +21,8 @@
     NewsBlurAppDelegate *appDelegate;
 
     UIProgressView *progressView;
-    UIToolbar *toolbar;
-    UIBarButtonItem *buttonPrevious;
-    UIBarButtonItem *buttonNext;
+    UIButton *buttonPrevious;
+    UIButton *buttonNext;
     UIBarButtonItem *activity;
     UIActivityIndicatorView *loadingIndicator;
     UIToolbar *bottomPlaceholderToolbar;
@@ -48,9 +47,8 @@
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic) IBOutlet UIProgressView *progressView;
 @property (strong, nonatomic) IBOutlet UIView *progressViewContainer;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonPrevious;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonNext;
+@property (nonatomic) IBOutlet UIButton *buttonPrevious;
+@property (nonatomic) IBOutlet UIButton *buttonNext;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;

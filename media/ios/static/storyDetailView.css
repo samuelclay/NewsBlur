@@ -165,6 +165,7 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
+    padding-bottom: 36px;
 
     -webkit-text-size-adjust: none; 
     font-size: 14px;

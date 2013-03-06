@@ -206,7 +206,7 @@
                             footerString
                             ];
     
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -373,26 +373,28 @@
 - (NSString *)getComments {
     NSString *comments = @"<div class=\"NB-feed-story-comments\">";
 
-    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
-        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
+    if ([self.activeStory objectForKey:@"comment_count"] != [NSNull null] &&
+        [[self.activeStory objectForKey:@"comment_count"] intValue] > 0) {
         
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
         
-        NSString *commentHeader = [NSString stringWithFormat:@
-                                   "<div class=\"NB-story-comments-friends-header-wrapper\">"
-                                   "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
-                                   "</div>",
-                                   [[story objectForKey:@"comment_count_friends"] intValue],
-                                   [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
-        
-        comments = [comments stringByAppendingString:commentHeader];
-        // add friends comments
-        for (int i = 0; i < friendsCommentsArray.count; i++) {
-            NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
-            comments = [comments stringByAppendingString:comment];
-        }
+        if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
+            NSString *commentHeader = [NSString stringWithFormat:@
+                                       "<div class=\"NB-story-comments-friends-header-wrapper\">"
+                                       "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                       "</div>",
+                                       [[story objectForKey:@"comment_count_friends"] intValue],
+                                       [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+            comments = [comments stringByAppendingString:commentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < friendsCommentsArray.count; i++) {
+                NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }        
         
         if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             NSString *publicCommentHeader = [NSString stringWithFormat:@
@@ -405,6 +407,7 @@
             comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:publicCommentHeader];
             comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
+            
             // add public comments
             for (int i = 0; i < publicCommentsArray.count; i++) {
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];

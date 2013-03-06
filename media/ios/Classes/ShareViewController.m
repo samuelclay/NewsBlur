@@ -468,8 +468,10 @@
         } else {
             self.submitButton.title = @"Share this story";
         }   
+    } else if ([self.currentType isEqualToString: @"reply"] ||
+               [self.currentType isEqualToString:@"edit-reply"]) {
+        self.submitButton.enabled = [self.commentField.text length] > 0;
     }
-    
     
 
 }

@@ -34,7 +34,7 @@
 @synthesize progressViewContainer;
 @synthesize separatorBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
-@synthesize toolbar, rightToolbar;
+@synthesize rightToolbar;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -92,11 +92,9 @@
     
     [self.progressViewContainer addGestureRecognizer:tap];
     self.progressViewContainer.hidden = YES;
-    
-    toolbar.autoresizingMask = toolbar.autoresizingMask | UIViewAutoresizingFlexibleHeight;
+
     rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 80,
-                                             self.toolbar.frame.size.height)];
+                    initWithFrame:CGRectMake(0, 0, 80, 44)];
     
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -629,29 +627,25 @@
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
             [buttonPrevious setEnabled:NO];
+            [buttonPrevious setAlpha:.4];
         } else {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
             [buttonPrevious setEnabled:YES];
+            [buttonPrevious setAlpha:1];
         }
     
     // setting up the NEXT UNREAD STORY BUTTON
+    buttonNext.enabled = YES;
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
-    if (nextIndex == -1 && unreadCount > 0) {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
-    } else if (nextIndex == -1) {
-        [buttonNext setStyle:UIBarButtonItemStyleDone];
-        [buttonNext setTitle:@"Done"];
+    if ((nextIndex == -1 && unreadCount > 0) ||
+        nextIndex != -1) {
+        [buttonNext setTitle:@"NEXT" forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"] forState:UIControlStateNormal];
     } else {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
+        [buttonNext setTitle:@"DONE" forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"] forState:UIControlStateNormal];
     }
-    buttonNext.enabled = YES;
     
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
