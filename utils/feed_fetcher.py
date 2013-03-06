@@ -226,8 +226,7 @@ class ProcessFeed:
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'])
 
-        if ((not self.feed.is_push or self.options.get('force'))
-            and hasattr(self.fpf, 'feed') and 
+        if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
             self_url = self.feed.feed_address
@@ -236,8 +235,11 @@ class ProcessFeed:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-            if hub_url and self_url and not settings.DEBUG:
-                logging.debug(u'   ---> [%-30s] ~BB~FWSubscribing to PuSH hub: %s' % (
+            push_expired = self.feed.is_push and self.feed.push.lease_expires < datetime.datetime.now()
+            if (hub_url and self_url and not settings.DEBUG and
+                (push_expired or not self.feed.is_push or self.options.get('force'))):
+                logging.debug(u'   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s' % (
+                              "~SKRe-~SN" if push_expired else "",
                               self.feed.title[:30], hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
         
