@@ -189,6 +189,13 @@ body.NB-iphone {
     color: #313330;
 }
 
+.NB-non-river .NB-story-title {
+    padding-top: 9px;
+}
+.NB-river .NB-story-title {
+    padding-top: 20px;
+}
+
 .NB-story-title-positive {
     color: #58A353;
     text-shadow: 0 1px 0 #E9F6E9;
@@ -234,7 +241,7 @@ body.NB-iphone {
     font-size: .7em;
     overflow: hidden;
     padding: .7em 2px .2em 0;
-    line-height: 12px;
+    line-height: 1.2em;
     height: 1.8em;
 }
 
@@ -344,13 +351,13 @@ div + p {
 }
 
 .NB-header {
-    line-height: 1.2em;
+    line-height: 1.4em;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     border-bottom: 1px solid #C2C5BE;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     overflow: hidden;
     max-width: none;
-    
+
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -545,6 +552,7 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button div {
+    height: auto;
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#DCDCDC),

@@ -1940,6 +1940,12 @@
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }
 
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+    [self informError:error];
+}
+
 @end
 
 

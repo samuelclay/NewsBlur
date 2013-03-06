@@ -123,6 +123,12 @@
     [request startAsynchronous];
 }
 
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
+}
+
 - (void)finishConnectFromSocial:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    

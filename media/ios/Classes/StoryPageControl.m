@@ -50,6 +50,7 @@
 @synthesize waitingForNextUnreadFromServer;
 @synthesize storyHUD;
 @synthesize scrollingToPage;
+@synthesize traverseView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -731,10 +732,13 @@
 - (void)openSendToDialog {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
-    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory
-                                            objectForKey:@"story_title"]];
-    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-    [actionSheet showInView:self.view];
+    NSString *title = [appDelegate.activeStory
+                       objectForKey:@"story_title"];
+    
+    
+//    SHKItem *item = [SHKItem URL:url title:title];
+//    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
+//    [actionSheet showInView:self.view];
 }
 
 - (void)markStoryAsSaved {

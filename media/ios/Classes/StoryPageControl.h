@@ -27,6 +27,7 @@
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
     TransparentToolbar * rightToolbar;
+    UIView *traverseView;
     
     WEPopoverController *popoverController;
 	Class popoverClass;
@@ -56,6 +57,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
+@property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;

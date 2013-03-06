@@ -148,6 +148,9 @@
         contentWidthClass = @"NB-iphone";
     }
     
+    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+                            @"NB-river" : @"NB-non-river";
+    
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
@@ -179,7 +182,7 @@
     NSString *htmlString = [NSString stringWithFormat:@
                             "<html>"
                             "<head>%@</head>" // header string
-                            "<body id=\"story_pane\" class=\"%@\">"
+                            "<body id=\"story_pane\" class=\"%@ %@\">"
                             "    <div class=\"%@\" id=\"NB-font-style\">"
                             "       <div class=\"%@\" id=\"NB-font-size\">"
                             "           <div id=\"NB-header-container\">%@</div>" // storyHeader
@@ -196,6 +199,7 @@
                             "</html>",
                             headerString,
                             contentWidthClass,
+                            riverClass,
                             fontStyleClass,
                             fontSizeClass,
                             storyHeader,
@@ -234,16 +238,11 @@
     }
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-    //    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
-    //                                                              appDelegate.isSocialView) ? -20 : -9)
-    //                                     animated:NO];
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
@@ -775,26 +774,22 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
     if ([keyPath isEqual:@"contentOffset"]) {
-        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1)) {
+        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
             // Pulling
             if (!pullingScrollview) {
                 pullingScrollview = YES;
-                [self.feedTitleGradient.layer setShadowOpacity:.5];
-                [self.webView insertSubview:self.feedTitleGradient belowSubview:self.webView.scrollView];
                 
                 for (id subview in self.webView.scrollView.subviews) {
                     UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
                     (UIImageView*)subview : nil;
                     // image views whose image is 1px wide are shadow images, hide them
-                    if (imgView && imgView.image.size.width == 1) {
-                        imgView.hidden = YES;
+                    if (imgView && imgView.image.size.width > 1) {
+                        [self.webView.scrollView insertSubview:self.feedTitleGradient
+                                                  belowSubview:subview];
+                        [self.webView.scrollView bringSubviewToFront:subview];
                     }
                 }
             }
-            float y = -1 * self.webView.scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height;
-            self.feedTitleGradient.frame = CGRectMake(0, y,
-                                                      self.feedTitleGradient.frame.size.width,
-                                                      self.feedTitleGradient.frame.size.height);
         } else {
             // Normal reading
             if (pullingScrollview) {
@@ -815,6 +810,41 @@
                     }
                 }
             }
+        }
+        
+        BOOL atBottom = (self.webView.scrollView.contentSize.height -
+                         self.webView.scrollView.contentOffset.y -
+                         self.webView.scrollView.frame.size.height) < 100;
+        BOOL atTop = self.webView.scrollView.contentOffset.y < 10;
+        if (!atTop && !atBottom) {
+            // Hide
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+            animations:^{
+                appDelegate.storyPageControl.traverseView.alpha = 0;
+            } completion:^(BOOL finished) {
+                
+            }];
+        } else if (atTop && !atBottom) {
+            // Stick to bottom
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         self.webView.scrollView.frame.size.height - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+             animations:^{
+                appDelegate.storyPageControl.traverseView.alpha = 1;
+            } completion:^(BOOL finished) {
+                
+            }];
+        } else {
+            // Scroll with bottom of scrollview
+            appDelegate.storyPageControl.traverseView.alpha = 1;
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
         }
     }
 }

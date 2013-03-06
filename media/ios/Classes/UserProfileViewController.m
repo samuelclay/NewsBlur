@@ -149,10 +149,10 @@
     [self.view addSubview:self.profileTable];
 }
 
-
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 #pragma mark -
