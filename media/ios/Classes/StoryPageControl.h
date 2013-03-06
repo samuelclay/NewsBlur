@@ -23,7 +23,6 @@
     UIProgressView *progressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
-    UIBarButtonItem *activity;
     UIActivityIndicatorView *loadingIndicator;
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
@@ -44,13 +43,12 @@
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
-@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic) IBOutlet UIProgressView *progressView;
 @property (strong, nonatomic) IBOutlet UIView *progressViewContainer;
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
 @property (nonatomic) UIBarButtonItem *buttonBack;
-@property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;

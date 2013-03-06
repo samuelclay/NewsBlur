@@ -38,7 +38,6 @@
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
-@synthesize activity;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
@@ -81,11 +80,6 @@
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
     
     popoverClass = [WEPopoverController class];
-
-    // loading indicator
-    self.loadingIndicator = [[UIActivityIndicatorView alloc]
-                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    self.activity.customView = self.loadingIndicator;
     
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
@@ -934,7 +928,6 @@
     if (nextLocation == -1 && unreadCount > 0 &&
         fdvc.feedPage < 100) {
         [self.loadingIndicator startAnimating];
-        self.activity.customView = self.loadingIndicator;
         self.buttonNext.enabled = NO;
         // Fetch next page and see if it has the unreads.
         self.waitingForNextUnreadFromServer = YES;

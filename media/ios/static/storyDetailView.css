@@ -165,7 +165,6 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
-    padding-bottom: 36px;
 
     -webkit-text-size-adjust: none; 
     font-size: 14px;
@@ -400,6 +399,9 @@ del {
 
 /* Comments */
 
+#NB-comments-wrapper {
+    margin-bottom: 52px;
+}
 .NB-feed-story-comments {
     margin: 0 !important;
     clear: both !important;
