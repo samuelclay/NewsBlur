@@ -155,7 +155,7 @@
         } else {
             cell.textLabel.text = [@"Save this story" uppercaseString];
         }
-        cell.imageView.image = [UIImage imageNamed:@"time"];
+        cell.imageView.image = [UIImage imageNamed:@"clock.png"];
     } else if (indexPath.row == 1) {
         bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
@@ -169,10 +169,10 @@
         cell.imageView.image = [UIImage imageNamed:@"email"];
     } else if (indexPath.row == 3) {
         cell.textLabel.text = [@"Train this story" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"bricks"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 4) {
         cell.textLabel.text = [@"Share this story" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"rainbow"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
     }
 
     return cell;

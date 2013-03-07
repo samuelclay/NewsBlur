@@ -51,6 +51,7 @@
 @synthesize storyHUD;
 @synthesize scrollingToPage;
 @synthesize traverseView;
+@synthesize traversePinned, traverseFloating;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -158,7 +159,7 @@
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
-                titleImage = [UIImage imageNamed:@"clock2.png"];
+                titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
             } else {
@@ -432,6 +433,20 @@
 //    if (self.isDraggingScrollview) {
         [self setStoryFromScroll];
 //    }
+    
+    // Stick to bottom
+    CGRect tvf = self.traverseView.frame;
+    traversePinned = YES;
+    [UIView animateWithDuration:.3 delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         self.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                              self.scrollView.frame.size.height - tvf.size.height,
+                                                              tvf.size.width, tvf.size.height);
+                         appDelegate.storyPageControl.traverseView.alpha = 1;
+                     } completion:^(BOOL finished) {
+                         
+                     }];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {

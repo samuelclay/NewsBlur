@@ -27,7 +27,6 @@
         UIView *selectedBackground = [[UIView alloc] init];
         [selectedBackground setBackgroundColor:UIColorFromRGB(0x639510)];
         [self setSelectedBackgroundView:selectedBackground];
-
     }
     if (self.selected) {
         self.textLabel.shadowColor = [UIColor blackColor];
@@ -36,6 +35,14 @@
     }
 
     return self;
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.imageView.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
+    self.imageView.frame = CGRectMake(0, 0, self.frame.size.height, self.frame.size.height);
+    self.imageView.contentMode = UIViewContentModeCenter;
+    
+    self.textLabel.frame = CGRectMake(self.imageView.frame.size.width, 0, self.frame.size.width - self.imageView.frame.size.width, self.frame.size.height);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

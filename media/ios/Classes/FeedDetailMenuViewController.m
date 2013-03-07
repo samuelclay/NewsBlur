@@ -136,13 +136,13 @@
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
 
     if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"bin_closed"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
     } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"arrow_branch"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_move.png"];
     } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"bricks"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 3) {
-        cell.imageView.image = [UIImage imageNamed:@"car"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch.png"];
     }
     
     return cell;

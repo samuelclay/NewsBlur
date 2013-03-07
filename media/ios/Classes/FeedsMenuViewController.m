@@ -81,9 +81,9 @@
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
     
     if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"rainbow.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_followers.png"];
     } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"user_orange.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
     }
     
     return cell;

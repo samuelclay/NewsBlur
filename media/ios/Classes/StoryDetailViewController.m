@@ -811,11 +811,17 @@
             }
         }
         
-        BOOL atBottom = (self.webView.scrollView.contentSize.height -
-                         self.webView.scrollView.contentOffset.y -
-                         self.webView.scrollView.frame.size.height) < 100;
-        BOOL atTop = self.webView.scrollView.contentOffset.y < 10;
+        if (appDelegate.storyPageControl.currentPage != self) return;
+        
+        int webpageHeight = self.webView.scrollView.contentSize.height;
+        int viewportHeight = self.webView.scrollView.frame.size.height;
+        int topPosition = self.webView.scrollView.contentOffset.y;
+        int bottomPosition = webpageHeight - topPosition - viewportHeight;
+        BOOL singlePage = webpageHeight - 100 <= viewportHeight;
+        BOOL atBottom = bottomPosition < 100;
+        BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
+            NSLog(@"A");
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -824,8 +830,11 @@
             } completion:^(BOOL finished) {
                 
             }];
-        } else if (atTop && !atBottom) {
+        } else if (!singlePage && (atTop && !atBottom)) {
+            NSLog(@"B");
             // Stick to bottom
+            appDelegate.storyPageControl.traversePinned = YES;
+            appDelegate.storyPageControl.traverseFloating = NO;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
                                                                          self.webView.scrollView.frame.size.height - tvf.size.height,
@@ -837,8 +846,28 @@
             } completion:^(BOOL finished) {
                 
             }];
+        } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
+                   appDelegate.storyPageControl.traversePinned &&
+                   !atBottom) {
+            NSLog(@"C");
+            // Scroll with bottom of scrollview, but smoothly
+            appDelegate.storyPageControl.traversePinned = NO;
+            appDelegate.storyPageControl.traverseFloating = YES;
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+             animations:^{
+             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
+             } completion:^(BOOL finished) {
+                 
+             }];
         } else {
+            NSLog(@"D");
             // Scroll with bottom of scrollview
+            appDelegate.storyPageControl.traversePinned = NO;
+            appDelegate.storyPageControl.traverseFloating = YES;
             appDelegate.storyPageControl.traverseView.alpha = 1;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
