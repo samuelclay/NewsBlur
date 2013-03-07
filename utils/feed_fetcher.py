@@ -242,6 +242,11 @@ class ProcessFeed:
                               self.feed.title[:30],
                               "~SKRe-~SN" if push_expired else "", hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+            elif self.feed.is_push and not hub_url:
+                logging.debug(u'   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (
+                              self.feed.title[:30]))
+                self.feed.is_push = False
+                self.feed = self.feed.save()
         
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
