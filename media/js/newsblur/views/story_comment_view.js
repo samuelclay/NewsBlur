@@ -39,7 +39,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, [
-                        (this.user.get('protected') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' })),
+                        (this.user.get('protected') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' })),
                         'reply'
                     ])
                 ]),

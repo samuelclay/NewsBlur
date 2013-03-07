@@ -101,7 +101,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-protected', className: 'NB-profile-protected-label' }, [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
+                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
                                         $.make('b', 'Protected:'),
                                         $.make('span', 'My shared stories are public but only people I approve can reply')
                                     ])
@@ -117,7 +117,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-private', className: 'NB-profile-protected-label' }, [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
+                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
                                         $.make('b', 'Private:'),
                                         $.make('span', 'Only people I approve can see my shared stories and reply to me')
                                     ])

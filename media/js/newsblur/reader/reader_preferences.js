@@ -155,7 +155,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-ssl-2', type: 'radio', name: 'ssl', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-ssl-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/lock.png' }),
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_lock.png' }),
                                     'Only use a secure https connection'
                                 ])
                             ])
@@ -501,7 +501,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/code_icon.png' }),
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
                                     'Show ',
                                     $.make('del', 'changes'),
                                     ' ',

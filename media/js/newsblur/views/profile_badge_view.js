@@ -104,7 +104,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 $.make('div', { 
                     className: 'NB-profile-badge-action-follow NB-profile-badge-action-protected-follow NB-modal-submit-button NB-modal-submit-green' 
                 }, [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
                     $.make('span', 'Follow')
                 ]),
                 (!profile.get('private') && $.make('div', { 

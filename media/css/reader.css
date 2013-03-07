@@ -2279,7 +2279,8 @@ background: transparent;
 .NB-feed-story .NB-feed-story-header .NB-feed-story-hide-changes {
     width: 24px;
     height: 16px;
-    background: transparent url('/media/embed/reader/code_icon.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 0;
+    background-size: 16px;
     float: left;
     margin: 1px 0 0px 0px;
     opacity: .6;
@@ -5628,7 +5629,8 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/award_star_bronze_3.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/circular/g_icn_award.png') no-repeat  0 1px;    
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
@@ -7512,7 +7514,8 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/images.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('/media/embed/icons/silk/lock.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_lock.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
     background: transparent url('/media/embed/icons/silk/star.png') no-repeat 0 0;
@@ -7828,6 +7831,8 @@ form.opml_import_form input {
 .NB-modal-preferences .NB-preference-hidestorychanges label img {
   vertical-align: middle;
   margin: -4px 6px 0 2px;
+  width: 16px;
+  height: 16px;
 }
 .NB-modal-preferences .NB-preference-singlestory label img {
   vertical-align: middle;
@@ -9597,12 +9602,28 @@ form.opml_import_form input {
     clear: both;
     left: 0;
     top: 0;
-    background: white url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
     background-size: 16px;
     vertical-align: bottom;
     width: 16px;
     height: 16px;
     position: absolute;
+}
+.NB-stat-subscribers .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png');
+    background-size: 16px;
+}
+.NB-stat-updated .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch.png');
+    background-size: 16px;
+}
+.NB-stat-decay .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_lastupdated.png');
+    background-size: 16px;
+}
+.NB-stat-realtime .NB-icon {
+    background: transparent url('/media/embed/icons/circular/clock.png');
+    background-size: 16px;
 }
 .NB-feedbar-options-stat .NB-stat {
     font-size: 11px;
