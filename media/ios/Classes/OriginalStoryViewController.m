@@ -10,9 +10,9 @@
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
-#import "SHK.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
+#import "ShareThis.h"
 
 @implementation OriginalStoryViewController
 
@@ -297,10 +297,9 @@
 - (IBAction)doOpenActionSheet {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory 
-                                            objectForKey:@"story_title"]];
-    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-    [actionSheet showInView:self.view];
+    NSString *title = [appDelegate.activeStory
+                       objectForKey:@"story_title"];
+    [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
 }
 
 @end

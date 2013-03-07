@@ -22,9 +22,9 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "SHK.h"
 #import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
+#import "ShareThis.h"
 
 @implementation StoryPageControl
 
@@ -734,11 +734,7 @@
                                        objectForKey:@"story_permalink"]];
     NSString *title = [appDelegate.activeStory
                        objectForKey:@"story_title"];
-    
-    
-//    SHKItem *item = [SHKItem URL:url title:title];
-//    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-//    [actionSheet showInView:self.view];
+    [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
 }
 
 - (void)markStoryAsSaved {

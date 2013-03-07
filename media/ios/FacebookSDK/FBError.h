@@ -1,0 +1,274 @@
+/*
+ * Copyright 2012 Facebook
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#import <Foundation/Foundation.h>
+
+/*!
+ The NSError domain of all errors returned by the Facebook SDK.
+*/
+extern NSString *const FacebookSDKDomain;
+
+/*!
+ The key in the userInfo NSDictionary of NSError where you can find
+ the inner NSError (if any).
+*/
+extern NSString *const FBErrorInnerErrorKey;
+
+/*!
+ The key in the userInfo NSDictionary of NSError for the parsed JSON response
+ from the server. In case of a batch, includes the JSON for a single FBRequest.
+*/
+extern NSString *const FBErrorParsedJSONResponseKey;
+
+/*!
+ The key in the userInfo NSDictionary of NSError indicating
+ the HTTP status code of the response (if any).
+*/
+extern NSString *const FBErrorHTTPStatusCodeKey;
+
+/*!
+ @abstract Error codes returned by the Facebook SDK in NSError.  
+ 
+ @discussion
+ These are valid only in the scope of FacebookSDKDomain.
+ */
+typedef enum FBErrorCode {
+    /*! 
+     Like nil for FBErrorCode values, represents an error code that
+     has not been initialized yet.
+     */
+    FBErrorInvalid = 0,
+
+    /// The operation failed because it was cancelled.
+    FBErrorOperationCancelled,
+    
+    /// A login attempt failed
+    FBErrorLoginFailedOrCancelled,
+
+    /// The graph API returned an error for this operation.
+    FBErrorRequestConnectionApi,
+
+    /*!
+     The operation failed because the server returned an unexpected
+     response.  You can get this error if you are not using the most
+     recent SDK, or if you set your application's migration settings
+     incorrectly for the version of the SDK you are using.
+    
+     If this occurs on the current SDK with proper app migration
+     settings, you may need to try changing to one request per batch.
+     */
+    FBErrorProtocolMismatch,
+
+    /// Non-success HTTP status code was returned from the operation.
+    FBErrorHTTPError,
+    
+    /// An endpoint that returns a binary response was used with FBRequestConnection;
+    /// endpoints that return image/jpg, etc. should be accessed using NSURLRequest
+    FBErrorNonTextMimeTypeReturned,
+
+    /// An error occurred while trying to display a native dialog
+    FBErrorNativeDialog,
+    
+    /// An error occurred using the FBInsights class
+    FBErrorInsights,
+    
+    /// An error occurred related to an iOS API call
+    FBErrorSystemAPI,
+  
+    /// An error occurred while trying to fetch publish install response data
+    FBErrorPublishInstallResponse,
+} FBErrorCode;
+
+/*!
+ @typedef FBErrorCategory enum
+ 
+ @abstract Indicates the Facebook SDK classification for the error
+ 
+ @discussion
+ */
+typedef enum {
+    /*! Indicates that the error category is invalid and likely represents an error that
+     is unrelated to Facebook or the Facebook SDK */
+    FBErrorCategoryInvalid                      = 0,
+    /*! Indicates that the error may be authentication related but the application should retry the operation.
+     This case may involve user action that must be taken, and so the application should also test
+     the fberrorShouldNotifyUser property and if YES display fberrorUserMessage to the user before retrying.*/
+    FBErrorCategoryRetry          = 1,
+    /*! Indicates that the error is authentication related and the application should reopen the session*/
+    FBErrorCategoryAuthenticationReopenSession  = 2,
+    /*! Indicates that the error is permission related */
+    FBErrorCategoryPermissions                  = 3,
+    /*! Indicates that the error implies that the server had an unexpected failure or may be temporarily down */
+    FBErrorCategoryServer                       = 4,
+    /*! Indicates that the error results from the server throttling the client */
+    FBErrorCategoryThrottling                   = 5,
+    /*! Indicates the user cancelled the operation */
+    FBErrorCategoryUserCancelled                = 6,
+    /*! Indicates that the error is Facebook-related but is uncategorizable, and likely newer than the 
+     current version of the SDK */
+    FBErrorCategoryFacebookOther                = -1,
+    /*! Indicates that the error is an application error resulting in a bad or malformed request to the server. */
+    FBErrorCategoryBadRequest                   = -2,
+} FBErrorCategory;
+
+/*!
+ The key in the userInfo NSDictionary of NSError where you can find
+ the inner NSError (if any).
+ */
+extern NSString *const FBErrorInnerErrorKey;
+
+/*!
+ The key in the userInfo NSDictionary of NSError where you can find 
+ the session associated with the error (if any).
+*/
+extern NSString *const FBErrorSessionKey;
+
+/*!
+ The key in the userInfo NSDictionary of NSError for unsuccessful 
+ logins (error.code equals FBErrorLoginFailedOrCancelled). If present,
+ the value will be one of the constants prefixed by FBErrorLoginFailedReason*.
+*/
+extern NSString *const FBErrorLoginFailedReason;
+
+/*!
+ The key in the userInfo NSDictionary of NSError for unsuccessful
+ logins (error.code equals FBErrorLoginFailedOrCancelled). If present,
+ the value indicates an original login error code wrapped by this error.
+ This is only used in the web dialog login flow.
+ */
+extern NSString *const FBErrorLoginFailedOriginalErrorCode;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates the user
+ cancelled a web dialog auth.
+*/
+extern NSString *const FBErrorLoginFailedReasonInlineCancelledValue;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates the user
+ did not cancel a web dialog auth.
+ */
+extern NSString *const FBErrorLoginFailedReasonInlineNotCancelledValue;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates the user
+ cancelled a non-iOS 6 SSO (either Safari or Facebook App) login.
+ */
+extern NSString *const FBErrorLoginFailedReasonUserCancelledValue;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates the user
+ cancelled an iOS system login.
+ */
+extern NSString *const FBErrorLoginFailedReasonUserCancelledSystemValue;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates the app's
+ slider in iOS 6 (device Settings -> Privacy -> Facebook {app} ) has
+ been disabled.
+ */
+extern NSString *const FBErrorLoginFailedReasonSystemDisallowedWithoutErrorValue;
+
+/*!
+ A value that may appear in an NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key for login failures. Indicates an error
+ has occurred when requesting Facebook account acccess in iOS 6 that was
+ not `FBErrorLoginFailedReasonSystemDisallowedWithoutErrorValue` nor
+ a user cancellation.
+ */
+extern NSString *const FBErrorLoginFailedReasonSystemError;
+extern NSString *const FBErrorLoginFailedReasonUnitTestResponseUnrecognized;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key when requesting new permissions fails. Indicates
+ the request for new permissions has failed because the session was closed.
+ */
+extern NSString *const FBErrorReauthorizeFailedReasonSessionClosed;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key when requesting new permissions fails. Indicates
+ the request for new permissions has failed because the user cancelled.
+ */
+extern NSString *const FBErrorReauthorizeFailedReasonUserCancelled;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key when requesting new permissions fails on
+ iOS 6 with the Facebook account. Indicates the request for new permissions has 
+ failed because the user cancelled.
+ */
+extern NSString *const FBErrorReauthorizeFailedReasonUserCancelledSystem;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorLoginFailedReason` key when requesting new permissions fails. Indicates
+ the request for new permissions has failed because the request was
+ for a different user than the original permission set.
+ */
+extern NSString *const FBErrorReauthorizeFailedReasonWrongUser;
+
+/*!
+ The key in the userInfo NSDictionary of NSError for errors
+ encountered with `FBNativeDialog` operations. (error.code equals FBErrorNativeDialog).
+ If present, the value will be one of the constants prefixed by FBErrorNativeDialog*.
+*/
+extern NSString *const FBErrorNativeDialogReasonKey;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+`FBErrorNativeDialogReasonKey` key. Indicates that a native dialog is not supported 
+ in the current OS.
+*/
+extern NSString *const FBErrorNativeDialogNotSupported;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorNativeDialogReasonKey` key. Indicates that a native dialog cannot be
+ displayed because it is not appropriate for the current session. 
+*/
+extern NSString *const FBErrorNativeDialogInvalidForSession;
+
+/*!
+ A value that may appear in the NSError userInfo dictionary under the
+ `FBErrorNativeDialogReasonKey` key. Indicates that a native dialog cannot be
+ displayed for some other reason.
+ */
+extern NSString *const FBErrorNativeDialogCantBeDisplayed;
+
+/*!
+ The key in the userInfo NSDictionary of NSError for errors
+ encountered with `FBInsights` operations (error.code equals FBErrorInsights).
+*/
+extern NSString *const FBErrorInsightsReasonKey;
+
+// Exception strings raised by the Facebook SDK
+
+/*!
+ This exception is raised by methods in the Facebook SDK to indicate
+ that an attempted operation is invalid
+ */
+extern NSString *const FBInvalidOperationException;
+
+// Facebook SDK also raises exceptions the following common exceptions:
+//  NSInvalidArgumentException
+

@@ -22,7 +22,6 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "SHK.h"
 #import "StringHelper.h"
 
 @implementation StoryDetailViewController

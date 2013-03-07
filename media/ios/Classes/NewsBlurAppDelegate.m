@@ -36,6 +36,7 @@
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
+#import "ShareThis.h"
 
 
 @implementation NewsBlurAppDelegate
@@ -197,6 +198,8 @@
 //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
     
+    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
+    
     [[UINavigationBar appearance]
      setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
      forBarMetrics:UIBarMetricsDefault];
@@ -234,6 +237,18 @@
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
     [splashView removeFromSuperview];
 }
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
+}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [ShareThis handleFacebookOpenUrl:url];
+}
+
 
 #pragma mark -
 #pragma mark Social Views
