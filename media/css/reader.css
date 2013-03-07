@@ -2797,6 +2797,10 @@ background: transparent;
     height: 22px;
     border-radius: 3px;
 }
+.NB-story-share-profile .NB-user-avatar img.NB-user-avatar-private {
+  width: 16px;
+  height: 16px;
+}
 .NB-story-share-profile .NB-user-username {
     float: left;
 }
@@ -7849,6 +7853,8 @@ form.opml_import_form input {
 .NB-modal-preferences .NB-preference-ssl label img {
   vertical-align: middle;
   margin: -5px 6px 0 2px;
+  width: 16px;
+  height: 16px;
 }
 .NB-modal-preferences .NB-preference-password .NB-preference-option {
   float: left;
@@ -8975,6 +8981,10 @@ form.opml_import_form input {
 .NB-modal-profile-editor .NB-profile-privacy-option b {
     padding: 0 6px 0 0;
 }
+.NB-modal-profile-editor .NB-profile-privacy-option img {
+  width: 16px;
+  height: 16px;
+}
 .NB-modal-profile-editor .NB-friends-profile .NB-count {
     float: left;
     color: #404040;
@@ -9236,6 +9246,10 @@ form.opml_import_form input {
 }
 .NB-profile-badge-actions .NB-profile-badge-action-buttons {
     float: right;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-buttons img {
+  width: 16px;
+  height: 16px;
 }
 .NB-profile-badge-info .NB-profile-badge-actions .NB-loading {
     margin: 6px 12px 0 0;
