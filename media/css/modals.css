@@ -329,14 +329,20 @@
 }
 .NB-modal-submit-red {
     background-color: #911C31;
+    background-image: -webkit-linear-gradient(bottom, #7D0D25, #911C31);
+    background-image: linear-gradient(to top, #7D0D25, #911C31);
     color: #E4E4E4;
     font-weight: bold;
 }
 .NB-modal-submit-red:hover {
-    background-color: #4D000A;
+    background-color: #7D0D25;
+    background-image: -webkit-linear-gradient(bottom, #68001B, #7D0D25);
+    background-image: linear-gradient(to top, #68001B, #68001B);
 }
 .NB-modal-submit-red:active {
-    background-color: #1E0007;
+    background-color: #68001B;
+    background-image: -webkit-linear-gradient(bottom, #540015, #68001B);
+    background-image: linear-gradient(to top, #540015, #68001B);
 }
 
 .NB-modal .NB-modal-submit {
