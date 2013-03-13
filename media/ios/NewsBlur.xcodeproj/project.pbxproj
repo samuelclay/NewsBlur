@@ -1104,9 +1104,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				FFDCA0C216E80952000D8E0C /* AdSupport.framework */,
-				FFDCA0C016E8094F000D8E0C /* Accounts.framework */,
-				FFDCA0BE16E80944000D8E0C /* Social.framework */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				4307BE511565EDF8007A932A /* Resources */,
 				43D0451C1565BC090085F811 /* Resources-iPad */,
@@ -1161,6 +1158,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FFDCA0C216E80952000D8E0C /* AdSupport.framework */,
+				FFDCA0C016E8094F000D8E0C /* Accounts.framework */,
+				FFDCA0BE16E80944000D8E0C /* Social.framework */,
 				FFDCA0B516E80877000D8E0C /* cocoa-oauth */,
 				FFDCA0A316E80866000D8E0C /* REComposeViewController */,
 				FFDC9FBF16E8078E000D8E0C /* FacebookSDK */,

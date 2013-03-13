@@ -443,7 +443,8 @@
                          self.traverseView.frame = CGRectMake(tvf.origin.x,
                                                               self.scrollView.frame.size.height - tvf.size.height,
                                                               tvf.size.width, tvf.size.height);
-                         appDelegate.storyPageControl.traverseView.alpha = 1;
+                         self.traverseView.alpha = 1;
+                         self.traversePinned = YES;
                      } completion:^(BOOL finished) {
                          
                      }];

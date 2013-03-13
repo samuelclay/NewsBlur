@@ -23,11 +23,11 @@ $('.NB-train-button a').live('click', function () {
 });
 
 $('.NB-button').live('touchstart', function () {
-    $(this).addClass('selected');
+    $(this).addClass('active');
 });
 
 $('.NB-button').live('touchend', function (e) {
-    $(this).removeClass('selected');
+    $(this).removeClass('active');
 });
 
 function setImage(img) {

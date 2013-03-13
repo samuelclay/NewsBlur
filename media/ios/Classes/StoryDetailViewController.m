@@ -817,7 +817,7 @@
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
-        BOOL singlePage = webpageHeight - 100 <= viewportHeight;
+        BOOL singlePage = webpageHeight - 110 <= viewportHeight;
         BOOL atBottom = bottomPosition < 100;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
@@ -830,9 +830,22 @@
             } completion:^(BOOL finished) {
                 
             }];
+        } else if (singlePage) {
+            NSLog(@"Single-D");
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+
+            if (bottomPosition > 0) {
+                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                             self.webView.scrollView.frame.size.height - tvf.size.height,
+                                                                             tvf.size.width, tvf.size.height);
+            } else {
+                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                             (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                             tvf.size.width, tvf.size.height);
+            }
         } else if (!singlePage && (atTop && !atBottom)) {
             NSLog(@"B");
-            // Stick to bottom
+            // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPageControl.traversePinned = YES;
             appDelegate.storyPageControl.traverseFloating = NO;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
@@ -847,11 +860,9 @@
                 
             }];
         } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
-                   appDelegate.storyPageControl.traversePinned &&
-                   !atBottom) {
+                   appDelegate.storyPageControl.traversePinned) {
             NSLog(@"C");
             // Scroll with bottom of scrollview, but smoothly
-            appDelegate.storyPageControl.traversePinned = NO;
             appDelegate.storyPageControl.traverseFloating = YES;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
             [UIView animateWithDuration:.3 delay:0
@@ -861,7 +872,7 @@
                                                                          (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
                                                                          tvf.size.width, tvf.size.height);
              } completion:^(BOOL finished) {
-                 
+                 appDelegate.storyPageControl.traversePinned = NO;                 
              }];
         } else {
             NSLog(@"D");
@@ -1356,11 +1367,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         contentWidthClass = @"NB-iphone";
     }
+    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+                            @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"$('body').attr('class', '%@');"
+                          @"$('body').attr('class', '%@ %@');"
                           "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
+                          riverClass,
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
