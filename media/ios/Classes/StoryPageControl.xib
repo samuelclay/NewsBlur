@@ -131,7 +131,7 @@
 								<double key="IBUIContentEdgeInsets.left">0.0</double>
 								<double key="IBUIContentEdgeInsets.right">20</double>
 								<string key="IBUINormalTitle">NEXT</string>
-								<object class="NSColor" key="IBUIHighlightedTitleColor" id="254282267">
+								<object class="NSColor" key="IBUIHighlightedTitleColor" id="792222908">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
 								</object>
@@ -178,7 +178,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<float key="IBUIProgress">0.5</float>
 						<int key="IBUIProgressViewStyle">1</int>
-						<reference key="IBUIProgressTintColor" ref="254282267"/>
+						<reference key="IBUIProgressTintColor" ref="792222908"/>
 						<object class="NSColor" key="IBUITrackTintColor">
 							<int key="NSColorSpace">2</int>
 							<bytes key="NSRGB">MC45MDk4MDM5ODY1IDAuOTE3NjQ3MTIzMyAwLjg5NDExNzcxMwA</bytes>
