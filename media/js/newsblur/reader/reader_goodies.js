@@ -53,6 +53,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://windowsphone.com/s?appid=900e67fd-9934-e011-854c-00237de2db9e'
+              }, 'View in Windows Phone Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Feed Me: User-Created Windows Phone App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://projects.developer.nokia.com/feed_reader'
               }, 'View in Nokia Store'),
               $.make('div', { className: 'NB-goodies-nokia' }),
