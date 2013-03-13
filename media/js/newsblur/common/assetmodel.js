@@ -1100,6 +1100,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
+    cancel_premium_subscription: function(callback, error_callback) {
+        this.make_request('/profile/cancel_premium', {}, callback, error_callback);
+    },
+    
     approve_feed_in_moderation_queue: function(feed_id, date, callback) {
         this.make_request('/recommendations/approve_feed', {
             'feed_id'     : feed_id,

@@ -2535,15 +2535,18 @@ background: transparent;
 .NB-story-comment .NB-story-comment-like {
     float: left;
     width: 16px;
-    background: transparent url('/media/embed/reader/star_grey.png') no-repeat center 0;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/g_icn_fav.png') no-repeat center 0;
+    background-size: 14px;
     text-transform: uppercase;
+    margin-top: -1px;
     padding: 1px 6px 1px 2px;
-    height: 11px;
 }
 .NB-story-comment .NB-story-comment-like:hover,
 .NB-story-comment .NB-story-comment-like.NB-active {
     cursor: pointer;
-    background: transparent url('/media/embed/reader/star_green.png') no-repeat center 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_fav_active.png') no-repeat center 0;
+    background-size: 14px;
 }
 .NB-story-comment .NB-story-comment-like:active {
     cursor: pointer;
@@ -7522,7 +7525,8 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('/media/embed/icons/silk/star.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_fav_active.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-6 .NB-feedchooser-premium-bullet-image {
     background: transparent url('/media/embed/icons/silk/lorry.png') no-repeat 0 0;
@@ -7976,6 +7980,7 @@ form.opml_import_form input {
 }
 .NB-modal-account .NB-preference-premium .NB-block {
     margin: 8px 0;
+    display: block;
 }
 .NB-modal-account .NB-account-payments {
     margin: 0;

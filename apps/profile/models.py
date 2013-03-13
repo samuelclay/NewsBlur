@@ -219,7 +219,24 @@ class Profile(models.Model):
                 payment_gap = (self.premium_expire - most_recent_payment_date).days
             self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365+payment_gap)
             self.save()
+    
+    def cancel_premium(self):
+        self.cancel_premium_paypal()
+        return self.cancel_premium_stripe()
+    
+    def cancel_premium_paypal(self):
+        pass
         
+    def cancel_premium_stripe(self):
+        if not self.stripe_id:
+            return
+            
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+        stripe_customer.cancel_subscription()
+        
+        return True
+
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
             new_feeds = UserSubscription.objects.filter(user=self.user, 

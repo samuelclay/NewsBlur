@@ -92,14 +92,15 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                 ' ',
                                 NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
                             ]),
-                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, 'Renew and change your payment amount')
+                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, 'Renew and change your payment amount'),
+                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-splash-link' }, 'Cancel subscription renewal')
                         ]))
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
                         'Premium'
                     ])
                 ]),
-                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium' }, [
+                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-history' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('ul', { className: 'NB-account-payments' }, [
                             $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
@@ -218,6 +219,16 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
       });
     },
     
+    cancel_premium: function() {
+        this.model.cancel_premium_subscription(_.bind(function(data) {
+            $(".NB-preference-premium .NB-error").remove();
+            $(".NB-preference-premium .NB-preference-options").append($.make("div", { className: "NB-error" }, "Your subscription will no longer automatically renew.").fadeIn(500));
+        }, this), _.bind(function(data) {
+            $(".NB-preference-premium .NB-error").remove();
+            $(".NB-preference-premium .NB-preference-options").append($.make("div", { className: "NB-error" }, data.message || "Could not cancel your membership. Contact support.").fadeIn(500));
+        }, this));
+    },
+    
     handle_cancel: function() {
         var $cancel = $('.NB-modal-cancel', this.$modal);
         
@@ -310,6 +321,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
             
             self.close_and_load_premium();
+        });        
+        $.targetIs(e, { tagSelector: '.NB-account-premium-cancel' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.cancel_premium();
         });        
         $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function($t, $p) {
             e.preventDefault();
