@@ -314,9 +314,6 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
-BROKER_BACKEND = "redis"
-BROKER_URL = "redis://db02:6379/0"
-CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
@@ -419,7 +416,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db02',
+    'host': 'db01',
 }
 
 # =================
@@ -483,6 +480,14 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': False,
 }
 RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+
+# =========
+# = Redis =
+# =========
+
+BROKER_BACKEND = "redis"
+BROKER_URL = "redis://%s:6379/0" % REDIS['host']
+CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
 # = Mongo =

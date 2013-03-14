@@ -44,7 +44,7 @@ env.roledefs ={
             ],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
-           'db03.newsblur.com', 
+           # 'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
            ],
@@ -62,18 +62,18 @@ env.roledefs ={
              ],
     'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                ],
-    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
-                'ec2-184-72-214-147.compute-1.amazonaws.com',
-                'ec2-107-20-103-16.compute-1.amazonaws.com',
-                'ec2-50-17-12-16.compute-1.amazonaws.com',
-                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                'ec2-184-73-2-61.compute-1.amazonaws.com',
-                
                 # New post Reader shut-down
                 'ec2-50-17-135-87.compute-1.amazonaws.com',
                 'ec2-50-16-7-166.compute-1.amazonaws.com',
                 'ec2-54-234-182-177.compute-1.amazonaws.com',
+                'ec2-23-22-123-187.compute-1.amazonaws.com',
+                ],
+    'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
+                'ec2-184-72-214-147.compute-1.amazonaws.com',
+                'ec2-107-20-103-16.compute-1.amazonaws.com',
+                'ec2-50-17-12-16.compute-1.amazonaws.com',
+                #'ec2-54-242-34-138.compute-1.amazonaws.com',
+                'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -356,8 +356,8 @@ def setup_db(skip_common=False):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    setup_postgres(standby=False)
-    setup_mongo()
+    # setup_postgres(standby=False)
+    # setup_mongo()
     setup_gunicorn(supervisor=False)
     setup_redis()
     setup_db_munin()
@@ -395,7 +395,8 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
-    run('mkdir -p %s' % env.VENDOR_PATH)
+    sudo('mkdir -p %s' % env.VENDOR_PATH)
+    sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
@@ -684,7 +685,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
 
     # EC2
-    for host in env.roledefs['ec2task']:
+    for host in set(env.roledefs['ec2app'] + env.roledefs['ec2task']):
         ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,

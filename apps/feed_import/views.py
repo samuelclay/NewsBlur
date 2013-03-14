@@ -173,7 +173,7 @@ def reader_callback(request):
 
     if request.user.is_authenticated():
         return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
-
+    
     return HttpResponseRedirect(reverse('import-signup'))
     
 @json.json_view
@@ -221,7 +221,11 @@ def import_signup(request):
                 user_token.user = new_user
                 user_token.save()
                 login_user(request, new_user)
-                return HttpResponseRedirect(reverse('index'))
+                if request.user.profile.is_premium:
+                    return HttpResponseRedirect(reverse('index'))
+                url = "https://%s%s" % (Site.objects.get_current().domain,
+                                         reverse('stripe-form'))
+                return HttpResponseRedirect(url)
             else:
                 logging.user(request, "~BR~FW ***> Can't find user token during import/signup. Re-authenticating...")
                 return HttpResponseRedirect(reverse('google-reader-authorize'))
