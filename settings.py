@@ -312,6 +312,11 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_tasks"
     },
+    "beat_feeds_task": {
+        "exchange": "beat_feeds_task",
+        "exchange_type": "direct",
+        "binding_key": "beat_feeds_task"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
 
@@ -330,14 +335,14 @@ CELERY_DISABLE_RATE_LIMITS  = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
 CELERYBEAT_SCHEDULE = {
-    'freshen-homepage': {
-        'task': 'freshen-homepage',
-        'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'beat_tasks'},
-    },
     'task-feeds': {
         'task': 'task-feeds',
         'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_feeds_task'},
+    },
+    'freshen-homepage': {
+        'task': 'freshen-homepage',
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
     'collect-stats': {

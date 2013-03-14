@@ -19,8 +19,16 @@ class TaskFeeds(Task):
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
             active=True,
-            active_premium_subscribers__gte=0
+            active_premium_subscribers__gte=10
         ).order_by('?')
+        active_count = feeds.count()
+        
+        # Regular feeds
+        feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now,
+            active=True,
+            active_premium_subscribers__gte=0
+        ).order_by('?')[:1000]
         active_count = feeds.count()
         
         # Mistakenly inactive feeds
