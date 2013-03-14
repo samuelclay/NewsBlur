@@ -167,9 +167,12 @@ def deploy_code(copy_assets=False, full=False):
         # with settings(warn_only=True):
         #     run('pkill -c gunicorn')            
         #     # run('kill -HUP `cat logs/gunicorn.pid`')
-        sudo('supervisorctl reload')
-        run('curl -s http://%s > /dev/null' % env.host)
-        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+        with settings(warn_only=True):
+            run('./utils/kill_gunicorn.sh')
+        with settings(warn_only=True):
+            sudo('./utils/kill_gunicorn.sh')
+        # run('curl -s http://%s > /dev/null' % env.host)
+        # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
 @parallel
 def kill():
