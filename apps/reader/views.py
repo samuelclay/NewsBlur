@@ -1304,21 +1304,22 @@ def save_feed_chooser(request):
                 if not sub.active:
                     sub.active = True
                     sub.save()
-                    sub.feed.count_subscribers()
+                    if sub.feed.active_subscribers <= 0:
+                        sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()
         except Feed.DoesNotExist:
             pass
             
-    
+    request.user.profile.queue_new_feeds()
+    request.user.profile.refresh_stale_feeds(exclude_new=True)
+
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
     ))
-    request.user.profile.queue_new_feeds()
-    request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
     return {'activated': activated}
 
 @ajax_login_required
