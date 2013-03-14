@@ -47,6 +47,8 @@ env.roledefs ={
            # 'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
+           'db10.newsblur.com',
+           'db11.newsblur.com',
            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
@@ -85,6 +87,9 @@ env.roledefs ={
             'app01.newsblur.com', 
             'app02.newsblur.com', 
             ],
+    'do': ['198.211.109.225',
+           '198.211.109.224',
+           ]
 }
 
 # ================
@@ -683,7 +688,14 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
-
+    
+    # DigitalOcean
+    for ip in set(env.roledefs['do']):
+        sudo('ufw allow proto tcp from %s to any port %s' % (
+            ip,
+            ','.join(map(str, ports))
+        ))
+    
     # EC2
     for host in set(env.roledefs['ec2app'] + env.roledefs['ec2task']):
         ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
@@ -728,7 +740,7 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db02'
+    slave = 'db11.newsblur.com'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
     
