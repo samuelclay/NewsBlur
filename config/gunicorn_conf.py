@@ -19,4 +19,4 @@ else:
     workers = int(NUM_CPUS / 2)
 
 if workers <= 2:
-    workers = math.floor(GIGS_OF_MEMORY / 256)
+    workers = math.floor(GIGS_OF_MEMORY * 1000 / 256)
