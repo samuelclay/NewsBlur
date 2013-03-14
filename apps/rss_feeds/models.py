@@ -1265,7 +1265,7 @@ class Feed(models.Model):
                                                 subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor*2
+        return total, random_factor*8
         
     def set_next_scheduled_update(self, verbose=True):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)

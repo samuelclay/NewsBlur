@@ -66,6 +66,7 @@ env.roledefs ={
                 'ec2-50-17-135-87.compute-1.amazonaws.com',
                 'ec2-50-16-7-166.compute-1.amazonaws.com',
                 'ec2-54-234-182-177.compute-1.amazonaws.com',
+                'ec2-23-22-123-187.compute-1.amazonaws.com',
                 ],
     'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
@@ -394,7 +395,8 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
-    run('mkdir -p %s' % env.VENDOR_PATH)
+    sudo('mkdir -p %s' % env.VENDOR_PATH)
+    sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
