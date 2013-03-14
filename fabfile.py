@@ -68,11 +68,11 @@ env.roledefs ={
                 'ec2-54-234-182-177.compute-1.amazonaws.com',
                 'ec2-23-22-123-187.compute-1.amazonaws.com',
                 ],
-    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
+    'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
-                'ec2-54-242-34-138.compute-1.amazonaws.com',
+                #'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
@@ -356,8 +356,8 @@ def setup_db(skip_common=False):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    setup_postgres(standby=False)
-    setup_mongo()
+    # setup_postgres(standby=False)
+    # setup_mongo()
     setup_gunicorn(supervisor=False)
     setup_redis()
     setup_db_munin()

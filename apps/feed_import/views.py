@@ -221,10 +221,11 @@ def import_signup(request):
                 user_token.user = new_user
                 user_token.save()
                 login_user(request, new_user)
+                if request.user.profile.is_premium:
+                    return HttpResponseRedirect(reverse('index'))
                 url = "https://%s%s" % (Site.objects.get_current().domain,
                                          reverse('stripe-form'))
                 return HttpResponseRedirect(url)
-                # return HttpResponseRedirect(reverse('index'))
             else:
                 logging.user(request, "~BR~FW ***> Can't find user token during import/signup. Re-authenticating...")
                 return HttpResponseRedirect(reverse('google-reader-authorize'))
