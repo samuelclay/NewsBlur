@@ -47,6 +47,8 @@ env.roledefs ={
            # 'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
+           'db10.newsblur.com',
+           'db11.newsblur.com',
            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
@@ -85,6 +87,9 @@ env.roledefs ={
             'app01.newsblur.com', 
             'app02.newsblur.com', 
             ],
+    'do': ['198.211.109.225',
+           '198.211.109.224',
+           ]
 }
 
 # ================
@@ -126,6 +131,10 @@ def ec2app():
 def vps():
     server()
     env.roles = ['vps']
+
+def do():
+    server()
+    env.roles = ['do']
 
 def ec2():
     env.user = 'ubuntu'
@@ -384,7 +393,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -683,7 +692,14 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
-
+    
+    # DigitalOcean
+    for ip in set(env.roledefs['do']):
+        sudo('ufw allow proto tcp from %s to any port %s' % (
+            ip,
+            ','.join(map(str, ports))
+        ))
+    
     # EC2
     for host in set(env.roledefs['ec2app'] + env.roledefs['ec2task']):
         ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
@@ -728,7 +744,7 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db02'
+    slave = 'db11.newsblur.com'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
     
@@ -788,6 +804,7 @@ def enable_celerybeat():
         run('mkdir -p data')
     put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
+    put('config/supervisor_celeryd_beat_feeds.conf', '/etc/supervisor/conf.d/celeryd_beat_feeds.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     
