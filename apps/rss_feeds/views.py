@@ -76,6 +76,8 @@ def feed_autocomplete(request):
     
     return dict(code=-1, message="Overloaded, no autocomplete results.")
     
+    return dict(code=-1, message="Overloaded, no autocomplete results.")
+    
     if not query:
         return dict(code=-1, message="Specify a search 'term'.")
         

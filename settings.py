@@ -65,6 +65,7 @@ LOGIN_URL             = '/reader/login'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
+# EMAIL_BACKEND         = 'django_mailgun.MailgunBackend'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
@@ -441,7 +442,7 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db01.newsblur.com:3060"
+ORIGINAL_PAGE_SERVER = "db02.newsblur.com:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,
