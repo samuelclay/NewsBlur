@@ -213,13 +213,14 @@ def profile_is_premium(request):
     total_subs = subs.count()
     activated_subs = subs.filter(active=True).count()
     
-    if retries >= 30 and not request.user.profile.is_premium:
-        subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
-        message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
-        mail_admins(subject, message, fail_silently=True)
+    if retries >= 30:
         code = -1
-        request.user.profile.is_premium = True
-        request.user.profile.save()
+        if not request.user.profile.is_premium:
+            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
+            message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
+            mail_admins(subject, message, fail_silently=True)
+            request.user.profile.is_premium = True
+            request.user.profile.save()
         
     return {
         'is_premium': profile.is_premium,
