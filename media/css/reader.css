@@ -4135,9 +4135,11 @@ form.opml_import_form input {
 
 .NB-modal-trainer .NB-trainer-points li img.NB-trainer-bullet {
     float: left;
-    margin: 4px 4px 0 0;
+    margin: 8px 8px 0 0;
     padding: 0;
     vertical-align: middle;
+    width: 8px;
+    height: 8px;
 }
 
 .NB-modal-trainer .NB-trainer-not-authenticated {
