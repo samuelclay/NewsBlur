@@ -20,7 +20,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_premium_subscribers__gte=10
-        ).order_by('?')
+        ).order_by('?')[:5000]
         active_count = feeds.count()
         
         # Regular feeds
