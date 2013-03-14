@@ -262,7 +262,9 @@ def stripe_form(request):
     if success_updating:
         return render_to_response('reader/paypal_return.xhtml', 
                                   {}, context_instance=RequestContext(request))
-        
+    
+    logging.user(request, "~BM~FBLoading Stripe form")
+
     return render_to_response('profile/stripe_form.xhtml',
         {
           'zebra_form': zebra_form,
