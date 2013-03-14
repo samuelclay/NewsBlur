@@ -314,7 +314,7 @@ CELERY_QUEUES = {
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://db01:6379/0"
+BROKER_URL = "redis://db02:6379/0"
 CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERYD_PREFETCH_MULTIPLIER = 1
@@ -418,7 +418,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db01',
+    'host': 'db02',
 }
 
 # =================
