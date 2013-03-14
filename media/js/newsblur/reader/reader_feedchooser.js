@@ -10,14 +10,14 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     runner: function() {
         this.start = new Date();
-        this.MAX_FEEDS = 64;
+        this.MAX_FEEDS = 12;
         this.approve_list = [];
         this.make_modal();
         this.make_paypal_button();
         _.defer(_.bind(function() { this.open_modal(); }, this));
         if (!NEWSBLUR.Globals.is_premium) {
             this.find_feeds_in_feed_list();
-            this.initial_load_feeds();
+            this.initial_load_feeds(true);
         }
         this.choose_dollar_amount(2);
         

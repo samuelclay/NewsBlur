@@ -60,12 +60,20 @@ env.roledefs ={
              'task10.newsblur.com',
              'task11.newsblur.com',
              ],
+    'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
+               'ec2-54-242-34-138.compute-1.amazonaws.com',
+                ],
     'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
                 'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
+                
+                # New post Reader shut-down
+                'ec2-50-17-135-87.compute-1.amazonaws.com',
+                'ec2-50-16-7-166.compute-1.amazonaws.com',
+                'ec2-54-234-182-177.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -84,8 +92,8 @@ env.roledefs ={
 # ================
 
 def server():
-    env.NEWSBLUR_PATH = "/home/%s/newsblur" % env.user
-    env.VENDOR_PATH   = "/home/%s/code" % env.user
+    env.NEWSBLUR_PATH = "/srv/newsblur"
+    env.VENDOR_PATH   = "/srv/code"
 
 def app():
     server()
@@ -110,6 +118,10 @@ def task():
 def ec2task():
     ec2()
     env.roles = ['ec2task']
+    
+def ec2app():
+    ec2()
+    env.roles = ['ec2app']
     
 def vps():
     server()
@@ -402,6 +414,7 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
     sudo('mkdir -p /srv')
+    sudo('ln -f -s /home/%s/code /srv/code' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/newsblur' % env.user)
 
 def setup_repo_local_settings():
@@ -730,7 +743,7 @@ def setup_mongo():
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
-    redis_version = '2.6.2'
+    redis_version = '2.6.11'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -834,7 +847,7 @@ def copy_task_settings():
 # = Setup - EC2 =
 # ===============
 
-def setup_ec2_task():
+def setup_ec2():
     AMI_NAME = 'ami-834cf1ea' # Ubuntu 64-bit 12.04 LTS
     # INSTANCE_TYPE = 'c1.medium'
     INSTANCE_TYPE = 'c1.medium'
@@ -863,7 +876,6 @@ def setup_ec2_task():
     host = instance.public_dns_name
     env.host_string = host
     
-    setup_task()
     
     
 # ==============
