@@ -38,6 +38,9 @@ env.roledefs ={
             'app03.newsblur.com',
             'app04.newsblur.com',
             '198.211.110.230',
+            '198.211.110.131',
+            '192.34.61.227',
+            '198.211.109.155',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -94,6 +97,9 @@ env.roledefs ={
            '198.211.109.224',
            '198.211.110.164',
            '198.211.110.230',
+           '198.211.110.131',
+           '192.34.61.227',
+           '198.211.109.155',
            ]
 }
 
@@ -683,6 +689,7 @@ def maintenance_off():
 # = Setup - DB =
 # ==============    
 
+@parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -875,7 +882,7 @@ def copy_task_settings():
 # =========================
 
 def setup_do(name):
-    INSTANCE_SIZE = "8GB"
+    INSTANCE_SIZE = "2GB"
     IMAGE_NAME = "Ubuntu 12.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
