@@ -19,7 +19,7 @@ class TaskFeeds(Task):
         popular_feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
             active=True,
-            active_premium_subscribers__gte=2
+            active_premium_subscribers__gte=1
         ).order_by('?')[:1000]
         popular_count = popular_feeds.count()
         
@@ -27,7 +27,7 @@ class TaskFeeds(Task):
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
             active=True,
-            active_premium_subscribers__gte=1
+            active_subscribers__gte=1
         ).order_by('?')[:500]
         active_count = feeds.count()
         
