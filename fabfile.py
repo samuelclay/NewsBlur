@@ -44,6 +44,8 @@ env.roledefs ={
             '198.211.107.87',
             '198.211.105.155',
             '198.211.104.133',
+            '198.211.103.214',
+            '198.211.106.22',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -102,6 +104,8 @@ env.roledefs ={
            '198.211.107.87',
            '198.211.105.155',
            '198.211.104.133',
+           '198.211.103.214',
+           '198.211.106.22',
            ]
 }
 
@@ -175,7 +179,7 @@ def deploy():
     deploy_code(copy_assets=True)
 
 def deploy_full():
-    deploy_code(full=True)
+    deploy_code(copy_assets=True, full=True)
 
 @parallel
 def deploy_code(copy_assets=False, full=False, fast=False):
