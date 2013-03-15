@@ -9,6 +9,7 @@ import os
 import time
 import sys
 import re
+import dop.client
 
 django.settings_module('settings')
 try:
@@ -36,6 +37,7 @@ env.roledefs ={
             'app02.newsblur.com', 
             'app03.newsblur.com',
             'app04.newsblur.com',
+            '198.211.110.230',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -49,6 +51,7 @@ env.roledefs ={
            'db05.newsblur.com',
            'db10.newsblur.com',
            'db11.newsblur.com',
+           'db12.newsblur.com',
            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
@@ -89,6 +92,7 @@ env.roledefs ={
             ],
     'do': ['198.211.109.225',
            '198.211.109.224',
+           '198.211.110.164',
            ]
 }
 
@@ -480,7 +484,8 @@ def setup_imaging():
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
-    
+
+@parallel
 def setup_hosts():
     put('config/hosts', '/etc/hosts', use_sudo=True)
 
@@ -561,8 +566,8 @@ def switch_forked_mongoengine():
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     
-def setup_sudoers():
-    sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
+def setup_sudoers(user=None):
+    sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
 
 def setup_nginx():
     NGINX_VERSION = '1.2.2'
@@ -744,13 +749,13 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db11.newsblur.com'
+    slave = 'db12.newsblur.com'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
     
     # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.1/main postgres@%s:/var/lib/postgresql/9.1/ --exclude postmaster.pid\"' % slave, pty=False)
-    sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
+    # sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
     
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -863,6 +868,61 @@ def copy_task_settings():
     with settings(warn_only=True):
         put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
+# =========================
+# = Setup - Digital Ocean =
+# =========================
+
+def setup_do(name):
+    INSTANCE_SIZE = "8GB"
+    IMAGE_NAME = "Ubuntu 12.04 x64 Server"
+    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
+    sizes = dict((s.name, s.id) for s in doapi.sizes())
+    size_id = sizes[INSTANCE_SIZE]
+    ssh_key_id = doapi.all_ssh_keys()[0].id
+    region_id = doapi.regions()[0].id
+    images = dict((s.name, s.id) for s in doapi.images())
+    image_id = images[IMAGE_NAME]
+    instance = doapi.create_droplet(name=name, 
+                                    size_id=size_id, 
+                                    image_id=image_id, 
+                                    region_id=region_id, 
+                                    ssh_key_ids=[str(ssh_key_id)])
+    print "Booting droplet: %s/%s (size: %s)" % (instance.id, IMAGE_NAME, INSTANCE_SIZE)
+    
+    instance = doapi.show_droplet(instance.id)
+    i = 0
+    while True:
+        if instance.status == 'active':
+            print "...booted: %s" % instance.ip_address
+            time.sleep(5)
+            break
+        elif instance.status == 'new':
+            print ".",
+            sys.stdout.flush()
+            instance = doapi.show_droplet(instance.id)
+            i += 1
+            time.sleep(i)
+        else:
+            print "!!! Error: %s" % instance.status
+            return
+    
+    host = instance.ip_address
+    env.host_string = host
+    
+    env.user = "root"
+    with settings(warn_only=True):
+        run('useradd -m sclay')
+        setup_sudoers("sclay")
+    run('mkdir -p ~sclay/.ssh && chmod 700 ~sclay/.ssh')
+    run('rm -fr ~sclay/.ssh/id_dsa*')
+    run('ssh-keygen -t dsa -f ~sclay/.ssh/id_dsa -N ""')
+    run('touch ~sclay/.ssh/authorized_keys')
+    put("~/.ssh/id_dsa.pub", "authorized_keys")
+    run('echo `cat authorized_keys` >> ~sclay/.ssh/authorized_keys')
+    run('rm authorized_keys')
+    run('chown sclay.sclay -R ~sclay/.ssh')
+    env.user = "sclay"
 
 # ===============
 # = Setup - EC2 =
