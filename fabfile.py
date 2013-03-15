@@ -684,7 +684,17 @@ def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
-    
+
+def setup_haproxy():
+    sudo('apt-get install -y haproxy')
+    put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/haproxy')
+    put('config/haproxy.conf', '/etc/haproxy/.conf', use_sudo=True)
+    sudo('mkdir -p /var/lib/redis')
+    sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis stop')
+    sudo('/etc/init.d/redis start')
+
 # ==============
 # = Setup - DB =
 # ==============    
