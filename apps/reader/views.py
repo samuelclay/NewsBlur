@@ -55,7 +55,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app10', 'app01', 'www']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'test']:
         username = request.subdomain
         try:
             if '.' in username:
