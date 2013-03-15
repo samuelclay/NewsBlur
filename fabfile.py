@@ -100,6 +100,7 @@ env.roledefs ={
            '198.211.110.131',
            '192.34.61.227',
            '198.211.109.155',
+           '198.211.109.197',
            ]
 }
 
@@ -404,7 +405,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -685,15 +686,27 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy():
-    sudo('apt-get install -y haproxy')
+def setup_haproxy(install=False):
+    # sudo('apt-get install -y haproxy')
+    # sudo('ufw allow 81') # nginx moved
+    if install:
+        with cd(env.VENDOR_PATH):
+            run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
+            run('tar -xf haproxy-1.5-dev17.tar.gz')
+            with cd('haproxy-1.5-dev17'):
+                run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+                sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
-    put('config/haproxy.conf', '/etc/haproxy/.conf', use_sudo=True)
-    sudo('mkdir -p /var/lib/redis')
-    sudo('update-rc.d redis defaults')
-    sudo('/etc/init.d/redis stop')
-    sudo('/etc/init.d/redis start')
+    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    sudo('echo "ENABLED=1" > /etc/default/haproxy')
+    cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+
+    sudo('/etc/init.d/haproxy stop')
+    sudo('/etc/init.d/haproxy start')
 
 # ==============
 # = Setup - DB =
