@@ -917,7 +917,9 @@ def setup_do(name):
     
     host = instance.ip_address
     env.host_string = host
+    add_user_to_do()
     
+def add_user_to_do():
     env.user = "root"
     with settings(warn_only=True):
         run('useradd -m sclay')
