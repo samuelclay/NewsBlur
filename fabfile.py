@@ -71,11 +71,6 @@ env.roledefs ={
              ],
     'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                # New post Reader shut-down
-                'ec2-50-17-135-87.compute-1.amazonaws.com',
-                'ec2-50-16-7-166.compute-1.amazonaws.com',
-                'ec2-54-234-182-177.compute-1.amazonaws.com',
-                'ec2-23-22-123-187.compute-1.amazonaws.com',
                 ],
     'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
@@ -200,7 +195,11 @@ def deploy_code(copy_assets=False, full=False, fast=False):
 @parallel
 def kill():
     sudo('supervisorctl reload')
-    run('pkill -c gunicorn')
+    with settings(warn_only=True):
+        if env.user == 'ubuntu':
+            sudo('./utils/kill_gunicorn.sh')
+        else:
+            run('./utils/kill_gunicorn.sh')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
