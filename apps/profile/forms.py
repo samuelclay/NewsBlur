@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
 PLANS = [
-    # ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
+    ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
     ("newsblur-premium-24", mark_safe("$24 / year <span class='NB-small'>($2/month)</span>")),
     ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
 ]

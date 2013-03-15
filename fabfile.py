@@ -41,6 +41,7 @@ env.roledefs ={
             '198.211.110.131',
             '192.34.61.227',
             '198.211.109.155',
+            '198.211.107.87',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -70,11 +71,6 @@ env.roledefs ={
              ],
     'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                # New post Reader shut-down
-                'ec2-50-17-135-87.compute-1.amazonaws.com',
-                'ec2-50-16-7-166.compute-1.amazonaws.com',
-                'ec2-54-234-182-177.compute-1.amazonaws.com',
-                'ec2-23-22-123-187.compute-1.amazonaws.com',
                 ],
     'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
@@ -100,6 +96,8 @@ env.roledefs ={
            '198.211.110.131',
            '192.34.61.227',
            '198.211.109.155',
+           '198.211.109.197',
+           '198.211.107.87',
            ]
 }
 
@@ -176,7 +174,7 @@ def deploy_full():
     deploy_code(full=True)
 
 @parallel
-def deploy_code(copy_assets=False, full=False):
+def deploy_code(copy_assets=False, full=False, fast=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
@@ -184,20 +182,24 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        # with settings(warn_only=True):
-        #     run('pkill -c gunicorn')            
-        #     # run('kill -HUP `cat logs/gunicorn.pid`')
-        with settings(warn_only=True):
-            run('./utils/kill_gunicorn.sh')
-        with settings(warn_only=True):
-            sudo('./utils/kill_gunicorn.sh')
+        sudo('supervisorctl reload')
+        if fast:
+            with settings(warn_only=True):
+                if env.user == 'ubuntu':
+                    sudo('./utils/kill_gunicorn.sh')
+                else:
+                    run('./utils/kill_gunicorn.sh')
         # run('curl -s http://%s > /dev/null' % env.host)
         # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
 @parallel
 def kill():
     sudo('supervisorctl reload')
-    run('pkill -c gunicorn')
+    with settings(warn_only=True):
+        if env.user == 'ubuntu':
+            sudo('./utils/kill_gunicorn.sh')
+        else:
+            run('./utils/kill_gunicorn.sh')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
@@ -684,7 +686,33 @@ def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
-    
+
+def setup_haproxy(install=False):
+    # sudo('apt-get install -y haproxy')
+    # sudo('ufw allow 81') # nginx moved
+    if install:
+        with cd(env.VENDOR_PATH):
+            run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
+            run('tar -xf haproxy-1.5-dev17.tar.gz')
+            with cd('haproxy-1.5-dev17'):
+                run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+                sudo('make install')
+    put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/haproxy')
+    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    sudo('echo "ENABLED=1" > /etc/default/haproxy')
+    cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+
+    sudo('/etc/init.d/haproxy stop')
+    sudo('/etc/init.d/haproxy start')
+
+def config_haproxy():
+    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    sudo('/etc/init.d/haproxy reload')
+
 # ==============
 # = Setup - DB =
 # ==============    

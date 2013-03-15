@@ -2,15 +2,16 @@
 
 199.15.250.228  app01   app01.newsblur.com
 199.15.250.229  app02   app02.newsblur.com  push
-199.15.252.156  app03   app03.newsblur.com
-199.15.252.109  app04   app04.newsblur.com  www
+199.15.251.139  app03   app03.newsblur.com
+199.15.252.109  app04   app04.newsblur.com
 
 
-198.211.110.230  app12   app12.newsblur.com 
+198.211.109.197  app10   app10.newsblur.com www
 198.211.110.131  app11   app11.newsblur.com 
-198.211.109.197  app10   app10.newsblur.com
+198.211.110.230  app12   app12.newsblur.com 
 192.34.61.227    app13   app13.newsblur.com
 198.211.109.155  app14   app14.newsblur.com
+198.211.107.87   app15   app15.newsblur.com
 
 199.15.249.101  db01    db01.newsblur.com
 199.15.252.50   db02    db02.newsblur.com
