@@ -41,6 +41,7 @@ env.roledefs ={
             '198.211.110.131',
             '192.34.61.227',
             '198.211.109.155',
+            '198.211.107.87',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -101,6 +102,7 @@ env.roledefs ={
            '192.34.61.227',
            '198.211.109.155',
            '198.211.109.197',
+           '198.211.107.87',
            ]
 }
 
@@ -177,7 +179,7 @@ def deploy_full():
     deploy_code(full=True)
 
 @parallel
-def deploy_code(copy_assets=False, full=False):
+def deploy_code(copy_assets=False, full=False, fast=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
@@ -185,13 +187,13 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        # with settings(warn_only=True):
-        #     run('pkill -c gunicorn')            
-        #     # run('kill -HUP `cat logs/gunicorn.pid`')
-        with settings(warn_only=True):
-            run('./utils/kill_gunicorn.sh')
-        with settings(warn_only=True):
-            sudo('./utils/kill_gunicorn.sh')
+        sudo('supervisorctl reload')
+        if fast:
+            with settings(warn_only=True):
+                if env.user == 'ubuntu':
+                    sudo('./utils/kill_gunicorn.sh')
+                else:
+                    run('./utils/kill_gunicorn.sh')
         # run('curl -s http://%s > /dev/null' % env.host)
         # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
@@ -707,6 +709,10 @@ def setup_haproxy(install=False):
 
     sudo('/etc/init.d/haproxy stop')
     sudo('/etc/init.d/haproxy start')
+
+def config_haproxy():
+    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    sudo('/etc/init.d/haproxy reload')
 
 # ==============
 # = Setup - DB =
