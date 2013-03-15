@@ -18,5 +18,7 @@ if GIGS_OF_MEMORY > NUM_CPUS:
 else:
     workers = int(NUM_CPUS / 2)
 
-if workers <= 2:
-    workers = int(math.floor(GIGS_OF_MEMORY * 1000 / 256))
+if workers <= 4:
+    workers = int(math.floor(GIGS_OF_MEMORY * 1000 / 512))
+if workers > 8:
+    workers = 8

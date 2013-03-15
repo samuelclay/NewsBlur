@@ -1,7 +1,7 @@
 fs     = require 'fs'
 redis  = require 'redis'
 
-REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db01'
+REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db10'
 SECURE = !!process.env.NODE_SSL
 client = redis.createClient 6379, REDIS_SERVER
 

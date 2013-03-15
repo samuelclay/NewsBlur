@@ -1245,13 +1245,12 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(5, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 0:
+        if self.active_premium_subscribers > 3:
             total = min(total, 60) # 1 hour minimum for premiums
 
-        if (self.active_premium_subscribers <= 1 and 
-            (self.stories_last_month == 0 or self.average_stories_per_month == 0)):
+        if ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
             total = total * random.randint(1, 12)
         
         if self.is_push:
@@ -1259,7 +1258,7 @@ class Feed(models.Model):
         
         # 1 month max
         if total > 60*24*30:
-            total = 60*24*30 
+            total = 60*24*30
         
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
