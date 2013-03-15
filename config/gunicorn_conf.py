@@ -20,3 +20,5 @@ else:
 
 if workers <= 4:
     workers = int(math.floor(GIGS_OF_MEMORY * 1000 / 512))
+if workers > 8:
+    workers = 8
