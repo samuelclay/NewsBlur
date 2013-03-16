@@ -59,7 +59,10 @@
                 'unfetched_feeds': 0,
                 'fetched_feeds': 0,
                 'page_fill_outs': 0,
-                'recommended_feed_page': 0
+                'recommended_feed_page': 0,
+                'interactions_page': 1,
+                'activities_page': 1,
+                'socket_reconnects': 0
             };
             this.cache = {
                 'iframe_story_positions': {},
@@ -3871,12 +3874,21 @@
             if (this.socket && !this.socket.socket.connected) {
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
-                var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
                 var server = window.location.protocol + '//' + window.location.hostname;
-                if (NEWSBLUR.Globals.debug) server = server + ':' + port;
-                this.socket = this.socket || io.connect(server);
+                var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
+                this.socket = this.socket || io.connect(server, {
+                    "reconnection delay": 5000,
+                    "connect timeout": 5000,
+                    "port": NEWSBLUR.Globals.debug ? port : 80
+                });
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
+                this.socket.on('reconnect_error', _.bind(function() {
+                    this.retry_socketio_connect();
+                }, this));
+                this.socket.on('reconnect_failed', _.bind(function() {
+                    this.retry_socketio_connect();
+                }, this));
                 this.socket.on('connect', _.bind(function() {
                     var active_feeds = this.send_socket_active_feeds();
                     // NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
@@ -3922,6 +3934,8 @@
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
+                    
+                    this.retry_socketio_connect();
                 }, this));
                 this.socket.on('error', _.bind(function() {
                     NEWSBLUR.log(["Can't connect to real-time pubsub."]);
@@ -3929,9 +3943,28 @@
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
+
+                    this.retry_socketio_connect();
+
                 }, this));
             }
             
+        },
+        
+        retry_socketio_connect: function() {
+            var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
+            console.log('Real-time connection failed. Tried port:', this.socket.socket.options.port);
+
+            if (this.socket.socket.options.port == port) {
+                this.socket.socket.options.port = 80;
+            } else {
+                this.socket.socket.options.port = port;
+            }
+
+            this.counts.socket_reconnects += .5;
+            _.delay(_.bind(function() {
+                this.socket.socket.connect();
+            }, this), this.counts.socket_reconnects * 1000);
         },
         
         send_socket_active_feeds: function() {

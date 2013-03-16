@@ -1,6 +1,11 @@
-if (process.versions.node.match(/^0.3/)) {
-    exports.util = require("util");
-} else {
-    // This module is called "sys" in 0.2.x
-    exports.util = require("sys");
+// Support for very old versions of node where the module was called "sys".  At some point, we should abandon this.
+
+var util;
+
+try {
+    util = require("util");
+} catch (err) {
+    util = require("sys");
 }
+
+module.exports = util;

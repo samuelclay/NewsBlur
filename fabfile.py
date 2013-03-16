@@ -42,6 +42,14 @@ env.roledefs ={
             '192.34.61.227',
             '198.211.109.155',
             '198.211.107.87',
+            '198.211.105.155',
+            '198.211.104.133',
+            '198.211.103.214',
+            '198.211.106.22',
+            '198.211.110.189',
+            '198.211.106.215',
+            '192.81.209.42',
+            '198.211.102.245',
             ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
@@ -69,14 +77,11 @@ env.roledefs ={
              'task10.newsblur.com',
              'task11.newsblur.com',
              ],
-    'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
-               'ec2-54-242-34-138.compute-1.amazonaws.com',
-                ],
-    'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
+    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
-                #'ec2-54-242-34-138.compute-1.amazonaws.com',
+                'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
@@ -98,6 +103,14 @@ env.roledefs ={
            '198.211.109.155',
            '198.211.109.197',
            '198.211.107.87',
+           '198.211.105.155',
+           '198.211.104.133',
+           '198.211.103.214',
+           '198.211.106.22',
+           '198.211.110.189',
+           '198.211.106.215',
+           '192.81.209.42',
+           '198.211.102.245',
            ]
 }
 
@@ -133,10 +146,6 @@ def ec2task():
     ec2()
     env.roles = ['ec2task']
     
-def ec2app():
-    ec2()
-    env.roles = ['ec2app']
-    
 def vps():
     server()
     env.roles = ['vps']
@@ -171,7 +180,7 @@ def deploy():
     deploy_code(copy_assets=True)
 
 def deploy_full():
-    deploy_code(full=True)
+    deploy_code(copy_assets=True, full=True)
 
 @parallel
 def deploy_code(copy_assets=False, full=False, fast=False):
@@ -370,7 +379,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False):
+def setup_db(skip_common=False, role=None):
     if not skip_common:
         setup_common()
     setup_baremetal()
@@ -378,10 +387,15 @@ def setup_db(skip_common=False):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    # setup_postgres(standby=False)
-    # setup_mongo()
+    if role == "postgres":
+        setup_postgres(standby=False)
+    elif role == "postgres_slave":
+        setup_postgres(standby=True)
+    elif role == "mongo":
+        setup_mongo()
+    elif role == "redis":
+        setup_redis()
     setup_gunicorn(supervisor=False)
-    setup_redis()
     setup_db_munin()
     
     # if env.user == 'ubuntu':
@@ -742,7 +756,7 @@ def setup_db_firewall():
         ))
     
     # EC2
-    for host in set(env.roledefs['ec2app'] + env.roledefs['ec2task']):
+    for host in set(env.roledefs['ec2task']):
         ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -769,7 +783,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 580126400
+    shmmax = 599585856
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),

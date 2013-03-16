@@ -5,6 +5,12 @@ REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'd
 SECURE = !!process.env.NODE_SSL
 client = redis.createClient 6379, REDIS_SERVER
 
+RedisStore  = require 'socket.io/lib/stores/redis'
+rpub        = redis.createClient 6379, REDIS_SERVER
+rsub        = redis.createClient 6379, REDIS_SERVER
+rclient     = redis.createClient 6379, REDIS_SERVER
+
+
 if SECURE
     privateKey = fs.readFileSync('./config/certificates/newsblur.com.key').toString()
     certificate = fs.readFileSync('./config/certificates/newsblur.com.crt').toString()
@@ -26,6 +32,11 @@ io.configure 'production', ->
 io.configure 'development', ->
     io.set 'log level', 2
 
+io.set 'store', new RedisStore
+    redisPub    : rpub
+    redisSub    : rsub
+    redisClient : rclient
+
 io.sockets.on 'connection', (socket) ->
     socket.on 'subscribe:feeds', (@feeds, @username) ->
         console.log "   ---> [#{@username}] Subscribing to #{feeds.length} feeds " +
@@ -35,17 +46,16 @@ io.sockets.on 'connection', (socket) ->
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.subscribe @feeds
         socket.subscribe.subscribe @username
-        
+
         socket.subscribe.on 'message', (channel, message) =>
             console.log "   ---> [#{@username}] Update on #{channel}: #{message}"
             if channel == @username
                 socket.emit 'user:update', channel, message
             else
                 socket.emit 'feed:update', channel, message
-    
+
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
         console.log "   ---> [#{@username}] Disconnect, there are now" +
                     " #{io.sockets.clients().length-1} users. " +
-                    " #{if SECURE then "(SSL)"}"
-    
+                    " #{if SECURE then "(SSL)" else "(non-SSL)"}"
