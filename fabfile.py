@@ -1,15 +1,11 @@
 from fabric.api import cd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
-from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
 import os
 import time
 import sys
 import re
-import dop.client
 
 django.settings_module('settings')
 try:
@@ -924,6 +920,8 @@ def copy_task_settings():
 # =========================
 
 def setup_do(name):
+    import dop.client
+
     INSTANCE_SIZE = "2GB"
     IMAGE_NAME = "Ubuntu 12.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
@@ -981,6 +979,8 @@ def add_user_to_do():
 # ===============
 
 def setup_ec2():
+    from boto.ec2.connection import EC2Connection
+
     AMI_NAME = 'ami-834cf1ea' # Ubuntu 64-bit 12.04 LTS
     # INSTANCE_TYPE = 'c1.medium'
     INSTANCE_TYPE = 'c1.medium'
@@ -1041,6 +1041,9 @@ if django_settings:
         print " ---> You need to fix django's settings. Enter python and type `import settings`."
 
 def save_file_in_s3(filename):
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
     k      = Key(bucket)
@@ -1049,6 +1052,9 @@ def save_file_in_s3(filename):
     k.set_contents_from_filename(filename)
 
 def get_file_from_s3(filename):
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
     k      = Key(bucket)
@@ -1057,6 +1063,8 @@ def get_file_from_s3(filename):
     k.get_contents_to_filename(filename)
 
 def list_backup_in_s3():
+    from boto.s3.connection import S3Connection
+
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
 
@@ -1064,6 +1072,8 @@ def list_backup_in_s3():
         print "[%s] %s" % (i, key.name)
 
 def delete_all_backups():
+    from boto.s3.connection import S3Connection
+
     #FIXME: validate filename exists
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
