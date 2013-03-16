@@ -30,6 +30,17 @@
 
   io.util.mixin(Transport, io.EventEmitter);
 
+
+  /**
+   * Indicates whether heartbeats is enabled for this transport
+   *
+   * @api private
+   */
+
+  Transport.prototype.heartbeats = function () {
+    return true;
+  };
+
   /**
    * Handles the response from the server. When a new response is received
    * it will automatically update the timeout, decode the message and
@@ -41,8 +52,8 @@
 
   Transport.prototype.onData = function (data) {
     this.clearCloseTimeout();
-    
-    // If the connection in currently open (or in a reopening state) reset the close 
+
+    // If the connection in currently open (or in a reopening state) reset the close
     // timeout since we have just received data. This check is necessary so
     // that we don't reset the timeout on an explicitly disconnected connection.
     if (this.socket.connected || this.socket.connecting || this.socket.reconnecting) {
@@ -81,7 +92,7 @@
     }
 
     if (packet.type == 'error' && packet.advice == 'reconnect') {
-      this.open = false;
+      this.isOpen = false;
     }
 
     this.socket.onPacket(packet);
@@ -94,7 +105,7 @@
    *
    * @api private
    */
-  
+
   Transport.prototype.setCloseTimeout = function () {
     if (!this.closeTimeout) {
       var self = this;
@@ -112,7 +123,7 @@
    */
 
   Transport.prototype.onDisconnect = function () {
-    if (this.close && this.open) this.close();
+    if (this.isOpen) this.close();
     this.clearTimeouts();
     this.socket.onDisconnect();
     return this;
@@ -127,7 +138,7 @@
   Transport.prototype.onConnect = function () {
     this.socket.onConnect();
     return this;
-  }
+  };
 
   /**
    * Clears close timeout
@@ -178,7 +189,7 @@
   Transport.prototype.onHeartbeat = function (heartbeat) {
     this.packet({ type: 'heartbeat' });
   };
- 
+
   /**
    * Called when the transport opens.
    *
@@ -186,7 +197,7 @@
    */
 
   Transport.prototype.onOpen = function () {
-    this.open = true;
+    this.isOpen = true;
     this.clearCloseTimeout();
     this.socket.onOpen();
   };
@@ -206,7 +217,7 @@
       self.open();
     }, this.socket.options['reopen delay']);*/
 
-    this.open = false;
+    this.isOpen = false;
     this.socket.onClose();
     this.onDisconnect();
   };

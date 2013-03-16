@@ -21,6 +21,25 @@ var io = require('socket.io');
 Next, attach it to a HTTP/HTTPS server. If you're using the fantastic `express`
 web framework:
 
+#### Express 3.x
+
+```js
+var app = express()
+  , server = require('http').createServer(app)
+  , io = io.listen(server);
+
+server.listen(80);
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+```
+
+#### Express 2.x
+
 ```js
 var app = express.createServer()
   , io = io.listen(app);
@@ -104,10 +123,10 @@ io.sockets.on('connection', function (socket) {
   var socket = io.connect('http://localhost');
 
   socket.on('connect', function () {
-    socket.emit('set nickname', confirm('What is your nickname?'));
+    socket.emit('set nickname', prompt('What is your nickname?'));
     socket.on('ready', function () {
       console.log('Connected !');
-      socket.emit('msg', confirm('What is your message?'));
+      socket.emit('msg', prompt('What is your message?'));
     });
   });
 </script>
