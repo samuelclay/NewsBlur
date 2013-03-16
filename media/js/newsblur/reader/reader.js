@@ -3860,7 +3860,7 @@
             } else if (force || !this.socket || !this.socket.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 this.socket = this.socket || io.connect(server, {
-                    "reconnect": false,
+                    "reconnection delay": 5000,
                     "connect timeout": 5000,
                     "port": 80
                 });
