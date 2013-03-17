@@ -5,10 +5,10 @@ REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'd
 SECURE = !!process.env.NODE_SSL
 client = redis.createClient 6379, REDIS_SERVER
 
-RedisStore  = require 'socket.io/lib/stores/redis'
-rpub        = redis.createClient 6379, REDIS_SERVER
-rsub        = redis.createClient 6379, REDIS_SERVER
-rclient     = redis.createClient 6379, REDIS_SERVER
+# RedisStore  = require 'socket.io/lib/stores/redis'
+# rpub        = redis.createClient 6379, REDIS_SERVER
+# rsub        = redis.createClient 6379, REDIS_SERVER
+# rclient     = redis.createClient 6379, REDIS_SERVER
 
 
 if SECURE
@@ -32,10 +32,10 @@ io.configure 'production', ->
 io.configure 'development', ->
     io.set 'log level', 2
 
-io.set 'store', new RedisStore
-    redisPub    : rpub
-    redisSub    : rsub
-    redisClient : rclient
+# io.set 'store', new RedisStore
+#     redisPub    : rpub
+#     redisSub    : rsub
+#     redisClient : rclient
 
 io.sockets.on 'connection', (socket) ->
     socket.on 'subscribe:feeds', (@feeds, @username) ->
