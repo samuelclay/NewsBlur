@@ -515,7 +515,7 @@ def setup_hosts():
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    put('config/secrets/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('../secrets-newsblur/configs/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
@@ -680,14 +680,14 @@ def configure_node():
     sudo('supervisorctl reload')
 
 def copy_app_settings():
-    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -715,7 +715,7 @@ def setup_haproxy(install=False):
     sudo('chmod u+x /etc/init.d/haproxy')
     put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
-    cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
+    cert_path = "%s/../secrets-newsblur/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
@@ -916,7 +916,7 @@ def enable_celery_supervisor():
     
 def copy_task_settings():
     with settings(warn_only=True):
-        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 # =========================
