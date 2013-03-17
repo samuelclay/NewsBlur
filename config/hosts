@@ -1,5 +1,16 @@
 127.0.0.1 localhost
 
+127.0.0.1   samuel.nb.local.com
+127.0.0.1   conesus.nb.local.com
+127.0.0.1   chrome.nb.local.com
+127.0.0.1   firefox.nb.local.com
+127.0.0.1   popular.nb.local.com
+127.0.0.1   test.nb.local.com
+127.0.0.1   test2.nb.local.com
+127.0.0.1   test3.nb.local.com
+127.0.0.1   test4.nb.local.com
+127.0.0.1   test5.nb.local.com
+
 199.15.250.228  app01   app01.newsblur.com
 199.15.250.229  app02   app02.newsblur.com push
 199.15.251.139  app03   app03.newsblur.com debug
