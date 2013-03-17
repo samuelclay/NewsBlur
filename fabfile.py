@@ -452,10 +452,10 @@ def add_machine_to_ssh():
     
 def setup_repo():
     with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+        run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    sudo('ln -f -s /home/%s/code /srv/code' % env.user)
-    sudo('ln -f -s /home/%s/newsblur /srv/newsblur' % env.user)
+    sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -717,7 +717,9 @@ def setup_haproxy():
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
-
+    put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
+    sudo('restart rsyslog')
+    
     sudo('/etc/init.d/haproxy stop')
     sudo('/etc/init.d/haproxy start')
 
