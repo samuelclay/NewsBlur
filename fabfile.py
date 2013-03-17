@@ -52,6 +52,7 @@ env.roledefs ={
             '198.211.102.245',
             ],
     'dev': ['dev.newsblur.com'],
+    'debug': ['debug.newsblur.com'],
     'web': ['app01.newsblur.com', 
             'app02.newsblur.com', 
             'app04.newsblur.com',
@@ -153,6 +154,10 @@ def vps():
 def do():
     server()
     env.roles = ['do']
+
+def debug():
+    server()
+    env.roles = ['debug']
 
 def ec2():
     env.user = 'ubuntu'
