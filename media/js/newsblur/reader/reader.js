@@ -3962,7 +3962,8 @@
             }
 
             this.counts.socket_reconnects += .5;
-            _.delay(_.bind(function() {
+            clearTimeout(this.cache.socketio_reconnect);
+            this.cache.socketio_reconnect = _.delay(_.bind(function() {
                 this.socket.socket.connect();
             }, this), this.counts.socket_reconnects * 1000);
         },
