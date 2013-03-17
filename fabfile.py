@@ -510,7 +510,7 @@ def setup_supervisor():
 
 @parallel
 def setup_hosts():
-    put('config/hosts', '/etc/hosts', use_sudo=True)
+    put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
