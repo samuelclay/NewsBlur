@@ -920,7 +920,7 @@
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
             $('.NB-progress-link', $progress).html($.make('div', { 
                 className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
-            }, ['Choose your 12 sites']));
+            }, ['Choose your 64 sites']));
             
             this.show_progress_bar();
         },
@@ -951,7 +951,7 @@
                        NEWSBLUR.assets.folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             } else if (!NEWSBLUR.Globals.is_premium &&
-                       NEWSBLUR.assets.feeds.active().length > 12) {
+                       NEWSBLUR.assets.feeds.active().length > 64) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
         },
@@ -2718,7 +2718,7 @@
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 12 sites'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }), 

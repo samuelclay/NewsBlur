@@ -214,7 +214,7 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        run('sudo supervisorctl restart node_favicons')
+        # run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -510,12 +510,12 @@ def setup_supervisor():
 
 @parallel
 def setup_hosts():
-    put('config/hosts', '/etc/hosts', use_sudo=True)
+    put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    put('config/secrets/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('../secrets-newsblur/configs/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
@@ -676,18 +676,18 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 def copy_app_settings():
-    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -701,16 +701,14 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy(install=False):
-    # sudo('apt-get install -y haproxy')
-    # sudo('ufw allow 81') # nginx moved
-    if install:
-        with cd(env.VENDOR_PATH):
-            run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
-            run('tar -xf haproxy-1.5-dev17.tar.gz')
-            with cd('haproxy-1.5-dev17'):
-                run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
-                sudo('make install')
+def setup_haproxy():
+    sudo('ufw allow 81') # nginx moved
+    with cd(env.VENDOR_PATH):
+        run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
+        run('tar -xf haproxy-1.5-dev17.tar.gz')
+        with cd('haproxy-1.5-dev17'):
+            run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+            sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
     put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
@@ -723,8 +721,11 @@ def setup_haproxy(install=False):
     sudo('/etc/init.d/haproxy stop')
     sudo('/etc/init.d/haproxy start')
 
-def config_haproxy():
-    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+def config_haproxy(debug=False):
+    if debug:
+        put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    else:
+        put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('/etc/init.d/haproxy reload')
 
 # ==============
@@ -917,7 +918,7 @@ def enable_celery_supervisor():
     
 def copy_task_settings():
     with settings(warn_only=True):
-        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 # =========================
