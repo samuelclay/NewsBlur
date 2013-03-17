@@ -181,8 +181,8 @@ def post_deploy():
     cleanup_assets()
     
 @parallel
-def deploy():
-    deploy_code(copy_assets=True)
+def deploy(fast=False):
+    deploy_code(copy_assets=True, fast=fast)
 
 def deploy_full():
     deploy_code(copy_assets=True, full=True)
