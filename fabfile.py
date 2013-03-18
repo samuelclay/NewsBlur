@@ -93,6 +93,9 @@ env.roledefs ={
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
                 'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
+                
+                'ec2-54-234-211-75.compute-1.amazonaws.com',
+                'ec2-50-16-97-13.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -104,29 +107,6 @@ env.roledefs ={
             'app01.newsblur.com', 
             'app02.newsblur.com', 
             ],
-    'do': ['198.211.109.225',
-           '198.211.109.224',
-           '198.211.110.164',
-           '198.211.110.230',
-           '198.211.110.131',
-           '192.34.61.227',
-           '198.211.109.155',
-           '198.211.109.197',
-           '198.211.107.87',
-           '198.211.105.155',
-           '198.211.104.133',
-           '198.211.103.214',
-           '198.211.106.22',
-           '198.211.110.189',
-           '198.211.106.215',
-           '192.81.209.42',
-           '198.211.102.245',
-           '198.211.109.236',
-           '198.211.113.54',
-           '198.211.113.206',
-           '198.211.113.86',
-           '198.211.113.196',
-           ]
 }
 
 # ================
@@ -794,7 +774,8 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
     
     # DigitalOcean
-    for ip in set(env.roledefs['do']):
+    for ip in set(env.roledefs['app']):
+        if 'newsblur.com' in ip: continue
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
