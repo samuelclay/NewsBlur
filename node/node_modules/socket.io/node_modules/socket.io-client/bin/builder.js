@@ -84,6 +84,19 @@ var baseTransports = {
 };
 
 /**
+ * Wrappers for client-side usage.
+ * This enables usage in top-level browser window, client-side CommonJS systems and AMD loaders.
+ * If doing a node build for server-side client, this wrapper is NOT included.
+ * @api private
+ */
+var wrapperPre = "\nvar io = ('undefined' === typeof module ? {} : module.exports);\n(function() {\n";
+
+var wrapperPost = "\nif (typeof define === \"function\" && define.amd) {" +
+                  "\n  define([], function () { return io; });" +
+                  "\n}\n})();";
+
+
+/**
  * Builds a custom Socket.IO distribution based on the transports that you
  * need. You can configure the build to create development build or production
  * build (minified).
@@ -168,10 +181,14 @@ var builder = module.exports = function () {
       // we are done, did we error?
       if (error) return callback(error);
 
-      // concatinate the file contents in order
+      // start with the license header
       var code = development
         , ignore = 0;
 
+      // pre-wrapper for non-server-side builds
+      if (!settings.node) code += wrapperPre;
+
+      // concatenate the file contents in order
       files.forEach(function (file) {
         code += results[file];
       });
@@ -181,6 +198,11 @@ var builder = module.exports = function () {
         settings.custom.forEach(function (content) {
           code += content;
         });
+      }
+
+      // post-wrapper for non-server-side builds
+      if (!settings.node) {
+          code += wrapperPost;
       }
 
       code = activeXObfuscator(code);

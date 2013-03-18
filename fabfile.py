@@ -45,8 +45,18 @@ env.roledefs ={
             '198.211.110.131',
             '192.34.61.227',
             '198.211.109.155',
+            '198.211.107.87',
+            '198.211.105.155',
+            '198.211.104.133',
+            '198.211.103.214',
+            '198.211.106.22',
+            '198.211.110.189',
+            '198.211.106.215',
+            '192.81.209.42',
+            '198.211.102.245',
             ],
     'dev': ['dev.newsblur.com'],
+    'debug': ['debug.newsblur.com'],
     'web': ['app01.newsblur.com', 
             'app02.newsblur.com', 
             'app04.newsblur.com',
@@ -72,19 +82,11 @@ env.roledefs ={
              'task10.newsblur.com',
              'task11.newsblur.com',
              ],
-    'ec2app': ['ec2-54-242-38-48.compute-1.amazonaws.com',
-               'ec2-54-242-34-138.compute-1.amazonaws.com',
-                # New post Reader shut-down
-                'ec2-50-17-135-87.compute-1.amazonaws.com',
-                'ec2-50-16-7-166.compute-1.amazonaws.com',
-                'ec2-54-234-182-177.compute-1.amazonaws.com',
-                'ec2-23-22-123-187.compute-1.amazonaws.com',
-                ],
-    'ec2task': [#'ec2-54-242-38-48.compute-1.amazonaws.com',
+    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
-                #'ec2-54-242-34-138.compute-1.amazonaws.com',
+                'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
@@ -105,6 +107,15 @@ env.roledefs ={
            '192.34.61.227',
            '198.211.109.155',
            '198.211.109.197',
+           '198.211.107.87',
+           '198.211.105.155',
+           '198.211.104.133',
+           '198.211.103.214',
+           '198.211.106.22',
+           '198.211.110.189',
+           '198.211.106.215',
+           '192.81.209.42',
+           '198.211.102.245',
            ]
 }
 
@@ -140,10 +151,6 @@ def ec2task():
     ec2()
     env.roles = ['ec2task']
     
-def ec2app():
-    ec2()
-    env.roles = ['ec2app']
-    
 def vps():
     server()
     env.roles = ['vps']
@@ -151,6 +158,10 @@ def vps():
 def do():
     server()
     env.roles = ['do']
+
+def debug():
+    server()
+    env.roles = ['debug']
 
 def ec2():
     env.user = 'ubuntu'
@@ -174,14 +185,14 @@ def post_deploy():
     cleanup_assets()
     
 @parallel
-def deploy():
-    deploy_code(copy_assets=True)
+def deploy(fast=False):
+    deploy_code(copy_assets=True, fast=fast)
 
 def deploy_full():
-    deploy_code(full=True)
+    deploy_code(copy_assets=True, full=True)
 
 @parallel
-def deploy_code(copy_assets=False, full=False):
+def deploy_code(copy_assets=False, full=False, fast=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
@@ -189,26 +200,30 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        # with settings(warn_only=True):
-        #     run('pkill -c gunicorn')            
-        #     # run('kill -HUP `cat logs/gunicorn.pid`')
-        with settings(warn_only=True):
-            run('./utils/kill_gunicorn.sh')
-        with settings(warn_only=True):
-            sudo('./utils/kill_gunicorn.sh')
+        sudo('supervisorctl reload')
+        if fast:
+            with settings(warn_only=True):
+                if env.user == 'ubuntu':
+                    sudo('./utils/kill_gunicorn.sh')
+                else:
+                    run('./utils/kill_gunicorn.sh')
         # run('curl -s http://%s > /dev/null' % env.host)
         # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
 @parallel
 def kill():
     sudo('supervisorctl reload')
-    run('pkill -c gunicorn')
+    with settings(warn_only=True):
+        if env.user == 'ubuntu':
+            sudo('./utils/kill_gunicorn.sh')
+        else:
+            run('./utils/kill_gunicorn.sh')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        run('sudo supervisorctl restart node_favicons')
+        # run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -373,7 +388,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False):
+def setup_db(skip_common=False, role=None):
     if not skip_common:
         setup_common()
     setup_baremetal()
@@ -381,10 +396,15 @@ def setup_db(skip_common=False):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    # setup_postgres(standby=False)
-    # setup_mongo()
+    if role == "postgres":
+        setup_postgres(standby=False)
+    elif role == "postgres_slave":
+        setup_postgres(standby=True)
+    elif role == "mongo":
+        setup_mongo()
+    elif role == "redis":
+        setup_redis()
     setup_gunicorn(supervisor=False)
-    setup_redis()
     setup_db_munin()
     
     # if env.user == 'ubuntu':
@@ -441,10 +461,10 @@ def add_machine_to_ssh():
     
 def setup_repo():
     with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+        run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    sudo('ln -f -s /home/%s/code /srv/code' % env.user)
-    sudo('ln -f -s /home/%s/newsblur /srv/newsblur' % env.user)
+    sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -499,12 +519,12 @@ def setup_supervisor():
 
 @parallel
 def setup_hosts():
-    put('config/hosts', '/etc/hosts', use_sudo=True)
+    put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    put('config/secrets/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('../secrets-newsblur/configs/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
@@ -577,6 +597,26 @@ def switch_forked_mongoengine():
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+
+def setup_ulimit():
+     # Increase File Descriptor limits.
+    run('export FILEMAX=`sysctl -n fs.file-max`')
+    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak')
+    sudo('touch /etc/security/limits.conf')
+    sudo('chmod 666 /etc/security/limits.conf')
+    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('"root hard nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf')
+    sudo('chmod 644 /etc/security/limits.conf')
+
+    # run('touch /home/ubuntu/.bash_profile')
+    # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
+
+    # Increase Ephemeral Ports.
+    # sudo chmod 666 /etc/sysctl.conf
+    # echo "net.ipv4.ip_local_port_range = 1024 65535" >> /etc/sysctl.conf
+    # sudo chmod 644 /etc/sysctl.conf
     
 def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
@@ -665,18 +705,18 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 def copy_app_settings():
-    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -690,16 +730,14 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy(install=False):
-    # sudo('apt-get install -y haproxy')
-    # sudo('ufw allow 81') # nginx moved
-    if install:
-        with cd(env.VENDOR_PATH):
-            run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
-            run('tar -xf haproxy-1.5-dev17.tar.gz')
-            with cd('haproxy-1.5-dev17'):
-                run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
-                sudo('make install')
+def setup_haproxy():
+    sudo('ufw allow 81') # nginx moved
+    with cd(env.VENDOR_PATH):
+        run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
+        run('tar -xf haproxy-1.5-dev17.tar.gz')
+        with cd('haproxy-1.5-dev17'):
+            run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+            sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
     put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
@@ -708,9 +746,18 @@ def setup_haproxy(install=False):
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
-
+    put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
+    sudo('restart rsyslog')
+    
     sudo('/etc/init.d/haproxy stop')
     sudo('/etc/init.d/haproxy start')
+
+def config_haproxy(debug=False):
+    if debug:
+        put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    else:
+        put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    sudo('/etc/init.d/haproxy reload')
 
 # ==============
 # = Setup - DB =
@@ -741,7 +788,7 @@ def setup_db_firewall():
         ))
     
     # EC2
-    for host in set(env.roledefs['ec2app'] + env.roledefs['ec2task']):
+    for host in set(env.roledefs['ec2task']):
         ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -768,7 +815,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 580126400
+    shmmax = 599585856
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
@@ -901,7 +948,7 @@ def enable_celery_supervisor():
     
 def copy_task_settings():
     with settings(warn_only=True):
-        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 # =========================

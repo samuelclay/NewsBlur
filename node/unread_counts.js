@@ -63,7 +63,7 @@
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
-      return console.log(("   ---> [" + this.username + "] Disconnect, there are now") + (" " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : void 0)));
+      return console.log(("   ---> [" + this.username + "] Disconnect, there are now") + (" " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
   });
 

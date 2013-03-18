@@ -190,7 +190,7 @@
       var request = io.util.request(xdomain),
           usesXDomReq = (global.XDomainRequest && request instanceof XDomainRequest),
           socketProtocol = (socket && socket.options && socket.options.secure ? 'https:' : 'http:'),
-          isXProtocol = (socketProtocol != global.location.protocol);
+          isXProtocol = (global.location && socketProtocol != global.location.protocol);
       if (request && !(usesXDomReq && isXProtocol)) {
         return true;
       }
@@ -206,8 +206,8 @@
    * @api public
    */
 
-  XHR.xdomainCheck = function () {
-    return XHR.check(null, true);
+  XHR.xdomainCheck = function (socket) {
+    return XHR.check(socket, true);
   };
 
 })(

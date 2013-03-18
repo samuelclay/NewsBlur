@@ -60,7 +60,8 @@
                 'page_fill_outs': 0,
                 'recommended_feed_page': 0,
                 'interactions_page': 1,
-                'activities_page': 1
+                'activities_page': 1,
+                'socket_reconnects': 0
             };
             this.cache = {
                 'iframe_story_positions': {},
@@ -888,7 +889,7 @@
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
             $('.NB-progress-link', $progress).html($.make('div', { 
                 className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
-            }, ['Choose your 12 sites']));
+            }, ['Choose your 64 sites']));
             
             this.show_progress_bar();
         },
@@ -918,7 +919,7 @@
                        NEWSBLUR.assets.folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             } else if (!NEWSBLUR.Globals.is_premium &&
-                       NEWSBLUR.assets.feeds.active().length > 12) {
+                       NEWSBLUR.assets.feeds.active().length > 64) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
         },
@@ -2638,7 +2639,7 @@
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 12 sites'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }), 
@@ -3857,9 +3858,13 @@
             if (this.socket && !this.socket.socket.connected) {
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
+                var server = window.location.protocol + '//' + window.location.hostname;
                 var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
-                var server = window.location.protocol + '//' + window.location.hostname + ':' + port;
-                this.socket = this.socket || io.connect(server);
+                this.socket = this.socket || io.connect(server, {
+                    "reconnection delay": 2000,
+                    "connect timeout": 2000,
+                    "port": NEWSBLUR.Globals.debug ? port : 80
+                });
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
