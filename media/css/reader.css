@@ -9098,3 +9098,14 @@ form.opml_import_form input {
 .NB-static-form .NB-errors {
     margin-left: 200px;
 }
+
+.NB-static-alert {
+    margin: 24px 0 0 0;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+    color: #294A28;
+}
+.NB-static-feedchooser .NB-feedchooser-premium-bullets li {
+    background-color: rgba(255, 255, 255, .4);
+}

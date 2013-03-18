@@ -1,4 +1,3 @@
-
 /*!
  * socket.io-node
  * Copyright(c) 2011 LearnBoost <dev@learnboost.com>
@@ -53,9 +52,16 @@ FlashSocket.prototype.name = 'flashsocket';
 FlashSocket.init = function (manager) {
   var server;
   function create () {
+
+    // Drop out immediately if the user has
+    // disabled the flash policy server
+    if (!manager.get('flash policy server')) {
+      return;
+    }
+
     server = require('policyfile').createServer({ 
       log: function(msg){
-        manager.log.info(msg.toLowerCase());
+        manager.log.info(msg);
       }
     }, manager.get('origins'));
 
@@ -89,6 +95,23 @@ FlashSocket.init = function (manager) {
         }
         catch (e) { /* ignore exception. could e.g. be that the server isn't started yet */ }
       }
+      create();
+    }
+  });
+
+  // create or destroy the server
+  manager.on('set:flash policy server', function (value, key) {
+    var transports = manager.get('transports');
+    if (~transports.indexOf('flashsocket')) {
+      if (server && !value) {
+        // destroy the server
+        try {
+          server.close();
+        }
+        catch (e) { /* ignore exception. could e.g. be that the server isn't started yet */ }
+      }
+    } else if (!server && value) {
+      // create the server
       create();
     }
   });

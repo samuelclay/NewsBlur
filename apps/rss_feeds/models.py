@@ -335,9 +335,13 @@ class Feed(models.Model):
 
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
+        
         count_extra = False
-        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
+        elif self.average_stories_per_month == 0 and self.stories_last_month > 0:
+            count_extra = True
+            
         if force or (full and count_extra):
             self.count_stories()
             self.save_popular_authors()
@@ -533,7 +537,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
-        # self.save_feed_story_history_statistics()
+        self.save_feed_story_history_statistics()
     
     def _split_favicon_color(self):
         color = self.favicon_color
@@ -1241,13 +1245,12 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(5, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 0:
+        if self.active_premium_subscribers > 3:
             total = min(total, 60) # 1 hour minimum for premiums
 
-        if (self.active_premium_subscribers <= 1 and 
-            (self.stories_last_month == 0 or self.average_stories_per_month == 0)):
+        if ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
             total = total * random.randint(1, 12)
         
         if self.is_push:
@@ -1255,7 +1258,7 @@ class Feed(models.Model):
         
         # 1 month max
         if total > 60*24*30:
-            total = 60*24*30 
+            total = 60*24*30
         
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
@@ -1264,7 +1267,7 @@ class Feed(models.Model):
                                                 subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor*2
+        return total, random_factor*8
         
     def set_next_scheduled_update(self, verbose=True):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)

@@ -15,7 +15,49 @@
 
 {% block content %}
 
-<div class="NB-static-form-wrapper">
+<div class="NB-static-alert">
+    Due to overwhelming demand, free accounts are temporarily suspended.
+    <br />
+    By going premium you get full access to NewsBlur.
+</div>
+
+<div class="NB-static-form-wrapper" style="overflow:hidden">
+   <div class="NB-modal-feedchooser NB-static-feedchooser NB-feedchooser-type" style="    margin: 0 10% 0 0;
+    width: 360px;
+float: right;">
+    <div class="NB-feedchooser-info">
+        <div class="NB-feedchooser-info-type">
+            <span class="NB-feedchooser-subtitle-type-prefix">Super-Mega</span> Premium Account
+        </div>
+    </div>
+    <ul class="NB-feedchooser-premium-bullets">
+        <li class="NB-1">
+            <div class="NB-feedchooser-premium-bullet-image"></div>Enable every site by going premium
+        </li>
+        <li class="NB-2">
+            <div class="NB-feedchooser-premium-bullet-image"></div>Sites updated up to 10x more often
+        </li>
+        <li class="NB-3">
+            <div class="NB-feedchooser-premium-bullet-image"></div>River of News (reading by folder)
+        </li>
+        <li class="NB-4">
+            <div class="NB-feedchooser-premium-bullet-image"></div>Privacy options for your blurblog
+        </li>
+        <li class="NB-5">
+            <div class="NB-feedchooser-premium-bullet-image"></div>Text view conveniently extracts the story
+        </li>
+        <li class="NB-6">
+            <div class="NB-feedchooser-premium-bullet-image"></div>You feed my poor, hungry dog for <span class="NB-feedchooser-hungry-dog">12 days</span><img src="/media//img/reader/shiloh.jpg" class="NB-feedchooser-premium-poor-hungry-dog">
+        </li>
+        <li class="NB-7">
+            <div class="NB-feedchooser-premium-bullet-image"></div>Choose how much you would like to pay
+            <div style="color: #490567">
+                The only difference is happiness
+            </div>
+        </li>
+    </ul>
+</div>
+
     <div class="NB-static-form NB-stripe-form">
         <label>Username</label>
         <div class="NB-stripe-username">{{ user.username }}</div>
@@ -53,6 +95,11 @@
             </div>
             
             <div style="overflow: hidden">
+                <style>
+                .NB-stripe-plan-choice label:first-child {
+                    display: none;
+                }
+                </style>
                 {{ zebra_form.plan.label_tag }}
                 {{ zebra_form.plan|safe }}
             </div>

@@ -55,7 +55,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'debug']:
         username = request.subdomain
         try:
             if '.' in username:
@@ -159,7 +159,9 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
-            return HttpResponseRedirect(reverse('index'))
+            url = "https://%s%s" % (Site.objects.get_current().domain,
+                                     reverse('stripe-form'))
+            return HttpResponseRedirect(url)
 
     return index(request)
         
@@ -1304,21 +1306,22 @@ def save_feed_chooser(request):
                 if not sub.active:
                     sub.active = True
                     sub.save()
-                    sub.feed.count_subscribers()
+                    if sub.feed.active_subscribers <= 0:
+                        sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()
         except Feed.DoesNotExist:
             pass
             
-    
+    request.user.profile.queue_new_feeds()
+    request.user.profile.refresh_stale_feeds(exclude_new=True)
+
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
     ))
-    request.user.profile.queue_new_feeds()
-    request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
     return {'activated': activated}
 
 @ajax_login_required

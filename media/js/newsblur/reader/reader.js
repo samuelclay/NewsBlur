@@ -60,7 +60,8 @@
                 'page_fill_outs': 0,
                 'recommended_feed_page': 0,
                 'interactions_page': 1,
-                'activities_page': 1
+                'activities_page': 1,
+                'socket_reconnects': 0
             };
             this.cache = {
                 'iframe_story_positions': {},
@@ -1777,7 +1778,7 @@
                 if (data.status == 502) {
                     message = "NewsBlur is down right now. <br> Try again soon.";
                 } else if (data.status == 503) {
-                    message = "NewsBlur is in maintenace mode. <br> Try again soon.";
+                    message = "NewsBlur is in maintenance mode. <br> Try again soon.";
                     this.show_maintenance_page();
                 }
             }
@@ -3857,9 +3858,13 @@
             if (this.socket && !this.socket.socket.connected) {
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
+                var server = window.location.protocol + '//' + window.location.hostname;
                 var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
-                var server = window.location.protocol + '//' + window.location.hostname + ':' + port;
-                this.socket = this.socket || io.connect(server);
+                this.socket = this.socket || io.connect(server, {
+                    "reconnection delay": 2000,
+                    "connect timeout": 2000,
+                    "port": NEWSBLUR.Globals.debug ? port : 80
+                });
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {

@@ -16,12 +16,19 @@ class TaskFeeds(Task):
         now = datetime.datetime.utcnow()
         
         # Active feeds
+        popular_feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now,
+            active=True,
+            active_premium_subscribers__gte=1
+        ).order_by('?')[:1000]
+        popular_count = popular_feeds.count()
+        
+        # Regular feeds
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
-            active=True
-        ).exclude(
-            active_subscribers=0
-        ).order_by('?')
+            active=True,
+            active_subscribers__gte=1
+        ).order_by('?')[:500]
         active_count = feeds.count()
         
         # Mistakenly inactive feeds
@@ -42,12 +49,14 @@ class TaskFeeds(Task):
         ).order_by('?')[:20]
         old_count = old_feeds.count()
         
-        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
+        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
+            popular_count,
             active_count,
             inactive_count,
             old_count,
         ))        
         
+        Feed.task_feeds(popular_feeds, verbose=False)
         Feed.task_feeds(feeds, verbose=False)
         if inactive_feeds: Feed.task_feeds(inactive_feeds, verbose=False)
         if old_feeds: Feed.task_feeds(old_feeds, verbose=False)

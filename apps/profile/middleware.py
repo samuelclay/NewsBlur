@@ -158,6 +158,12 @@ class SimpsonsMiddleware:
         response["X-%s" % source] = quote[1]
 
         return response
+        
+class ServerHostnameMiddleware:
+    def process_response(self, request, response):
+        response["X-server"] = settings.SERVER_NAME
+
+        return response
 
 class TimingMiddleware:
     def process_request(self, request):

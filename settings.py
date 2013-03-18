@@ -16,7 +16,7 @@ ADMINS       = (
     ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
-SERVER_NAME  = 'local'
+SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
@@ -65,6 +65,7 @@ LOGIN_URL             = '/reader/login'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
+# EMAIL_BACKEND         = 'django_mailgun.MailgunBackend'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
@@ -103,6 +104,7 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
+    'apps.profile.middleware.ServerHostnameMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -311,11 +313,13 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_tasks"
     },
+    "beat_feeds_task": {
+        "exchange": "beat_feeds_task",
+        "exchange_type": "direct",
+        "binding_key": "beat_feeds_task"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
-BROKER_BACKEND = "redis"
-BROKER_URL = "redis://db01:6379/0"
-CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
@@ -332,14 +336,14 @@ CELERY_DISABLE_RATE_LIMITS  = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
 CELERYBEAT_SCHEDULE = {
-    'freshen-homepage': {
-        'task': 'freshen-homepage',
-        'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'beat_tasks'},
-    },
     'task-feeds': {
         'task': 'task-feeds',
         'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_feeds_task'},
+    },
+    'freshen-homepage': {
+        'task': 'freshen-homepage',
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
     'collect-stats': {
@@ -418,7 +422,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db01',
+    'host': 'db10',
 }
 
 # =================
@@ -441,7 +445,7 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db01.newsblur.com:3060"
+ORIGINAL_PAGE_SERVER = "db02.newsblur.com:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,
@@ -482,6 +486,14 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': False,
 }
 RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+
+# =========
+# = Redis =
+# =========
+
+BROKER_BACKEND = "redis"
+BROKER_URL = "redis://%s:6379/0" % REDIS['host']
+CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
 # = Mongo =

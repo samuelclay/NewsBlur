@@ -17,7 +17,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         _.defer(_.bind(function() { this.open_modal(); }, this));
         if (!NEWSBLUR.Globals.is_premium) {
             this.find_feeds_in_feed_list();
-            this.initial_load_feeds();
+            this.initial_load_feeds(true);
         }
         this.choose_dollar_amount(2);
         
@@ -122,15 +122,15 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
                   // this.make_google_checkout()
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
-                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: 8px;top: 9px"  })
-                            ]),
-                            '$12/year'
-                          ]),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($1/month)')
-                      ]),
+                      // $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
+                      //     $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
+                      //       $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: 8px;top: 9px"  })
+                      //       ]),
+                      //       '$12/year'
+                      //     ]),
+                      //     $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($1/month)')
+                      // ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
                             $.make('div', { className: 'NB-feedchooser-dollar-image' }, [

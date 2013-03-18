@@ -120,6 +120,9 @@
     text-transform: none;
 }
 
+.NB-static-form #payment-form > div {
+    clear: both;
+}
 .NB-static-form p {
     overflow: hidden;
 }
