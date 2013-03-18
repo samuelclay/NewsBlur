@@ -84,7 +84,7 @@ env.roledefs ={
              # 'task07.newsblur.com',
              'task08.newsblur.com',
              'task09.newsblur.com',
-             'task10.newsblur.com',
+             # 'task10.newsblur.com',
              'task11.newsblur.com',
              ],
     'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
@@ -720,6 +720,7 @@ def configure_node():
     # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
+@parallel
 def copy_app_settings():
     put('../secrets-newsblur/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
@@ -957,7 +958,7 @@ def enable_celery_supervisor():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
-    
+@parallel
 def copy_task_settings():
     with settings(warn_only=True):
         put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
