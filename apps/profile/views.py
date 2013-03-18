@@ -253,6 +253,7 @@ def stripe_form(request):
             user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
             user.profile.stripe_id = customer.id
             user.profile.save()
+            user.profile.activate_premium() # TODO: Remove, because webhooks are slow
 
             success_updating = True
 
