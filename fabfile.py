@@ -9,7 +9,11 @@ import os
 import time
 import sys
 import re
-import dop.client
+try:
+    import dop.client
+except ImportError:
+    print "Digital Ocean's API not loaded"
+
 
 django.settings_module('settings')
 try:
