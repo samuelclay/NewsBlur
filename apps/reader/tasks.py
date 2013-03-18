@@ -40,7 +40,7 @@ class CleanAnalytics(Task):
             settings.MONGOANALYTICSDB.nbanalytics.page_loads.count(),
             settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),
         ))
-        day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.remove({
             "date": {"$lt": day_ago},
         })
