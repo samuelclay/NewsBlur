@@ -16,7 +16,7 @@ ADMINS       = (
     ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
-SERVER_NAME  = 'local'
+SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
@@ -104,6 +104,7 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
+    'apps.profile.middleware.ServerHostnameMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 

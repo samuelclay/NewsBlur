@@ -50,6 +50,11 @@ env.roledefs ={
             '198.211.106.215',
             '192.81.209.42',
             '198.211.102.245',
+            '198.211.109.236',
+            '198.211.113.54',
+            '198.211.113.206',
+            '198.211.113.86',
+            '198.211.113.196',
             ],
     'dev': ['dev.newsblur.com'],
     'debug': ['debug.newsblur.com'],
@@ -112,6 +117,11 @@ env.roledefs ={
            '198.211.106.215',
            '192.81.209.42',
            '198.211.102.245',
+           '198.211.109.236',
+           '198.211.113.54',
+           '198.211.113.206',
+           '198.211.113.86',
+           '198.211.113.196',
            ]
 }
 
@@ -459,7 +469,8 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    with settings(warn_only=True):
+        sudo('ln -f -s /home/%s/code /srv/' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
@@ -658,6 +669,7 @@ def setup_app_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh') # ssh
     sudo('ufw allow 80') # http
+    sudo('ufw allow 8000') # gunicorn
     sudo('ufw allow 8888') # socket.io
     sudo('ufw allow 8889') # socket.io ssl
     sudo('ufw allow 443') # https
