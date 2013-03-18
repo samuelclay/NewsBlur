@@ -593,6 +593,26 @@ def switch_forked_mongoengine():
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+
+def setup_ulimit():
+     # Increase File Descriptor limits.
+    run('export FILEMAX=`sysctl -n fs.file-max`')
+    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak')
+    sudo('touch /etc/security/limits.conf')
+    sudo('chmod 666 /etc/security/limits.conf')
+    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('"root hard nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf')
+    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf')
+    sudo('chmod 644 /etc/security/limits.conf')
+
+    # run('touch /home/ubuntu/.bash_profile')
+    # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
+
+    # Increase Ephemeral Ports.
+    # sudo chmod 666 /etc/sysctl.conf
+    # echo "net.ipv4.ip_local_port_range = 1024 65535" >> /etc/sysctl.conf
+    # sudo chmod 644 /etc/sysctl.conf
     
 def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
