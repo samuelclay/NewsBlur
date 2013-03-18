@@ -43,8 +43,15 @@ def user(u, msg, request=None):
     premium = '*' if is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
-    if request:
-        MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=request.path, 
+    page_load_paths = [
+        "/reader/feed/",
+        "/social/stories/",
+        "/reader/river_stories/",
+        "/social/river_stories/"
+    ]
+    path = MAnalyticsPageLoad.clean_path(request.path)
+    if request and path in page_load_paths:
+        MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
                                duration=seconds)
 
 def cipher(msg):
