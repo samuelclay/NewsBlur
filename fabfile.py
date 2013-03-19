@@ -15,7 +15,8 @@ except ImportError:
     django_settings = None
 
 
-DIST_PACKAGES_BASE_PATH = '/usr/local/lib/python2.7/dist-packages'
+PYTHON_LIB_PATH = '/usr/local/lib/python2.7'
+DIST_PACKAGES_BASE_PATH = '%s/dist-packages' % (PYTHON_LIB_PATH,)
 
 def sudoEasyInstall(*args):
     sudo('easy_install -U %s' % args)
@@ -500,7 +501,7 @@ def setup_python():
     #     sudo('python setup.py install')
         
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > %s/sitecustomize.py\'' % (PYTHON_LIB_PATH,))
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
