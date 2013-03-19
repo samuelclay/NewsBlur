@@ -22,7 +22,7 @@ def sudoEasyInstall(*args):
     sudo('easy_install -U %s' % args)
 
 def runGitClone(src, dst = None):
-    cmd = 'git clone %s' % (src,)
+    cmd = 'git clone --depth 1 %s' % (src,)
 
     if(not dst is None):
         cmd += ' ' + dst
