@@ -2879,8 +2879,7 @@ background: transparent;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
     margin-top: 1px;
-    border-bottom: 1px solid #A9A9A9;
-    background-color: #DCDCDC;
+    background-color: #edefea;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2897,10 +2896,10 @@ background: transparent;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
-    padding: 4px;
+    padding: 7px 4px;
     height: 100%;
     float: right;
-    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px 5px;
+    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px center;
     background-size: 16px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -2917,9 +2916,13 @@ background: transparent;
 }
 
 .NB-sideoption .NB-sideoption-title {
-    padding: 4px 36px 4px 6px;
+    padding: 7px 36px 8px 6px;
     color: white;
     text-shadow: none;
+    height: 32px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2935,7 +2938,7 @@ background: transparent;
 .NB-sideoption.NB-active,
 .NB-story-starred .NB-sideoption.NB-feed-story-save,
 .NB-story-shared .NB-sideoption.NB-feed-story-share {
-    background-color: #2B478C;
+    background-color: #dcdfd8;
 }
 
 .NB-sideoption:hover .NB-sideoption-icon,
@@ -2946,9 +2949,8 @@ background: transparent;
 .NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-title,
 .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-icon,
 .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-title {
-    color: #D7DDF7;
+    color: #90928B;
     opacity: 1;
-    text-shadow: 0 1px 0 #101010;
 }
 .NB-sideoption-share-wrapper {
     height: 0;
@@ -4831,7 +4833,7 @@ form.opml_import_form input {
     margin: 12px 0 4px 0;
     font-size: 13px;
     text-transform: uppercase;
-    color: #134160;
+    color: #585a55;
     clear: both;
 }
 
@@ -5281,11 +5283,10 @@ form.opml_import_form input {
 }
 .NB-module-features .NB-module-feature .NB-module-feature-date {
     float: left;
-    text-transform: uppercase;
     padding: 4px 8px;
     margin: 0;
     color: #808080;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 20px;
     white-space: nowrap;
     min-width: 100px;
@@ -5367,16 +5368,17 @@ form.opml_import_form input {
   .NB-module-recommended .NB-module-recommended-date {
     line-height: 14px;
     float: left;
-    color: #8493CD;
+    color: #585a55;
+    font-size: 11px;
     margin: 1px 2px 0 0;
     text-shadow: 0 1px 0 #E9E9E9;
   }
   .NB-module-recommended .NB-module-recommended-date span {
     vertical-align: text-top;
     margin: 0 0 0 -3px;
+    line-height: 12px;
     font-size: 8px;
-    color: #8487C4;
-  }
+    }
   .NB-module-recommended .NB-recommended {
     margin: 12px 0 0 0;
     padding: 0 12px;
