@@ -226,6 +226,13 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var date = (new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1));
             return NEWSBLUR.utils.shortMonthNames[date.getMonth()] + " " + date.getUTCFullYear();
         });
+        if (labels.length > 16) {
+            var cut_size = Math.round(labels.length / 16.0);
+            labels = _.map(labels, function(label, c) {
+                if ((c % cut_size) == 0) return label;
+                return "";
+            });
+        }
         var values = _.map(data['story_count_history'], function(date) {
             return date[1];
         });
