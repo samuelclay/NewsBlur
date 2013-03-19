@@ -15,6 +15,8 @@ except ImportError:
     django_settings = None
 
 
+DIST_PACKAGES_BASE_PATH = '/usr/local/lib/python2.7/dist-packages'
+
 def sudoEasyInstall(*args):
     sudo('easy_install -U %s' % args)
 
@@ -551,10 +553,10 @@ def setup_mongoengine():
         with settings(warn_only=True):
             run('rm -fr mongoengine')
             run('git clone https://github.com/MongoEngine/mongoengine.git')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
-            sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
-                 os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+            sudo('rm -fr %s/mongoengine' % (DIST_PACKAGES_BASE_PATH,))
+            sudo('rm -fr %s/mongoengine-*' % (DIST_PACKAGES_BASE_PATH,))
+            sudo('ln -s %s %s/mongoengine' % 
+                 (os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'), DIST_PACKAGES_BASE_PATH))
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
@@ -562,11 +564,11 @@ def setup_pymongo_repo():
             run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
-    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridgs*')
-    sudo('ln -fs %s /usr/local/lib/python2.7/dist-packages/' % 
-         os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
+    sudo('rm -fr %s/pymongo*' % (DIST_PACKAGES_BASE_PATH,))
+    sudo('rm -fr %s/bson*' % (DIST_PACKAGES_BASE_PATH,))
+    sudo('rm -fr %s/gridgs*' % (DIST_PACKAGES_BASE_PATH,))
+    sudo('ln -fs %s %s/' % 
+         (os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'), DIST_PACKAGES_BASE_PATH))
         
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
