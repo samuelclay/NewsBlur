@@ -489,15 +489,16 @@ def setup_libxml_code():
 
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
-    
+
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses django-mailgun mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
-    
+    sudo('easy_install -U $(<%s)' %
+         os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
     put('config/pystartup.py', '.pystartup')
+
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
     #     sudo('python setup.py install')
-        
+
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
