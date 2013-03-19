@@ -2734,6 +2734,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-import' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Import or upload sites')
+                    ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4989,6 +4993,15 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_goodies_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-import' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    NEWSBLUR.reader.open_intro_modal({
+                        'page_number': 2,
+                        'force_import': true
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-friends' }, function($t, $p){

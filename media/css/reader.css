@@ -5842,6 +5842,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/menu_icn_goodies.png') no-repeat  0 1px;
     background-size: 18px;
 }
+.NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/nav_icn_global.png') no-repeat  2px 2px;
+    background-size: 14px;
+}
 .NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_followers.png') no-repeat 2px 1px;
     background-size: 16px;
