@@ -21,6 +21,14 @@ DIST_PACKAGES_BASE_PATH = '%s/dist-packages' % (PYTHON_LIB_PATH,)
 def sudoEasyInstall(*args):
     sudo('easy_install -U %s' % args)
 
+def runGitClone(src, dst = None):
+    cmd = 'git clone %s' % (src,)
+
+    if(not dst is None):
+        cmd += ' ' + dst
+
+    run(cmd)
+
 # ============
 # = DEFAULTS =
 # ============
@@ -429,7 +437,7 @@ def setup_installs():
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
     with settings(warn_only=True):
-        run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
+        runGitClone('git://github.com/robbyrussell/oh-my-zsh.git', '~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
@@ -454,7 +462,7 @@ def add_machine_to_ssh():
     
 def setup_repo():
     with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+        runGitClone('https://github.com/samuelclay/NewsBlur.git', 'newsblur')
     sudo('mkdir -p /srv')
     sudo('ln -f -s /home/%s/code /srv/code' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/newsblur' % env.user)
@@ -480,8 +488,8 @@ def setup_libxml():
 
 def setup_libxml_code():
     with cd(env.VENDOR_PATH):
-        run('git clone git://git.gnome.org/libxml2')
-        run('git clone git://git.gnome.org/libxslt')
+        runGitClone('git://git.gnome.org/libxml2')
+        runGitClone('git://git.gnome.org/libxslt')
     
     with cd(os.path.join(env.VENDOR_PATH, 'libxml2')):
         run('./configure && make && sudo make install')
@@ -553,7 +561,7 @@ def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('rm -fr mongoengine')
-            run('git clone https://github.com/MongoEngine/mongoengine.git')
+            runGitClone('https://github.com/MongoEngine/mongoengine.git')
             sudo('rm -fr %s/mongoengine' % (DIST_PACKAGES_BASE_PATH,))
             sudo('rm -fr %s/mongoengine-*' % (DIST_PACKAGES_BASE_PATH,))
             sudo('ln -s %s %s/mongoengine' % 
@@ -562,7 +570,7 @@ def setup_mongoengine():
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
-            run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+            runGitClone('git://github.com/mongodb/mongo-python-driver.git', 'pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
     sudo('rm -fr %s/pymongo*' % (DIST_PACKAGES_BASE_PATH,))
@@ -648,7 +656,7 @@ def setup_gunicorn(supervisor=True):
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
     with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
-        run('git clone git://github.com/benoitc/gunicorn.git')
+        runGitClone('git://github.com/benoitc/gunicorn.git')
     with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
         run('git pull')
         sudo('python setup.py develop')
@@ -660,7 +668,7 @@ def update_gunicorn():
         sudo('python setup.py develop')
 
 def setup_staging():
-    run('git clone https://github.com/samuelclay/NewsBlur.git staging')
+    runGitClone('https://github.com/samuelclay/NewsBlur.git', 'staging')
     with cd('~/staging'):
         run('cp ../newsblur/local_settings.py local_settings.py')
         run('mkdir -p logs')
@@ -850,7 +858,7 @@ def setup_db_munin():
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
-            run('git clone git://github.com/samuel/python-munin.git')
+            runGitClone('git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node restart')
