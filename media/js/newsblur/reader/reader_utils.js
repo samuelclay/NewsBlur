@@ -133,15 +133,17 @@ NEWSBLUR.utils = {
         return _.string.include(feed_id, 'social:');
     },
     
+    monthNames: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    shortMonthNames: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    
     format_date: function(date) {
         var dayOfWeek = date.getDay();
         var month = date.getMonth();
         var year = date.getUTCFullYear();
         var day = date.getDate();
-        var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];       
 
-        return dayNames[dayOfWeek] + ", " + monthNames[month] + " " + day + ", " + year;
+        return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
     },
     
     make_folders: function(model, selected_folder_title) {

@@ -6111,6 +6111,9 @@ form.opml_import_form input {
   margin: 0px 24px;
   width: 524px;
   height: 180px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .NB-modal-statistics .NB-modal-loading {
