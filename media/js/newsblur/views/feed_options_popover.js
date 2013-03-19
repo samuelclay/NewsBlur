@@ -51,7 +51,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' }),
+                (feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),

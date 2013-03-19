@@ -3120,6 +3120,7 @@
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
                 $('.NB-task-manage').tipsy('disable');
+                if (options.inverse) inverse = true;
             }
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
@@ -3128,12 +3129,28 @@
             $manage_menu_container.data('item', $item && $item[0]);
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
-                $manage_menu_container.align($('.NB-task-manage'), 'top -left', {
-                    'top': 0, 
-                    'left': -2
-                });
+                if (inverse) {
+                    $('li', $manage_menu_container).each(function() {
+                        $(this).prependTo($(this).parent());
+                    });
+                    $manage_menu_container.corner('bl br 8px');
+                    $('.NB-menu-manage-site-info', $manage_menu_container).hide();
+                } else {
+                    $manage_menu_container.corner('tl tr 8px');
+                }
+
+                if ($item.hasClass('NB-task-manage')) {
+                    $manage_menu_container.align($item, 'top -left', {
+                        'top': 0, 
+                        'left': -2
+                    });
+                } else {
+                    $manage_menu_container.align($item, '-top left', {
+                        'top': -24, 
+                        'left': 20
+                    });
+                }
                 $('.NB-task-manage').addClass('NB-hover');
-                $manage_menu_container.corner('tl tr 8px');
             } else if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
                 var left, top;
                 NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
@@ -3163,8 +3180,8 @@
                     });
 
                     $manage_menu_container.corner('br 8px');
-                    $manage_menu_container.find('.NB-menu-manage > li.NB-menu-separator-inverse').each(function() {
-                        $(this).appendTo($(this).parent());
+                    $('li', $manage_menu_container).each(function() {
+                        $(this).prependTo($(this).parent());
                     });
                 } else {
                     var $align = $item;
@@ -4700,6 +4717,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.show_manage_menu('site', $t);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-account-settings' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.show_manage_menu('site', $t, {inverse: true});
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-close' }, function($t, $p){

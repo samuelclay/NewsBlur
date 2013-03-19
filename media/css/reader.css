@@ -4909,6 +4909,19 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
+.NB-account .NB-module .NB-module-account-settings {
+    background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
+    background-size: 12px;
+    width: 16px;
+    height: 16px;
+    float: right;
+    cursor: pointer;
+}
+.NB-module .NB-module-account-settings.NB-javascript {
+  opacity: .2;
+  cursor: default;
+}
+
 .NB-account .NB-module .NB-module-item .NB-module-account-premium {
     float: right;
     margin-right: 12px;

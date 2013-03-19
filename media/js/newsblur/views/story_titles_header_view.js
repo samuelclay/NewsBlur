@@ -50,7 +50,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 </div>\
             ', {
                 folder_title: this.fake_folder_title(),
-                folder_id: NEWSBLUR.reader.active_folder.id,
+                folder_id: NEWSBLUR.reader.active_feed,
                 show_options: !NEWSBLUR.reader.active_folder.get('fake')
             }));
         } else if (NEWSBLUR.reader.flags['river_view'] && 
