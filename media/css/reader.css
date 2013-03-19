@@ -5860,7 +5860,8 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/email.png') no-repeat 0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 1px;
+    background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
     width: 16px;
@@ -5900,7 +5901,8 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/readability.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url('/media/embed/icons/silk/email.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
     background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
@@ -7947,7 +7949,8 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('/media/embed/icons/silk/email.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('/media/embed/reader/readability.png') no-repeat 0 0;

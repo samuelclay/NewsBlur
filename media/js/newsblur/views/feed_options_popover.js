@@ -3,7 +3,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-filter-popover",
     
     options: {
-        'width': 246,
+        'width': 264,
         'anchor': '.NB-feedbar-options',
         'placement': 'bottom right',
         'offset': {
