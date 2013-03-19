@@ -13,6 +13,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .NB-feedbar-options"         : "open_options_popover",
+        "dblclick .feed_counts"             : "mark_feed_as_read",
         "dblclick"                          : "open_feed_link",
         "click"                             : "open",
         "mouseenter"                        : "add_hover_inverse",
@@ -265,6 +266,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     mark_feed_as_read: function(e) {
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
     },
     
     show_manage_menu: function(e) {
