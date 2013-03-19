@@ -15,6 +15,9 @@ except ImportError:
     django_settings = None
 
 
+def sudoEasyInstall(*args):
+    sudo('easy_install -U %s' % (args,))
+
 # ============
 # = DEFAULTS =
 # ============
@@ -484,11 +487,11 @@ def setup_libxml_code():
         run('./configure && make && sudo make install')
 
 def setup_psycopg():
-    sudo('easy_install -U psycopg2')
+    sudoEasyInstall('psycopg2')
     
 def setup_python():
-    # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses django-mailgun mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
+    # sudoEasyInstall('pip')
+    sudoEasyInstall('fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses django-mailgun mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -499,7 +502,7 @@ def setup_python():
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
-    sudo('easy_install pil')
+    sudoEasyInstall('pil')
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
