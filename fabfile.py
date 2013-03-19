@@ -16,7 +16,7 @@ except ImportError:
 
 
 def sudoEasyInstall(*args):
-    sudo('easy_install -U %s' % (args,))
+    sudo('easy_install -U %s' % args)
 
 # ============
 # = DEFAULTS =
