@@ -49,10 +49,11 @@ def user(u, msg, request=None):
         "/reader/river_stories/",
         "/social/river_stories/"
     ]
-    path = MAnalyticsPageLoad.clean_path(request.path)
-    if request and path in page_load_paths:
-        MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
-                               duration=seconds)
+    if request:
+        path = MAnalyticsPageLoad.clean_path(request.path)
+        if path in page_load_paths:
+            MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
+                                   duration=seconds)
 
 def cipher(msg):
     shift = len(msg)
