@@ -28,7 +28,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:300]
+        ).order_by('?')[:250]
         active_count = feeds.count()
         
         # Mistakenly inactive feeds
