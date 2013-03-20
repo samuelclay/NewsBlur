@@ -485,7 +485,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+if not DEVELOPMENT:
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Redis =
