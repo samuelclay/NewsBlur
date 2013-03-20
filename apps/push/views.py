@@ -50,7 +50,7 @@ def push_callback(request, push_id):
             subscription.feed.queue_pushed_feed_xml("Fetch me")
             MFeedPushHistory.objects.create(feed_id=subscription.feed_id)
         else:
-            logging.debug('   ---> [%-30s] [%s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed_id, subscription.feed))
+            logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
         
         return HttpResponse('')
     return Http404
