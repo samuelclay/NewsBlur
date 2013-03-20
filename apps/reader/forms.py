@@ -101,6 +101,11 @@ class SignupForm(forms.Form):
     def clean(self):
         username = self.cleaned_data.get('username', '')
         password = self.cleaned_data.get('password', '')
+        email = self.cleaned_data.get('email', None)
+        if email:
+            email_exists = User.objects.filter(email__iexact=email).count()
+            if email_exists:
+                raise forms.ValidationError(_(u'Someone is already using that email address.'))
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
@@ -111,6 +116,12 @@ class SignupForm(forms.Form):
     def save(self, profile_callback=None):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
+
+        email = self.cleaned_data.get('email', None)
+        if email:
+            email_exists = User.objects.filter(email__iexact=email).count()
+            if email_exists:
+                raise forms.ValidationError(_(u'Someone is already using that email address.'))
 
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
@@ -123,7 +134,7 @@ class SignupForm(forms.Form):
         new_user = User(username=username)
         new_user.set_password(password)
         new_user.is_active = True
-        new_user.email = self.cleaned_data['email']
+        new_user.email = email
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
