@@ -1800,6 +1800,10 @@ background: transparent;
 #story_pane .NB-feed-story:first-child .NB-feed-story-header {
     padding-top: 0;
 }
+#story_pane .NB-feed-stories pre {
+    overflow-x: auto;
+    max-width: 100%;
+}
 
 #story_pane .NB-feed-story-header-info {
     font-weight: bold;
