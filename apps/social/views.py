@@ -573,10 +573,10 @@ def mark_story_as_unshared(request):
     format = request.REQUEST.get('format', 'json')
     original_story_found = True
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
-    if not story:
-        original_story_found = False
-        
+    story, original_story_found = MStory.find_story(story_feed_id=feed_id, 
+                                                    story_id=story_id,
+                                                    original_only=True)
+    
     shared_story = MSharedStory.objects(user_id=request.user.pk, 
                                         story_feed_id=feed_id, 
                                         story_guid=story_id).limit(1).first()
