@@ -763,7 +763,15 @@ def config_haproxy(debug=False):
     else:
         put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('/etc/init.d/haproxy reload')
-
+    
+def upgrade_django():
+    sudo('supervisorctl stop gunicorn')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('./utils/kill_gunicorn.sh')
+        sudo('easy_install -U django')
+        pull()
+    sudo('supervisorctl start gunicorn')
+    
 # ==============
 # = Setup - DB =
 # ==============    
