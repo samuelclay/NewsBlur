@@ -70,7 +70,7 @@ EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
-ALLOWED_HOSTS         = ['.newsblur.com', '127.0.0.1']
+ALLOWED_HOSTS         = ['.newsblur.com', '127.0.0.1', '*.newsblur.com', '*']
 
 # ===============
 # = Enviornment =
@@ -108,6 +108,8 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.ServerHostnameMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 # ===========
 # = Logging =
