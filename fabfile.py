@@ -381,7 +381,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, role=None):
+def setup_db(skip_common=False, engine=None):
     if not skip_common:
         setup_common()
     setup_baremetal()
@@ -389,13 +389,13 @@ def setup_db(skip_common=False, role=None):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    if role == "postgres":
+    if engine == "postgres":
         setup_postgres(standby=False)
-    elif role == "postgres_slave":
+    elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif role == "mongo":
+    elif engine == "mongo":
         setup_mongo()
-    elif role == "redis":
+    elif engine == "redis":
         setup_redis()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
@@ -433,7 +433,8 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
-    sudo('mkdir -p %s' % env.VENDOR_PATH)
+    with settings(warn_only=True):
+        sudo('mkdir -p %s' % env.VENDOR_PATH)
     sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
@@ -954,8 +955,8 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name):
-    INSTANCE_SIZE = "2GB"
+def setup_do(name, size=2):
+    INSTANCE_SIZE = "%sGB" % size
     IMAGE_NAME = "Ubuntu 12.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
@@ -1102,3 +1103,8 @@ def delete_all_backups():
     for i, key in enumerate(bucket.get_all_keys()):
         print "deleting %s" % (key.name)
         key.delete()
+
+def add_revsys_keys():
+    put("~/Downloads/revsys-keys.pub", "revsys_keys")
+    run('cat revsys_keys >> ~/.ssh/authorized_keys')
+    run('rm revsys_keys')
