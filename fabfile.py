@@ -227,14 +227,12 @@ def gunicorn_restart():
     restart_gunicorn()
     
 def restart_gunicorn():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('sudo supervisorctl restart gunicorn')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl restart gunicorn')
         
 def gunicorn_stop():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('sudo supervisorctl stop gunicorn')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl stop gunicorn')
         
 def staging():
     with cd('~/staging'):
@@ -559,19 +557,17 @@ def config_monit_db():
     sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('rm -fr mongoengine')
-            run('git clone https://github.com/MongoEngine/mongoengine.git')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
-            sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
-                 os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('rm -fr mongoengine')
+        run('git clone https://github.com/MongoEngine/mongoengine.git')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
+        sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
+             os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
@@ -581,12 +577,11 @@ def setup_pymongo_repo():
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
-    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
-        with settings(warn_only=True):
-            run('git remote add clay https://github.com/samuelclay/mongoengine.git')
-            run('git pull')
-            run('git fetch clay')
-            run('git checkout -b clay_master clay/master')
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')), settings(warn_only=True):
+        run('git remote add clay https://github.com/samuelclay/mongoengine.git')
+        run('git pull')
+        run('git fetch clay')
+        run('git checkout -b clay_master clay/master')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
@@ -625,17 +620,16 @@ def setup_sudoers(user=None):
 
 def setup_nginx():
     NGINX_VERSION = '1.2.2'
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            sudo("groupadd nginx")
-            sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
-            run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
-            run('rm nginx-%s.tar.gz' % NGINX_VERSION)
-            with cd('nginx-%s' % NGINX_VERSION):
-                run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
-                run('make')
-                sudo('make install')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        sudo("groupadd nginx")
+        sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
+        run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
+        run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
+        run('rm nginx-%s.tar.gz' % NGINX_VERSION)
+        with cd('nginx-%s' % NGINX_VERSION):
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('make')
+            sudo('make install')
             
 def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
@@ -730,9 +724,8 @@ def maintenance_on():
 
 @parallel    
 def maintenance_off():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('mv templates/maintenance_on.html templates/maintenance_off.html')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy():
@@ -770,7 +763,7 @@ def upgrade_django():
         run('./utils/kill_gunicorn.sh')
         sudo('easy_install -U django')
         pull()
-    sudo('supervisorctl start gunicorn')
+    sudo('supervisorctl reload')
     
 # ==============
 # = Setup - DB =
@@ -892,9 +885,8 @@ def setup_munin():
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('git clone git://github.com/samuel/python-munin.git')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node restart')
