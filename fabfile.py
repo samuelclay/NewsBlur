@@ -96,6 +96,9 @@ env.roledefs ={
                 
                 'ec2-54-234-211-75.compute-1.amazonaws.com',
                 'ec2-50-16-97-13.compute-1.amazonaws.com',
+                'ec2-54-242-131-232.compute-1.amazonaws.com',
+                'ec2-75-101-195-131.compute-1.amazonaws.com',
+                'ec2-54-242-105-17.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
