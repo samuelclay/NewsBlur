@@ -1882,7 +1882,7 @@ class MSharedStory(mongo.Document):
         for image_source in image_sources[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
-            r = requests.get(image_source, prefetch=False, headers=headers)
+            r = requests.get(image_source, headers=headers)
             _, width, height = image_size(r.raw)
             if width <= 16 or height <= 16:
                 continue
