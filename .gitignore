@@ -12,7 +12,7 @@ build/
 .DS_Store
 **/*.perspectivev*
 data/
-config/certificates/*
+config/certificates
 **/*.xcuserstate
 UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate

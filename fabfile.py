@@ -96,6 +96,9 @@ env.roledefs ={
                 
                 'ec2-54-234-211-75.compute-1.amazonaws.com',
                 'ec2-50-16-97-13.compute-1.amazonaws.com',
+                'ec2-54-242-131-232.compute-1.amazonaws.com',
+                'ec2-75-101-195-131.compute-1.amazonaws.com',
+                'ec2-54-242-105-17.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -489,15 +492,16 @@ def setup_libxml_code():
 
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
-    
+
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses django-mailgun mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
-    
+    sudo('easy_install -U $(<%s)' %
+         os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
     put('config/pystartup.py', '.pystartup')
+
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
     #     sudo('python setup.py install')
-        
+
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
@@ -720,7 +724,8 @@ def maintenance_on():
 @parallel    
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
+        with settings(warn_only=True):
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy():

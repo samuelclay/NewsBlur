@@ -1878,6 +1878,10 @@ background: transparent;
 .NB-feed-story:first-child .NB-feed-story-header {
     padding-top: 0;
 }
+#story_pane .NB-feed-stories pre {
+    overflow-x: auto;
+    max-width: 100%;
+}
 
 .NB-feed-story .NB-feed-story-header-info {
     font-weight: bold;
@@ -2014,10 +2018,6 @@ background: transparent;
 
 .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
-}
-.NB-feed-story .NB-feed-story-content pre,
-.NB-feed-story .NB-feed-story-content code {
-    white-space: normal;
 }
 .NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;

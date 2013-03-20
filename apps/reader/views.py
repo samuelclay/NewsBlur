@@ -601,7 +601,7 @@ def load_single_feed(request, feed_id):
     last_update = relative_timesince(feed.last_update)
     time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s(%s)~SN)" % (
         diff1, diff2, diff3, diff4, userstories_db and userstories_db.count() or '~SN0~SB')
-        if timediff > 0.50 else "")
+        if timediff > 1 else "")
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
     

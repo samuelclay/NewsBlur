@@ -17,6 +17,7 @@ from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MInteraction, MActivity, MFollowRequest
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
+from apps.social.tasks import UpdateRecalcForSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
@@ -553,10 +554,8 @@ def mark_story_as_shared(request):
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
-        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
-        for socialsub in socialsubs:
-            socialsub.needs_unread_recalc = True
-            socialsub.save()
+        UpdateRecalcForSubscription.delay(subscription_user_id=request.user.pk,
+                                          shared_story_id=str(shared_story.id))
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
         shared_story.comments = comments
@@ -567,7 +566,6 @@ def mark_story_as_shared(request):
     
     if original_story_found:
         story.count_comments()
-    shared_story.publish_update_to_subscribers()
     
     story = Feed.format_story(story)
     check_all = not original_story_found
@@ -613,10 +611,10 @@ def mark_story_as_unshared(request):
     format = request.REQUEST.get('format', 'json')
     original_story_found = True
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
-    if not story:
-        original_story_found = False
-        
+    story, original_story_found = MStory.find_story(story_feed_id=feed_id, 
+                                                    story_id=story_id,
+                                                    original_only=True)
+    
     shared_story = MSharedStory.objects(user_id=request.user.pk, 
                                         story_feed_id=feed_id, 
                                         story_guid=story_id).limit(1).first()
@@ -1246,7 +1244,7 @@ def shared_stories_rss_feed(request, user_id, username):
         user.username,
         request.META['HTTP_USER_AGENT'][:24]
     ))
-    return HttpResponse(rss.writeString('utf-8'))
+    return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
 @required_params('user_id')
 @json.json_view
@@ -1375,3 +1373,4 @@ def comment_reply(request, comment_id, reply_id):
     for story_reply in shared_story.replies:
         if story_reply.reply_id == ObjectId(reply_id):
             return story_reply
+    return shared_story.comments_with_author()
