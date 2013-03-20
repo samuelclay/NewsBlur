@@ -270,6 +270,14 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                     '?'
                 ])
               ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Add Site/Folder'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'a'
+                ])
+              ])
             ])
         ]);
     },
