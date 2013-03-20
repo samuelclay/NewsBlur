@@ -1901,10 +1901,6 @@ background: transparent;
 .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }
-.NB-feed-story .NB-feed-story-content pre,
-.NB-feed-story .NB-feed-story-content code {
-    white-space: normal;
-}
 .NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto;
