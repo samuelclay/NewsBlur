@@ -229,6 +229,11 @@
           optional: true
           default: newest
           example: oldest
+        - key: read_filter
+          desc: "Show all stories or only unread stories"
+          optional: true
+          default: unread
+          example: all
             
     - url: /reader/mark_story_as_read
       method: POST
