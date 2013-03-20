@@ -13,7 +13,7 @@ from django.utils.html import strip_tags as strip_tags_django
 from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
-from vendor import reseekfile
+# from vendor import reseekfile
 
 COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 
@@ -239,8 +239,9 @@ def truncate_chars(value, max_length):
     return truncd_val + "..."
 
 def image_size(datastream):
-    datastream = reseekfile.ReseekFile(datastream)
-    data = str(datastream.read(30))
+    # datastream = reseekfile.ReseekFile(datastream)
+    # data = str(datastream.read(30))
+    data = datastream[:30]
     size = len(data)
     height = -1
     width = -1
