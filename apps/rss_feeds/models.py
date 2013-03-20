@@ -847,11 +847,13 @@ class Feed(models.Model):
                         try:
                             existing_story = MStory.objects.get(id=existing_story.id)
                         except ValidationError:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                story_guid=existing_story.id)
+                            existing_story, _ = MStory.find_story(existing_story.story_feed_id,
+                                                                  existing_story.id,
+                                                                  original_only=True)
                     elif existing_story and existing_story.story_guid:
-                        existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
-                                                            story_guid=existing_story.story_guid)
+                        existing_story, _ = MStory.find_story(existing_story.story_feed_id,
+                                                              existing_story.story_guid,
+                                                              original_only=True)
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError):
@@ -927,7 +929,8 @@ class Feed(models.Model):
                 
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
-            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
+            all_tags = MStory.objects(story_feed_id=self.pk,
+                                      story_tags__exists=True).item_frequencies('story_tags')
             feed_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
                                key=itemgetter(1), 
                                reverse=True)[:25]
@@ -1230,7 +1233,7 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 12 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
@@ -1242,13 +1245,13 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(5, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 3:
+        if self.active_premium_subscribers > 5:
             total = min(total, 60) # 1 hour minimum for premiums
 
         if ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
-            total = total * random.randint(1, 12)
+            total = total * random.randint(1, 24)
         
         if self.is_push:
             total = total * 20
@@ -1429,7 +1432,7 @@ class MFeedPage(mongo.Document):
 
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id            = mongo.IntField(unique_with='story_guid')
+    story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
     story_content            = mongo.StringField()
@@ -1504,9 +1507,10 @@ class MStory(mongo.Document):
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
         original_found = True
-
-        story = cls.objects(story_feed_id=story_feed_id,
-                            story_guid=story_id).limit(1).first()
+        
+        guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
+        story_hash = "%s:%s" % (story_feed_id, guid_hash)
+        story = cls.objects(story_hash=story_hash).limit(1).first()
         
         if not story:
             original_found = False

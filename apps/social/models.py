@@ -33,6 +33,7 @@ from utils.feed_functions import relative_timesince
 from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
+from StringIO import StringIO
 
 RECOMMENDATIONS_LIMIT = 5
 IGNORE_IMAGE_SOURCES = [
@@ -1207,7 +1208,7 @@ class MSharedStory(mongo.Document):
                     ('user_id', 'story_db_id'),
                     'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
-        'ordering': ['shared_date'],
+        'ordering': ['-shared_date'],
         'allow_inheritance': False,
     }
 
@@ -1879,11 +1880,13 @@ class MSharedStory(mongo.Document):
         soup = BeautifulSoup(zlib.decompress(self.story_content_z))
         image_sources = [img.get('src') for img in soup.findAll('img')]
         image_sizes = []
+        
         for image_source in image_sources[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
-            r = requests.get(image_source, prefetch=False, headers=headers)
-            _, width, height = image_size(r.raw)
+            req = requests.get(image_source, headers=headers, stream=True)
+            datastream = StringIO(req.content[:30])
+            _, width, height = image_size(datastream)
             if width <= 16 or height <= 16:
                 continue
             image_sizes.append({'src': image_source, 'size': (width, height)})

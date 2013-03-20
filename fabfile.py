@@ -74,7 +74,12 @@ env.roledefs ={
            'db10.newsblur.com',
            'db11.newsblur.com',
            'db12.newsblur.com',
+           'db20.newsblur.com',
+           'db21.newsblur.com',
            ],
+    'dbdo':['198.211.115.113',
+            '198.211.115.153',
+            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -96,6 +101,9 @@ env.roledefs ={
                 
                 'ec2-54-234-211-75.compute-1.amazonaws.com',
                 'ec2-50-16-97-13.compute-1.amazonaws.com',
+                'ec2-54-242-131-232.compute-1.amazonaws.com',
+                'ec2-75-101-195-131.compute-1.amazonaws.com',
+                'ec2-54-242-105-17.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -339,6 +347,7 @@ def setup_common():
     setup_installs()
     setup_user()
     setup_sudoers()
+    setup_ulimit()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -378,7 +387,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, role=None):
+def setup_db(skip_common=False, engine=None):
     if not skip_common:
         setup_common()
     setup_baremetal()
@@ -386,13 +395,13 @@ def setup_db(skip_common=False, role=None):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    if role == "postgres":
+    if engine == "postgres":
         setup_postgres(standby=False)
-    elif role == "postgres_slave":
+    elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif role == "mongo":
+    elif engine == "mongo":
         setup_mongo()
-    elif role == "redis":
+    elif engine == "redis":
         setup_redis()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
@@ -430,8 +439,9 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
-    sudo('mkdir -p %s' % env.VENDOR_PATH)
-    sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
+    with settings(warn_only=True):
+        sudo('mkdir -p %s' % env.VENDOR_PATH)
+        sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
@@ -453,8 +463,8 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    with settings(warn_only=True):
-        sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    # with settings(warn_only=True):
+    #     sudo('ln -f -s /home/%s/code /srv/' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
@@ -489,15 +499,16 @@ def setup_libxml_code():
 
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
-    
+
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses django-mailgun mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
-    
+    sudo('easy_install -U $(<%s)' %
+         os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
     put('config/pystartup.py', '.pystartup')
+
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
     #     sudo('python setup.py install')
-        
+
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
@@ -591,15 +602,15 @@ def setup_logrotate():
 
 def setup_ulimit():
      # Increase File Descriptor limits.
-    run('export FILEMAX=`sysctl -n fs.file-max`')
-    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak')
-    sudo('touch /etc/security/limits.conf')
-    sudo('chmod 666 /etc/security/limits.conf')
-    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('"root hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    sudo('chmod 644 /etc/security/limits.conf')
+    run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
+    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
+    sudo('touch /etc/security/limits.conf', pty=False)
+    sudo('chmod 666 /etc/security/limits.conf', pty=False)
+    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    sudo('chmod 644 /etc/security/limits.conf', pty=False)
 
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
@@ -720,7 +731,8 @@ def maintenance_on():
 @parallel    
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
+        with settings(warn_only=True):
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy():
@@ -733,7 +745,7 @@ def setup_haproxy():
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
-    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
@@ -749,7 +761,7 @@ def config_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
-        put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('/etc/init.d/haproxy reload')
 
 # ==============
@@ -774,7 +786,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
     
     # DigitalOcean
-    for ip in set(env.roledefs['app']):
+    for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
         if 'newsblur.com' in ip: continue
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -838,7 +850,7 @@ def setup_mongo():
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
-    sudo('apt-get -y install mongodb-10gen numactl')
+    sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
     sudo('/etc/init.d/mongodb restart')
@@ -949,8 +961,8 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name):
-    INSTANCE_SIZE = "2GB"
+def setup_do(name, size=2):
+    INSTANCE_SIZE = "%sGB" % size
     IMAGE_NAME = "Ubuntu 12.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
@@ -1097,3 +1109,8 @@ def delete_all_backups():
     for i, key in enumerate(bucket.get_all_keys()):
         print "deleting %s" % (key.name)
         key.delete()
+
+def add_revsys_keys():
+    put("~/Downloads/revsys-keys.pub", "revsys_keys")
+    run('cat revsys_keys >> ~/.ssh/authorized_keys')
+    run('rm revsys_keys')

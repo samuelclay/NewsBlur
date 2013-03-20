@@ -70,6 +70,7 @@ EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
+ALLOWED_HOSTS         = ['.newsblur.com', '127.0.0.1']
 
 # ===============
 # = Enviornment =
@@ -144,12 +145,13 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
             'include_html': True,
         }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console', 'log_file'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -168,7 +170,12 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-    }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
 }
 
 # ==========================

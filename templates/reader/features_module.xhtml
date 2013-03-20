@@ -29,7 +29,7 @@
     {% endfor %}
   </table>
   {% if user.is_staff %}
-    <form action="{% url add-feature %}" id="add-feature-form" method="post">
+    <form action="{% url "add-feature" %}" id="add-feature-form" method="post">
       {{ feature_form.description }}
       <input type="submit" value="Add feature" />
     </form>
