@@ -74,7 +74,12 @@ env.roledefs ={
            'db10.newsblur.com',
            'db11.newsblur.com',
            'db12.newsblur.com',
+           'db20.newsblur.com',
+           'db21.newsblur.com',
            ],
+    'dbdo':['198.211.115.113',
+            '198.211.115.153',
+            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -342,6 +347,7 @@ def setup_common():
     setup_installs()
     setup_user()
     setup_sudoers()
+    setup_ulimit()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -435,7 +441,7 @@ def setup_installs():
     sudo('chsh %s -s /bin/zsh' % env.user)
     with settings(warn_only=True):
         sudo('mkdir -p %s' % env.VENDOR_PATH)
-    sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
+        sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
@@ -457,8 +463,8 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    with settings(warn_only=True):
-        sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    # with settings(warn_only=True):
+    #     sudo('ln -f -s /home/%s/code /srv/' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
@@ -596,15 +602,15 @@ def setup_logrotate():
 
 def setup_ulimit():
      # Increase File Descriptor limits.
-    run('export FILEMAX=`sysctl -n fs.file-max`')
-    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak')
-    sudo('touch /etc/security/limits.conf')
-    sudo('chmod 666 /etc/security/limits.conf')
-    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('"root hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    sudo('chmod 644 /etc/security/limits.conf')
+    run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
+    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
+    sudo('touch /etc/security/limits.conf', pty=False)
+    sudo('chmod 666 /etc/security/limits.conf', pty=False)
+    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    sudo('chmod 644 /etc/security/limits.conf', pty=False)
 
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
@@ -780,7 +786,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
     
     # DigitalOcean
-    for ip in set(env.roledefs['app']):
+    for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
         if 'newsblur.com' in ip: continue
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -844,7 +850,7 @@ def setup_mongo():
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
-    sudo('apt-get -y install mongodb-10gen numactl')
+    sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
     sudo('/etc/init.d/mongodb restart')
