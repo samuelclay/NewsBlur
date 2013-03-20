@@ -758,12 +758,12 @@ def config_haproxy(debug=False):
     sudo('/etc/init.d/haproxy reload')
     
 def upgrade_django():
-    sudo('supervisorctl stop gunicorn')
     with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        sudo('supervisorctl stop gunicorn')
         run('./utils/kill_gunicorn.sh')
-        sudo('easy_install -U django')
+        sudo('easy_install -U django gunicorn')
         pull()
-    sudo('supervisorctl reload')
+        sudo('supervisorctl reload')
     
 # ==============
 # = Setup - DB =
