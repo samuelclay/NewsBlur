@@ -70,6 +70,7 @@ EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
+ALLOWED_HOSTS         = ['.newsblur.com', '127.0.0.1']
 
 # ===============
 # = Enviornment =
