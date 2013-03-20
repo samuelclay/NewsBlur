@@ -724,7 +724,8 @@ def maintenance_on():
 @parallel    
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
-        run('mv templates/maintenance_on.html templates/maintenance_off.html')
+        with settings(warn_only=True):
+            run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy():
