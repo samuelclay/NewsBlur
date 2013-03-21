@@ -132,9 +132,12 @@ class SignupForm(forms.Form):
                 raise forms.ValidationError(_(u'Someone is already using that username.'))
             else:
                 return user_auth
+        
+        if not password:
+            password = username
             
         new_user = User(username=username)
-        new_user.set_password(password or username)
+        new_user.set_password(password)
         new_user.is_active = True
         new_user.email = email
         new_user.save()
