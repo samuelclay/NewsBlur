@@ -134,7 +134,7 @@ class SignupForm(forms.Form):
                 return user_auth
             
         new_user = User(username=username)
-        new_user.set_password(password)
+        new_user.set_password(password or username)
         new_user.is_active = True
         new_user.email = email
         new_user.save()
