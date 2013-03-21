@@ -435,6 +435,7 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db10',
 }
+SESSION_REDIS_DB = 5
 
 # =================
 # = Elasticsearch =
@@ -543,6 +544,7 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 REDIS_STORY_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
+REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
