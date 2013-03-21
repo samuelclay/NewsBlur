@@ -21,5 +21,10 @@
         android:id="@+id/menu_textsize"
         android:showAsAction="never"
         android:title="@string/menu_textsize"/>
+        
+    <item
+        android:id="@+id/menu_reading_save"
+        android:showAsAction="never"
+        android:title="@string/menu_save_story"/>
 
 </menu>

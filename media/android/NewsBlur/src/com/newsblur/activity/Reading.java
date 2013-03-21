@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
@@ -20,6 +21,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -35,6 +37,7 @@ import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
+import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -58,6 +61,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
+    private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	private ArrayList<ContentProviderOperation> operations;
 	protected Cursor stories;
@@ -79,6 +83,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		contentResolver = getContentResolver();
+
+        this.apiManager = new APIManager(this);
 
 	}
 
@@ -144,7 +150,29 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
-			return true;	
+			return true;
+        case R.id.menu_reading_save:
+            if (story != null) {
+                final String feedId = story.feedId;
+                final String storyId = story.id;
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... arg) {
+                        return apiManager.markStoryAsStarred(feedId, storyId);
+                    }
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        if (result) {
+                            Toast.makeText(Reading.this, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(Reading.this, R.string.toast_story_save_error, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.execute();
+            } else {
+                Log.w(this.getClass().getName(), "Couldn't save story, no selection found.");
+            }
+            return true;
 
 		default:
 			return super.onOptionsItemSelected(item);	
