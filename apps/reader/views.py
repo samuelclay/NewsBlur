@@ -193,8 +193,10 @@ def autologin(request, username, secret):
     if next and not next.startswith('/'):
         next = '?next=' + next
         return HttpResponseRedirect(reverse('index') + next)
-    else:
+    elif next:
         return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(reverse('index'))
     
 @ratelimit(minutes=1, requests=24)
 @never_cache
