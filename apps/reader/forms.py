@@ -7,6 +7,7 @@ from django.db.models import Q
 from apps.reader.models import Feature
 from apps.profile.tasks import EmailNewUser
 from apps.social.models import MActivity
+from apps.profile.models import blank_authenticate
 from utils import log as logging
 
 class LoginForm(forms.Form):
@@ -27,29 +28,30 @@ class LoginForm(forms.Form):
         password = self.cleaned_data.get('password', '')
         
         user = User.objects.filter(Q(username__iexact=username) | Q(email=username))
+        if user:
+            user = user[0]
         if username and user:
-            self.user_cache = authenticate(username=user[0].username, password=password)
+            self.user_cache = authenticate(username=user.username, password=password)
             if self.user_cache is None:
-                self.user_cache = authenticate(username=user[0].username, password="")
+                blank = blank_authenticate(user.username)
+                if blank:
+                    user.set_password(user.username)
+                    user.save()
+                self.user_cache = authenticate(username=user.username, password=user.username)
             if self.user_cache is None:
-                email_username = User.objects.filter(email=username)
-                if email_username:
-                    self.user_cache = authenticate(username=email_username[0].username, password=password)
+                email_user = User.objects.filter(email=username)
+                if email_user:
+                    email_user = email_user[0]
+                    self.user_cache = authenticate(username=email_user.username, password=password)
                     if self.user_cache is None:
-                        self.user_cache = authenticate(username=email_username[0].username, password="")
+                        blank = blank_authenticate(email_user.username)
+                        if blank:
+                            email_user.set_password(email_user.username)
+                            email_user.save()
+                        self.user_cache = authenticate(username=email_user.username, password=email_user.username)
             if self.user_cache is None:
-                # logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
-                jkless_password = password.replace('j', '').replace('k', '')
-                self.user_cache = authenticate(username=username, password=jkless_password)
-                if self.user_cache is None:
-                    logging.info(" ***> [%s] Bad Login" % username)
-                    raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
-                else:
-                    # Supreme fuck-up. Accidentally removed the letters J and K from
-                    # all user passwords. Re-save with correct password.
-                    logging.info(" ***> [%s] FIXING JK-LESS PASSWORD" % username)
-                    self.user_cache.set_password(password)
-                    self.user_cache.save()
+                logging.info(" ***> [%s] Bad Login" % username)
+                raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
             if not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))
         elif username and not user:
