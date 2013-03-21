@@ -435,6 +435,7 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db10',
 }
+SESSION_REDIS_DB = 5
 
 # =================
 # = Elasticsearch =
