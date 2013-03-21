@@ -5,7 +5,7 @@ from django.contrib.sessions.models import Session
 
 sessions_count = Session.objects.count()
 print " ---> %s sessions in Django" % sessions_count
-batch_size = 10
+batch_size = 1000
 r = redis.Redis(connection_pool=settings.REDIS_SESSION_POOL)
 
 for batch in range(int(math.ceil(sessions_count / batch_size))+1):

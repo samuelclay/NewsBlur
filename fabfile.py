@@ -41,8 +41,9 @@ env.roledefs ={
             'app02.newsblur.com', 
             'app03.newsblur.com',
             'app04.newsblur.com',
-            '198.211.110.230',
+            '198.211.109.197',
             '198.211.110.131',
+            '198.211.110.230',
             '192.34.61.227',
             '198.211.109.155',
             '198.211.107.87',
@@ -722,9 +723,9 @@ def maintenance_on():
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_off.html templates/maintenance_on.html')
 
-@parallel    
+@parallel
 def maintenance_off():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+    with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
