@@ -2,6 +2,9 @@ package com.newsblur.network;
 
 public class APIConstants {
 
+    // TODO: make use of trailing slashes on URLs consistent or document why
+    // they are not.
+
 	public static final String URL_LOGIN = "http://newsblur.com/api/login";
 	public static final String URL_FEEDS = "http://newsblur.com/reader/feeds/?include_favicons=true&flat=true";
 	public static final String URL_FEEDS_NO_UPDATE = "http://newsblur.com/reader/feeds/?include_favicons=true&flat=true&update_counts=false";
@@ -23,6 +26,7 @@ public class APIConstants {
 	public static final String URL_MARK_FEED_STORIES_AS_READ = "http://newsblur.com/reader/mark_feed_stories_as_read/";
 	public static final String URL_MARK_SOCIALSTORY_AS_READ = "http://newsblur.com/reader/mark_social_stories_as_read/";
 	public static final String URL_SHARE_STORY = "http://newsblur.com/social/share_story";
+    public static final String URL_MARK_STORY_AS_STARRED = "http://newsblur.com/reader/mark_story_as_starred/";
 	
 	public static final String URL_FEED_AUTOCOMPLETE = "http://newsblur.com/rss_feeds/feed_autocomplete";
 	
