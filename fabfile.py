@@ -74,7 +74,12 @@ env.roledefs ={
            'db10.newsblur.com',
            'db11.newsblur.com',
            'db12.newsblur.com',
+           'db20.newsblur.com',
+           'db21.newsblur.com',
            ],
+    'dbdo':['198.211.115.113',
+            '198.211.115.153',
+            ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -222,14 +227,12 @@ def gunicorn_restart():
     restart_gunicorn()
     
 def restart_gunicorn():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('sudo supervisorctl restart gunicorn')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl restart gunicorn')
         
 def gunicorn_stop():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('sudo supervisorctl stop gunicorn')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl stop gunicorn')
         
 def staging():
     with cd('~/staging'):
@@ -342,6 +345,7 @@ def setup_common():
     setup_installs()
     setup_user()
     setup_sudoers()
+    setup_ulimit()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -381,7 +385,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, role=None):
+def setup_db(skip_common=False, engine=None):
     if not skip_common:
         setup_common()
     setup_baremetal()
@@ -389,13 +393,13 @@ def setup_db(skip_common=False, role=None):
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    if role == "postgres":
+    if engine == "postgres":
         setup_postgres(standby=False)
-    elif role == "postgres_slave":
+    elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif role == "mongo":
+    elif engine == "mongo":
         setup_mongo()
-    elif role == "redis":
+    elif engine == "redis":
         setup_redis()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
@@ -433,8 +437,9 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh %s -s /bin/zsh' % env.user)
-    sudo('mkdir -p %s' % env.VENDOR_PATH)
-    sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
+    with settings(warn_only=True):
+        sudo('mkdir -p %s' % env.VENDOR_PATH)
+        sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
@@ -456,8 +461,8 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    with settings(warn_only=True):
-        sudo('ln -f -s /home/%s/code /srv/' % env.user)
+    # with settings(warn_only=True):
+    #     sudo('ln -f -s /home/%s/code /srv/' % env.user)
     sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
 
 def setup_repo_local_settings():
@@ -552,19 +557,17 @@ def config_monit_db():
     sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('rm -fr mongoengine')
-            run('git clone https://github.com/MongoEngine/mongoengine.git')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
-            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
-            sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
-                 os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('rm -fr mongoengine')
+        run('git clone https://github.com/MongoEngine/mongoengine.git')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
+        sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
+             os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
     #     sudo('python setup.py install')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
@@ -574,12 +577,11 @@ def setup_pymongo_repo():
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
-    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
-        with settings(warn_only=True):
-            run('git remote add clay https://github.com/samuelclay/mongoengine.git')
-            run('git pull')
-            run('git fetch clay')
-            run('git checkout -b clay_master clay/master')
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')), settings(warn_only=True):
+        run('git remote add clay https://github.com/samuelclay/mongoengine.git')
+        run('git pull')
+        run('git fetch clay')
+        run('git checkout -b clay_master clay/master')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
@@ -595,15 +597,15 @@ def setup_logrotate():
 
 def setup_ulimit():
      # Increase File Descriptor limits.
-    run('export FILEMAX=`sysctl -n fs.file-max`')
-    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak')
-    sudo('touch /etc/security/limits.conf')
-    sudo('chmod 666 /etc/security/limits.conf')
-    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('"root hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf')
-    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf')
-    sudo('chmod 644 /etc/security/limits.conf')
+    run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
+    sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
+    sudo('touch /etc/security/limits.conf', pty=False)
+    sudo('chmod 666 /etc/security/limits.conf', pty=False)
+    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    sudo('chmod 644 /etc/security/limits.conf', pty=False)
 
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
@@ -618,17 +620,16 @@ def setup_sudoers(user=None):
 
 def setup_nginx():
     NGINX_VERSION = '1.2.2'
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            sudo("groupadd nginx")
-            sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
-            run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
-            run('rm nginx-%s.tar.gz' % NGINX_VERSION)
-            with cd('nginx-%s' % NGINX_VERSION):
-                run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
-                run('make')
-                sudo('make install')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        sudo("groupadd nginx")
+        sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
+        run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
+        run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
+        run('rm nginx-%s.tar.gz' % NGINX_VERSION)
+        with cd('nginx-%s' % NGINX_VERSION):
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('make')
+            sudo('make install')
             
 def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
@@ -723,9 +724,8 @@ def maintenance_on():
 
 @parallel    
 def maintenance_off():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            run('mv templates/maintenance_on.html templates/maintenance_off.html')
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy():
@@ -738,7 +738,7 @@ def setup_haproxy():
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
-    put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
@@ -754,9 +754,17 @@ def config_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
-        put('config/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('/etc/init.d/haproxy reload')
-
+    
+def upgrade_django():
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        sudo('supervisorctl stop gunicorn')
+        run('./utils/kill_gunicorn.sh')
+        sudo('easy_install -U django gunicorn')
+        pull()
+        sudo('supervisorctl reload')
+    
 # ==============
 # = Setup - DB =
 # ==============    
@@ -779,7 +787,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
     
     # DigitalOcean
-    for ip in set(env.roledefs['app']):
+    for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
         if 'newsblur.com' in ip: continue
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -843,7 +851,7 @@ def setup_mongo():
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
-    sudo('apt-get -y install mongodb-10gen numactl')
+    sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
     sudo('/etc/init.d/mongodb restart')
@@ -878,9 +886,8 @@ def setup_munin():
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    with cd(env.VENDOR_PATH):
-        with settings(warn_only=True):
-            run('git clone git://github.com/samuel/python-munin.git')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
     sudo('/etc/init.d/munin-node restart')
@@ -955,8 +962,8 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name):
-    INSTANCE_SIZE = "2GB"
+def setup_do(name, size=2):
+    INSTANCE_SIZE = "%sGB" % size
     IMAGE_NAME = "Ubuntu 12.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
@@ -1103,3 +1110,8 @@ def delete_all_backups():
     for i, key in enumerate(bucket.get_all_keys()):
         print "deleting %s" % (key.name)
         key.delete()
+
+def add_revsys_keys():
+    put("~/Downloads/revsys-keys.pub", "revsys_keys")
+    run('cat revsys_keys >> ~/.ssh/authorized_keys')
+    run('rm revsys_keys')

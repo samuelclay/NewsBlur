@@ -11,6 +11,7 @@ import redis
 from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
+from bson.objectid import ObjectId
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -1511,9 +1512,12 @@ class MStory(mongo.Document):
         from apps.social.models import MSharedStory
         original_found = True
         
-        guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
-        story_hash = "%s:%s" % (story_feed_id, guid_hash)
-        story = cls.objects(story_hash=story_hash).limit(1).first()
+        if isinstance(story_id, ObjectId):
+            story = cls.objects(id=story_id).limit(1).first()
+        else:
+            guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
+            story_hash = "%s:%s" % (story_feed_id, guid_hash)
+            story = cls.objects(story_hash=story_hash).limit(1).first()
         
         if not story:
             original_found = False

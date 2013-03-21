@@ -4,6 +4,8 @@ import os
 import datetime
 import redis
 import raven
+import django.http
+import re
 from mongoengine import connect
 from boto.s3.connection import S3Connection
 from utils import jammit
@@ -70,6 +72,7 @@ EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
+ALLOWED_HOSTS         = ['*']
 
 # ===============
 # = Enviornment =
@@ -108,6 +111,8 @@ MIDDLEWARE_CLASSES = (
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 # ===========
 # = Logging =
 # ===========
@@ -144,6 +149,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
             'include_html': True,
         }
     },
@@ -168,7 +174,12 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-    }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
 }
 
 # ==========================
@@ -485,7 +496,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+if not DEVELOPMENT:
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Redis =
@@ -551,3 +563,5 @@ if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
         S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
     if BACKED_BY_AWS.get('icons_on_s3'):
         S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+
+django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")
