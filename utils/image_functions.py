@@ -1,7 +1,7 @@
 """Operations for images through the PIL."""
 
 from PIL import Image
-import ImageOps as PILOps
+from PIL import ImageOps as PILOps
 from ExifTags import TAGS
 from StringIO import StringIO
 
