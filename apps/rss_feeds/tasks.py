@@ -20,7 +20,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_premium_subscribers__gte=1
-        ).order_by('?')[:400]
+        ).order_by('?')[:200]
         popular_count = popular_feeds.count()
         
         # Regular feeds
