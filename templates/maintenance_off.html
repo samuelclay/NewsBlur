@@ -77,7 +77,11 @@
                         <img src="/media/img/logo_512.png" class="logo">
                         <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
                         <div class="description">
-                            <p>After a failed replication, MongoDB is throwing a fit. Performing a repair on both primary and secondary databases. This will immediately speed up the site. Unfortunately, it takes an hour to complete. It is now past midnight on the east coast.</p>
+                            <p>Sorry for the maintenance, but today and tomorrow are going to be difficult for me. I am spinning up a new mega-huge database for MongoDB, but this will take at least an hour. I could keep NewsBlur running, but it would be extremely slow. Once the new db is up, it'll buy me some time to do proper sharding.</p>
+                            
+                            <p>Here's the deal (technical details trigger warning): I need to create a usable shard key for my mongodb cluster. The problem is that I the shard key I thought I would be using a month ago is unique but sparse. Turns out you can't use a shard key that doesn't include the unique index as a prefix. So I'm stuck creating a new unique index on 100GB of data. Not easy, and not quick.</p>
+                            <p>To make matters worse, the primary mongodb database machine (I'm currently running replica sets without sharding) hit 100% disk utilization two days ago, hence the ridiculous load times. It's a 32GB machine. I'm migrating over to a 96GB machine, which should immediately alleviate disk utilization and drastically lower load times. It's not true scale, but it does buy me time.</p>
+                            <p>I need the time to create a better unique index that can also be used as a viable shard key. At that point I can finally shard, and then true scale will be achieved. If I ever need more capacity, I just drop in a new set of three machines (a 32GB replica set primary, and two 16GB secondaries used for the feed fetcher's read queries).</p>
                             <p>To pass the time, go surf <a href="http://mlkshk.com/popular">MLKSHK's popular page</a>.</p>
                             <p></p>
                         </div>

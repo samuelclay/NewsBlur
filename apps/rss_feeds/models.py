@@ -205,13 +205,6 @@ class Feed(models.Model):
                 logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feeds[0])
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
-            else:
-                duplicate_feeds = Feed.objects.filter(
-                    hash_address_and_link=self.hash_address_and_link)
-                if self.pk != duplicate_feeds[0].pk:
-                    feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
-                    return feed
-                return duplicate_feeds[0]
                 
             return self
 
