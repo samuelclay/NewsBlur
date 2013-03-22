@@ -56,8 +56,6 @@ class MStatistics(mongo.Document):
     @classmethod
     def collect_statistics(cls):
         now = datetime.datetime.now()
-        cls.collect_statistics_feeds_fetched()
-        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_premium_users()
         print "Premiums: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_standard_users()
@@ -68,6 +66,8 @@ class MStatistics(mongo.Document):
         print "Stories shared: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_for_db()
         print "DB Stats: %s" % (datetime.datetime.now() - now)
+        cls.collect_statistics_feeds_fetched()
+        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls):
