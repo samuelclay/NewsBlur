@@ -100,6 +100,7 @@ env.roledefs ={
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
+
                 'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 'ec2-54-234-211-75.compute-1.amazonaws.com',
@@ -769,7 +770,11 @@ def upgrade_django():
         sudo('supervisorctl reload')
 def upgrade_pil():
     with cd(env.NEWSBLUR_PATH):
-        sudo('')
+        sudo('easy_install pillow')
+        # celery_stop()
+        pull()
+        sudo('apt-get remove -y python-imaging')
+        kill()
     
 # ==============
 # = Setup - DB =
