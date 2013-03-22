@@ -45,6 +45,16 @@
 
   XHRPolling.prototype.name = 'xhr-polling';
 
+  /**
+   * Indicates whether heartbeats is enabled for this transport
+   *
+   * @api private
+   */
+
+  XHRPolling.prototype.heartbeats = function () {
+    return false;
+  };
+
   /** 
    * Establish a connection, for iPhone and Android this will be done once the page
    * is loaded.
@@ -69,7 +79,7 @@
   function empty () {};
 
   XHRPolling.prototype.get = function () {
-    if (!this.open) return;
+    if (!this.isOpen) return;
 
     var self = this;
 
@@ -89,12 +99,18 @@
     function onload () {
       this.onload = empty;
       this.onerror = empty;
+      self.retryCounter = 1;
       self.onData(this.responseText);
       self.get();
     };
 
     function onerror () {
-      self.onClose();
+      self.retryCounter ++;
+      if(!self.retryCounter || self.retryCounter > 3) {
+        self.onClose();  
+      } else {
+        self.get();
+      }
     };
 
     this.xhr = this.request();

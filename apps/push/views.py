@@ -46,8 +46,11 @@ def push_callback(request, push_id):
 
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
-        subscription.feed.queue_pushed_feed_xml("Fetch me")
-        MFeedPushHistory.objects.create(feed_id=subscription.feed_id)
+        if subscription.feed.active_premium_subscribers >= 1:
+            subscription.feed.queue_pushed_feed_xml("Fetch me")
+            MFeedPushHistory.objects.create(feed_id=subscription.feed_id)
+        else:
+            logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
         
         return HttpResponse('')
     return Http404

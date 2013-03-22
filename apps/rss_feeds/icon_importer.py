@@ -1,5 +1,6 @@
 import urllib2
 import lxml.html
+import numpy
 import scipy
 import scipy.misc
 import scipy.cluster
@@ -7,7 +8,7 @@ import urlparse
 import struct
 import operator
 import gzip
-import BmpImagePlugin, PngImagePlugin, Image
+from PIL import BmpImagePlugin, PngImagePlugin, Image
 from boto.s3.key import Key
 from StringIO import StringIO
 from django.conf import settings
@@ -258,7 +259,10 @@ class IconImporter(object):
         NUM_CLUSTERS = 5
         
         # Convert image into array of values for each point.
-        ar = scipy.misc.fromimage(image)
+        if image.mode == '1':
+            image.convert('L')
+        ar = numpy.array(image)
+        # ar = scipy.misc.fromimage(image)
         shape = ar.shape
         
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]

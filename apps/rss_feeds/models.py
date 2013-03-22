@@ -11,6 +11,7 @@ import redis
 from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
+from bson.objectid import ObjectId
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -204,13 +205,6 @@ class Feed(models.Model):
                 logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feeds[0])
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
-            else:
-                duplicate_feeds = Feed.objects.filter(
-                    hash_address_and_link=self.hash_address_and_link)
-                if self.pk != duplicate_feeds[0].pk:
-                    feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
-                    return feed
-                return duplicate_feeds[0]
                 
             return self
 
@@ -335,14 +329,27 @@ class Feed(models.Model):
 
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
+        
         count_extra = False
-        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
+        elif self.average_stories_per_month == 0 and self.stories_last_month > 0:
+            count_extra = True
+            
         if force or (full and count_extra):
             self.count_stories()
             self.save_popular_authors()
             self.save_popular_tags()
     
+    @classmethod
+    def setup_feeds_for_premium_subscribers(cls, feed_ids):
+        logging.info(" ---> ~SN~FMScheduling immediate premium setup of ~SB%s~SN feeds..." % 
+             len(feed_ids))
+        
+        feeds = Feed.objects.filter(pk__in=feed_ids)
+        for feed in feeds:
+            feed.setup_feed_for_premium_subscribers()
+
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
         self.set_next_scheduled_update()
@@ -524,7 +531,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
-        # self.save_feed_story_history_statistics()
+        self.save_feed_story_history_statistics()
     
     def _split_favicon_color(self):
         color = self.favicon_color
@@ -834,11 +841,13 @@ class Feed(models.Model):
                         try:
                             existing_story = MStory.objects.get(id=existing_story.id)
                         except ValidationError:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                story_guid=existing_story.id)
+                            existing_story, _ = MStory.find_story(existing_story.story_feed_id,
+                                                                  existing_story.id,
+                                                                  original_only=True)
                     elif existing_story and existing_story.story_guid:
-                        existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
-                                                            story_guid=existing_story.story_guid)
+                        existing_story, _ = MStory.find_story(existing_story.story_feed_id,
+                                                              existing_story.story_guid,
+                                                              original_only=True)
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError):
@@ -914,7 +923,8 @@ class Feed(models.Model):
                 
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
-            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
+            all_tags = MStory.objects(story_feed_id=self.pk,
+                                      story_tags__exists=True).item_frequencies('story_tags')
             feed_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
                                key=itemgetter(1), 
                                reverse=True)[:25]
@@ -1217,7 +1227,7 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 12 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
@@ -1229,21 +1239,20 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 0:
+        if self.active_premium_subscribers > 5:
             total = min(total, 60) # 1 hour minimum for premiums
 
-        if (self.active_premium_subscribers <= 1 and 
-            (self.stories_last_month == 0 or self.average_stories_per_month == 0)):
-            total = total * random.randint(1, 12)
+        if ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
+            total = total * random.randint(1, 24)
         
         if self.is_push:
             total = total * 20
         
         # 1 month max
         if total > 60*24*30:
-            total = 60*24*30 
+            total = 60*24*30
         
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
@@ -1252,7 +1261,7 @@ class Feed(models.Model):
                                                 subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor*2
+        return total, random_factor*8
         
     def set_next_scheduled_update(self, verbose=True):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
@@ -1417,7 +1426,7 @@ class MFeedPage(mongo.Document):
 
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id            = mongo.IntField(unique_with='story_guid')
+    story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
     story_content            = mongo.StringField()
@@ -1440,7 +1449,12 @@ class MStory(mongo.Document):
 
     meta = {
         'collection': 'stories',
-        'indexes': [('story_feed_id', '-story_date')],
+        'indexes': [('story_feed_id', '-story_date'),
+                    {'fields': ['story_hash'], 
+                     'unique': True,
+                     'sparse': True, 
+                     'types': False, 
+                     'drop_dups': True }],
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -1453,11 +1467,13 @@ class MStory(mongo.Document):
 
     @property
     def feed_guid_hash(self):
-        return hashlib.sha1("%s:%s" % (self.story_feed_id, self.story_guid)).hexdigest()[:6]
+        return "%s:%s" % (self.story_feed_id, self.guid_hash)
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
+        self.story_hash = self.feed_guid_hash
+        
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
@@ -1485,9 +1501,13 @@ class MStory(mongo.Document):
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
         original_found = True
-
-        story = cls.objects(story_feed_id=story_feed_id,
-                            story_guid=story_id).limit(1).first()
+        
+        if isinstance(story_id, ObjectId):
+            story = cls.objects(id=story_id).limit(1).first()
+        else:
+            guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
+            story_hash = "%s:%s" % (story_feed_id, guid_hash)
+            story = cls.objects(story_hash=story_hash).limit(1).first()
         
         if not story:
             original_found = False

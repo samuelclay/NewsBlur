@@ -108,7 +108,7 @@
 {
     [self buildMenuOptions];
     int filterOptions = 2;
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+    if (appDelegate.isSocialRiverView || appDelegate.isSocialView) {
         filterOptions = 1;
     }
     

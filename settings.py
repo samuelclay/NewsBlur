@@ -4,6 +4,8 @@ import os
 import datetime
 import redis
 import raven
+import django.http
+import re
 from mongoengine import connect
 from boto.s3.connection import S3Connection
 from utils import jammit
@@ -16,7 +18,7 @@ ADMINS       = (
     ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
-SERVER_NAME  = 'local'
+SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
@@ -65,10 +67,12 @@ LOGIN_URL             = '/reader/login'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
+# EMAIL_BACKEND         = 'django_mailgun.MailgunBackend'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
+ALLOWED_HOSTS         = ['*']
 
 # ===============
 # = Enviornment =
@@ -83,8 +87,10 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 # ===========================
 
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -103,8 +109,11 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
+    'apps.profile.middleware.ServerHostnameMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 # ===========
 # = Logging =
@@ -142,12 +151,13 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
             'include_html': True,
         }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console', 'log_file'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -166,7 +176,12 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-    }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
 }
 
 # ==========================
@@ -311,11 +326,13 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_tasks"
     },
+    "beat_feeds_task": {
+        "exchange": "beat_feeds_task",
+        "exchange_type": "direct",
+        "binding_key": "beat_feeds_task"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
-BROKER_BACKEND = "redis"
-BROKER_URL = "redis://db01:6379/0"
-CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
@@ -332,14 +349,14 @@ CELERY_DISABLE_RATE_LIMITS  = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
 CELERYBEAT_SCHEDULE = {
-    'freshen-homepage': {
-        'task': 'freshen-homepage',
-        'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'beat_tasks'},
-    },
     'task-feeds': {
         'task': 'task-feeds',
         'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_feeds_task'},
+    },
+    'freshen-homepage': {
+        'task': 'freshen-homepage',
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
     'collect-stats': {
@@ -418,8 +435,9 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db01',
+    'host': 'db10',
 }
+SESSION_REDIS_DB = 5
 
 # =================
 # = Elasticsearch =
@@ -441,7 +459,7 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db01.newsblur.com:3060"
+ORIGINAL_PAGE_SERVER = "db02.newsblur.com:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,
@@ -481,7 +499,16 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+if not DEVELOPMENT:
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+
+# =========
+# = Redis =
+# =========
+
+BROKER_BACKEND = "redis"
+BROKER_URL = "redis://%s:6379/0" % REDIS['host']
+CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
 # = Mongo =
@@ -519,6 +546,7 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 REDIS_STORY_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
+REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
@@ -539,3 +567,5 @@ if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
         S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
     if BACKED_BY_AWS.get('icons_on_s3'):
         S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+
+django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")

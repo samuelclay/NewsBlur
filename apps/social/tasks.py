@@ -1,5 +1,7 @@
+from bson.objectid import ObjectId
 from celery.task import Task
-from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
+from apps.social.models import MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
+from django.contrib.auth.models import User
 from utils import log as logging
 
 
@@ -57,4 +59,19 @@ class SharePopularStories(Task):
         if not shared:
             shared = MSharedStory.share_popular_stories(interactive=False, days=2)
             
+
+class UpdateRecalcForSubscription(Task):
+
+    def run(self, subscription_user_id, shared_story_id):
+        user = User.objects.get(pk=subscription_user_id)
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=subscription_user_id)
+        logging.debug(" ---> ~FM~SNFlipping unread recalc for ~SB%s~SN subscriptions to ~SB%s's blurblog~SN" % (
+            socialsubs.count(),
+            user.username
+        ))
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
         
+        shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
+        shared_story.publish_update_to_subscribers()

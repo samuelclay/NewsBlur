@@ -16,13 +16,29 @@ class TaskFeeds(Task):
         now = datetime.datetime.utcnow()
         
         # Active feeds
+        popular_feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now,
+            active=True,
+            active_premium_subscribers__gte=1
+        ).order_by('?')[:400]
+        popular_count = popular_feeds.count()
+        
+        # Regular feeds
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
-            active=True
-        ).exclude(
-            active_subscribers=0
-        ).order_by('?')
+            active=True,
+            active_subscribers__gte=1
+        ).order_by('?')[:200]
         active_count = feeds.count()
+        
+        # Force refresh feeds
+        refresh_feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now,
+            active=True,
+            fetched_once=False,
+            active_subscribers__gte=1
+        ).order_by('?')[:50]
+        refresh_count = refresh_feeds.count()
         
         # Mistakenly inactive feeds
         day = now - datetime.timedelta(days=1)
@@ -31,7 +47,7 @@ class TaskFeeds(Task):
             queued_date__lte=day,
             min_to_decay__lte=60*24,
             active_subscribers__gte=1
-        ).order_by('?')[:20]
+        ).order_by('?')[:50]
         inactive_count = inactive_feeds.count()
         
         week = now - datetime.timedelta(days=7)
@@ -42,13 +58,17 @@ class TaskFeeds(Task):
         ).order_by('?')[:20]
         old_count = old_feeds.count()
         
-        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
+        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
+            popular_count,
             active_count,
+            refresh_count,
             inactive_count,
             old_count,
         ))        
         
+        Feed.task_feeds(popular_feeds, verbose=False)
         Feed.task_feeds(feeds, verbose=False)
+        Feed.task_feeds(refresh_feeds, verbose=False)
         if inactive_feeds: Feed.task_feeds(inactive_feeds, verbose=False)
         if old_feeds: Feed.task_feeds(old_feeds, verbose=False)
         
@@ -160,4 +180,15 @@ class ScheduleImmediateFetches(Task):
             feed_ids = [feed_ids]
         
         Feed.schedule_feed_fetches_immediately(feed_ids)
+
+
+class SchedulePremiumSetup(Task):
+    
+    def run(self, feed_ids, **kwargs):
+        from apps.rss_feeds.models import Feed
+        
+        if not isinstance(feed_ids, list):
+            feed_ids = [feed_ids]
+        
+        Feed.setup_feeds_for_premium_subscribers(feed_ids)
         

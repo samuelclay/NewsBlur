@@ -33,9 +33,10 @@
       , 'reconnection limit': Infinity
       , 'reopen delay': 3000
       , 'max reconnection attempts': 10
-      , 'sync disconnect on unload': true
+      , 'sync disconnect on unload': false
       , 'auto connect': true
       , 'flash policy port': 10843
+      , 'manualFlush': false
     };
 
     io.util.merge(this.options, options);
@@ -51,8 +52,7 @@
     if (this.options['sync disconnect on unload'] &&
         (!this.isXDomain() || io.util.ua.hasCORS)) {
       var self = this;
-
-      io.util.on(global, 'unload', function () {
+      io.util.on(global, 'beforeunload', function () {
         self.disconnectSync();
       }, false);
     }
@@ -119,6 +119,7 @@
 
     function complete (data) {
       if (data instanceof Error) {
+        self.connecting = false;
         self.onError(data.message);
       } else {
         fn.apply(null, data.split(':'));
@@ -148,14 +149,19 @@
       var xhr = io.util.request();
 
       xhr.open('GET', url, true);
-      xhr.withCredentials = true;
+      if (this.isXDomain()) {
+        xhr.withCredentials = true;
+      }
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
           xhr.onreadystatechange = empty;
 
           if (xhr.status == 200) {
             complete(xhr.responseText);
+          } else if (xhr.status == 403) {
+            self.onError(xhr.responseText);
           } else {
+            self.connecting = false;            
             !self.reconnecting && self.onError(xhr.responseText);
           }
         }
@@ -176,7 +182,7 @@
     for (var i = 0, transport; transport = transports[i]; i++) {
       if (io.Transport[transport]
         && io.Transport[transport].check(this)
-        && (!this.isXDomain() || io.Transport[transport].xdomainCheck())) {
+        && (!this.isXDomain() || io.Transport[transport].xdomainCheck(this))) {
         return new io.Transport[transport](this, this.sessionid);
       }
     }
@@ -198,15 +204,17 @@
     }
 
     var self = this;
-
+    self.connecting = true;
+    
     this.handshake(function (sid, heartbeat, close, transports) {
       self.sessionid = sid;
       self.closeTimeout = close * 1000;
       self.heartbeatTimeout = heartbeat * 1000;
-      self.transports = transports ? io.util.intersect(
-          transports.split(',')
-        , self.options.transports
-      ) : self.options.transports;
+      if(!self.transports)
+          self.transports = self.origTransports = (transports ? io.util.intersect(
+              transports.split(',')
+            , self.options.transports
+          ) : self.options.transports);
 
       self.setHeartbeatTimeout();
 
@@ -228,11 +236,7 @@
                 self.connecting = false;
 
                 if (self.options['try multiple transports']) {
-                  if (!self.remainingTransports) {
-                    self.remainingTransports = self.transports.slice(0);
-                  }
-
-                  var remaining = self.remainingTransports;
+                  var remaining = self.transports;
 
                   while (remaining.length > 0 && remaining.splice(0,1)[0] !=
                          self.transport.name) {}
@@ -270,6 +274,7 @@
 
   Socket.prototype.setHeartbeatTimeout = function () {
     clearTimeout(this.heartbeatTimeoutTimer);
+    if(this.transport && !this.transport.heartbeats()) return;
 
     var self = this;
     this.heartbeatTimeoutTimer = setTimeout(function () {
@@ -305,10 +310,24 @@
     this.doBuffer = v;
 
     if (!v && this.connected && this.buffer.length) {
-      this.transport.payload(this.buffer);
-      this.buffer = [];
+      if (!this.options['manualFlush']) {
+        this.flushBuffer();
+      }
     }
   };
+
+  /**
+   * Flushes the buffer data over the wire.
+   * To be invoked manually when 'manualFlush' is set to true.
+   *
+   * @api public
+   */
+
+  Socket.prototype.flushBuffer = function() {
+    this.transport.payload(this.buffer);
+    this.buffer = [];
+  };
+  
 
   /**
    * Disconnect the established connect.
@@ -338,10 +357,18 @@
 
   Socket.prototype.disconnectSync = function () {
     // ensure disconnection
-    var xhr = io.util.request()
-      , uri = this.resource + '/' + io.protocol + '/' + this.sessionid;
+    var xhr = io.util.request();
+    var uri = [
+        'http' + (this.options.secure ? 's' : '') + ':/'
+      , this.options.host + ':' + this.options.port
+      , this.options.resource
+      , io.protocol
+      , ''
+      , this.sessionid
+    ].join('/') + '/?disconnect=1';
 
-    xhr.open('GET', uri, true);
+    xhr.open('GET', uri, false);
+    xhr.send(null);
 
     // handle disconnection immediately
     this.onDisconnect('booted');
@@ -520,6 +547,7 @@
         if (!self.redoTransports) {
           self.on('connect_failed', maybeReconnect);
           self.options['try multiple transports'] = true;
+          self.transports = self.origTransports;
           self.transport = self.getTransport();
           self.redoTransports = true;
           self.connect();

@@ -1,5 +1,6 @@
 import datetime
 import stripe
+import hashlib
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
@@ -15,6 +16,7 @@ from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
+from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter
 from utils import log as logging
 from utils import json_functions as json
@@ -134,12 +136,17 @@ class Profile(models.Model):
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
+            if sub.active: continue
             sub.active = True
             try:
                 sub.save()
-                sub.feed.setup_feed_for_premium_subscribers()
             except IntegrityError, Feed.DoesNotExist:
                 pass
+        
+        scheduled_feeds = [sub.feed.pk for sub in subs]
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
         self.queue_new_feeds()
         self.setup_premium_history()
@@ -484,13 +491,34 @@ zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 def change_password(user, old_password, new_password):
     user_db = authenticate(username=user.username, password=old_password)
     if user_db is None:
+        blank = blank_authenticate(user.username)
+        if blank:
+            user.set_password(user.username)
+            user.save()
+    if user_db is None:
+        user_db = authenticate(username=user.username, password=user.username)
+        
+    if not user_db:
         return -1
     else:
         user_db.set_password(new_password)
         user_db.save()
         return 1
         
+def blank_authenticate(username, password=""):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return
     
+    if user.password == "!":
+        return user
+        
+    algorithm, salt, hash = user.password.split('$', 2)
+    encoded = hashlib.sha1(salt + password).hexdigest()
+    if encoded == hash:
+        return user
+            
 class MSentEmail(mongo.Document):
     sending_user_id = mongo.IntField()
     receiver_user_id = mongo.IntField()

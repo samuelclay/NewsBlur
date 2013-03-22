@@ -133,6 +133,19 @@ public class APIManager {
 		}
 	}
 
+	public boolean markStoryAsStarred(final String feedId, final String storyId) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public CategoriesResponse getCategories() {
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_CATEGORIES);

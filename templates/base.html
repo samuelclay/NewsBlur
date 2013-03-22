@@ -33,7 +33,7 @@
     };
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
-      'lock_mouse_indicator'    : 0,
+      'lock_mouse_indicator'    : 100,
       'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
       'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
@@ -72,13 +72,13 @@
       'story_share_email'       : true
     };
     NEWSBLUR.URLs = {
-      'google-reader-authorize' : "{% url google-reader-authorize %}",
-      'upload-avatar'           : "{% url upload-avatar %}",
-      'opml-upload'             : "{% url opml-upload %}",
-      'opml-export'             : "{% url opml-export %}",
+      'google-reader-authorize' : "{% url "google-reader-authorize" %}",
+      'upload-avatar'           : "{% url "upload-avatar" %}",
+      'opml-upload'             : "{% url "opml-upload" %}",
+      'opml-export'             : "{% url "opml-export" %}",
       'domain'                  : "{% current_domain %}",
       'favicon'                 : "/rss_feeds/icon/{id}",
-      'delete-account'          : "{% url profile-delete-account %}"
+      'delete-account'          : "{% url "profile-delete-account" %}"
     };
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
@@ -112,18 +112,18 @@
 
   <div class="NB-body-inner">
       <div class="NB-splash-info NB-splash-top">
-        <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
+        <a href="{% url "index" %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
       </div>
   
       {% block content %}{% endblock %}
 
       <div class="NB-splash-info NB-splash-bottom">
         <ul class="NB-splash-links NB-inner">
-          <li class="NB-splash-link NB-splash-link-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
-          <li class="NB-splash-link NB-splash-link-about"><a href="{% url about %}">About</a></li>
-          <li class="NB-splash-link NB-splash-link-faq"><a href="{% url faq %}">FAQ</a></li>
-          <li class="NB-splash-link NB-splash-link-api"><a href="{% url api %}">API</a></li>
-          <li class="NB-splash-link NB-splash-link-press"><a href="{% url press %}">Press</a></li>
+          <li class="NB-splash-link NB-splash-link-logo"><a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
+          <li class="NB-splash-link NB-splash-link-about"><a href="{% url "about" %}">About</a></li>
+          <li class="NB-splash-link NB-splash-link-faq"><a href="{% url "faq" %}">FAQ</a></li>
+          <li class="NB-splash-link NB-splash-link-api"><a href="{% url "api" %}">API</a></li>
+          <li class="NB-splash-link NB-splash-link-press"><a href="{% url "press" %}">Press</a></li>
           <li class="NB-splash-link NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
           <li class="NB-splash-link NB-splash-link-getsatisfaction"><a href="https://getsatisfaction.com/newsblur">Feedback</a></li>
           <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>

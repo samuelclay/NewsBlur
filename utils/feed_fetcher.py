@@ -18,7 +18,8 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
+from utils.feed_functions import timelimit, TimeoutError, utf8encode
+# from utils.feed_functions import mail_feed_error_to_admin
 
 
 # Refresh feed code adapted from Feedjack.
@@ -226,8 +227,7 @@ class ProcessFeed:
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'])
 
-        if ((not self.feed.is_push or self.options.get('force'))
-            and hasattr(self.fpf, 'feed') and 
+        if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
             self_url = self.feed.feed_address
@@ -236,10 +236,20 @@ class ProcessFeed:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-            if hub_url and self_url and not settings.DEBUG:
-                logging.debug(u'   ---> [%-30s] ~BB~FWSubscribing to PuSH hub: %s' % (
-                              self.feed.title[:30], hub_url))
+            push_expired = self.feed.is_push and self.feed.push.lease_expires < datetime.datetime.now()
+            if (hub_url and self_url and not settings.DEBUG and
+                self.feed.active_subscribers > 0 and
+                (push_expired or not self.feed.is_push or self.options.get('force'))):
+                logging.debug(u'   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s' % (
+                              self.feed.title[:30],
+                              "~SKRe-~SN" if push_expired else "", hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+            elif (self.feed.is_push and 
+                  (self.feed.active_subscribers <= 0 or not hub_url)):
+                logging.debug(u'   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (
+                              self.feed.title[:30]))
+                self.feed.is_push = False
+                self.feed = self.feed.save()
         
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
@@ -379,7 +389,7 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 feed_code = 500
                 fetched_feed = None
-                mail_feed_error_to_admin(feed, e, local_vars=locals())
+                # mail_feed_error_to_admin(feed, e, local_vars=locals())
                 if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
                     settings.RAVEN_CLIENT):
                     settings.RAVEN_CLIENT.captureException()
@@ -424,8 +434,10 @@ class Dispatcher:
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     page_data = None
-                    mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.RAVEN_CLIENT.captureException()
+                    # mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                        settings.RAVEN_CLIENT):
+                        settings.RAVEN_CLIENT.captureException()
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
@@ -442,8 +454,10 @@ class Dispatcher:
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
-                    mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.RAVEN_CLIENT.captureException()
+                    # mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                        settings.RAVEN_CLIENT):
+                        settings.RAVEN_CLIENT.captureException()
             else:
                 logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             

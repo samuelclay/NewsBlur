@@ -159,7 +159,7 @@
     return new XMLHttpRequest();
     // end node
 
-    if (xdomain && 'undefined' != typeof XDomainRequest) {
+    if (xdomain && 'undefined' != typeof XDomainRequest && !util.ua.hasCORS) {
       return new XDomainRequest();
     }
 
@@ -215,7 +215,7 @@
    *
    * @api public
    */
-  
+
   util.merge = function merge (target, additional, deep, lastseen) {
     var seen = lastseen || []
       , depth = typeof deep == 'undefined' ? 2 : deep
@@ -240,7 +240,7 @@
    *
    * @api public
    */
-  
+
   util.mixin = function (ctor, ctor2) {
     util.merge(ctor.prototype, ctor2.prototype);
   };
@@ -288,7 +288,7 @@
     }
 
     return ret;
-  }
+  };
 
   /**
    * Array indexOf compatibility.
@@ -298,8 +298,8 @@
    */
 
   util.indexOf = function (arr, o, i) {
-    
-    for (var j = arr.length, i = i < 0 ? i + j < 0 ? 0 : i + j : i || 0; 
+
+    for (var j = arr.length, i = i < 0 ? i + j < 0 ? 0 : i + j : i || 0;
          i < j && arr[i] !== o; i++) {}
 
     return j <= i ? -1 : i;
@@ -352,5 +352,14 @@
 
   util.ua.webkit = 'undefined' != typeof navigator
     && /webkit/i.test(navigator.userAgent);
+
+   /**
+   * Detect iPad/iPhone/iPod.
+   *
+   * @api public
+   */
+
+  util.ua.iDevice = 'undefined' != typeof navigator
+      && /iPad|iPhone|iPod/i.test(navigator.userAgent);
 
 })('undefined' != typeof io ? io : module.exports, this);

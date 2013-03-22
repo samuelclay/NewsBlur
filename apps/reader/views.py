@@ -55,7 +55,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'debug']:
         username = request.subdomain
         try:
             if '.' in username:
@@ -159,7 +159,9 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
-            return HttpResponseRedirect(reverse('index'))
+            url = "https://%s%s" % (Site.objects.get_current().domain,
+                                     reverse('stripe-form'))
+            return HttpResponseRedirect(url)
 
     return index(request)
         
@@ -191,8 +193,10 @@ def autologin(request, username, secret):
     if next and not next.startswith('/'):
         next = '?next=' + next
         return HttpResponseRedirect(reverse('index') + next)
-    else:
+    elif next:
         return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(reverse('index'))
     
 @ratelimit(minutes=1, requests=24)
 @never_cache
@@ -583,7 +587,7 @@ def load_single_feed(request, feed_id):
     last_update = relative_timesince(feed.last_update)
     time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s(%s)~SN)" % (
         diff1, diff2, diff3, diff4, userstories_db and userstories_db.count() or '~SN0~SB')
-        if timediff > 0.50 else "")
+        if timediff > 1 else "")
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
     
@@ -1304,21 +1308,22 @@ def save_feed_chooser(request):
                 if not sub.active:
                     sub.active = True
                     sub.save()
-                    sub.feed.count_subscribers()
+                    if sub.feed.active_subscribers <= 0:
+                        sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()
         except Feed.DoesNotExist:
             pass
             
-    
+    request.user.profile.queue_new_feeds()
+    request.user.profile.refresh_stale_feeds(exclude_new=True)
+
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
     ))
-    request.user.profile.queue_new_feeds()
-    request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
     return {'activated': activated}
 
 @ajax_login_required
@@ -1464,7 +1469,7 @@ def send_story_email(request):
             message = "Email error: %s" % str(e)
         logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                               (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
-                               story['story_title'][:50], feed.feed_title[:50]))
+                               story['story_title'][:50], feed and feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
 

@@ -214,12 +214,13 @@ def profile_is_premium(request):
     activated_subs = subs.filter(active=True).count()
     
     if retries >= 30:
-        subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
-        message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
-        mail_admins(subject, message, fail_silently=True)
         code = -1
-        request.user.profile.is_premium = True
-        request.user.profile.save()
+        if not request.user.profile.is_premium:
+            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
+            message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
+            mail_admins(subject, message, fail_silently=True)
+            request.user.profile.is_premium = True
+            request.user.profile.save()
         
     return {
         'is_premium': profile.is_premium,
@@ -252,6 +253,7 @@ def stripe_form(request):
             user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
             user.profile.stripe_id = customer.id
             user.profile.save()
+            user.profile.activate_premium() # TODO: Remove, because webhooks are slow
 
             success_updating = True
 
@@ -261,7 +263,9 @@ def stripe_form(request):
     if success_updating:
         return render_to_response('reader/paypal_return.xhtml', 
                                   {}, context_instance=RequestContext(request))
-        
+    
+    logging.user(request, "~BM~FBLoading Stripe form")
+
     return render_to_response('profile/stripe_form.xhtml',
         {
           'zebra_form': zebra_form,

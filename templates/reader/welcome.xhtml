@@ -70,7 +70,7 @@
                     <div class="NB-module-header-signup">Sign up</div>
                 </div>
                 <div class="NB-login">
-                    <form method="post" action="{% url login %}">
+                    <form method="post" action="{% url "login" %}">
                         <div>
                             {{ login_form.username.label_tag }}
                             {{ login_form.username }}
@@ -78,7 +78,7 @@
                         <div>
                             <div class="NB-signup-optional">
                                 {% if login_form.errors and login_form.errors|length %}
-                                    <a href="{% url profile-forgot-password %}" class="NB-splash-link">Forgot?</a>
+                                    <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
                                 {% else %}
                                     Optional
                                 {% endif %}
@@ -99,7 +99,7 @@
                 </div>
             
                 <div class="NB-signup">
-                    <form method="post" action="{% url signup %}">
+                    <form method="post" action="{% url "signup" %}">
                         <div>
                             {{ signup_form.username.label_tag }}
                             {{ signup_form.username }}
@@ -123,7 +123,7 @@
                         {% endfor %}
                     {% endif %}
                     <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-                    <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/welcome/Google_Reader_logo.png" width="16" height="16" style="vertical-align: bottom;"> Google Reader</a>
+                    <a href="{% url "google-reader-authorize" %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/welcome/Google_Reader_logo.png" width="16" height="16" style="vertical-align: bottom;"> Google Reader</a>
                 </div>
             </div>
 
@@ -165,13 +165,13 @@
                     <th></th>
                     <th>Free Account</th>
                     <th class="NB-last">
-                        <div class="NB-price">$1 / month</div>
+                        <div class="NB-price">$24 / year</div>
                         Premium Account
                     </th>
                 </tr>
                 <tr>
                     <td class="NB-bold">Number of Sites</td>
-                    <td>Up to 64 sites</td>
+                    <td>Up to 12 sites</td>
                     <td class="NB-last">Unlimited sites</td>
                 </tr>
                 <tr>
@@ -237,7 +237,7 @@
                 <a href="http://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png"></a>
                 <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
             </div>
-            <a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
+            <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
             is built in New York City and San Francisco by 
             <a href="http://twitter.com/samuelclay" class="NB-splash-link">
                 <img src="http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_reasonably_small.jpg" class="NB-twitter-avatar">
