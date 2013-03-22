@@ -7,7 +7,7 @@ import urlparse
 import struct
 import operator
 import gzip
-import BmpImagePlugin, PngImagePlugin, Image
+from PIL import BmpImagePlugin, PngImagePlugin, Image
 from boto.s3.key import Key
 from StringIO import StringIO
 from django.conf import settings

@@ -767,6 +767,9 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
+def upgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('')
     
 # ==============
 # = Setup - DB =
