@@ -857,6 +857,8 @@ def setup_mongo():
     sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
+    run('echo "ulimit -n 10000" > mongodb.defaults')
+    sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():

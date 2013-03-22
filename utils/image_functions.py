@@ -1,6 +1,6 @@
 """Operations for images through the PIL."""
 
-import Image
+from PIL import Image
 import ImageOps as PILOps
 from ExifTags import TAGS
 from StringIO import StringIO
