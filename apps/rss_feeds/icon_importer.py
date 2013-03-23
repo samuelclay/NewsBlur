@@ -8,6 +8,7 @@ import urlparse
 import struct
 import operator
 import gzip
+import datetime
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from boto.s3.key import Key
 from StringIO import StringIO
@@ -76,9 +77,12 @@ class IconImporter(object):
         return not self.feed.favicon_not_found
 
     def save_to_s3(self, image_str):
+        expires = datetime.datetime.now() + datetime.timedelta(days=60)
+        expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
         k = Key(settings.S3_ICONS_BUCKET)
         k.key = self.feed.s3_icons_key
         k.set_metadata('Content-Type', 'image/png')
+        k.set_metadata('Expires', expires)
         k.set_contents_from_string(image_str.decode('base64'))
         k.set_acl('public-read')
         
