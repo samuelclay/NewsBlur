@@ -61,6 +61,9 @@
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                                 context:nil];
     self.pageIndex = -2;
 }
 
@@ -242,9 +245,6 @@
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                                 context:nil];
 
     self.activeStoryId = [self.activeStory objectForKey:@"id"];
 }
@@ -817,8 +817,8 @@
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
-        BOOL singlePage = webpageHeight - 110 <= viewportHeight;
-        BOOL atBottom = bottomPosition < 100;
+        BOOL singlePage = webpageHeight - 150 <= viewportHeight;
+        BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
             NSLog(@"A");
