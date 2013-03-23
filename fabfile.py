@@ -775,7 +775,14 @@ def upgrade_pil():
         pull()
         sudo('apt-get remove -y python-imaging')
         kill()
-    
+
+def downgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('apt-get install -y python-imaging')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
+        pull()
+        kill()
+        
 # ==============
 # = Setup - DB =
 # ==============    
