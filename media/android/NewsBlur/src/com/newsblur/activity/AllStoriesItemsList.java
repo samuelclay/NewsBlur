@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
@@ -15,13 +16,10 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.domain.Story;
-import com.newsblur.domain.ValueMultimap;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.MarkAllStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class AllStoriesItemsList extends ItemsList {
@@ -90,15 +88,17 @@ public class AllStoriesItemsList extends ItemsList {
 
 	@Override
 	public void markItemListAsRead() {
-		Cursor stories = getContentResolver().query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
-		ValueMultimap storiesToMarkAsRead = new ValueMultimap();
-		for (int i = 0; i < stories.getCount(); i++) {
-	      stories.moveToNext();
-		  Story story = Story.fromCursor(stories);
-		  storiesToMarkAsRead.put(story.feedId, story.id);
-		}
-		
-		new MarkAllStoriesAsReadTask(apiManager) {
+		new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... arg) {
+				if (apiManager.markAllAsRead()) {
+					return true;
+				} 
+				else {
+					return false;
+				}
+			}
+			
 			@Override
 			protected void onPostExecute(Boolean result) {
 				if (result) {
@@ -116,8 +116,8 @@ public class AllStoriesItemsList extends ItemsList {
 				} else {
 					Toast.makeText(AllStoriesItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
 				}
-			}
-		}.execute(storiesToMarkAsRead);
+			};
+		}.execute();
 	}
 
 	@Override
