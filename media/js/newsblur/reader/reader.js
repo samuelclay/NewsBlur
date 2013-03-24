@@ -2102,10 +2102,10 @@
         
         send_story_to_googleplus: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://plusone.google.com/_/+1/confirm'; //?hl=en&url=${url}
+            var url = 'https://plus.google.com/share';
             var googleplus_url = [
               url,
-              '?hl=en&url=',
+              '?url=',
               encodeURIComponent(story.get('story_permalink')),
               '&title=',
               encodeURIComponent(story.get('story_title')),
