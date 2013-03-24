@@ -116,8 +116,12 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		} else {
 			followButton.setVisibility(View.GONE);
 			Bitmap userPicture = PrefsUtils.getUserImage(context);
-		    userPicture = UIUtils.roundCorners(userPicture, 5);
-			imageView.setImageBitmap(userPicture);
+			// seems to sometimes be an error loading the picture so prevent
+			// force close if null returned
+			if (userPicture != null) {
+		        userPicture = UIUtils.roundCorners(userPicture, 5);
+			    imageView.setImageBitmap(userPicture);
+			}
 		}
 	}
 	
