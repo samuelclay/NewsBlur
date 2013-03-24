@@ -79,10 +79,15 @@ env.roledefs ={
            'db20.newsblur.com',
            'db21.newsblur.com',
            'db22.newsblur.com',
+           'db23.newsblur.com',
            ],
-    'dbdo':['198.211.115.113',
+    'dbdo':['198.211.109.225',
+            '198.211.109.224',
+            '198.211.110.164',
+            '198.211.115.113',
             '198.211.115.153',
             '198.211.115.8',
+            '198.211.117.116',
             ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
@@ -521,7 +526,7 @@ def setup_imaging():
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
 
-@parallel
+# @parallel
 def setup_hosts():
     put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
