@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<script src="javascripts/jquery.min.js" type="text/javascript"></script>
+		<script src="javascripts/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="javascripts/jquery.tagsinput.js" type="text/javascript"></script>
+		
+		<script type="text/javascript">
+			var baseURL		= 'https://talentopoly-staging.heroku.com/';
+			// var baseURL = 'https://talentopoly.com/';
+
+			var apiURL		= baseURL + 'api/v1/';
+			var postsURL	= baseURL + 'posts/';
+			
+			var maxLinkLength	= 255;
+			var maxTitleLength	= 255;
+			
+			var verbPost	= 'posts.json';
+			var verbSimilar = 'posts/similar.json';
+			var verbKey		= 'api_key.json';
+			var verbValid	= 'valid.json';
+			
+			var popover = safari.extension.popovers[0];
+			var popoverHeights = {
+				max: 725,
+				add: { padding: 20 }
+			}
+			var oldTab, oldURL;
+			var isKeyValid = false;
+			
+			var feedbackMessages = {
+				url_length: { id:'url_length_error', 		type:'error', 	msg:'<li id="url_length_error">URL must be present and cannot be longer than 255 Characters</li>' },
+				title_length: {id:'title_length_error', 	type:'error', 	msg:'<li id="title_length_error">Title must be between 5 and 255 Characters</li>'},
+				success: {id:'success_message', 			type:'success', msg:'<li id="success_message">Success!</li>'},
+				invalid_key: { id:'invalid_api_key', 		type:'error', 	msg:'<li id="invalid_api_key">Could not validate your API Key!</li>'}
+			};
+			
+			function kickstart(event) {
+				var api_key = safari.extension.secureSettings.api_key;
+				
+				if ( !(isKeyValid = validateAPIKey(api_key)) ) 
+				{
+					showLoginContainer();
+				} else {
+					$('#api_key').val(api_key);
+					updateFields();
+					showPostForm();
+				}
+				resizePopover();
+			}
+			
+			function updateFields(force) {
+				var newTab = safari.application.activeBrowserWindow.activeTab;
+				var newURL = newTab.url;
+				var pageTitle = newTab.title;
+				
+				if (newTab === oldTab && newURL === oldURL && !force) { return; }
+				
+				oldTab = safari.application.activeBrowserWindow.activeTab; 
+				oldURL = newURL;
+				
+				clearPostForm();
+				
+				$('#status_container').html('').hide().removeClass('error success');
+				$('#post_link').val(newURL);
+				$('#post_title').val(pageTitle);
+				
+				validateLinkChange();
+				validateTitleChange();
+			}
+			
+			function resizePopover(newSize) {
+				var size = $('body').height() + popoverHeights.add.padding;
+				
+				if ( newSize > 0 ) { popover.height = newSize; return; }
+				
+				popover.height = Math.min(popoverHeights.max, size);
+			}
+			
+			function fetchAPIKey(form) {
+				$("#login_spinner").show();
+				$('#login_button').hide();
+				
+				var params = '?' + form.serialize();
+				var ajaxFetch = $.ajax({
+						url: apiURL + verbKey + params, 
+						success: function(data, status, jqxhr) { safari.extension.secureSettings.api_key = data; kickstart(); },
+						error: function(jqxhr, status, exception) { addStatus('error', jqxhr.responseText); $('#login_button').show(); $("#login_spinner").hide(); },
+						complete: function(data, status) { },
+						dataType: 'text'
+					});
+				ajaxFetch.always(function(data, status) { $('#login_button').show();$("#login_spinner").hide(); });
+			}
+			
+			function validateAPIKey(key) {
+				if (!key) return false;
+				var retVal = false;
+				var params = '?api_key=' + key;
+				$.ajax({
+						url: apiURL + verbValid + params, 
+						success: function(data, status, jqxhr) { 
+							if (data === "true") {
+								retVal = true;
+								clearLoginForm();
+							}  else {
+								
+							}
+						}, 
+						error: function(jqxhr, status, exception) { addStatus('error', feedbackMessages.invalid_key); },
+						dataType: 'text', 
+						async: false
+					});
+				return retVal;
+			}
+			
+			function logout() {
+				safari.extension.secureSettings.api_key = '';
+				isKeyValid = false;
+				clearLoginForm();
+				clearPostForm();
+				showLoginContainer();
+			}
+
+			function getSimilarPosts(url, title) {
+				var params = '?link=' + encodeURIComponent(url);
+				params += '&title=' + encodeURIComponent(title);
+				params += '&api_key=' + safari.extension.secureSettings.api_key;
+				
+				$('#similar_posts').html('');
+				
+				$.ajax({
+					type: 'GET',
+					url: apiURL + verbSimilar + params, 
+					success: function(data, status, jqxhr) {
+						if (data.length < 1) { $('#similar').hide(); resizePopover(); return; }
+						$(data).each(function() {
+							$('#similar_posts').append('<a href="' + postsURL + this.id + '" class="similar_post" title="' + this.link + '" onclick="openLink(this); return false;">' + this.title + '</a>');
+						});
+						resizePopover();
+						$('#similar').show();
+					},
+					error: function(jqxhr, status, exception) { $('#similar').hide(); },
+					complete: function(data, status) { resizePopover(); },
+					dataType: 'json'
+				});			
+			}
+	
+			function submitPost(form) {
+				$("#post_spinner").show();
+				$('#post_button').hide();
+				var formData = form.serialize();
+				var ajaxSubmit = $.ajax({
+						type: 'POST',
+						url: apiURL + verbPost,
+						success: function(data, status, jqxhr) { postSuccessful(data); },
+						error: function(jqxhr, status, exception) { addStatus('error', jqxhr.responseText); },
+						complete: function(data, status) { },
+						data: formData,
+						dataType: 'json'
+					});
+				ajaxSubmit.always(function(data, status) { $('#post_button').show(); $("#post_spinner").hide(); })
+			}
+			
+			function postSuccessful(data) {
+				openPost(data.id); 
+				clearPostForm();
+				addStatus(feedbackMessages.success.type, feedbackMessages.success.msg);
+				$('#post_container').hide();
+				resizePopover();
+				setTimeout("popover.hide()", 2500)
+			}
+			
+			function openPost(id) {
+				var settingOpenOnPost = safari.extension.settings.openOnPost;
+				if (!id) { return; }
+				
+				if (settingOpenOnPost === "never" || settingOpenOnPost == null) { return; }
+				
+				var newTab = safari.application.activeBrowserWindow.openTab('background');
+				newTab.url = postsURL + id;
+					
+				if (settingOpenOnPost === "foreground") {
+					newTab.activate();
+				}
+					
+				return id;
+			}
+			function validateStatusBox() {
+				if ( $('#status_container').html().length > 0 ) {
+					$('#status_container').show(); 
+				} else {
+					$('#status_container').hide();
+				}
+				resizePopover();
+			}
+			
+			function validateLinkChange(event) {
+				var postURL = $('#post_link').val();
+				var e = feedbackMessages.url_length;
+				
+				updateLinkLength();
+				
+				if (postURL < 1 || postURL.length > maxLinkLength) {
+					addStatus( e.type, e.msg, '<li id="' + e.id + '">' );
+				} else {
+					getSimilarPosts($('#post_link').val(), $('#post_title').val());
+					removeStatusById(e.id);
+				}
+			}
+			
+			function updateLinkLength() {
+				var length = $('#post_link').val().length;
+				$('#post_link_length').html(maxLinkLength-length + ' Characters Remaining');
+				if ( length > maxLinkLength ) { $('#post_link_length').addClass('red em'); }
+				else { $('#post_link_length').removeClass(); }
+			}
+			
+			function validateTitleChange(event) {
+				var postTitle = $('#post_title').val();
+				var e = feedbackMessages.title_length;
+				
+				updateTitleLength();
+				
+				if (postTitle.length < 5 || postTitle.length > maxTitleLength) {
+					addStatus( e.type, e.msg, '<li id="' + e.id + '">' );
+				} else {
+					removeStatusById(e.id);
+				}
+			}
+			
+			function updateTitleLength() {
+				var length = $('#post_title').val().length;
+				$('#post_title_length').html(maxTitleLength - length + ' Characters Remaining');
+				if ( length > maxTitleLength ) { $('#post_title_length').addClass('red em'); }
+				else { $('#post_title_length').removeClass(); }
+			}
+			
+			function addStatus(elmClass, text, wrap) {
+				var wrapper = (typeof(wrap) != 'undefined') ? wrap : $('<li>');
+				var c = $('#status_container');
+				c.removeClass().addClass(elmClass);
+				
+				// c.html( text );
+				try {
+					var json = $.parseJSON(text);
+
+					for (var key in json) {
+					  if (json.hasOwnProperty(key)) {
+						var values = json[key];
+						for ( i in values ) {
+							var text = values[i];
+							var id = key + '_' + text.replace(/ /g, '_').substring(0,30);
+							if ( ! $('#status_container #' + id).length ) { c.append( $('<li id="' + id + '">').append(key.toTitleCase() + ' ' + text)); }
+						}
+					  }
+					}
+					
+					// if (json.hasOwnProperty('link')) {
+					// 	for (i in json.link) {
+					// 		var text = json.link[i];
+					// 		var id = 'link_' + text.replace(/ /g, '_');
+					// 		if ( ! $('#status_container #' + id).length ) { c.append( $('<li id="' + id + '">').append('Link ' + text)); }
+					// 	}
+					// }
+					// 
+					// if (json.hasOwnProperty('title')) {
+					// 	for (i in json.title) {
+					// 		var text = json.title[i];
+					// 		var id = 'title_' + text.replace(/ /g, '_');
+					// 		if ( ! $('#status_container #' + id).length ) { c.append($('<li id="' + id + '">').append('Title ' + text)); }
+					// 	}
+					// }
+					// 
+					// if (json.hasOwnProperty('base')) {
+					// 	for (i in json.base) {
+					// 		var text = json.base[i];
+					// 		var id = 'base_' + text.replace(/ /g, '_');
+					// 		var id = id.substring(0,30);
+					// 		if ( ! $('#status_container #' + id).length ) { c.append($('<li id="' + id + '">').append(text)); }
+					// 	}
+					// }
+					
+				} catch (ex) {
+					c.append($(wrapper).append(text + '<br />' + ex))
+				}
+				validateStatusBox();
+			}
+			
+			function removeStatusById(id) {
+				if ( $('#status_container #'+id).length ) {
+					$('#status_container #'+id).remove();
+				}
+				validateStatusBox();
+			}
+			
+			function clearLoginForm() {
+				$('#status_container').html('').hide().removeClass();
+
+				$('#email').val('');
+				$('#password').val('');
+			}
+			
+			function clearPostForm() {
+				$('#status_container').html('').hide().removeClass();
+
+				$('#post_link').val('');
+				$('#post_title').val('');
+				$('#post_description').val('');
+				$('#post_tag_list').val('');
+
+				$('#similar').hide();
+				$('#similar_posts').html('');
+
+				resizePopover();
+			}
+			
+			function showLoginContainer() {
+				$('#login_container').show();
+				$('#post_container').hide();
+				$('#email').focus();
+				resizePopover();
+			}
+			
+			function showPostForm() {
+				$('#login_container').hide();
+				$('#post_container').show();
+				$('#post_description').focus();
+				resizePopover();
+			}
+			
+			function hideStatusContainer(clear) {
+				var c = $('#status_container');
+				if (clear) { c.html(''); }
+				c.hide();
+			}
+			
+			function openLink(anchor) {
+				var tab = safari.application.activeBrowserWindow.openTab(); 
+				tab.url = $(anchor).attr('href'); 
+			}
+			
+			function settingChanged(event) {
+				//alert('Key: ' + event.key + ' New Value: ' + event.newValue + ' Old Value: ' + event.oldValue);
+			}
+			
+			String.prototype.toTitleCase = function () {
+			  var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
+
+			  return this.replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
+			    if (index > 0 && index + p1.length !== title.length &&
+			      p1.search(smallWords) > -1 && title.charAt(index - 2) !== ":" && 
+			      title.charAt(index - 1).search(/[^\s-]/) < 0) {
+			      return match.toLowerCase();
+			    }
+
+			    if (p1.substr(1).search(/[A-Z]|\../) > -1) {
+			      return match;
+			    }
+
+			    return match.charAt(0).toUpperCase() + match.substr(1);
+			  });
+			};
+			
+			safari.application.addEventListener("popover", kickstart, true);
+			safari.extension.settings.addEventListener("change", settingChanged, false);
+			
+		</script>
+		<link href="stylesheets/style.css" media="screen" rel="stylesheet" type="text/css" />
+		<link href="stylesheets/jquery.tagsinput.css" media="screen" rel="stylesheet" type="text/css" />
+	</head>
+	<body onload="kickstart(); return false;">
+		<div id="header">
+			<img alt="Logo" src="images/logo.png">
+		</div>
+		<ul id="status_container" class="div-form" style="display:none;">
+
+		</ul>
+		<div id="login_container" class="div-form">
+			<div id="login_panel" style="">
+				<form accept-charset="UTF-8" action="#" data-remote="true" id="login_form" method="post" onsubmit="fetchAPIKey($(this)); return false;" name="login_form">
+					<div id="email_label">
+						<div>
+							<label for="email">Email</label>
+						</div>
+						<div>
+							<input class="login_field" id="email" name="email" type="text">
+						</div>
+					</div>
+					<div id="password_label">
+						<div>
+							<label for="password">Password</label>
+						</div>
+						<div>
+							<input class="login_field" id="password" name="password" type="password" value="">
+						</div>
+					</div>
+
+					<div id="base">
+						<div id="guidelines">
+							<a href="https://talentopoly.com/static/site_guidelines" onclick="openLink(this); return false;">Read the Site Guidelines</a><br />
+							<a href="https://talentopoly.com/forgot_password" onclick="openLink(this); return false;">Need Help?</a>
+						</div>
+						<div id="login_actions">
+							<div id="login_spinner" style="display:none;vertical-align:middle;"><img src="images/spinner.gif" style="vertical-align:middle;margin-top:5px;height:30px;" /></div>
+							<input id="login_button" style="" type="submit" value="Login" name="login" type="image">
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div id="login_bar">
+						
+						<div class="clear"></div>
+					</div>
+					<div id="login_misc">
+
+					</div>
+				</form>
+			</div>
+		</div>
+		
+		<div id="post_container" class="div-form">
+			<form accept-charset="UTF-8" action="#" onsubmit="submitPost($(this));return false;" class="new_post" data-remote="true" enctype="multipart/form-data" id="new_post" method="post" name="new_post">
+				<div style="margin:0;padding:0;display:inline">
+					<input name="utf8" type="hidden" value="✓">
+					<input id="api_key" name="api_key" type="hidden" value="">
+				</div>
+				<div id="link">
+					<div>
+						<label for="post_link">Link</label> 
+						<small style="float:right;" id="post_link_length"></small>
+					</div>
+					<div>
+						<input id="post_link" name="link" size="25" type="text"> <a href="#" onClick="updateFields(true);return false;"> <img src="images/refresh.png" style="width:20px" title="Refresh" /></a>
+					</div>
+				</div>
+				<div id="title">
+					<div>
+						<label for="post_title">Title</label> 
+						<small style="float:right;" id="post_title_length"></small>
+					</div>
+					<div>
+						<input id="post_title" name="title" size="30" type="text">
+					</div>
+				</div>
+				<div id="similar" style="display: none;">
+					<div>
+						<label>Similar posts (please check)</label> Has this already been posted?
+					</div>
+					<div id="similar_posts"></div>
+				</div>
+				<div id="description">
+					<div>
+						<label for="post_description">Description (optional)</label> You can use <a href="http://daringfireball.net/projects/markdown/syntax" onclick="openLink(this); return false;">markdown syntax</a>
+					</div>
+					<div>
+						<textarea cols="40" id="post_description" name="description" rows="20"></textarea>
+					</div>
+				</div>
+				<div id="tags">
+					<div>
+						<label for="post_tag_list">Tags (optional)</label> Type enter or a comma to create a tag
+					</div>
+					<div>
+						<input id="post_tag_list" name="tag_list" size="30" type="text" value="">
+					</div>
+				</div>
+				<div id="base">
+					<div id="guidelines">
+						<a href="https://talentopoly.com/static/site_guidelines" onclick="openLink(this); return false;">Read the Site Guidelines</a><br />
+						<a href="#" onclick="logout(); return false;">Logout</a>
+					</div>
+					<div id="post_actions">
+						<div id="schedule" style="display:inline-block;">
+							<div>
+								<label for="post_hours_from_now" >Post in</label>
+								<input id="post_hours_from_now" name="hours_from_now" size="2" type="text" value="0"> hour(s)
+							</div>
+						</div>
+						<div id="post_spinner" style="display:none;vertical-align:middle;"><img src="images/spinner.gif" style="vertical-align:middle;margin-top:5px;height:30px;" /></div>
+						<input id="post_button" name="commit" type="submit" value="Post" />
+					</div>
+					<div style="clear: both;"></div>
+				</div><input id="post_bookmarklet" name="post[bookmarklet]" type="hidden" value="true">
+			</form>
+		</div>
+
+		<script type="text/javascript">
+			//<![CDATA[
+			$('#post_tag_list').tagsInput({
+				height: '40px',
+				width: '400px',
+				defaultText: '',
+				autocomplete_url: baseURL + '/tags/autocomplete.json'
+			});
+			
+			$('#post_link').change( function() { validateLinkChange(); } );
+			$('#post_link').keyup( function() { updateLinkLength(); } );
+			$('#post_title').change( function() { validateTitleChange(); } );
+			$('#post_title').keyup( function() { updateTitleLength(); } );
+			//]]>
+		</script>
+		
+	</body>
+</html>
