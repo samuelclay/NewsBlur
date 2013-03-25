@@ -1319,13 +1319,17 @@ def feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
+    is_premium = request.user.profile.is_premium
+    if is_premium:
+        approved_feeds = []
+    else:
+        approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds:
+            if is_premium or sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True

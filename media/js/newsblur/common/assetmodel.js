@@ -1234,7 +1234,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     save_feed_chooser: function(approved_feeds, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/save_feed_chooser', {
-                'approved_feeds': _.select(approved_feeds, function(f) { return f; })
+                'approved_feeds': approved_feeds && _.select(approved_feeds, function(f) { return f; })
             }, callback);
         } else {
             if ($.isFunction(callback)) callback();
