@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Key</key>
+		<string>username</string>
+		<key>Secure</key>
+		<true/>
+		<key>Title</key>
+		<string>Username</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>password</string>
+		<key>Password</key>
+		<true/>
+		<key>Secure</key>
+		<true/>
+		<key>Title</key>
+		<string>Password</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>updateTime</string>
+		<key>Secure</key>
+		<false/>
+		<key>Type</key>
+		<string>Hidden</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>total</string>
+		<key>Key</key>
+		<string>countStyle</string>
+		<key>Title</key>
+		<string>Show:</string>
+		<key>Titles</key>
+		<array>
+			<string>Normal + Focused</string>
+			<string>Normal Only</string>
+			<string>Focused Only</string>
+		</array>
+		<key>Type</key>
+		<string>RadioButtons</string>
+		<key>Values</key>
+		<array>
+			<string>total</string>
+			<string>normal</string>
+			<string>focused</string>
+		</array>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Timing Options</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<real>300000</real>
+		<key>Key</key>
+		<string>updateTime</string>
+		<key>Title</key>
+		<string>Update Every: </string>
+		<key>Titles</key>
+		<array>
+			<string>1 minute</string>
+			<string>5 minutes</string>
+			<string>10 minutes</string>
+			<string>15 minutes</string>
+			<string>30 minutes</string>
+		</array>
+		<key>Type</key>
+		<string>ListBox</string>
+		<key>Values</key>
+		<array>
+			<real>60000</real>
+			<real>300000</real>
+			<real>600000</real>
+			<real>900000</real>
+			<real>1800000</real>
+		</array>
+	</dict>
+</array>
+</plist>
