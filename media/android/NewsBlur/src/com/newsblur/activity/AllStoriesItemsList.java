@@ -91,12 +91,7 @@ public class AllStoriesItemsList extends ItemsList {
 		new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Void... arg) {
-				if (apiManager.markAllAsRead()) {
-					return true;
-				} 
-				else {
-					return false;
-				}
+				return apiManager.markAllAsRead();
 			}
 			
 			@Override
