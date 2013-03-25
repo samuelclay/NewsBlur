@@ -3867,11 +3867,11 @@
             } else if (force || !this.socket || !this.socket.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 var https = _.string.startsWith(window.location.protocol, 'https');
+                var www = _.string.contains(window.location.href, 'www.newsblur.com');
                 var port = https ? 443 : 80;
                 if (NEWSBLUR.Globals.debug || !www) {
                     port = https ? 8889 : 8888;
                 }
-                var www = _.string.contains(window.location.href, 'www.newsblur.com');
                 this.socket = this.socket || io.connect(server, {
                     "reconnection delay": 2000,
                     "connect timeout": 2000,
