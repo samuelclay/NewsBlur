@@ -10,6 +10,7 @@ import os
 import time
 import sys
 import re
+import yaml
 try:
     import dop.client
 except ImportError:
@@ -29,6 +30,7 @@ except ImportError:
 # ============
 
 env.NEWSBLUR_PATH = "~/projects/newsblur"
+env.SECRETS_PATH = "~/projects/secrets-newsblur"
 env.VENDOR_PATH   = "~/projects/code"
 
 # =========
@@ -36,95 +38,8 @@ env.VENDOR_PATH   = "~/projects/code"
 # =========
 
 env.user = 'sclay'
-env.roledefs ={
-    'local': ['localhost'],
-    'app': ['app01.newsblur.com', 
-            'app02.newsblur.com', 
-            'app03.newsblur.com',
-            'app04.newsblur.com',
-            '198.211.109.197',
-            '198.211.110.131',
-            '198.211.110.230',
-            '192.34.61.227',
-            '198.211.109.155',
-            '198.211.107.87',
-            '198.211.105.155',
-            '198.211.104.133',
-            '198.211.103.214',
-            '198.211.106.22',
-            '198.211.110.189',
-            '198.211.106.215',
-            '192.81.209.42',
-            '198.211.102.245',
-            '198.211.109.236',
-            '198.211.113.54',
-            '198.211.113.206',
-            '198.211.113.86',
-            '198.211.113.196',
-            ],
-    'dev': ['dev.newsblur.com'],
-    'debug': ['debug.newsblur.com'],
-    'web': ['app01.newsblur.com', 
-            'app02.newsblur.com', 
-            'app04.newsblur.com',
-            ],
-    'db': ['db01.newsblur.com', 
-           'db02.newsblur.com', 
-           # 'db03.newsblur.com', 
-           'db04.newsblur.com', 
-           'db05.newsblur.com',
-           'db10.newsblur.com',
-           'db11.newsblur.com',
-           'db12.newsblur.com',
-           'db20.newsblur.com',
-           'db21.newsblur.com',
-           'db22.newsblur.com',
-           'db23.newsblur.com',
-           ],
-    'dbdo':['198.211.109.225',
-            '198.211.109.224',
-            '198.211.110.164',
-            '198.211.115.113',
-            '198.211.115.153',
-            '198.211.115.8',
-            '198.211.117.116',
-            ],
-    'task': ['task01.newsblur.com', 
-             'task02.newsblur.com', 
-             'task03.newsblur.com', 
-             'task04.newsblur.com', 
-             # 'task05.newsblur.com', 
-             # 'task06.newsblur.com', 
-             # 'task07.newsblur.com',
-             'task08.newsblur.com',
-             'task09.newsblur.com',
-             # 'task10.newsblur.com',
-             'task11.newsblur.com',
-             ],
-    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
-                'ec2-184-72-214-147.compute-1.amazonaws.com',
-                'ec2-107-20-103-16.compute-1.amazonaws.com',
-                'ec2-50-17-12-16.compute-1.amazonaws.com',
-
-                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                'ec2-184-73-2-61.compute-1.amazonaws.com',
-                'ec2-54-234-211-75.compute-1.amazonaws.com',
-                'ec2-54-242-131-232.compute-1.amazonaws.com',
-                'ec2-75-101-195-131.compute-1.amazonaws.com',
-                'ec2-54-242-105-17.compute-1.amazonaws.com',
-                'ec2-107-20-76-111.compute-1.amazonaws.com',
-                ],
-    'vps': ['task01.newsblur.com', 
-            'task03.newsblur.com', 
-            'task04.newsblur.com', 
-            'task08.newsblur.com', 
-            'task09.newsblur.com', 
-            'task10.newsblur.com', 
-            'task11.newsblur.com', 
-            'app01.newsblur.com', 
-            'app02.newsblur.com', 
-            ],
-}
+hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
+env.roledefs = yaml.load(open(hosts_path))
 
 # ================
 # = Environments =
@@ -132,6 +47,7 @@ env.roledefs ={
 
 def server():
     env.NEWSBLUR_PATH = "/srv/newsblur"
+    env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
 
 def app():
