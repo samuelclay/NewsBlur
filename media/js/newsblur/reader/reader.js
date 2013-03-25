@@ -917,7 +917,14 @@
                 }
             } else if (!NEWSBLUR.assets.flags['has_chosen_feeds'] &&
                        NEWSBLUR.assets.folders.length) {
-                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                if (NEWSBLUR.Globals.is_premium) {
+                    this.model.save_feed_chooser(null, function() {
+                        NEWSBLUR.reader.hide_feed_chooser_button();
+                        NEWSBLUR.assets.load_feeds();
+                    });
+                } else {
+                    _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                }
             } else if (!NEWSBLUR.Globals.is_premium &&
                        NEWSBLUR.assets.feeds.active().length > 64) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
