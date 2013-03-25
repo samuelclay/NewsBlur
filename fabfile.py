@@ -1,5 +1,6 @@
 from fabric.api import cd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
+from fabric.operations import prompt
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
@@ -77,9 +78,11 @@ env.roledefs ={
            'db12.newsblur.com',
            'db20.newsblur.com',
            'db21.newsblur.com',
+           'db22.newsblur.com',
            ],
     'dbdo':['198.211.115.113',
             '198.211.115.153',
+            '198.211.115.8',
             ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
@@ -97,14 +100,14 @@ env.roledefs ={
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
+
                 'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
-                
                 'ec2-54-234-211-75.compute-1.amazonaws.com',
-                'ec2-50-16-97-13.compute-1.amazonaws.com',
                 'ec2-54-242-131-232.compute-1.amazonaws.com',
                 'ec2-75-101-195-131.compute-1.amazonaws.com',
                 'ec2-54-242-105-17.compute-1.amazonaws.com',
+                'ec2-107-20-76-111.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
             'task03.newsblur.com', 
@@ -765,7 +768,21 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
-    
+def upgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('easy_install pillow')
+        # celery_stop()
+        pull()
+        sudo('apt-get remove -y python-imaging')
+        kill()
+
+def downgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('apt-get install -y python-imaging')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
+        pull()
+        kill()
+        
 # ==============
 # = Setup - DB =
 # ==============    
@@ -823,7 +840,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 599585856
+    shmmax = 1140047872
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
@@ -855,6 +872,8 @@ def setup_mongo():
     sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
+    run('echo "ulimit -n 10000" > mongodb.defaults')
+    sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
@@ -882,6 +901,7 @@ def setup_munin():
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
         sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+    sudo('/etc/init.d/munin-node restart')
 
     
 def setup_db_munin():
@@ -1055,12 +1075,15 @@ def setup_ec2():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5432):
-    backup_date = '2012-08-17-08-00'
+def restore_postgres(port=5433):
+    backup_date = '2013-01-29-09-00'
+    yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
+    if yes != 'y': return
     # run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
     # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    sudo('su postgres -c "createdb newsblur -p %s -O newsblur"' % (port,))
-    sudo('su postgres -c "pg_restore -p %s --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % (port, backup_date))
+    run('dropdb newsblur -p %s -U postgres' % (port,), pty=False)
+    run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
+    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
     
 def restore_mongo():
     backup_date = '2012-07-24-09-00'

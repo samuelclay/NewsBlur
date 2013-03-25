@@ -56,8 +56,6 @@ class MStatistics(mongo.Document):
     @classmethod
     def collect_statistics(cls):
         now = datetime.datetime.now()
-        cls.collect_statistics_feeds_fetched()
-        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_premium_users()
         print "Premiums: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_standard_users()
@@ -68,6 +66,8 @@ class MStatistics(mongo.Document):
         print "Stories shared: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_for_db()
         print "DB Stats: %s" % (datetime.datetime.now() - now)
+        cls.collect_statistics_feeds_fetched()
+        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls):
@@ -84,11 +84,25 @@ class MStatistics(mongo.Document):
         from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
         def delete_old_history():
-            MFeedFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
-            MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
-            MFeedFetchHistory.objects(fetch_date__lt=last_month).delete()
-            MPageFetchHistory.objects(fetch_date__lt=last_month).delete()
-            MFeedPushHistory.objects(push_date__lt=last_month).delete()
+            print "Deleting old history."
+            feed_fetch_last_day = MFeedFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304])
+            page_fetch_last_day = MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304])
+            feed_fetch_last_month = MFeedFetchHistory.objects(fetch_date__lt=last_month)
+            page_fetch_last_month = MPageFetchHistory.objects(fetch_date__lt=last_month)
+            push_last_month = MFeedPushHistory.objects(push_date__lt=last_month)
+            print "Found %s/%s/%s/%s/%s (feed/page day, feed/page month, push month)" % (
+                feed_fetch_last_day.count(),
+                page_fetch_last_day.count(),
+                feed_fetch_last_month.count(),
+                page_fetch_last_month.count(),
+                push_last_month.count(),
+            )
+            
+            feed_fetch_last_day.delete()
+            page_fetch_last_day.delete()
+            feed_fetch_last_month.delete()
+            page_fetch_last_month.delete()
+            push_last_month.delete()
         try:
             delete_old_history()
         except TimeoutError:
