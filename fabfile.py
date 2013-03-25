@@ -43,7 +43,7 @@ try:
     roles = yaml.load(open(hosts_path))
     for role_name, hosts in roles.items():
         if isinstance(hosts, dict):
-            roles[role_name] = [hosts[h][0] for h in hosts]
+            roles[role_name] = [host for host in hosts.keys()]
     env.roledefs = roles
 except:
     print " ***> No role definitions found in %s. Using default roles." % hosts_path
@@ -716,7 +716,7 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============    
 
-@parallel
+# @parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -730,8 +730,6 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
-    
-    sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
     
     # DigitalOcean
     for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
@@ -947,6 +945,7 @@ def setup_do(name, size=2):
     
     host = instance.ip_address
     env.host_string = host
+    time.sleep(10)
     add_user_to_do()
     
 def add_user_to_do():
