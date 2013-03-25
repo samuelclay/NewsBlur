@@ -5,6 +5,7 @@ import time
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
 from utils.user_functions import extract_user_agent
+from apps.statistics.rstats import RStats
 
 class NullHandler(logging.Handler): #exists in python 3.1
     def emit(self, record):
@@ -54,6 +55,7 @@ def user(u, msg, request=None):
         if path in page_load_paths:
             MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
                                    duration=seconds)
+            RStats.add('page_load', duration=seconds)
 
 def cipher(msg):
     shift = len(msg)

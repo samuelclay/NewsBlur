@@ -161,7 +161,7 @@ class SimpsonsMiddleware:
         
 class ServerHostnameMiddleware:
     def process_response(self, request, response):
-        response["X-server"] = settings.SERVER_NAME
+        response["X-gunicorn-server"] = settings.SERVER_NAME
 
         return response
 

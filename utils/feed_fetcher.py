@@ -18,7 +18,7 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, utf8encode
+from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -54,11 +54,18 @@ class FetchFeed:
                                                  
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
+        address = self.feed.feed_address
         
-        if self.options.get('force') or not self.feed.fetched_once or not self.feed.known_good:
+        if (self.options.get('force') or random.random() <= .01):
             modified = None
             etag = None
-
+            address = cache_bust_url(address)
+            logging.debug(u'   ---> [%-30s] ~FBForcing fetch: %s' % (
+                          self.feed.title[:30], address))
+        elif (not self.feed.fetched_once or not self.feed.known_good):
+            modified = None
+            etag = None
+        
         USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
@@ -75,7 +82,7 @@ class FetchFeed:
             return FEED_OK, self.fpf
 
         try:
-            self.fpf = feedparser.parse(self.feed.feed_address,
+            self.fpf = feedparser.parse(address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
@@ -83,7 +90,7 @@ class FetchFeed:
             logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
                           (self.feed.title[:30], e))
             feedparser.PARSE_MICROFORMATS = False
-            self.fpf = feedparser.parse(self.feed.feed_address,
+            self.fpf = feedparser.parse(address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)

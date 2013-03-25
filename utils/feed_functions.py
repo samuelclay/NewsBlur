@@ -3,9 +3,11 @@ import threading
 import sys
 import traceback
 import pprint
+import urllib
+import urlparse
+import random
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
-from django.conf import settings
 from utils import log as logging
 
 class TimeoutError(Exception): pass
@@ -55,6 +57,18 @@ def utf8encode(tstr):
             return unicode(tstr.decode('utf-8').encode('utf-8'))
         except UnicodeDecodeError:
             return u''
+
+def append_query_string_to_url(url, **kwargs):
+    url_parts = list(urlparse.urlparse(url))
+    query = dict(urlparse.parse_qsl(url_parts[4]))
+    query.update(kwargs)
+
+    url_parts[4] = urllib.urlencode(query)
+
+    return urlparse.urlunparse(url_parts)
+    
+def cache_bust_url(url):
+    return append_query_string_to_url(url, _=random.randint(0, 10000))
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
