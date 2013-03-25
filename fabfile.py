@@ -733,8 +733,10 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     
     # DigitalOcean
-    for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
-        if 'newsblur.com' in ip: continue
+    for ip in set(env.roledefs['app'] + 
+                  env.roledefs['dbdo'] + 
+                  env.roledefs['dev'] + 
+                  env.roledefs['debug']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
