@@ -570,6 +570,7 @@ def configure_nginx():
     sudo("mkdir -p /var/log/nginx")
     put("config/nginx.newsblur.conf", "/usr/local/nginx/conf/sites-enabled/newsblur.conf", use_sudo=True)
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
+    sudo('sed -i -e s/nginx_none/`cat /etc/hostname`/g /usr/local/nginx/conf/sites-enabled/newsblur.conf')
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
