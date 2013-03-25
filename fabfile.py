@@ -38,8 +38,20 @@ env.VENDOR_PATH   = "~/projects/code"
 # =========
 
 env.user = 'sclay'
-hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
-env.roledefs = yaml.load(open(hosts_path))
+try:
+    hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
+    roles = yaml.load(open(hosts_path))
+    for role_name, hosts in roles.items():
+        if isinstance(hosts, dict):
+            roles[role_name] = [hosts[h][0] for h in hosts]
+    env.roledefs = roles
+except:
+    print " ***> No role definitions found in %s. Using default roles." % hosts_path
+    env.roledefs = {
+        'app'   : ['app01.newsblur.com'],
+        'db'    : ['db01.newsblur.com'],
+        'task'  : ['task01.newsblur.com'],
+    }
 
 # ================
 # = Environments =
@@ -57,10 +69,6 @@ def app():
 def dev():
     server()
     env.roles = ['dev']
-
-def web():
-    server()
-    env.roles = ['web']
 
 def db():
     server()
