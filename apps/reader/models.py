@@ -932,7 +932,12 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_feeds:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
-                    UserSubscription.objects.get_or_create(user=self.user, feed=feed)
+                    us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
+                        'needs_unread_recalc': True
+                    })
+                    if not us.needs_unread_recalc:
+                        us.needs_unread_recalc = True
+                        us.save()
 
 
 class Feature(models.Model):

@@ -47,7 +47,7 @@ class TaskFeeds(Task):
             queued_date__lte=day,
             min_to_decay__lte=60*24,
             active_subscribers__gte=1
-        ).order_by('?')[:50]
+        ).order_by('?')[:100]
         inactive_count = inactive_feeds.count()
         
         week = now - datetime.timedelta(days=7)
@@ -55,7 +55,7 @@ class TaskFeeds(Task):
             last_update__lte=week, 
             queued_date__lte=day,
             active_subscribers__gte=1
-        ).order_by('?')[:20]
+        ).order_by('?')[:50]
         old_count = old_feeds.count()
         
         logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
