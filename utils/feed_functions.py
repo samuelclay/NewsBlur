@@ -69,7 +69,7 @@ def append_query_string_to_url(url, **kwargs):
     
 def cache_bust_url(url):
     return append_query_string_to_url(url, _=random.randint(0, 10000))
-    
+
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
     """Find the Levenshtein distance between two strings."""
