@@ -12,20 +12,20 @@ class Migration(DataMigration):
             if f < batch*100000: continue
             start = time.time()
             try:
-                feed = Feed.get_by_id(f)
-            except Feed.DoesNotExist:
-                continue
-            if not feed: continue
-            cp1 = time.time() - start
-            if feed.active_premium_subscribers < 1: continue
-            stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)
-            cp2 = time.time() - start
-            try:
+                try:
+                    feed = Feed.get_by_id(f)
+                except Feed.DoesNotExist:
+                    continue
+                if not feed: continue
+                cp1 = time.time() - start
+                if feed.active_premium_subscribers < 1: continue
+                stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)
+                cp2 = time.time() - start
                 for story in stories: story.save()
+                cp3 = time.time() - start
+                print "%3s stories: %s (%s/%s/%s)" % (stories.count(), feed, round(cp1, 2), round(cp2, 2), round(cp3, 2))
             except Exception, e:
                 print " ***> (%s) %s" % (f, e)
-            cp3 = time.time() - start
-            print "%3s stories: %s (%s/%s/%s)" % (stories.count(), feed, round(cp1, 2), round(cp2, 2), round(cp3, 2))
     
 
 

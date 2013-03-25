@@ -25,6 +25,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStarredStory, SearchFeed
+from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder, feedparser
 from utils import urlnorm
@@ -1682,6 +1683,7 @@ class MFeedFetchHistory(mongo.Document):
         if not isinstance(self.exception, basestring):
             self.exception = unicode(self.exception)
         super(MFeedFetchHistory, self).save(*args, **kwargs)
+        RStats.add('feed_fetch')
         
     @classmethod
     def feed_history(cls, feed_id, timezone=None):
