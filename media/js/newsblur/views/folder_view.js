@@ -61,7 +61,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         if (!this.options.only_title) {
             var $feeds = _.compact(this.collection.map(function(item) {
                 if (item.is_feed()) {
-                    if (!item.feed.get('active')) return;
+                    if (!feed_chooser && !item.feed.get('active')) return;
                     var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
                         model: item.feed, 
                         type: 'feed',
