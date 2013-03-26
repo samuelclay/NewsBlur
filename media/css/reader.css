@@ -1090,6 +1090,9 @@ background: transparent;
     width: 206px;
     top: 2px;
 }
+.NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-options-container {
+    position: static;
+}
 #story_titles .NB-feedbar .NB-feedbar-options {
     cursor: pointer;
     float: left;
@@ -1171,8 +1174,8 @@ background: transparent;
 
 .NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     position: static;
-    float: left;
-    margin-left: 26px;
+    float: right;
+    margin: 4px 0 4px 4px;
 }
 
 #story_titles .NB-feedbar .NB-feedlist-manage-icon {
@@ -1322,6 +1325,11 @@ background: transparent;
 }
 #story_titles .NB-story-title-indicator:hover {
     background-color: rgba(0, 0, 0, .1);
+}
+.NB-story-pane-west #story_titles .NB-feedbar .NB-story-title-indicator {
+    position: static;
+    float: left;
+    margin: 4px 4px 2px 0;
 }
 #story_titles .NB-story-title-indicator .NB-story-title-indicator-count {
     float: left;
@@ -2905,6 +2913,8 @@ background: transparent;
     float: left;
     margin: 8px 8px 0 0;
     border: 1px solid #C0C0C0;
+    clear: right;
+    width: 174px;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
@@ -2939,9 +2949,6 @@ background: transparent;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
-}
-.NB-feed-story-view-narrow .NB-sideoption .NB-sideoption-title {
-    padding: 4px 42px 4px 8px;
 }
 .NB-sideoption:hover {
     cursor: pointer;

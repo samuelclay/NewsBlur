@@ -184,6 +184,7 @@
                 skip_save_type: flag,
                 resize: true
             });
+            
             NEWSBLUR.app.story_titles.fill_out();
             this.flags.fetch_story_locations_in_feed_view = this.flags.fetch_story_locations_in_feed_view ||
                                                             _.throttle(function() {
@@ -232,7 +233,8 @@
             $('.right-pane').removeClass('NB-story-pane-west')
                             .removeClass('NB-story-pane-north')
                             .removeClass('NB-story-pane-south')
-                            .addClass('NB-story-pane-'+story_anchor);
+                            .toggleClass('NB-story-pane-'+story_anchor,
+                                         NEWSBLUR.assets.preference('story_layout') == 'split');
                             
             this.layout.outerLayout = this.$s.$layout.layout({ 
                 zIndex:                 2,
@@ -416,7 +418,7 @@
             this.$s.$story_pane.css('left', -1 * offset);
             
             this.flags.set_story_titles_size = this.flags.set_story_titles_size || _.debounce( _.bind(function() {
-                var story_titles_size = this.layout.rightLayout.state[this.model.preference('story_pane_anchor')].size;
+                var story_titles_size = this.layout.contentLayout.state[this.model.preference('story_pane_anchor')].size;
                 this.model.preference('story_titles_pane_size', story_titles_size);
                 this.flags.set_story_titles_size = null;
                 this.locks.scrolling = _.delay(_.bind(function() {
@@ -2679,7 +2681,7 @@
         close_story_titles_pane: function(update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.rightLayout.close(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.close(story_anchor);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -2688,7 +2690,7 @@
         open_story_titles_pane: function(update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.rightLayout.open(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.open(story_anchor);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = false;
