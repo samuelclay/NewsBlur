@@ -7,7 +7,8 @@ import re
 
 from django.conf import settings
 from django.db import models
-from django.utils.hashcompat import sha_constructor
+#from django.utils.hashcompat import sha_constructor
+from hashlib import sha1
 
 from apps.push import signals
 from apps.rss_feeds.models import Feed
@@ -120,7 +121,7 @@ class PushSubscription(models.Model):
     def generate_token(self, mode):
         assert self.pk is not None, \
             'Subscription must be saved before generating token'
-        token = mode[:20] + sha_constructor('%s%i%s' % (
+        token = mode[:20] + sha1('%s%i%s' % (
                 settings.SECRET_KEY, self.pk, mode)).hexdigest()
         self.verify_token = token
         self.save()

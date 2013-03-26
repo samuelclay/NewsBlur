@@ -143,7 +143,7 @@ class FileFinder:
 
     @classmethod
     def find_files(cls, folder, pattern):
-        listdir = os.listdir(folder)
+        listdir = os.listdir('/var/www/vhosts/newsblur.wsartori.com/newsblur/' + folder)
         listdir.sort()
         for entry in listdir:
             if not os.path.isdir(entry) and fnmatch(entry, pattern):
