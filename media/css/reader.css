@@ -2832,8 +2832,10 @@ background: transparent;
     border-radius: 3px;
 }
 .NB-story-share-profile .NB-user-avatar img.NB-user-avatar-private {
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
+  bottom: 0;
+  left: 0;
 }
 .NB-story-share-profile .NB-user-username {
     float: left;
