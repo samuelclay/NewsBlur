@@ -1,7 +1,7 @@
 /*global Buffer require exports console setTimeout */
 
 var events = require("events"),
-    util = require("../util").util,
+    util = require("../util"),
     hiredis = require("hiredis");
 
 exports.debug_mode = false;
@@ -27,15 +27,20 @@ HiredisReplyParser.prototype.reset = function () {
 HiredisReplyParser.prototype.execute = function (data) {
     var reply;
     this.reader.feed(data);
-    try {
-        while ((reply = this.reader.get()) !== undefined) {
-            if (reply && reply.constructor === Error) {
-                this.emit("reply error", reply);
-            } else {
-                this.emit("reply", reply);
-            }
+    while (true) {
+        try {
+          reply = this.reader.get();
+        } catch (err) {
+          this.emit("error", err);
+          break;
         }
-    } catch (err) {
-        this.emit("error", err);
+
+        if (reply === undefined) break;
+
+        if (reply && reply.constructor === Error) {
+            this.emit("reply error", reply);
+        } else {
+            this.emit("reply", reply);
+        }
     }
 };

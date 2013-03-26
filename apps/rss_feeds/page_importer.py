@@ -11,7 +11,8 @@ from django.conf import settings
 from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
-from utils.feed_functions import timelimit, mail_feed_error_to_admin
+from utils.feed_functions import timelimit
+# from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
     'tag:', 
@@ -120,7 +121,10 @@ class PageImporter(object):
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
-            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                settings.RAVEN_CLIENT):
+                settings.RAVEN_CLIENT.captureException()
             if not urllib_fallback:
                 self.fetch_page(urllib_fallback=True)
         else:

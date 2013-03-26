@@ -1,17 +1,32 @@
 # -*- coding: utf-8 -*-
 from south.v2 import DataMigration
-from apps.rss_feeds.models import MStory, Feed
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
+        from apps.rss_feeds.models import MStory, Feed
+        import time
+
+        batch = 0
         for f in xrange(Feed.objects.latest('pk').pk):
-            feed = Feed.get_by_id(f)
-            if not feed: continue
-            stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)
-            print "%3s stories: %s " % (stories.count(), feed)
-            for story in stories: story.save()
-            
+            if f < batch*100000: continue
+            start = time.time()
+            try:
+                try:
+                    feed = Feed.get_by_id(f)
+                except Feed.DoesNotExist:
+                    continue
+                if not feed: continue
+                cp1 = time.time() - start
+                if feed.active_premium_subscribers < 1: continue
+                stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)
+                cp2 = time.time() - start
+                for story in stories: story.save()
+                cp3 = time.time() - start
+                print "%3s stories: %s (%s/%s/%s)" % (stories.count(), feed, round(cp1, 2), round(cp2, 2), round(cp3, 2))
+            except Exception, e:
+                print " ***> (%s) %s" % (f, e)
+    
 
 
     def backwards(self, orm):

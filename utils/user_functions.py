@@ -1,6 +1,6 @@
+import hashlib
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from hashlib import md5, sha1
 from django.utils.http import urlquote
 from django.http import HttpResponseForbidden
 from django.conf import settings
@@ -62,14 +62,14 @@ def get_user(request):
     return user
     
 def invalidate_template_cache(fragment_name, *variables):
-    args = md5(u':'.join([urlquote(var) for var in variables]))
+    args = hashlib.md5(u':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     
 def generate_secret_token(phrase, size=12):
     """Generate a (SHA1) security hash from the provided info."""
     info = (phrase, settings.SECRET_KEY)
-    return sha1("".join(info)).hexdigest()[:size]
+    return hashlib.sha1("".join(info)).hexdigest()[:size]
 
 def extract_user_agent(request):
     user_agent = request.environ.get('HTTP_USER_AGENT', '')

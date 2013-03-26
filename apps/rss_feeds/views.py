@@ -70,10 +70,12 @@ def load_feed_favicon(request, feed_id):
 
 @json.json_view
 def feed_autocomplete(request):
+    user = get_user(request)
     query = request.GET.get('term')
     version = int(request.GET.get('v', 1))
     
-    return dict(code=-1, message="Overloaded, no autocomplete results.")
+    if not user.profile.is_premium:
+        return dict(code=-1, message="Overloaded, no autocomplete results.")
     
     if not query:
         return dict(code=-1, message="Specify a search 'term'.")

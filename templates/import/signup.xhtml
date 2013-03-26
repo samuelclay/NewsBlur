@@ -15,7 +15,7 @@
         </h5>
 
         <div class="NB-import-signup" style="margin-top: 24px;">
-          <form method="post" action="{% url import-signup %}">
+          <form method="post" action="{% url "import-signup" %}">
             <div>
               {{ signup_form.username.label_tag }}
               {{ signup_form.username }}

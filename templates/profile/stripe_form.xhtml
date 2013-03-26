@@ -95,6 +95,11 @@ float: right;">
             </div>
             
             <div style="overflow: hidden">
+                <style>
+                .NB-stripe-plan-choice label:first-child {
+                    display: none;
+                }
+                </style>
                 {{ zebra_form.plan.label_tag }}
                 {{ zebra_form.plan|safe }}
             </div>

@@ -55,7 +55,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'debug']:
         username = request.subdomain
         try:
             if '.' in username:
@@ -193,8 +193,10 @@ def autologin(request, username, secret):
     if next and not next.startswith('/'):
         next = '?next=' + next
         return HttpResponseRedirect(reverse('index') + next)
-    else:
+    elif next:
         return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect(reverse('index'))
     
 @ratelimit(minutes=1, requests=24)
 @never_cache
@@ -585,7 +587,7 @@ def load_single_feed(request, feed_id):
     last_update = relative_timesince(feed.last_update)
     time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s(%s)~SN)" % (
         diff1, diff2, diff3, diff4, userstories_db and userstories_db.count() or '~SN0~SB')
-        if timediff > 0.50 else "")
+        if timediff > 1 else "")
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
     
@@ -1295,13 +1297,17 @@ def feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
+    is_premium = request.user.profile.is_premium
+    if is_premium:
+        approved_feeds = []
+    else:
+        approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds:
+            if is_premium or sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True

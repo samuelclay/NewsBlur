@@ -356,13 +356,8 @@ class UserSubscription(models.Model):
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
         for story_id in set(story_ids):
-            try:
-                story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=story_id)
-            except MStory.DoesNotExist:
-                # Story has been deleted, probably by feed_fetcher.
-                continue
-            except MStory.MultipleObjectsReturned:
-                story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
+            story, _ = MStory.find_story(story_feed_id=self.feed_id, story_id=story_id)
+            if not story: continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             m, _ = MUserStory.objects.get_or_create(story_id=story_id, user_id=self.user_id, 
@@ -510,11 +505,12 @@ class UserSubscription(models.Model):
             duplicate_story = user_story.story
             if duplicate_story:
                 story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
-                original_story = MStory.objects(story_feed_id=new_feed.pk,
-                                                story_guid=story_guid)
+                original_story, _ = MStory.find_story(story_feed_id=new_feed.pk,
+                                                      story_id=story_guid,
+                                                      original_only=True)
         
                 if original_story:
-                    user_story.story = original_story[0]
+                    user_story.story = original_story
                     try:
                         user_story.save()
                     except OperationError:
@@ -936,7 +932,12 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_feeds:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
-                    UserSubscription.objects.get_or_create(user=self.user, feed=feed)
+                    us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
+                        'needs_unread_recalc': True
+                    })
+                    if not us.needs_unread_recalc:
+                        us.needs_unread_recalc = True
+                        us.save()
 
 
 class Feature(models.Model):

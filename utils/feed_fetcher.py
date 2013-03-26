@@ -18,7 +18,8 @@ from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
+from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
+# from utils.feed_functions import mail_feed_error_to_admin
 
 
 # Refresh feed code adapted from Feedjack.
@@ -53,11 +54,18 @@ class FetchFeed:
                                                  
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
+        address = self.feed.feed_address
         
-        if self.options.get('force') or not self.feed.fetched_once or not self.feed.known_good:
+        if (self.options.get('force') or random.random() <= .01):
             modified = None
             etag = None
-
+            address = cache_bust_url(address)
+            logging.debug(u'   ---> [%-30s] ~FBForcing fetch: %s' % (
+                          self.feed.title[:30], address))
+        elif (not self.feed.fetched_once or not self.feed.known_good):
+            modified = None
+            etag = None
+        
         USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
@@ -74,7 +82,7 @@ class FetchFeed:
             return FEED_OK, self.fpf
 
         try:
-            self.fpf = feedparser.parse(self.feed.feed_address,
+            self.fpf = feedparser.parse(address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
@@ -82,7 +90,7 @@ class FetchFeed:
             logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
                           (self.feed.title[:30], e))
             feedparser.PARSE_MICROFORMATS = False
-            self.fpf = feedparser.parse(self.feed.feed_address,
+            self.fpf = feedparser.parse(address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
@@ -237,12 +245,14 @@ class ProcessFeed:
                     self_url = link['href']
             push_expired = self.feed.is_push and self.feed.push.lease_expires < datetime.datetime.now()
             if (hub_url and self_url and not settings.DEBUG and
+                self.feed.active_subscribers > 0 and
                 (push_expired or not self.feed.is_push or self.options.get('force'))):
                 logging.debug(u'   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s' % (
                               self.feed.title[:30],
                               "~SKRe-~SN" if push_expired else "", hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
-            elif self.feed.is_push and not hub_url:
+            elif (self.feed.is_push and 
+                  (self.feed.active_subscribers <= 0 or not hub_url)):
                 logging.debug(u'   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (
                               self.feed.title[:30]))
                 self.feed.is_push = False
@@ -386,7 +396,7 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 feed_code = 500
                 fetched_feed = None
-                mail_feed_error_to_admin(feed, e, local_vars=locals())
+                # mail_feed_error_to_admin(feed, e, local_vars=locals())
                 if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
                     settings.RAVEN_CLIENT):
                     settings.RAVEN_CLIENT.captureException()
@@ -431,8 +441,10 @@ class Dispatcher:
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     page_data = None
-                    mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.RAVEN_CLIENT.captureException()
+                    # mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                        settings.RAVEN_CLIENT):
+                        settings.RAVEN_CLIENT.captureException()
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
@@ -449,8 +461,10 @@ class Dispatcher:
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
-                    mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.RAVEN_CLIENT.captureException()
+                    # mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                        settings.RAVEN_CLIENT):
+                        settings.RAVEN_CLIENT.captureException()
             else:
                 logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             

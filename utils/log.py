@@ -5,6 +5,7 @@ import time
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
 from utils.user_functions import extract_user_agent
+from apps.statistics.rstats import RStats
 
 class NullHandler(logging.Handler): #exists in python 3.1
     def emit(self, record):
@@ -43,9 +44,18 @@ def user(u, msg, request=None):
     premium = '*' if is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
+    page_load_paths = [
+        "/reader/feed/",
+        "/social/stories/",
+        "/reader/river_stories/",
+        "/social/river_stories/"
+    ]
     if request:
-        MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=request.path, 
-                               duration=seconds)
+        path = MAnalyticsPageLoad.clean_path(request.path)
+        if path in page_load_paths:
+            MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
+                                   duration=seconds)
+            RStats.add('page_load', duration=seconds)
 
 def cipher(msg):
     shift = len(msg)
