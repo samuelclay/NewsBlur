@@ -78,7 +78,7 @@ public class Profile extends SherlockFragmentActivity {
 		@Override
 		protected void onPreExecute() {
 			if (TextUtils.isEmpty(userId)) {
-				detailsFragment.setUser(PrefsUtils.getUserDetails(Profile.this), true);
+				detailsFragment.setUser(Profile.this, PrefsUtils.getUserDetails(Profile.this), true);
 			}
 		}
 
@@ -102,8 +102,9 @@ public class Profile extends SherlockFragmentActivity {
 		@Override
 		protected void onPostExecute(Void result) {
 			if (user != null && detailsFragment != null && activitiesFragment != null) {
-				detailsFragment.setUser(user, TextUtils.isEmpty(userId));
-				activitiesFragment.setActivitiesAndUser(activities, user);
+				detailsFragment.setUser(Profile.this, user, TextUtils.isEmpty(userId));
+				// TODO still sometimes causes a force close - is activities null ?
+				activitiesFragment.setActivitiesAndUser(Profile.this, activities, user);
 			}
 		}
 	}

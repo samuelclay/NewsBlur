@@ -193,8 +193,11 @@ public class AddSitesListFragment extends Fragment {
 			feedImage.setAlpha(125);
 		}
 		
-		for (View feedBorder : feedBorderViews) {
-			feedBorder.setAlpha(125);
+		// View.setAlpha only support on API level >= 11
+		if (Build.VERSION.SDK_INT > 10) {
+		    for (View feedBorder : feedBorderViews) {
+			    feedBorder.setAlpha(125);
+		    }
 		}
 	}
 
@@ -208,8 +211,11 @@ public class AddSitesListFragment extends Fragment {
 			feedImage.setAlpha(255);
 		}
 		
-		for (View feedBorder : feedBorderViews) {
-			feedBorder.setAlpha(255);
+		// View.setAlpha only support on API level >= 11
+		if (Build.VERSION.SDK_INT > 10) {
+		    for (View feedBorder : feedBorderViews) {
+			    feedBorder.setAlpha(255);
+		    }
 		}
 	}
 
