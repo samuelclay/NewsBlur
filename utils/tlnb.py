@@ -12,7 +12,7 @@ IGNORE_HOSTS = [
     'push',
 ]
 
-def main(role="app", role2="app"):
+def main(role="app", role2="dev"):
     streams = list()
     path = "/srv/newsblur/logs/newsblur.log"
     hosts_path = os.path.expanduser(os.path.join('../secrets-newsblur/configs/hosts.yml'))
