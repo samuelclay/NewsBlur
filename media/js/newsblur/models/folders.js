@@ -53,7 +53,7 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     },
     
     feed_ids_in_folder: function() {
-        if (this.is_feed()) {
+        if (this.is_feed() && this.feed.get('active')) {
             return this.feed.id;
         } else if (this.is_folder()) {
             return this.folders.feed_ids_in_folder();

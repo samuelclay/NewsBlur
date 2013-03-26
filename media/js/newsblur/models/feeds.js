@@ -120,6 +120,8 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
             return true;
         }
         
+        if (!this.get('active')) return false;
+        
         if (unread_view <= -1) {
             return !!(this.get('ng') || this.get('nt') || this.get('ps'));
         } else if (unread_view == 0) {
