@@ -423,18 +423,38 @@ body {
 
 #NB-feeds-list-loader {
   background: transparent url("/media/embed/reader/big_spinner.gif?v2") no-repeat 0 0;
-  color: #C7CDD6;
+  color: rgba(0, 0, 0, .2);
   font-size: 16px;
   height: 51px;
   left: 5%;
   padding: 5px 0 0 62px;
   position: absolute;
-  text-shadow: 0 1px 0 #E7EDF6;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
   text-transform: uppercase;
   top: 40%;
   width: 125px;
   z-index: 10;
   cursor: default;
+}
+.NB-feeds-list-empty {
+  background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
+  background-size: 64px;
+  color: rgba(0, 0, 0, .4);
+  opacity: .4;
+  font-size: 16px;
+  padding: 78px 24px 0;
+  position: absolute;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+  top: 40%;
+  width: 100%;
+  z-index: 10;
+  cursor: default;
+  line-height: 20px;
+  font-weight: bold;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .NB-feedlists ::-moz-selection {

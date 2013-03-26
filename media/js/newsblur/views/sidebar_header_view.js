@@ -44,6 +44,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         this.$('.NB-feeds-header-dashboard').html($header);
         
         this.toggle_hide_read_preference();
+        NEWSBLUR.reader.toggle_focus_in_slider();
         
         return this;
     },
