@@ -2703,18 +2703,11 @@ background: transparent;
 .NB-story-comments-public-header-wrapper {
     margin-top: 12px;
 }
-.NB-story-comments-public-teaser,
-.NB-story-comments-public-header {
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
-}
 .NB-story-comments-shares-teaser {
     background-color: #F5F5EF;
     color: #898989;
     cursor: default;
-    text-shadow: 0 1px 0 #FFF;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
     font-weight: normal;
     font-size: 10px;
     padding: 4px 12px 4px 28px;
@@ -2724,20 +2717,38 @@ background: transparent;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
     -moz-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
     box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
 }
 
 .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
-    background-color: #2B478C;
-    background-image: none;
-    text-shadow: 0 1px 0 #141F48;
+    background-image: -webkit-linear-gradient(center top , #EAECE5, #DDDFD6);
+    background-image: -moz-linear-gradient(center top , #EAECE5, #DDDFD6);
+    background-image: linear-gradient(center top , #EAECE5, #DDDFD6);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+.NB-story-comments-public-teaser-wrapper:active .NB-story-comments-public-teaser {
+    background-image: -webkit-linear-gradient(center top , #D6D9D0, #C7CABF);
+    background-image: -moz-linear-gradient(center top , #D6D9D0, #C7CABF);
+    background-image: linear-gradient(center top , #D6D9D0, #C7CABF);
 }
 .NB-story-comments-public-teaser b {
     padding: 0 1px;
     font-size: 12px;
+}
+.NB-story-comments-expand-icon {
+    background: transparent url("/media/embed/icons/circular/folder_expand.png") no-repeat center center;
+    background-size: 13px 12px;
+    width: 16px;
+    height: 16px;
+    float: right;
+    margin: 2px 2px;
+    opacity: .8;
+}
+.NB-story-comments-expand-icon.NB-loading {
+    background: transparent url("/media/embed/reader/recycle_spinner.gif") no-repeat center center;
+    background-size: 16px;    
+}
+.NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-expand-icon {
+    opacity: 1;
 }
 .NB-story-share-label {
     display: inline-block;
@@ -2880,6 +2891,7 @@ background: transparent;
     text-shadow: 0 1px 0 #000;
     margin-top: 1px;
     background-color: #edefea;
+    clear: both;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;

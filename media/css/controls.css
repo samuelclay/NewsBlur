@@ -20,15 +20,63 @@ ul.segmented-control {
 
 .segmented-control li {
     background: none;
-    background-color: #DDDFD9;
     float: left;
     margin-left: 1px;
     cursor: pointer;
     margin: 0;
     padding: 0;
     clear: none;
-
+    text-transform: uppercase;
+    text-align: center;
     border-right: 1px solid rgba(0, 0, 0, .2);
+
+    color: #61635e;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+    
+    background-color: #DDDFD9;
+    background-image:
+        -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, .05))),
+        url(/media/img/reader/background-control-light.png);
+    background-image:
+        -moz-linear-gradient(0% 0% -90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .05)),
+        url(/media/img/reader/background-control-light.png);
+    
+    -webkit-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                        inset 0 0 5px rgba(255, 255, 255, .1);
+    -moz-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                     inset 0 0 5px rgba(255, 255, 255, .1);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                inset 0 0 5px rgba(255, 255, 255, .1);
+}
+
+.segmented-control li:active:not(.NB-disabled),
+.segmented-control-active li:active {
+    color: #303030;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
+
+    background-image:
+        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
+        url(/media/img/reader/background-control.png);
+    
+    background-image:
+        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .25)),
+        url(/media/img/reader/background-control.png);
+    
+    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                        inset 0 0 5px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                     inset 0 0 5px rgba(0, 0, 0, .1);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                inset 0 0 5px rgba(0, 0, 0, .1);
+}
+
+.segmented-control li.NB-active,
+.segmented-control li.NB-active:active,
+.segmented-control-active li {
+    color: #303030;
+
+    background-color: #FDFDFD;
+    background-image: linear-gradient(top, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .3)), to(rgba(255, 255, 255, 0)));
     
     background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
@@ -36,12 +84,25 @@ ul.segmented-control {
     -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
     -moz-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
     box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
-
-    color: #61635e;
-    text-transform: uppercase;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
-    text-align: center;
 }
+
+.segmented-control li.NB-disabled {
+    opacity: .9;
+    color: rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
+    cursor: default;
+    
+    -webkit-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
+                        inset 0 0 2px rgba(255, 255, 255, .1);
+    -moz-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
+                     inset 0 0 2px rgba(255, 255, 255, .1);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
+                inset 0 0 2px rgba(255, 255, 255, .1);
+}
+.segmented-control li.NB-disabled .NB-task-image {
+    opacity: .3;
+}
+
 
 .segmented-control li:first-child,
 .segmented-control li.NB-first {
@@ -64,66 +125,4 @@ ul.segmented-control {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
     border-right: none;
-}
-
-.segmented-control li:active:not(.NB-disabled),
-.segmented-control-active li:active {
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
-        url(/media/img/reader/background-control.png);
-    
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .25)),
-        url(/media/img/reader/background-control.png);
-    
-    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                        inset 0 0 5px rgba(0, 0, 0, .1);
-    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                     inset 0 0 5px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                inset 0 0 5px rgba(0, 0, 0, .1);
-
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
-
-    color: #303030;
-}
-
-.segmented-control li.NB-active,
-.segmented-control li.NB-active:active,
-.segmented-control-active li {
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, .05))),
-        url(/media/img/reader/background-control-light.png);
-    
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .05)),
-        url(/media/img/reader/background-control-light.png);
-    
-    background-color: #FDFDFD;
-    
-    -webkit-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                        inset 0 0 5px rgba(255, 255, 255, .1);
-    -moz-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                     inset 0 0 5px rgba(255, 255, 255, .1);
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                inset 0 0 5px rgba(255, 255, 255, .1);
-
-    color: #303030;
-}
-
-.segmented-control li.NB-disabled {
-    opacity: .9;
-    color: rgba(0, 0, 0, .1);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
-    cursor: default;
-    
-    -webkit-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                        inset 0 0 2px rgba(255, 255, 255, .1);
-    -moz-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                     inset 0 0 2px rgba(255, 255, 255, .1);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                inset 0 0 2px rgba(255, 255, 255, .1);
-}
-.segmented-control li.NB-disabled .NB-task-image {
-    opacity: .3;
 }
