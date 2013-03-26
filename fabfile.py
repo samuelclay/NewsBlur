@@ -318,7 +318,7 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, engine=None):
+def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_baremetal()
