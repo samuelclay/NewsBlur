@@ -105,6 +105,18 @@ public class APIManager {
 			return false;
 		}
 	}
+	
+	public boolean markAllAsRead() {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_DAYS, "0");
+		final APIResponse response = client.post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public boolean markStoryAsRead(final String feedId, final ArrayList<String> storyIds) {
 		final APIClient client = new APIClient(context);
@@ -661,6 +673,7 @@ public class APIManager {
 		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
 
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			// TODO doesn't handle auto complete not supporting premium users only causing force close ?
 			return gson.fromJson(response.responseString, FeedResult[].class);
 		} else {
 			return null;

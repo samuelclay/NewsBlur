@@ -74,4 +74,7 @@ public class ValueMultimap implements Serializable {
 		return builder.toString();
 	}
 
+	public int size() {
+		return multimap.size();
+	}
 }

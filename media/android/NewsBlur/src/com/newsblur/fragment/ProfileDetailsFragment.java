@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,11 +44,11 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		apiManager = new APIManager(getActivity());
 	}
 	
-	public void setUser(final UserDetails user, final boolean viewingSelf) {
+	public void setUser(Context context, final UserDetails user, final boolean viewingSelf) {
 		this.user = user;
 		this.viewingSelf = viewingSelf;
 		if (username != null) {
-			setUserFields();
+			setUserFields(context);
 		}
 	}
 	
@@ -69,13 +70,13 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		unfollowButton.setOnClickListener(this);
 		
 		if (user != null) {
-			setUserFields();
+			setUserFields(getActivity());
 		}
 		
 		return v;
 	}
 
-	private void setUserFields() {
+	private void setUserFields(Context context) {
 		username.setText(user.username);
 		
 		if (!TextUtils.isEmpty(user.bio)) {
@@ -114,9 +115,13 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 			}
 		} else {
 			followButton.setVisibility(View.GONE);
-			Bitmap userPicture = PrefsUtils.getUserImage(getActivity());
-			userPicture = UIUtils.roundCorners(userPicture, 5);
-			imageView.setImageBitmap(userPicture);
+			Bitmap userPicture = PrefsUtils.getUserImage(context);
+			// seems to sometimes be an error loading the picture so prevent
+			// force close if null returned
+			if (userPicture != null) {
+		        userPicture = UIUtils.roundCorners(userPicture, 5);
+			    imageView.setImageBitmap(userPicture);
+			}
 		}
 	}
 	
