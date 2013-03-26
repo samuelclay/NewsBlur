@@ -1,11 +1,15 @@
 package com.newsblur.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -34,7 +38,6 @@ import com.newsblur.database.MixedExpandableListAdapter;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.network.MarkFolderAsReadTask;
-import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.UIUtils;
@@ -180,6 +183,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 		case R.id.menu_mark_folder_as_read:
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+			// all shared stories and regular folders are expandable
+			// all stories is not expandable
 			if (folderAdapter.isExpandable(groupPosition)) {
 				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
@@ -195,7 +200,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					}
 				}.execute(folderId);
 			} else {
-				final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+				// TODO is social feed actually all shared stories ? Should this be used for expandable and position == 0 ?
+				/*final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String socialFeedId = socialFeedCursor.getString(socialFeedCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 				new MarkSocialFeedAsReadTask(apiManager, resolver){
 					@Override
@@ -207,7 +213,37 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
 						}
 					}
-				}.execute(socialFeedId);
+				}.execute(socialFeedId);*/
+				
+				new AsyncTask<Void, Void, Boolean>() {
+					private List<String> feedIds = new ArrayList<String>();
+					
+					@Override
+					protected Boolean doInBackground(Void... arg) {
+						Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+						while (cursor.moveToNext()) {
+							feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
+						}
+						return apiManager.markAllAsRead();
+					}
+					
+					@Override
+					protected void onPostExecute(Boolean result) {
+						if (result) {
+							ContentValues values = new ContentValues();
+							values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
+							values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
+							values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
+							for (String feedId : feedIds) {
+								resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
+						  	}
+							folderAdapter.requery();
+							Toast.makeText(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+						}
+					};
+				}.execute();
 			}
 			return true;	
 		}

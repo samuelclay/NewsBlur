@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -32,9 +33,9 @@ public class ProfileActivityFragment extends Fragment {
 		return v;
 	}
 	
-	public void setActivitiesAndUser(final ActivitiesResponse[] activities, UserDetails user ) {
+	public void setActivitiesAndUser(Context context, final ActivitiesResponse[] activities, UserDetails user ) {
 		// Set the activities, create the adapter
-		adapter = new ActivitiesAdapter(getActivity(), activities, user);
+		adapter = new ActivitiesAdapter(context, activities, user);
 		displayActivities();
 	}
 	
