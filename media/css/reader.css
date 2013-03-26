@@ -1182,12 +1182,21 @@ background: transparent;
     opacity: 0;
     display: none;
     position: absolute;
-    left: 4px;
-    top: 0px;
+    left: 7px;
+    top: 1px;
     width: 20px;
     height: 22px;
     cursor: pointer;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 3px 4px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 6px 7px;
+    background-size: 8px;
+}
+#story_titles .NB-feedbar .NB-feedlist-manage-icon:hover {
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 6px 7px;
+    background-size: 8px;
+}
+
+#story_titles .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 5px 7px;
     background-size: 8px;
 }
 
@@ -1204,15 +1213,6 @@ background: transparent;
     background-position: 3px 5px;
 }
 
-#story_titles .NB-feedbar .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 3px 4px;
-    background-size: 8px;
-}
-
-#story_titles .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 3px 4px;
-    background-size: 8px;
-}
 
 #story_titles .NB-feedbar .feed .feed_counts {
     width: 200px;
@@ -4228,7 +4228,7 @@ form.opml_import_form input {
     vertical-align: bottom;
 }
 .NB-narrow .NB-intelligence-slider img {
-    margin: 3px 8px 5px;
+    margin: 2px 8px 1px;
 }
 /* ===================== */
 /* = Add Feeds/Folders = */
@@ -7491,9 +7491,8 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon {
     background: none;
 }
-.NB-modal-feedchooser .NB-feedlist .folder_title:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
-    background-size: 16px;
+.NB-modal-feedchooser .NB-feedlist .folder_title:hover .NB-folder-icon {
+    display: block !important;
 }
 
 .NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-collapse-icon {
