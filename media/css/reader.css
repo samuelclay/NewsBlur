@@ -3725,11 +3725,23 @@ background: transparent;
 
 .NB-taskbar .NB-task-layout-split .NB-task-image {
     left: 12px;
-    background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
+    background: transparent url('/media/img/icons/circular/nav_story_split.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
+.NB-taskbar .NB-task-layout-split.NB-active .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_split_active.png') no-repeat 0 0;
+    background-size: 18px 14px;
 }
 .NB-taskbar .NB-task-layout-list .NB-task-image {
     left: 12px;
-    background: transparent url('/media/embed/icons/silk/application_view_list.png') no-repeat 0 0;
+    background: transparent url('/media/img/icons/circular/nav_story_list.png') no-repeat 0 0;
+    background-size: 18px 14px;
+}
+.NB-taskbar .NB-task-layout-list.NB-active .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/img/icons/circular/nav_story_list_active.png') no-repeat 0 0;
+    background-size: 18px 14px;
 }
 
 .NB-taskbar .NB-task-return .NB-task-image {

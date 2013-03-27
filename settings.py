@@ -86,12 +86,6 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 # = Django-specific Modules =
 # ===========================
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
@@ -501,6 +495,20 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 if not DEVELOPMENT:
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+
+if DEBUG:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.filesystem.Loader',
+         'django.template.loaders.app_directories.Loader',
+        ),
+    )
+else:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.cached.Loader', (
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        )),
+    )
 
 # =========
 # = Redis =
