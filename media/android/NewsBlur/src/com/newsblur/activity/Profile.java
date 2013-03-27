@@ -89,12 +89,15 @@ public class Profile extends SherlockFragmentActivity {
 				user = profileResponse.user;
 				activities = profileResponse.activities;
 			} else {
-				// TODO if profileResponse null then null user.id will cause force close ?
 				apiManager.updateUserProfile();
 				user = PrefsUtils.getUserDetails(Profile.this);
-				profileResponse = apiManager.getUser(user.id);
-				if (profileResponse != null) {
-					activities = profileResponse.activities;
+				// check user.id has been set. If previous attempts to update the user details
+				// have failed then user.id == null would cause a force close
+				if (user.id != null) {
+					profileResponse = apiManager.getUser(user.id);
+					if (profileResponse != null) {
+						activities = profileResponse.activities;
+					}
 				}
 			}
 			return null;
