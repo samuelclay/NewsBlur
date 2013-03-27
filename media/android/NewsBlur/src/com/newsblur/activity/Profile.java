@@ -89,6 +89,7 @@ public class Profile extends SherlockFragmentActivity {
 				user = profileResponse.user;
 				activities = profileResponse.activities;
 			} else {
+				// TODO if profileResponse null then null user.id will cause force close ?
 				apiManager.updateUserProfile();
 				user = PrefsUtils.getUserDetails(Profile.this);
 				profileResponse = apiManager.getUser(user.id);
@@ -103,8 +104,10 @@ public class Profile extends SherlockFragmentActivity {
 		protected void onPostExecute(Void result) {
 			if (user != null && detailsFragment != null && activitiesFragment != null) {
 				detailsFragment.setUser(Profile.this, user, TextUtils.isEmpty(userId));
-				// TODO still sometimes causes a force close - is activities null ?
-				activitiesFragment.setActivitiesAndUser(Profile.this, activities, user);
+				// activities could be null if no profile response was received
+				if (activities != null) {
+				  activitiesFragment.setActivitiesAndUser(Profile.this, activities, user);
+			    }
 			}
 		}
 	}
