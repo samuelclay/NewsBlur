@@ -22,6 +22,7 @@ SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
+SECRET_KEY            = 'YOUR_SECRET_KEY'
 
 # ===========================
 # = Directory Declaractions =
@@ -66,7 +67,6 @@ LOGIN_URL             = '/reader/login'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
-SECRET_KEY            = 'YOUR_SECRET_KEY'
 # EMAIL_BACKEND         = 'django_mailgun.MailgunBackend'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
