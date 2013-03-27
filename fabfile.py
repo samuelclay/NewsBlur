@@ -318,14 +318,15 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, engine=None):
+def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    setup_memcached()
+    if engine == "memcached":
+        setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
@@ -529,15 +530,15 @@ def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
 
 def setup_ulimit():
-     # Increase File Descriptor limits.
+    # Increase File Descriptor limits.
     run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
     sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
     sudo('touch /etc/security/limits.conf', pty=False)
     sudo('chmod 666 /etc/security/limits.conf', pty=False)
-    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "root hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "root soft nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile 10000" >> /etc/security/limits.conf', pty=False)
     sudo('chmod 644 /etc/security/limits.conf', pty=False)
 
     # run('touch /home/ubuntu/.bash_profile')
@@ -927,7 +928,8 @@ def setup_do(name, size=2):
                                     size_id=size_id, 
                                     image_id=image_id, 
                                     region_id=region_id, 
-                                    ssh_key_ids=[str(ssh_key_id)])
+                                    ssh_key_ids=[str(ssh_key_id)],
+                                    virtio=True)
     print "Booting droplet: %s/%s (size: %s)" % (instance.id, IMAGE_NAME, INSTANCE_SIZE)
     
     instance = doapi.show_droplet(instance.id)
