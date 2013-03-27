@@ -28,7 +28,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:200]
+        ).order_by('?')[:300]
         active_count = feeds.count()
         
         # Force refresh feeds
