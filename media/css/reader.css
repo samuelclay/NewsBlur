@@ -3774,6 +3774,9 @@ background: transparent;
     box-shadow: #9A9A9A 2px 2px 0px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
+.NB-feed-story-view-narrow #story_taskbar .NB-task-title {
+    display: none;
+}
 
 
 /* ======================= */

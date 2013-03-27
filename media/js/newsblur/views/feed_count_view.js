@@ -62,7 +62,7 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
         var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
         var left = (o_width / 2.0) - (i_width / 2.0);
         var view_taskbar_width = $('.NB-taskbar-view').outerWidth(true);
-        var story_buttons_offset = $(".NB-taskbar-nav").position().left;
+        var story_buttons_offset = $(".NB-taskbar-layout").position().left;
 
         if (i_width + 12 > (story_buttons_offset - view_taskbar_width)) {
             this.$el.hide();

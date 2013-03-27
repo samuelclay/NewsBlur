@@ -129,7 +129,6 @@
             this.position_mouse_indicator();
             this.handle_login_and_signup_forms();
             this.apply_story_styling();
-            this.apply_tipsy_titles();
             this.load_recommended_feeds();
             this.setup_dashboard_graphs();
             this.setup_feedback_table();
@@ -209,11 +208,15 @@
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
                 this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.addClass('NB-feed-story-view-narrow');
+                this.$s.$body.addClass('NB-feed-story-view-narrow');
             } else {
                 this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
                 this.$s.$story_titles.removeClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.removeClass('NB-feed-story-view-narrow');
+                this.$s.$body.removeClass('NB-feed-story-view-narrow');
             }
+            
+            this.apply_tipsy_titles();
         },
         
         apply_resizable_layout: function(refresh) {
@@ -363,6 +366,14 @@
         },
         
         apply_tipsy_titles: function() {
+            $('.NB-taskbar-sidebar-toggle-close').tipsy('disable');
+            $('.NB-taskbar-sidebar-toggle-open').tipsy('disable');
+            $('.NB-task-add').tipsy('disable');
+            $('.NB-task-manage').tipsy('disable');
+            $('.NB-taskbar-button.NB-tipsy').each(function() {
+                $(this).tipsy('disable');
+            });
+            
             if (this.model.preference('show_tooltips')) {
                 $('.NB-taskbar-sidebar-toggle-close').tipsy({
                     gravity: 'se',
@@ -380,11 +391,13 @@
                     gravity: 's',
                     delayIn: 375
                 });
-            } else {
-                $('.NB-taskbar-sidebar-toggle-close').tipsy('disable');
-                $('.NB-taskbar-sidebar-toggle-open').tipsy('disable');
-                $('.NB-task-add').tipsy('disable');
-                $('.NB-task-manage').tipsy('disable');
+                $('.NB-feed-story-view-narrow .NB-taskbar-button.NB-tipsy').tipsy({
+                    gravity: 'n',
+                    delayIn: 375,
+                    title: 'tipsy-title'
+                }).each(function() {
+                    $(this).tipsy('enable');
+                });
             }
             $('.NB-module-content-account-realtime').tipsy({
                 gravity: 'se',
@@ -454,6 +467,8 @@
                 this.$s.$layout.layout().resizeAll();
                 this.adjust_for_narrow_window();
             }
+            
+            this.apply_tipsy_titles();
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.setup_ftux_signup_callout();
             }
