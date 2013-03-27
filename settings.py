@@ -22,7 +22,7 @@ SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
-SECRET_KEY            = 'YOUR_SECRET_KEY'
+SECRET_KEY   = 'YOUR_SECRET_KEY'
 
 # ===========================
 # = Directory Declaractions =
@@ -190,6 +190,10 @@ LOGGING = {
 
 DAYS_OF_UNREAD          = 14
 SUBSCRIBER_EXPIRE       = 2
+
+TRIM_STORIES            = True    # Purge old articles from database?
+TRIM_STORIES_KEEP_DAYS  = 180     # Keep at least articles that are younger than 180 days old
+TRIM_STORIES_KEEP_NUM   = 100     # Keep at least 100 articles per feed
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
