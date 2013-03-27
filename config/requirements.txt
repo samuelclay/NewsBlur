@@ -12,7 +12,6 @@ django-redis-sessions==0.3.1
 django-ses==0.4.1
 django-subdomains==2.0.3
 Django>=1.5,<1.6
-django_ses
 Fabric==1.6.0
 gunicorn==0.17.2
 httplib2==0.8
