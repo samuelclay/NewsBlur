@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -62,6 +63,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        Log.d( this.getClass().getName(), "Fragment Create start" );
+
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
@@ -82,6 +85,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
+
+        Log.d( this.getClass().getName(), "Fragment Create end" );
+
 	}
 
 	@Override

@@ -457,36 +457,53 @@ public class APIManager {
 
 	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
+        Log.d( this.getClass().getName(), "calling " + (doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE) );
 		
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
+
+        Log.d( this.getClass().getName(), "parsing response" );
+
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (feedUpdate.folders.size() == 0) {
 				return false;
 			}
+
+            Log.d( this.getClass().getName(), "querying old feeds" );
 			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
-			
+
+            Log.d( this.getClass().getName(), "updating feeds" );
+
+            // go thru all feeds.  if we don't already know about them or the metadata-for-ID has changed, write them to the DB
 			for (String newFeedId : feedUpdate.feeds.keySet()) {
 				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feedUpdate.feeds.get(newFeedId).getValues());
 				}
 			}
+
+            Log.d( this.getClass().getName(), "cleaning up old feeds" );
 			
-			for (String olderFeedId : existingFeeds.keySet()) {
+			// go thru all the old feeds. if any are not in the update, delete them from the DB
+            for (String olderFeedId : existingFeeds.keySet()) {
 				if (feedUpdate.feeds.get(olderFeedId) == null) {
 					Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(olderFeedId).build();
 					contentResolver.delete(feedUri, null, null);
 				}
 			}
+
+            Log.d( this.getClass().getName(), "updating social feeds" );
 			
-			for (final SocialFeed feed : feedUpdate.socialFeeds) {
+			// (blindly?) insert all social feeds found
+            for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
 			}
+
+            Log.d( this.getClass().getName(), "querying old folders" );
 			
-			
+			// re-query for all existing folders
 			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 			folderCursor.moveToFirst();
 			HashSet<String> existingFolders = new HashSet<String>();
@@ -495,18 +512,22 @@ public class APIManager {
 				folderCursor.moveToNext();
 			}
 			folderCursor.close();
-			
+
+            Log.d( this.getClass().getName(), "updating folders" );
+
+            // for all folders found just now
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 				if (!TextUtils.isEmpty(entry.getKey())) {
 					String folderName = entry.getKey().trim();
+                    // if the folder is new, write it to the DB
 					if (!existingFolders.contains(folderName) && !TextUtils.isEmpty(folderName)) {
 						final ContentValues folderValues = new ContentValues();
 						folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-						Log.d("Folder", "Inserting folder: " + folderName);
 						contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
 					}
 	
-					for (Long feedId : entry.getValue()) {
+					// for each feed in the folder, if it didn't exist before this update, write a feed/folder mapping to the DB
+                    for (Long feedId : entry.getValue()) {
 						if (!existingFeeds.containsKey(Long.toString(feedId))) {
 							ContentValues values = new ContentValues(); 
 							values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
@@ -516,6 +537,9 @@ public class APIManager {
 					}
 				}
 			}
+
+            Log.d( this.getClass().getName(), "done" );
+
 		}
 		return true;
 	}

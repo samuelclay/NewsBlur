@@ -125,7 +125,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
-			Log.d(TAG, "Has returned");
+			Log.d(this.getClass().getName(), "onActivityResult:RESULT_OK" );
 			folderFeedList.hasUpdated();
 		}
 	}

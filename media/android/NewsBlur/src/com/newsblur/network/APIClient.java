@@ -23,7 +23,6 @@ import com.newsblur.util.PrefConstants;
 
 public class APIClient {
 
-	private static final String TAG = "APIClient";
 	private Context context;
 
 	public APIClient(final Context context) {
@@ -38,16 +37,16 @@ public class APIClient {
 			return response;
 		}
 		try {
-			final URL urlFeeds = new URL(urlString);
-			connection = (HttpURLConnection) urlFeeds.openConnection();
+			final URL url = new URL(urlString);
+			connection = (HttpURLConnection) url.openConnection();
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
-			return extractResponse(urlFeeds, connection);
+			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -72,16 +71,17 @@ public class APIClient {
 			}
 			final String parameterString = TextUtils.join("&", parameters);
 
-			final URL urlFeeds = new URL(urlString + "?" + parameterString);
-			connection = (HttpURLConnection) urlFeeds.openConnection();
+			final URL url = new URL(urlString + "?" + parameterString);
+            Log.d(this.getClass().getName(), "caling API: " + url);
+			connection = (HttpURLConnection) url.openConnection();
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
-			return extractResponse(urlFeeds, connection);
+			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			if (connection != null) {
@@ -110,7 +110,7 @@ public class APIClient {
 			}
 			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -149,7 +149,7 @@ public class APIClient {
 			try {
 				builder.append(URLEncoder.encode((String) entry.getValue(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				Log.e(TAG, e.getLocalizedMessage());
+				Log.e(this.getClass().getName(), e.getLocalizedMessage());
 				return new APIResponse();
 			}
 			parameters.add(builder.toString());
@@ -175,7 +175,7 @@ public class APIClient {
 
 			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
+			Log.e(this.getClass().getName(), "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
 			return new APIResponse();
 		} finally {
 			if (connection != null) {
@@ -217,7 +217,7 @@ public class APIClient {
 
 			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
+			Log.e(this.getClass().getName(), "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
 			return new APIResponse();
 		} finally {
 			if (connection != null) {
