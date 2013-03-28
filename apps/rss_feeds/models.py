@@ -1219,9 +1219,11 @@ class Feed(models.Model):
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
         updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
-                                                    * (updates_per_month**0.15)))
+                                                    * (updates_per_month**0.25)))
         if self.active_premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.active_premium_subscribers, 4)
+        updates_per_day_delay = int(updates_per_day_delay)
+
         # Lots of subscribers = lots of updates
         # 24 hours for 0 subscribers.
         # 4 hours for 1 subscriber.
@@ -1231,6 +1233,7 @@ class Feed(models.Model):
         subscriber_bonus = 12 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
+        subscriber_bonus = int(subscriber_bonus)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -1256,16 +1259,21 @@ class Feed(models.Model):
             total = 60*24*30
         
         if verbose:
-            print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
-                                                self.num_subscribers, self.active_subscribers,
-                                                self.premium_subscribers, self.active_premium_subscribers,
-                                                subscriber_bonus, slow_punishment, total)
+            logging.debug("   ---> [%-30s] Fetched every %sm (%s+%s+%s) Subs: %s/%s Stories: %s/%s" % (
+                                                unicode(self)[:30], total, 
+                                                updates_per_day_delay,
+                                                subscriber_bonus, 
+                                                slow_punishment,
+                                                self.num_subscribers,
+                                                self.active_premium_subscribers,
+                                                self.average_stories_per_month,
+                                                self.stories_last_month))
         random_factor = random.randint(0, total) / 4
         
         return total, random_factor*8
         
-    def set_next_scheduled_update(self, verbose=True):
-        total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
+    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+        total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
         
         if self.errors_since_good:
             total = total * self.errors_since_good
@@ -1278,7 +1286,8 @@ class Feed(models.Model):
                                 minutes = total + random_factor)
             
         self.min_to_decay = total
-        self.next_scheduled_update = next_scheduled_update
+        if not skip_scheduling:
+            self.next_scheduled_update = next_scheduled_update
 
         self.save()
 

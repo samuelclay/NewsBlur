@@ -103,6 +103,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
                 (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
+              ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
+                  $.make('div', { className: 'NB-statistics-update-explainer' }, [
+                    $.make('b', 'Why so infrequently?'),
+                    'This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.'
+                  ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
                     $.make('div', { className: 'NB-statistics-label' }, [
