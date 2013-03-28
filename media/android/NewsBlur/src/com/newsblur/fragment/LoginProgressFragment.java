@@ -27,14 +27,13 @@ import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class LoginProgressFragment extends Fragment implements Receiver {
+public class LoginProgressFragment extends Fragment /*implements Receiver*/ {
 
 	private APIManager apiManager;
-	private DetachableResultReceiver receiver;
-	private String TAG = "LoginProgress";
+	//private DetachableResultReceiver receiver;
 	private TextView updateStatus, retrievingFeeds, letsGo;
 	private ImageView loginProfilePicture;
-	private int CURRENT_STATUS = -1;
+	//private int CURRENT_STATUS = -1;
 	private ProgressBar feedProgress, loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
@@ -54,8 +53,8 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		apiManager = new APIManager(getActivity());
-		receiver = new DetachableResultReceiver(new Handler());
-		receiver.setReceiver(this);
+		//receiver = new DetachableResultReceiver(new Handler());
+		//receiver.setReceiver(this);
 
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
@@ -74,7 +73,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		// password.setOnEditorActionListener(this);
 
 		if (loginTask != null) {
-			refreshUI();
+			//refreshUI();
 		} else {
 			loginTask = new LoginTask();
 			loginTask.execute();
@@ -98,10 +97,10 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			LoginResponse response = apiManager.login(username, password);
 			apiManager.updateUserProfile();
 			try {
-				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
-				Thread.sleep(700);
+				// TODO: get rid of this and use proper UI transactions
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				Log.e(TAG, "Error sleeping during login.");
+				Log.e(this.getClass().getName(), "Error sleeping during login.");
 			}
 			return response;
 		}
@@ -122,10 +121,14 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
 
-				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
+				/*final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
 				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
 				intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
-				getActivity().startService(intent);
+				getActivity().startService(intent);*/
+
+                Intent startMain = new Intent(getActivity(), Main.class);
+                getActivity().startActivity(startMain);
+
 			} else {
 				if (result.errors != null && result.errors.message != null) {
 					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
@@ -138,7 +141,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 	}
 
 
-	private void refreshUI() {
+	/*private void refreshUI() {
 		switch (CURRENT_STATUS) {
 		case SyncService.NOT_RUNNING:
 			break;
@@ -172,20 +175,20 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			updateStatus.setText("Error synchronising.");
 			break;
 		}
-	}
+	}*/
 
 
 	// Interface for Host 
-	public interface LoginFragmentInterface {
+	/*public interface LoginFragmentInterface {
 		public void loginSuccessful();
 		public void loginUnsuccessful();
 		public void syncSuccessful();
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void onReceiverResult(int resultCode, Bundle resultData) {
 		CURRENT_STATUS = resultCode;
 		refreshUI();
-	}
+	}*/
 
 }

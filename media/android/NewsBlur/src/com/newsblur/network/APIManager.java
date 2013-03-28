@@ -519,7 +519,6 @@ public class APIManager {
 					if (!existingFolders.contains(folderName) && !TextUtils.isEmpty(folderName)) {
 						final ContentValues folderValues = new ContentValues();
 						folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-						Log.d("Folder", "Inserting folder: " + folderName);
 						contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
 					}
 	
