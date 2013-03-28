@@ -9,6 +9,7 @@ django-compress==1.0.1
 django-extensions==1.1.1
 django-mailgun==0.2.1
 django-redis-sessions==0.3.1
+django-redis-cache==0.9.7
 django-ses==0.4.1
 django-subdomains==2.0.3
 Django>=1.5,<1.6
