@@ -8,11 +8,12 @@ public class NewsBlurApplication extends Application {
 
 	ImageLoader imageLoader;
 	
-	public NewsBlurApplication() {
-		super();
+	@Override
+	public void onCreate() {
+		super.onCreate();
 		imageLoader = new ImageLoader(this);
 	}
-	
+
 	public ImageLoader getImageLoader() {
 		return imageLoader;
 	}
