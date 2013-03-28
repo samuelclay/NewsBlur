@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from south.v2 import DataMigration
+from django.conf import settings
+import pymongo
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         from apps.rss_feeds.models import MStory, Feed
         import time
-
+        
+        db = pymongo.Connection(settings.MONGODB_HOST)
         batch = 0
-        for f in xrange(Feed.objects.latest('pk').pk):
+        start = 0
+        for f in xrange(start, Feed.objects.latest('pk').pk):
             if f < batch*100000: continue
             start = time.time()
             try:
@@ -18,10 +22,14 @@ class Migration(DataMigration):
                     continue
                 if not feed: continue
                 cp1 = time.time() - start
-                if feed.active_premium_subscribers < 1: continue
-                stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)
+                # if feed.active_premium_subscribers < 1: continue
+                stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)\
+                                        .only('_id', 'story_feed_id', 'story_permalink')
                 cp2 = time.time() - start
-                for story in stories: story.save()
+                for story in stories: 
+                    db.newsblur.stories.update({"_id": story.id}, {"$set": {
+                        "story_hash": story.story_hash
+                    }})
                 cp3 = time.time() - start
                 print "%3s stories: %s (%s/%s/%s)" % (stories.count(), feed, round(cp1, 2), round(cp2, 2), round(cp3, 2))
             except Exception, e:
