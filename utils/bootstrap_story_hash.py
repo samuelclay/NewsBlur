@@ -1,4 +1,5 @@
 import time
+import pymongo
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed
 
@@ -12,7 +13,8 @@ for f in xrange(start, Feed.objects.latest('pk').pk):
         cp1 = time.time() - start
         # if feed.active_premium_subscribers < 1: continue
         stories = MStory.objects.filter(story_feed_id=f, story_hash__exists=False)\
-                                .only('id', 'story_feed_id', 'story_guid')
+                                .only('id', 'story_feed_id', 'story_guid')\
+                                .read_preference(pymongo.ReadPreference.SECONDARY)
         cp2 = time.time() - start
         count = 0
         for story in stories:
