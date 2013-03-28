@@ -25,6 +25,7 @@
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
+#import "EmptyExplainer.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -687,30 +688,7 @@ static const CGFloat kFolderTitleHeight = 28;
         [appDelegate showFirstTimeUser];
         return;
     }
-    
-    BOOL hasFocusStory = NO;
-    for (id feedId in appDelegate.dictFeeds) {
-        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
-        if ([[feed objectForKey:@"ps"] intValue] > 0) {
-            hasFocusStory = YES;
-            break;
-        }
-    }
 
-    if (!hasFocusStory) {
-        [self.intelligenceControl removeSegmentAtIndex:2 animated:NO];
-        [self.intelligenceControl setWidth:90 forSegmentAtIndex:0];
-        [self.intelligenceControl setWidth:90 forSegmentAtIndex:1];
-    } else {
-        UIImage *green = [UIImage imageNamed:@"green_focus.png"];
-        if (self.intelligenceControl.numberOfSegments == 2) {
-            [self.intelligenceControl insertSegmentWithImage:green atIndex:2 animated:NO];
-            [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
-            [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
-            [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-        }
-    }
-    
     self.intelligenceControl.hidden = NO;
 }
 
@@ -1227,6 +1205,25 @@ heightForHeaderInSection:(NSInteger)section {
     [self redrawUnreadCounts];
 
 	[hud hide:YES afterDelay:0.5];
+    [self showExplainerOnEmptyFeedlist];
+}
+
+- (void)showExplainerOnEmptyFeedlist {
+    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+    if (intelligenceLevel > 0) {
+        BOOL hasFocusStory = NO;
+        for (id feedId in appDelegate.dictFeeds) {
+            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
+            if ([[feed objectForKey:@"ps"] intValue] > 0) {
+                hasFocusStory = YES;
+                break;
+            }
+        }
+        if (!hasFocusStory) {
+            EmptyExplainer *explainer = [[EmptyExplainer alloc] initWithFrame:self.view.frame];
+            [self.view insertSubview:explainer aboveSubview:self.feedTitlesTable];
+        }
+    }
 }
 
 - (void)redrawUnreadCounts {
@@ -1387,15 +1384,18 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
+    } else if ([request responseStatusCode] == 503) {
+        [pull finishedLoading];
+        return [self informError:@"In maintenance mode"];
     } else if ([request responseStatusCode] >= 500) {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
-    
-    NSString *responseString = [request responseString];   
+
+    NSString *responseString = [request responseString];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
+    NSDictionary *results = [NSJSONSerialization
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];

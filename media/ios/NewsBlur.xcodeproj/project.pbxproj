@@ -284,6 +284,7 @@
 		FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7016D6A90D002D334D /* ak-icon-global.png */; };
 		FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
 		FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */; };
+		FF918D8A1704D51200ED288B /* EmptyExplainer.m in Sources */ = {isa = PBXBuildFile; fileRef = FF918D891704D51200ED288B /* EmptyExplainer.m */; };
 		FF9B566516E810900054BF68 /* Instapaper-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B565F16E810900054BF68 /* Instapaper-Icon.png */; };
 		FF9B566616E810900054BF68 /* Instapaper-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566016E810900054BF68 /* Instapaper-Icon@2x.png */; };
 		FF9B566716E810900054BF68 /* Pocket-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566116E810900054BF68 /* Pocket-Icon.png */; };
@@ -809,6 +810,8 @@
 		FF85BF7016D6A90D002D334D /* ak-icon-global.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-global.png"; sourceTree = "<group>"; };
 		FF85BF7216D6A972002D334D /* ak-icon-allstories.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-allstories.png"; sourceTree = "<group>"; };
 		FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-blurblogs.png"; sourceTree = "<group>"; };
+		FF918D881704D51200ED288B /* EmptyExplainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmptyExplainer.h; sourceTree = "<group>"; };
+		FF918D891704D51200ED288B /* EmptyExplainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmptyExplainer.m; sourceTree = "<group>"; };
 		FF9B565F16E810900054BF68 /* Instapaper-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Instapaper-Icon.png"; sourceTree = "<group>"; };
 		FF9B566016E810900054BF68 /* Instapaper-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Instapaper-Icon@2x.png"; sourceTree = "<group>"; };
 		FF9B566116E810900054BF68 /* Pocket-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pocket-Icon.png"; sourceTree = "<group>"; };
@@ -1281,6 +1284,8 @@
 				43F44B1B159D8D7200F48F8A /* FeedTableCell.m */,
 				FFDE35D8161D12250034BFDE /* UnreadCountView.h */,
 				FFDE35D9161D12250034BFDE /* UnreadCountView.m */,
+				FF918D881704D51200ED288B /* EmptyExplainer.h */,
+				FF918D891704D51200ED288B /* EmptyExplainer.m */,
 			);
 			name = Feeds;
 			sourceTree = "<group>";
@@ -2466,6 +2471,7 @@
 				FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */,
 				FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */,
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
+				FF918D8A1704D51200ED288B /* EmptyExplainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

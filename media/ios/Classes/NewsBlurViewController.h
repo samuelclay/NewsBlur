@@ -85,6 +85,7 @@ UIPopoverControllerDelegate> {
 - (IBAction)sectionUntapped:(UIButton *)button;
 - (IBAction)sectionUntappedOutside:(UIButton *)button;
 - (void)redrawUnreadCounts;
+- (void)showExplainerOnEmptyFeedlist;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (void)loadFavicons;
 - (void)loadAvatars;
