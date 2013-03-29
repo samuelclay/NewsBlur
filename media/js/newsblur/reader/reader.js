@@ -917,7 +917,14 @@
                 }
             } else if (!NEWSBLUR.assets.flags['has_chosen_feeds'] &&
                        NEWSBLUR.assets.folders.length) {
-                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                if (NEWSBLUR.Globals.is_premium) {
+                    this.model.save_feed_chooser(null, function() {
+                        NEWSBLUR.reader.hide_feed_chooser_button();
+                        NEWSBLUR.assets.load_feeds();
+                    });
+                } else {
+                    _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                }
             } else if (!NEWSBLUR.Globals.is_premium &&
                        NEWSBLUR.assets.feeds.active().length > 64) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
@@ -2102,10 +2109,10 @@
         
         send_story_to_googleplus: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://plusone.google.com/_/+1/confirm'; //?hl=en&url=${url}
+            var url = 'https://plus.google.com/share';
             var googleplus_url = [
               url,
-              '?hl=en&url=',
+              '?url=',
               encodeURIComponent(story.get('story_permalink')),
               '&title=',
               encodeURIComponent(story.get('story_title')),
@@ -3859,12 +3866,16 @@
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
-                var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
-                var www = _.string.contains(window.location.href, 'www.newsblur.com');
+                var https = _.string.startsWith(window.location.protocol, 'https');
+                var dev = _.string.contains(window.location.href, 'dev.newsblur.com');
+                var port = https ? 443 : 80;
+                if (NEWSBLUR.Globals.debug || dev) {
+                    port = https ? 8889 : 8888;
+                }
                 this.socket = this.socket || io.connect(server, {
                     "reconnection delay": 2000,
                     "connect timeout": 2000,
-                    "port": NEWSBLUR.Globals.debug || !www ? port : 80
+                    "port": port
                 });
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);

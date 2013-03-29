@@ -1,5 +1,6 @@
 from fabric.api import cd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
+from fabric.operations import prompt
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
@@ -9,6 +10,7 @@ import os
 import time
 import sys
 import re
+import yaml
 try:
     import dop.client
 except ImportError:
@@ -28,6 +30,7 @@ except ImportError:
 # ============
 
 env.NEWSBLUR_PATH = "~/projects/newsblur"
+env.SECRETS_PATH = "~/projects/secrets-newsblur"
 env.VENDOR_PATH   = "~/projects/code"
 
 # =========
@@ -35,88 +38,20 @@ env.VENDOR_PATH   = "~/projects/code"
 # =========
 
 env.user = 'sclay'
-env.roledefs ={
-    'local': ['localhost'],
-    'app': ['app01.newsblur.com', 
-            'app02.newsblur.com', 
-            'app03.newsblur.com',
-            'app04.newsblur.com',
-            '198.211.109.197',
-            '198.211.110.131',
-            '198.211.110.230',
-            '192.34.61.227',
-            '198.211.109.155',
-            '198.211.107.87',
-            '198.211.105.155',
-            '198.211.104.133',
-            '198.211.103.214',
-            '198.211.106.22',
-            '198.211.110.189',
-            '198.211.106.215',
-            '192.81.209.42',
-            '198.211.102.245',
-            '198.211.109.236',
-            '198.211.113.54',
-            '198.211.113.206',
-            '198.211.113.86',
-            '198.211.113.196',
-            ],
-    'dev': ['dev.newsblur.com'],
-    'debug': ['debug.newsblur.com'],
-    'web': ['app01.newsblur.com', 
-            'app02.newsblur.com', 
-            'app04.newsblur.com',
-            ],
-    'db': ['db01.newsblur.com', 
-           'db02.newsblur.com', 
-           # 'db03.newsblur.com', 
-           'db04.newsblur.com', 
-           'db05.newsblur.com',
-           'db10.newsblur.com',
-           'db11.newsblur.com',
-           'db12.newsblur.com',
-           'db20.newsblur.com',
-           'db21.newsblur.com',
-           ],
-    'dbdo':['198.211.115.113',
-            '198.211.115.153',
-            ],
-    'task': ['task01.newsblur.com', 
-             'task02.newsblur.com', 
-             'task03.newsblur.com', 
-             'task04.newsblur.com', 
-             # 'task05.newsblur.com', 
-             # 'task06.newsblur.com', 
-             # 'task07.newsblur.com',
-             'task08.newsblur.com',
-             'task09.newsblur.com',
-             # 'task10.newsblur.com',
-             'task11.newsblur.com',
-             ],
-    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
-                'ec2-184-72-214-147.compute-1.amazonaws.com',
-                'ec2-107-20-103-16.compute-1.amazonaws.com',
-                'ec2-50-17-12-16.compute-1.amazonaws.com',
-                'ec2-54-242-34-138.compute-1.amazonaws.com',
-                'ec2-184-73-2-61.compute-1.amazonaws.com',
-                
-                'ec2-54-234-211-75.compute-1.amazonaws.com',
-                'ec2-50-16-97-13.compute-1.amazonaws.com',
-                'ec2-54-242-131-232.compute-1.amazonaws.com',
-                'ec2-75-101-195-131.compute-1.amazonaws.com',
-                'ec2-54-242-105-17.compute-1.amazonaws.com',
-                ],
-    'vps': ['task01.newsblur.com', 
-            'task03.newsblur.com', 
-            'task04.newsblur.com', 
-            'task08.newsblur.com', 
-            'task09.newsblur.com', 
-            'task10.newsblur.com', 
-            'task11.newsblur.com', 
-            'app01.newsblur.com', 
-            'app02.newsblur.com', 
-            ],
-}
+try:
+    hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
+    roles = yaml.load(open(hosts_path))
+    for role_name, hosts in roles.items():
+        if isinstance(hosts, dict):
+            roles[role_name] = [host for host in hosts.keys()]
+    env.roledefs = roles
+except:
+    print " ***> No role definitions found in %s. Using default roles." % hosts_path
+    env.roledefs = {
+        'app'   : ['app01.newsblur.com'],
+        'db'    : ['db01.newsblur.com'],
+        'task'  : ['task01.newsblur.com'],
+    }
 
 # ================
 # = Environments =
@@ -124,6 +59,7 @@ env.roledefs ={
 
 def server():
     env.NEWSBLUR_PATH = "/srv/newsblur"
+    env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
 
 def app():
@@ -133,10 +69,6 @@ def app():
 def dev():
     server()
     env.roles = ['dev']
-
-def web():
-    server()
-    env.roles = ['web']
 
 def db():
     server()
@@ -222,7 +154,7 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        # run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -386,14 +318,15 @@ def setup_app(skip_common=False):
     deploy()
     config_monit_app()
 
-def setup_db(skip_common=False, engine=None):
+def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    setup_memcached()
+    if engine == "memcached":
+        setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
@@ -518,7 +451,7 @@ def setup_imaging():
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
 
-@parallel
+# @parallel
 def setup_hosts():
     put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
@@ -597,15 +530,15 @@ def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
 
 def setup_ulimit():
-     # Increase File Descriptor limits.
+    # Increase File Descriptor limits.
     run('export FILEMAX=`sysctl -n fs.file-max`', pty=False)
     sudo('mv /etc/security/limits.conf /etc/security/limits.conf.bak', pty=False)
     sudo('touch /etc/security/limits.conf', pty=False)
     sudo('chmod 666 /etc/security/limits.conf', pty=False)
-    run('echo "root soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "root hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "* soft nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
-    run('echo "* hard nofile $FILEMAX" >> /etc/security/limits.conf', pty=False)
+    run('echo "root soft nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "root hard nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "* soft nofile 10000" >> /etc/security/limits.conf', pty=False)
+    run('echo "* hard nofile 10000" >> /etc/security/limits.conf', pty=False)
     sudo('chmod 644 /etc/security/limits.conf', pty=False)
 
     # run('touch /home/ubuntu/.bash_profile')
@@ -638,6 +571,7 @@ def configure_nginx():
     sudo("mkdir -p /var/log/nginx")
     put("config/nginx.newsblur.conf", "/usr/local/nginx/conf/sites-enabled/newsblur.conf", use_sudo=True)
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
+    sudo('sed -i -e s/nginx_none/`cat /etc/hostname`/g /usr/local/nginx/conf/sites-enabled/newsblur.conf')
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
@@ -703,7 +637,7 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 @parallel
@@ -765,12 +699,26 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
-    
+def upgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('easy_install pillow')
+        # celery_stop()
+        pull()
+        sudo('apt-get remove -y python-imaging')
+        kill()
+
+def downgrade_pil():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('apt-get install -y python-imaging')
+        sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
+        pull()
+        kill()
+        
 # ==============
 # = Setup - DB =
 # ==============    
 
-@parallel
+# @parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -785,11 +733,12 @@ def setup_db_firewall():
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
     
-    sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
-    
     # DigitalOcean
-    for ip in set(env.roledefs['app'] + env.roledefs['dbdo']):
-        if 'newsblur.com' in ip: continue
+    for ip in set(env.roledefs['app'] + 
+                  env.roledefs['dbdo'] + 
+                  env.roledefs['dev'] + 
+                  env.roledefs['debug'] + 
+                  env.roledefs['task']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -823,7 +772,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 599585856
+    shmmax = 1140047872
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
@@ -855,6 +804,8 @@ def setup_mongo():
     sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
         '/etc/mongodb.conf', use_sudo=True)
+    run('echo "ulimit -n 10000" > mongodb.defaults')
+    sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
@@ -874,14 +825,29 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_munin():
-    sudo('apt-get update')
+    # sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
+    put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
-    sudo('/etc/init.d/spawn_fcgi_munin_graph start')
-    sudo('update-rc.d spawn_fcgi_munin_graph defaults')
-
+    sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_html')
+    with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph stop')
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+        sudo('/etc/init.d/spawn_fcgi_munin_html stop')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+        sudo('update-rc.d spawn_fcgi_munin_html defaults')
+    sudo('/etc/init.d/munin-node restart')
+    with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+    
     
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
@@ -976,7 +942,8 @@ def setup_do(name, size=2):
                                     size_id=size_id, 
                                     image_id=image_id, 
                                     region_id=region_id, 
-                                    ssh_key_ids=[str(ssh_key_id)])
+                                    ssh_key_ids=[str(ssh_key_id)],
+                                    virtio=True)
     print "Booting droplet: %s/%s (size: %s)" % (instance.id, IMAGE_NAME, INSTANCE_SIZE)
     
     instance = doapi.show_droplet(instance.id)
@@ -998,6 +965,7 @@ def setup_do(name, size=2):
     
     host = instance.ip_address
     env.host_string = host
+    time.sleep(10)
     add_user_to_do()
     
 def add_user_to_do():
@@ -1054,12 +1022,15 @@ def setup_ec2():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5432):
-    backup_date = '2012-08-17-08-00'
+def restore_postgres(port=5433):
+    backup_date = '2013-01-29-09-00'
+    yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
+    if yes != 'y': return
     # run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
     # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    sudo('su postgres -c "createdb newsblur -p %s -O newsblur"' % (port,))
-    sudo('su postgres -c "pg_restore -p %s --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % (port, backup_date))
+    run('dropdb newsblur -p %s -U postgres' % (port,), pty=False)
+    run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
+    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
     
 def restore_mongo():
     backup_date = '2012-07-24-09-00'

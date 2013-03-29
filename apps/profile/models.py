@@ -210,14 +210,7 @@ class Profile(models.Model):
         print " ---> %s payments" % len(payment_history)
         
         if most_recent_payment_date:
-            payment_gap = 0
-            # If user lapsed and has no gap b/w last payment and expiration, 
-            # they only get a full year. Otherwise, give them the gap.
-            if (self.premium_expire and 
-                self.premium_expire > datetime.datetime.now() and
-                self.premium_expire > most_recent_payment_date):
-                payment_gap = (self.premium_expire - most_recent_payment_date).days
-            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365+payment_gap)
+            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
             self.save()
         
     def queue_new_feeds(self, new_feeds=None):

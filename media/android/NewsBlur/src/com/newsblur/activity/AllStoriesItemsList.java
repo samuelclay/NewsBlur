@@ -2,22 +2,31 @@ package com.newsblur.activity;
 
 import java.util.ArrayList;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.network.APIManager;
 import com.newsblur.service.SyncService;
 
 public class AllStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
+	private APIManager apiManager;
+	private ContentResolver resolver;
 	private boolean stopLoading = false;
 
 	@Override
@@ -27,8 +36,10 @@ public class AllStoriesItemsList extends ItemsList {
 		setTitle(getResources().getString(R.string.all_stories));
 
 		feedIds = new ArrayList<String>();
-
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		apiManager = new APIManager(this);
+		resolver = getContentResolver();
+		
+		Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
@@ -76,8 +87,41 @@ public class AllStoriesItemsList extends ItemsList {
 
 
 	@Override
-	public void markItemListAsRead() { }
+	public void markItemListAsRead() {
+		new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... arg) {
+				return apiManager.markAllAsRead();
+			}
+			
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result) {
+					// mark all feed IDs as read
+					ContentValues values = new ContentValues();
+					values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
+					values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
+					values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
+					for (String feedId : feedIds) {
+						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
+					}
+					setResult(RESULT_OK); 
+					Toast.makeText(AllStoriesItemsList.this, R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
+					finish();
+				} else {
+					Toast.makeText(AllStoriesItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+				}
+			};
+		}.execute();
+	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.allstories_itemslist, menu);
+		return true;
+	}
 
 	@Override
 	public void setNothingMoreToUpdate() {

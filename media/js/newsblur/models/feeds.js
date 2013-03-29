@@ -3,9 +3,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     initialize: function() {
         _.bindAll(this, 'on_change', 'delete_feed', 'update_folder_counts');
         // this.bind('change', this.on_change);
-        this.bind('change:ps', this.update_folder_counts);
-        this.bind('change:nt', this.update_folder_counts);
-        this.bind('change:ng', this.update_folder_counts);
+        this.bind('change:ps', this.change_counts);
+        this.bind('change:nt', this.change_counts);
+        this.bind('change:ng', this.change_counts);
         this.bind('change:selected', this.update_folder_visibility);
         this.views = [];
         this.folders = [];
@@ -15,6 +15,21 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         if (!('selected' in this.changedAttributes())) {
             NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
         }
+    },
+    
+    change_counts: function(data, count, options) {
+        options = options || {};
+        console.log(["change_counts", data, count, options]);
+        this.update_folder_counts();
+        
+        if (this.get('selected') && options.refresh_feeds) {
+            console.log(["Selected feed count change", this]);
+            NEWSBLUR.reader.feed_unread_count(this.id);
+        }
+    },
+    
+    force_update_counts: function() {
+        NEWSBLUR.reader.feed_unread_count(this.id);
     },
     
     update_folder_counts: function() {

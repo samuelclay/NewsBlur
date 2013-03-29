@@ -1,8 +1,8 @@
 """Operations for images through the PIL."""
 
-import Image
-import ImageOps as PILOps
-from ExifTags import TAGS
+from PIL import Image
+from PIL import ImageOps as PILOps
+from PIL.ExifTags import TAGS
 from StringIO import StringIO
 
 PROFILE_PICTURE_SIZES = {
