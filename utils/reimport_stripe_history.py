@@ -29,6 +29,8 @@ while True:
                 user.profile.activate_premium()
             elif user.payments.all().count() != 1:
                 user.profile.setup_premium_history()
+            elif not user.profile.premium_expire:
+                user.profile.setup_premium_history()
             elif user.profile.premium_expire > datetime.datetime.now() + datetime.timedelta(days=365):
                 user.profile.setup_premium_history()
             else:
