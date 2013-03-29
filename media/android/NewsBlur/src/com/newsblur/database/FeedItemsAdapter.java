@@ -1,5 +1,8 @@
 package com.newsblur.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -80,6 +83,22 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 		}
 
 		return v;
+	}
+	
+	public Story getStory(int position) {
+		cursor.moveToPosition(position);
+		return Story.fromCursor(cursor);
+	}
+	
+	public ArrayList<Story> getPreviousStories(int position) {
+		ArrayList<Story> stories = new ArrayList<Story>();
+		cursor.moveToPosition(0);
+		for(int i=0;i<=position && position < cursor.getCount();i++) {
+			Story story = Story.fromCursor(cursor);
+			stories.add(story);
+			cursor.moveToNext();
+		}
+		return stories;
 	}
 
 }

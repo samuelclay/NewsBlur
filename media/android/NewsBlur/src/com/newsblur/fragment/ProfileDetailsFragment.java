@@ -184,13 +184,10 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.profile_follow_button:
-				new FollowTask().execute();
-				break;
-			case R.id.profile_unfollow_button:
-				new UnfollowTask().execute();
-				break;	
+		if (v.getId() == R.id.profile_follow_button) {
+			new FollowTask().execute();
+		} else if (v.getId() == R.id.profile_unfollow_button) {
+			new UnfollowTask().execute();
 		}
 	}
 	

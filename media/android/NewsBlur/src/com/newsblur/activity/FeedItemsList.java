@@ -69,12 +69,11 @@ public class FeedItemsList extends ItemsList {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (!super.onOptionsItemSelected(item)) {
-			switch (item.getItemId()) {
-				case R.id.menu_delete_feed:
-					deleteFeed();
-					return true;
-				default:
-					return false;
+			if (item.getItemId() == R.id.menu_delete_feed) {
+				deleteFeed();
+				return true;
+			} else {
+				return false;
 			}
 		} else {
 			return true;

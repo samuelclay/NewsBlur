@@ -98,13 +98,10 @@ public class LoginRegisterFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onClick(View viewClicked) {
-		switch (viewClicked.getId()) {
-		case R.id.login_button: 
+		if (viewClicked.getId() == R.id.login_button) {
 			logIn();
-			break;
-		case R.id.registration_button: 
+		} else if (viewClicked.getId() == R.id.registration_button) {
 			signUp();
-			break;
 		}
 	}
 

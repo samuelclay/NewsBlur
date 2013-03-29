@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -17,24 +16,28 @@ import com.newsblur.R;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ImageLoader;
 
 public class FolderTreeViewBinder implements ViewBinder {
 
 	private int currentState = AppConstants.STATE_SOME;
 	private int READING_RETURNED = 0x02;
+	private final ImageLoader imageLoader;
 	
+	public FolderTreeViewBinder(ImageLoader imageLoader) {
+		this.imageLoader = imageLoader;
+	}
+
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON)) {
-			Bitmap bitmap = null;
-			if (cursor.getBlob(columnIndex) != null) {
-				final byte[] data = Base64.decode(cursor.getBlob(columnIndex), Base64.DEFAULT);
-				bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
+			if (cursor.getString(columnIndex) != null) {
+				String imageUrl = cursor.getString(columnIndex);
+				imageLoader.displayImage(imageUrl, (ImageView)view);
+			} else {
+				Bitmap bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.world);
+				((ImageView) view).setImageBitmap(bitmap);
 			}
-			if (bitmap == null) {
-				bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.world);
-			}
-			((ImageView) view).setImageBitmap(bitmap);
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_POS)) {
 			int feedPositive = cursor.getInt(columnIndex);
