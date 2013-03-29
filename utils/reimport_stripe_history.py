@@ -1,7 +1,7 @@
 import stripe, datetime, time
 stripe.api_key = settings.STRIPE_SECRET
 
-week = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%s')
+week = (datetime.datetime.now() - datetime.timedelta(days=14)).strftime('%s')
 failed = []
 limit = 100
 offset = 0
@@ -28,6 +28,8 @@ while True:
             if not user.profile.is_premium:
                 user.profile.activate_premium()
             elif user.payments.all().count() != 1:
+                user.profile.setup_premium_history()
+            elif user.profile.premium_expire > datetime.datetime.now() + datetime.timedelta(days=365):
                 user.profile.setup_premium_history()
             else:
                 print " ---> %s is fine" % username
