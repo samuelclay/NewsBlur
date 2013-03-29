@@ -154,7 +154,7 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        # run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -637,7 +637,7 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 @parallel
