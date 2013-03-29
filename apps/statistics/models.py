@@ -2,10 +2,12 @@ import datetime
 import mongoengine as mongo
 import urllib2
 import pymongo
+import redis
 from django.conf import settings
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
+from apps.statistics.rstats import RStats, round_time
 from utils import json_functions as json
 from utils import db_functions
 from utils import log as logging
@@ -135,49 +137,39 @@ class MStatistics(mongo.Document):
     
     @classmethod
     def collect_statistics_sites_loaded(cls):
-        now = datetime.datetime.now()
+        now = round_time(datetime.datetime.now(), round_to=60)
         sites_loaded = []
         avg_time_taken = []
-        
-        for hour in range(24):
-            start_hours_ago = now - datetime.timedelta(hours=hour)
-            end_hours_ago = now - datetime.timedelta(hours=hour+1)
-            
-            load_times = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
-                "$match": {
-                    "date": {
-                        "$gte": end_hours_ago,
-                        "$lte": start_hours_ago,
-                    },
-                    "path": {
-                        "$in": [
-                            "/reader/feed/",
-                            "/social/stories/",
-                            "/reader/river_stories/",
-                            "/social/river_stories/",
-                        ]
-                    }
-                },
-            }, {
-                "$group": {
-                    "_id"   : 1,
-                    "count" : {"$sum": 1},
-                    "avg"   : {"$avg": "$duration"},
-                },
-            }])
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
-            count = 0
-            avg = 0
-            if load_times['result']:
-                count = load_times['result'][0]['count']
-                avg = load_times['result'][0]['avg']
-                
+        for hour in range(24):
+            start_hours_ago = now - datetime.timedelta(hours=hour+1)
+    
+            pipe = r.pipeline()
+            for m in range(60):
+                minute = start_hours_ago + datetime.timedelta(minutes=m)
+                key = "%s:%s" % (RStats.stats_type('page_load'), minute.strftime('%s'))
+                pipe.get("%s:s" % key)
+                pipe.get("%s:a" % key)
+    
+            times = pipe.execute()
+    
+            counts = [int(c) for c in times[::2] if c]
+            avgs = [float(a) for a in times[1::2] if a]
+            
+            if counts and avgs:
+                count = sum(counts)
+                avg = round(sum(avgs) / count, 3)
+            else:
+                count = 0
+                avg = 0
+
             sites_loaded.append(count)
             avg_time_taken.append(avg)
 
         sites_loaded.reverse()
         avg_time_taken.reverse()
-        
+
         values = (
             ('sites_loaded',            json.encode(sites_loaded)),
             ('avg_time_taken',          json.encode(avg_time_taken)),
@@ -261,85 +253,6 @@ class MFeedback(mongo.Document):
 
         return feedbacks
 
-class MAnalyticsPageLoad(mongo.Document):
-    date = mongo.DateTimeField(default=datetime.datetime.now)
-    username = mongo.StringField()
-    user_id = mongo.IntField()
-    is_premium = mongo.BooleanField()
-    platform = mongo.StringField()
-    path = mongo.StringField()
-    duration = mongo.FloatField()
-    server = mongo.StringField()
-    
-    meta = {
-        'db_alias': 'nbanalytics',
-        'collection': 'page_loads',
-        'allow_inheritance': False,
-        'indexes': ['path', 'date', 'platform', 'user_id', 'server'],
-        'ordering': ['date'],
-    }
-    
-    def __unicode__(self):
-        return "%s / %s: (%.4s) %s" % (self.username, self.platform, self.duration, self.path)
-        
-    @classmethod
-    def add(cls, user, is_premium, platform, path, duration):
-        if user.is_anonymous():
-            username = None
-            user_id = 0
-        else:
-            username = user.username
-            user_id = user.pk
-            
-        path = cls.clean_path(path)
-        server_name = settings.SERVER_NAME
-        
-        cls.objects.create(username=username, user_id=user_id, is_premium=is_premium,
-                           platform=platform, path=path, duration=duration, server=server_name)
-    
-    @classmethod
-    def clean_path(cls, path):
-        if not path:
-            return
-            
-        if path.startswith('/reader/feed'):
-            path = '/reader/feed/'
-        elif path.startswith('/social/stories'):
-            path = '/social/stories/'
-        elif path.startswith('/reader/river_stories'):
-            path = '/reader/river_stories/'
-        elif path.startswith('/social/river_stories'):
-            path = '/social/river_stories/'
-        elif path.startswith('/reader/page/'):
-            path = '/reader/page/'
-        elif path.startswith('/api/check_share_on_site'):
-            path = '/api/check_share_on_site/'
-            
-        return path
-        
-    @classmethod
-    def fetch_stats(cls, stat_key, stat_value):
-        stats = cls.objects.filter(**{stat_key: stat_value})
-        return cls.calculate_stats(stats)
-        
-    @classmethod
-    def calculate_stats(cls, stats):
-        return cls.aggregate(**stats)
-
-    @classmethod
-    def clean(cls, days=1):
-        last_day = datetime.datetime.now() - datetime.timedelta(days=days)
-        
-        from utils.feed_functions import timelimit, TimeoutError
-        @timelimit(60)
-        def delete_old_history():
-            cls.objects(date__lte=last_day).delete()
-            cls.objects(date__lte=last_day).delete()
-        try:
-            delete_old_history()
-        except TimeoutError:
-            logging.debug("~SK~SB~BR~FWTimed out on deleting old page load history. Shit.")
-        
 
 class MAnalyticsFetcher(mongo.Document):
     date = mongo.DateTimeField(default=datetime.datetime.now)

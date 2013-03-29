@@ -64,25 +64,21 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 	}
 
 	public void setState(final int state) {
-		switch (state) {
-			case R.id.toggle_all:
-				allButton.setEnabled(false);
-				someButton.setEnabled(true);
-				focusButton.setEnabled(true);
-				CURRENT_STATE = AppConstants.STATE_ALL;
-				break;
-			case R.id.toggle_some:
-				allButton.setEnabled(true);
-				someButton.setEnabled(false);
-				focusButton.setEnabled(true);
-				CURRENT_STATE = AppConstants.STATE_SOME;
-				break;
-			case R.id.toggle_focus:
-				allButton.setEnabled(true);
-				someButton.setEnabled(true);
-				focusButton.setEnabled(false);
-				CURRENT_STATE = AppConstants.STATE_BEST;
-				break;	
+		if (state == R.id.toggle_all) {
+			allButton.setEnabled(false);
+			someButton.setEnabled(true);
+			focusButton.setEnabled(true);
+			CURRENT_STATE = AppConstants.STATE_ALL;
+		} else if (state == R.id.toggle_some) {
+			allButton.setEnabled(true);
+			someButton.setEnabled(false);
+			focusButton.setEnabled(true);
+			CURRENT_STATE = AppConstants.STATE_SOME;
+		} else if (state == R.id.toggle_focus) {
+			allButton.setEnabled(true);
+			someButton.setEnabled(true);
+			focusButton.setEnabled(false);
+			CURRENT_STATE = AppConstants.STATE_BEST;
 		}
 	}
 

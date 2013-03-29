@@ -16,8 +16,6 @@ def getlogger():
     return logger
 
 def user(u, msg, request=None):
-    from apps.statistics.models import MAnalyticsPageLoad
-    
     if not u:
         return debug(msg)
         
@@ -51,10 +49,8 @@ def user(u, msg, request=None):
         "/social/river_stories/"
     ]
     if request:
-        path = MAnalyticsPageLoad.clean_path(request.path)
+        path = RStats.clean_path(request.path)
         if path in page_load_paths:
-            MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=path, 
-                                   duration=seconds)
             RStats.add('page_load', duration=seconds)
 
 def cipher(msg):

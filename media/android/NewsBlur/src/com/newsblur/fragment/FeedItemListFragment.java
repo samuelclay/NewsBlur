@@ -1,6 +1,9 @@
 package com.newsblur.fragment;
 
+import java.util.ArrayList;
+
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,9 +12,13 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -27,16 +34,18 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Story;
+import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener, OnCreateContextMenuListener {
 
 	private static final String TAG = "itemListFragment";
 	public static final String FRAGMENT_TAG = "itemListFragment";
 	private ContentResolver contentResolver;
 	private String feedId;
-	private SimpleCursorAdapter adapter;
+	private FeedItemsAdapter adapter;
 	private Uri storiesUri;
 	private int currentState;
 	private int currentPage = 1;
@@ -95,7 +104,8 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
-
+		itemList.setOnCreateContextMenuListener(this);
+		
 		return v;
 	}
 
@@ -142,7 +152,11 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = FeedProvider.getStorySelectionFromState(state);
+		refreshStories();
+	}
+
+	private void refreshStories() {
+		final String selection = FeedProvider.getStorySelectionFromState(currentState);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
@@ -160,5 +174,57 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
 
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+		if (item.getItemId() == R.id.menu_mark_story_as_read) {
+			final Story story = adapter.getStory(menuInfo.position);
+			ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
+			storyIdsToMarkRead.add(story.id);
+			new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
+
+				@Override
+				protected void onPostExecute(Void result) {
+					// TODO this isn't sufficient. We also need to update counts
+					ContentValues values = new ContentValues();
+					values.put(DatabaseConstants.STORY_READ, true);
+					contentResolver.update(FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build(), values, null, null);
+					refreshStories();
+				}
+				
+			}.execute();
+		} else if (item.getItemId() == R.id.menu_mark_previous_stories_as_read) {
+			ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
+			final ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
+			for(Story story: previousStories) {
+				if(story.read == 0) {
+					storyIdsToMarkRead.add(story.id);
+				}
+			}
+			new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
+
+				@Override
+				protected void onPostExecute(Void result) {
+					// TODO this isn't sufficient. We also need to update counts
+					ContentValues values = new ContentValues();
+					values.put(DatabaseConstants.STORY_READ, true);
+					for(String storyId: storyIdsToMarkRead) {
+						contentResolver.update(FeedProvider.STORY_URI.buildUpon().appendPath(storyId).build(), values, null, null);
+					}
+					refreshStories();
+				}
+				
+			}.execute();
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		MenuInflater inflater = getActivity().getMenuInflater();
+		
+		inflater.inflate(R.menu.context_story, menu);
+	}
 
 }
