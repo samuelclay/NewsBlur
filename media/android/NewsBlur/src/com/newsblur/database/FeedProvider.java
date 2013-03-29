@@ -1,7 +1,6 @@
 package com.newsblur.database;
 
-import com.newsblur.util.AppConstants;
-
+import android.R.string;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -10,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.newsblur.util.AppConstants;
 
 public class FeedProvider extends ContentProvider {
 
@@ -144,6 +145,41 @@ public class FeedProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		return null;
+	}
+
+	@Override
+	public int bulkInsert(Uri uri, ContentValues[] valuesArray) {
+		int count = 0;
+		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
+		switch (uriMatcher.match(uri)) {
+			case ALL_FOLDERS:
+				db.beginTransaction();
+				try {
+					for(ContentValues values: valuesArray) {
+						db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+						count++;
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				break;
+			case ALL_SOCIAL_FEEDS:
+				db.beginTransaction();
+				try {
+					for(ContentValues values: valuesArray) {
+						db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+						count++;
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				break;
+			default:
+				count = super.bulkInsert(uri, valuesArray);
+		}
+		return count;
 	}
 
 	@Override

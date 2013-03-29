@@ -25,12 +25,14 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -119,6 +121,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		setupWebview(web);
 		setupItemMetadata();
 		setupShareButton();
+		setupSaveButton();
 
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
@@ -127,6 +130,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
 		return view;
+	}
+	
+	private void setupSaveButton() {
+
+		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+
+		saveButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FeedUtils.saveStory(story, getActivity(), apiManager);
+			}
+		});
 	}
 
 	private void setupShareButton() {

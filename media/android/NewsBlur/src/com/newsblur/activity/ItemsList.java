@@ -62,14 +62,12 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
-	
-			case R.id.menu_mark_all_as_read:
-				markItemListAsRead();
-				return true;
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
+			markItemListAsRead();
+			return true;
 		}
 	
 		return false;
