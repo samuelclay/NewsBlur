@@ -90,19 +90,18 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_profile:
+		if (item.getItemId() == R.id.menu_profile) {
 			Intent profileIntent = new Intent(this, Profile.class);
 			startActivity(profileIntent);
 			return true;
-		case R.id.menu_refresh:
+		} else if (item.getItemId() == R.id.menu_refresh) {
 			triggerRecount();
 			return true;
-		case R.id.menu_add_feed:
+		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent intent = new Intent(this, SearchForFeeds.class);
 			startActivityForResult(intent, 0);
-			return true;	
-		case R.id.menu_logout:
+			return true;
+		} else if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
 			newFragment.show(getSupportFragmentManager(), "dialog");
 		}

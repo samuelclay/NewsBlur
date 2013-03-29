@@ -27,6 +27,7 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -36,6 +37,7 @@ import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
@@ -64,7 +66,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor sharedCountCursor = resolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 
-		groupViewBinder = new FolderTreeViewBinder();
+		ImageLoader imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
+		groupViewBinder = new FolderTreeViewBinder(imageLoader);
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
 
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
@@ -72,7 +75,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEUT };
 		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneu };
-		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
+		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
 		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feedpositive };
 		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumpos };
@@ -152,9 +155,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		final ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
-		switch (item.getItemId()) {
-
-		case R.id.menu_mark_feed_as_read:
+		if (item.getItemId() == R.id.menu_mark_feed_as_read) {
 			new MarkFeedAsReadTask(getActivity(), apiManager) {
 				@Override
 				protected void onPostExecute(Boolean result) {
@@ -172,13 +173,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 				}
 			}.execute(Long.toString(info.id));
 			return true;
-
-		case R.id.menu_delete_feed:
+		} else if (item.getItemId() == R.id.menu_delete_feed) {
 			Toast.makeText(getActivity(), "Deleted feed", Toast.LENGTH_SHORT).show();
 			((Main) getActivity()).deleteFeed(info.id, null);
 			return true;
-
-		case R.id.menu_mark_folder_as_read:
+		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 			if (folderAdapter.isExpandable(groupPosition)) {
 				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
@@ -209,7 +208,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					}
 				}.execute(socialFeedId);
 			}
-			return true;	
+			return true;
 		}
 		return super.onContextItemSelected(item);
 	}

@@ -12,6 +12,19 @@
         android:background="@drawable/selector_sharebutton_background"
         android:padding="10dp"
         android:text="@string/share_this" />
+    
+    <Button
+        android:id="@+id/save_story_button"
+        style="@style/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/selector_savebutton_background"
+        android:padding="10dp"
+        android:text="@string/save_this" />
 
     <RelativeLayout
         android:id="@+id/reading_shared_container"

@@ -83,16 +83,12 @@ public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCa
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-
-		case R.id.menu_search:
+		if (item.getItemId() == R.id.menu_search) {
 			onSearchRequested();
-			return true;	
-
-		case android.R.id.home:
+			return true;
+		} else if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
-
 		}
 		return super.onOptionsItemSelected(item);
 	}

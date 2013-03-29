@@ -48,15 +48,21 @@ public class APIManager {
 
 	private static final String TAG = "APIManager";
 	private Context context;
-	private Gson gson;
+	private static Gson gson;
 	private ContentResolver contentResolver;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		final GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
 		contentResolver = context.getContentResolver();
-		gson = builder.create();
+		initGsonIfNeededBuilder();
+	}
+
+	private static synchronized void initGsonIfNeededBuilder() {
+		if(gson == null) {
+			final GsonBuilder builder = new GsonBuilder();
+			builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
+			gson = builder.create();
+		}
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -445,10 +451,9 @@ public class APIManager {
 
 	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
-		
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
-		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
+		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (feedUpdate.folders.size() == 0) {
@@ -457,10 +462,14 @@ public class APIManager {
 			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
+			List<ContentValues> feedValues = new ArrayList<ContentValues>();
 			for (String newFeedId : feedUpdate.feeds.keySet()) {
 				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
-					contentResolver.insert(FeedProvider.FEEDS_URI, feedUpdate.feeds.get(newFeedId).getValues());
+					feedValues.add(feedUpdate.feeds.get(newFeedId).getValues());
 				}
+			}
+			if(feedValues.size() > 0) {
+				contentResolver.bulkInsert(FeedProvider.FEEDS_URI, feedValues.toArray(new ContentValues[feedValues.size()]));
 			}
 			
 			for (String olderFeedId : existingFeeds.keySet()) {
@@ -470,10 +479,13 @@ public class APIManager {
 				}
 			}
 			
+			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
-				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
+				socialFeedValues.add(feed.getValues());
 			}
-			
+			if(socialFeedValues.size() > 0) {
+				contentResolver.bulkInsert(FeedProvider.SOCIAL_FEEDS_URI, socialFeedValues.toArray(new ContentValues[socialFeedValues.size()]));
+			}
 			
 			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 			folderCursor.moveToFirst();
