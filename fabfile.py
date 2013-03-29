@@ -443,6 +443,9 @@ def setup_python():
 
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+    
+    if env.user == 'ubuntu':
+        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
