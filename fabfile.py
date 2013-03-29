@@ -808,6 +808,15 @@ def setup_mongo():
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
 
+def setup_mongo_mms():
+    pull()
+    put('../secrets-newsblur/settings/mongo_mms_settings.py', '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
+    with cd(env.NEWSBLUR_PATH):
+        put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+
+
 def setup_redis():
     redis_version = '2.6.11'
     with cd(env.VENDOR_PATH):
