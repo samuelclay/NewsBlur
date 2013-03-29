@@ -629,7 +629,6 @@ body {
     position: absolute;
     top: 2px;
     left: 2px;
-/*    background: transparent url('/media/embed/icons/silk/building.png') no-repeat 0 0;*/
     width: 16px;
     height: 16px;
 }
@@ -1143,13 +1142,6 @@ background: transparent;
     margin: 0 0 0 4px;
 }
 
-#story_titles .NB-feedbar .NB-feedbar-settings {
-    background: transparent url("/media/embed/icons/silk/cog.png") no-repeat center center;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    padding: 0 24px 0 12px;
-}
 #story_titles .NB-feedbar .NB-feedbar-train-feed {
     background: transparent url("/media/embed/icons/circular/train.png") no-repeat center center;
     background-size: 16px;
@@ -3481,56 +3473,6 @@ background: transparent;
     position: relative;
 /*    overflow: hidden;*/ /* No hidden overflow so ftux callouts can show */
 }
-.NB-taskbar .NB-taskbar-sidebar-toggle-close {
-  width: 20px;
-  height: 28px;
-  background: transparent url('/media/embed/icons/silk/control_rewind.png') no-repeat 4px 6px;
-  right: 0px;
-  top: 0px;
-  position: absolute;
-  opacity: .8;
-  cursor: pointer;
-}
-
-.NB-taskbar .NB-taskbar-sidebar-toggle-close:hover {
-  opacity: 1;
-  background: transparent url('/media/embed/icons/silk/control_rewind_blue.png') no-repeat 4px 6px;
-}
-
-.NB-taskbar-sidebar-toggle-open {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #818181;
-  border-radius: 0;
-  -webkit-border-top-right-radius: 6px;
-  -webkit-border-bottom-right-radius: 6px;
-  -moz-border-radius-topright: 6px;
-  -moz-border-radius-bottomright: 6px;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
-  background: #E0E0E0 url("/media/embed/reader/taskbar_background.png") repeat-x left top;
-  left: -24px;
-  bottom: 2px;
-  position: absolute;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.NB-taskbar-sidebar-toggle-open-image {
-  width: 16px;
-  height: 16px;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  opacity: .8;
-  background: transparent url('/media/embed/icons/silk/control_fastforward.png') no-repeat 0;
-}
-
-.NB-taskbar-sidebar-toggle-open:hover .NB-taskbar-sidebar-toggle-open-image {
-  opacity: 1;
-  background: transparent url('/media/embed/icons/silk/control_fastforward_blue.png') no-repeat 0;
-}
-
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
     top: 5px;
@@ -5187,13 +5129,15 @@ form.opml_import_form input {
 }
 .NB-module-gettingstarted .NB-module-launch-intro .NB-icon {
     background: transparent url(/media/embed/icons/silk/lorry.png) no-repeat center center;
+    background-size: 16px;
 }
 .NB-module-gettingstarted .NB-module-friends-button .NB-icon {
     background: transparent url('/media/embed/icons/circular/share.png') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-module-gettingstarted .NB-module-account-train .NB-icon {
-    background: transparent url(/media/embed/icons/silk/plugin.png) no-repeat center center;
+    background: transparent url(/media/embed/icons/circular/menu_icn_train.png) no-repeat center center;
+    background-size: 16px;
 }
 .NB-module-gettingstarted .NB-intro-goal .NB-not-done {
     margin: 6px auto;
@@ -5733,7 +5677,8 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-social-profile .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png') no-repeat  0 1px;
+    background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_keyboard.png') no-repeat  0 1px;    

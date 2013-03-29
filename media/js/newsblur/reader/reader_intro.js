@@ -92,7 +92,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-sites' }, [
                             $.make('h4'),
                             $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
-                                '&laquo; Restart and re-import your sites'
+                                '&laquo; Go back and re-import your sites'
                             ]),
                             $.make('div', { className: 'NB-intro-import-delayed' }, [
                                 'There are too many sites to process...',

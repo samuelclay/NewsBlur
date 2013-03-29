@@ -15,7 +15,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .folder_title"               : "open",
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
-        "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
         "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-options"         : "open_options_popover",
@@ -333,10 +332,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 }
             });
         }
-    },
-    
-    open_settings: function(e) {
-        this.show_manage_menu(e);
     },
     
     mark_folder_as_read: function() {

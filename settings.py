@@ -30,7 +30,8 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
-TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
+TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),
+                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
 STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')

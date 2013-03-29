@@ -10,7 +10,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
-        "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .NB-feedbar-options"         : "open_options_popover",
         "dblclick .feed_counts"             : "mark_feed_as_read",
@@ -317,10 +316,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     open_statistics: function() {
         NEWSBLUR.reader.open_feed_statistics_modal();
-    },
-    
-    open_settings: function(e) {
-        this.show_manage_menu(e);
     },
     
     show_hidden_story_titles: function() {

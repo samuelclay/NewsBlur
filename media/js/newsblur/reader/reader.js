@@ -295,7 +295,8 @@
                 south__closable:        true,
                 south__initClosed:      true,
                 fxName:                 "slideOffscreen",
-                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
+                fxSettings_open:        { duration: 0 },
                 enableCursorHotkey:     false,
                 togglerLength_open:     0
             });
@@ -309,7 +310,8 @@
                     enableCursorHotkey:     false,
                     togglerLength_open:     0,
                     fxName:                 "slideOffscreen",
-                    fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                    fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
+                    fxSettings_open:        { duration: 0, easing: "easeInOutQuint" },
                     north__paneSelector:    ".content-north",
                     north__size:            37
                 };
@@ -317,6 +319,9 @@
                 this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
 
                 var contentLayoutOptions = { 
+                    fxName:                 "slideOffscreen",
+                    fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
+                    fxSettings_open:        { duration: 0, easing: "easeInOutQuint" },
                     resizeWhileDragging:    true,
                     center__paneSelector:   ".content-center",
                     spacing_open:           story_anchor == 'west' ? 1 : 4,
@@ -366,8 +371,6 @@
         },
         
         apply_tipsy_titles: function() {
-            $('.NB-taskbar-sidebar-toggle-close').tipsy('disable');
-            $('.NB-taskbar-sidebar-toggle-open').tipsy('disable');
             $('.NB-task-add').tipsy('disable');
             $('.NB-task-manage').tipsy('disable');
             $('.NB-taskbar-button.NB-tipsy').each(function() {
@@ -375,14 +378,6 @@
             });
             
             if (this.model.preference('show_tooltips')) {
-                $('.NB-taskbar-sidebar-toggle-close').tipsy({
-                    gravity: 'se',
-                    delayIn: 375
-                });
-                $('.NB-taskbar-sidebar-toggle-open').tipsy({
-                    gravity: 'sw',
-                    delayIn: 375
-                });
                 $('.NB-task-add').tipsy({
                     gravity: 'sw',
                     delayIn: 375
@@ -2667,22 +2662,12 @@
             this.$s.$layout.layout().hide('west');
             this.resize_window();
             this.flags['sidebar_closed'] = true;
-            $('.NB-taskbar-sidebar-toggle-open').stop().animate({
-                'left': -1
-            }, {
-                'duration': 1000,
-                'easing': 'easeOutQuint',
-                'queue': false
-            });
         },
         
         open_sidebar: function() {
             this.$s.$layout.layout().open('west');
             this.resize_window();
             this.flags['sidebar_closed'] = false;
-            $('.NB-taskbar-sidebar-toggle-open').stop().css({
-                'left': -24
-            });
         },
         
         toggle_story_titles_pane: function(update_layout) {
@@ -2696,7 +2681,7 @@
         close_story_titles_pane: function(update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.close(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -4779,14 +4764,6 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.show_manage_menu('site', $t, {inverse: true});
                 }
-            });  
-            $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-close' }, function($t, $p){
-                e.preventDefault();
-                self.close_sidebar();
-            });  
-            $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-open' }, function($t, $p){
-                e.preventDefault();
-                self.open_sidebar();
             });  
             
             // = Context Menu ================================================
