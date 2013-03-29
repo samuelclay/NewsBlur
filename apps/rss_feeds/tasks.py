@@ -21,7 +21,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_premium_subscribers__gte=1
-        ).order_by('?')[:400]
+        ).order_by('?')[:500]
         popular_count = popular_feeds.count()
         
         # Regular feeds
@@ -29,7 +29,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:800]
+        ).order_by('?')[:1000]
         active_count = feeds.count()
         
         # Force refresh feeds
