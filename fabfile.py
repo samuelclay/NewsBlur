@@ -154,7 +154,7 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        # run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -637,7 +637,7 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 @parallel
@@ -737,7 +737,8 @@ def setup_db_firewall():
     for ip in set(env.roledefs['app'] + 
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
-                  env.roledefs['debug']):
+                  env.roledefs['debug'] + 
+                  env.roledefs['task']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -824,16 +825,29 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_munin():
-    sudo('apt-get update')
+    # sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
+    put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
+    sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_html')
     with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph stop')
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
         sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+        sudo('/etc/init.d/spawn_fcgi_munin_html stop')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+        sudo('update-rc.d spawn_fcgi_munin_html defaults')
     sudo('/etc/init.d/munin-node restart')
-
+    with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+    
     
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)

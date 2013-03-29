@@ -14,6 +14,7 @@ class TaskFeeds(Task):
         from apps.rss_feeds.models import Feed        
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
+        start = time.time()
         
         # Active feeds
         popular_feeds = Feed.objects.filter(
@@ -28,7 +29,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:200]
+        ).order_by('?')[:600]
         active_count = feeds.count()
         
         # Force refresh feeds
@@ -71,7 +72,9 @@ class TaskFeeds(Task):
         Feed.task_feeds(refresh_feeds, verbose=False)
         if inactive_feeds: Feed.task_feeds(inactive_feeds, verbose=False)
         if old_feeds: Feed.task_feeds(old_feeds, verbose=False)
-        
+
+        logging.debug(" ---> ~FBTasking took %.2s seconds" % (time.time() - start))
+
         
 class UpdateFeeds(Task):
     name = 'update-feeds'

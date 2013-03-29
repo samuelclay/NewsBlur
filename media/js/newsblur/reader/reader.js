@@ -3944,9 +3944,9 @@
             } else if (force || !this.socket || !this.socket.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 var https = _.string.startsWith(window.location.protocol, 'https');
-                var www = _.string.contains(window.location.href, 'www.newsblur.com');
+                var dev = _.string.contains(window.location.href, 'dev.newsblur.com');
                 var port = https ? 443 : 80;
-                if (NEWSBLUR.Globals.debug || !www) {
+                if (NEWSBLUR.Globals.debug || dev) {
                     port = https ? 8889 : 8888;
                 }
                 this.socket = this.socket || io.connect(server, {

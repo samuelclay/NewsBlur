@@ -6142,6 +6142,15 @@ form.opml_import_form input {
   overflow: hidden;
   margin: 0 0 12px 0;
 }
+.NB-modal-statistics .NB-statistics-update-explainer {
+    clear: both;
+    margin: 12px 24px 0;
+    font-size: 10px;
+    color: #808080;
+}
+.NB-modal-statistics .NB-statistics-update-explainer b {
+    padding-right: 8px;
+}
 .NB-modal-statistics .NB-statistics-premium-stats {
     border-top: 1px solid #E0E0E0;
     padding: 12px 0 0;
