@@ -9,4 +9,4 @@
 5. go to both of the following NewsBlur directories and run `android update project --path .`:
   * `NewsBlur/media/android/NewsBlur/`
   * `NewsBlur/media/android/NewsBlur/libs/ActionBarSherlock/`
-6. build a test APK with `ant clean && ant debug` (.apk will be in `NewsBlur/media/android/NewsBlur/bin/`)
+6. build a test APK with `ant clean && ant debug` from `NewsBlur/media/android/NewsBlur/` (.apk will be in `NewsBlur/media/android/NewsBlur/bin/`)
