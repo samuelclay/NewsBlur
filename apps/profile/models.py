@@ -194,6 +194,13 @@ class Profile(models.Model):
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            
+            existing_history = PaymentHistory.objects.filter(user=self.user,
+                                                             payment_provider='stripe')
+            if existing_history.count():
+                print " ---> Deleting existing history: %s stripe payments" % existing_history.count()
+                existing_history.delete()
+        
             for payment in stripe_payments:
                 created = datetime.datetime.fromtimestamp(payment.created)
                 PaymentHistory.objects.create(user=self.user,
