@@ -29,7 +29,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:1000]
+        ).order_by('?')[:600]
         active_count = feeds.count()
         
         # Force refresh feeds
@@ -56,7 +56,7 @@ class TaskFeeds(Task):
             last_update__lte=week, 
             queued_date__lte=day,
             active_subscribers__gte=1
-        ).order_by('?')[:50]
+        ).order_by('?')[:500]
         old_count = old_feeds.count()
         
         logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
