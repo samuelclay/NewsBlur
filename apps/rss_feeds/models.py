@@ -50,13 +50,13 @@ class Feed(models.Model):
     is_push = models.NullBooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
-    active_subscribers = models.IntegerField(default=-1, db_index=True)
+    active_subscribers = models.IntegerField(default=-1)
     premium_subscribers = models.IntegerField(default=-1)
-    active_premium_subscribers = models.IntegerField(default=-1, db_index=True)
+    active_premium_subscribers = models.IntegerField(default=-1)
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
-    last_update = models.DateTimeField(db_index=True)
+    last_update = models.DateTimeField()
     fetched_once = models.BooleanField(default=False)
-    known_good = models.BooleanField(default=False, db_index=True)
+    known_good = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
@@ -70,7 +70,7 @@ class Feed(models.Model):
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
     next_scheduled_update = models.DateTimeField(db_index=True)
-    queued_date = models.DateTimeField(db_index=True)
+    queued_date = models.DateTimeField()
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
@@ -1461,7 +1461,7 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'sparse': True, 
+                     'sparse': True,
                      'types': False, 
                      'drop_dups': True }],
         'index_drop_dups': True,
