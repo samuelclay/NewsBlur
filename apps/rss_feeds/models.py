@@ -312,6 +312,8 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
+        if not feeds: return
+        
         if isinstance(feeds, Feed):
             if verbose:
                 logging.debug(" ---> Tasking feed: %s" % feeds)
