@@ -50,7 +50,7 @@ class Feed(models.Model):
     is_push = models.NullBooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
-    active_subscribers = models.IntegerField(default=-1)
+    active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
     active_premium_subscribers = models.IntegerField(default=-1)
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
