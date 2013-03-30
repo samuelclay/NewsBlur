@@ -21,7 +21,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:1000]
+        ).order_by('?')[:1250]
         active_count = feeds.count()
         cp1 = time.time()
         

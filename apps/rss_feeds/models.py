@@ -296,7 +296,7 @@ class Feed(models.Model):
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch:
             feed_finder_url = feedfinder.feed(url)
-            if feed_finder_url:
+            if feed_finder_url and 'comments' not in feed_finder_url:
                 feed = by_url(feed_finder_url)
                 if not feed and create:
                     feed = cls.objects.create(feed_address=feed_finder_url)
@@ -1247,7 +1247,7 @@ class Feed(models.Model):
                 slow_punishment = 6 * self.last_load_time
         total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 4:
+        if self.active_premium_subscribers >= 4:
             total = min(total, 60) # 1 hour minimum for premiums
 
         if self.is_push:
