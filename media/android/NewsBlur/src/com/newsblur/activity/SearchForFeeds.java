@@ -1,19 +1,17 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -24,12 +22,12 @@ import com.newsblur.R;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.network.SearchAsyncTaskLoader;
+import com.newsblur.network.SearchLoaderResponse;
 
-public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCallbacks<ArrayList<FeedResult>>, OnItemClickListener {
+public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
 	private static final int LOADER_TWITTER_SEARCH = 0x01;
-	private Menu menu;
 	private ListView resultsList;
-	private Loader<ArrayList<FeedResult>> searchLoader;
+	private Loader<SearchLoaderResponse> searchLoader;
 	private FeedSearchResultAdapter adapter;
 
 	@Override
@@ -57,7 +55,6 @@ public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCa
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.search, menu);
-		this.menu = menu;
 		return true;
 	}
 
@@ -94,20 +91,25 @@ public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCa
 	}
 
 	@Override
-	public Loader<ArrayList<FeedResult>> onCreateLoader(int loaderId, Bundle bundle) {
+	public Loader<SearchLoaderResponse> onCreateLoader(int loaderId, Bundle bundle) {
 		String searchTerm = bundle.getString(SearchAsyncTaskLoader.SEARCH_TERM);
 		return new SearchAsyncTaskLoader(this, searchTerm);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<ArrayList<FeedResult>> loader, ArrayList<FeedResult> results) {
-		adapter = new FeedSearchResultAdapter(this, 0, 0, results);
-		resultsList.setAdapter(adapter);
+	public void onLoadFinished(Loader<SearchLoaderResponse> loader, SearchLoaderResponse results) {
 		setSupportProgressBarIndeterminateVisibility(false);
+		if(!results.hasError()) {
+			adapter = new FeedSearchResultAdapter(this, 0, 0, results.getResults());
+			resultsList.setAdapter(adapter);
+		} else {
+			String message = results.getErrorMessage() == null ? "Error" : results.getErrorMessage();
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
-	public void onLoaderReset(Loader<ArrayList<FeedResult>> loader) {
+	public void onLoaderReset(Loader<SearchLoaderResponse> loader) {
 		
 	}
 

@@ -22,6 +22,10 @@ import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -38,6 +42,7 @@ import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.Message;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
@@ -263,7 +268,7 @@ public class APIManager {
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				int deleted = contentResolver.delete(storyUri, null, null);
+				contentResolver.delete(storyUri, null, null);
 			}
 
 			for (Story story : storiesResponse.stories) {
@@ -678,15 +683,14 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
-	public FeedResult[] searchForFeed(String searchTerm) {
+	public FeedResult[] searchForFeed(String searchTerm) throws ServerErrorException {
 		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
 		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
 
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			// TODO doesn't handle auto complete not supporting premium users only causing force close ?
-			return gson.fromJson(response.responseString, FeedResult[].class);
+			return fromJson(response.responseString, FeedResult[].class);
 		} else {
 			return null;
 		}
@@ -703,4 +707,25 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
+	private <T> T fromJson(String json, Class<T> classOfT) throws ServerErrorException {
+		if(isServerMessage(json)) {
+			Message errorMessage = gson.fromJson(json, Message.class);
+			throw new ServerErrorException(errorMessage.message);
+		}
+		return gson.fromJson(json, classOfT);
+	}
+
+	private boolean isServerMessage(String json) {
+		// TODO find a better way to identify these failed responses
+		boolean isServerMessage = false;
+		JsonParser parser = new JsonParser();
+		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
+		if(asJsonObject.has("code")) {
+			JsonElement codeItem = asJsonObject.get("code");
+			int code = codeItem.getAsInt();
+			if(code == -1)
+				isServerMessage = true;
+		}
+		return isServerMessage;
+	}
 }
