@@ -71,7 +71,7 @@ class TaskFeeds(Task):
         Feed.task_feeds(inactive_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
-        logging.debug(" ---> ~FBTasking took %s seconds" % int((time.time() - start)))
+        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds" % int((time.time() - start)))
 
         
 class UpdateFeeds(Task):
