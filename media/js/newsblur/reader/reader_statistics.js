@@ -95,8 +95,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-label' }, 'Every'),
-                $.make('div', { className: 'NB-statistics-count' }, update_interval)
+                (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
+                    $.make('div', { className: 'NB-statistics-label' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/realtime_spinner.gif', className: 'NB-statisics-realtime-spinner' }),
+                        'Real-time'
+                    ]),
+                    $.make('div', { className: 'NB-statistics-count' }, 'Supplemented by checks every ' + update_interval)
+                ])),
+                (!data['push'] && $.make('div', [
+                    $.make('div', { className: 'NB-statistics-label' }, 'Every'),
+                    $.make('div', { className: 'NB-statistics-count' }, update_interval)
+                ]))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
@@ -117,7 +126,14 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                         $.make('br'),
                         'this site would update every'
                     ]),
-                    $.make('div', { className: 'NB-statistics-count' }, premium_update_interval)
+                    $.make('div', { className: 'NB-statistics-count' }, premium_update_interval),
+                    (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
+                        $.make('div', { className: 'NB-statistics-label' }, [
+                            'but it wouldn\'t matter because',
+                            $.make('br'),
+                            'this site is already in real-time'
+                        ])
+                    ]))
                   ])
               ]))
             ])),

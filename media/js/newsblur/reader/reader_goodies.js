@@ -74,31 +74,62 @@ NEWSBLUR.ReaderGoodies.prototype = {
                   href: '#'
               }, 'Add to Firefox'),
               $.make('div', { className: 'NB-goodies-firefox' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register Newsblur as an RSS reader')
+              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register NewsBlur as an RSS reader')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
-              }, 'Add to Chrome'),
+              }, 'Download'),
               $.make('div', { className: 'NB-goodies-chrome' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
-                  className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '#'
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd/details?hl=en'
+              }, 'Add to Chrome'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Register NewsBlur as an RSS reader'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'To use this extension, use the custom add site URL below.'
+              ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip'
               }, 'Add to Safari'),
               $.make('div', { className: 'NB-goodies-safari' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader'),
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register NewsBlur as an RSS reader'),
               $.make('div', { className: 'NB-goodies-subtitle' }, [
                 'To use this extension, extract and move the NewsBlur Safari Helper.app ',
                 'to your Applications folder. Then in ',
                 $.make('b', 'Safari > Settings > RSS'),
-                ' choose the new NewsBlur Safari Helper.app. Then clicking on the RSS button in ',
-                'Safari will open the feed in NewsBlur. Simple!'
+                ' choose the new NewsBlur Safari Helper.app. If you don\'t have an RSS chooser, ',
+                'you will have to use ',
+                $.make('a', { href: 'http://www.rubicode.com/Software/RCDefaultApp/', className: 'NB-splash-link' }, 'RCDefaultApp'),
+                ' to select the NewsBlur Safari Helper as your RSS reader. Then loading an RSS ',
+                'feed in Safari will open the feed in NewsBlur. Simple!'
               ])
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-safari-notifier NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://menakite.eu/~anaconda/safari/NewsBlur-Counter/NewsBlur-Counter.safariextz'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-safari' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: NewsBlur unread count notifier')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier')
+            ]),
+            
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
                   className: 'NB-goodies-custom-input',
@@ -106,14 +137,6 @@ NEWSBLUR.ReaderGoodies.prototype = {
               }),
               $.make('div', { className: 'NB-goodies-custom' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
-              }, 'Chrome Notifier'),
-              $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Chrome address bar button that shows unread counts')
             ])
         ]);
     },
@@ -179,12 +202,6 @@ NEWSBLUR.ReaderGoodies.prototype = {
             navigator.registerContentHandler("application/rss+xml",
                                              host + "?url=%s",
                                              "NewsBlur");
-        });
-
-        $.targetIs(e, { tagSelector: '.NB-goodies-safari-link' }, function($t, $p) {
-            e.preventDefault();
-
-            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {

@@ -6071,10 +6071,23 @@ form.opml_import_form input {
     color: #A0A0A0;
     text-shadow: 0 1px 0 #FFF;
     font-size: 11px;
+    margin-top: 8px;
+}
+.NB-modal-statistics .NB-statisics-realtime-spinner {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: middle;
+    display: inline-block;
 }
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-count {
   font-size: 17px;
   padding: 6px 0 0;
+  margin-bottom: 8px;
+}
+.NB-modal-statistics .NB-statistics-realtime .NB-statistics-count {
+    font-size: 13px;
+    color: #808080;
 }
 .NB-modal-statistics .NB-statistics-history-stat .NB-statistics-count {
   font-size: 42px;
@@ -7625,7 +7638,7 @@ form.opml_import_form input {
   background: transparent url('/media/embed/reader/firefox.png') no-repeat 0 0;
 }
 
-.NB-modal-goodies .NB-goodies-safari-link {
+.NB-modal-goodies .NB-modal-submit-button {
   float: right;
 }
 .NB-modal-goodies .NB-goodies-safari {
