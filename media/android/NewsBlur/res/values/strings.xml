@@ -146,5 +146,5 @@
     <string name="public_comment_count">%d PUBLIC COMMENTS</string>
     <string name="friends_comments_count">%d COMMENTS</string>
     <string name="toast_marked_all_stories_as_read">All stories marked as read</string>
-    
+    <string name="unknown_user">Unknown User</string>
 </resources>
