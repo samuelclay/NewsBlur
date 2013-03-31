@@ -21,7 +21,7 @@ class TaskFeeds(Task):
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:1000]
+        ).order_by('?')[:1250]
         active_count = feeds.count()
         cp1 = time.time()
         
@@ -71,7 +71,7 @@ class TaskFeeds(Task):
         Feed.task_feeds(inactive_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
-        logging.debug(" ---> ~FBTasking took %s seconds" % int((time.time() - start)))
+        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds" % int((time.time() - start)))
 
         
 class UpdateFeeds(Task):
