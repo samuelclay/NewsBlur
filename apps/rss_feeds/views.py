@@ -75,11 +75,11 @@ def feed_autocomplete(request):
     version = int(request.GET.get('v', 1))
     format = request.GET.get('format', 'autocomplete')
     
-    if not user.profile.is_premium:
-        return dict(code=-1, message="Overloaded, no autocomplete results.")
+    if True or not user.profile.is_premium:
+        return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
     
     if not query:
-        return dict(code=-1, message="Specify a search 'term'.")
+        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
         
     feeds = []
     for field in ['feed_address', 'feed_title', 'feed_link']:

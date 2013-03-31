@@ -7,7 +7,7 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.newsblur.domain.FeedResult;
 
-public class SearchAsyncTaskLoader extends AsyncTaskLoader<ArrayList<FeedResult>> {
+public class SearchAsyncTaskLoader extends AsyncTaskLoader<SearchLoaderResponse> {
 
 	public static final String SEARCH_TERM = "searchTerm";
 	
@@ -21,13 +21,18 @@ public class SearchAsyncTaskLoader extends AsyncTaskLoader<ArrayList<FeedResult>
 	}
 
 	@Override
-	public ArrayList<FeedResult> loadInBackground() {
-		ArrayList<FeedResult> list = new ArrayList<FeedResult>();
-		for (FeedResult result : apiManager.searchForFeed(searchTerm)) {
-			list.add(result);
+	public SearchLoaderResponse loadInBackground() {
+		SearchLoaderResponse response;
+		try {
+			ArrayList<FeedResult> list = new ArrayList<FeedResult>();
+			for (FeedResult result : apiManager.searchForFeed(searchTerm)) {
+				list.add(result);
+			}
+			response = new SearchLoaderResponse(list);
+		} catch (ServerErrorException ex) {
+			response = new SearchLoaderResponse(ex.getMessage());
 		}
-		
-		return list;
+		return response;
 	}
 
 }

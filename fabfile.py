@@ -293,7 +293,6 @@ def setup_common():
     setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
-    configure_nginx()
     setup_munin()
 
 def setup_all():
@@ -443,6 +442,9 @@ def setup_python():
 
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+    
+    if env.user == 'ubuntu':
+        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -564,6 +566,7 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
+    configure_nginx()
             
 def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
@@ -738,7 +741,8 @@ def setup_db_firewall():
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
-                  env.roledefs['task']):
+                  env.roledefs['task'] + 
+                  ['199.15.249.101']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -772,14 +776,16 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 1140047872
-    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    # shmmax = 1140047872
+    sudo('add-apt-repository ppa:pitti/postgresql')
+    sudo('apt-get update')
+    sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.1/main/postgresql.conf', use_sudo=True)
-    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
-    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
-    sudo('sysctl -p')
+    ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
+    # sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    # sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    # sudo('sysctl -p')
     
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.1/recovery.conf', use_sudo=True)

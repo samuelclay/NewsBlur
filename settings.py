@@ -516,7 +516,7 @@ else:
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/0" % REDIS['host']
+BROKER_URL = "redis://%s:6379/4" % REDIS['host']
 CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
@@ -556,6 +556,7 @@ REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 REDIS_STORY_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
 REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
+REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
