@@ -137,29 +137,35 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			});
 
 			Cursor replies = resolver.query(FeedProvider.REPLIES_URI, null, null, new String[] { comment.id }, DatabaseConstants.REPLY_DATE + " DESC");
-
 			while (replies.moveToNext()) {
 				Reply reply = Reply.fromCursor(replies);
+				
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
 				replyText.setText(Html.fromHtml(reply.text));
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
+				// occasionally there was no reply user and this caused a force close 
 				Cursor replyCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { reply.userId }, null);
-				final UserProfile replyUser = UserProfile.fromCursor(replyCursor);
-				imageLoader.displayImage(replyUser.photoUrl, replyImage);
-				replyImage.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						Intent i = new Intent(context, Profile.class);
-						i.putExtra(Profile.USER_ID, replyUser.userId);
-						context.startActivity(i);
-					}
-				});
-
-				TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
-				replyUsername.setText(replyUser.username);
-
+				if (replyCursor.getCount() > 0) {
+					final UserProfile replyUser = UserProfile.fromCursor(replyCursor);
+					imageLoader.displayImage(replyUser.photoUrl, replyImage);
+					replyImage.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							Intent i = new Intent(context, Profile.class);
+							i.putExtra(Profile.USER_ID, replyUser.userId);
+							context.startActivity(i);
+						}
+					});
+					
+					TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
+					replyUsername.setText(replyUser.username);
+				} else {
+					TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
+					replyUsername.setText(R.string.unknown_user);
+				}
+				
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
 				replySharedDate.setText(reply.shortDate.toUpperCase() + " AGO");
 
