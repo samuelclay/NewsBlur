@@ -26,7 +26,6 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.AppConstants;
 
-@SuppressWarnings("deprecation")
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	private Handler mHandler;
@@ -173,13 +172,12 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
-	@Override
 	public long getChildId(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getId(childPosition);
 		} else {
-			groupPosition = groupPosition - 2;
-			return getChildrenCursorHelper(groupPosition, true).getId(childPosition);
+			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 2, true);
+			return childrenCursorHelper.getId(childPosition);
 		}
 	}
 
@@ -251,9 +249,22 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	@Override
 	public long getGroupId(int groupPosition) {
 		if (groupPosition >= 2) {
-			return folderCursorHelper.getId(groupPosition);
+			return folderCursorHelper.getId(groupPosition-2);
 		} else {
-			return groupPosition;
+			return Long.MAX_VALUE - groupPosition;
+		}
+	}
+	
+	public String getGroupName(int groupPosition) {
+		if (groupPosition == 0) {
+			return "[ALL_SHARED_STORIES]";
+		} else if(groupPosition == 1) {
+			return "[ALL_STORIES]";
+		} else {
+			Cursor cursor = folderCursorHelper.getCursor();
+			cursor.moveToPosition(groupPosition-2);
+			// Is folder name really always unique?
+			return cursor.getString(cursor.getColumnIndex("folder_name"));
 		}
 	}
 
