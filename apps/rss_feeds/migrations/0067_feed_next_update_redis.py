@@ -12,7 +12,7 @@ class Migration(DataMigration):
         for f in xrange(start, Feed.objects.latest('pk').pk, 1000):
             print " ---> %s" % f
             feed = Feed.objects.filter(pk__in=range(f, f+1000), active=True)\
-                               .values_list('pk', 'next_scheduled_update', 'min_to_decay')
+                               .values_list('pk', 'next_scheduled_update')
             p = r.pipeline()
             for pk, s, m in feed:
                 p.zadd('scheduled_updates', pk, s.strftime('%s'))
