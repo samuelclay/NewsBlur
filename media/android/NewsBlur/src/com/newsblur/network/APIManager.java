@@ -476,7 +476,11 @@ public class APIManager {
 			if (feedUpdate.folders.size() == 0) {
 				return false;
 			}
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> Remove extra debug.  Add full API logging.
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
 			List<ContentValues> feedValues = new ArrayList<ContentValues>();
@@ -495,7 +499,11 @@ public class APIManager {
 					contentResolver.delete(feedUri, null, null);
 				}
 			}
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> Remove extra debug.  Add full API logging.
 			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				socialFeedValues.add(feed.getValues());
@@ -512,7 +520,12 @@ public class APIManager {
 				folderCursor.moveToNext();
 			}
 			folderCursor.close();
+<<<<<<< HEAD
 			
+=======
+
+            // for all folders found just now
+>>>>>>> Remove extra debug.  Add full API logging.
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 				if (!TextUtils.isEmpty(entry.getKey())) {
 					String folderName = entry.getKey().trim();
@@ -532,6 +545,10 @@ public class APIManager {
 					}
 				}
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> Remove extra debug.  Add full API logging.
 		}
 		return true;
 	}
