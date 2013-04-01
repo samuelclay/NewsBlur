@@ -668,6 +668,9 @@ def maintenance_off():
 
 def setup_haproxy():
     sudo('ufw allow 81') # nginx moved
+    sudo('ufw allow 1936') # haproxy stats
+    sudo('apt-get install -y haproxy')
+    sudo('apt-get remove haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -676,6 +679,7 @@ def setup_haproxy():
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
+    sudo('mkdir -p /etc/haproxy')
     put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
