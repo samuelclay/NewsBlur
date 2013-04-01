@@ -6063,7 +6063,7 @@ form.opml_import_form input {
     clear: both;
     margin: 24px 0 0;
     overflow: hidden;
-    padding: 10px 0;
+    padding: 10px 0 0;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-label {
