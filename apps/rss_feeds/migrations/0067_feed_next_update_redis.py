@@ -11,7 +11,9 @@ class Migration(DataMigration):
         start = 0
         for f in xrange(start, Feed.objects.latest('pk').pk, 1000):
             print " ---> %s" % f
-            feed = Feed.objects.filter(pk__in=range(f, f+1000), active=True)\
+            feed = Feed.objects.filter(pk__in=range(f, f+1000), 
+                                       active=True,
+                                       active_subscribers__gte=1)\
                                .values_list('pk', 'next_scheduled_update')
             p = r.pipeline()
             for pk, s, m in feed:

@@ -1292,7 +1292,7 @@ class Feed(models.Model):
         
         
         self.min_to_decay = total
-        if not skip_scheduling:
+        if not skip_scheduling and self.active_subscribers >= 1:
             self.next_scheduled_update = next_scheduled_update
             r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
 
