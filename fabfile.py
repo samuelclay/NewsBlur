@@ -324,8 +324,8 @@ def setup_db(engine=None, skip_common=False):
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    if engine == "memcached":
-        setup_memcached()
+    # if engine == "memcached":
+    #     setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
@@ -359,7 +359,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -668,6 +668,9 @@ def maintenance_off():
 
 def setup_haproxy():
     sudo('ufw allow 81') # nginx moved
+    sudo('ufw allow 1936') # haproxy stats
+    sudo('apt-get install -y haproxy')
+    sudo('apt-get remove haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -676,6 +679,7 @@ def setup_haproxy():
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
+    sudo('mkdir -p /etc/haproxy')
     put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
@@ -728,7 +732,7 @@ def setup_db_firewall():
         27017,  # MongoDB
         28017,  # MongoDB web
         6379,   # Redis
-        11211,  # Memcached
+        # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
     ]
@@ -772,8 +776,8 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
-def setup_memcached():
-    sudo('apt-get -y install memcached')
+# def setup_memcached():
+#     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
     # shmmax = 1140047872
@@ -877,6 +881,7 @@ def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
         run('mkdir -p data')
     put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
+    put('config/supervisor_celeryd_work_queue.conf', '/etc/supervisor/conf.d/celeryd_work_queue.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat_feeds.conf', '/etc/supervisor/conf.d/celeryd_beat_feeds.conf', use_sudo=True)
     sudo('supervisorctl reread')
