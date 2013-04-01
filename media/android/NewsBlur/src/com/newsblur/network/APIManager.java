@@ -476,7 +476,7 @@ public class APIManager {
 			if (feedUpdate.folders.size() == 0) {
 				return false;
 			}
-
+			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
 			List<ContentValues> feedValues = new ArrayList<ContentValues>();
@@ -489,14 +489,13 @@ public class APIManager {
 				contentResolver.bulkInsert(FeedProvider.FEEDS_URI, feedValues.toArray(new ContentValues[feedValues.size()]));
 			}
 			
-			// go thru all the old feeds. if any are not in the update, delete them from the DB
-            for (String olderFeedId : existingFeeds.keySet()) {
+			for (String olderFeedId : existingFeeds.keySet()) {
 				if (feedUpdate.feeds.get(olderFeedId) == null) {
 					Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(olderFeedId).build();
 					contentResolver.delete(feedUri, null, null);
 				}
 			}
-
+			
 			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				socialFeedValues.add(feed.getValues());
@@ -513,20 +512,17 @@ public class APIManager {
 				folderCursor.moveToNext();
 			}
 			folderCursor.close();
-
-            // for all folders found just now
+			
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 				if (!TextUtils.isEmpty(entry.getKey())) {
 					String folderName = entry.getKey().trim();
-                    // if the folder is new, write it to the DB
 					if (!existingFolders.contains(folderName) && !TextUtils.isEmpty(folderName)) {
 						final ContentValues folderValues = new ContentValues();
 						folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
 						contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
 					}
 	
-					// for each feed in the folder, if it didn't exist before this update, write a feed/folder mapping to the DB
-                    for (Long feedId : entry.getValue()) {
+					for (Long feedId : entry.getValue()) {
 						if (!existingFeeds.containsKey(Long.toString(feedId))) {
 							ContentValues values = new ContentValues(); 
 							values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
@@ -536,7 +532,6 @@ public class APIManager {
 					}
 				}
 			}
-
 		}
 		return true;
 	}
