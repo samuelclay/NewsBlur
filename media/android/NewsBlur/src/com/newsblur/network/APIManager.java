@@ -468,8 +468,6 @@ public class APIManager {
 
 	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
-        Log.d( this.getClass().getName(), "calling " + (doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE) );
-		
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_FEEDS);
 		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
@@ -479,8 +477,6 @@ public class APIManager {
 				return false;
 			}
 
-            Log.d( this.getClass().getName(), "querying old feeds" );
-			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
 			List<ContentValues> feedValues = new ArrayList<ContentValues>();
@@ -501,8 +497,6 @@ public class APIManager {
 				}
 			}
 
-            Log.d( this.getClass().getName(), "updating social feeds" );
-			
 			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				socialFeedValues.add(feed.getValues());
@@ -519,8 +513,6 @@ public class APIManager {
 				folderCursor.moveToNext();
 			}
 			folderCursor.close();
-
-            Log.d( this.getClass().getName(), "updating folders" );
 
             // for all folders found just now
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
@@ -544,8 +536,6 @@ public class APIManager {
 					}
 				}
 			}
-
-            Log.d( this.getClass().getName(), "done" );
 
 		}
 		return true;
