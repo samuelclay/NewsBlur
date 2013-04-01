@@ -226,6 +226,7 @@ def load_feeds(request):
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
+    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     scheduled_feeds = []
     for sub in user_subs:
         pk = sub.feed_id
@@ -235,6 +236,8 @@ def load_feeds(request):
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.active and sub.feed.active_subscribers <= 0:
+            scheduled_feeds.append(sub.feed.pk)
+        elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
     
     if len(scheduled_feeds) > 0 and request.user.is_authenticated():
