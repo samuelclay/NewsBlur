@@ -443,7 +443,7 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db02:9200']
+ELASTICSEARCH_HOSTS = ['db10:9200']
 
 # ===============
 # = Social APIs =
