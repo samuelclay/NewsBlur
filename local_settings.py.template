@@ -23,9 +23,20 @@ DEBUG_ASSETS = DEBUG
 MEDIA_URL = '/media/'
 SECRET_KEY = 'YOUR SECRET KEY'
 
-CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'dummy:///'
 # CACHE_BACKEND = 'locmem:///'
 # CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
+    },
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

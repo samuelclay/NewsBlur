@@ -39,6 +39,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
@@ -119,25 +120,24 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		Story story = readingAdapter.getStory(currentItem);
 		UserDetails user = PrefsUtils.getUserDetails(this);
 
-		switch (item.getItemId()) {
-		case android.R.id.home:
+		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
-		case R.id.menu_reading_original:
+		} else if (item.getItemId() == R.id.menu_reading_original) {
 			if (story != null) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				i.setData(Uri.parse(story.permalink));
 				startActivity(i);
 			}
 			return true;
-		case R.id.menu_reading_sharenewsblur:
+		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
 			if (story != null) {
 				ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, currentItem);
 				DialogFragment newFragment = ShareDialogFragment.newInstance(currentFragment, story, currentFragment.previouslySavedShareText);
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;
-		case R.id.menu_shared:
+		} else if (item.getItemId() == R.id.menu_shared) {
 			Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 			intent.setType("text/plain");
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -146,36 +146,16 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
 			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
-		case R.id.menu_textsize:
+		} else if (item.getItemId() == R.id.menu_textsize) {
 			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;
-        case R.id.menu_reading_save:
-            if (story != null) {
-                final String feedId = story.feedId;
-                final String storyId = story.id;
-                new AsyncTask<Void, Void, Boolean>() {
-                    @Override
-                    protected Boolean doInBackground(Void... arg) {
-                        return apiManager.markStoryAsStarred(feedId, storyId);
-                    }
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        if (result) {
-                            Toast.makeText(Reading.this, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(Reading.this, R.string.toast_story_save_error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }.execute();
-            } else {
-                Log.w(this.getClass().getName(), "Couldn't save story, no selection found.");
-            }
-            return true;
-
-		default:
-			return super.onOptionsItemSelected(item);	
+		} else if (item.getItemId() == R.id.menu_reading_save) {
+			FeedUtils.saveStory(story, Reading.this, apiManager);
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
 		}
 	}
 

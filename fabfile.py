@@ -154,7 +154,7 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
-        # run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
     restart_gunicorn()
@@ -293,7 +293,6 @@ def setup_common():
     setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
-    configure_nginx()
     setup_munin()
 
 def setup_all():
@@ -443,6 +442,9 @@ def setup_python():
 
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+    
+    if env.user == 'ubuntu':
+        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -564,6 +566,7 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
+    configure_nginx()
             
 def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
@@ -637,7 +640,7 @@ def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
-    # put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 @parallel
@@ -737,7 +740,9 @@ def setup_db_firewall():
     for ip in set(env.roledefs['app'] + 
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
-                  env.roledefs['debug']):
+                  env.roledefs['debug'] + 
+                  env.roledefs['task'] + 
+                  ['199.15.249.101']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -771,14 +776,16 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 1140047872
-    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    # shmmax = 1140047872
+    sudo('add-apt-repository ppa:pitti/postgresql')
+    sudo('apt-get update')
+    sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.1/main/postgresql.conf', use_sudo=True)
-    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
-    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
-    sudo('sysctl -p')
+    ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
+    # sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    # sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    # sudo('sysctl -p')
     
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.1/recovery.conf', use_sudo=True)
@@ -807,6 +814,15 @@ def setup_mongo():
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
 
+def setup_mongo_mms():
+    pull()
+    put('../secrets-newsblur/settings/mongo_mms_settings.py', '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
+    with cd(env.NEWSBLUR_PATH):
+        put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+
+
 def setup_redis():
     redis_version = '2.6.11'
     with cd(env.VENDOR_PATH):
@@ -824,15 +840,29 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_munin():
-    sudo('apt-get update')
+    # sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
+    put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
-    sudo('/etc/init.d/spawn_fcgi_munin_graph start')
-    sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+    sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_html')
+    with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph stop')
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+        sudo('/etc/init.d/spawn_fcgi_munin_html stop')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+        sudo('update-rc.d spawn_fcgi_munin_html defaults')
     sudo('/etc/init.d/munin-node restart')
-
+    with settings(warn_only=True):
+        sudo('chown nginx.www-data munin-cgi*')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('/etc/init.d/spawn_fcgi_munin_html start')
+    
     
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)

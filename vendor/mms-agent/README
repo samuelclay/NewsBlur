@@ -1,0 +1,196 @@
+(C) Copyright 2012, 10gen
+
+10gen MongoDB Monitoring Service (MMS) - Agent
+=============
+
+For the complete MMS documentation, see: https://mms.10gen.com/help/
+
+The MMS agent polls your MongoDB instance(s) once per minute and relays statistics to 10gen.
+
+New hosts are added by entering them on this page (click the plus/+ button on the top of the page)  - https://mms.10gen.com/host/list
+
+If you have a replica set, you only need to enter one host and the agent will discover the rest of the nodes in the group/cluster.
+
+If you have a shard cluster, you only need to enter one mongos host and the agent will discover the rest of the nodes in the cluster.
+
+Only one MMS agent is active at a time, the others are simply hot-standys.
+
+If you restart your agent or fail over to a secondary agent, there is a five minute timeout before data is sent to the central MMS servers.
+
+The MMS agent only supports MongoDB 1.6.x+
+
+The MMS agent currently does not support Python 3.x
+
+Important
+------------
+
+If you have thousands of databases or collections, you should disable "DB Stats" on the "Settings" page before starting your agent.
+
+Collecting db stats on thousands of databases or collections can adversely impact performance of your system.
+
+* https://mms.10gen.com/settings
+
+Installation
+------------
+
+* Install Python (2.4+) and pymongo (1.9+) - http://api.mongodb.org/python/current/
+
+    * For most people (on Linux) this is as easy as running: sudo easy_install pymongo
+
+    * If you do not have easy_install, typically you can run: sudo yum install python-setuptools
+
+        * For more information, see: http://pypi.python.org/pypi/setuptools
+
+* The hashlib package must be installed if running Python 2.4
+
+    * Try (as root): easy_install hashlib - if that does not work, use:  http://pypi.python.org/pypi/hashlib/20081119
+
+        * Download and unzip and then run (requires root/sudo permission to install):
+
+            * python setup.py build
+
+            * python setup.py install
+
+* The backported hmac package must be installed if running Python 2.4
+
+    * Do *not* use pip for installing this package. Pip is not pulling the correct files.
+
+    * Try (as root): easy_install hmac - if that does not work, use: http://pypi.python.org/pypi/hmac
+
+        * Download and unzip and then run (requires root/sudo permission to install):
+
+            * python setup.py build
+
+            * python setup.py install
+
+* If you need to install any libraries then make sure you close your session/terminal after installing and open a new one, before starting the agent.
+
+* The agent will securely update itself as new releases are published by 10gen. The agent directory must be writable by the user the agent is running under.
+
+* Start the agent:
+
+nohup python agent.py > /REPLACE_SOME_DIRECTORY/agent.log 2>&1 &
+
+Note: If you are running Python 2.4, you should reduce the default stack size for the user account the MMS agent runs under. In Python 2.5+, the agent reduces the stack size programmatically.
+
+Hardware Monitoring - Munin Setup
+------------
+
+MMS also supports hardware monitoring on database servers. To accomplish this, MMS collects data from the ubiquitous Munin Node daemon.
+
+Note munin-node, and hardware monitoring is only available for MongoDB instances running on Linux hosts.
+
+The following are a list of steps to install and configure the Munin Node daemon for MMS.
+
+* Install the munin-node module
+
+    * On the majority of OSs, this can be accomplished by using apt-get or yum - e.g., sudo yum install munin-node)
+
+    * If you install from source you must also install the plugins (described in the links below under "Additional Documentation")
+
+    * MMS currently uses the cpu, iostat and iostat_ios plugins
+
+* Configure munin-node.conf to allow connections from the server(s) running your MMS agent(s).
+
+    * Typically, this file is located in /etc/munin/munin-node.conf
+
+    * Modify the "allow" property - See the munin-node.conf documentation for more information: http://munin-monitoring.org/wiki/munin-node.conf
+
+* If your disk devices are numbered (e.g., /dev/sda1) then you need to configure the munin iostat plugin to support numbered disks (disabled by default).
+
+    * For a typical installation, the configuration file is: /etc/munin/plugin-conf.d/munin-node
+
+    * If this file does not exist, create and add the following:
+        [iostat]
+            env.SHOW_NUMBERED 1
+
+* Ensure your Munin Node process is registered to start on server boot
+
+    * E.g. sudo ln -s /etc/init.d/munin-node /etc/rc3.d/S99munin-node
+
+* Restart your Munin Node process to update the configuration:
+
+    * sudo /etc/init.d/munin-node restart
+
+* You can verify your munin-node setup by running the following from the agent(s) nodes:
+
+    * telnet HOSTNAME 4949 (the default and required port for munin-node)
+
+    * fetch iostat
+
+    * fetch iostat_ios
+
+    * fetch cpu
+
+    (each command should be on a separate line - i.e., hit return after fetch COMMAND - if the plugins are not installed you will see '# Unknown service')
+
+* Additional Documentation
+
+    * http://munin-monitoring.org/wiki/munin-node
+
+    * http://munin-monitoring.org/wiki/LinuxInstallation
+
+    * http://munin-monitoring.org/wiki/SolarisInstallation
+
+    * http://munin-monitoring.org/wiki/HowToMonitorWindows
+
+    * http://munin-monitoring.org
+
+Firewall
+-------------
+
+If your datacenter is secured by a firewall, please configure your firewall to allow outbound connections on port 443 (SSL) to mms.10gen.com
+
+Proxy
+-------------
+
+If your datacenter requires outbound connections to route through a proxy, you can add the following environment variable:
+
+export https_proxy='http://someProxyServer:port';
+
+(on Windows use HTTPS_PROXY)
+
+Note: This requires Python 2.6.1+
+
+
+Data Collected
+-------------
+
+Different commands are executed based on the host type. Below is an overall list of commands/queries executed.
+
+* Default
+    * serverStatus
+    * buildinfo
+    * getCmdLineOpts
+    * connPoolStats
+    * _isSelf
+    * getParameter
+    * ismaster
+    * getShardVersion
+    * netstat
+    * replSetGetStatus
+    * shards.find
+    * mongos.find
+    * config.chunks.group
+    * oplog.find
+    * collstats - oplog.rs
+    * sources.find (slave)
+    * config.settings.find
+    * config.collections.find
+    * config.databases.find
+    * config.lockpings.find
+    * dbstats
+    * db.locks
+
+* Enabled By User
+    * profiler.find
+
+For more information see:
+
+* https://groups.google.com/forum/#!forum/10gen-mms
+
+To submit a support request:
+
+* https://jira.mongodb.org/secure/CreateIssue.jspa?pid=10582&issuetype=6
+
+

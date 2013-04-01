@@ -74,11 +74,11 @@ def feed_autocomplete(request):
     query = request.GET.get('term')
     version = int(request.GET.get('v', 1))
     
-    if not user.profile.is_premium:
-        return dict(code=-1, message="Overloaded, no autocomplete results.")
+    if True or not user.profile.is_premium:
+        return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
     
     if not query:
-        return dict(code=-1, message="Specify a search 'term'.")
+        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
         
     feeds = []
     for field in ['feed_address', 'feed_title', 'feed_link']:
@@ -130,6 +130,8 @@ def load_feed_statistics(request, feed_id):
     user = get_user(request)
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
+    feed.count_subscribers()
+    feed.set_next_scheduled_update(verbose=True, skip_scheduling=True)
     feed.save_feed_story_history_statistics()
     feed.save_classifier_counts()
     

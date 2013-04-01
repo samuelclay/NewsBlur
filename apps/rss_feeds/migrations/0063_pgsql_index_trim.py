@@ -1,61 +1,62 @@
 # -*- coding: utf-8 -*-
-from south.v2 import DataMigration
-from django.conf import settings
-import pymongo
+import datetime
+from south.db import db
+from south.v2 import SchemaMigration
+from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        from apps.rss_feeds.models import MStory, Feed
-        import time
-        
-        db = pymongo.Connection(settings.MONGODB_HOST)
-        batch = 0
-        start = 0
-        for f in xrange(start, Feed.objects.latest('pk').pk):
-            if f < batch*100000: continue
-            start = time.time()
-            try:
-                try:
-                    feed = Feed.get_by_id(f)
-                except Feed.DoesNotExist:
-                    continue
-                if not feed: continue
-                cp1 = time.time() - start
-                # if feed.active_premium_subscribers < 1: continue
-                stories = MStory.objects.filter(story_feed_id=feed.pk, story_hash__exists=False)\
-                                        .only('_id', 'story_feed_id', 'story_permalink')
-                cp2 = time.time() - start
-                for story in stories: 
-                    db.newsblur.stories.update({"_id": story.id}, {"$set": {
-                        "story_hash": story.story_hash
-                    }})
-                cp3 = time.time() - start
-                print "%3s stories: %s (%s/%s/%s)" % (stories.count(), feed, round(cp1, 2), round(cp2, 2), round(cp3, 2))
-            except Exception, e:
-                print " ***> (%s) %s" % (f, e)
-    
+        # Removing index on 'Feed', fields ['active_subscribers']
+        db.delete_index('feeds', ['active_subscribers'])
+
+        # Removing index on 'Feed', fields ['last_update']
+        db.delete_index('feeds', ['last_update'])
+
+        # Removing index on 'Feed', fields ['known_good']
+        db.delete_index('feeds', ['known_good'])
+
+        # Removing index on 'Feed', fields ['queued_date']
+        db.delete_index('feeds', ['queued_date'])
+
+        # Removing index on 'Feed', fields ['active_premium_subscribers']
+        db.delete_index('feeds', ['active_premium_subscribers'])
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        # Adding index on 'Feed', fields ['active_premium_subscribers']
+        db.create_index('feeds', ['active_premium_subscribers'])
+
+        # Adding index on 'Feed', fields ['queued_date']
+        db.create_index('feeds', ['queued_date'])
+
+        # Adding index on 'Feed', fields ['known_good']
+        db.create_index('feeds', ['known_good'])
+
+        # Adding index on 'Feed', fields ['last_update']
+        db.create_index('feeds', ['last_update'])
+
+        # Adding index on 'Feed', fields ['active_subscribers']
+        db.create_index('feeds', ['active_subscribers'])
+
 
     models = {
-        'rss_feeds.duplicatefeed': {
+        u'rss_feeds.duplicatefeed': {
             'Meta': {'object_name': 'DuplicateFeed'},
             'duplicate_address': ('django.db.models.fields.CharField', [], {'max_length': '764', 'db_index': 'True'}),
             'duplicate_feed_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'db_index': 'True'}),
             'duplicate_link': ('django.db.models.fields.CharField', [], {'max_length': '764', 'null': 'True', 'db_index': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'duplicate_addresses'", 'to': "orm['rss_feeds.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'feed': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'duplicate_addresses'", 'to': u"orm['rss_feeds.Feed']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
-        'rss_feeds.feed': {
+        u'rss_feeds.feed': {
             'Meta': {'ordering': "['feed_title']", 'object_name': 'Feed', 'db_table': "'feeds'"},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
-            'active_premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
-            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
+            'active_premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
+            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'average_stories_per_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'branch_from_feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['rss_feeds.Feed']", 'null': 'True', 'blank': 'True'}),
+            'branch_from_feed': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['rss_feeds.Feed']", 'null': 'True', 'blank': 'True'}),
             'creation': ('django.db.models.fields.DateField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'days_to_trim': ('django.db.models.fields.IntegerField', [], {'default': '90'}),
             'errors_since_good': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
@@ -73,27 +74,27 @@ class Migration(DataMigration):
             'has_page': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'has_page_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'hash_address_and_link': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64', 'db_index': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_push': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
-            'known_good': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'known_good': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_load_time': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'last_update': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
+            'last_update': ('django.db.models.fields.DateTimeField', [], {}),
             'min_to_decay': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'next_scheduled_update': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
             'num_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
-            'queued_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
+            'queued_date': ('django.db.models.fields.DateTimeField', [], {}),
             's3_icon': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
             's3_page': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
             'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
-        'rss_feeds.feeddata': {
+        u'rss_feeds.feeddata': {
             'Meta': {'object_name': 'FeedData'},
-            'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'data'", 'unique': 'True', 'to': "orm['rss_feeds.Feed']"}),
+            'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'data'", 'unique': 'True', 'to': u"orm['rss_feeds.Feed']"}),
             'feed_classifier_counts': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'feed_tagline': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
             'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'story_count_history': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
@@ -101,4 +102,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['rss_feeds']
-    symmetrical = True

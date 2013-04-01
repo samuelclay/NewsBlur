@@ -45,18 +45,20 @@ class Feed(models.Model):
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
-    hash_address_and_link = models.CharField(max_length=64, unique=True, db_index=True)
+    hash_address_and_link = models.CharField(max_length=64, unique=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
     is_push = models.NullBooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
-    active_premium_subscribers = models.IntegerField(default=-1, db_index=True)
+    active_premium_subscribers = models.IntegerField(default=-1)
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
+    next_scheduled_update = models.DateTimeField()
+    queued_date = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
-    known_good = models.BooleanField(default=False, db_index=True)
+    known_good = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
@@ -69,8 +71,6 @@ class Feed(models.Model):
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
-    next_scheduled_update = models.DateTimeField(db_index=True)
-    queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
@@ -296,7 +296,7 @@ class Feed(models.Model):
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch:
             feed_finder_url = feedfinder.feed(url)
-            if feed_finder_url:
+            if feed_finder_url and 'comments' not in feed_finder_url:
                 feed = by_url(feed_finder_url)
                 if not feed and create:
                     feed = cls.objects.create(feed_address=feed_finder_url)
@@ -312,6 +312,8 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
+        if not feeds: return
+        
         if isinstance(feeds, Feed):
             if verbose:
                 logging.debug(" ---> Tasking feed: %s" % feeds)
@@ -1219,18 +1221,21 @@ class Feed(models.Model):
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
         updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
-                                                    * (updates_per_month**0.35)))
-        if self.premium_subscribers > 0:
-            updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
+                                                    * (updates_per_month**0.25)))
+        if self.active_premium_subscribers > 0:
+            updates_per_day_delay /= min(self.active_subscribers+self.active_premium_subscribers, 4)
+        updates_per_day_delay = int(updates_per_day_delay)
+
         # Lots of subscribers = lots of updates
         # 24 hours for 0 subscribers.
         # 4 hours for 1 subscriber.
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 12 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
+        subscriber_bonus = int(subscriber_bonus)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -1242,30 +1247,34 @@ class Feed(models.Model):
                 slow_punishment = 6 * self.last_load_time
         total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers > 5:
+        if self.active_premium_subscribers >= 4:
             total = min(total, 60) # 1 hour minimum for premiums
 
-        if ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
-            total = total * random.randint(1, 24)
-        
         if self.is_push:
             total = total * 20
+        elif ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
+            total = total * random.randint(1, 24)
         
         # 1 month max
         if total > 60*24*30:
             total = 60*24*30
         
         if verbose:
-            print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
-                                                self.num_subscribers, self.active_subscribers,
-                                                self.premium_subscribers, self.active_premium_subscribers,
-                                                subscriber_bonus, slow_punishment, total)
+            logging.debug("   ---> [%-30s] Fetched every %sm (%s+%s+%s) Subs: %s/%s Stories: %s/%s" % (
+                                                unicode(self)[:30], total, 
+                                                updates_per_day_delay,
+                                                subscriber_bonus, 
+                                                slow_punishment,
+                                                self.num_subscribers,
+                                                self.active_premium_subscribers,
+                                                self.average_stories_per_month,
+                                                self.stories_last_month))
         random_factor = random.randint(0, total) / 4
         
         return total, random_factor*8
         
-    def set_next_scheduled_update(self, verbose=True):
-        total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
+    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+        total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
         
         if self.errors_since_good:
             total = total * self.errors_since_good
@@ -1278,7 +1287,8 @@ class Feed(models.Model):
                                 minutes = total + random_factor)
             
         self.min_to_decay = total
-        self.next_scheduled_update = next_scheduled_update
+        if not skip_scheduling:
+            self.next_scheduled_update = next_scheduled_update
 
         self.save()
 
@@ -1453,7 +1463,7 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'sparse': True, 
+                     'sparse': True,
                      'types': False, 
                      'drop_dups': True }],
         'index_drop_dups': True,

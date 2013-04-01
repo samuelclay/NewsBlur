@@ -36,15 +36,11 @@ class CleanAnalytics(Task):
     name = 'clean-analytics'
 
     def run(self, **kwargs):
-        logging.debug(" ---> Cleaning analytics... %s page loads and %s feed fetches" % (
-            settings.MONGOANALYTICSDB.nbanalytics.page_loads.count(),
+        logging.debug(" ---> Cleaning analytics... %s feed fetches" % (
             settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),
         ))
         day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.remove({
-            "date": {"$lt": day_ago},
-        })
-        settings.MONGOANALYTICSDB.nbanalytics.page_loads.remove({
             "date": {"$lt": day_ago},
         })
         

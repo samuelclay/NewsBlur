@@ -26,7 +26,7 @@ class NBMuninGraph(MuninGraph):
         from django.conf import settings
     
         hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)    
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
 
         return {
             'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),

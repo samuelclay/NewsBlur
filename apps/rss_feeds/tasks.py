@@ -14,22 +14,16 @@ class TaskFeeds(Task):
         from apps.rss_feeds.models import Feed        
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
-        
-        # Active feeds
-        popular_feeds = Feed.objects.filter(
-            next_scheduled_update__lte=now,
-            active=True,
-            active_premium_subscribers__gte=1
-        ).order_by('?')[:400]
-        popular_count = popular_feeds.count()
+        start = time.time()
         
         # Regular feeds
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now,
             active=True,
             active_subscribers__gte=1
-        ).order_by('?')[:500]
+        ).order_by('?')[:1250]
         active_count = feeds.count()
+        cp1 = time.time()
         
         # Force refresh feeds
         refresh_feeds = Feed.objects.filter(
@@ -37,8 +31,9 @@ class TaskFeeds(Task):
             active=True,
             fetched_once=False,
             active_subscribers__gte=1
-        ).order_by('?')[:50]
+        ).order_by('?')[:100]
         refresh_count = refresh_feeds.count()
+        cp2 = time.time()
         
         # Mistakenly inactive feeds
         day = now - datetime.timedelta(days=1)
@@ -49,29 +44,35 @@ class TaskFeeds(Task):
             active_subscribers__gte=1
         ).order_by('?')[:100]
         inactive_count = inactive_feeds.count()
+        cp3 = time.time()
         
         week = now - datetime.timedelta(days=7)
         old_feeds = Feed.objects.filter(
             last_update__lte=week, 
             queued_date__lte=day,
             active_subscribers__gte=1
-        ).order_by('?')[:50]
+        ).order_by('?')[:500]
         old_count = old_feeds.count()
+        cp4 = time.time()
         
-        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB/~FC%s~FB/~FC%s~FB/~FC%s~SN~FB feeds..." % (
-            popular_count,
+        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN~FB/~FC%s~FB (~FC%s~FB/~FC%s~SN~FB) feeds... (%.4s/%.4s/%.4s/%.4s)" % (
             active_count,
             refresh_count,
             inactive_count,
             old_count,
-        ))        
+            cp1 - start,
+            cp2 - cp1,
+            cp3 - cp2,
+            cp4 - cp3
+        ))
         
-        Feed.task_feeds(popular_feeds, verbose=False)
         Feed.task_feeds(feeds, verbose=False)
         Feed.task_feeds(refresh_feeds, verbose=False)
-        if inactive_feeds: Feed.task_feeds(inactive_feeds, verbose=False)
-        if old_feeds: Feed.task_feeds(old_feeds, verbose=False)
-        
+        Feed.task_feeds(inactive_feeds, verbose=False)
+        Feed.task_feeds(old_feeds, verbose=False)
+
+        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds" % int((time.time() - start)))
+
         
 class UpdateFeeds(Task):
     name = 'update-feeds'

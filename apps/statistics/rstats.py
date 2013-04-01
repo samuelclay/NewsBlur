@@ -26,6 +26,27 @@ class RStats:
             pipe.expireat("%s:a" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
         pipe.expireat("%s:s" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
         pipe.execute()
+    
+    @classmethod
+    def clean_path(cls, path):
+        if not path:
+            return
+            
+        if path.startswith('/reader/feed/'):
+            path = '/reader/feed/'
+        elif path.startswith('/social/stories'):
+            path = '/social/stories/'
+        elif path.startswith('/reader/river_stories'):
+            path = '/reader/river_stories/'
+        elif path.startswith('/social/river_stories'):
+            path = '/social/river_stories/'
+        elif path.startswith('/reader/page/'):
+            path = '/reader/page/'
+        elif path.startswith('/api/check_share_on_site'):
+            path = '/api/check_share_on_site/'
+            
+        return path
+
 
 def round_time(dt=None, round_to=60):
    """Round a datetime object to any time laps in seconds

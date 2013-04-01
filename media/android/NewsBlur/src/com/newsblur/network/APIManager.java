@@ -22,6 +22,10 @@ import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -38,6 +42,7 @@ import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.Message;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
@@ -48,15 +53,21 @@ public class APIManager {
 
 	private static final String TAG = "APIManager";
 	private Context context;
-	private Gson gson;
+	private static Gson gson;
 	private ContentResolver contentResolver;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		final GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
 		contentResolver = context.getContentResolver();
-		gson = builder.create();
+		initGsonIfNeededBuilder();
+	}
+
+	private static synchronized void initGsonIfNeededBuilder() {
+		if(gson == null) {
+			final GsonBuilder builder = new GsonBuilder();
+			builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
+			gson = builder.create();
+		}
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -257,7 +268,7 @@ public class APIManager {
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				int deleted = contentResolver.delete(storyUri, null, null);
+				contentResolver.delete(storyUri, null, null);
 			}
 
 			for (Story story : storiesResponse.stories) {
@@ -460,11 +471,8 @@ public class APIManager {
         Log.d( this.getClass().getName(), "calling " + (doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE) );
 		
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
-
-        Log.d( this.getClass().getName(), "parsing response" );
-
-		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
+		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (feedUpdate.folders.size() == 0) {
@@ -474,17 +482,16 @@ public class APIManager {
             Log.d( this.getClass().getName(), "querying old feeds" );
 			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
-
-            Log.d( this.getClass().getName(), "updating feeds" );
-
-            // go thru all feeds.  if we don't already know about them or the metadata-for-ID has changed, write them to the DB
+			
+			List<ContentValues> feedValues = new ArrayList<ContentValues>();
 			for (String newFeedId : feedUpdate.feeds.keySet()) {
 				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
-					contentResolver.insert(FeedProvider.FEEDS_URI, feedUpdate.feeds.get(newFeedId).getValues());
+					feedValues.add(feedUpdate.feeds.get(newFeedId).getValues());
 				}
 			}
-
-            Log.d( this.getClass().getName(), "cleaning up old feeds" );
+			if(feedValues.size() > 0) {
+				contentResolver.bulkInsert(FeedProvider.FEEDS_URI, feedValues.toArray(new ContentValues[feedValues.size()]));
+			}
 			
 			// go thru all the old feeds. if any are not in the update, delete them from the DB
             for (String olderFeedId : existingFeeds.keySet()) {
@@ -496,14 +503,14 @@ public class APIManager {
 
             Log.d( this.getClass().getName(), "updating social feeds" );
 			
-			// (blindly?) insert all social feeds found
-            for (final SocialFeed feed : feedUpdate.socialFeeds) {
-				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
+			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
+			for (final SocialFeed feed : feedUpdate.socialFeeds) {
+				socialFeedValues.add(feed.getValues());
 			}
-
-            Log.d( this.getClass().getName(), "querying old folders" );
+			if(socialFeedValues.size() > 0) {
+				contentResolver.bulkInsert(FeedProvider.SOCIAL_FEEDS_URI, socialFeedValues.toArray(new ContentValues[socialFeedValues.size()]));
+			}
 			
-			// re-query for all existing folders
 			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 			folderCursor.moveToFirst();
 			HashSet<String> existingFolders = new HashSet<String>();
@@ -690,15 +697,14 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
-	public FeedResult[] searchForFeed(String searchTerm) {
+	public FeedResult[] searchForFeed(String searchTerm) throws ServerErrorException {
 		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
 		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
 
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			// TODO doesn't handle auto complete not supporting premium users only causing force close ?
-			return gson.fromJson(response.responseString, FeedResult[].class);
+			return fromJson(response.responseString, FeedResult[].class);
 		} else {
 			return null;
 		}
@@ -715,4 +721,25 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
+	private <T> T fromJson(String json, Class<T> classOfT) throws ServerErrorException {
+		if(isServerMessage(json)) {
+			Message errorMessage = gson.fromJson(json, Message.class);
+			throw new ServerErrorException(errorMessage.message);
+		}
+		return gson.fromJson(json, classOfT);
+	}
+
+	private boolean isServerMessage(String json) {
+		// TODO find a better way to identify these failed responses
+		boolean isServerMessage = false;
+		JsonParser parser = new JsonParser();
+		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
+		if(asJsonObject.has("code")) {
+			JsonElement codeItem = asJsonObject.get("code");
+			int code = codeItem.getAsInt();
+			if(code == -1)
+				isServerMessage = true;
+		}
+		return isServerMessage;
+	}
 }
