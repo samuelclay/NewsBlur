@@ -324,8 +324,8 @@ def setup_db(engine=None, skip_common=False):
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    if engine == "memcached":
-        setup_memcached()
+    # if engine == "memcached":
+    #     setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
@@ -359,7 +359,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -728,7 +728,7 @@ def setup_db_firewall():
         27017,  # MongoDB
         28017,  # MongoDB web
         6379,   # Redis
-        11211,  # Memcached
+        # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
     ]
@@ -772,8 +772,8 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
-def setup_memcached():
-    sudo('apt-get -y install memcached')
+# def setup_memcached():
+#     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
     # shmmax = 1140047872
