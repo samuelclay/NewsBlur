@@ -214,6 +214,7 @@ def import_starred_stories_from_google_reader(request):
     code = 0
     feed_count = 0
     starred_count = 0
+    delayed = False
     
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
