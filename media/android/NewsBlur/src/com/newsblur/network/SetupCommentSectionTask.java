@@ -99,8 +99,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					favouriteIcon.setImageResource(R.drawable.have_favourite);
 				}
 
-				// disable adding images for all liking users as it overlaps with text
-				/*for (String id : comment.likingUsers) {
+				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
 
 					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
@@ -110,7 +109,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					favouriteImage.setTag(id);
 					
 					favouriteContainer.addView(favouriteImage);
-				}*/
+				}
 
 				favouriteIcon.setOnClickListener(new OnClickListener() {
 					@Override
@@ -238,10 +237,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				commentCursor.moveToNext();
 			}
 
-			// disable adding user images next to comment and shared counts. On a phone
-			// with a large number of users it renders all images in a vertical column
-			// using too much vertical space
-			/*for (final String userId : story.sharedUserIds) {
+			for (final String userId : story.sharedUserIds) {
 				if (!commentIds.contains(userId)) {
 					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
 					UserProfile user = UserProfile.fromCursor(userCursor);
@@ -264,7 +260,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
 				commentGrid.addView(image);
 				commentCursor.moveToNext();
-			}*/
+			}
 			
 			if (publicCommentViews.size() > 0) {
 				String commentCount = context.getString(R.string.public_comment_count);
