@@ -3867,9 +3867,11 @@
             } else if (force || !this.socket || !this.socket.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 var https = _.string.startsWith(window.location.protocol, 'https');
-                var dev = _.string.contains(window.location.href, 'dev.newsblur.com');
+                var local = NEWSBLUR.Globals.debug || _.any(['dev', 'debug'], function(hostname) {
+                    return _.string.contains(window.location.host, hostname);
+                });
                 var port = https ? 443 : 80;
-                if (NEWSBLUR.Globals.debug || dev) {
+                if (local) {
                     port = https ? 8889 : 8888;
                 }
                 this.socket = this.socket || io.connect(server, {

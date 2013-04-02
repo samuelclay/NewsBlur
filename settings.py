@@ -443,7 +443,7 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db02:9200']
+ELASTICSEARCH_HOSTS = ['db10:9200']
 
 # ===============
 # = Social APIs =
@@ -459,7 +459,7 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db02.newsblur.com:3060"
+ORIGINAL_PAGE_SERVER = "db10:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,

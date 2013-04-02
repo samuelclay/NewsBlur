@@ -895,6 +895,11 @@ def mark_feed_stories_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
     feeds_stories = json.decode(feeds_stories)
+    data = {
+        'code': -1,
+        'message': 'Nothing was marked as read'
+    }
+    
     for feed_id, story_ids in feeds_stories.items():
         feed_id = int(feed_id)
         try:
