@@ -127,8 +127,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		}
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
-			long groupId = folderAdapter.getGroupId(i);
-			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {
+			String groupName = folderAdapter.getGroupName(i);
+			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true)) {
 				list.expandGroup(i);
 			} else {
 				list.collapseGroup(i);
@@ -278,19 +278,21 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		folderAdapter.setBlogCursor(blogCursor);
 		folderAdapter.setGroupCursor(cursor);
 		folderAdapter.setCountCursor(countCursor);
-		folderAdapter.notifyDataSetChanged();	
+		folderAdapter.notifyDataSetChanged();
+		
+		checkOpenFolderPreferences();
 	}
 
 	@Override
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
 		if (folderAdapter.isExpandable(groupPosition)) {
-			long groupId = folderAdapter.getGroupId(groupPosition);
+			String groupName = folderAdapter.getGroupName(groupPosition);
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + groupId, false).commit();
+				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
 			} else {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + groupId, true).commit();
+				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
 			}
 			return false;
 		} else {

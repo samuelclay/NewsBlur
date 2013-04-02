@@ -69,7 +69,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         });
         
         var feeds = NEWSBLUR.assets.feeds.filter(function(feed){ 
-            return _.string.contains(feed.get('feed_title').toLowerCase(), input);
+            return _.string.contains(feed.get('feed_title').toLowerCase(), input) || feed.id == input;
         });
         var socialsubs = NEWSBLUR.assets.social_feeds.filter(function(feed){ 
             return _.string.contains(feed.get('feed_title').toLowerCase(), input) ||
