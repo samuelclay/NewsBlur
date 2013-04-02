@@ -366,6 +366,13 @@ class GoogleReaderImporter(Importer):
         return starred_count
         
     def process_starred_items(self, stories):
+        counts = {
+            'created': 0,
+            'existed': 0,
+            'failed': 0,
+        }
+        logging.user(self.user, "~FCBeginning starring...")
+        
         for story in stories:
             try:
                 original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, fetch=False)
@@ -384,10 +391,18 @@ class GoogleReaderImporter(Importer):
                     "story_feed_id": original_feed and original_feed.pk,
                     "story_tags": [tag for tag in story.get('categories', []) if 'user/' not in tag]
                 }
-                logging.user(self.user, "~FCStarring: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
+                # logging.user(self.user, "~FCStarring: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
                 MStarredStory.objects.create(**story_db)
+                counts['created'] += 1
             except OperationError:
-                logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
-            except Exception, e:
-                logging.user(self.user, "~FC~BRFailed to star: ~SB%s / %s" % (story, e))
-                
+                # logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
+                counts['existed'] += 1
+            except Exception:
+                # logging.user(self.user, "~FC~BRFailed to star: ~SB%s / %s" % (story, e))
+                counts['failed'] += 1
+
+        logging.user(self.user, "~FCStarred: ~SB%s~SN/~SB%s%s~SN/~SB%s%s~SN" % (
+                     counts['created'],
+                     '~FM' if counts['existed'] else '~SN', counts['existed'],
+                     '~FR' if counts['failed'] else '~SN', counts['failed']))
+        return counts
