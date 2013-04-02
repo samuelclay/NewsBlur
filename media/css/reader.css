@@ -3963,6 +3963,7 @@ form.opml_import_form input {
 .NB-static a:hover,
 .NB-splash-link:hover {
     color: #A85B40;
+    cursor: pointer;
 }
 
 .NB-module-logo, .NB-module-login {
@@ -6690,10 +6691,13 @@ form.opml_import_form input {
 
 .NB-modal-intro .NB-intro-import-delayed {
     color: #808080;
-    margin: 12px 0 0;
+    margin: -24px 0 12px;
     font-size: 12px;
     text-align: center;
     display: none;
+}
+.NB-modal-intro .NB-intro-module-containers {
+    overflow: hidden;
 }
 .NB-modal-intro .NB-intro-module-container {
     width: 46%;
@@ -6715,6 +6719,9 @@ form.opml_import_form input {
 .NB-modal-intro .NB-page-2 h4 {
     margin: 24px 0 32px;
     font-size: 24px;
+}
+.NB-intro-import-only.NB-modal-intro .NB-page-2 .NB-page-2-started {
+    display: none;
 }
 .NB-modal-intro .NB-intro-module .NB-modal-submit-button {
     margin: 0;
@@ -6758,20 +6765,28 @@ form.opml_import_form input {
     vertical-align: bottom;
     margin: 0 4px;
 }
-.NB-modal-intro .NB-intro-bookmarklet {
+.NB-modal-intro .NB-intro-bookmarklet,
+.NB-modal-intro .NB-intro-starredimport {
     text-align: center;
     padding: 0 48px;
     width: 100%;
     overflow: hidden;
-    margin: 40px 0 0;
+    margin: 32px 0 0;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+.NB-modal-intro .NB-intro-starredimport {
+    margin: 12px 0 0;
 }
 .NB-modal-intro .NB-intro-bookmarklet-info {
     float: left;
     font-size: 13px;
     padding: 2px 0 0 12px;
+}
+.NB-modal-intro .NB-intro-starredimport-info {
+    font-size: 13px;
+    padding: 10px 0 0;
 }
 .NB-modal-intro a.NB-goodies-bookmarklet-button {
     float: left;
@@ -6785,10 +6800,15 @@ form.opml_import_form input {
     margin: 92px 0 48px;
 }
 .NB-modal-intro .NB-intro-imports-sites h4 {
-    margin: 72px 0 36px;
+    margin: 64px 0 36px;
+}
+.NB-modal-intro .NB-intro-imports-sites h6 {
+    margin: -24px 0 36px;
+    text-align: center;
+    font-size: 14px;
 }
 .NB-modal-intro .NB-intro-imports-sites .NB-modal-submit-button {
-    margin: 0 auto 24px;
+    margin: 0 auto 18px;
     width: 250px;
     text-align: center;
     display: block;

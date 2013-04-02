@@ -357,6 +357,40 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
     
+    def send_import_reader_finished_email(self, feed_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_finished.xhtml', locals())
+        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
+    
+    def send_import_reader_starred_finished_email(self, feed_count, starred_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_starred_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_starred_finished.xhtml', locals())
+        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader starred stories import: %s" % self.user.email)
+    
     def send_launch_social_email(self, force=False):
         if not self.user.email or not self.send_emails:
             logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))

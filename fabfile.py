@@ -530,6 +530,7 @@ def switch_forked_mongoengine():
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_ulimit():
     # Increase File Descriptor limits.
@@ -817,6 +818,7 @@ def setup_mongo():
     run('echo "ulimit -n 10000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_mongo_mms():
     pull()

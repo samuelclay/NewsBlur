@@ -59,45 +59,55 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     $.make('div', { className: 'NB-carousel-inner NB-intro-imports' }, [
                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-start' }, [
                             $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
-                            $.make('div', { className: 'NB-intro-module-container NB-left' }, [
-                                $.make('h3', { className: 'NB-module-content-header' }, 'Import from'),
-                                $.make('div', { className: 'NB-intro-module NB-intro-import-google' }, [
-                                    $.make('h3', [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.png', width: 115, height: 40 })
-                                    ]),
-                                    $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
-                                        'Connect to Google'
-                                    ]),
-                                    $.make('div', { className: 'NB-error' })
+                            $.make('div', { className: 'NB-intro-module-containers' }, [
+                                $.make('div', { className: 'NB-intro-module-container NB-left' }, [
+                                    $.make('h3', { className: 'NB-module-content-header' }, 'Import from'),
+                                    $.make('div', { className: 'NB-intro-module NB-intro-import-google' }, [
+                                        $.make('h3', [
+                                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.png', width: 115, height: 40 })
+                                        ]),
+                                        $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
+                                            'Connect to Google'
+                                        ]),
+                                        $.make('div', { className: 'NB-error' })
+                                    ])
+                                ]),
+                                $.make('div', { className: 'NB-intro-module-container NB-right' }, [
+                                    $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
+                                    $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
+                                        $.make('h3', 'OPML'),
+                                        $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
+                                            $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
+                                                'Upload OPML File',
+                                                $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
+                                            ])
+                                        ]),
+                                        $.make('div', { className: 'NB-error' })
+                                    ])
                                 ])
                             ]),
-                            $.make('div', { className: 'NB-intro-module-container NB-right' }, [
-                                $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
-                                $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
-                                    $.make('h3', 'OPML'),
-                                    $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
-                                        $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
-                                            'Upload OPML File',
-                                            $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
-                                        ])
-                                    ]),
-                                    $.make('div', { className: 'NB-error' })
+                            (this.options.force_import && $.make('div', { className: 'NB-intro-starredimport NB-intro-section NB-intro-import-container' }, [
+                                $.make('h3', { className: 'NB-module-content-header' }, 'Google Reader Starred Stories'),
+                                $.make('div', { className: 'NB-intro-import NB-intro-module' }, [
+                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-starredimport-button' }, 'Connect to Google'),
+                                    $.make('div', { className: 'NB-intro-starredimport-info' }, 'Import your saved stories from Google Reader')
                                 ])
-                            ])
+                            ]))
                         ]),
                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-progress' }, [
-                            $.make('h4', { className: 'NB-page-2-started' }, "Importing your sites..."),
+                            $.make('h4', { className: 'NB-page-2-importing' }, "Importing your sites..."),
                             $.make('div', { className: 'NB-loading' })
                         ]),
                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-sites' }, [
                             $.make('h4'),
-                            $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
-                                '&laquo; Go back and re-import your sites'
-                            ]),
+                            $.make('h6'),
                             $.make('div', { className: 'NB-intro-import-delayed' }, [
-                                'There are too many sites to process...',
+                                'There are too many sites and stories to process...',
                                 $.make('br'),
                                 'You will be emailed within a minute or three.'
+                            ]),
+                            $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
+                                '&laquo; Go back and re-import your sites'
                             ]),
                             $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
                                 $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
@@ -169,6 +179,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
               ])
             ])
         ]);
+        
+        if (this.options.force_import) {
+            this.$modal.addClass('NB-intro-import-only');
+        }
     },
     
     // ==========
@@ -378,7 +392,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
-    advance_import_carousel: function(page) {
+    advance_import_carousel: function(page, options) {
+        options = options || {};
         var $carousel = $('.NB-carousel-inner', this.$modal);
 
         if (!_.isNumber(page)) { 
@@ -403,21 +418,32 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             'easing': 'easeInOutQuint',
             'duration': 1000
         });
-        this.count_feeds();
+        this.count_feeds(options);
     },
     
-    count_feeds: function(fake_feed_count) {
-        var feed_count = fake_feed_count || NEWSBLUR.assets.feeds.size();
+    count_feeds: function(options) {
+        options = options || {};
+        var feed_count = options.fake_count || NEWSBLUR.assets.feeds.size();
+        var starred_count = options.starred_count || NEWSBLUR.assets.starred_count;
         
         $(".NB-intro-imports-sites h4", this.$modal).text([
             'You are subscribed to ',
-            (fake_feed_count && 'at least '),
+            (options.fake_count && 'at least '),
             Inflector.pluralize(' site', feed_count, true),
             '.'
         ].join(""));
 
-        if (feed_count) {
-            NEWSBLUR.reader.check_hide_getting_started();
+        if (starred_count) {
+            var $info = $(".NB-intro-imports-sites h6", this.$modal);
+            $info.text([
+                "And you have ",
+                Inflector.pluralize(' saved story', starred_count, true),
+                ". "
+            ].join(""));
+            
+            if (starred_count == 10) {
+                $info.append($.make('span', { className: 'NB-splash-link NB-starredimport-button' }, 'Fetch the rest'));
+            }
         }
     },
     
@@ -458,10 +484,15 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // = Import =
     // ==========
     
-    google_reader_connect: function() {
-        var options = "location=0,status=0,width=800,height=500";
+    google_reader_connect: function(options) {
+        options = options || {};
+        var window_options = "location=0,status=0,width=800,height=500";
         var url = "/import/authorize";
-        this.connect_window = window.open(url, '_blank', options);
+        this.flags.starred_only = !!options.starred_only;
+        $(".NB-page-2-importing", this.$modal).text(options.starred_only ? 
+                                                    "Importing your sites and stories..." : 
+                                                    "Importing your sites...");
+        this.connect_window = window.open(url, '_blank', window_options);
         clearInterval(this.connect_window_timer);
         this.connect_window_timer = setInterval(_.bind(function() {
             console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
@@ -469,10 +500,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 if (!this.connect_window || 
                     !this.connect_window.location || 
                     this.connect_window.closed) {
-                    this.start_import_from_google_reader({});
+                    this.start_import_from_google_reader(options);
                 }
             } catch (err) {
-                this.start_import_from_google_reader({});
+                this.start_import_from_google_reader(options);
             }
         }, this), 1000);
 
@@ -482,6 +513,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     start_import_from_google_reader: function(data) {
         console.log(["start_import_from_google_reader", data]);
         clearInterval(this.connect_window_timer);
+        data.starred_only = this.flags.starred_only;
         var $error = $('.NB-intro-import-google .NB-error', this.$modal);
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
         if (data && data.error) {
@@ -490,18 +522,33 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         } else {
             $error.hide();
             NEWSBLUR.reader.flags.importing_from_google_reader = false;
-            this.advance_import_carousel(1);
+            this.advance_import_carousel(1, data);
             $loading.addClass('NB-active');
-            NEWSBLUR.assets.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
+            if (data && data.starred_only) {
+                    NEWSBLUR.assets.start_import_starred_stories_from_google_reader(
+                        _.bind(this.finish_import_from_google_reader, this));                
+            } else {
+                    NEWSBLUR.assets.start_import_from_google_reader(
+                        _.bind(this.finish_import_from_google_reader, this));
+            }
         }
     },
     
-    finish_import_from_google_reader: function() {
+    finish_import_from_google_reader: function(data) {
+        var self = this;
+        console.log(["finish_import_from_google_reader", data]);
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
         
         NEWSBLUR.assets.load_feeds(_.bind(function() {
             $loading.removeClass('NB-active');
             this.advance_import_carousel(2);
+            if (data.delayed) {
+                NEWSBLUR.reader.flags.delayed_import = true;
+                self.count_feeds({fake_count: data.feed_count});
+                $('.NB-intro-import-delayed', self.$modal).show();
+            } else {
+                $('.NB-intro-import-delayed', self.$modal).hide();
+            }
         }, this));
     },
     
@@ -534,7 +581,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     self.advance_import_carousel(2);
                     if (data.payload.delayed) {
                         NEWSBLUR.reader.flags.delayed_import = true;
-                        self.count_feeds(data.payload.feed_count);
+                        self.count_feeds({fake_count: data.payload.feed_count});
                         $('.NB-intro-import-delayed', self.$modal).show();
                     }
                 });
@@ -641,6 +688,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         $.targetIs(e, { tagSelector: '.NB-google-reader-oauth' }, function($t, $p) {
             e.preventDefault();
             self.google_reader_connect();
+        });
+        $.targetIs(e, { tagSelector: '.NB-starredimport-button' }, function($t, $p) {
+            e.preventDefault();
+            self.google_reader_connect({'starred_only': true});
         });
         $.targetIs(e, { tagSelector: '.NB-intro-import-restart' }, function($t, $p) {
             e.preventDefault();

@@ -74,7 +74,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.flags['refresh_inline_feed_delay'] = true;
             NEWSBLUR.reader.force_feeds_refresh(function() {
                 NEWSBLUR.reader.finish_count_unreads_after_import();
-            }, true);
+            }, true, null, function() {
+                NEWSBLUR.reader.finish_count_unreads_after_import({error: true});
+            });
         }
         
         if (folders.length && !this.options.feed_chooser) {

@@ -4423,7 +4423,8 @@
             
             this.animate_progress_bar($bar, 5);
             
-            this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
+            this.model.start_import_from_google_reader(
+                $.rescope(this.finish_import_from_google_reader, this));
             this.show_progress_bar();
         },
 
@@ -4477,7 +4478,8 @@
             }, 500);
         },
 
-        finish_count_unreads_after_import: function(e, data) {
+        finish_count_unreads_after_import: function(data) {
+            data = data || {};
             $('.NB-progress-bar', this.$s.$feeds_progress).progressbar({
                 value: 100
             });
