@@ -313,21 +313,21 @@ class Feed(models.Model):
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
         if not feeds: return
-        
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+
         if isinstance(feeds, Feed):
             if verbose:
-                logging.debug(" ---> Tasking feed: %s" % feeds)
-            feeds = [feeds]
+                logging.debug(" ---> ~SN~FBTasking feed: ~SB%s" % feeds)
+            feeds = [feeds.pk]
         elif verbose:
-            logging.debug(" ---> Tasking %s feeds..." % len(feeds))
+            logging.debug(" ---> ~SN~FBTasking ~SB%s~SN feeds..." % len(feeds))
         
-        feed_queue = []
-        for f in feeds:
-            f.queued_date = datetime.datetime.utcnow()
-            f.set_next_scheduled_update(verbose=False)
-
-        for feed_queue in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-            feed_ids = [feed.pk for feed in feed_queue]
+        if isinstance(feeds, QuerySet):
+            feeds = [f.pk for f in feeds]
+        
+        r.srem('queued_feeds', *feeds)
+        
+        for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
             UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds')
 
     def update_all_statistics(self, full=True, force=False):
@@ -384,7 +384,7 @@ class Feed(models.Model):
                     return False
                 try:
                     self.feed_address = feed_address
-                    self.next_scheduled_update = datetime.datetime.utcnow()
+                    self.schedule_feed_fetch_immediately()
                     self.has_feed_exception = False
                     self.active = True
                     self.save()
@@ -739,6 +739,8 @@ class Feed(models.Model):
         
     def update(self, **kwargs):
         from utils import feed_fetcher
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -766,6 +768,7 @@ class Feed(models.Model):
         
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
+        r.zadd('fetched_feeds_last_hour', self.pk, int(datetime.datetime.now().strftime('%s')))
         
         if options['force']:
             feed.sync_redis()
@@ -1274,6 +1277,7 @@ class Feed(models.Model):
         return total, random_factor*8
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
         
         if self.errors_since_good:
@@ -1285,18 +1289,23 @@ class Feed(models.Model):
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
-            
+        
+        
         self.min_to_decay = total
-        if not skip_scheduling:
+        if not skip_scheduling and self.active_subscribers >= 1:
             self.next_scheduled_update = next_scheduled_update
+            r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
 
         self.save()
+        
 
     def schedule_feed_fetch_immediately(self, verbose=True):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
         self.next_scheduled_update = datetime.datetime.utcnow()
+        r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
 
         return self.save()
         
@@ -1318,7 +1327,7 @@ class Feed(models.Model):
             self.schedule_feed_fetch_immediately()
         else:
             logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
-            self.queued_date = datetime.datetime.utcnow()
+            # self.queued_date = datetime.datetime.utcnow()
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     
