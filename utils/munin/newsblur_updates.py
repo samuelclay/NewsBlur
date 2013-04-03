@@ -11,7 +11,7 @@ class NBMuninGraph(MuninGraph):
             'graph_title' : 'NewsBlur Updates',
             'graph_vlabel' : '# of updates',
             'graph_args' : '-l 0',
-            'update_queue.label': 'Queued Feeds last hour',
+            'update_queue.label': 'Queued Feeds',
             'feeds_fetched.label': 'Fetched feeds last hour',
             'celery_update_feeds.label': 'Celery - Update Feeds',
             'celery_new_feeds.label': 'Celery - New Feeds',
@@ -29,8 +29,8 @@ class NBMuninGraph(MuninGraph):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
 
         return {
-            'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),
-            'feeds_fetched': Feed.objects.filter(last_update__gte=hour_ago).count(),
+            'update_queue': r.llen("queued_feeds"),
+            'feeds_fetched': r.llen("fetched_feeds_last_hour"),
             'celery_update_feeds': r.llen("update_feeds"),
             'celery_new_feeds': r.llen("new_feeds"),
             'celery_push_feeds': r.llen("push_feeds"),

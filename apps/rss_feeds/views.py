@@ -207,7 +207,7 @@ def exception_retry(request):
     if not feed:
         raise Http404
     
-    feed.next_scheduled_update = datetime.datetime.utcnow()
+    feed.schedule_feed_fetch_immediately()
     feed.has_page_exception = False
     feed.has_feed_exception = False
     feed.active = True
@@ -254,13 +254,12 @@ def exception_change_feed_address(request):
         feed.active = True
         feed.fetched_once = False
         feed.feed_address = feed_address
-        feed.next_scheduled_update = datetime.datetime.utcnow()
-        duplicate_feed = feed.save()
+        duplicate_feed = feed.schedule_feed_fetch_immediately()
         code = 1
         if duplicate_feed:
             new_feed = Feed.objects.get(pk=duplicate_feed.pk)
             feed = new_feed
-            new_feed.next_scheduled_update = datetime.datetime.utcnow()
+            new_feed.schedule_feed_fetch_immediately()
             new_feed.has_feed_exception = False
             new_feed.active = True
             new_feed.save()
@@ -335,12 +334,11 @@ def exception_change_feed_link(request):
             feed.fetched_once = False
             feed.feed_link = feed_link
             feed.feed_address = feed_address
-            feed.next_scheduled_update = datetime.datetime.utcnow()
-            duplicate_feed = feed.save()
+            duplicate_feed = feed.schedule_feed_fetch_immediately()
             if duplicate_feed:
                 new_feed = Feed.objects.get(pk=duplicate_feed.pk)
                 feed = new_feed
-                new_feed.next_scheduled_update = datetime.datetime.utcnow()
+                new_feed.schedule_feed_fetch_immediately()
                 new_feed.has_page_exception = False
                 new_feed.active = True
                 new_feed.save()
