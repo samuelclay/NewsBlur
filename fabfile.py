@@ -340,14 +340,14 @@ def setup_db(engine=None, skip_common=False):
     # if env.user == 'ubuntu':
     #     setup_db_mdadm()
 
-def setup_task(skip_common=False):
+def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
     copy_task_settings()
-    enable_celery_supervisor()
+    enable_celery_supervisor(queue)
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
@@ -933,8 +933,12 @@ def setup_task_firewall():
 def setup_task_motd():
     put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
     
-def enable_celery_supervisor():
-    put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+def enable_celery_supervisor(queue=None):
+    if not queue:
+        put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    else:
+        put('config/supervisor_celeryd_%s.conf' % queue, '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+        
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
