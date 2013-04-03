@@ -198,7 +198,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             });
         }
         
-        this.folder_count = new NEWSBLUR.Views.FolderCount({
+        this.folder_count = new NEWSBLUR.Views.UnreadCount({
             collection: this.collection
         }).render();
         var $counts = this.folder_count.$el;

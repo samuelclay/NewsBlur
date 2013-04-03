@@ -1290,6 +1290,7 @@
 
             $original_tabs.removeClass('NB-disabled-page')
                           .removeClass('NB-disabled')
+                          .removeClass('NB-hidden')
                           .removeClass('NB-exception-page');
             $original_tabs.each(function() {
                 $(this).tipsy('disable');
@@ -1312,11 +1313,36 @@
                 });
             } else if (this.flags.river_view) {
                 $page_tab.addClass('NB-disabled');
+                $('.NB-taskbar-button.task_view_page').addClass('NB-hidden');
+                $('.NB-taskbar-button.task_view_feed').addClass('NB-first');
             } else if (feed && feed.get('has_exception') && feed.get('exception_type') == 'page') {
                 if (view == 'page') {
                     view = 'feed';
                 }
                 $('.task_view_page').addClass('NB-exception-page');
+            }
+            
+            
+            var $split = $(".NB-task-layout-split");
+            var $list = $(".NB-task-layout-list");
+            var story_layout = NEWSBLUR.assets.preference('story_layout');
+            
+            if (story_layout == 'list') {
+                $('.NB-taskbar-button.task_view_page').addClass('NB-hidden');
+                $('.NB-taskbar-button.task_view_feed').addClass('NB-first');
+                $('.NB-taskbar-button.task_view_story').addClass('NB-hidden');
+                $('.NB-taskbar-button.task_view_text').addClass('NB-last');
+                $split.removeClass('NB-active');
+                $list.addClass('NB-active');
+            } else if (story_layout == 'split') {
+                if (!this.flags.river_view) {               
+                    $('.NB-taskbar-button.task_view_page').removeClass('NB-hidden');
+                    $('.NB-taskbar-button.task_view_feed').removeClass('NB-first');
+                }
+                $('.NB-taskbar-button.task_view_story').removeClass('NB-hidden');
+                $('.NB-taskbar-button.task_view_text').removeClass('NB-last');
+                $split.addClass('NB-active');
+                $list.removeClass('NB-active');
             }
 
             if (feed_id == 'starred') {
@@ -1333,29 +1359,11 @@
         switch_story_layout: function(story_layout) {
             story_layout = story_layout || NEWSBLUR.assets.preference('story_layout');
             
-            var $split = $(".NB-task-layout-split");
-            var $list = $(".NB-task-layout-list");
-            
-            if (story_layout == 'list') {
-                $('.NB-taskbar-button.task_view_page').addClass('NB-hidden');
-                $('.NB-taskbar-button.task_view_story').addClass('NB-hidden');
-                $('.NB-taskbar-button.task_view_text').addClass('NB-last');
-                $('.NB-taskbar-button.task_view_feed').addClass('NB-first');
-                $split.removeClass('NB-active');
-                $list.addClass('NB-active');
-            } else if (story_layout == 'split') {
-                $('.NB-taskbar-button.task_view_page').removeClass('NB-hidden');
-                $('.NB-taskbar-button.task_view_story').removeClass('NB-hidden');
-                $('.NB-taskbar-button.task_view_text').removeClass('NB-last');
-                $('.NB-taskbar-button.task_view_feed').removeClass('NB-first');
-                $split.addClass('NB-active');
-                $list.removeClass('NB-active');
-            }
-            
             if (story_layout == NEWSBLUR.assets.preference('story_layout')) return;
             
             NEWSBLUR.assets.preference('story_layout', story_layout);
             
+            this.set_correct_story_view_for_feed();
             this.apply_resizable_layout(true);
             
             if (story_layout == 'list') {
@@ -2206,7 +2214,7 @@
             }
             
             if (feed) {
-                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.UnreadCount({
                     model: feed
                 }).render();
             } else if (folder) {
@@ -2217,7 +2225,7 @@
                 } else {
                     collection = folder.folder_view.collection;
                 }
-                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FolderCount({
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.UnreadCount({
                     collection: collection
                 }).render();
             }

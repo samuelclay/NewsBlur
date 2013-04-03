@@ -1,21 +1,32 @@
-NEWSBLUR.Views.FolderCount = Backbone.View.extend({
+NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
     
     className: 'feed_counts_floater',
     
     initialize: function() {
         _.bindAll(this, 'render');
         if (!this.options.stale) {
-            this.collection.bind('change:counts', this.render);
+            if (this.model) {
+                this.model.bind('change:ps', this.render);
+                this.model.bind('change:nt', this.render);
+                this.model.bind('change:ng', this.render);
+            } else if (this.collection) {
+                this.collection.bind('change:counts', this.render);
+            }
         }
     },
-
+    
     // ==========
     // = Render =
     // ==========
     
     render: function() {
         var unread_class = "";
-        var counts = this.collection.unread_counts();
+        var counts;
+        if (this.model) {
+            counts = this.model.unread_counts();
+        } else if (this.collection) {
+            counts = this.collection.unread_counts();
+        }
 
         if (counts['ps']) {
             unread_class += ' unread_positive';
@@ -56,20 +67,18 @@ NEWSBLUR.Views.FolderCount = Backbone.View.extend({
     // ===========
     
     center: function() {
-        var i_width = this.$el.width();
-        var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
-        var left = (o_width / 2.0) - (i_width / 2.0);
-        var view_taskbar_width = $('.NB-taskbar-view').outerWidth(true);
-        var story_buttons_offset = $(".NB-taskbar-nav").position().left;
+        var count_width = this.$el.width();
+        var left_buttons_offset = $('.NB-taskbar-view').outerWidth(true);
+        var right_buttons_offset = $(".NB-taskbar-layout").position().left;
+        var usable_space = right_buttons_offset - left_buttons_offset;
+        var left = (usable_space / 2) - (count_width / 2) + left_buttons_offset;
         
-        if (i_width + 12 > (story_buttons_offset - view_taskbar_width)) {
+        // console.log(["Unread count offset", count_width, left, left_buttons_offset, right_buttons_offset]);
+        
+        if (count_width + 12 > usable_space) {
             this.$el.hide();
         }
-
-        if (left < view_taskbar_width + 12) {
-            left += view_taskbar_width - left + 12;
-        }
-
+        
         this.$el.css({'left': left});
     },
     
