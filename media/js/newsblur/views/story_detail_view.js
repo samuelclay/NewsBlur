@@ -51,7 +51,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.model.story_view = this;
             this.model.inline_story_detail_view = this;
         }
-        this.model.latest_story_detail_view = this;
+        if (!this.options.feed_floater) {
+            this.model.latest_story_detail_view = this;
+        }
     },
     
     // =============

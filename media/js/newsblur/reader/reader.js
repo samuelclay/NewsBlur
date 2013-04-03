@@ -2826,7 +2826,7 @@
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
-                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.get('feed_title') })
+                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title NB-input', value: feed.get('feed_title') })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
@@ -2928,7 +2928,7 @@
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
-                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
+                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title NB-input', value: feed_id })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
@@ -2957,7 +2957,7 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input', value: story.get('story_permalink') }),
+                        $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input NB-input', value: story.get('story_permalink') }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -3087,7 +3087,6 @@
                 // this.update_share_button_label($('.NB-sideoption-share-comments', $manage_menu));
             }
             
-            if (inverse) $manage_menu.addClass('NB-inverse');
             return $manage_menu;
         },
         
@@ -3193,6 +3192,7 @@
                     });
 
                     $manage_menu_container.corner('br 8px');
+                    $manage_menu_container.corner('tr 0');
                     $('li', $manage_menu_container).each(function() {
                         $(this).prependTo($(this).parent());
                     });
@@ -3222,20 +3222,24 @@
                         'left': left
                     });
                     $manage_menu_container.corner('tr 8px');
+                    $manage_menu_container.corner('br 0');
                 }
             }
             $manage_menu_container.stop().css({'display': 'block', 'opacity': 1});
             
             // Create and position the arrow tab
             if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
-                var $arrow = $.make('div', { className: 'NB-menu-manage-arrow' });
+                var $arrow = $.make('div', { className: 'NB-menu-manage-arrow' }, [
+                    $.make('div', { className: 'NB-icon' })
+                ]);
                 if (inverse) {
                     $arrow.corner('bl br 5px');
                     $manage_menu_container.append($arrow);
-                    $arrow.addClass('NB-inverse');
+                    $manage_menu_container.addClass('NB-inverse');
                 } else {
                     $arrow.corner('tl tr 5px');
                     $manage_menu_container.prepend($arrow);
+                    $manage_menu_container.removeClass('NB-inverse');
                 }
             }
             
