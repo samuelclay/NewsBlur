@@ -59,11 +59,18 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         window.focus();
     },
     
-    open_share_dialog: function(e) {
-        var $story = this.latest_story_detail_view.$el;
-        this.latest_story_detail_view.share_view.toggle_feed_story_share_dialog({
-            animate_scroll: true
-        });
+    open_share_dialog: function(e, view) {
+        if (view == 'title') {
+            var $story_title = this.story_title_view.$st;
+            this.story_title_view.mouseenter_manage_icon();
+            NEWSBLUR.reader.show_manage_menu('story', $story_title, {story_id: this.id});
+            NEWSBLUR.reader.show_confirm_story_share_menu_item(this.id);
+        } else {
+            var $story = this.latest_story_detail_view.$el;
+            this.latest_story_detail_view.share_view.toggle_feed_story_share_dialog({
+                animate_scroll: true
+            });
+        }
     },
     
     change_selected: function(model, selected) {

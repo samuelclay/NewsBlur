@@ -127,8 +127,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     queue: false,
                     easing: 'easeInOutQuint',
                     offset: this.model.latest_story_detail_view.$el.height() -
-                            $scroll_container.height() + 
-                            dialog_height
+                            $scroll_container.height()
                 });
             }
             $share.animate({

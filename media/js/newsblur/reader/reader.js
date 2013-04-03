@@ -5591,7 +5591,12 @@
             $document.bind('keydown', 'shift+s', function(e) {
                 e.preventDefault();
                 if (self.active_story) {
-                    self.active_story.open_share_dialog(e);
+                    var view = 'feed';
+                    if (NEWSBLUR.assets.preference('story_layout') == 'split' &&
+                        _.contains(['page', 'story'], self.story_view)) {
+                        view = 'title';
+                    }
+                    self.active_story.open_share_dialog(e, view);
                 }
             });
         }

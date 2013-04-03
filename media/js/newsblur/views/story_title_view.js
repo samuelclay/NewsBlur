@@ -302,6 +302,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     mouseenter_manage_icon: function() {
         var menu_height = 270;
+        // console.log(["mouseenter_manage_icon", this.$el.offset().top, $(window).height(), menu_height]);
         if (this.$el.offset().top > $(window).height() - menu_height) {
             this.$st.addClass('NB-hover-inverse');
         }
