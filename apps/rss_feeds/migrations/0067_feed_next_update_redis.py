@@ -16,7 +16,7 @@ class Migration(DataMigration):
                                        active_subscribers__gte=1)\
                                .values_list('pk', 'next_scheduled_update')
             p = r.pipeline()
-            for pk, s, m in feed:
+            for pk, s in feed:
                 p.zadd('scheduled_updates', pk, s.strftime('%s'))
             p.execute()
 
