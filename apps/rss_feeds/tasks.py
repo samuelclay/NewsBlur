@@ -120,6 +120,8 @@ class UpdateFeeds(Task):
         for feed_pk in feed_pks:
             try:
                 feed = Feed.get_by_id(feed_pk)
+                if not feed:
+                    raise Feed.DoesNotExist
                 feed.update(**options)
             except Feed.DoesNotExist:
                 logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)

@@ -444,7 +444,8 @@ def setup_python():
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
     
     if env.user == 'ubuntu':
-        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
+        with settings(warn_only=True):
+            sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -944,9 +945,10 @@ def enable_celery_supervisor(queue=None):
 
 @parallel
 def copy_task_settings():
+    host = env.host.split('.', 2)[0]
     with settings(warn_only=True):
         put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 # =========================
 # = Setup - Digital Ocean =
