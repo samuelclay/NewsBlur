@@ -35,7 +35,6 @@ import com.newsblur.network.domain.StoriesResponse;
  */
 public class SyncService extends IntentService {
 
-	private static final String TAG = "SyncService";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
 	public static final String EXTRA_TASK_FOLDER_NAME = "taskFoldername";
@@ -74,7 +73,7 @@ public class SyncService extends IntentService {
 
 
 	public SyncService() {
-		super(TAG);
+		super(SyncService.class.getName());
 	}
 
 	@Override
@@ -91,6 +90,8 @@ public class SyncService extends IntentService {
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
+
+            Log.d( this.getClass().getName(), "Sync Intent: " + intent.getIntExtra(SYNCSERVICE_TASK , -1) );
 
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
 			case EXTRA_TASK_FOLDER_UPDATE:
@@ -131,7 +132,7 @@ public class SyncService extends IntentService {
 						}
 					}
 				} else {
-					Log.e(TAG, "No feed/stories to mark as read included in SyncRequest");
+					Log.e(this.getClass().getName(), "No feed/stories to mark as read included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
@@ -157,7 +158,7 @@ public class SyncService extends IntentService {
 				if (!TextUtils.isEmpty(markSocialJson)) {
 					apiManager.markSocialStoryAsRead(markSocialJson);
 				} else {
-					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
+					Log.e(this.getClass().getName(), "No feed/story to mark as read included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
@@ -171,7 +172,7 @@ public class SyncService extends IntentService {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
-					Log.e(TAG, "No feed to refresh included in SyncRequest");
+					Log.e(this.getClass().getName(), "No feed to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
@@ -186,7 +187,7 @@ public class SyncService extends IntentService {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
-					Log.e(TAG, "No feed ids to refresh included in SyncRequest");
+					Log.e(this.getClass().getName(), "No feed ids to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
@@ -200,7 +201,7 @@ public class SyncService extends IntentService {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
-					Log.e(TAG, "No socialfeed ids to refresh included in SyncRequest");
+					Log.e(this.getClass().getName(), "No socialfeed ids to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
@@ -214,12 +215,12 @@ public class SyncService extends IntentService {
 						receiver.send(STATUS_FINISHED_CLOSE, Bundle.EMPTY);
 						return;
 					} else {
-						Log.e(TAG, "Error deleting feed");
+						Log.e(this.getClass().getName(), "Error deleting feed");
 						Toast.makeText(this, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();
 						receiver.send(STATUS_ERROR, Bundle.EMPTY);
 					}
 				} else {
-					Log.e(TAG, "No feed id to delete include in SyncRequest");
+					Log.e(this.getClass().getName(), "No feed id to delete include in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	
@@ -233,18 +234,21 @@ public class SyncService extends IntentService {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
-					Log.e(TAG, "Missing parameters forsocialfeed SyncRequest");
+					Log.e(this.getClass().getName(), "Missing parameters for socialfeed SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
 
 			default:
-				Log.e(TAG, "SyncService called without relevant task assignment");
+				Log.e(this.getClass().getName(), "SyncService called without relevant task assignment");
 				break;
 			}
+
+            Log.d( this.getClass().getName(), "Sync Intent complete");
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.e(TAG, "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
+			Log.e(this.getClass().getName(), "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
 			if (receiver != null) {
 				final Bundle bundle = new Bundle();
 				bundle.putString(Intent.EXTRA_TEXT, e.toString());
@@ -255,7 +259,7 @@ public class SyncService extends IntentService {
 		if (receiver != null) {
 			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 		} else {
-			Log.e(TAG, "No receiver attached to Sync?");
+			Log.e(this.getClass().getName(), "No receiver attached to Sync?");
 		}
 	}
 
