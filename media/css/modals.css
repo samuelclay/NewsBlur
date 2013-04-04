@@ -204,7 +204,7 @@
   padding-right: 4px;
 }
 
-.NB-modal-submit {
+.NB-modal-submit-bottom {
     width: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -441,7 +441,9 @@
     overflow: auto;
     height: 400px;
     width: 100%;
-    padding-right: 12px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;    
 }
 .NB-modal .NB-tab.NB-active {
     display: block;

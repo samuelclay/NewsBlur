@@ -172,7 +172,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     "You're ready to go! Hope you enjoy NewsBlur."
                 ])
             ]),
-            $.make('div', { className: 'NB-modal-submit' }, [
+            $.make('div', { className: 'NB-modal-submit-bottom' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
                 $.make('span', { className: 'NB-tutorial-next-page-text' }, "Let's Get Started "),
                 $.make('span', { className: 'NB-raquo' }, '&raquo;')

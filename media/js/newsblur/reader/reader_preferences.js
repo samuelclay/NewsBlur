@@ -602,18 +602,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Show all comments'
                         ])
                     ])
-                    
-                ]),
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+            ]),
+            $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
+                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...'),
+                ' or ',
+                $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+            ])
         ]);
     },
     
@@ -803,7 +798,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var self = this;
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
-        $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
+        $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function(data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();
@@ -865,6 +860,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             }
             self.switch_tab(newtab);
         });        
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.save_preferences();
+        });
 
         $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
             e.preventDefault();
@@ -912,11 +912,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
     
     enable_save: function() {
-        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
+        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text('Save Preferences');
     },
     
     disable_save: function() {
-        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
+        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text('Make changes above...');
     }
     
 });

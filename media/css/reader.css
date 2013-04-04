@@ -6606,7 +6606,7 @@ form.opml_import_form input {
 .NB-modal-intro .NB-page.NB-page-1 {
   display: block;
 }
-.NB-modal-intro .NB-modal-submit .NB-modal-submit-button {
+.NB-modal-intro .NB-modal-submit-bottom .NB-modal-submit-button {
   float: right;
 }
 .NB-modal-intro ul {
@@ -7796,7 +7796,12 @@ form.opml_import_form input {
 .NB-modal-preferences {
     overflow: hidden;
 }
-
+.NB-modal-preferences .NB-modal-submit-button {
+    float: left;
+}
+.NB-modal-preferences .NB-modal-submit-form {
+    margin-top: 12px;
+}
 .NB-modal-preferences .NB-preferences-scroll {
     overflow: auto;
     max-height: 600px;
@@ -9146,6 +9151,9 @@ form.opml_import_form input {
     font-size: 13px;
     padding: 6px;
     height: 54px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .NB-modal-profile-editor .NB-tab-blurblog input[type=text] {
     margin: 0 0 12px;
