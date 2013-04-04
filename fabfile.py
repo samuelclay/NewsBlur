@@ -730,7 +730,7 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============    
 
-# @parallel
+@parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -750,8 +750,7 @@ def setup_db_firewall():
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
-                  env.roledefs['task'] + 
-                  ['199.15.249.101']):
+                  env.roledefs['task']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -950,7 +949,10 @@ def enable_celery_supervisor(queue=None):
 
 @parallel
 def copy_task_settings():
-    if env.host:
+    server_hostname = run('hostname')
+    if 'task' in server_hostname:
+        host = server_hostname
+    elif env.host:
         host = env.host.split('.', 2)[0]
     else:
         host = env.host_string.split('.', 2)[0]

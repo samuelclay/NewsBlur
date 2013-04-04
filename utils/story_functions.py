@@ -13,6 +13,7 @@ from django.utils.html import strip_tags as strip_tags_django
 from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
+from utils.feed_functions import timelimit, TimeoutError
 from vendor import reseekfile
 
 COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
@@ -193,6 +194,13 @@ def strip_tags(html):
     return s.get_data()
 
 def strip_comments(html_string):
+    try:
+        strip_comments_timelimit(html_string)
+    except TimeoutError:
+        return html_string
+
+@timelimit(2)
+def strip_comments_timelimit(html_string):
     return COMMENTS_RE.sub('', html_string)
     
 def strip_comments__lxml(html_string):
