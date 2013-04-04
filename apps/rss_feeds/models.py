@@ -750,6 +750,7 @@ class Feed(models.Model):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
+        original_feed_id = self.pk
         
         options = {
             'verbose': kwargs.get('verbose'),
@@ -769,15 +770,15 @@ class Feed(models.Model):
         feed = disp.run_jobs()
         
         feed = Feed.get_by_id(feed.pk)
-        if not feed: return
+        if feed:
+            feed.last_update = datetime.datetime.utcnow()
+            feed.set_next_scheduled_update()
+            r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
+            if options['force']:
+                feed.sync_redis()
+        else:
+            r.zrem('tasked_feeds', original_feed_id)
         
-        feed.last_update = datetime.datetime.utcnow()
-        feed.set_next_scheduled_update()
-        r.zadd('fetched_feeds_last_hour', self.pk, int(datetime.datetime.now().strftime('%s')))
-        
-        if options['force']:
-            feed.sync_redis()
-            
         return feed
 
     @classmethod
