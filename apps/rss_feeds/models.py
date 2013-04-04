@@ -198,7 +198,7 @@ class Feed(models.Model):
                                                   feed_link=self.feed_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
-                logging.debug("%s: %s" % (self.feed_address, duplicate_feeds))
+                logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
                 return
 
