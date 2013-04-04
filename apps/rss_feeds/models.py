@@ -808,7 +808,7 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
-        if settings.DEBUG:
+        if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
                           self.title[:30],
                           len(stories),
@@ -913,6 +913,12 @@ class Feed(models.Model):
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
+        if settings.DEBUG or verbose:
+            logging.debug("   ---> [%-30s] ~FBChecked ~SB%s~SN new/updated: %s" % (
+                          self.title[:30],
+                          len(stories),
+                          ret_values))
+
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
