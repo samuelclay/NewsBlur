@@ -27,14 +27,11 @@ import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class LoginProgressFragment extends Fragment implements Receiver {
+public class LoginProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	private DetachableResultReceiver receiver;
-	private String TAG = "LoginProgress";
 	private TextView updateStatus, retrievingFeeds, letsGo;
 	private ImageView loginProfilePicture;
-	private int CURRENT_STATUS = -1;
 	private ProgressBar feedProgress, loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
@@ -54,8 +51,6 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		apiManager = new APIManager(getActivity());
-		receiver = new DetachableResultReceiver(new Handler());
-		receiver.setReceiver(this);
 
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
@@ -71,14 +66,9 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		feedProgress = (ProgressBar) v.findViewById(R.id.login_feed_progress);
 		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
 		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
-		// password.setOnEditorActionListener(this);
 
-		if (loginTask != null) {
-			refreshUI();
-		} else {
-			loginTask = new LoginTask();
-			loginTask.execute();
-		}
+        loginTask = new LoginTask();
+        loginTask.execute();
 
 		return v;
 	}
@@ -98,10 +88,10 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			LoginResponse response = apiManager.login(username, password);
 			apiManager.updateUserProfile();
 			try {
-				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
-				Thread.sleep(700);
+				// TODO: get rid of this and use proper UI transactions
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				Log.e(TAG, "Error sleeping during login.");
+				Log.e(this.getClass().getName(), "Error sleeping during login.");
 			}
 			return response;
 		}
@@ -122,10 +112,9 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
 
-				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
-				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
-				intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
-				getActivity().startService(intent);
+                Intent startMain = new Intent(getActivity(), Main.class);
+                getActivity().startActivity(startMain);
+
 			} else {
 				if (result.errors != null && result.errors.message != null) {
 					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
@@ -135,57 +124,6 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				getActivity().finish();
 			}
 		}
-	}
-
-
-	private void refreshUI() {
-		switch (CURRENT_STATUS) {
-		case SyncService.NOT_RUNNING:
-			break;
-		case SyncService.STATUS_NO_MORE_UPDATES:
-			break;
-		case SyncService.STATUS_FINISHED:
-			final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
-			retrievingFeeds.setText(R.string.login_retrieved_feeds);
-			retrievingFeeds.startAnimation(b);
-
-			final Animation c = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
-			letsGo.setText(R.string.login_lets_go);
-			c.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					Intent startMain = new Intent(getActivity(), Main.class);
-					getActivity().startActivity(startMain);
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) { }
-
-				@Override
-				public void onAnimationStart(Animation animation) { }				
-			});
-			letsGo.startAnimation(c);
-			break;
-		case SyncService.STATUS_RUNNING:
-			break;
-		case SyncService.STATUS_ERROR:
-			updateStatus.setText("Error synchronising.");
-			break;
-		}
-	}
-
-
-	// Interface for Host 
-	public interface LoginFragmentInterface {
-		public void loginSuccessful();
-		public void loginUnsuccessful();
-		public void syncSuccessful();
-	}
-
-	@Override
-	public void onReceiverResult(int resultCode, Bundle resultData) {
-		CURRENT_STATUS = resultCode;
-		refreshUI();
 	}
 
 }
