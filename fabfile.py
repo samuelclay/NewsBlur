@@ -201,9 +201,12 @@ def celery_fast():
 @parallel
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl stop celery')
+        sudo('supervisorctl stop celery')
         with settings(warn_only=True):
-            run('./utils/kill_celery.sh')
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')                
 
 @parallel
 def celery_start():
@@ -945,7 +948,11 @@ def enable_celery_supervisor(queue=None):
 
 @parallel
 def copy_task_settings():
-    host = env.host.split('.', 2)[0]
+    if env.host:
+        host = env.host.split('.', 2)[0]
+    else:
+        host = env.host_string.split('.', 2)[0]
+        
     with settings(warn_only=True):
         put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))

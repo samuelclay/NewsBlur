@@ -326,6 +326,11 @@ class Feed(models.Model):
             feeds = [f.pk for f in feeds]
         
         r.srem('queued_feeds', *feeds)
+        now = datetime.datetime.now().strftime("%s")
+        p = r.pipeline()
+        for feed_id in feeds:
+            p.zadd('tasked_feeds', feed_id, now)
+        p.execute()
         
         for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
             UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds')
@@ -1295,7 +1300,8 @@ class Feed(models.Model):
         if not skip_scheduling and self.active_subscribers >= 1:
             self.next_scheduled_update = next_scheduled_update
             r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
-
+            r.zrem('tasked_feeds', self.pk)
+            
         self.save()
         
 
