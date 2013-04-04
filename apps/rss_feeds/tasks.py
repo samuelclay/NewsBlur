@@ -82,7 +82,6 @@ class TaskFeeds(Task):
         
         # Feed.task_feeds(feeds, verbose=False)
         Feed.task_feeds(refresh_feeds, verbose=False)
-        Feed.task_feeds(inactive_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
         logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~SB%s~SN/%s tasked/queued/scheduled)" % (
