@@ -201,9 +201,12 @@ def celery_fast():
 @parallel
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl stop celery')
+        sudo('supervisorctl stop celery')
         with settings(warn_only=True):
-            run('./utils/kill_celery.sh')
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')                
 
 @parallel
 def celery_start():
@@ -340,14 +343,14 @@ def setup_db(engine=None, skip_common=False):
     # if env.user == 'ubuntu':
     #     setup_db_mdadm()
 
-def setup_task(skip_common=False):
+def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
     copy_task_settings()
-    enable_celery_supervisor()
+    enable_celery_supervisor(queue)
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
@@ -444,7 +447,8 @@ def setup_python():
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
     
     if env.user == 'ubuntu':
-        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
+        with settings(warn_only=True):
+            sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -935,16 +939,25 @@ def setup_task_firewall():
 def setup_task_motd():
     put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
     
-def enable_celery_supervisor():
-    put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+def enable_celery_supervisor(queue=None):
+    if not queue:
+        put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    else:
+        put('config/supervisor_celeryd_%s.conf' % queue, '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+        
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
 @parallel
 def copy_task_settings():
+    if env.host:
+        host = env.host.split('.', 2)[0]
+    else:
+        host = env.host_string.split('.', 2)[0]
+        
     with settings(warn_only=True):
         put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 # =========================
 # = Setup - Digital Ocean =

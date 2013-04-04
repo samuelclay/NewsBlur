@@ -21,16 +21,13 @@ class NBMuninGraph(MuninGraph):
 
 
     def calculate_metrics(self):
-        import datetime
-        from apps.rss_feeds.models import Feed
         from django.conf import settings
     
-        hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
 
         return {
-            'update_queue': r.llen("queued_feeds"),
-            'feeds_fetched': r.llen("fetched_feeds_last_hour"),
+            'update_queue': r.scard("queued_feeds"),
+            'feeds_fetched': r.zcard("fetched_feeds_last_hour"),
             'celery_update_feeds': r.llen("update_feeds"),
             'celery_new_feeds': r.llen("new_feeds"),
             'celery_push_feeds': r.llen("push_feeds"),
