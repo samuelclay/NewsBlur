@@ -32,7 +32,7 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if tasked_feeds_size < 5000:
+        if tasked_feeds_size < 50000:
             feeds = r.srandmember('queued_feeds', 1000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
@@ -50,7 +50,7 @@ class TaskFeeds(Task):
         cp2 = time.time()
         
         # Mistakenly inactive feeds
-        hours_ago = (now - datetime.timedelta(hours=6)).strftime('%s')
+        hours_ago = (now - datetime.timedelta(hours=1)).strftime('%s')
         old_tasked_feeds = r.zrangebyscore('tasked_feeds', 0, hours_ago)
         inactive_count = len(old_tasked_feeds)
         if inactive_count:
@@ -61,7 +61,7 @@ class TaskFeeds(Task):
                             r.scard('queued_feeds')))
         cp3 = time.time()
         
-        old = now - datetime.timedelta(days=3)
+        old = now - datetime.timedelta(days=1)
         old_feeds = Feed.objects.filter(
             next_scheduled_update__lte=old, 
             active_subscribers__gte=1
