@@ -2,6 +2,7 @@ import datetime
 import os
 import shutil
 import time
+import redis
 from celery.task import Task
 from utils import log as logging
 from utils import s3_utils as s3
@@ -15,19 +16,32 @@ class TaskFeeds(Task):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         start = time.time()
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        tasked_feeds_size = r.zcard('tasked_feeds')
+        
+        hour_ago = now - datetime.timedelta(hours=1)
+        r.zremrangebyscore('fetched_feeds_last_hour', 0, int(hour_ago.strftime('%s')))
+        
+        now_timestamp = int(now.strftime("%s"))
+        queued_feeds = r.zrangebyscore('scheduled_updates', 0, now_timestamp)
+        r.zremrangebyscore('scheduled_updates', 0, now_timestamp)
+        r.sadd('queued_feeds', *queued_feeds)
+        logging.debug(" ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/%s queued/scheduled)" % (
+                        len(queued_feeds),
+                        r.scard('queued_feeds'),
+                        r.zcard('scheduled_updates')))
         
         # Regular feeds
-        feeds = Feed.objects.filter(
-            next_scheduled_update__lte=now,
-            active=True,
-            active_subscribers__gte=1
-        ).order_by('?')[:1250]
-        active_count = feeds.count()
+        if tasked_feeds_size < 50000:
+            feeds = r.srandmember('queued_feeds', 1000)
+            Feed.task_feeds(feeds, verbose=True)
+            active_count = len(feeds)
+        else:
+            active_count = 0
         cp1 = time.time()
         
         # Force refresh feeds
         refresh_feeds = Feed.objects.filter(
-            next_scheduled_update__lte=now,
             active=True,
             fetched_once=False,
             active_subscribers__gte=1
@@ -36,20 +50,20 @@ class TaskFeeds(Task):
         cp2 = time.time()
         
         # Mistakenly inactive feeds
-        day = now - datetime.timedelta(days=1)
-        inactive_feeds = Feed.objects.filter(
-            last_update__lte=day, 
-            queued_date__lte=day,
-            min_to_decay__lte=60*24,
-            active_subscribers__gte=1
-        ).order_by('?')[:100]
-        inactive_count = inactive_feeds.count()
+        hours_ago = (now - datetime.timedelta(hours=1)).strftime('%s')
+        old_tasked_feeds = r.zrangebyscore('tasked_feeds', 0, hours_ago)
+        inactive_count = len(old_tasked_feeds)
+        if inactive_count:
+            r.zremrangebyscore('tasked_feeds', 0, hours_ago)
+            r.sadd('queued_feeds', *old_tasked_feeds)
+            logging.debug(" ---> ~SN~FBRe-queuing ~SB%s~SN dropped feeds (~SB%s~SN queued)" % (
+                            inactive_count,
+                            r.scard('queued_feeds')))
         cp3 = time.time()
         
-        week = now - datetime.timedelta(days=7)
+        old = now - datetime.timedelta(days=1)
         old_feeds = Feed.objects.filter(
-            last_update__lte=week, 
-            queued_date__lte=day,
+            next_scheduled_update__lte=old, 
             active_subscribers__gte=1
         ).order_by('?')[:500]
         old_count = old_feeds.count()
@@ -66,12 +80,15 @@ class TaskFeeds(Task):
             cp4 - cp3
         ))
         
-        Feed.task_feeds(feeds, verbose=False)
+        # Feed.task_feeds(feeds, verbose=False)
         Feed.task_feeds(refresh_feeds, verbose=False)
-        Feed.task_feeds(inactive_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
-        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds" % int((time.time() - start)))
+        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~SB%s~SN/%s tasked/queued/scheduled)" % (
+                        int((time.time() - start)),
+                        r.zcard('tasked_feeds'),
+                        r.scard('queued_feeds'),
+                        r.zcard('scheduled_updates')))
 
         
 class UpdateFeeds(Task):
@@ -99,6 +116,8 @@ class UpdateFeeds(Task):
         for feed_pk in feed_pks:
             try:
                 feed = Feed.get_by_id(feed_pk)
+                if not feed:
+                    raise Feed.DoesNotExist
                 feed.update(**options)
             except Feed.DoesNotExist:
                 logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)

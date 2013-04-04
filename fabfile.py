@@ -201,9 +201,12 @@ def celery_fast():
 @parallel
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl stop celery')
+        sudo('supervisorctl stop celery')
         with settings(warn_only=True):
-            run('./utils/kill_celery.sh')
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')                
 
 @parallel
 def celery_start():
@@ -324,8 +327,8 @@ def setup_db(engine=None, skip_common=False):
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    if engine == "memcached":
-        setup_memcached()
+    # if engine == "memcached":
+    #     setup_memcached()
     if engine == "postgres":
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
@@ -340,14 +343,14 @@ def setup_db(engine=None, skip_common=False):
     # if env.user == 'ubuntu':
     #     setup_db_mdadm()
 
-def setup_task(skip_common=False):
+def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
     copy_task_settings()
-    enable_celery_supervisor()
+    enable_celery_supervisor(queue)
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
@@ -359,7 +362,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -444,7 +447,8 @@ def setup_python():
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
     
     if env.user == 'ubuntu':
-        sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
+        with settings(warn_only=True):
+            sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -668,6 +672,9 @@ def maintenance_off():
 
 def setup_haproxy():
     sudo('ufw allow 81') # nginx moved
+    sudo('ufw allow 1936') # haproxy stats
+    sudo('apt-get install -y haproxy')
+    sudo('apt-get remove haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -676,6 +683,7 @@ def setup_haproxy():
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
+    sudo('mkdir -p /etc/haproxy')
     put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
@@ -721,14 +729,14 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============    
 
-# @parallel
+@parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
         27017,  # MongoDB
         28017,  # MongoDB web
         6379,   # Redis
-        11211,  # Memcached
+        # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
     ]
@@ -741,8 +749,7 @@ def setup_db_firewall():
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
-                  env.roledefs['task'] + 
-                  ['199.15.249.101']):
+                  env.roledefs['task']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -772,8 +779,8 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
-def setup_memcached():
-    sudo('apt-get -y install memcached')
+# def setup_memcached():
+#     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
     # shmmax = 1140047872
@@ -877,6 +884,7 @@ def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
         run('mkdir -p data')
     put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
+    put('config/supervisor_celeryd_work_queue.conf', '/etc/supervisor/conf.d/celeryd_work_queue.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat_feeds.conf', '/etc/supervisor/conf.d/celeryd_beat_feeds.conf', use_sudo=True)
     sudo('supervisorctl reread')
@@ -928,16 +936,28 @@ def setup_task_firewall():
 def setup_task_motd():
     put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
     
-def enable_celery_supervisor():
-    put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+def enable_celery_supervisor(queue=None):
+    if not queue:
+        put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    else:
+        put('config/supervisor_celeryd_%s.conf' % queue, '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+        
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
 @parallel
 def copy_task_settings():
+    server_hostname = run('hostname')
+    if 'task' in server_hostname:
+        host = server_hostname
+    elif env.host:
+        host = env.host.split('.', 2)[0]
+    else:
+        host = env.host_string.split('.', 2)[0]
+        
     with settings(warn_only=True):
         put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 # =========================
 # = Setup - Digital Ocean =
