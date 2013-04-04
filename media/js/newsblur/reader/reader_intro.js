@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderIntro = function(options) {
     var defaults = {
-        modal_container_class: "NB-intro-container"
+        modal_container_class: "NB-full-container"
     };
     var intro_page = NEWSBLUR.assets.preference('intro_page');
     

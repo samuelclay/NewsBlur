@@ -1,11 +1,16 @@
 NEWSBLUR.ReaderKeyboard = function(options) {
-    var defaults = {};
+    var defaults = {
+        modal_container_class: "NB-full-container"
+    };
     
     this.options = $.extend({}, defaults, options);
     this.runner();
 };
 
-NEWSBLUR.ReaderKeyboard.prototype = {
+NEWSBLUR.ReaderKeyboard.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderKeyboard.prototype.constructor = NEWSBLUR.ReaderKeyboard;
+
+_.extend(NEWSBLUR.ReaderKeyboard.prototype, {
     
     runner: function() {
         this.make_modal();
@@ -348,4 +353,4 @@ NEWSBLUR.ReaderKeyboard.prototype = {
         });
     }
     
-};
+});

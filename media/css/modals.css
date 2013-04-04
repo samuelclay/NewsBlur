@@ -204,6 +204,19 @@
   padding-right: 4px;
 }
 
+.NB-modal-submit {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 24px;
+    background-color: #F7F8F5;
+    border-top: 1px solid #DFE2DA;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
 
 .NB-modal-submit-button {
     font-size: 12px;
@@ -352,7 +365,6 @@
 }
 
 .NB-modal .NB-modal-submit {
-    margin: 16px 0 0 0;
     font-size: 13px;
     overflow: hidden;
 }

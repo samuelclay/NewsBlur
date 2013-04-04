@@ -1,6 +1,7 @@
 NEWSBLUR.ReaderMarkRead = function(options) {
     var defaults = {
-        'days': 1
+        days: 1,
+        modal_container_class: "NB-full-container"
     };
     
     this.flags = {};

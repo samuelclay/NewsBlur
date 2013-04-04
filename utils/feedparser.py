@@ -1,3 +1,5 @@
+# Broken: http://menu-mtv-quadhangout.blogspot.com/feeds/posts/default
+
 """Universal feed parser
 
 Handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds

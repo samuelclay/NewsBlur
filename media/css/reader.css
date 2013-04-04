@@ -6558,7 +6558,7 @@ form.opml_import_form input {
 
 .NB-modal-intro {
 }
-#simplemodal-container.NB-intro-container {
+#simplemodal-container.NB-full-container {
     padding: 0;
 }
 
@@ -6605,19 +6605,6 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-page.NB-page-1 {
   display: block;
-}
-.NB-modal-intro .NB-modal-submit {
-    width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    border-radius: 6px;
-    padding: 24px;
-    background-color: #F7F8F5;
-    border-top: 1px solid #DFE2DA;
-    position: absolute;
-    bottom: 0;
-    right: 0;
 }
 .NB-modal-intro .NB-modal-submit .NB-modal-submit-button {
   float: right;
