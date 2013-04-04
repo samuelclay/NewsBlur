@@ -393,6 +393,7 @@ class Dispatcher:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
                 feed = Feed.get_by_id(getattr(feed, 'pk', feed_id))
+                if not feed: continue
                 feed.save_feed_history(500, "Error", tb)
                 feed_code = 500
                 fetched_feed = None
