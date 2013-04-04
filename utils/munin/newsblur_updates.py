@@ -13,6 +13,7 @@ class NBMuninGraph(MuninGraph):
             'graph_args' : '-l 0',
             'update_queue.label': 'Queued Feeds',
             'feeds_fetched.label': 'Fetched feeds last hour',
+            'tasked_feeds.label': 'Tasked Feeds',
             'celery_update_feeds.label': 'Celery - Update Feeds',
             'celery_new_feeds.label': 'Celery - New Feeds',
             'celery_push_feeds.label': 'Celery - Push Feeds',
@@ -28,6 +29,7 @@ class NBMuninGraph(MuninGraph):
         return {
             'update_queue': r.scard("queued_feeds"),
             'feeds_fetched': r.zcard("fetched_feeds_last_hour"),
+            'tasked_feeds': r.zcard("tasked_feeds"),
             'celery_update_feeds': r.llen("update_feeds"),
             'celery_new_feeds': r.llen("new_feeds"),
             'celery_push_feeds': r.llen("push_feeds"),

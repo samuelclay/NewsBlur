@@ -17,7 +17,7 @@ class TaskFeeds(Task):
         now = datetime.datetime.utcnow()
         start = time.time()
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        task_feeds_size = r.llen('update_feeds') * 12
+        tasked_feeds_size = r.zcard('tasked_feeds')
         
         hour_ago = now - datetime.timedelta(hours=1)
         r.zremrangebyscore('fetched_feeds_last_hour', 0, int(hour_ago.strftime('%s')))
@@ -32,7 +32,7 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if task_feeds_size < 1000:
+        if tasked_feeds_size < 5000:
             feeds = r.srandmember('queued_feeds', 1000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
@@ -86,7 +86,7 @@ class TaskFeeds(Task):
 
         logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~SB%s~SN/%s tasked/queued/scheduled)" % (
                         int((time.time() - start)),
-                        r.llen('update_feeds'),
+                        r.zcard('tasked_feeds'),
                         r.scard('queued_feeds'),
                         r.zcard('scheduled_updates')))
 
