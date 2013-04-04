@@ -198,7 +198,7 @@ class Feed(models.Model):
                                                   feed_link=self.feed_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
-                logging.debug("%s: %s" % (self.feed_address, duplicate_feeds))
+                logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
                 return
 
@@ -313,21 +313,26 @@ class Feed(models.Model):
     @classmethod
     def task_feeds(cls, feeds, queue_size=12, verbose=True):
         if not feeds: return
-        
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+
         if isinstance(feeds, Feed):
             if verbose:
-                logging.debug(" ---> Tasking feed: %s" % feeds)
-            feeds = [feeds]
+                logging.debug(" ---> ~SN~FBTasking feed: ~SB%s" % feeds)
+            feeds = [feeds.pk]
         elif verbose:
-            logging.debug(" ---> Tasking %s feeds..." % len(feeds))
+            logging.debug(" ---> ~SN~FBTasking ~SB%s~SN feeds..." % len(feeds))
         
-        feed_queue = []
-        for f in feeds:
-            f.queued_date = datetime.datetime.utcnow()
-            f.set_next_scheduled_update(verbose=False)
-
-        for feed_queue in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-            feed_ids = [feed.pk for feed in feed_queue]
+        if isinstance(feeds, QuerySet):
+            feeds = [f.pk for f in feeds]
+        
+        r.srem('queued_feeds', *feeds)
+        now = datetime.datetime.now().strftime("%s")
+        p = r.pipeline()
+        for feed_id in feeds:
+            p.zadd('tasked_feeds', feed_id, now)
+        p.execute()
+        
+        for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
             UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds')
 
     def update_all_statistics(self, full=True, force=False):
@@ -384,7 +389,7 @@ class Feed(models.Model):
                     return False
                 try:
                     self.feed_address = feed_address
-                    self.next_scheduled_update = datetime.datetime.utcnow()
+                    self.schedule_feed_fetch_immediately()
                     self.has_feed_exception = False
                     self.active = True
                     self.save()
@@ -739,10 +744,13 @@ class Feed(models.Model):
         
     def update(self, **kwargs):
         from utils import feed_fetcher
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
+        original_feed_id = self.pk
         
         options = {
             'verbose': kwargs.get('verbose'),
@@ -761,15 +769,17 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
         
-        feed = Feed.get_by_id(feed.pk)
-        if not feed: return
+        if feed:
+            feed = Feed.get_by_id(feed.pk)
+        if feed:
+            feed.last_update = datetime.datetime.utcnow()
+            feed.set_next_scheduled_update()
+            r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
+            if options['force']:
+                feed.sync_redis()
         
-        feed.last_update = datetime.datetime.utcnow()
-        feed.set_next_scheduled_update()
+        r.zrem('tasked_feeds', original_feed_id)
         
-        if options['force']:
-            feed.sync_redis()
-            
         return feed
 
     @classmethod
@@ -800,7 +810,7 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
-        if settings.DEBUG:
+        if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
                           self.title[:30],
                           len(stories),
@@ -811,7 +821,7 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            story_content = strip_comments(story_content)
+            # story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
@@ -905,6 +915,12 @@ class Feed(models.Model):
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
+        if settings.DEBUG or verbose:
+            logging.debug("   ---> [%-30s] ~FBChecked ~SB%s~SN new/updated: %s" % (
+                          self.title[:30],
+                          len(stories),
+                          ret_values))
+
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
@@ -1274,6 +1290,7 @@ class Feed(models.Model):
         return total, random_factor*8
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
         
         if self.errors_since_good:
@@ -1285,18 +1302,24 @@ class Feed(models.Model):
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
-            
+        
+        
         self.min_to_decay = total
-        if not skip_scheduling:
+        if not skip_scheduling and self.active_subscribers >= 1:
             self.next_scheduled_update = next_scheduled_update
-
+            r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
+            r.zrem('tasked_feeds', self.pk)
+            
         self.save()
+        
 
     def schedule_feed_fetch_immediately(self, verbose=True):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
             
         self.next_scheduled_update = datetime.datetime.utcnow()
+        r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
 
         return self.save()
         
@@ -1318,7 +1341,7 @@ class Feed(models.Model):
             self.schedule_feed_fetch_immediately()
         else:
             logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
-            self.queued_date = datetime.datetime.utcnow()
+            # self.queued_date = datetime.datetime.utcnow()
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     
