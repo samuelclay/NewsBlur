@@ -53,7 +53,7 @@ class TaskFeeds(Task):
         hours_ago = (now - datetime.timedelta(hours=6)).strftime('%s')
         old_tasked_feeds = r.zrangebyscore('tasked_feeds', 0, hours_ago)
         inactive_count = len(old_tasked_feeds)
-        if tasked_feeds:
+        if inactive_count:
             r.zremrangebyscore('tasked_feeds', 0, hours_ago)
             r.sadd('queued_feeds', *old_tasked_feeds)
             logging.debug(" ---> ~SN~FBRe-queuing ~SB%s~SN dropped feeds (~SB%s~SN queued)" % (
