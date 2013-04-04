@@ -769,15 +769,16 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
         
-        feed = Feed.get_by_id(feed.pk)
+        if feed:
+            feed = Feed.get_by_id(feed.pk)
         if feed:
             feed.last_update = datetime.datetime.utcnow()
             feed.set_next_scheduled_update()
             r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
             if options['force']:
                 feed.sync_redis()
-        else:
-            r.zrem('tasked_feeds', original_feed_id)
+        
+        r.zrem('tasked_feeds', original_feed_id)
         
         return feed
 
