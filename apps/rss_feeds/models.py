@@ -200,6 +200,9 @@ class Feed(models.Model):
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
                                                   feed_link=self.feed_link)
             if not duplicate_feeds:
+                hash_address_and_link = hashlib.sha1(self.feed_address+self.feed_link).hexdigest()
+                duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
+            if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
@@ -385,7 +388,7 @@ class Feed(models.Model):
             if feed_address:
                 if feed_address.endswith('feedburner.com/atom.xml'):
                     logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
-                    return False
+                    return False, self
                 try:
                     self.feed_address = feed_address
                     feed = self.save()
@@ -402,7 +405,7 @@ class Feed(models.Model):
             return feed_address, feed
         
         if self.feed_address_locked:
-            return
+            return False, self
             
         try:
             feed_address, feed = _1()
