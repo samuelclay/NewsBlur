@@ -18,7 +18,9 @@ import android.widget.ViewSwitcher;
 
 import com.newsblur.R;
 import com.newsblur.activity.AddSites;
+import com.newsblur.activity.Login;
 import com.newsblur.activity.LoginProgress;
+import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.LoginResponse;
@@ -99,17 +101,15 @@ public class RegisterProgressFragment extends Fragment {
 				Log.e(TAG, "Error sleeping during login.");
 			}
 			response = apiManager.signup(username, password, email);
-			if (response.authenticated) {
+			if (response.code != -1 && response.authenticated) {
 				return apiManager.checkForFolders();
-			} else {
-				cancel(true);
 			}
 			return false;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean hasFolders) {
-			if (!isCancelled()) {
+			if (response.code != -1 && response.authenticated) {
 				if (!hasFolders.booleanValue()) {
 					switcher.showNext();
 				} else {
@@ -118,19 +118,28 @@ public class RegisterProgressFragment extends Fragment {
 					i.putExtra("password", password);
 					startActivity(i);
 				}
-			}
-		}
-
-		@Override
-		protected void onCancelled() {
-			if (response.errors != null && response.errors.message != null) {
-				Toast.makeText(getActivity(), response.errors.message[0], Toast.LENGTH_LONG).show();
 			} else {
-				Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), extractErrorMessage(response), Toast.LENGTH_LONG).show();
+				startActivity(new Intent(getActivity(), Login.class));
 			}
-			getActivity().finish();
 		}
 
+		private String extractErrorMessage(LoginResponse response) {
+			String errorMessage = null;
+			if(response.errors != null) {
+				if(response.errors.email != null && response.errors.email.length > 0) {
+					errorMessage = response.errors.email[0];
+				} else if(response.errors.username != null && response.errors.username.length > 0) {
+					errorMessage = response.errors.username[0];
+				} else if(response.errors.message != null && response.errors.message.length > 0) {
+					errorMessage = response.errors.message[0];
+				}
+			}
+			if(errorMessage == null) {
+				errorMessage = getResources().getString(R.string.login_message_error);
+			}
+			return errorMessage;
+		}
 	}
 
 
