@@ -844,10 +844,10 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
-                except (IntegrityError, OperationError):
+                except (IntegrityError, OperationError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
-                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('guid')[:30]))
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
             elif existing_story and story_has_changed:
                 # update story
                 original_content = None
@@ -865,10 +865,10 @@ class Feed(models.Model):
                                                               original_only=True)
                     else:
                         raise MStory.DoesNotExist
-                except (MStory.DoesNotExist, OperationError):
+                except (MStory.DoesNotExist, OperationError), e:
                     ret_values['error'] += 1
                     if verbose:
-                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                     continue
                 if existing_story.story_original_content_z:
                     original_content = zlib.decompress(existing_story.story_original_content_z)
