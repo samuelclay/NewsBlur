@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -20,9 +19,7 @@ import com.newsblur.R;
 import com.newsblur.activity.AddSites;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.LoginProgress;
-import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.LoginResponse;
 
 public class RegisterProgressFragment extends Fragment {
@@ -101,10 +98,7 @@ public class RegisterProgressFragment extends Fragment {
 				Log.e(TAG, "Error sleeping during login.");
 			}
 			response = apiManager.signup(username, password, email);
-			if (response.code != -1 && response.authenticated) {
-				return apiManager.checkForFolders();
-			}
-			return false;
+			return response.code != -1 && response.authenticated;
 		}
 
 		@Override
