@@ -413,6 +413,7 @@ class Feed(models.Model):
         except TimeoutError:
             logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
+            feed = self
             feed_address = None
                 
         return bool(feed_address), feed
@@ -821,7 +822,7 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            # story_content = strip_comments(story_content)
+            story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 

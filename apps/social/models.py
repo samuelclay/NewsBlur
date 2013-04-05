@@ -1964,8 +1964,8 @@ class MSharedStory(mongo.Document):
             image_sizes = sorted(image_sizes, key=lambda i: i['size'][0] * i['size'][1],
                                               reverse=True)
             self.image_sizes = image_sizes
-            self.image_count = len(image_sizes)
-            self.save()
+        self.image_count = len(image_sizes)
+        self.save()
         
         logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s images" % self.image_count)
         
