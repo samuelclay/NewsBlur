@@ -422,6 +422,7 @@ class Dispatcher:
                 elif ret_feed == FEED_ERRPARSE:
                     feed_code = 550
                 
+            if not feed: continue
             feed = self.refresh_feed(feed.pk)
             if ((self.options['force']) or 
                 (random.random() > .9) or

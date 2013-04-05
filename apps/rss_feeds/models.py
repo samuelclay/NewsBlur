@@ -372,6 +372,7 @@ class Feed(models.Model):
         @timelimit(10)
         def _1():
             feed_address = None
+            feed = self
             try:
                 is_feed = feedfinder.isFeed(self.feed_address)
             except KeyError:
