@@ -410,6 +410,7 @@ class Feed(models.Model):
         except TimeoutError:
             logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
+            feed = self
             feed_address = None
                 
         return bool(feed_address), feed
