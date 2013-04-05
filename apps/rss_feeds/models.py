@@ -746,13 +746,13 @@ class Feed(models.Model):
     def update(self, **kwargs):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
-        original_feed_id = self.pk
-        
+            
         options = {
             'verbose': kwargs.get('verbose'),
             'timeout': 10,
@@ -779,7 +779,11 @@ class Feed(models.Model):
             if options['force']:
                 feed.sync_redis()
         
-        r.zrem('tasked_feeds', original_feed_id)
+        if not feed or original_feed_id != feed.pk:
+            logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
+            r.zrem('tasked_feeds', original_feed_id)
+        if feed:
+            r.zrem('tasked_feeds', feed.pk)
         
         return feed
 
@@ -843,10 +847,10 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
-                except (IntegrityError, OperationError):
+                except (IntegrityError, OperationError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
-                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('guid')[:30]))
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
             elif existing_story and story_has_changed:
                 # update story
                 original_content = None
@@ -864,10 +868,10 @@ class Feed(models.Model):
                                                               original_only=True)
                     else:
                         raise MStory.DoesNotExist
-                except (MStory.DoesNotExist, OperationError):
+                except (MStory.DoesNotExist, OperationError), e:
                     ret_values['error'] += 1
                     if verbose:
-                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                     continue
                 if existing_story.story_original_content_z:
                     original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -916,12 +920,6 @@ class Feed(models.Model):
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
-        if settings.DEBUG or verbose:
-            logging.debug("   ---> [%-30s] ~FBChecked ~SB%s~SN new/updated: %s" % (
-                          self.title[:30],
-                          len(stories),
-                          ret_values))
-
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
