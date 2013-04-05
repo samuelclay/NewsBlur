@@ -16,13 +16,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -51,7 +49,6 @@ import com.newsblur.util.PrefsUtils;
 
 public class APIManager {
 
-	private static final String TAG = "APIManager";
 	private Context context;
 	private static Gson gson;
 	private ContentResolver contentResolver;
@@ -458,14 +455,6 @@ public class APIManager {
 		return getFolderFeedMapping(false);		
 	}
 	
-	public boolean checkForFolders() {
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_FEEDS);
-		FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
-		return (feedUpdate.folders.entrySet().size() > 1);
-	}
-	
-
 	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
 		final APIClient client = new APIClient(context);
