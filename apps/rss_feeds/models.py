@@ -917,12 +917,6 @@ class Feed(models.Model):
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
-        if settings.DEBUG or verbose:
-            logging.debug("   ---> [%-30s] ~FBChecked ~SB%s~SN new/updated: %s" % (
-                          self.title[:30],
-                          len(stories),
-                          ret_values))
-
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):

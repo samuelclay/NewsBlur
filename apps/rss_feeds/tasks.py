@@ -100,7 +100,8 @@ class UpdateFeeds(Task):
     def run(self, feed_pks, **kwargs):
         from apps.rss_feeds.models import Feed
         from apps.statistics.models import MStatistics
-        
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+
         mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
         compute_scores = bool(mongodb_replication_lag < 10)
         
@@ -115,14 +116,12 @@ class UpdateFeeds(Task):
             feed_pks = [feed_pks]
             
         for feed_pk in feed_pks:
-            try:
-                feed = Feed.get_by_id(feed_pk)
-                if not feed:
-                    raise Feed.DoesNotExist
+            feed = Feed.get_by_id(feed_pk)
+            if not feed or feed.pk != int(feed_pk):
+                logging.info(" ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..." % (feed_pk, feed and feed.pk))
+                r.zrem('tasked_feeds', feed_pk)
+            if feed:
                 feed.update(**options)
-            except Feed.DoesNotExist:
-                logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)
-            # logging.debug(' Updating: [%s] %s' % (feed_pks, feed))
 
 class NewFeeds(Task):
     name = 'new-feeds'
