@@ -197,6 +197,9 @@ class Feed(models.Model):
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
                                                   feed_link=self.feed_link)
             if not duplicate_feeds:
+                hash_address_and_link = hashlib.sha1(self.feed_address+self.feed_link).hexdigest()
+                duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
+            if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
@@ -366,6 +369,7 @@ class Feed(models.Model):
         @timelimit(10)
         def _1():
             feed_address = None
+            feed = self
             try:
                 is_feed = feedfinder.isFeed(self.feed_address)
             except KeyError:
@@ -381,41 +385,35 @@ class Feed(models.Model):
         
             if feed_address:
                 if feed_address.endswith('feedburner.com/atom.xml'):
-                    # message = """
-                    # %s - %s - %s
-                    # """ % (feed_address, self.__dict__, pprint(self.__dict__))
-                    # mail_admins('Wierdo alert', message, fail_silently=True)
                     logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
-                    return False
+                    return False, self
                 try:
                     self.feed_address = feed_address
-                    self.schedule_feed_fetch_immediately()
-                    self.has_feed_exception = False
-                    self.active = True
-                    self.save()
+                    feed = self.save()
+                    feed.schedule_feed_fetch_immediately()
+                    feed.has_feed_exception = False
+                    feed.active = True
+                    feed = feed.save()
                 except IntegrityError:
                     original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
                     original_feed.has_feed_exception = False
                     original_feed.active = True
                     original_feed.save()
                     merge_feeds(original_feed.pk, self.pk)
-            return feed_address
+            return feed_address, feed
         
         if self.feed_address_locked:
-            return
+            return False, self
             
         try:
-            feed_address = _1()
+            feed_address, feed = _1()
         except TimeoutError:
             logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
+            feed = self
             feed_address = None
-        
-        if feed_address:
-            self.has_feed_exception = True
-            self.schedule_feed_fetch_immediately()
-        
-        return not not feed_address
+                
+        return bool(feed_address), feed
 
     def save_feed_history(self, status_code, message, exception=None):
         MFeedFetchHistory(feed_id=self.pk, 
@@ -745,13 +743,13 @@ class Feed(models.Model):
     def update(self, **kwargs):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
-        original_feed_id = self.pk
-        
+            
         options = {
             'verbose': kwargs.get('verbose'),
             'timeout': 10,
@@ -778,7 +776,11 @@ class Feed(models.Model):
             if options['force']:
                 feed.sync_redis()
         
-        r.zrem('tasked_feeds', original_feed_id)
+        if not feed or original_feed_id != feed.pk:
+            logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
+            r.zrem('tasked_feeds', original_feed_id)
+        if feed:
+            r.zrem('tasked_feeds', feed.pk)
         
         return feed
 
@@ -821,7 +823,7 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            # story_content = strip_comments(story_content)
+            story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
@@ -915,12 +917,6 @@ class Feed(models.Model):
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
-        if settings.DEBUG or verbose:
-            logging.debug("   ---> [%-30s] ~FBChecked ~SB%s~SN new/updated: %s" % (
-                          self.title[:30],
-                          len(stories),
-                          ret_values))
-
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
