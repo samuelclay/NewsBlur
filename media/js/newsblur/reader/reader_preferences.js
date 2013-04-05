@@ -35,12 +35,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
+            $.make('div', { className: 'NB-modal-loading' }),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Preferences'
+            ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
                     $.make('div', { className: 'NB-preference' }, [
@@ -605,9 +608,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
-                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...'),
-                ' or ',
-                $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...')
             ])
         ]);
     },

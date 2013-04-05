@@ -19,7 +19,10 @@ NEWSBLUR.ReaderGoodies.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Goodies &amp; Extras'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Goodies &amp; Extras'
+            ]),
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
               $.make('div', { className: 'NB-goodies-title' }, 'Add Site &amp; Share Story Bookmarklet')

@@ -24,7 +24,10 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Keyboard shortcuts'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Keyboard shorcuts'
+            ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story'),

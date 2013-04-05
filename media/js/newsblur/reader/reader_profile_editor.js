@@ -38,7 +38,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, 'Profile'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, 'Blurblog')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Your Profile'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Profile'
+            ]),
             $.make('div', { className: 'NB-tab NB-tab-profile NB-active' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Preview'),

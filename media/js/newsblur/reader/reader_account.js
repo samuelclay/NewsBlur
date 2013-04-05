@@ -37,7 +37,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal-account NB-modal' }, [
             $.make('a', { href: '#preferences', className: 'NB-link-account-preferences NB-splash-link' }, 'Switch to Preferences'),
-            $.make('h2', { className: 'NB-modal-title' }, 'My Account'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Account'
+            ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-preference NB-preference-username' }, [
                     $.make('div', { className: 'NB-preference-options' }, [

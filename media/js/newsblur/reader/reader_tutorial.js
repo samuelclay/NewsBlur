@@ -52,7 +52,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-tutorial NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('div', { className: 'NB-modal-page' }),
-            $.make('h2', { className: 'NB-modal-title' }),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                $.make('span', 'Tips &amp; Tricks')
+            ]),
             $.make('div', { className: 'NB-page NB-page-1' }, [
               $.make('h4', 'NewsBlur is a visual feed reader with intelligence.'),
               $.make('div', 'You\'ll figure out much of NewsBlur by playing around and trying things out. This tutorial is here to quickly offer a foundation.'),
@@ -350,7 +353,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     },
     
     set_title: function() {
-      $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
+      $('.NB-modal-title span', this.$modal).text(this.TITLES[this.page_number-1]);
     },
 
     load_tips: function() {

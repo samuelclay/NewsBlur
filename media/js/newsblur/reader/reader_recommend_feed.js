@@ -34,7 +34,10 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
                 this.make_feed_chooser()
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Recommend this Site'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Recommend this Site'
+            ]),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [

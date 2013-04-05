@@ -33,7 +33,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-following' }, 'I\'m Following'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-followers' }, 'Following Me')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Friends and Followers'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Friends and Followers'
+            ]),
             $.make('div', { className: 'NB-tab NB-tab-findfriends NB-active' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Your profile'),

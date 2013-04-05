@@ -80,6 +80,13 @@
     font-size: 22px;
 }
 
+.NB-modal-title .NB-icon {
+    width: 28px;
+    height: 28px;
+    float: left;
+    margin: 0 12px 0 0;
+}
+
 .NB-modal h5,
 .NB-module h5,
 .NB-module-header {
@@ -410,27 +417,38 @@
 
 .NB-modal .NB-modal-tab {
     float: left;
-    padding: 8px 12px 10px;
-    background-color: #E0E0E0;
+    padding: 8px 18px 10px;
+    font-size: 12px;
+    background-color: #F0F1EC;
     border-top: 1px solid #A0A0A0;
     border-left: 1px solid #A0A0A0;
     border-bottom: 1px solid #A0A0A0;
     cursor: pointer;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
     margin-top: -4px;
+    -webkit-box-shadow: inset 0px -1px 1px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0px -1px 1px rgba(0, 0, 0, .1);
+    box-shadow: inset 0px -1px 1px rgba(0, 0, 0, .1);
 }
 
 .NB-modal .NB-modal-tab:hover {
-    background-color: #F2F2F9;
+    background-color: #E4E5DF;
+}
+.NB-modal .NB-modal-tab:first-child {
+    border-top-left-radius: 2px;
 }
 .NB-modal .NB-modal-tab:last-child {
     border-right: 1px solid #A0A0A0;
+    border-top-right-radius: 2px;
 }
 
 .NB-modal .NB-modal-tab.NB-active {
     background-color: white;
     border-bottom: 1px solid white;
     cursor: default;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 .NB-modal .NB-tab {
@@ -441,6 +459,7 @@
     overflow: auto;
     height: 400px;
     width: 100%;
+    font-size: 14px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;    

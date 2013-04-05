@@ -4005,6 +4005,11 @@ form.opml_import_form input {
   margin: 8px 0px 0 0;
 }
 
+.NB-modal-classifiers .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_intelligence.png');
+    background-size: 28px;
+}
+
 .NB-modal-classifiers h2.NB-like {
     color: #007000;
 }
@@ -4497,6 +4502,11 @@ form.opml_import_form input {
 /* = Mark Read Modal = */
 /* =================== */
 
+
+.NB-modal-markread .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_markread.png');
+    background-size: 28px;
+}
 .NB-modal-markread .NB-markread-slider {
     margin-top: 24px;
 }
@@ -6277,6 +6287,10 @@ form.opml_import_form input {
 /* = Feed Recommendation Modal = */
 /* ============================= */
 
+.NB-modal-recommend .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_recommend.png');
+    background-size: 28px;
+}
 .NB-modal-recommend .NB-modal-loading {
   margin: 6px 8px 0;
 }
@@ -6403,6 +6417,11 @@ form.opml_import_form input {
 /* = Tutorial Modal = */
 /* ================== */
 
+
+.NB-modal-tutorial .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_tutorial.png');
+    background-size: 28px;
+}
 .NB-modal-tutorial h4 {
   clear: both;
 }
@@ -7612,6 +7631,10 @@ form.opml_import_form input {
 /* = Goodies Modal = */
 /* ================= */
 
+.NB-modal-goodies .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_goodies.png');
+    background-size: 28px;
+}
 .NB-modal-goodies .NB-goodies-group {
   clear: both;
   margin: 16px 0 0 0;
@@ -7733,6 +7756,11 @@ form.opml_import_form input {
 /* = Keyboard Shortcuts Modal = */
 /* ============================ */
 
+
+.NB-modal-keyboard .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_keyboard.png');
+    background-size: 28px;
+}
 .NB-modal-keyboard .NB-keyboard-group {
   clear: both;
   margin: 16px 0 0 0;
@@ -7795,6 +7823,10 @@ form.opml_import_form input {
 
 .NB-modal-preferences {
     overflow: hidden;
+}
+.NB-modal-preferences .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_preferences.png');
+    background-size: 28px;
 }
 .NB-modal-preferences .NB-modal-submit-button {
     float: left;
@@ -8041,6 +8073,10 @@ form.opml_import_form input {
 /* = Account Dialog = */
 /* ================== */
 
+.NB-modal-account .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_account.png');
+    background-size: 28px;
+}
 .NB-modal-account .NB-preference-username input,
 .NB-modal-account .NB-preference-email input {
     width: 306px;
@@ -8780,6 +8816,11 @@ form.opml_import_form input {
 /* = Friends Modal = */
 /* ================= */
 
+.NB-modal-friends .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_friends.png');
+    background-size: 28px;
+}
+
 .NB-modal-friends .NB-tab {
     min-height: 80px;
     padding: 12px 0;
@@ -8931,6 +8972,11 @@ form.opml_import_form input {
 /* ======================== */
 /* = Profile Editor Modal = */
 /* ======================== */
+
+.NB-modal-profile-editor .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_profile.png');
+    background-size: 28px;
+}
 
 .NB-modal-profile-editor .NB-tab {
     min-height: 80px;
