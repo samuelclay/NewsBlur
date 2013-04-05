@@ -2721,7 +2721,7 @@
                     $.make('li', { className: 'NB-menu-manage-site-info' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
-                    ]).corner('tl tr 8px'),
+                    ]).corner('top 8px').corner('bottom 0px'),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3153,10 +3153,10 @@
                     $('li', $manage_menu_container).each(function() {
                         $(this).prependTo($(this).parent());
                     });
-                    $manage_menu_container.corner('bl br 8px');
+                    $manage_menu_container.corner('bottom 8px').corner('top 0px');
                     $('.NB-menu-manage-site-info', $manage_menu_container).hide();
                 } else {
-                    $manage_menu_container.corner('tl tr 8px');
+                    $manage_menu_container.corner('top 8px').corner('bottom 0px');
                 }
 
                 if ($item.hasClass('NB-task-manage')) {
@@ -3199,8 +3199,7 @@
                         'left': left
                     });
 
-                    $manage_menu_container.corner('br 8px');
-                    $manage_menu_container.corner('tr 0');
+                    $manage_menu_container.corner('br 8px').corner('bl top 0px');
                     $('li', $manage_menu_container).each(function() {
                         $(this).prependTo($(this).parent());
                     });
@@ -3229,8 +3228,7 @@
                         'top': top, 
                         'left': left
                     });
-                    $manage_menu_container.corner('tr 8px');
-                    $manage_menu_container.corner('br 0');
+                    $manage_menu_container.corner('tr 8px').corner('tl bottom 0px');
                 }
             }
             $manage_menu_container.stop().css({'display': 'block', 'opacity': 1});
@@ -3241,11 +3239,11 @@
                     $.make('div', { className: 'NB-icon' })
                 ]);
                 if (inverse) {
-                    $arrow.corner('bl br 5px');
+                    $arrow.corner('bottom 5px').corner('top 0px');
                     $manage_menu_container.append($arrow);
                     $manage_menu_container.addClass('NB-inverse');
                 } else {
-                    $arrow.corner('tl tr 5px');
+                    $arrow.corner('top 5px').corner('bottom 0px');
                     $manage_menu_container.prepend($arrow);
                     $manage_menu_container.removeClass('NB-inverse');
                 }
