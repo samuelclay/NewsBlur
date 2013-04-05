@@ -49,18 +49,27 @@ public class FeedFolderResponse {
 			starredCount = gson.fromJson(starredCountElement, int.class);
 		}
 		
-		JsonObject feedsElement = (JsonObject) asJsonObject.get("feeds");
-		if(feedsElement != null) {
-			feeds = new HashMap<String, Feed>();
-			Set<Entry<String, JsonElement>> entrySet = feedsElement.entrySet();
-			Iterator<Entry<String, JsonElement>> iterator = entrySet.iterator();
-			while(iterator.hasNext()) {
-				Entry<String, JsonElement> feedElement = iterator.next();
-				Feed feed = gson.fromJson(feedElement.getValue(), Feed.class);
-				feeds.put(feedElement.getKey(), feed);
+		// Inconsistent server response here. When user has no feeds we get
+		// 		"feeds": []
+		// and other times we get
+		// 		"feeds": {"309667": {
+		// So support both I guess
+		JsonElement feedsElement = asJsonObject.get("feeds");
+		feeds = new HashMap<String, Feed>();
+		if(feedsElement instanceof JsonObject) {
+			JsonObject feedsObject = (JsonObject) asJsonObject.get("feeds");
+			if(feedsObject != null) {
+				Set<Entry<String, JsonElement>> entrySet = feedsObject.entrySet();
+				Iterator<Entry<String, JsonElement>> iterator = entrySet.iterator();
+				while(iterator.hasNext()) {
+					Entry<String, JsonElement> feedElement = iterator.next();
+					Feed feed = gson.fromJson(feedElement.getValue(), Feed.class);
+					feeds.put(feedElement.getKey(), feed);
+				}
 			}
-		}
+		} // else server sent back '"feeds": []' 
 		
+		socialFeeds = new SocialFeed[0];
 		JsonArray socialFeedsArray = (JsonArray) asJsonObject.get("social_feeds");
 		if(socialFeedsArray != null) {
 			List<SocialFeed> socialFeedsList = new ArrayList<SocialFeed>();

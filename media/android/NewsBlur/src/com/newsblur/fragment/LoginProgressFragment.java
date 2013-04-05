@@ -3,14 +3,12 @@ package com.newsblur.fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,19 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.LoginResponse;
-import com.newsblur.service.DetachableResultReceiver;
-import com.newsblur.service.DetachableResultReceiver.Receiver;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public class LoginProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	private TextView updateStatus, retrievingFeeds, letsGo;
+	private TextView updateStatus, retrievingFeeds;
 	private ImageView loginProfilePicture;
 	private ProgressBar feedProgress, loggingInProgress;
 	private LoginTask loginTask;
@@ -62,7 +58,6 @@ public class LoginProgressFragment extends Fragment {
 
 		updateStatus = (TextView) v.findViewById(R.id.login_logging_in);
 		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
-		letsGo = (TextView) v.findViewById(R.id.login_lets_go);
 		feedProgress = (ProgressBar) v.findViewById(R.id.login_feed_progress);
 		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
 		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
@@ -74,8 +69,6 @@ public class LoginProgressFragment extends Fragment {
 	}
 
 	private class LoginTask extends AsyncTask<String, Void, LoginResponse> {
-
-		private static final String TAG = "LoginTask";
 
 		@Override
 		protected void onPreExecute() {
@@ -121,7 +114,7 @@ public class LoginProgressFragment extends Fragment {
 				} else {
 					Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
 				}
-				getActivity().finish();
+				startActivity(new Intent(getActivity(), Login.class));
 			}
 		}
 	}
