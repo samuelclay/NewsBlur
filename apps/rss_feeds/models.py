@@ -384,41 +384,34 @@ class Feed(models.Model):
         
             if feed_address:
                 if feed_address.endswith('feedburner.com/atom.xml'):
-                    # message = """
-                    # %s - %s - %s
-                    # """ % (feed_address, self.__dict__, pprint(self.__dict__))
-                    # mail_admins('Wierdo alert', message, fail_silently=True)
                     logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False
                 try:
                     self.feed_address = feed_address
-                    self.schedule_feed_fetch_immediately()
-                    self.has_feed_exception = False
-                    self.active = True
-                    self.save()
+                    feed = self.save()
+                    feed.schedule_feed_fetch_immediately()
+                    feed.has_feed_exception = False
+                    feed.active = True
+                    feed = feed.save()
                 except IntegrityError:
                     original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
                     original_feed.has_feed_exception = False
                     original_feed.active = True
                     original_feed.save()
                     merge_feeds(original_feed.pk, self.pk)
-            return feed_address
+            return feed_address, feed
         
         if self.feed_address_locked:
             return
             
         try:
-            feed_address = _1()
+            feed_address, feed = _1()
         except TimeoutError:
             logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
             feed_address = None
-        
-        if feed_address:
-            self.has_feed_exception = True
-            self.schedule_feed_fetch_immediately()
-        
-        return not not feed_address
+                
+        return bool(feed_address), feed
 
     def save_feed_history(self, status_code, message, exception=None):
         MFeedFetchHistory(feed_id=self.pk, 
