@@ -743,7 +743,7 @@ class Feed(models.Model):
     def update(self, **kwargs):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        original_feed_id = self.pk
+        original_feed_id = int(self.pk)
 
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
