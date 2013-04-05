@@ -743,13 +743,13 @@ class Feed(models.Model):
     def update(self, **kwargs):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        original_feed_id = self.pk
 
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
-        original_feed_id = self.pk
-        
+            
         options = {
             'verbose': kwargs.get('verbose'),
             'timeout': 10,
@@ -776,7 +776,11 @@ class Feed(models.Model):
             if options['force']:
                 feed.sync_redis()
         
-        r.zrem('tasked_feeds', original_feed_id)
+        if not feed or original_feed_id != feed.pk:
+            logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
+            r.zrem('tasked_feeds', original_feed_id)
+        if feed:
+            r.zrem('tasked_feeds', feed.pk)
         
         return feed
 
