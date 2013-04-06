@@ -145,7 +145,9 @@ class ProcessFeed:
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
             
-            if self.fpf.status in (302, 301):
+            # 302: Temporary redirect: ignore
+            # 301: Permanent redirect: save it
+            if self.fpf.status == 301:
                 if not self.fpf.href.endswith('feedburner.com/atom.xml'):
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
