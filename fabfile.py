@@ -456,6 +456,10 @@ def setup_imaging():
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
+    put('config/supervisord.conf', '/etc/supervisor/supervisord.conf')
+    sudo('/etc/init.d/supervisord stop')
+    sudo('sleep 2')
+    sudo('/etc/init.d/supervisord start')
 
 # @parallel
 def setup_hosts():
