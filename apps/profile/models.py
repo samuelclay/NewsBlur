@@ -532,7 +532,7 @@ def change_password(user, old_password, new_password):
         user_db.set_password(new_password)
         user_db.save()
         return 1
-        
+
 def blank_authenticate(username, password=""):
     try:
         user = User.objects.get(username=username)
@@ -543,8 +543,9 @@ def blank_authenticate(username, password=""):
         return user
         
     algorithm, salt, hash = user.password.split('$', 2)
-    encoded = hashlib.sha1(salt + password).hexdigest()
-    if encoded == hash:
+    encoded_blank = hashlib.sha1(salt + password).hexdigest()
+    encoded_username = authenticate(username=username, password=username)
+    if encoded_blank == hash or encoded_username == user:
         return user
             
 class MSentEmail(mongo.Document):
