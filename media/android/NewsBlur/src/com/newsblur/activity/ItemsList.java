@@ -73,8 +73,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 		return false;
 	}
 	
-	
-
 	@Override
 	public void updateAfterSync() {
 		if (itemListFragment != null) {
@@ -83,6 +81,15 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 			Log.e(TAG, "Error updating list as it doesn't exist.");
 		}
 		setSupportProgressBarIndeterminateVisibility(false);
+	}
+
+	@Override
+	public void updatePartialSync() {
+		if (itemListFragment != null) {
+			itemListFragment.hasUpdated();
+		} else {
+			Log.e(TAG, "Error updating list as it doesn't exist.");
+		}
 	}
 
 	@Override

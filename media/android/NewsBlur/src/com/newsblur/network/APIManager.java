@@ -451,10 +451,6 @@ public class APIManager {
 		}
 	}
 
-	public boolean getFolderFeedMapping() {
-		return getFolderFeedMapping(false);		
-	}
-	
 	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
 		final APIClient client = new APIClient(context);
@@ -462,9 +458,6 @@ public class APIManager {
 		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			if (feedUpdate.folders.size() == 0) {
-				return false;
-			}
 			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
