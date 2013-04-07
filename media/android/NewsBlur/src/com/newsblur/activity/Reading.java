@@ -179,6 +179,13 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		checkStoryCount(pager.getCurrentItem());
 	}
 
+	@Override
+	public void updatePartialSync() {
+		stories.requery();
+		readingAdapter.notifyDataSetChanged();
+		checkStoryCount(pager.getCurrentItem());
+	}
+
 	public abstract void checkStoryCount(int position);
 
 	@Override

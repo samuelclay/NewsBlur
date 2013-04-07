@@ -145,7 +145,9 @@ class ProcessFeed:
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
             
-            if self.fpf.status in (302, 301):
+            # 302: Temporary redirect: ignore
+            # 301: Permanent redirect: save it
+            if self.fpf.status == 301:
                 if not self.fpf.href.endswith('feedburner.com/atom.xml'):
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
@@ -160,9 +162,11 @@ class ProcessFeed:
                 logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..." % (self.feed.title[:30], self.fpf.status))
                 fixed_feed = None
                 if not self.feed.known_good:
-                    fixed_feed = self.feed.check_feed_link_for_feed_address()
+                    fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
+                else:
+                    self.feed = feed
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, ret_values
 
@@ -171,18 +175,22 @@ class ProcessFeed:
                 logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (self.feed.title[:30], len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
-                    fixed_feed = self.feed.check_feed_link_for_feed_address()
+                    fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(552, 'Non-xml feed', self.fpf.bozo_exception)
+                else:
+                    self.feed = feed
                 self.feed = self.feed.save()
                 return FEED_ERRPARSE, ret_values
             elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
                 logging.debug("   ---> [%-30s] ~SB~FRFeed has SAX/XML parsing issues. %s entries. Checking address..." % (self.feed.title[:30], len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
-                    fixed_feed = self.feed.check_feed_link_for_feed_address()
+                    fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(553, 'SAX Exception', self.fpf.bozo_exception)
+                else:
+                    self.feed = feed
                 self.feed = self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
@@ -416,6 +424,7 @@ class Dispatcher:
                 elif ret_feed == FEED_ERRPARSE:
                     feed_code = 550
                 
+            if not feed: continue
             feed = self.refresh_feed(feed.pk)
             if ((self.options['force']) or 
                 (random.random() > .9) or

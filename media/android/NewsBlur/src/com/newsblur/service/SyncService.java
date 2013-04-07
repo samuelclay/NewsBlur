@@ -46,17 +46,18 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
 	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
 
-	public final static int STATUS_RUNNING = 0x02;
+	// TODO: replace these with enums
+    public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
 	public static final int STATUS_NO_MORE_UPDATES = 0x05;
 	public static final int STATUS_FINISHED_CLOSE = 0x06;
 	public static final int NOT_RUNNING = 0x01;
+    public static final int STATUS_PARTIAL_PROGRESS = 0x07;
 
-	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
+	public static final int EXTRA_TASK_FOLDER_UPDATE_TWO_STEP = 30;
 	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
-	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
 	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
@@ -90,33 +91,27 @@ public class SyncService extends IntentService {
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
+            // TODO: is it ever valid for receiver to be null? if not, we could factor out all
+            //       the checks below
 
             Log.d( this.getClass().getName(), "Sync Intent: " + intent.getIntExtra(SYNCSERVICE_TASK , -1) );
 
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
-			case EXTRA_TASK_FOLDER_UPDATE:
-				if (!apiManager.getFolderFeedMapping()) {
-					receiver.send(STATUS_NO_MORE_UPDATES, null);
-				}
+
+			case EXTRA_TASK_FOLDER_UPDATE_TWO_STEP:
+				// do a quick fetch of folders/feeds
+                apiManager.getFolderFeedMapping(false);
+                // notify UI of progress
+                if (receiver != null) {
+                    receiver.send(STATUS_PARTIAL_PROGRESS, Bundle.EMPTY);
+                }
+                // update feed counts
+                apiManager.refreshFeedCounts();
+                // UI will be notified again by default
 				break;
 
 			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:
 				apiManager.getFolderFeedMapping(true);
-				break;	
-
-				// For the moment, we only retry offline updates when we refresh counts. We also assume here that every update is to mark a story as read.
-			case EXTRA_TASK_REFRESH_COUNTS:
-				Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
-				while (cursor.moveToNext()) {
-					OfflineUpdate update = OfflineUpdate.fromCursor(cursor);
-					ArrayList<String> storyId = new ArrayList<String>();
-					storyId.add(update.arguments[1]);
-					if (apiManager.markStoryAsRead(update.arguments[0], storyId)) {
-						getContentResolver().delete(FeedProvider.OFFLINE_URI, DatabaseConstants.UPDATE_ID + " = ?", new String[] { Integer.toString(update.id) });
-					}
-				}
-				apiManager.refreshFeedCounts();
-				cursor.close();
 				break;	
 
 			case EXTRA_TASK_MARK_STORY_READ:
@@ -262,5 +257,20 @@ public class SyncService extends IntentService {
 			Log.e(this.getClass().getName(), "No receiver attached to Sync?");
 		}
 	}
+
+    /* TODO: this code existed in the refresh_feeds intent, but was never used.  Now that
+             we are actually using the API as intended, it is possible this needs to
+             actually get called somewhere.
+    Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
+    while (cursor.moveToNext()) {
+        OfflineUpdate update = OfflineUpdate.fromCursor(cursor);
+        ArrayList<String> storyId = new ArrayList<String>();
+        storyId.add(update.arguments[1]);
+        if (apiManager.markStoryAsRead(update.arguments[0], storyId)) {
+            getContentResolver().delete(FeedProvider.OFFLINE_URI, DatabaseConstants.UPDATE_ID + " = ?", new String[] { Integer.toString(update.id) });
+        }
+    }
+    cursor.close();
+    */
 
 }

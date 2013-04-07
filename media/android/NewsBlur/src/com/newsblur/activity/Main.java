@@ -45,12 +45,17 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerFullRefresh();
+            // for our first sync, don't just trigger a heavyweight refresh, do it in two steps
+            // so the UI appears more quickly (per the docs at newsblur.com/api)
+			triggerFirstSync();
 		}
 	}
 
-	
-	private void triggerFullRefresh() {
+    /**
+     * Triggers an initial two-phase sync, so the UI can display quickly using /reader/feeds and
+     * then call /reader/refresh_feeds to get updated counts.
+     */
+	private void triggerFirstSync() {
 		setSupportProgressBarIndeterminateVisibility(true);
 		if (menu != null) {
 			menu.findItem(R.id.menu_refresh).setEnabled(false);
@@ -58,11 +63,14 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE_TWO_STEP);
 		startService(intent);
 	}
 	
-	private void triggerRecount() {
+	/**
+     * Triggers a full, manually requested refresh of feed/folder data and counts.
+     */
+    private void triggerRefresh() {
 		setSupportProgressBarIndeterminateVisibility(true);
 		if (menu != null) {
 			menu.findItem(R.id.menu_refresh).setEnabled(false);
@@ -95,7 +103,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 			startActivity(profileIntent);
 			return true;
 		} else if (item.getItemId() == R.id.menu_refresh) {
-			triggerRecount();
+			triggerRefresh();
 			return true;
 		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent intent = new Intent(this, SearchForFeeds.class);
@@ -129,15 +137,29 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		}
 	}
 
-	@Override
+	/**
+     * Called after the sync service completely finishes a task.
+     */
+    @Override
 	public void updateAfterSync() {
 		folderFeedList.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
 		menu.findItem(R.id.menu_refresh).setEnabled(true);
 	}
+
+    /**
+     * Called when the sync service has made enough progress to update the UI but not
+     * enough to stop the progress indicator.
+     */
+    @Override
+    public void updatePartialSync() {
+        folderFeedList.hasUpdated();
+    }
 	
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {
+        // TODO: the progress bar is activated manually elsewhere in this activity. this
+        //       interface method may be redundant.
 		if (syncRunning) {
 			setSupportProgressBarIndeterminateVisibility(true);
 			if (menu != null) {

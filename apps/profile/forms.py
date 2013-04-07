@@ -48,8 +48,12 @@ class DeleteAccountForm(forms.Form):
         super(DeleteAccountForm, self).__init__(*args, **kwargs)
     
     def clean_password(self):
+        from apps.profile.models import blank_authenticate
         user_auth = authenticate(username=self.user.username, 
                                  password=self.cleaned_data['password'])
+        if not user_auth:
+            user_auth = blank_authenticate(username=self.user.username)
+        
         if not user_auth:
             raise forms.ValidationError('Your password doesn\'t match.')
 

@@ -11,7 +11,8 @@ import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
 
 public class SyncUpdateFragment extends Fragment implements Receiver {
-		public static final String TAG = "SyncUpdateFragment";
+
+        public static final String TAG = SyncUpdateFragment.class.getName();
 		public DetachableResultReceiver receiver;
 		public boolean syncRunning = false;
 
@@ -40,6 +41,12 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 					((SyncUpdateFragmentInterface) getActivity()).updateAfterSync();
 				}
 				break;
+			case SyncService.STATUS_PARTIAL_PROGRESS:
+				syncRunning = true;
+				if (getActivity() != null) {
+					((SyncUpdateFragmentInterface) getActivity()).updatePartialSync();
+				}
+				break;
 			case SyncService.STATUS_FINISHED_CLOSE:
 				syncRunning = false;
 				if (getActivity() != null) {
@@ -57,11 +64,11 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 				break;	
 			case SyncService.STATUS_ERROR:
 				syncRunning = false;
-				Log.e(TAG, "There was an error");
+				Log.e(this.getClass().getName(), "Sync completed with an error.");
 				break;		
 			default:
 				syncRunning = false;
-				Log.e(TAG, "Unrecognised response attempting to get reading data");
+				Log.e(this.getClass().getName(), "Sync completed with an unknown result.");
 				break;
 			}
 		}
@@ -75,6 +82,7 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 
 		public interface SyncUpdateFragmentInterface {
 			public void updateAfterSync();
+            public void updatePartialSync();
 			public void closeAfterUpdate();
 			public void setNothingMoreToUpdate();
 			public void updateSyncStatus(boolean syncRunning);

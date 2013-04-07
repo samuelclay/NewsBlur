@@ -3,6 +3,7 @@
 	<name>NewsBlur</name>
 	<comment></comment>
 	<projects>
+		<project>ActionBarSherlock</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

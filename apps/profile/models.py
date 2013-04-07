@@ -219,7 +219,35 @@ class Profile(models.Model):
         if most_recent_payment_date:
             self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
             self.save()
+
+    def refund_premium(self):
+        if self.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            stripe_payments[0].refund()
+            logging.user(self.user, "~FRRefunding stripe payment: $%s" % (stripe_payments[0].amount/1000))
+            self.cancel_premium()
+            
+    def cancel_premium(self):
+        self.cancel_premium_paypal()
+        return self.cancel_premium_stripe()
+    
+    def cancel_premium_paypal(self):
+        pass
         
+    def cancel_premium_stripe(self):
+        if not self.stripe_id:
+            return
+            
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+        stripe_customer.cancel_subscription()
+
+        logging.user(self.user, "~FRCanceling Stripe subscription")
+        
+        return True
+
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
             new_feeds = UserSubscription.objects.filter(user=self.user, 
@@ -504,7 +532,7 @@ def change_password(user, old_password, new_password):
         user_db.set_password(new_password)
         user_db.save()
         return 1
-        
+
 def blank_authenticate(username, password=""):
     try:
         user = User.objects.get(username=username)
@@ -515,8 +543,9 @@ def blank_authenticate(username, password=""):
         return user
         
     algorithm, salt, hash = user.password.split('$', 2)
-    encoded = hashlib.sha1(salt + password).hexdigest()
-    if encoded == hash:
+    encoded_blank = hashlib.sha1(salt + password).hexdigest()
+    encoded_username = authenticate(username=username, password=username)
+    if encoded_blank == hash or encoded_username == user:
         return user
             
 class MSentEmail(mongo.Document):
