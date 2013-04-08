@@ -74,29 +74,14 @@ def feed_autocomplete(request):
     query = request.GET.get('term')
     version = int(request.GET.get('v', 1))
     
-    if True or not user.profile.is_premium:
-        return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
+    # if True or not user.profile.is_premium:
+    #     return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
     
     if not query:
         return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
         
-    feeds = []
-    for field in ['feed_address', 'feed_title', 'feed_link']:
-        if not feeds:
-            feeds = Feed.objects.filter(**{
-                '%s__icontains' % field: query,
-                'num_subscribers__gt': 1,
-                'branch_from_feed__isnull': True,
-            }).exclude(
-                Q(**{'%s__icontains' % field: 'token'}) |
-                Q(**{'%s__icontains' % field: 'private'})
-            ).only(
-                'id',
-                'feed_title', 
-                'feed_address', 
-                'num_subscribers'
-            ).select_related("data").order_by('-num_subscribers')[:5]
-    
+    feed_ids = Feed.autocomplete(query)
+    feeds = [Feed.get_by_id(feed_id) for feed_id in feed_ids]
     feeds = [{
         'id': feed.pk,
         'value': feed.feed_address,
@@ -104,6 +89,7 @@ def feed_autocomplete(request):
         'tagline': feed.data and feed.data.feed_tagline,
         'num_subscribers': feed.num_subscribers,
     } for feed in feeds]
+    feeds = sorted(feeds, key=lambda f: -1 * f['num_subscribers'])
     
     feed_ids = [f['id'] for f in feeds]
     feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
