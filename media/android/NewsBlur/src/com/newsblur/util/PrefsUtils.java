@@ -18,11 +18,33 @@ import com.newsblur.domain.UserDetails;
 
 public class PrefsUtils {
 
-	public static void saveCookie(final Context context, final String cookie) {
+	public static void saveLogin(final Context context, final String userName, final String cookie) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
+		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
+	}
+
+	/**
+	 * Removes the current login session (i.e. logout)
+	 */
+	public static void clearLogin(final Context context) {
+		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		final Editor edit = preferences.edit();
+		edit.putString(PrefConstants.PREF_COOKIE, null);
+		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, null);
+		edit.commit();
+	}
+	
+	/**
+	 * Retrieves the current unique login key. This key will be unique for each
+	 * login. If this login key doesn't match the login key you have then assume
+	 * the user is logged out
+	 */
+	public static String getUniqueLoginKey(final Context context) {
+		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		return preferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null);
 	}
 
 	public static void saveUserDetails(final Context context, final UserDetails profile) {

@@ -32,8 +32,6 @@ class Command(BaseCommand):
         if options['daemonize']:
             daemonize()
         
-        options['fake'] = bool(MStatistics.get('fake_fetch'))
-        
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         

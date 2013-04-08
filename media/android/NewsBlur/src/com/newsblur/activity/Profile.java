@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.domain.UserDetails;
@@ -17,7 +16,7 @@ import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
-public class Profile extends SherlockFragmentActivity {
+public class Profile extends NbFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String detailsTag = "details";

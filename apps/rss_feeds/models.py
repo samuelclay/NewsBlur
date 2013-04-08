@@ -8,6 +8,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+from urlparse import urlparse
 from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
@@ -35,7 +36,8 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags, htmldiff, strip_comments
+from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
+from vendor.redis_completion.engine import RedisEngine
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -191,7 +193,6 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
-            return self
         except IntegrityError, e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
@@ -209,8 +210,10 @@ class Feed(models.Model):
                 logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feeds[0])
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
-                
-            return self
+        
+        self.sync_autocompletion()
+        
+        return self
 
     def index_for_search(self):
         if self.num_subscribers > 1 and not self.branch_from_feed:
@@ -223,6 +226,31 @@ class Feed(models.Model):
     
     def sync_redis(self):
         return MStory.sync_all_redis(self.pk)
+    
+    def sync_autocompletion(self):
+        if self.num_subscribers <= 1: return
+        if self.branch_from_feed: return
+        if any(t in self.feed_address for t in ['token', 'private']): return
+        
+        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+        engine.store(self.pk, title=self.feed_title)
+        engine.boost(self.pk, self.num_subscribers)
+        
+        parts = urlparse(self.feed_address)
+        engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+        engine.store(self.pk, title=parts.hostname)
+        engine.boost(self.pk, self.num_subscribers)
+        
+    @classmethod
+    def autocomplete(self, prefix, limit=5):
+        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+        results = engine.search(phrase=prefix, limit=limit, autoboost=True)
+        
+        if len(results) < limit:
+            engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+            results += engine.search(phrase=prefix, limit=limit-len(results), autoboost=True, filters=[lambda f: f not in results])
+            
+        return results
         
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
@@ -335,8 +363,9 @@ class Feed(models.Model):
             p.zadd('tasked_feeds', feed_id, now)
         p.execute()
         
-        for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-            UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds')
+        # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
+        for feed_id in feeds:
+            UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
 
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
@@ -773,14 +802,14 @@ class Feed(models.Model):
             feed.last_update = datetime.datetime.utcnow()
             feed.set_next_scheduled_update()
             r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
-            if options['force']:
-                feed.sync_redis()
         
         if not feed or original_feed_id != feed.pk:
             logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
             r.zrem('tasked_feeds', original_feed_id)
+            r.zrem('error_feeds', original_feed_id)
         if feed:
             r.zrem('tasked_feeds', feed.pk)
+            r.zrem('error_feeds', feed.pk)
         
         return feed
 
@@ -811,7 +840,8 @@ class Feed(models.Model):
         
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
-
+        error_count = self.error_count
+        
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
                           self.title[:30],
@@ -823,7 +853,10 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            story_content = strip_comments(story_content)
+            if error_count:
+                story_content = strip_comments__lxml(story_content)
+            else:
+                story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
@@ -1260,7 +1293,11 @@ class Feed(models.Model):
         total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
         if self.active_premium_subscribers >= 3:
-            total = min(total, 60) # 1 hour minimum for premiums
+            total = min(total, 3*60) # 1 hour minimum for premiums
+        elif self.active_premium_subscribers >= 2:
+            total = min(total, 12*60)
+        elif self.active_premium_subscribers >= 1:
+            total = min(total, 24*60)
 
         if self.is_push:
             total = total * 20
@@ -1283,14 +1320,15 @@ class Feed(models.Model):
                                                 self.stories_last_month))
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor*8
+        return total, random_factor*4
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
+        error_count = self.error_count
         
-        if self.errors_since_good:
-            total = total * self.errors_since_good
+        if error_count:
+            total = total * error_count
             if verbose:
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (
@@ -1299,16 +1337,23 @@ class Feed(models.Model):
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
         
-        
         self.min_to_decay = total
         if not skip_scheduling and self.active_subscribers >= 1:
             self.next_scheduled_update = next_scheduled_update
             r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
             r.zrem('tasked_feeds', self.pk)
+            r.srem('queued_feeds', self.pk)
             
         self.save()
         
-
+    
+    @property
+    def error_count(self):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        fetch_errors = int(r.zscore('error_feeds', self.pk) or 0)
+        
+        return fetch_errors + self.errors_since_good
+        
     def schedule_feed_fetch_immediately(self, verbose=True):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         if verbose:
@@ -1574,6 +1619,8 @@ class MStory(mongo.Document):
         if self.id and self.story_date > DAYS_OF_UNREAD:
             r.sadd('F:%s' % self.story_feed_id, self.id)
             r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+            r.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self, r=None):
         if not r:
