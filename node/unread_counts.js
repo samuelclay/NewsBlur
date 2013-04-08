@@ -59,11 +59,11 @@
       });
     });
     return socket.on('disconnect', function() {
-      var _ref;
+      var _ref, _ref1;
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
-      return console.log(("   ---> [" + this.username + "] Disconnect (" + this.feeds.length + " feeds), there are now") + (" " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
+      return console.log(("   ---> [" + this.username + "] Disconnect (" + ((_ref1 = this.feeds) != null ? _ref1.length : void 0) + " feeds), there are now") + (" " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
   });
 
