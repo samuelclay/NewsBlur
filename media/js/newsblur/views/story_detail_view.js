@@ -315,7 +315,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_selected: function(model, selected, options) {
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
-        NEWSBLUR.reader.hide_stories_error();
+        NEWSBLUR.app.taskbar_info.hide_stories_error();
         
         if (selected && options.scroll_to_comments) {
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, {

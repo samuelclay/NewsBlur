@@ -3111,8 +3111,6 @@ background: transparent;
 /* ====================== */
 
 #story_taskbar .NB-river-progress {
-  position: absolute;
-  top: 0;
   margin: 6px 12px 0;
   width: 150px;
   height: 20px;
@@ -3131,14 +3129,16 @@ background: transparent;
   width: 150px;
   height: 8px;
 }
-
+.NB-taskbar-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 /* ============== */
 /* = Feed Error = */
 /* ============== */
 
 #story_taskbar .NB-feed-error {
-  position: absolute;
-  top: 0;
   margin: 6px 12px 0;
   height: 20px;
 }

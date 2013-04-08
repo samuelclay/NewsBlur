@@ -91,17 +91,17 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     },
     
     show_loading: function() {
-        NEWSBLUR.reader.hide_stories_error();
-        NEWSBLUR.reader.show_stories_progress_bar(10, "Fetching text");
+        NEWSBLUR.app.taskbar_info.hide_stories_error();
+        NEWSBLUR.app.taskbar_info.show_stories_progress_bar(10, "Fetching text");
     },
     
     hide_loading: function() {
-        NEWSBLUR.reader.hide_stories_progress_bar();
+        NEWSBLUR.app.taskbar_info.hide_stories_progress_bar();
     },
     
     error: function() {
         this.hide_loading();
-        NEWSBLUR.reader.show_stories_error({}, "Sorry, the story\'s text<br />could not be extracted.");
+        NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the story\'s text<br />could not be extracted.");
         
         var $content = this.$('.NB-feed-story-content');
         $content.html(this.story.get('story_content'));
