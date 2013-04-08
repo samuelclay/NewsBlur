@@ -366,8 +366,9 @@ class Feed(models.Model):
             p.zadd('tasked_feeds', feed_id, now)
         p.execute()
         
-        for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-            UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds')
+        # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
+        for feed_id in feeds:
+            UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
 
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
