@@ -549,7 +549,7 @@ REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
 REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
 REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
-# DB 6 = Session Store
+# REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
 REDIS_AUTOCOMPLETE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=7)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)

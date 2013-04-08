@@ -1,4 +1,5 @@
 import datetime
+from urlparse import urlparse
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.http import condition
@@ -79,6 +80,16 @@ def feed_autocomplete(request):
     
     if not query:
         return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
+    
+    if '.' in query:
+        try:
+            parts = urlparse(query)
+            if not parts.hostname and not query.startswith('http'):
+                parts = urlparse('http://%s' % query)
+            if parts.hostname:
+                query = parts.hostname
+        except:
+            logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
         
     feed_ids = Feed.autocomplete(query)
     feeds = [Feed.get_by_id(feed_id) for feed_id in feed_ids]
