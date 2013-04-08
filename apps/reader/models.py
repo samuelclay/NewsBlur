@@ -667,6 +667,7 @@ class MUserStory(mongo.Document):
         if self.story_db_id:
             all_read_stories_key = 'RS:%s' % (self.user_id)
             r.sadd(all_read_stories_key, self.story_db_id)
+            r.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
 
             read_story_key = 'RS:%s:%s' % (self.user_id, self.feed_id)
             r.sadd(read_story_key, self.story_db_id)

@@ -337,6 +337,8 @@ def setup_db(engine=None, skip_common=False):
         setup_mongo()
     elif engine == "redis":
         setup_redis()
+    elif engine == "redis_slave":
+        setup_redis(slave=True)
     setup_gunicorn(supervisor=False)
     setup_db_munin()
     
@@ -456,10 +458,10 @@ def setup_imaging():
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
-    put('config/supervisord.conf', '/etc/supervisor/supervisord.conf')
-    sudo('/etc/init.d/supervisord stop')
+    put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
+    sudo('/etc/init.d/supervisor stop')
     sudo('sleep 2')
-    sudo('/etc/init.d/supervisord start')
+    sudo('/etc/init.d/supervisor start')
 
 # @parallel
 def setup_hosts():
@@ -563,7 +565,7 @@ def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
 
 def setup_nginx():
-    NGINX_VERSION = '1.2.2'
+    NGINX_VERSION = '1.2.8'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -834,8 +836,8 @@ def setup_mongo_mms():
     sudo('supervisorctl update')
 
 
-def setup_redis():
-    redis_version = '2.6.11'
+def setup_redis(slave=False):
+    redis_version = '2.6.12'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -845,6 +847,10 @@ def setup_redis():
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
+    if slave:
+        put('config/redis_slave.conf', '/etc/redis_server.conf', use_sudo=True)
+    else:
+        put('config/redis_master.conf', '/etc/redis_server.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')

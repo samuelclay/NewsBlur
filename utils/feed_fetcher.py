@@ -369,10 +369,13 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        if random.random() <= 0.02:
+                        if self.options['force'] or random.random() <= 0.02:
+                            logging.debug('   ---> [%-30s] ~FBPerforming feed cleanup...' % (feed.title[:30],))
+                            start_cleanup = time.time()
                             feed.sync_redis()
                             MUserStory.delete_old_stories(feed_id=feed.pk)
                             MUserStory.sync_all_redis(feed_id=feed.pk)
+                            logging.debug('   ---> [%-30s] ~FBDone with feed cleanup. Took %s sec.' % (feed.title[:30], time.time() - start_cleanup))
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
