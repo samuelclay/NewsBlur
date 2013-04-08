@@ -171,7 +171,7 @@
             this.locks.scrolling = _.delay(_.bind(function() {
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 1000);
-            if (!this.flags['opening_feed']) {
+            if (!this.flags['opening_feed'] && NEWSBLUR.app.story_unread_counter) {
                 NEWSBLUR.app.story_unread_counter.center();
             }
             this.position_mouse_indicator();
