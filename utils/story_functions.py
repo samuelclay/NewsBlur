@@ -83,6 +83,9 @@ def pre_process_story(entry):
     else:
         entry['published'] = datetime.datetime.utcnow()
     
+    if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
+        entry['published'] = datetime.datetime.now()
+    
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
     # if protocol_index != -1:
