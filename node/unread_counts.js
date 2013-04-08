@@ -42,7 +42,10 @@
         _this = this;
       this.feeds = feeds;
       this.username = username;
-      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on)"));
+      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
+      if (!this.username) {
+        return;
+      }
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
