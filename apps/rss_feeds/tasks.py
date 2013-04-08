@@ -26,8 +26,9 @@ class TaskFeeds(Task):
         queued_feeds = r.zrangebyscore('scheduled_updates', 0, now_timestamp)
         r.zremrangebyscore('scheduled_updates', 0, now_timestamp)
         r.sadd('queued_feeds', *queued_feeds)
-        logging.debug(" ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/%s queued/scheduled)" % (
+        logging.debug(" ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                         len(queued_feeds),
+                        r.zcard('tasked_feeds'),
                         r.scard('queued_feeds'),
                         r.zcard('scheduled_updates')))
         
@@ -85,7 +86,7 @@ class TaskFeeds(Task):
         Feed.task_feeds(refresh_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
-        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~SB%s~SN/%s tasked/queued/scheduled)" % (
+        logging.debug(" ---> ~SN~FBTasking took ~SB%s~SN seconds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                         int((time.time() - start)),
                         r.zcard('tasked_feeds'),
                         r.scard('queued_feeds'),

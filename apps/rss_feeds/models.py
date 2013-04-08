@@ -776,8 +776,6 @@ class Feed(models.Model):
             feed.last_update = datetime.datetime.utcnow()
             feed.set_next_scheduled_update()
             r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
-            if options['force']:
-                feed.sync_redis()
         
         if not feed or original_feed_id != feed.pk:
             logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
@@ -1577,6 +1575,8 @@ class MStory(mongo.Document):
         if self.id and self.story_date > DAYS_OF_UNREAD:
             r.sadd('F:%s' % self.story_feed_id, self.id)
             r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+            r.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self, r=None):
         if not r:
