@@ -33,11 +33,12 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if tasked_feeds_size < 50000:
+        if tasked_feeds_size < 1000:
             feeds = r.srandmember('queued_feeds', 1000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
         else:
+            logging.debug(" ---> ~SN~FBToo many tasked feeds. ~SB%s~SN tasked." % tasked_feeds_size)
             active_count = 0
         cp1 = time.time()
         
@@ -107,7 +108,6 @@ class UpdateFeeds(Task):
         compute_scores = bool(mongodb_replication_lag < 10)
         
         options = {
-            'fake': bool(MStatistics.get('fake_fetch')),
             'quick': float(MStatistics.get('quick_fetch', 0)),
             'compute_scores': compute_scores,
             'mongodb_replication_lag': mongodb_replication_lag,
@@ -134,9 +134,7 @@ class NewFeeds(Task):
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
         
-        options = {
-            'force': True,
-        }
+        options = {}
         for feed_pk in feed_pks:
             feed = Feed.get_by_id(feed_pk)
             feed.update(options=options)
