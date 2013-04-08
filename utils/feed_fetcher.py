@@ -373,9 +373,11 @@ class Dispatcher:
                             logging.debug('   ---> [%-30s] ~FBPerforming feed cleanup...' % (feed.title[:30],))
                             start_cleanup = time.time()
                             feed.sync_redis()
+                            cp1 = time.time() - start_cleanup
                             MUserStory.delete_old_stories(feed_id=feed.pk)
+                            cp2 = time.time() - cp1 - start_cleanup
                             MUserStory.sync_all_redis(feed_id=feed.pk)
-                            logging.debug('   ---> [%-30s] ~FBDone with feed cleanup. Took %s sec.' % (feed.title[:30], time.time() - start_cleanup))
+                            logging.debug('   ---> [%-30s] ~FBDone with feed cleanup. Took %.4s+%.4s+%.4s=~SB%.4s~SN sec.' % (feed.title[:30], cp1, cp2, time.time() - cp2 - cp1 - start_cleanup, time.time() - start_cleanup))
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
