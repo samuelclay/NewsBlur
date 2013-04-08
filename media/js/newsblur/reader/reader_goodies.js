@@ -210,7 +210,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
         $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
             e.preventDefault();
 
-            window.location.href = 'https://chrome.google.com/webstore/detail/gchdledhagjbhhodjjhiclbnaioljomj';
+            window.location.href = 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/bmjffnfcokiodbeiamclanljnaheeoke';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {
