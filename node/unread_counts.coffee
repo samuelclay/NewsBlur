@@ -56,6 +56,6 @@ io.sockets.on 'connection', (socket) ->
 
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
-        console.log "   ---> [#{@username}] Disconnect, there are now" +
+        console.log "   ---> [#{@username}] Disconnect (#{@feeds.length} feeds), there are now" +
                     " #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
