@@ -107,7 +107,6 @@ class UpdateFeeds(Task):
         compute_scores = bool(mongodb_replication_lag < 10)
         
         options = {
-            'fake': bool(MStatistics.get('fake_fetch')),
             'quick': float(MStatistics.get('quick_fetch', 0)),
             'compute_scores': compute_scores,
             'mongodb_replication_lag': mongodb_replication_lag,
@@ -134,9 +133,7 @@ class NewFeeds(Task):
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
         
-        options = {
-            'force': True,
-        }
+        options = {}
         for feed_pk in feed_pks:
             feed = Feed.get_by_id(feed_pk)
             feed.update(options=options)
