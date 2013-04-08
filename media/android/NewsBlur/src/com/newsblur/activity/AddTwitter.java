@@ -5,10 +5,9 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 
-public class AddTwitter extends SherlockFragmentActivity {
+public class AddTwitter extends NbFragmentActivity {
 
 	public static final int TWITTER_AUTHED = 0x20;
 	private WebView webview;

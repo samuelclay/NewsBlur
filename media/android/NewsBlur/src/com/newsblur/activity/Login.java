@@ -1,5 +1,6 @@
 package com.newsblur.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,7 +35,7 @@ public class Login extends FragmentActivity {
 	}
 
 	private void preferenceCheck() {
-		final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
 		if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
 			final Intent mainIntent = new Intent(this, Main.class);
 			startActivity(mainIntent);
