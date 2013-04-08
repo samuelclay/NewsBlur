@@ -36,7 +36,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags, htmldiff, strip_comments__lxml
+from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from vendor.redis_completion.engine import RedisEngine
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -843,7 +843,8 @@ class Feed(models.Model):
         
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
-
+        error_count = self.error_count
+        
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
                           self.title[:30],
@@ -855,7 +856,10 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            story_content = strip_comments__lxml(story_content)
+            if error_count:
+                story_content = strip_comments__lxml(story_content)
+            else:
+                story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
