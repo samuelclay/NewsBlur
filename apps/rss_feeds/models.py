@@ -243,11 +243,11 @@ class Feed(models.Model):
         
     @classmethod
     def autocomplete(self, prefix, limit=5):
-        engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         results = engine.search(phrase=prefix, limit=limit, autoboost=True)
         
         if len(results) < limit:
-            engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
+            engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
             results += engine.search(phrase=prefix, limit=limit-len(results), autoboost=True, filters=[lambda f: f not in results])
             
         return results
