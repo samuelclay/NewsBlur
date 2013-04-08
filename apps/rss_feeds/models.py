@@ -1260,9 +1260,9 @@ class Feed(models.Model):
         if self.active_premium_subscribers >= 3:
             total = min(total, 60) # 1 hour minimum for premiums
         elif self.active_premium_subscribers >= 2:
-            total = min(total, 3*60)
+            total = min(total, 6*60)
         elif self.active_premium_subscribers >= 1:
-            total = min(total, 12*60)
+            total = min(total, 24*60)
 
         if self.is_push:
             total = total * 20
