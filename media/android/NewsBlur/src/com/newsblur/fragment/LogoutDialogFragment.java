@@ -14,13 +14,12 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.database.BlurDatabase;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class LogoutDialogFragment extends DialogFragment {
 
 	protected static final String TAG = "LogoutDialogFragment";
-	private APIManager apiManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,6 @@ public class LogoutDialogFragment extends DialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		
-		apiManager = new APIManager(getActivity());
 		View v = inflater.inflate(R.layout.fragment_logout_dialog, container, false);
 		final TextView message = (TextView) v.findViewById(R.id.dialog_message);
 		message.setText(getActivity().getResources().getString(R.string.logout_warning));
@@ -45,6 +43,7 @@ public class LogoutDialogFragment extends DialogFragment {
 				BlurDatabase databaseHelper = new BlurDatabase(getActivity().getApplicationContext());
 				databaseHelper.dropAndRecreateTables();
 				
+				PrefsUtils.clearLogin(getActivity());
 				Intent i = new Intent(getActivity(), Login.class);
 				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(i);
