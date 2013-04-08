@@ -3,13 +3,11 @@ package com.newsblur.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
 
-public class RegisterProgress extends SherlockFragmentActivity {
+public class RegisterProgress extends NbFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";

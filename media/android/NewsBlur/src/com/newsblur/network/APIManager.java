@@ -75,7 +75,7 @@ public class APIManager {
 		final APIResponse response = client.post(APIConstants.URL_LOGIN, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtils.saveCookie(context, response.cookie);
+			PrefsUtils.saveLogin(context, username, response.cookie);
 			return loginResponse;
 		} else {
 			return new LoginResponse();
@@ -185,7 +185,7 @@ public class APIManager {
 		final APIResponse response = client.post(APIConstants.URL_SIGNUP, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtils.saveCookie(context, response.cookie);
+			PrefsUtils.saveLogin(context, username, response.cookie);
 
 			CookieSyncManager.createInstance(context.getApplicationContext());
 			CookieManager cookieManager = CookieManager.getInstance();
