@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +72,6 @@ public class DeleteFeedFragment extends DialogFragment {
 					protected Boolean doInBackground(Void... arg) {
 						long feedId = getArguments().getLong(FEED_ID);
 						String folderName = getArguments().getString(FOLDER_NAME);
-						Log.w("mark", "feedID = " + feedId);
 						if (apiManager.deleteFeed(feedId, folderName)) {
 							Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
 							DeleteFeedFragment.this.getActivity().getContentResolver().delete(feedUri, null, null);
