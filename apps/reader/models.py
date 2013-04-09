@@ -101,8 +101,13 @@ class UserSubscription(models.Model):
             self.feed.sync_redis()
         
         userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id)
+        total = userstories.count()
+        logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s)" % (total, self))
+        
+        pipeline = r.pipeline()
         for userstory in userstories:
-            userstory.sync_redis(r=r)
+            userstory.sync_redis(pipeline=pipeline)
+        pipeline.execute()
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
