@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 import requests
+import random
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -506,6 +507,9 @@ def load_single_feed(request, feed_id):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         usersub = None
+    
+    if usersub and random.random() < 0.01:
+        usersub.sync_redis()
     
     if query:
         stories = feed.find_stories(query, offset=offset, limit=limit)
