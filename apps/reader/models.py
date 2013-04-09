@@ -660,10 +660,12 @@ class MUserStory(mongo.Document):
             
             return story.id
             
-    def sync_redis(self, r=None):
-        if not r:
+    def sync_redis(self, r=None, pipeline=None):
+        if pipeline:
+            r = pipeline
+        elif not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-
+        
         if self.story_db_id:
             all_read_stories_key = 'RS:%s' % (self.user_id)
             r.sadd(all_read_stories_key, self.story_db_id)
@@ -704,10 +706,12 @@ class MUserStory(mongo.Document):
 
         total = read_stories.count()
         print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
+        pipeline = r.pipeline()
         for i, read_story in enumerate(read_stories):
             if (i+1) % 1000 == 0: 
                 print " ---> %s/%s" % (i+1, total)
-            read_story.sync_redis(r)
+            read_story.sync_redis(r, pipeline=pipeline)
+        pipeline.execute()
         
 class UserSubscriptionFolders(models.Model):
     """

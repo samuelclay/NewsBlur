@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -19,7 +18,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends SherlockFragmentActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
+public class Main extends NbFragmentActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
 
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;

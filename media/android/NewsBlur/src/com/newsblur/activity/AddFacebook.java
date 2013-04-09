@@ -5,10 +5,9 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 
-public class AddFacebook extends SherlockFragmentActivity {
+public class AddFacebook extends NbFragmentActivity {
 
 	public static final int FACEBOOK_AUTHED = 0x21;
 	private WebView webview;

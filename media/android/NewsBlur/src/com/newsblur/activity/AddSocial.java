@@ -8,11 +8,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.AddSocialFragment;
 
-public class AddSocial extends SherlockFragmentActivity {
+public class AddSocial extends NbFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "addSocialFragment";

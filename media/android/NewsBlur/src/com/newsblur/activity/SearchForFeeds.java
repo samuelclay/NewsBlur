@@ -13,7 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -24,7 +23,7 @@ import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
 
-public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
+public class SearchForFeeds extends NbFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
 	private static final int LOADER_TWITTER_SEARCH = 0x01;
 	private ListView resultsList;
 	private Loader<SearchLoaderResponse> searchLoader;

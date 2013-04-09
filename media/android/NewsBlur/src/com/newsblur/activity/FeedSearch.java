@@ -1,7 +1,6 @@
 package com.newsblur.activity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class FeedSearch extends SherlockFragmentActivity {
+public class FeedSearch extends NbFragmentActivity {
 
 }
