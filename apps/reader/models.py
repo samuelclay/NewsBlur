@@ -96,11 +96,10 @@ class UserSubscription(models.Model):
         
     def sync_redis(self, skip_feed=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)        
         
-        if not skip_feed:
-            self.feed.sync_redis()
-        
-        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id)
+        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id,
+                                                read_date__gte=UNREAD_CUTOFF)
         total = userstories.count()
         logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s)" % (total, self))
         
@@ -689,7 +688,7 @@ class MUserStory(mongo.Document):
     @classmethod
     def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)
         
         if feed_id and user_id:
             read_stories = cls.objects.filter(user_id=user_id,
