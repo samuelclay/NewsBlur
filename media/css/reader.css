@@ -5550,7 +5550,7 @@ form.opml_import_form input {
 
 .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active),
 .NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
-    background-color: #DEE6D4;
+    background-color: #ECEEEA;
 }
 .NB-menu-manage li.NB-menu-item:active:not(.NB-disabled):not(.NB-active) {
     background-color: #ACB2A6;
@@ -5613,7 +5613,7 @@ form.opml_import_form input {
 
 .NB-menu-manage li.NB-menu-item:active:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
-    color: rgba(255, 255, 255, .8);
+    color: rgba(255, 255, 255, 1);
 }
 
 .NB-menu-manage .NB-disabled {
