@@ -5,10 +5,9 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 
-public class ImportFeeds extends SherlockFragmentActivity {
+public class ImportFeeds extends NbFragmentActivity {
 	
 	private WebView webContainer;
 

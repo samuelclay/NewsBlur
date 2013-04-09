@@ -999,11 +999,11 @@ body {
 /* ================ */
 
 
-#story_titles ::-moz-selection {
+.NB-feed-story-header-info ::-moz-selection {
   background: transparent;
 } 
 
-#story_titles ::selection {
+.NB-feed-story-header-info ::selection {
 background: transparent;
 }
 

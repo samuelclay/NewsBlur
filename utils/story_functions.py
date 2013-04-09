@@ -15,7 +15,8 @@ from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
 
-COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
+# COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
+COMMENTS_RE = re.compile('\<!--.*?--\>')
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -82,6 +83,9 @@ def pre_process_story(entry):
         entry['published'] = publish_date
     else:
         entry['published'] = datetime.datetime.utcnow()
+    
+    if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
+        entry['published'] = datetime.datetime.now()
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
@@ -194,8 +198,21 @@ def strip_tags(html):
 
 def strip_comments(html_string):
     return COMMENTS_RE.sub('', html_string)
+
+def strip_comments__lxml2(html_string=""):
+    if not html_string: return html_string
+    tree = lxml.html.fromstring(html_string)
+    comments = tree.xpath('//comment()')
+
+    for c in comments:
+        p = c.getparent()
+        p.remove(c)
+
+    return lxml.etree.tostring(tree)
+        
+def strip_comments__lxml(html_string=""):
+    if not html_string: return html_string
     
-def strip_comments__lxml(html_string):
     params = {
         'comments': True,
         'scripts': False,
@@ -222,7 +239,7 @@ def strip_comments__lxml(html_string):
         return lxml.etree.tostring(clean_html)
     except XMLSyntaxError:
         return html_string
-
+        
 def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     

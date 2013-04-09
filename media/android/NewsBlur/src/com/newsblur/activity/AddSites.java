@@ -11,12 +11,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.AddSitesListFragment;
 import com.newsblur.network.APIManager;
 
-public class AddSites extends SherlockFragmentActivity {
+public class AddSites extends NbFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "addsitesFragment";
