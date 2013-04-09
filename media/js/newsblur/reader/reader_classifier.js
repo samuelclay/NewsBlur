@@ -281,9 +281,9 @@ var classifier_prototype = {
                 'Intelligence Trainer'
             ]),
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
-            $.make('ol', { className: 'NB-trainer-points' }, [
+            $.make('ol', { className: 'NB-trainer-points NB-classifiers' }, [
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right;margin-top: 4px;', width: 155, height: 17 }),
+                    $.make('div', { className: 'NB-classifier-example' }),
                     $.make('b', 'You will see a bunch of tags and authors.'),
                     ' Sites will be ordered by popularity. Click on what you like and don\'t like.'
                 ]),
@@ -605,7 +605,8 @@ var classifier_prototype = {
     make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count, classifier) {
         var score = 0;
         // NEWSBLUR.log(['classifiers', this.user_classifiers, classifier_value, this.user_classifiers[classifier_type+'s']]);
-        if (classifier_value in this.user_classifiers[classifier_type+'s']) {
+        if (this.user_classifiers[classifier_type+'s'] && 
+            classifier_value in this.user_classifiers[classifier_type+'s']) {
             score = this.user_classifiers[classifier_type+'s'][classifier_value];
         }
         

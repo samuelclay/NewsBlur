@@ -4131,6 +4131,14 @@ form.opml_import_form input {
     padding: 0 0 0 8px;
 }
 
+.NB-modal-trainer .NB-classifier-example {
+    background: transparent url('/media/embed/reader/sample_classifier_tag.png') no-repeat 0 0;
+    background-size: 135px 69px;
+    width: 135px;
+    height: 23px;
+    float: right;
+    margin-left: 4px;
+}
 .NB-modal-trainer .NB-trainer-points li img.NB-trainer-bullet {
     float: left;
     margin: 8px 8px 0 0;

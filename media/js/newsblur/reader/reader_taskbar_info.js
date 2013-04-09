@@ -51,7 +51,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         var $bar = $('.NB-river-progress-bar', $progress);
         var unreads;
         if (feeds_loading) unreads = feeds_loading;
-        else unreads = this.get_unread_count(false) / 10;
+        else unreads = NEWSBLUR.reader.get_unread_count(false) / 10;
         NEWSBLUR.reader.animate_progress_bar($bar, unreads / 10);
         
         $('.NB-river-progress-text', $progress).text(message);
