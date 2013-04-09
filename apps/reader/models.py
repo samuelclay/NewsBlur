@@ -706,12 +706,12 @@ class MUserStory(mongo.Document):
 
         total = read_stories.count()
         print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
+        pipeline = r.pipeline()
         for i, read_story in enumerate(read_stories):
-            pipeline = r.pipeline()
             if (i+1) % 1000 == 0: 
                 print " ---> %s/%s" % (i+1, total)
             read_story.sync_redis(r, pipeline=pipeline)
-            pipeline.execute()
+        pipeline.execute()
         
 class UserSubscriptionFolders(models.Model):
     """
