@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -129,6 +130,12 @@ public class AddSitesListFragment extends Fragment {
 
 			for (String feedId : category.feedIds) {
 				Feed feed = response.feeds.get(feedId);
+
+                if (null == feed) {
+                    Log.w(this.getClass().getName(), "Skipping feed ID with no corresponding feed: " + feedId);
+                    continue;
+                }
+
 				View feedView = inflater.inflate(R.layout.merge_category_feed, null);
 				TextView feedTitle = (TextView) feedView.findViewById(R.id.login_category_feed_title);
 				feedTitle.setText(feed.title);
