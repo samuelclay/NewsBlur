@@ -79,6 +79,7 @@ public class RegisterProgressFragment extends Fragment {
 			public void onClick(View arg0) {
 				Intent i = new Intent(getActivity(), AddSites.class);
 				startActivity(i);
+				getActivity().finish();
 			}
 		});
 
@@ -111,10 +112,12 @@ public class RegisterProgressFragment extends Fragment {
 					i.putExtra("username", username);
 					i.putExtra("password", password);
 					startActivity(i);
+					getActivity().finish();
 				}
 			} else {
 				Toast.makeText(getActivity(), extractErrorMessage(response), Toast.LENGTH_LONG).show();
 				startActivity(new Intent(getActivity(), Login.class));
+				getActivity().finish();
 			}
 		}
 

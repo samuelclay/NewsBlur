@@ -4,10 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
 
-public class RegisterProgress extends NbFragmentActivity {
+public class RegisterProgress extends SherlockFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";
