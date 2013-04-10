@@ -700,12 +700,15 @@ public class APIManager {
 		// TODO find a better way to identify these failed responses
 		boolean isServerMessage = false;
 		JsonParser parser = new JsonParser();
-		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
-		if(asJsonObject.has("code")) {
-			JsonElement codeItem = asJsonObject.get("code");
-			int code = codeItem.getAsInt();
-			if(code == -1)
-				isServerMessage = true;
+		JsonElement jsonElement = parser.parse(json);
+		if(jsonElement.isJsonObject()) {
+			JsonObject asJsonObject = jsonElement.getAsJsonObject();
+			if(asJsonObject.has("code")) {
+				JsonElement codeItem = asJsonObject.get("code");
+				int code = codeItem.getAsInt();
+				if(code == -1)
+					isServerMessage = true;
+			}
 		}
 		return isServerMessage;
 	}

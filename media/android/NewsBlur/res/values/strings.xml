@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="newsblur">NewsBlur</string>
@@ -147,4 +146,5 @@
     <string name="friends_comments_count">%d COMMENTS</string>
     <string name="toast_marked_all_stories_as_read">All stories marked as read</string>
     <string name="unknown_user">Unknown User</string>
+    <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
 </resources>

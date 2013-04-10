@@ -36,6 +36,7 @@
        	
 		<activity
             android:name=".activity.RegisterProgress"
+            android:noHistory="true"
             android:label="@string/get_started" />
 		
 		<activity

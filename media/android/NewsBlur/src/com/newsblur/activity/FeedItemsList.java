@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
+import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
@@ -24,7 +26,11 @@ import com.newsblur.service.SyncService;
 public class FeedItemsList extends ItemsList {
 
 	public static final String EXTRA_FEED = "feedId";
+	public static final String EXTRA_FEED_TITLE = "feedTitle";
+	public static final String EXTRA_FOLDER_NAME = "folderName";
 	private String feedId;
+	private String feedTitle;
+	private String folderName;
 	private APIManager apiManager;
 	private boolean stopLoading = false;
 
@@ -33,7 +39,9 @@ public class FeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 		apiManager = new APIManager(this);
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
-
+        feedTitle = getIntent().getStringExtra(EXTRA_FEED_TITLE);
+        folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
+        
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = getContentResolver().query(feedUri, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		cursor.moveToFirst();
@@ -58,12 +66,8 @@ public class FeedItemsList extends ItemsList {
 	}
 	
 	public void deleteFeed() {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_DELETE_FEED);
-		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, Long.parseLong(feedId));
-		startService(intent);
+		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(Long.parseLong(feedId), feedTitle, folderName);
+		deleteFeedFragment.show(fragmentManager, "dialog");
 	}
 
 	@Override
