@@ -8,11 +8,15 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
 
+/**
+ * Show progress screen while registering request is being processed. This
+ * Activity doesn't extend NbFragmentActivity because it is one of the few
+ * Activities that will be shown while the user is still logged out.
+ */
 public class RegisterProgress extends SherlockFragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";
-	private String TAG = "RegisterProgressActivity";
 
 	@Override
 	protected void onCreate(Bundle bundle) {
