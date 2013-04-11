@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -431,6 +432,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 			final Cursor cursor = getChildrenCursor(folderCursorHelper.getCursor());
 			cursorHelper = new MyCursorHelper(cursor);
+            //Log.d(this.getClass().getName(), "lazily initing cursor helper for group " + groupPosition + " with rowID " + cursorHelper.mRowIDColumn );
 			mChildrenCursorHelpers.put(groupPosition, cursorHelper);
 		}
 

@@ -131,7 +131,7 @@ public class AddSitesListFragment extends Fragment {
 			for (String feedId : category.feedIds) {
 				Feed feed = response.feeds.get(feedId);
 
-                if (null == feed) {
+                if (feed == null) {
                     Log.w(this.getClass().getName(), "Skipping feed ID with no corresponding feed: " + feedId);
                     continue;
                 }

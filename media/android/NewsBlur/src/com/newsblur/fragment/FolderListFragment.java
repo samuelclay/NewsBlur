@@ -49,11 +49,9 @@ import com.newsblur.view.SocialFeedViewBinder;
 
 public class FolderListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener {
 
-	private ExpandableListView list;
 	private ContentResolver resolver;
 	private MixedExpandableListAdapter folderAdapter;
 	private FolderTreeViewBinder groupViewBinder;
-	private int leftBound, rightBound;
 	private APIManager apiManager;
 	private int currentState = AppConstants.STATE_SOME;
 	private int FEEDCHECK = 0x01;
@@ -75,9 +73,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		ImageLoader imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		groupViewBinder = new FolderTreeViewBinder(imageLoader);
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
-
-		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
-		rightBound = UIUtils.convertDPsToPixels(getActivity(), 10);
 
 		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEUT };
 		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneu };
@@ -110,13 +105,14 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
-		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+		ExpandableListView list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
 		list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
 		list.setOnCreateContextMenuListener(this);
 
-		Display display = getActivity().getWindowManager().getDefaultDisplay();
-		int width = display.getWidth();
-		list.setIndicatorBounds(width - leftBound, width - rightBound);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        list.setIndicatorBounds(
+                display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 20),
+                display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 10));
 
 		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
 		list.setAdapter(folderAdapter);
@@ -128,6 +124,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		return v;
 	}
 
+    private ExpandableListView getListView() {
+        return (ExpandableListView) (this.getView().findViewById(R.id.folderfeed_list));
+    }
+
 	public void checkOpenFolderPreferences() {
 		if (sharedPreferences == null) {
 			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
@@ -135,9 +135,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
 			String groupName = folderAdapter.getGroupName(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true)) {
-				list.expandGroup(i);
+				this.getListView().expandGroup(i);
 			} else {
-				list.collapseGroup(i);
+				this.getListView().collapseGroup(i);
 			}
 		}
 	}
@@ -191,7 +191,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			// all shared stories and regular folders are expandable
 			// all stories is not expandable
 			if (folderAdapter.isExpandable(groupPosition)) {
-				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+				// TODO: is there a better way to get the folder ID for a group position that asking the list view?
+                final Cursor folderCursor = ((MixedExpandableListAdapter) this.getListView().getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 				new MarkFolderAsReadTask(apiManager, resolver) {
 					@Override

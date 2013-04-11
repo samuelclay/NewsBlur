@@ -119,7 +119,7 @@ public class FeedFolderResponse {
 			}
 		}
 		folders.put(fullFolderName, feedIds);
-        Log.d( this.getClass().getName(), "parsed folder '" + fullFolderName + "' with " + feedIds.size() + " feeds" );
+        //Log.d( this.getClass().getName(), "parsed folder '" + fullFolderName + "' with " + feedIds.size() + " feeds" );
 	}
 
 	private String getFolderName(String key, List<String> parentFeedNames) {
@@ -131,7 +131,7 @@ public class FeedFolderResponse {
 		if(key != null) {
 			builder.append(key);
 		} else {
-            builder.append(" (no folder)");
+            //builder.append(" (no folder)");
         }
 		return builder.toString();
 	}
