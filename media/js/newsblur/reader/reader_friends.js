@@ -114,7 +114,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service.png' }),
-                        syncing ? 'Fetching...' : 'Disconnect'
+                        syncing ? 'Fetching...' : 'Connected'
                     ])
                 ]);
             } else {
@@ -140,8 +140,13 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $services.prepend($autofollow);
         
         $('.NB-friends-search').html($.make('div', [
-            $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
-            $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' }),
+            $.make('div', { className: "NB-module-search-input NB-module-search-people" }, [
+                $.make('div', { className: "NB-search-close" }),
+                $.make('label', { 'for': "NB-friends-search-input" }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "img/reader/search_icon2.png" })
+                ]),
+                $.make('input', { id: "NB-friends-search-input", className: 'NB-input', placeholder: "Username or email..." })
+            ]),
             $.make('div', { className: 'NB-loading NB-friends-search-loading' }),
             $.make('div', { className: 'NB-friends-search-badges' })
         ]));
@@ -199,10 +204,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
             $tab.append($ghost);
         } else {
-            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
-                'You are followed by ',
-                Inflector.pluralize('person', this.profile.get('follower_count'), true),
-                '.'
+            var $heading = $.make('fieldset', [
+                $.make('legend', { className: 'NB-profile-section-heading' }, [
+                    'You are followed by ',
+                    Inflector.pluralize('person', this.profile.get('follower_count'), true)
+                ])
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.follower_profiles.each(_.bind(function(profile) {
@@ -217,10 +223,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
             $tab.append($ghost);
         } else {
-            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
-                'You are following ',
-                Inflector.pluralize('person', this.profile.get('following_count'), true),
-                '.'
+            var $heading = $.make('fieldset', [
+                $.make('legend', { className: 'NB-profile-section-heading' }, [
+                    'You are following ',
+                    Inflector.pluralize('person', this.profile.get('following_count'), true)
+                ])
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.following_profiles.each(_.bind(function(profile) {

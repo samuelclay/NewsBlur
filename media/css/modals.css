@@ -53,6 +53,21 @@
 .NB-modal.NB-signed-out .NB-fieldset.NB-anonymous-ok {
     opacity: 1;
 }
+fieldset {
+    border: 0;
+    border-top: 1px solid #E6E6E6;
+    padding: 0 12px;
+    margin: 12px 0 0;
+}
+fieldset legend {
+    padding: 4px 16px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #151775;
+    border: 1px solid #E6E6E6;
+    background-color: #F7F7F5;
+}
+
 
 .NB-modal .NB-modal-error {
     float: right;

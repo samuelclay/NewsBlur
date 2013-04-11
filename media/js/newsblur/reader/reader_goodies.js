@@ -23,12 +23,18 @@ NEWSBLUR.ReaderGoodies.prototype = {
                 $.make('div', { className: 'NB-icon' }),
                 'Goodies &amp; Extras'
             ]),
+            
+            $.make('fieldset', [
+                $.make('legend', 'Bookmarklet')
+            ]),
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
               $.make('div', { className: 'NB-goodies-title' }, 'Add Site &amp; Share Story Bookmarklet')
             ]),
             
-            $.make('h3', 'Mobile Apps for NewsBlur'),
+            $.make('fieldset', [
+                $.make('legend', 'Mobile Apps for NewsBlur')
+            ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
@@ -69,8 +75,9 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('div', { className: 'NB-goodies-nokia' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
             ]),
-            
-            $.make('h3', 'Browser Extensions for NewsBlur'),
+            $.make('fieldset', [
+                $.make('legend', 'Browser Extensions for NewsBlur')
+            ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
@@ -133,6 +140,9 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier')
             ]),
             
+            $.make('fieldset', [
+                $.make('legend', 'Custom URLs')
+            ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
                   className: 'NB-goodies-custom-input',

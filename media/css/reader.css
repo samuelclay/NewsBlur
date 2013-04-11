@@ -1559,7 +1559,7 @@ background: transparent;
     width: 12px;
     height: 12px;
     border-radius: 2px;
-    margin: 3px 2px 0 0;
+    margin: 3px 2px 20px 0;
     display: block;
 }
 
@@ -7659,6 +7659,9 @@ form.opml_import_form input {
 /* = Goodies Modal = */
 /* ================= */
 
+.NB-modal-goodies fieldset {
+    margin: 32px 0 32px;
+}
 .NB-modal-goodies .NB-modal-title .NB-icon {
     background: transparent url('/media/embed/icons/circular/g_modal_goodies.png');
     background-size: 28px;
@@ -7667,7 +7670,7 @@ form.opml_import_form input {
   clear: both;
   margin: 16px 0 0 0;
   overflow: hidden;
-  background-color: #F0F0F0;
+  background-color: #F7F7F5;
   padding: 8px;
 }
 
@@ -8857,19 +8860,6 @@ form.opml_import_form input {
     margin: 6px 8px 0 0;
     float: left;
 }
-.NB-modal-friends fieldset {
-    border: 0;
-    border-top: 1px solid #E6E6E6;
-    padding: 0 12px;
-    margin: 12px 0 0;
-}
-.NB-modal-friends fieldset legend {
-    padding: 0 12px;
-    font-weight: bold;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #151775;
-}
 .NB-modal-friends .NB-friends-services {
     overflow: hidden;
 }
@@ -8990,10 +8980,7 @@ form.opml_import_form input {
     width: auto ;
 }
 .NB-modal-friends .NB-profile-section-heading {
-    text-align: center;
     margin: 18px 0 0px;
-    border-bottom: 1px solid #E0E0E0;
-    padding: 0 0 16px;
 }
 
 
@@ -10075,7 +10062,7 @@ form.opml_import_form input {
     width: 16px;
     height: 16px;
     float: left;
-    margin: 7px 6px 0 0;
+    margin: 3px 0 0 0;
 }
 
 .NB-feed-badge {
