@@ -177,6 +177,8 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
+        self.fix_google_alerts_urls()
+        
         feed_address = self.feed_address or ""
         feed_link = self.feed_link or ""
         self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
@@ -269,6 +271,14 @@ class Feed(models.Model):
     def merge_feeds(cls, *args, **kwargs):
         return merge_feeds(*args, **kwargs)
     
+    def fix_google_alerts_urls(self):
+        if (self.feed_address.startswith('http://user/') and 
+            '/state/com.google/alerts/' in self.feed_address):
+            match = re.match(r"http://user/(\d+)/state/com.google/alerts/(\d+)", self.feed_address)
+            if match:
+                user_id, alert_id = match.groups()
+                self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
+        
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids):
         logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
