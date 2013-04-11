@@ -63,8 +63,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        Log.d( this.getClass().getName(), "Fragment Create start" );
-
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
@@ -74,17 +72,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		groupViewBinder = new FolderTreeViewBinder(imageLoader);
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
 
-		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEUT };
-		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneu };
-		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
-		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feedpositive };
-		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
-		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumpos };
-
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
-
-        Log.d( this.getClass().getName(), "Fragment Create end" );
 
 	}
 
