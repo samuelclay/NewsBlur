@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -31,7 +32,6 @@ import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.Main;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
@@ -183,8 +183,14 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			}.execute(Long.toString(info.id));
 			return true;
 		} else if (item.getItemId() == R.id.menu_delete_feed) {
-			Toast.makeText(getActivity(), "Deleted feed", Toast.LENGTH_SHORT).show();
-			((Main) getActivity()).deleteFeed(info.id, null);
+			int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
+			String feedTitle = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+			Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+			String folderName = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
+			DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(info.id, feedTitle, folderName);
+			deleteFeedFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
@@ -330,7 +336,12 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			final Intent intent = new Intent(getActivity(), FeedItemsList.class);
 			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 			String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
+			String feedTitle = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+			final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+			String folderName = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feedId);
+			intent.putExtra(FeedItemsList.EXTRA_FEED_TITLE, feedTitle);
+			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivityForResult(intent, FEEDCHECK );
 		}

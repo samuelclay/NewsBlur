@@ -177,6 +177,8 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
+        self.fix_google_alerts_urls()
+        
         feed_address = self.feed_address or ""
         feed_link = self.feed_link or ""
         self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
@@ -228,18 +230,18 @@ class Feed(models.Model):
         return MStory.sync_all_redis(self.pk)
     
     def sync_autocompletion(self):
-        if self.num_subscribers <= 1: return
+        if self.num_subscribers <= 10: return
         if self.branch_from_feed: return
         if any(t in self.feed_address for t in ['token', 'private']): return
         
         engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=self.feed_title)
-        engine.boost(self.pk, self.num_subscribers)
+        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
         
         parts = urlparse(self.feed_address)
         engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=parts.hostname)
-        engine.boost(self.pk, self.num_subscribers)
+        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
         
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -269,6 +271,14 @@ class Feed(models.Model):
     def merge_feeds(cls, *args, **kwargs):
         return merge_feeds(*args, **kwargs)
     
+    def fix_google_alerts_urls(self):
+        if (self.feed_address.startswith('http://user/') and 
+            '/state/com.google/alerts/' in self.feed_address):
+            match = re.match(r"http://user/(\d+)/state/com.google/alerts/(\d+)", self.feed_address)
+            if match:
+                user_id, alert_id = match.groups()
+                self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
+        
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids):
         logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 

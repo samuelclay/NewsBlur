@@ -96,13 +96,17 @@ class UserSubscription(models.Model):
         
     def sync_redis(self, skip_feed=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)        
         
-        if not skip_feed:
-            self.feed.sync_redis()
+        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id,
+                                                read_date__gte=UNREAD_CUTOFF)
+        total = userstories.count()
+        logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s)" % (total, self))
         
-        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id)
+        pipeline = r.pipeline()
         for userstory in userstories:
-            userstory.sync_redis(r=r)
+            userstory.sync_redis(pipeline=pipeline)
+        pipeline.execute()
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
@@ -660,10 +664,12 @@ class MUserStory(mongo.Document):
             
             return story.id
             
-    def sync_redis(self, r=None):
-        if not r:
+    def sync_redis(self, r=None, pipeline=None):
+        if pipeline:
+            r = pipeline
+        elif not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-
+        
         if self.story_db_id:
             all_read_stories_key = 'RS:%s' % (self.user_id)
             r.sadd(all_read_stories_key, self.story_db_id)
@@ -682,9 +688,15 @@ class MUserStory(mongo.Document):
     @classmethod
     def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
-
-        if feed_id:
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)
+        
+        if feed_id and user_id:
+            read_stories = cls.objects.filter(user_id=user_id,
+                                              feed_id=feed_id, 
+                                              read_date__gte=UNREAD_CUTOFF)
+            key = "RS:%s:%s" % (user_id, feed_id)
+            r.delete(key)
+        elif feed_id:
             read_stories = cls.objects.filter(feed_id=feed_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:*:%s" % feed_id)
             print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
@@ -703,11 +715,18 @@ class MUserStory(mongo.Document):
             raise "Specify user_id, feed_id, or force."
 
         total = read_stories.count()
-        print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
+        logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s/%s)" % (total, user_id, feed_id))
+        pipeline = None
         for i, read_story in enumerate(read_stories):
+            if not pipeline:
+                pipeline = r.pipeline()
             if (i+1) % 1000 == 0: 
                 print " ---> %s/%s" % (i+1, total)
-            read_story.sync_redis(r)
+                pipeline.execute()
+                pipeline = r.pipeline()
+            read_story.sync_redis(r, pipeline=pipeline)
+        if pipeline:
+            pipeline.execute()
         
 class UserSubscriptionFolders(models.Model):
     """
