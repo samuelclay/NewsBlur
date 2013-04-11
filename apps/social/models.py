@@ -1441,10 +1441,10 @@ class MSharedStory(mongo.Document):
         
     @classmethod
     def collect_popular_stories(cls, cutoff=None, days=None):
-        from apps.statistics.models import MStatistics
         if not days: days = 1
-        shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
-        cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
+        # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
+        # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
+        cutoff = cutoff or 10
         today = datetime.datetime.now() - datetime.timedelta(days=days)
         
         map_f = """
@@ -1505,6 +1505,7 @@ class MSharedStory(mongo.Document):
                 
             story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
+            story_db.pop('user_id', None)
             story_values = {
                 'user_id': popular_profile.user_id,
                 'story_guid': story_db['story_guid'],
