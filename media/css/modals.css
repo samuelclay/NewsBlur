@@ -87,6 +87,12 @@ fieldset legend {
     background: none;
 }
 
+.NB-modal-tabs .NB-modal-loading,
+.NB-modal-tabs .NB-loading {
+    float: left;
+    margin: 4px 8px 0 0;
+}
+
 .NB-modal .NB-modal-loading.NB-active {
     background: transparent url('/media/img/reader/recycle_spinner.gif') no-repeat 0 0;
 }

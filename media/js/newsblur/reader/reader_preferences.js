@@ -859,6 +859,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             } else if ($t.hasClass('NB-modal-tab-stories')) {
                 newtab = 'stories';
             }
+            self.resize_modal();
             self.switch_tab(newtab);
         });        
         $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
@@ -897,19 +898,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     handle_change: function() {
         
         $('input[type=radio],input[type=checkbox],select', this.$modal).bind('change', _.bind(this.enable_save, this));
-    },
-    
-    switch_tab: function(newtab) {
-        var $modal_tabs = $('.NB-modal-tab', this.$modal);
-        var $tabs = $('.NB-tab', this.$modal);
-        
-        $modal_tabs.removeClass('NB-active');
-        $tabs.removeClass('NB-active');
-        
-        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
-        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
-        
-        this.resize_modal();
     },
     
     enable_save: function() {

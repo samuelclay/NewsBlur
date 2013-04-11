@@ -3066,11 +3066,20 @@
                         'top': 0, 
                         'left': -2
                     });
+                } else if (options.right) {
+                    $manage_menu_container.align($item, '-top -left', {
+                        'top': -34, 
+                        'left': 0
+                    });                    
                 } else {
                     $manage_menu_container.align($item, '-top left', {
                         'top': -24, 
                         'left': 20
                     });
+                }
+                if (options.body) {
+                    $manage_menu_container.appendTo(this.$s.$body);
+                    $manage_menu_container.css('z-index', $("#simplemodal-container").css('z-index'));
                 }
                 $('.NB-task-manage').addClass('NB-hover');
             } else if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
@@ -4681,6 +4690,15 @@
                     self.show_manage_menu('site', $t, {inverse: true});
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-modal-title' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var $item = $(".NB-icon", $t);
+                    if ($item.length) {
+                        self.show_manage_menu('site', $item, {inverse: true, right: true, body: true});
+                    }
+                }
+            });  
             
             // = Context Menu ================================================
             
@@ -4715,19 +4733,25 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-trainer' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_trainer_modal();
+                    $.modal.close(function() {
+                        self.open_trainer_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-tutorial' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_tutorial_modal();
+                    $.modal.close(function() {
+                        self.open_tutorial_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-intro' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_intro_modal({page_number: 1});
+                    $.modal.close(function() {
+                        self.open_intro_modal({page_number: 1});
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
@@ -4910,60 +4934,76 @@
                 var story = NEWSBLUR.assets.get_story(story_id);
                 story.star_story();
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-site-mark-read' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.open_mark_read_modal();
-                }
-            });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-social-profile' }, function($t, $p){
-                e.preventDefault();
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                self.open_social_profile_modal(feed_id);
-            });  
-
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.open_keyboard_shortcuts_modal();
-                }
-            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-exception' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');                    
                 self.open_feed_exception_modal(feed_id);
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-site-mark-read' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_mark_read_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-social-profile' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                $.modal.close(function() {
+                    self.open_social_profile_modal(feed_id);
+                });
+            });  
+
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_keyboard_shortcuts_modal();
+                    });
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-goodies' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_goodies_modal();
+                    $.modal.close(function() {
+                        self.open_goodies_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-import' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    NEWSBLUR.reader.open_intro_modal({
-                        'page_number': 2,
-                        'force_import': true
+                    $.modal.close(function() {
+                        NEWSBLUR.reader.open_intro_modal({
+                            'page_number': 2,
+                            'force_import': true
+                        });
                     });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-friends' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_friends_modal();
+                    $.modal.close(function() {
+                        self.open_friends_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-profile-editor' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_profile_editor_modal();
+                    $.modal.close(function() {
+                        self.open_profile_editor_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-preferences' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_preferences_modal();
+                    $.modal.close(function() {
+                        self.open_preferences_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
@@ -4976,13 +5016,17 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_account_modal();
+                    $.modal.close(function() {
+                        self.open_account_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feedchooser' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal();
+                    $.modal.close(function() {
+                        self.open_feedchooser_modal();
+                    });
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-account-upgrade' }, function($t, $p){

@@ -462,14 +462,13 @@
     self.storyPageControl.currentPage.webView.hidden = YES;
     self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
-    self.storyPageControl.progressViewContainer.hidden = YES;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        self.storyPageControl.progressView.progress = 1;
+        self.storyPageControl.circularProgressView.percentage = 1;
     } else {
-        self.storyPageControl.progressView.progress = 0;
+        self.storyPageControl.circularProgressView.percentage = 0;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;

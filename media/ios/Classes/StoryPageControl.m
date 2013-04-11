@@ -93,7 +93,7 @@
                             radius:radius
                             lineWidth:radius / 4.0f
                             progressMode:THProgressModeFill
-                            progressColor:[UIColor colorWithRed:0.96f green:0.96f blue:0.96f alpha:1.0f]
+                            progressColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:1.0f]
                             progressBackgroundMode:THProgressBackgroundModeCircumference
                             progressBackgroundColor:[UIColor colorWithRed:0.96f green:0.96f blue:0.96f alpha:.3f]
                             percentage:20];

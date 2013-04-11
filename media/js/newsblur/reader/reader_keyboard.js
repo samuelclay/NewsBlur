@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderKeyboard = function(options) {
     var defaults = {
-        modal_container_class: "NB-full-container"
+        width: 620
     };
     
     this.options = $.extend({}, defaults, options);
@@ -302,35 +302,6 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
               ])
             ])
         ]);
-    },
-    
-    open_modal: function() {
-        var self = this;
-        
-        this.$modal.modal({
-            'minWidth': 620,
-            'maxWidth': 620,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                    $(window).resize();
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
     },
     
     handle_cancel: function() {

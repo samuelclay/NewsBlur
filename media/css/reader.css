@@ -9001,19 +9001,6 @@ form.opml_import_form input {
     margin: 6px 8px 0 0;
     float: left;
 }
-.NB-modal-profile-editor fieldset {
-    border: 0;
-    border-top: 1px solid #E6E6E6;
-    padding: 0 12px;
-    margin: 0;
-}
-.NB-modal-profile-editor fieldset legend {
-    padding: 0 12px;
-    font-weight: bold;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #151775;
-}
 .NB-modal-profile-editor .NB-tab-profile .NB-modal-submit-button {
     float: left;
     margin: 12px 0 12px 12px;
@@ -9416,20 +9403,6 @@ form.opml_import_form input {
     right: 22px;
     float: none;
     z-index: 1;
-}
-.NB-modal-profile fieldset {
-    border: 0;
-    border-top: 1px solid #E6E6E6;
-    padding: 0 12px;
-    margin: 8px 0 0;
-}
-.NB-modal-profile fieldset legend {
-    padding: 0 12px;
-    font-weight: bold;
-    font-size: 11px;
-    color: #151775;
-    text-transform: uppercase;
-    text-shadow: 0 1px 0 white;
 }
 .NB-modal.NB-modal-profile .NB-modal-section {
     padding: 12px 0 2px;

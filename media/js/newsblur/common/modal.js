@@ -90,8 +90,17 @@ NEWSBLUR.Modal.prototype = {
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
         $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
-    }
+    },
     
-
+    switch_tab: function(newtab) {
+        var $modal_tabs = $('.NB-modal-tab', this.$modal);
+        var $tabs = $('.NB-tab', this.$modal);
+        
+        $modal_tabs.removeClass('NB-active');
+        $tabs.removeClass('NB-active');
+        
+        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
+        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
+    }
     
 };
