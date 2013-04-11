@@ -37,6 +37,13 @@
 .NB-modal {
     padding: 12px;
     position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#simplemodal-container.NB-full-container {
+    padding: 0;
 }
 
 .NB-modal.NB-signed-out .NB-fieldset {
@@ -217,7 +224,11 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     border-radius: 6px;
-    padding: 24px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 12px 24px;
     background-color: #F7F8F5;
     border-top: 1px solid #DFE2DA;
     position: absolute;
@@ -387,6 +398,9 @@
     border-bottom: 1px solid rgba(0, 0, 0, .1);
     margin: 16px 0 0;
     overflow: hidden;
+}
+.NB-modal .NB-fieldset:first-child {
+    margin-top: 0;
 }
 
 .NB-modal .NB-fieldset-fields {

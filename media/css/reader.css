@@ -3997,6 +3997,24 @@ form.opml_import_form input {
 /* = Classifier = */
 /* ============== */
 
+#simplemodal-container.NB-full-container.NB-classifier-container .simplemodal-wrap {
+    overflow: hidden !important;
+}
+.NB-modal.NB-modal-classifiers {
+    position: static;
+    overflow: hidden;
+    max-height: 600px;
+    padding: 18px;
+}
+.NB-modal-classifiers form {
+    height: 500px;
+    padding: 12px 12px 12px 0;
+    margin: 1px 0;
+    overflow-y: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;    
+}
 .NB-classifier {
     border-radius: 14px;
 }
@@ -4114,7 +4132,9 @@ form.opml_import_form input {
     color: #606060;
     font-size: 14px;
 }
-
+.NB-modal-trainer .NB-trainer-points {
+    margin-bottom: 64px;
+}
 .NB-modal-trainer .NB-trainer-points li {
     line-height: 23px;
     margin: 0 0 18px 0;
@@ -5639,6 +5659,10 @@ form.opml_import_form input {
 .NB-menu-manage li.NB-menu-item:hover .NB-menu-manage-subtitle {
     color: rgba(0, 0, 0, .4);
 }
+.NB-menu-manage li.NB-menu-item:active .NB-menu-manage-subtitle {
+    color: rgba(255, 255, 255, 1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
+}
 .NB-menu-manage .NB-menu-manage-title {
   padding: 5px 0 5px 0;
   margin-left: 36px;
@@ -6585,10 +6609,6 @@ form.opml_import_form input {
 
 .NB-modal-intro {
 }
-#simplemodal-container.NB-full-container {
-    padding: 0;
-}
-
 .NB-modal.NB-modal-intro .NB-modal-title {
     text-align: center;
     font-weight: normal;

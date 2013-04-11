@@ -82,7 +82,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     item.folder_views.push(folder_view);
                     return folder_view.el;
                 } else {
-                    console.log(["Not a feed or folder", item]);
+                    // console.log(["Not a feed or folder", item]);
                 }
             }));
             $feeds.push(this.make('li', { 'class': 'feed NB-empty' }));

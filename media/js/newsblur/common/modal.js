@@ -32,6 +32,7 @@ NEWSBLUR.Modal.prototype = {
                     });
                     setTimeout(function() {
                         $(window).resize();
+                        self.flags.modal_loaded = true;
                     });
                 });
             },
