@@ -9260,7 +9260,7 @@ form.opml_import_form input {
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo-wrapper {
     width: 108px;
-    height: 108px;
+/*    height: 108px;*/
     vertical-align: top;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo img {
@@ -9429,7 +9429,7 @@ form.opml_import_form input {
 .NB-modal-profile .NB-profile-followers {
     width: 100%;
     padding: 0;
-    background-color: #F9F9F9;
+    background-color: #F7F7F5;
     margin: 16px 0 0 0;
     border-radius: 6px;
     text-shadow: 0 1px 0 white;

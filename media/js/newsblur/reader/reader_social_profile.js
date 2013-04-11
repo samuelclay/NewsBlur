@@ -39,7 +39,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile' }, [
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('div', { className: 'NB-profile-info-header' }, $(this.$profile)),
-            $.make('div', { className: 'NB-profile-section NB-profile-section-activities' }, [
+            $.make('fieldset', { className: 'NB-profile-section NB-profile-section-activities' }, [
+                $.make('legend', 'Recent interactions'),
                 $.make('div', { className: 'NB-profile-activities' })
             ]),
             $.make('div', { className: 'NB-profile-section' }, [
