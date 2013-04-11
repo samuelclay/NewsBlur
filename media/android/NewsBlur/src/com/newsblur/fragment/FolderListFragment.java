@@ -102,27 +102,25 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		checkOpenFolderPreferences();
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
-		ExpandableListView list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
-		list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
-		list.setOnCreateContextMenuListener(this);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
+        ExpandableListView list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+        list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
+        list.setOnCreateContextMenuListener(this);
 
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         list.setIndicatorBounds(
                 display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 20),
                 display.getWidth() - UIUtils.convertDPsToPixels(getActivity(), 10));
 
-		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
-		list.setAdapter(folderAdapter);
-		list.setOnGroupClickListener(this);
-		list.setOnChildClickListener(this);
+        list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
+        list.setAdapter(folderAdapter);
+        list.setOnGroupClickListener(this);
+        list.setOnChildClickListener(this);
 
-		checkOpenFolderPreferences();
-
-		return v;
-	}
+        return v;
+    }
 
     private ExpandableListView getListView() {
         return (ExpandableListView) (this.getView().findViewById(R.id.folderfeed_list));
@@ -187,7 +185,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 			String feedTitle = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
-			Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+			// TODO: is there a better way to map group position onto folderName than asking the list adapter?
+            Cursor folderCursor = ((MixedExpandableListAdapter) this.getListView().getExpandableListAdapter()).getGroup(groupPosition);
 			String folderName = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 			DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(info.id, feedTitle, folderName);
 			deleteFeedFragment.show(getFragmentManager(), "dialog");
