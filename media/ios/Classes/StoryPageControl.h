@@ -11,6 +11,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "WEPopoverController.h"
 #import "TransparentToolbar.h"
+#import "THCircularProgressView.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
@@ -20,7 +21,7 @@
     
     NewsBlurAppDelegate *appDelegate;
 
-    UIProgressView *progressView;
+    THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
     UIActivityIndicatorView *loadingIndicator;
@@ -45,8 +46,7 @@
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic) IBOutlet UIProgressView *progressView;
-@property (strong, nonatomic) IBOutlet UIView *progressViewContainer;
+@property (nonatomic) IBOutlet THCircularProgressView *circularProgressView;
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
 @property (nonatomic) UIBarButtonItem *buttonBack;

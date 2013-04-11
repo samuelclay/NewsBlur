@@ -25,13 +25,13 @@
 #import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
 #import "ShareThis.h"
+#import "THCircularProgressView.h"
 
 @implementation StoryPageControl
 
 @synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
-@synthesize progressView;
-@synthesize progressViewContainer;
+@synthesize circularProgressView;
 @synthesize separatorBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
 @synthesize rightToolbar;
@@ -86,8 +86,21 @@
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
     
-    [self.progressViewContainer addGestureRecognizer:tap];
-    self.progressViewContainer.hidden = YES;
+    CGFloat radius = 12;
+    circularProgressView = [[THCircularProgressView alloc]
+                            initWithCenter:CGPointMake(self.traverseView.frame.size.width - 101,
+                                                       self.traverseView.frame.size.height / 2)
+                            radius:radius
+                            lineWidth:radius / 4.0f
+                            progressMode:THProgressModeFill
+                            progressColor:[UIColor colorWithRed:0.96f green:0.96f blue:0.96f alpha:1.0f]
+                            progressBackgroundMode:THProgressBackgroundModeCircumference
+                            progressBackgroundColor:[UIColor colorWithRed:0.96f green:0.96f blue:0.96f alpha:.3f]
+                            percentage:20];
+    [self.traverseView addSubview:circularProgressView];
+    [circularProgressView addGestureRecognizer:tap];
+    self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
+
 
     rightToolbar = [[TransparentToolbar alloc]
                     initWithFrame:CGRectMake(0, 0, 80, 44)];
@@ -579,7 +592,6 @@
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     self.bottomPlaceholderToolbar.hidden = YES;
-    self.progressViewContainer.hidden = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [rightToolbar setItems: [NSArray arrayWithObjects:
@@ -661,7 +673,7 @@
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    [progressView setProgress:progress];
+    circularProgressView.percentage = progress;
 }
 
 - (void)markStoryAsRead {
@@ -850,6 +862,7 @@
     
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self setNextPreviousButtons];
     
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
