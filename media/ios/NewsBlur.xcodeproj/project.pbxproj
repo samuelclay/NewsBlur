@@ -284,7 +284,6 @@
 		FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7016D6A90D002D334D /* ak-icon-global.png */; };
 		FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
 		FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */; };
-		FF918D8A1704D51200ED288B /* EmptyExplainer.m in Sources */ = {isa = PBXBuildFile; fileRef = FF918D891704D51200ED288B /* EmptyExplainer.m */; };
 		FF9B566516E810900054BF68 /* Instapaper-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B565F16E810900054BF68 /* Instapaper-Icon.png */; };
 		FF9B566616E810900054BF68 /* Instapaper-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566016E810900054BF68 /* Instapaper-Icon@2x.png */; };
 		FF9B566716E810900054BF68 /* Pocket-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566116E810900054BF68 /* Pocket-Icon.png */; };
@@ -293,6 +292,7 @@
 		FF9B566A16E810900054BF68 /* Readability-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566416E810900054BF68 /* Readability-Icon@2x.png */; };
 		FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
+		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
 		FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */; };
@@ -811,8 +811,6 @@
 		FF85BF7016D6A90D002D334D /* ak-icon-global.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-global.png"; sourceTree = "<group>"; };
 		FF85BF7216D6A972002D334D /* ak-icon-allstories.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-allstories.png"; sourceTree = "<group>"; };
 		FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-blurblogs.png"; sourceTree = "<group>"; };
-		FF918D881704D51200ED288B /* EmptyExplainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmptyExplainer.h; sourceTree = "<group>"; };
-		FF918D891704D51200ED288B /* EmptyExplainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmptyExplainer.m; sourceTree = "<group>"; };
 		FF9B565F16E810900054BF68 /* Instapaper-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Instapaper-Icon.png"; sourceTree = "<group>"; };
 		FF9B566016E810900054BF68 /* Instapaper-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Instapaper-Icon@2x.png"; sourceTree = "<group>"; };
 		FF9B566116E810900054BF68 /* Pocket-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pocket-Icon.png"; sourceTree = "<group>"; };
@@ -821,6 +819,7 @@
 		FF9B566416E810900054BF68 /* Readability-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Readability-Icon@2x.png"; sourceTree = "<group>"; };
 		FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "StoryPageControl~ipad.xib"; path = "Resources-iPad/Classes/StoryPageControl~ipad.xib"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
 		FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet_active.png; sourceTree = "<group>"; };
 		FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_appnet_active@2x.png"; sourceTree = "<group>"; };
 		FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet.png; sourceTree = "<group>"; };
@@ -1289,8 +1288,6 @@
 				43F44B1B159D8D7200F48F8A /* FeedTableCell.m */,
 				FFDE35D8161D12250034BFDE /* UnreadCountView.h */,
 				FFDE35D9161D12250034BFDE /* UnreadCountView.m */,
-				FF918D881704D51200ED288B /* EmptyExplainer.h */,
-				FF918D891704D51200ED288B /* EmptyExplainer.m */,
 			);
 			name = Feeds;
 			sourceTree = "<group>";
@@ -1315,6 +1312,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFB5F50A17187B6F00C8B432 /* big_world.png */,
 				FFDD848816E8EBF8000AA0A2 /* train.png */,
 				FFDD848916E8EBF8000AA0A2 /* train@2x.png */,
 				FFDD848416E8EB1E000AA0A2 /* share.png */,
@@ -2312,6 +2310,7 @@
 				FFDD848B16E8EBF8000AA0A2 /* train@2x.png in Resources */,
 				FFDD848E16E8ED75000AA0A2 /* menu_icn_share.png in Resources */,
 				FFDD848F16E8ED75000AA0A2 /* menu_icn_share@2x.png in Resources */,
+				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2477,7 +2476,6 @@
 				FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */,
 				FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */,
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
-				FF918D8A1704D51200ED288B /* EmptyExplainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

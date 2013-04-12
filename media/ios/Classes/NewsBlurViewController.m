@@ -25,7 +25,6 @@
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
-#import "EmptyExplainer.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -690,6 +689,8 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     self.intelligenceControl.hidden = NO;
+    
+    [self showExplainerOnEmptyFeedlist];
 }
 
 - (void)showUserProfile {
@@ -1220,9 +1221,12 @@ heightForHeaderInSection:(NSInteger)section {
             }
         }
         if (!hasFocusStory) {
-            EmptyExplainer *explainer = [[EmptyExplainer alloc] initWithFrame:self.view.frame];
-            [self.view insertSubview:explainer aboveSubview:self.feedTitlesTable];
+            self.noFocusMessage.hidden = NO;
+        } else {
+            self.noFocusMessage.hidden = YES;
         }
+    } else {
+        self.noFocusMessage.hidden = YES;
     }
 }
 

@@ -86,16 +86,16 @@
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
     
-    CGFloat radius = 12;
+    CGFloat radius = 8;
     circularProgressView = [[THCircularProgressView alloc]
                             initWithCenter:CGPointMake(self.traverseView.frame.size.width - 101,
                                                        self.traverseView.frame.size.height / 2)
                             radius:radius
                             lineWidth:radius / 4.0f
                             progressMode:THProgressModeFill
-                            progressColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:1.0f]
+                            progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
                             progressBackgroundMode:THProgressBackgroundModeCircumference
-                            progressBackgroundColor:[UIColor colorWithRed:0.96f green:0.96f blue:0.96f alpha:.3f]
+                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
                             percentage:20];
     [self.traverseView addSubview:circularProgressView];
     [circularProgressView addGestureRecognizer:tap];
