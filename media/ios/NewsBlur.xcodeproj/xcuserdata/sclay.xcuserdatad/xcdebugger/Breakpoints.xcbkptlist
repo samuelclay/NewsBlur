@@ -21,12 +21,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/NewsBlurAppDelegate.m"
-         timestampString = "378407777.087073"
+         timestampString = "387479373.491375"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "683"
          endingLineNumber = "683"
-         landmarkName = "-recalculateIntelligenceScores:"
+         landmarkName = "-loadRiverFeedDetailView"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

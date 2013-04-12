@@ -153,10 +153,10 @@
         [window addSubview:self.navigationController.view];
         self.window.rootViewController = self.navigationController;
     }
-            
+    
+    
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
-    
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
@@ -178,24 +178,24 @@
         splashView.frame = self.view.frame;
         splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
     } else if (IS_IPHONE_5) {
-        splashView.frame = self.window.frame;
+        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
         splashView.image = [UIImage imageNamed:@"Default-568h.png"];
     } else {
         splashView.frame = self.window.frame;
         splashView.image = [UIImage imageNamed:@"Default.png"];
     }
     
-    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+//    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     splashView.alpha = 1.0;
-    [window addSubview:splashView];
-    [window bringSubviewToFront:splashView];
+    [window.rootViewController.view addSubview:splashView];
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:.6];
     [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
-    splashView.alpha = 0.0;
-//    splashView.frame = CGRectMake(-60, -80, 440, 728);
+    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
+    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
+    splashView.alpha = .4;
     [UIView commitAnimations];
     
     [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];

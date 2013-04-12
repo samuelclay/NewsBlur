@@ -248,8 +248,8 @@ def backup_mongo():
 def backup_postgresql():
     # crontab for postgres master server
     # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
-    
+    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         # run('./postgresql_backup.sh')
         run('python backup_psql.py')

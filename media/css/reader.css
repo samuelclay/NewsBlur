@@ -10035,6 +10035,9 @@ form.opml_import_form input {
     width: 16px;
     height: 16px;
     float: left;
+    margin: 7px 6px 0 0;
+}
+.NB-modal-friends .NB-module-search-input label img {
     margin: 3px 0 0 0;
 }
 
