@@ -37,8 +37,8 @@
                         initWithObjects:[@"Find Friends" uppercaseString],
                                         [@"Logout" uppercaseString], nil];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
 }
 
 - (void)viewDidUnload
