@@ -1230,6 +1230,10 @@ class MSharedStory(mongo.Document):
         
         return self.story_guid_hash
     
+    @property
+    def feed_guid_hash(self):
+        return "%s:%s" % (self.story_feed_id, self.guid_hash)
+    
     def to_json(self):
         return {
             "user_id": self.user_id,
@@ -1471,6 +1475,7 @@ class MSharedStory(mongo.Document):
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if drop:
             for key_name in ["C", "S"]:
                 keys = r.keys("%s:*" % key_name)
@@ -1478,36 +1483,41 @@ class MSharedStory(mongo.Document):
                 for key in keys:
                     r.delete(key)
         for story in cls.objects.all():
-            story.sync_redis_shares(redis_conn=r)
-            story.sync_redis_story(redis_conn=s)
+            story.sync_redis_shares(r=r)
+            story.sync_redis_story(r=s, h=h)
     
     def sync_redis(self):
         self.sync_redis_shares()
         self.sync_redis_story()
 
-    def sync_redis_shares(self, redis_conn=None):
-        if not redis_conn:
-            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
+    def sync_redis_shares(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         share_key   = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
         comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
-        redis_conn.sadd(share_key, self.user_id)
+        r.sadd(share_key, self.user_id)
         if self.has_comments:
-            redis_conn.sadd(comment_key, self.user_id)
+            r.sadd(comment_key, self.user_id)
         else:
-            redis_conn.srem(comment_key, self.user_id)
+            r.srem(comment_key, self.user_id)
 
-    def sync_redis_story(self, redis_conn=None):
-        if not redis_conn:
-            redis_conn = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+    def sync_redis_story(self, r=None, h=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if not h:
+            h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not self.story_db_id:
             self.ensure_story_db_id(save=True)
             
         if self.story_db_id:
-            redis_conn.sadd('B:%s' % self.user_id, self.story_db_id)
-            redis_conn.zadd('zB:%s' % self.user_id, self.story_db_id,
-                            time.mktime(self.shared_date.timetuple()))
+            r.sadd('B:%s' % self.user_id, self.story_db_id)
+            r.zadd('zB:%s' % self.user_id, self.story_db_id,
+                   time.mktime(self.shared_date.timetuple()))
+            h.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+            h.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+                   time.mktime(self.shared_date.timetuple()))
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1520,6 +1530,9 @@ class MSharedStory(mongo.Document):
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         s.srem('B:%s' % self.user_id, self.story_db_id)
         s.zrem('zB:%s' % self.user_id, self.story_db_id)
+        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        h.srem('B:%s' % self.user_id, self.feed_guid_hash)
+        h.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
 
     def publish_update_to_subscribers(self):
         try:
