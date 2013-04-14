@@ -239,12 +239,12 @@ class Feed(models.Model):
         
         engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=self.feed_title)
-        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
+        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
         
         parts = urlparse(self.feed_address)
         engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=parts.hostname)
-        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
+        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
         
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -1308,9 +1308,9 @@ class Feed(models.Model):
         if self.active_premium_subscribers >= 3:
             total = min(total, 3*60) # 1 hour minimum for premiums
         elif self.active_premium_subscribers >= 2:
-            total = min(total, 12*60)
+            total = min(total, 9*60)
         elif self.active_premium_subscribers >= 1:
-            total = min(total, 24*60)
+            total = min(total, 18*60)
 
         if self.is_push:
             total = total * 20
