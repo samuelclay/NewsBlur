@@ -236,12 +236,12 @@ class Feed(models.Model):
         
         engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=self.feed_title)
-        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
+        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
         
         parts = urlparse(self.feed_address)
         engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=parts.hostname)
-        engine.boost(self.pk, min(1, self.num_subscribers / 10000.))
+        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
         
     @classmethod
     def autocomplete(self, prefix, limit=5):
