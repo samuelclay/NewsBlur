@@ -1515,9 +1515,13 @@ class MSharedStory(mongo.Document):
             r.sadd('B:%s' % self.user_id, self.story_db_id)
             r.zadd('zB:%s' % self.user_id, self.story_db_id,
                    time.mktime(self.shared_date.timetuple()))
+            r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
             h.sadd('B:%s' % self.user_id, self.feed_guid_hash)
             h.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
                    time.mktime(self.shared_date.timetuple()))
+            h.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+            h.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
