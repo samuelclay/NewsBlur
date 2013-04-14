@@ -621,7 +621,7 @@ class MUserStory(mongo.Document):
         
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_id).hexdigest()
+        return hashlib.sha1(self.story_id).hexdigest()[:6]
     
     @property
     def feed_guid_hash(self):
