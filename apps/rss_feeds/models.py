@@ -8,6 +8,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+import pymongo
 from urlparse import urlparse
 from collections import defaultdict
 from operator import itemgetter
@@ -1762,8 +1763,12 @@ class MFetchHistory(mongo.Document):
     
     @classmethod
     def feed(cls, feed_id, timezone=None):
-        fetch_history, _ = cls.objects.get_or_create(feed_id=feed_id)
+        fetch_history, _ = cls.objects.get_or_create(
+            feed_id=feed_id,
+            read_preference=pymongo.ReadPreference.PRIMARY
+        )
         history = {}
+
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
             history[fetch_type] = getattr(fetch_history, fetch_type)
             if not history[fetch_type]:
@@ -1783,7 +1788,10 @@ class MFetchHistory(mongo.Document):
         if not date:
             date = datetime.datetime.now()
         
-        fetch_history, _ = cls.objects.get_or_create(feed_id=feed_id)
+        fetch_history, _ = cls.objects.get_or_create(
+            feed_id=feed_id,
+            read_preference=pymongo.ReadPreference.PRIMARY
+        )
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
         elif fetch_type == 'page':
@@ -1828,7 +1836,10 @@ class MFetchExceptionHistory(mongo.Document):
         if not isinstance(exception, basestring):
             exception = unicode(exception)
         
-        fetch_exception, _ = cls.objects.get_or_create(feed_id=feed_id)
+        fetch_exception, _ = cls.objects.get_or_create(
+            feed_id=feed_id,
+            read_preference=pymongo.ReadPreference.PRIMARY
+        )
         fetch_exception.date = date
         fetch_exception.code = code
         fetch_exception.message = message
