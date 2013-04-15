@@ -141,6 +141,7 @@ class NewFeeds(Task):
         options = {}
         for feed_pk in feed_pks:
             feed = Feed.get_by_id(feed_pk)
+            if not feed: continue
             feed.update(options=options)
 
 class PushFeeds(Task):
@@ -161,7 +162,8 @@ class PushFeeds(Task):
             'mongodb_replication_lag': mongodb_replication_lag,
         }
         feed = Feed.get_by_id(feed_id)
-        feed.update(options=options)
+        if feed:
+            feed.update(options=options)
 
 class BackupMongo(Task):
     name = 'backup-mongo'
