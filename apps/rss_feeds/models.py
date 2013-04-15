@@ -1791,8 +1791,8 @@ class MFetchHistory(mongo.Document):
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
 
-        history.append((date, code, message))
-        history = history[-5:]
+        history.insert(0, (date, code, message))
+        history = history[:5]
 
         if fetch_type == 'feed':
             fetch_history.feed_fetch_history = history
