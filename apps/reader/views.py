@@ -422,7 +422,7 @@ def refresh_feeds(request):
             for duplicate_feed in duplicate_feeds:
                 feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed_id}
 
-    if settings.DEBUG or check_fetch_status:
+    if True or settings.DEBUG or check_fetch_status:
         logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
             len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
         
@@ -444,7 +444,7 @@ def feed_unread_count(request):
     if social_feed_ids:
         social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
     
-    if settings.DEBUG:
+    if True or settings.DEBUG:
         if len(feed_ids):
             feed_title = Feed.get_by_id(feed_ids[0]).feed_title
         elif len(social_feed_ids) == 1:
@@ -462,7 +462,9 @@ def refresh_feed(request, feed_id):
     feed = feed.update(force=True, compute_scores=False)
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
-
+    
+    logging.user(request, "~FBRefreshing feed: %s" % feed)
+    
     return load_single_feed(request, feed_id)
     
 @never_cache
@@ -1449,7 +1451,7 @@ def send_story_email(request):
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
-    share_user_profile = MSocialProfile.get_user(request.user.pk)
+    # share_user_profile = MSocialProfile.get_user(request.user.pk)
 
     if not to_addresses:
         code = -1
