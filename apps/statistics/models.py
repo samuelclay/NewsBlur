@@ -1,10 +1,8 @@
 import datetime
 import mongoengine as mongo
 import urllib2
-import pymongo
 import redis
 from django.conf import settings
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from apps.statistics.rstats import RStats, round_time
@@ -74,45 +72,10 @@ class MStatistics(mongo.Document):
         
     @classmethod
     def collect_statistics_feeds_fetched(cls):
-        last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
-        last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-        
         feeds_fetched = RStats.count('feed_fetch', hours=24)
-        cls.objects(key='feeds_fetched').update_one(upsert=True, set__key='feeds_fetched', set__value=feeds_fetched)
-        # pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day)\
-        #                     .read_preference(pymongo.ReadPreference.SECONDARY).count()
-        # cls.objects(key='pages_fetched').update_one(upsert=True, set__key='pages_fetched', set__value=pages_fetched)
-        # feeds_pushed = MFeedPushHistory.objects.filter(push_date__gte=last_day)\
-        #                     .read_preference(pymongo.ReadPreference.SECONDARY).count()
-        # cls.objects(key='feeds_pushed').update_one(upsert=True, set__key='feeds_pushed', set__value=feeds_pushed)
-        
-        from utils.feed_functions import timelimit, TimeoutError
-        @timelimit(60)
-        def delete_old_history():
-            print "Deleting old history. Nope."
-            return
-            feed_fetch_last_day = MFeedFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304])
-            page_fetch_last_day = MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304])
-            feed_fetch_last_month = MFeedFetchHistory.objects(fetch_date__lt=last_month)
-            page_fetch_last_month = MPageFetchHistory.objects(fetch_date__lt=last_month)
-            push_last_month = MFeedPushHistory.objects(push_date__lt=last_month)
-            print "Found %s/%s/%s/%s/%s (feed/page day, feed/page month, push month)" % (
-                feed_fetch_last_day.count(),
-                page_fetch_last_day.count(),
-                feed_fetch_last_month.count(),
-                page_fetch_last_month.count(),
-                push_last_month.count(),
-            )
-            
-            feed_fetch_last_day.delete()
-            page_fetch_last_day.delete()
-            feed_fetch_last_month.delete()
-            page_fetch_last_month.delete()
-            push_last_month.delete()
-        try:
-            delete_old_history()
-        except TimeoutError:
-            print "Timed out on deleting old history. Shit."
+        cls.objects(key='feeds_fetched').update_one(upsert=True, 
+                                                    set__key='feeds_fetched',
+                                                    set__value=feeds_fetched)
         
         return feeds_fetched
         
