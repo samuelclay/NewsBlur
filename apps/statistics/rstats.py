@@ -46,6 +46,21 @@ class RStats:
             path = '/api/check_share_on_site/'
             
         return path
+    
+    @classmethod
+    def count(cls, name, hours=24):
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        stats_type = cls.stats_type(name)
+        now = datetime.datetime.now()
+        pipe = r.pipeline()
+        for minutes_ago in range(60*hours):
+            dt_min_ago = now - datetime.timedelta(minutes=minutes_ago)
+            minute = round_time(dt=dt_min_ago, round_to=60)
+            key = "%s:%s" % (stats_type, minute.strftime('%s'))
+            pipe.get("%s:s" % key)
+        values = pipe.execute()
+        total = sum(int(v) for v in values if v)
+        return total
 
 
 def round_time(dt=None, round_to=60):
