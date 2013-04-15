@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from apps.push.models import PushSubscription
 from apps.push.signals import verified
-from apps.rss_feeds.models import MFeedPushHistory
+from apps.rss_feeds.models import MFetchHistory
 from utils import log as logging
 
 def push_callback(request, push_id):
@@ -48,7 +48,8 @@ def push_callback(request, push_id):
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         if subscription.feed.active_premium_subscribers >= 1:
             subscription.feed.queue_pushed_feed_xml("Fetch me")
-            MFeedPushHistory.objects.create(feed_id=subscription.feed_id)
+            MFetchHistory.add(feed_id=subscription.feed_id, 
+                              fetch_type='push')
         else:
             logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
         

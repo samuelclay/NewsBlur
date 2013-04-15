@@ -4,13 +4,12 @@ from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.http import condition
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
-from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
+from apps.rss_feeds.models import MFetchHistory
 from apps.rss_feeds.models import MFeedIcon
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
@@ -71,10 +70,10 @@ def load_feed_favicon(request, feed_id):
 
 @json.json_view
 def feed_autocomplete(request):
-    user = get_user(request)
     query = request.GET.get('term')
     version = int(request.GET.get('v', 1))
     
+    # user = get_user(request)
     # if True or not user.profile.is_premium:
     #     return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
     
@@ -176,9 +175,10 @@ def load_feed_statistics(request, feed_id):
     
     # Fetch histories
     timezone = user.profile.timezone
-    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)
-    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id, timezone=timezone)
-    stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id, timezone=timezone)
+    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
+    stats['feed_fetch_history'] = fetch_history['feed_fetch_history']
+    stats['page_fetch_history'] = fetch_history['page_fetch_history']
+    stats['feed_push_history'] = fetch_history['push_history']
     
     logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
@@ -190,10 +190,12 @@ def load_feed_settings(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     user = get_user(request)
     timezone = user.profile.timezone
-    
+
+    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
+    stats['feed_fetch_history'] = fetch_history['feed_fetch_history']
+    stats['page_fetch_history'] = fetch_history['page_fetch_history']
+    stats['feed_push_history'] = fetch_history['push_history']
     stats['duplicate_addresses'] = feed.duplicate_addresses.all()
-    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)
-    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id, timezone=timezone)
     
     return stats
     
@@ -288,10 +290,12 @@ def exception_change_feed_address(request):
             usersub = usersubs[0]
             usersub.switch_feed(feed, original_feed)
         else:
+            fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
             return {
                 'code': -1,
-                'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
-                'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+                'feed_fetch_history': fetch_history['feed_fetch_history'],
+                'page_fetch_history': fetch_history['page_fetch_history'],
+                'push_history': fetch_history['push_history'],
             }
 
     usersub.calculate_feed_scores(silent=False)
@@ -305,13 +309,15 @@ def exception_change_feed_address(request):
     
     if feed and feed.has_feed_exception:
         code = -1
-        
+
+    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
     return {
         'code': code, 
         'feeds': feeds, 
         'new_feed_id': usersub.feed_id,
-        'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
-        'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+        'feed_fetch_history': fetch_history['feed_fetch_history'],
+        'page_fetch_history': fetch_history['page_fetch_history'],
+        'push_history': fetch_history['push_history'],
     }
     
 @ajax_login_required
@@ -367,10 +373,12 @@ def exception_change_feed_link(request):
             usersub = usersubs[0]
             usersub.switch_feed(feed, original_feed)
         else:
+            fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
             return {
                 'code': -1,
-                'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
-                'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+                'feed_fetch_history': fetch_history['feed_fetch_history'],
+                'page_fetch_history': fetch_history['page_fetch_history'],
+                'push_history': fetch_history['push_history'],
             }
         
     usersub.calculate_feed_scores(silent=False)
@@ -384,12 +392,14 @@ def exception_change_feed_link(request):
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
     }
+    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
     return {
         'code': code, 
         'feeds': feeds, 
         'new_feed_id': usersub.feed_id,
-        'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
-        'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+        'feed_fetch_history': fetch_history['feed_fetch_history'],
+        'page_fetch_history': fetch_history['page_fetch_history'],
+        'push_history': fetch_history['push_history'],
     }
 
 @login_required

@@ -9,7 +9,6 @@ import zlib
 import hashlib
 import redis
 from urlparse import urlparse
-from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -446,28 +445,21 @@ class Feed(models.Model):
             
         try:
             feed_address, feed = _1()
-        except TimeoutError:
+        except TimeoutError, e:
             logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
-            self.save_feed_history(505, 'Timeout', '')
+            self.save_feed_history(505, 'Timeout', e)
             feed = self
             feed_address = None
                 
         return bool(feed_address), feed
 
     def save_feed_history(self, status_code, message, exception=None):
-        MFeedFetchHistory(feed_id=self.pk, 
-                          status_code=int(status_code),
+        MFetchHistory.add(feed_id=self.pk, 
+                          fetch_type='feed',
+                          code=int(status_code),
                           message=message,
-                          exception=exception,
-                          fetch_date=datetime.datetime.utcnow()).save()
-        # day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
-        # new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
-        # if new_fetch_histories.count() < 5 or True:
-        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
-        # else:
-        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
-        # for history in old_fetch_histories:
-        #     history.delete()
+                          exception=exception)
+        
         if status_code not in (200, 304):
             self.errors_since_good += 1
             self.count_errors_in_history('feed', status_code)
@@ -479,14 +471,11 @@ class Feed(models.Model):
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        MPageFetchHistory(feed_id=self.pk, 
-                          status_code=int(status_code),
+        MFetchHistory.add(feed_id=self.pk, 
+                          fetch_type='page',
+                          code=int(status_code),
                           message=message,
-                          exception=exception,
-                          fetch_date=datetime.datetime.utcnow()).save()
-        # old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
-        # for history in old_fetch_histories:
-        #     history.delete()
+                          exception=exception)
             
         if status_code not in (200, 304):
             self.count_errors_in_history('page', status_code)
@@ -498,11 +487,10 @@ class Feed(models.Model):
         
     def count_errors_in_history(self, exception_type='feed', status_code=None):
         logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
-        history_class = MFeedFetchHistory if exception_type == 'feed' else MPageFetchHistory
-        fetch_history = map(lambda h: h.status_code, 
-                            history_class.objects(feed_id=self.pk)[:50])
-        non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
-        errors     = [h for h in fetch_history if int(h) not in (200, 304)]
+        fetch_history = MFetchHistory.feed(self.pk)
+        fh = fetch_history[exception_type + '_fetch_history']
+        non_errors = [h for h in fh if h['status_code'] and int(h['status_code'])     in (200, 304)]
+        errors     = [h for h in fh if h['status_code'] and int(h['status_code']) not in (200, 304)]
         
         if len(non_errors) == 0 and len(errors) > 1:
             self.active = True
@@ -1063,16 +1051,16 @@ class Feed(models.Model):
                 print "Deleted %s stories, %s left." % (extra_stories_count,
                                                         existing_story_count)
 
-    @staticmethod
-    def clean_invalid_ids():
-        history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
-        urls = set()
-        for h in history:
-            u = re.split('InvalidId: (.*?) is not a valid ObjectId\\n$', h.exception)[1]
-            urls.add((h.feed_id, u))
-        
-        for f, u in urls:
-            print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
+    # @staticmethod
+    # def clean_invalid_ids():
+    #     history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
+    #     urls = set()
+    #     for h in history:
+    #         u = re.split('InvalidId: (.*?) is not a valid ObjectId\\n$', h.exception)[1]
+    #         urls.add((h.feed_id, u))
+    #     
+    #     for f, u in urls:
+    #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
         
     def get_stories(self, offset=0, limit=25, force=False):
@@ -1761,128 +1749,93 @@ class MStarredStory(mongo.Document):
         return original_text
         
 
-class MFeedFetchHistory(mongo.Document):
-    feed_id = mongo.IntField()
-    status_code = mongo.IntField()
+class MFetchHistory(mongo.Document):
+    feed_id = mongo.IntField(unique=True)
+    feed_fetch_history = mongo.DynamicField()
+    page_fetch_history = mongo.DynamicField()
+    push_history = mongo.DynamicField()
+    
+    meta = {
+        'collection': 'fetch_history',
+        'allow_inheritance': False,
+    }
+    
+    @classmethod
+    def feed(cls, feed_id, timezone=None):
+        fetch_history, _ = cls.objects.get_or_create(feed_id=feed_id)
+        history = {}
+        for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
+            history[fetch_type] = getattr(fetch_history, fetch_type)
+            if not history[fetch_type]:
+                history[fetch_type] = []
+            for f, fetch in enumerate(history[fetch_type]):
+                date_key = 'push_date' if fetch_type == 'push_history' else 'fetch_date'
+                history[fetch_type][f] = {
+                    date_key: localtime_for_timezone(fetch[0], 
+                                                     timezone).strftime("%Y-%m-%d %H:%M:%S"),
+                    'status_code': fetch[1],
+                    'message': fetch[2]
+                }
+        return history
+    
+    @classmethod
+    def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
+        if not date:
+            date = datetime.datetime.now()
+        
+        fetch_history, _ = cls.objects.get_or_create(feed_id=feed_id)
+        if fetch_type == 'feed':
+            history = fetch_history.feed_fetch_history or []
+        elif fetch_type == 'page':
+            history = fetch_history.page_fetch_history or []
+        elif fetch_type == 'push':
+            history = fetch_history.push_history or []
+
+        history.append((date, code, message))
+        history = history[-5:]
+
+        if fetch_type == 'feed':
+            fetch_history.feed_fetch_history = history
+        elif fetch_type == 'page':
+            fetch_history.page_fetch_history = history
+        elif fetch_type == 'push':
+            fetch_history.push_history = history
+        
+        fetch_history.save()
+        
+        if exception:
+            MFetchExceptionHistory.add(feed_id, date=date, code=code, 
+                                       message=message, exception=exception)
+        if fetch_type == 'feed':
+            RStats.add('feed_fetch')
+
+class MFetchExceptionHistory(mongo.Document):
+    feed_id = mongo.IntField(unique=True)
+    date = mongo.DateTimeField()
+    code = mongo.IntField()
     message = mongo.StringField()
     exception = mongo.StringField()
-    fetch_date = mongo.DateTimeField()
     
     meta = {
-        'collection': 'feed_fetch_history',
+        'collection': 'fetch_exception_history',
         'allow_inheritance': False,
-        'ordering': ['-fetch_date'],
-        'indexes': ['-fetch_date', ('fetch_date', 'status_code'), ('feed_id', 'status_code')],
-    }
-    
-    def save(self, *args, **kwargs):
-        if not isinstance(self.exception, basestring):
-            self.exception = unicode(self.exception)
-        super(MFeedFetchHistory, self).save(*args, **kwargs)
-        RStats.add('feed_fetch')
-        
-    @classmethod
-    def feed_history(cls, feed_id, timezone=None):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
-        fetch_history = []
-        for fetch in fetches:
-            history                = {}
-            history['message']     = fetch.message
-            history['fetch_date'] = localtime_for_timezone(fetch.fetch_date,
-                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
-            history['status_code'] = fetch.status_code
-            history['exception']   = fetch.exception
-            fetch_history.append(history)
-        return fetch_history
-        
-        
-class MPageFetchHistory(mongo.Document):
-    feed_id = mongo.IntField()
-    status_code = mongo.IntField()
-    message = mongo.StringField()
-    exception = mongo.StringField()
-    fetch_date = mongo.DateTimeField()
-    
-    meta = {
-        'collection': 'page_fetch_history',
-        'allow_inheritance': False,
-        'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
-    }
-    
-    def save(self, *args, **kwargs):
-        if not isinstance(self.exception, basestring):
-            self.exception = unicode(self.exception)
-        super(MPageFetchHistory, self).save(*args, **kwargs)
-
-    @classmethod
-    def feed_history(cls, feed_id, timezone=None):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
-        fetch_history = []
-        for fetch in fetches:
-            history                = {}
-            history['message']     = fetch.message
-            history['fetch_date'] = localtime_for_timezone(fetch.fetch_date,
-                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
-            history['status_code'] = fetch.status_code
-            history['exception']   = fetch.exception
-            fetch_history.append(history)
-        return fetch_history
-        
-        
-class MFeedPushHistory(mongo.Document):
-    feed_id = mongo.IntField()
-    push_date = mongo.DateTimeField(default=datetime.datetime.now)
-    
-    meta = {
-        'collection': 'feed_push_history',
-        'allow_inheritance': False,
-        'ordering': ['-push_date'],
-        'indexes': ['feed_id', '-push_date'],
     }
     
     @classmethod
-    def feed_history(cls, feed_id, timezone=None):
-        pushes = cls.objects(feed_id=feed_id).order_by('-push_date')[:5]
-        push_history = []
-        for push in pushes:
-            history = {}
-            history['push_date'] = localtime_for_timezone(push.push_date,
-                                   timezone).strftime("%Y-%m-%d %H:%M:%S")
-            push_history.append(history)
-        return push_history
-    
-    @classmethod
-    def detect_dupes(cls):
-        top = datetime.datetime.now() - datetime.timedelta(minutes=9)
-        bottom = datetime.datetime.now() - datetime.timedelta(minutes=10)
-        history = cls.objects.filter(push_date__lte=top, push_date__gte=bottom)
-        print " ---> %s history" % history.count()
-
-        feeds = [Feed.get_by_id(h.feed_id) for h in history]
-        titles = dict((f.pk, f.feed_title) for f in feeds)
-        count = Counter(titles.values())
-        commons = count.most_common(10)
-
-        for common_title, common_count in commons:
-            common_feed_ids = list(set([pk for pk, t in titles.items() if t == common_title]))
-            print " ---> Checking %s (%s pushes -> %s feeds)" % (
-                common_title, common_count, len(common_feed_ids))
-            common_story_titles = []
-            for feed_id in common_feed_ids:
-                feed = Feed.get_by_id(feed_id)
-                stories = feed.get_stories()
-                story_titles = [s['story_title'] for s in stories]
-                if not common_story_titles:
-                    print "      ---> %s is original (%s subs)" % (feed_id, feed.num_subscribers)
-                    common_story_titles = story_titles
-                    print "      ---> %s" % common_story_titles
-                elif set(common_story_titles) == set(story_titles):
-                    print "      ---> %s is the same (%s subs)" % (feed_id, feed.num_subscribers)
-                else:
-                    print "      ***> %s is different (%s subs)" % (feed_id, feed.num_subscribers)
-
+    def add(cls, feed_id, date=None, code=None, message="", exception=""):
+        if not date:
+            date = datetime.datetime.now()
+        if not isinstance(exception, basestring):
+            exception = unicode(exception)
         
+        fetch_exception, _ = cls.objects.get_or_create(feed_id=feed_id)
+        fetch_exception.date = date
+        fetch_exception.code = code
+        fetch_exception.message = message
+        fetch_exception.exception = exception
+        fetch_exception.save()
+
+
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=764, db_index=True)
     duplicate_link = models.CharField(max_length=764, null=True, db_index=True)
