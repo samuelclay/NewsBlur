@@ -34,8 +34,22 @@ class OAuthToken(models.Model):
     credential = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     
+
+class Importer:
+
+    def clear_feeds(self):
+        UserSubscription.objects.filter(user=self.user).delete()
+
+    def clear_folders(self):
+        UserSubscriptionFolders.objects.filter(user=self.user).delete()
     
-class OPMLExporter:
+    def get_folders(self):
+        self.usf, _ = UserSubscriptionFolders.objects.get_or_create(user=self.user,
+                                                                    defaults={'folders': '[]'})
+        return json.decode(self.usf.folders)
+    
+
+class OPMLExporter(Importer):
     
     def __init__(self, user):
         self.user = user
@@ -93,19 +107,6 @@ class OPMLExporter:
         self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
         
 
-class Importer:
-
-    def clear_feeds(self):
-        UserSubscription.objects.filter(user=self.user).delete()
-
-    def clear_folders(self):
-        UserSubscriptionFolders.objects.filter(user=self.user).delete()
-    
-    def get_folders(self):
-        self.usf, _ = UserSubscriptionFolders.objects.get_or_create(user=self.user,
-                                                                    defaults={'folders': '[]'})
-        return json.decode(self.usf.folders)
-    
 class OPMLImporter(Importer):
     
     def __init__(self, opml_xml, user):
