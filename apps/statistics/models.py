@@ -77,15 +77,14 @@ class MStatistics(mongo.Document):
         last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         
-        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__gte=last_day)\
-                            .read_preference(pymongo.ReadPreference.SECONDARY).count()
+        feeds_fetched = RStats.count('feed_fetch', hours=24)
         cls.objects(key='feeds_fetched').update_one(upsert=True, set__key='feeds_fetched', set__value=feeds_fetched)
-        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day)\
-                            .read_preference(pymongo.ReadPreference.SECONDARY).count()
-        cls.objects(key='pages_fetched').update_one(upsert=True, set__key='pages_fetched', set__value=pages_fetched)
-        feeds_pushed = MFeedPushHistory.objects.filter(push_date__gte=last_day)\
-                            .read_preference(pymongo.ReadPreference.SECONDARY).count()
-        cls.objects(key='feeds_pushed').update_one(upsert=True, set__key='feeds_pushed', set__value=feeds_pushed)
+        # pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day)\
+        #                     .read_preference(pymongo.ReadPreference.SECONDARY).count()
+        # cls.objects(key='pages_fetched').update_one(upsert=True, set__key='pages_fetched', set__value=pages_fetched)
+        # feeds_pushed = MFeedPushHistory.objects.filter(push_date__gte=last_day)\
+        #                     .read_preference(pymongo.ReadPreference.SECONDARY).count()
+        # cls.objects(key='feeds_pushed').update_one(upsert=True, set__key='feeds_pushed', set__value=feeds_pushed)
         
         from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
