@@ -17,6 +17,7 @@
         // Initialization code
         self.textLabel.backgroundColor = [UIColor clearColor];
         self.textLabel.textColor = UIColorFromRGB(0x303030);
+        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
         self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
         self.textLabel.shadowOffset = CGSizeMake(0, 1);
         self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
@@ -44,16 +45,10 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
-    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-    self.textLabel.textColor = UIColorFromRGB(0x303030);
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-    [super setHighlighted:highlighted animated:animated];
-
-    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-    self.textLabel.textColor = UIColorFromRGB(0x303030);
+    [super setHighlighted:highlighted animated:animated];    
 }
 
 @end

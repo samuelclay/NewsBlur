@@ -44,6 +44,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 

@@ -45,6 +45,7 @@
 @synthesize storyTitlesTable, feedMarkReadButton;
 @synthesize settingsBarButton;
 @synthesize separatorBarButton;
+@synthesize titleImageBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
 @synthesize stories;
 @synthesize rightToolbar;
@@ -91,6 +92,9 @@
     
     UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
+
+    titleImageBarButton = [UIBarButtonItem alloc];
+
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -124,8 +128,7 @@
     if (appDelegate.isSocialView) {
         UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
         [titleImageButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
-                                                 initWithCustomView:titleImageButton];
+        titleImageBarButton.customView = titleImageButton;
         [rightToolbar setItems: [NSArray arrayWithObjects:
                                  spacerBarButton,
                                  feedMarkReadButton,
@@ -134,6 +137,7 @@
                                  spacer3BarButton,
                                  titleImageBarButton, nil]];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
+        titleImageBarButton.enabled = YES;
     } else {
         [rightToolbar setItems: [NSArray arrayWithObjects:
                                  spacerBarButton,
@@ -144,19 +148,11 @@
                                  settingsBarButton, nil]];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
-
-    
-    // Commenting out until training is ready...
-    //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
-    //    [trainBarButton setImage:[UIImage imageNamed:@"train.png"]];
-    //    [trainBarButton setEnabled:YES];
-    //    [self.navigationItem setRightBarButtonItem:trainBarButton animated:YES];
-    //    [trainBarButton release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
-                                                inSection:0];
+                                                    inSection:0];
 //        NSLog(@"Read story: %d", [i intValue]);
         if (![indexPaths containsObject:indexPath]) {
             [indexPaths addObject:indexPath];
@@ -174,8 +170,6 @@
         
     if ((appDelegate.isSocialRiverView ||
          appDelegate.isSocialView ||
-         (appDelegate.isRiverView &&
-          [appDelegate.activeFolder isEqualToString:@"everything"]) ||
          [appDelegate.activeFolder isEqualToString:@"saved_stories"])) {
         settingsBarButton.enabled = NO;
     } else {
@@ -237,12 +231,12 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && appDelegate.isSocialView) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            UIButton *avatar = (UIButton *)[(UIBarButtonItem *)[[rightToolbar items] lastObject] customView];
+            UIButton *avatar = (UIButton *)titleImageBarButton.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(32, 32);
             avatar.frame = buttonFrame;
         } else {
-            UIButton *avatar = (UIButton *)[(UIBarButtonItem *)[[rightToolbar items] lastObject] customView];
+            UIButton *avatar = (UIButton *)titleImageBarButton.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(28, 28);
             avatar.frame = buttonFrame;
@@ -1131,7 +1125,8 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 4 : 38 * 6)];
+        BOOL everything = appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, everything ? 38 * 2 : 38 * 6)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];

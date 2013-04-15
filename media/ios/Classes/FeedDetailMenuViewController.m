@@ -35,8 +35,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
 }
 
 - (void)viewDidUnload
@@ -78,20 +78,23 @@
     return YES;
 }
 
-- (void)buildMenuOptions {    
+- (void)buildMenuOptions {
+    BOOL everything = appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"];
+
     NSMutableArray *options = [NSMutableArray array];
     
     //    NSString *title = appDelegate.isRiverView ?
     //                        appDelegate.activeFolder :
     //                        [appDelegate.activeFeed objectForKey:@"feed_title"];
     
-    NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
-                            appDelegate.isRiverView ?
-                            @"this entire folder" :
-                            @"this site"];
-    [options addObject:[deleteText uppercaseString]];
-    
-    [options addObject:[@"Move to another folder" uppercaseString]];
+    if (!everything) {
+        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
+                                appDelegate.isRiverView ?
+                                @"this entire folder" :
+                                @"this site"];
+        [options addObject:[deleteText uppercaseString]];
+        [options addObject:[@"Move to another folder" uppercaseString]];
+    }
     
     if (!appDelegate.isRiverView) {
         [options addObject:[@"Train this site" uppercaseString]];
