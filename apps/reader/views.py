@@ -442,9 +442,10 @@ def interactions_count(request):
     }
     
 @never_cache
+@ajax_login_required
 @json.json_view
 def feed_unread_count(request):
-    user = get_user(request)
+    user = request.user
     feed_ids = request.REQUEST.getlist('feed_id')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
@@ -1473,7 +1474,7 @@ def send_story_email(request):
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
-    # share_user_profile = MSocialProfile.get_user(request.user.pk)
+    share_user_profile = MSocialProfile.get_user(request.user.pk)
 
     if not to_addresses:
         code = -1
