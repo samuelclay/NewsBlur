@@ -429,9 +429,10 @@ def refresh_feeds(request):
     return {'feeds': feeds, 'social_feeds': social_feeds}
 
 @never_cache
+@ajax_login_required
 @json.json_view
 def feed_unread_count(request):
-    user = get_user(request)
+    user = request.user
     feed_ids = request.REQUEST.getlist('feed_id')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
