@@ -8244,7 +8244,7 @@ form.opml_import_form input {
 }
 .NB-static .NB-module-title-prefix {
   color: #A0A0A0;
-  padding: 0 8px 0 0;
+  padding: 0 2px 0 0;
 }
 
 .NB-static h3 {
@@ -8334,7 +8334,7 @@ form.opml_import_form input {
   padding-left: 24px;
 }
 .NB-static-about ul.NB-about-server li {
-  background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 3px;
+  background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 3px;
   padding-left: 24px;
 }
 .NB-static-about ul.NB-about-client li {
