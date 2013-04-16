@@ -65,6 +65,10 @@ def server():
 def app():
     server()
     env.roles = ['app']
+
+def work():
+    server()
+    env.roles = ['work']
     
 def dev():
     server()
@@ -117,10 +121,13 @@ def post_deploy():
     
 @parallel
 def deploy(fast=False):
-    deploy_code(copy_assets=True, fast=fast)
+    deploy_code(copy_assets=False, fast=fast)
 
-def deploy_full():
-    deploy_code(copy_assets=True, full=True)
+def deploy_web(fast=False):
+    deploy_code(copy_assets=True, fast=fast, full=False)
+
+def deploy_full(fast=False):
+    deploy_code(copy_assets=True, fast=fast, full=True)
 
 @parallel
 def deploy_code(copy_assets=False, full=False, fast=False):
