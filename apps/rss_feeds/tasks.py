@@ -34,7 +34,7 @@ class TaskFeeds(Task):
         
         # Regular feeds
         if tasked_feeds_size < 2000:
-            feeds = r.srandmember('queued_feeds', 1500)
+            feeds = r.srandmember('queued_feeds', 2000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
         else:

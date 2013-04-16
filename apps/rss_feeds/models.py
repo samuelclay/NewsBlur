@@ -376,7 +376,15 @@ class Feed(models.Model):
         # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
         for feed_id in feeds:
             UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
-
+    
+    @classmethod
+    def drain_task_feeds(cls, empty=False):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        if not empty:
+            tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+            r.sadd('queued_feeds', *tasked_feeds)
+        r.zremrangebyrank('tasked_feeds', 0, -1)
+        
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         
