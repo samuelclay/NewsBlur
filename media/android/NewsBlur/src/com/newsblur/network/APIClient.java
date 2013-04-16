@@ -55,68 +55,19 @@ public class APIClient {
 	}
 	
 	public APIResponse get(final String urlString, final ContentValues values) {
-		HttpURLConnection connection = null;
-		if (!NetworkUtils.isOnline(context)) {
-			APIResponse response = new APIResponse();
-			response.isOffline = true;
-			return response;
-		}
-		try {
-			List<String> parameters = new ArrayList<String>();
-			for (Entry<String, Object> entry : values.valueSet()) {
-				final StringBuilder builder = new StringBuilder();
-				builder.append((String) entry.getKey());
-				builder.append("=");
-				builder.append(URLEncoder.encode((String) entry.getValue()));
-				parameters.add(builder.toString());
-			}
-			final String parameterString = TextUtils.join("&", parameters);
-
-			final URL url = new URL(urlString + "?" + parameterString);
-            Log.d(this.getClass().getName(), "API GET " + url );
-			connection = (HttpURLConnection) url.openConnection();
-			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-			if (cookie != null) {
-				connection.setRequestProperty("Cookie", cookie);
-			}
-			return extractResponse(url, connection);
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
-			return new APIResponse();
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+        List<String> parameters = new ArrayList<String>();
+        for (Entry<String, Object> entry : values.valueSet()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append((String) entry.getKey());
+            builder.append("=");
+            builder.append(URLEncoder.encode((String) entry.getValue()));
+            parameters.add(builder.toString());
+        }
+        return this.get(urlString + "?" + TextUtils.join("&", parameters));
 	}
 	
 	public APIResponse get(final String urlString, final ValueMultimap valueMap) {
-		HttpURLConnection connection = null;
-		if (!NetworkUtils.isOnline(context)) {
-			APIResponse response = new APIResponse();
-			response.isOffline = true;
-			return response;
-		}
-		try {
-			String parameterString = valueMap.getParameterString();
-
-			final URL url = new URL(urlString + "?" + parameterString);
-            Log.d(this.getClass().getName(), "API GET " + url );
-			connection = (HttpURLConnection) url.openConnection();
-
-			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-			if (cookie != null) {
-				connection.setRequestProperty("Cookie", cookie);
-			}
-			return extractResponse(url, connection);
-		} catch (IOException e) {
-			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
-			return new APIResponse();
-		} finally {
-			connection.disconnect();
-		}
+        return this.get(urlString + "?" + valueMap.getParameterString());
 	}
 
 	private APIResponse extractResponse(final URL url, HttpURLConnection connection) throws IOException {
