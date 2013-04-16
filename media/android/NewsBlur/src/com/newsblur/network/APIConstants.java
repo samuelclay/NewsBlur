@@ -43,7 +43,6 @@ public class APIConstants {
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_EMAIL = "email";
-	
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
@@ -59,6 +58,7 @@ public class APIConstants {
 	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
 	public static final String PARAMETER_URL = "url";
 	public static final String PARAMETER_DAYS = "days";
+	public static final String PARAMETER_UPDATE_COUNTS = "update_counts";
 	
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
