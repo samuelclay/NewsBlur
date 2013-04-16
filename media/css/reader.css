@@ -3905,10 +3905,10 @@ form.opml_import_form input {
   background-size: 16px;
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1150px) {
     .NB-splash-info .NB-splash-links .NB-splash-link a {
-        padding-right: 6px;
-        padding-left: 18px;
+        padding-right: 5px;
+        padding-left: 19px;
     }
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
@@ -3921,23 +3921,31 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
-  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
-  background: transparent url('/media/embed/reader/octocat.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
+  background-size: 16px;
+}
+.NB-splash-info .NB-splash-links .NB-splash-link-ios a:hover {
+  background: transparent url('/media/embed/reader/apple_icon.png') no-repeat 0 6px;
+  background-size: 16px;
+}
+.NB-splash-info .NB-splash-links .NB-splash-link-android a:hover {
+  background: transparent url('/media/embed/reader/android_icon_round.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
-  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
-  background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
-  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 6px;
   background-size: 16px;
 }
 
@@ -8384,7 +8392,7 @@ form.opml_import_form input {
 
 .NB-static-faq .NB-trainer-bullet {
   vertical-align: top;
-  margin: 7px 4px;
+  margin: 6px 4px;
   width: 8px;
   height: 8px;
 }
