@@ -8359,21 +8359,23 @@ form.opml_import_form input {
 }
 
 .NB-static-faq .NB-module ul li {
-  background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 3px;
+  background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 6px;
+  background-size: 8px;
   padding-left: 24px;
 }
 
-.NB-static-faq ul li .NB-faq-question {
+.NB-static-faq ul li.NB-faq-question {
   display: block;
   font-weight: bold;
   margin: 0 0 10px 0;
 }
 
-.NB-static-faq ul li .NB-faq-answer {
+.NB-static-faq ul li.NB-faq-answer {
   line-height: 18px;
   color: #404040;
   margin: 0 0 16px 0;
   font-size: 12px;
+  background: none;
 }
 
 .NB-static-faq ul li .NB-faq-answer.last {
@@ -8381,7 +8383,10 @@ form.opml_import_form input {
 }
 
 .NB-static-faq .NB-trainer-bullet {
-  vertical-align: middle;
+  vertical-align: top;
+  margin: 7px 4px;
+  width: 8px;
+  height: 8px;
 }
 
 .NB-static-faq .NB-faq-image {
