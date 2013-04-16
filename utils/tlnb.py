@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import re
 import select
 import subprocess
 import sys
@@ -12,11 +11,15 @@ IGNORE_HOSTS = [
     'push',
 ]
 
-def main(role="app", role2="dev"):
+def main(role="app", role2="dev", command=None, path=None):
     streams = list()
-    path = "/srv/newsblur/logs/newsblur.log"
+    if not path:
+        path = "/srv/newsblur/logs/newsblur.log"
+    if not command:
+        command = "tail -f"
     hosts_path = os.path.expanduser(os.path.join('../secrets-newsblur/configs/hosts.yml'))
     hosts = yaml.load(open(hosts_path))
+    
     for r in [role, role2]:
         if isinstance(hosts[r], dict):
             hosts[r] = ["%s:%s" % (hosts[r][k][-1], k) for k in hosts[r].keys()]
@@ -29,9 +32,9 @@ def main(role="app", role2="dev"):
             address = hostname
         if 'ec2' in hostname:
             s = subprocess.Popen(["ssh", "-i", os.path.expanduser("~/.ec2/sclay.pem"), 
-                                  address, "tail -f " + path], stdout=subprocess.PIPE)
+                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         else:
-            s = subprocess.Popen(["ssh", address, "tail -f " + path], stdout=subprocess.PIPE)
+            s = subprocess.Popen(["ssh", address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         s.name = hostname
         streams.append(s)
 

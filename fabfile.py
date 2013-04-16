@@ -876,6 +876,7 @@ def setup_munin():
     sudo('/etc/init.d/munin-node restart')
     with settings(warn_only=True):
         sudo('chown nginx.www-data munin-cgi*')
+        sudo('chmod a+rw /var/log/munin/*')
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
         sudo('/etc/init.d/spawn_fcgi_munin_html start')
