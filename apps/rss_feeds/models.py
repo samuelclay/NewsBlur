@@ -1330,7 +1330,7 @@ class Feed(models.Model):
                                                 self.stories_last_month))
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor*2
+        return total, random_factor
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
