@@ -1912,7 +1912,7 @@ background: transparent;
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
     background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
 */
-    background-color: #EEF0E9;
+    background-color: #F2F2EF;
     border-bottom: 1px solid rgba(0, 0, 0, .2);
     position: relative;
     overflow: hidden;
@@ -1926,7 +1926,7 @@ background: transparent;
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F8F8F6 100%);
     background-image: linear-gradient(top, #FEFEFE, #F8F8F6);
 */
-    background-color: #F8F8F6;
+    background-color: #FBFAF8;
 }
 
 .NB-feed-story-header-info .NB-feed-story-header-collapse {
