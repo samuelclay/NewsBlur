@@ -3980,6 +3980,9 @@
             // 10 second minimum
             refresh_interval = Math.max(10*1000, refresh_interval);
             
+            // Add 0-100% random delay
+            refresh_interval = parseInt(refresh_interval * (1 + Math.random()), 10);
+            
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
