@@ -77,29 +77,39 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	/**
      * Load and store mappings from runtime DB column indicies to resource IDs needed by this class.
+     *
+     * TODO: this whole business with the mappings has a smell to it - figure out why.
      */
     private void initColumnMaps() {
 
-        Cursor folderCursor = folderCursorHelper.getCursor();
-        Cursor childCursor = getChildrenCursorHelper(0, true).getCursor();
-        Cursor blogCursor = blogCursorHelper.getCursor();
-
         this.groupColumnMap = new HashMap<Integer,Integer>();
+        Cursor folderCursor = folderCursorHelper.getCursor();
         this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.FOLDER_NAME), R.id.row_foldername);
         this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS), R.id.row_foldersumpos);
         this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT), R.id.row_foldersumneu);
-        this.childColumnMap = new HashMap<Integer,Integer>();
-        this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_TITLE), R.id.row_feedname);
-        this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_FAVICON_URL), R.id.row_feedfavicon);
-        this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_NEUTRAL_COUNT), R.id.row_feedneutral);
-        this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_POSITIVE_COUNT), R.id.row_feedpositive);
+
         this.blogColumnMap = new HashMap<Integer,Integer>();
+        Cursor blogCursor = blogCursorHelper.getCursor();
         this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_TITLE), R.id.row_socialfeed_name);
         this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_ICON), R.id.row_socialfeed_icon);
         this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT), R.id.row_socialsumneu);
         this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT), R.id.row_socialsumpos);
-
-        deactivateChildrenCursorHelper(0);
+        
+        // child cursors are lazily initialized.  temporarily try to init the first one and use it, as
+        // all of them have the same column layout.  If there is not first folder, there is nothing we
+        // can do yet.  Leave the map null and we'll lazily init it later when the DB is up and going.
+        if (folderCursor.moveToPosition(0)) {
+            this.childColumnMap = new HashMap<Integer,Integer>();
+            Cursor childCursor = getChildrenCursor(folderCursor);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_TITLE), R.id.row_feedname);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_FAVICON_URL), R.id.row_feedfavicon);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_NEUTRAL_COUNT), R.id.row_feedneutral);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_POSITIVE_COUNT), R.id.row_feedpositive);
+            // close the temp cursor
+            childCursor.close();
+        } else {
+            Log.w(this.getClass().getName(), "could not initialize column mappings for child views");
+        }
 
 	}
 
@@ -347,14 +357,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	}
 
 	protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
-		// This 'if' is for an edge case, where we've no intialised the child-from to cursor-column mapping yet because we've initialised the adapter but 
-		// it contained no group cursor yet. This happens when first registering, assuming the user initially has no data.
-		/*if (childFrom == null) {
-			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
-			if (tmpCursorHelper != null) {
-				initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
-			}
-		}*/
+        if (this.childColumnMap == null) {
+            // work-around: if the adapter was created before we had a DB, it may have been
+            // incompletely initialized.  Re-do it!
+            initColumnMaps();
+        }
 		bindView(view, context, cursor, this.childColumnMap, groupViewBinder);
 	}
 
@@ -411,7 +418,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 			final Cursor cursor = getChildrenCursor(folderCursorHelper.getCursor());
 			cursorHelper = new MyCursorHelper(cursor);
-            //Log.d(this.getClass().getName(), "lazily initing cursor helper for group " + groupPosition + " with rowID " + cursorHelper.mRowIDColumn );
 			mChildrenCursorHelpers.put(groupPosition, cursorHelper);
 		}
 
