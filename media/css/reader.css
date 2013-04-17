@@ -6155,7 +6155,7 @@ form.opml_import_form input {
 }
 .NB-modal-statistics .NB-statistics-update-explainer {
     clear: both;
-    margin: 12px 24px 0;
+    margin: 6px 24px 6px;
     font-size: 10px;
     color: #808080;
 }

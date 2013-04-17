@@ -117,6 +117,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                     $.make('b', 'Why so infrequently?'),
                     'This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.'
                   ])),
+              (data.errors_since_good &&
+                  $.make('div', { className: 'NB-statistics-update-explainer' }, [
+                    $.make('b', 'Why is the next update not at the normal rate?'),
+                    'This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to see the exact status codes for the feed. The more errors for the feed, the longer time taken between fetches.'
+                  ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
                     $.make('div', { className: 'NB-statistics-label' }, [

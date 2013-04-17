@@ -152,6 +152,7 @@ def load_feed_statistics(request, feed_id):
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
     stats['premium_update_interval_minutes'] = premium_update_interval_minutes
+    stats['errors_since_good'] = feed.errors_since_good
     
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history
