@@ -182,9 +182,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_folder_as_read) {
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-			// all shared stories and regular folders are expandable
-			// all stories is not expandable
-			if (folderAdapter.isExpandable(groupPosition)) {
+			// all folder but the root All Stories one use the simple method
+			if (!folderAdapter.isFolderRoot(groupPosition)) {
 				// TODO: is there a better way to get the folder ID for a group position that asking the list view?
                 final Cursor folderCursor = ((MixedExpandableListAdapter) this.getListView().getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
@@ -286,7 +285,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
-		if (folderAdapter.isExpandable(groupPosition)) {
+        // The root "All Stories" folder goes to a special activity
+        if (folderAdapter.isFolderRoot(groupPosition)) {
+			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
+			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
+			startActivityForResult(i, FEEDCHECK);
+			return true;
+        } else {
 			String groupName = folderAdapter.getGroupName(groupPosition);
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
@@ -296,11 +301,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
 			}
 			return false;
-		} else {
-			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
-			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
-			startActivityForResult(i, FEEDCHECK);
-			return true;
 		}
 	}
 

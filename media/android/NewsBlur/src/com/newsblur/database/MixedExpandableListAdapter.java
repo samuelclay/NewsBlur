@@ -36,8 +36,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private final int FOLDER = 0;
 	private final int BLOG = 0;
 	private final int FEED = 1;
-	private final int ALL_STORIES = 1;
-	private final int ALL_SHARED_STORIES = 2;
+	private final int ALL_SHARED_STORIES = 1;
 
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
 	private MyCursorHelper folderCursorHelper, blogCursorHelper;
@@ -125,8 +124,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int getGroupType(int groupPosition) {
 		if (groupPosition == 0) {
 			return ALL_SHARED_STORIES;
-		} else if (groupPosition == 1) {
-			return ALL_STORIES;
 		} else {
 			return FOLDER;
 		}
@@ -143,7 +140,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public int getGroupTypeCount() {
-		return 3;
+		return 2;
 	}
 
 	@Override
@@ -157,7 +154,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			blogCursorHelper.moveTo(childPosition);
 			return blogCursorHelper.getCursor();
 		} else {
-			groupPosition = groupPosition - 2;
+			groupPosition = groupPosition - 1;
 			return getChildrenCursorHelper(groupPosition).moveTo(childPosition);
 		}
 	}
@@ -167,7 +164,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		if (groupPosition == 0) {
 			return blogCursorHelper.getId(childPosition);
 		} else {
-			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 2);
+			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 1);
 			return childrenCursorHelper.getId(childPosition);
 		}
 	}
@@ -184,10 +181,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			}
 			bindBlogView(v, context, blogCursorHelper.getCursor());
 		} else {
-			groupPosition = groupPosition - 2;
-
+			groupPosition = groupPosition - 1;
 			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition);
-
 			Cursor cursor = cursorHelper.moveTo(childPosition);
 			if (cursor == null) {
 				throw new IllegalStateException("This should only be called when the cursor is valid");
@@ -207,7 +202,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		if (groupPosition == 0) {
 			return blogCursorHelper.getCount();
 		} else {
-			groupPosition = groupPosition - 2;
+			groupPosition = groupPosition - 1;
 			MyCursorHelper helper = getChildrenCursorHelper(groupPosition);
 			return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 		}
@@ -219,45 +214,50 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public Cursor getGroup(int groupPosition) {
-		return folderCursorHelper.moveTo(groupPosition - 2);
+		return folderCursorHelper.moveTo(groupPosition - 1);
 	}
 
 	public Cursor getBlogCursor(int childPosition) {
 		return blogCursorHelper.moveTo(childPosition);
 	}
 
-	public boolean isExpandable(int groupPosition) {
-        // TODO: non-expandability of the All Stories folder is what gives it special
-        //  behaviour. 
-        return (groupPosition == 0 || groupPosition > 1);
-	}
-
 	@Override
 	public int getGroupCount() {
-		return (folderCursorHelper.getCount() + 2);
+		return (folderCursorHelper.getCount() + 1);
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
-		if (groupPosition >= 2) {
-			return folderCursorHelper.getId(groupPosition-2);
-		} else {
-			return Long.MAX_VALUE - groupPosition;
+		if (groupPosition == 0) {
+            // the social folder doesn't have an ID, so just give it a really huge one
+            return Long.MAX_VALUE;
+        } else {
+			return folderCursorHelper.getId(groupPosition-1);
 		}
 	}
 	
 	public String getGroupName(int groupPosition) {
 		if (groupPosition == 0) {
 			return "[ALL_SHARED_STORIES]";
-		} else if(groupPosition == 1) {
-			return "[ALL_STORIES]";
 		} else {
 			Cursor cursor = folderCursorHelper.getCursor();
-			cursor.moveToPosition(groupPosition-2);
-			// Is folder name really always unique?
+			cursor.moveToPosition(groupPosition-1);
 			return cursor.getString(cursor.getColumnIndex("folder_name"));
 		}
 	}
+
+    /**
+     * Determines if the folder at the specified position is the special "root" folder.  This
+     * folder is returned by the API in a special way and the APIManager ensures it gets a
+     * specific name in the DB so we can find it.
+     */
+    public boolean isFolderRoot(int groupPosition) {
+        if ( getGroupName(groupPosition).equals(AppConstants.ROOT_FOLDER) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 	public void setGroupCursor(Cursor cursor) {
 		folderCursorHelper.changeCursor(cursor, false);
@@ -305,7 +305,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			
 			v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
-		} else if (groupPosition == 1) {
+		} else if (isFolderRoot(groupPosition)) {
+            // the special "root" folder gets a unique layout and behaviour
 			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
 			allStoriesCountCursor.moveToFirst();
@@ -319,9 +320,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 					break;
 			}
- 			
 		} else {
-			cursor = folderCursorHelper.moveTo(groupPosition - 2);
+			cursor = folderCursorHelper.moveTo(groupPosition - 1);
 			if (convertView == null) {
 				v = newGroupView(context, cursor, isExpanded, parent);
 			} else {
@@ -338,6 +338,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	}
 
 	private View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
+        // TODO: this code suggests that there was to be an alternate layout for collapsed folders, but it uses the same one either way?
 		return inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
 	}
 
@@ -367,8 +368,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
 		bindView(view, context, cursor, this.groupColumnMap, groupViewBinder);
 		view.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
-		((ImageView) view.findViewById(R.id.row_folder_icon)).setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
-		((ImageView) view.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
+        ImageView folderIconView = ((ImageView) view.findViewById(R.id.row_folder_icon));
+        if ( folderIconView != null ) {
+		    folderIconView.setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
+        }
+        ImageView folderIndicatorView = ((ImageView) view.findViewById(R.id.row_folder_indicator));
+        if ( folderIndicatorView != null ) {
+		    folderIndicatorView.setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
+        }
 	}
 
 	protected void bindBlogView(View view, Context context, Cursor cursor) {
@@ -425,8 +432,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	}
 
 	private synchronized void releaseCursorHelpers() {
-		for (int pos = mChildrenCursorHelpers.size() - 1; pos >= 0; pos--) {
-			mChildrenCursorHelpers.valueAt(pos).deactivate();
+		// no, SparseArrays really aren't Interable!
+        for (int i = 0; i < mChildrenCursorHelpers.size(); i++) {
+			mChildrenCursorHelpers.valueAt(i).deactivate();
 		}
 		mChildrenCursorHelpers.clear();
 	}
