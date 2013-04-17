@@ -32,9 +32,6 @@ import com.newsblur.util.AppConstants;
 
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
-	private Handler mHandler;
-	private boolean mAutoRequery;
-
 	// Child-type & Group-type IDs must be less than their respective type-counts, even though they're never implicitly mentioned as linked
 	private final int FOLDER = 0;
 	private final int BLOG = 0;
@@ -108,7 +105,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
             // close the temp cursor
             childCursor.close();
         } else {
-            Log.w(this.getClass().getName(), "could not initialize column mappings for child views");
+            Log.w(this.getClass().getName(), "deferring init. of column mappings for child views");
         }
 
 	}
@@ -118,7 +115,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		this.blogViewBinder = blogViewBinder;
 	}
 
-	protected Cursor getChildrenCursor(Cursor folderCursor) {
+	private Cursor getChildrenCursor(Cursor folderCursor) {
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
 		Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return contentResolver.query(uri, null, null, new String[] { FeedProvider.getFolderSelectionFromState(currentState) }, null);
@@ -135,13 +132,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
+    @Override
 	public int getChildType(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
 			return BLOG;
 		} else {
 			return FEED;
 		}
-	};
+	}
 
 	@Override
 	public int getGroupTypeCount() {
@@ -160,15 +158,16 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return blogCursorHelper.getCursor();
 		} else {
 			groupPosition = groupPosition - 2;
-			return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
+			return getChildrenCursorHelper(groupPosition).moveTo(childPosition);
 		}
 	}
 
-	public long getChildId(int groupPosition, int childPosition) {
+	@Override
+    public long getChildId(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getId(childPosition);
 		} else {
-			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 2, true);
+			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 2);
 			return childrenCursorHelper.getId(childPosition);
 		}
 	}
@@ -187,7 +186,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		} else {
 			groupPosition = groupPosition - 2;
 
-			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
+			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition);
 
 			Cursor cursor = cursorHelper.moveTo(childPosition);
 			if (cursor == null) {
@@ -207,11 +206,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int getChildrenCount(int groupPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getCount();
-		} else if (groupPosition == 1) {
-			return 0;
 		} else {
 			groupPosition = groupPosition - 2;
-			MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
+			MyCursorHelper helper = getChildrenCursorHelper(groupPosition);
 			return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 		}
 	}
@@ -230,7 +227,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	}
 
 	public boolean isExpandable(int groupPosition) {
-		return (groupPosition == 0 || groupPosition > 1);
+        // TODO: non-expandability of the All Stories folder is what gives it special
+        //  behaviour. 
+        return (groupPosition == 0 || groupPosition > 1);
 	}
 
 	@Override
@@ -404,13 +403,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
-	synchronized void deactivateChildrenCursorHelper(int groupPosition) {
-		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
+	private synchronized void deactivateChildrenCursorHelper(int groupPosition) {
+		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition);
 		mChildrenCursorHelpers.remove(groupPosition);
 		cursorHelper.deactivate();
 	}
 
-	synchronized MyCursorHelper getChildrenCursorHelper(int groupPosition, boolean requestCursor) {
+	private synchronized MyCursorHelper getChildrenCursorHelper( int groupPosition ) {
+
 		MyCursorHelper cursorHelper = mChildrenCursorHelpers.get(groupPosition);
 
 		if (cursorHelper == null) {
@@ -446,6 +446,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		super.notifyDataSetChanged();
 	}
 
+    // TODO: the requery() method on cursors is deprecated.  This class needs a way
+    //  to re-create all cursors via the original means used to make them.
 	public void requery() {
 		notifyDataSetInvalidated();
 		folderCursorHelper.getCursor().requery();
@@ -547,9 +549,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return mDataValid && mCursor != null;
 		}
 
+        // TODO: the cursors don't seem to do anything on content change. why
+        //  was this added in the first place?
 		private class MyContentObserver extends ContentObserver {
 			public MyContentObserver() {
-				super(mHandler);
+				super(null);
 			}
 
 			@Override
@@ -559,9 +563,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 			@Override
 			public void onChange(boolean selfChange) {
-				if (mAutoRequery && mCursor != null) {
-					mDataValid = mCursor.requery();
-				}
 			}
 		}
 
