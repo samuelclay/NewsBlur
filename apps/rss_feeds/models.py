@@ -233,12 +233,14 @@ class Feed(models.Model):
         if self.num_subscribers <= 10 and not settings.DEBUG: return
         if self.branch_from_feed: return
         if any(t in self.feed_address for t in ['token', 'private']): return
+
+        parts = urlparse(self.feed_address)
+        if not parts.hostname: return
         
         engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=self.feed_title)
         engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
         
-        parts = urlparse(self.feed_address)
         engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
         engine.store(self.pk, title=parts.hostname)
         engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
