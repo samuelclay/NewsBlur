@@ -14,4 +14,5 @@ public class AppConstants {
 	public static final float FONT_SIZE_LOWER_BOUND = 1.0f;
 	public static final float FONT_SIZE_INCREMENT_FACTOR = 5;
 	
+    public static final String ROOT_FOLDER = " _TOP_LEVEL_";
 }

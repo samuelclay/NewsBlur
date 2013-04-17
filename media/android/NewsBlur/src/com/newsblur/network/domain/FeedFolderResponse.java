@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
 	
@@ -131,7 +132,9 @@ public class FeedFolderResponse {
 		if(key != null) {
 			builder.append(key);
 		} else {
-            //builder.append(" (no folder)");
+            // a null key means we are at the root.  give these a pseudo-folder name, since the DB and many
+            // classes would be very unhappy with a null foldername.
+            builder.append(AppConstants.ROOT_FOLDER);
         }
 		return builder.toString();
 	}
