@@ -1907,12 +1907,7 @@ background: transparent;
     font-weight: bold;
     font-size: 16px;
     padding: 0 206px 0 28px;
-
-/*    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
-    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
-    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
-*/
-    background-color: #F2F2EF;
+    background-color: #EEF0E9;
     border-bottom: 1px solid rgba(0, 0, 0, .2);
     position: relative;
     overflow: hidden;
@@ -1922,11 +1917,7 @@ background: transparent;
 }
 
 .NB-feed-story.read .NB-feed-story-header-info {
-/*    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F8F8F6));
-    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F8F8F6 100%);
-    background-image: linear-gradient(top, #FEFEFE, #F8F8F6);
-*/
-    background-color: #FBFAF8;
+    background-color: #F8F8F6;
 }
 
 .NB-feed-story-header-info .NB-feed-story-header-collapse {
@@ -1980,11 +1971,9 @@ background: transparent;
     padding: 2px 0;
     color: white;
     font-size: 13px;
-/*    text-shadow: 0 1px 0 #000;*/
 }
 .NB-inverse .NB-feed-story-feed {
     color: black;
-/*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
 .NB-feed-story-feed .feed_favicon {
@@ -2001,12 +1990,10 @@ background: transparent;
 }
 .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #DFE2F3;
-/*    text-shadow: 0 1px 0 #000;*/
 }
 
 .NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #274C63;
-/*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
 /* =============================== */
