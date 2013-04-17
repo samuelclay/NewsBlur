@@ -4,7 +4,6 @@ import zlib
 import hashlib
 import redis
 import re
-import math
 import mongoengine as mongo
 import random
 import requests
@@ -1510,6 +1509,11 @@ class MSharedStory(mongo.Document):
             story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
             story_db.pop('user_id', None)
+            story_db.pop('comments', None)
+            story_db.pop('replies', None)
+            story_db['has_comments'] = False
+            story_db['has_replies'] = False
+            story_db['shared_date'] = datetime.datetime.now()
             story_values = {
                 'user_id': popular_profile.user_id,
                 'story_guid': story_db['story_guid'],
