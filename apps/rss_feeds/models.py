@@ -1311,7 +1311,7 @@ class Feed(models.Model):
         if self.is_push:
             total = total * 20
         elif ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
-            total = total * random.randint(1, 24)
+            total = total * 12
         
         # 1 month max
         if total > 60*24*30:
@@ -1347,9 +1347,10 @@ class Feed(models.Model):
                                 minutes = total + random_factor)
         
         self.min_to_decay = total
-        if not skip_scheduling and self.active_subscribers >= 1:
+        if not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
-            r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
+            if self.active_subscribers >= 1:
+                r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
             r.zrem('tasked_feeds', self.pk)
             r.srem('queued_feeds', self.pk)
             
