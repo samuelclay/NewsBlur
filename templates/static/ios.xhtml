@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-iphone{% endblock %}
 
 {% block title %}The NewsBlur iPad &amp; iPhone App{% endblock %}
@@ -179,3 +181,7 @@ $(document).ready(function() {
 });
 </script>
 {% endblock %}
+
+{% block footer %}
+    {% render_footer "ios" %}
+{% endblock footer %}

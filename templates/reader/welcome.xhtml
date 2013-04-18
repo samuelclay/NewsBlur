@@ -231,8 +231,14 @@
         </div>
     </div>
     
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
     <footer class="NB-welcome-footer">
-        <div class="NB-inner">
+        <div class="NB-welcome-footer-content NB-inner">
             <div class="NB-footer-icons">
                 <a href="http://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png"></a>
                 <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
@@ -244,7 +250,8 @@
                 @samuelclay
             </a>
         </div>
+        
+        {% render_footer "welcome" %}
+        
     </footer>
-</div>
-
-{% endblock %}
+{% endblock footer %}

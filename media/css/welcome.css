@@ -18,11 +18,28 @@
     background-color: rgba(0, 0, 0, .4);
 }
 .NB-welcome .NB-splash-info.NB-splash-bottom {
-    position: static;
-    display: none !important;
+    position: relative;
+    height: auto;
+    float: left;
+    overflow: hidden;
+    border-top: 1px solid rgba(0, 0, 0, .4);
 }
-.NB-welcome .NB-splash-info.NB-splash-bottom .NB-splash-links {
-    display: none;
+.NB-welcome .NB-splash-info .NB-splash-links {
+    position: relative;
+    left: 50%;
+    width: auto;
+    float: left;
+}
+.NB-welcome .NB-splash-info .NB-splash-links li {
+    position: relative;
+    right: 50%;
+}
+.NB-welcome .NB-splash-info .NB-splash-links a {
+    color: rgba(255, 255, 255, .7);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+}
+.NB-welcome .NB-splash-info .NB-splash-links a:hover {
+    color: #F4DD43;
 }
 
 /* ========== */
@@ -34,9 +51,6 @@
     margin: 0 auto;
     position: relative;
     height: 100%;
-}
-.NB-welcome .NB-splash-links {
-    overflow: hidden;
 }
 .NB-button {
     border: 1px solid #07360F;
@@ -599,16 +613,18 @@
 .NB-welcome-footer {
     overflow: hidden;
     clear: both;
-    padding: 42px 0 52px;
+    padding: 42px 0 0;
     color: #363C53;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
     line-height: 24px;
     background-color: #FAFAFA;
-    background: #F1E0D0 url(/media/img/welcome/footer_background.jpg) repeat center bottom;
+    background: #F1E0D0 url(/media/img/welcome/footer_background.jpg) repeat center top;
     background-size: 1438px 150px;
 
-    border-top: 4px solid rgba(0, 0, 0, .1);
-    border-bottom: 6px solid rgba(0, 0, 0, .4);
+    border-top: 2px solid rgba(0, 0, 0, .1);
+}
+.NB-welcome-footer .NB-welcome-footer-content {
+    margin-bottom: 46px;
 }
 .NB-welcome-footer .NB-footer-logo {
     vertical-align: text-bottom;

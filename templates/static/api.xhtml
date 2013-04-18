@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
 {% block title %}The NewsBlur API{% endblock %}
@@ -148,3 +150,7 @@
   </div>
   
 {% endblock content %}
+
+{% block footer %}
+    {% render_footer "api" %}
+{% endblock footer %}

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-faq{% endblock %}
 
 {% block title %}Frequently Asked Questions{% endblock %}
@@ -158,3 +160,7 @@
 </div>
 
 {% endblock content %}
+
+{% block footer %}
+    {% render_footer "faq" %}
+{% endblock footer %}

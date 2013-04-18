@@ -3869,6 +3869,8 @@ form.opml_import_form input {
     z-index: 1;
     margin: 0;
     padding: 0;
+    font-weight: 300;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
@@ -3890,6 +3892,8 @@ form.opml_import_form input {
   -ms-transition: all .12s ease-out;
   background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 0 -17px;
   background-size: 16px;
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
 }
 
 @media screen and (max-width: 1150px) {
@@ -3898,21 +3902,34 @@ form.opml_import_form input {
         padding-left: 19px;
     }
 }
+@media screen and (max-width: 950px) {
+    .NB-splash-info .NB-splash-links .NB-splash-link a {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+    .NB-splash-info .NB-splash-links .NB-splash-link a:hover {
+        background: none !important;
+    }
+}
+.NB-splash-info .NB-splash-link-logo {
+    display: none;
+}
+.NB-body-main .NB-splash-info .NB-splash-link-logo {
+    float: right;
+    display: block;
+}
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
     padding-bottom: 0;
     margin-top: -1px;
 }
 
+.NB-splash-info .NB-splash-links .NB-splash-link.NB-active a,
 .NB-splash-info .NB-splash-links .NB-splash-link-about a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
-  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 6px;
-  background-size: 16px;
-}
-.NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
-  background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 7px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-ios a:hover {
@@ -3920,7 +3937,11 @@ form.opml_import_form input {
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-android a:hover {
-  background: transparent url('/media/embed/reader/android_icon_round.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/android_icon_round.png') no-repeat 0 7px;
+  background-size: 16px;
+}
+.NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
+  background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
@@ -3932,7 +3953,7 @@ form.opml_import_form input {
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
-  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
   background-size: 16px;
 }
 

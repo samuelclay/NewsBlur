@@ -78,6 +78,13 @@ def render_account_module(context):
         'social_profile': context['social_profile'],
         'feed_count': context['feed_count'],
     }
+    
+@register.inclusion_tag('reader/footer.xhtml', takes_context=True)
+def render_footer(context, page=None):
+    return {
+        'page': page,
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
 
 @register.filter
 def get(h, key):

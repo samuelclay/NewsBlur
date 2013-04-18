@@ -427,7 +427,7 @@ class MSocialProfile(mongo.Document):
         self.count_follows()
         self.save()
         
-        if followee.protected and not force:
+        if followee.protected and user_id != self.user_id and not force:
             if self.user_id not in followee.requested_follow_user_ids:
                 followee.requested_follow_user_ids.append(self.user_id)
                 MFollowRequest.add(self.user_id, user_id)
@@ -436,7 +436,7 @@ class MSocialProfile(mongo.Document):
         followee.count_follows()
         followee.save()
 
-        if followee.protected and not force:
+        if followee.protected and user_id != self.user_id and not force:
             from apps.social.tasks import EmailFollowRequest
             EmailFollowRequest.apply_async(kwargs=dict(follower_user_id=self.user_id,
                                                        followee_user_id=user_id),
@@ -448,9 +448,10 @@ class MSocialProfile(mongo.Document):
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
 
-        if self.user_id != user_id:
+        if user_id != self.user_id:
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
             MActivity.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
+        
         socialsub, _ = MSocialSubscription.objects.get_or_create(user_id=self.user_id, 
                                                                  subscription_user_id=user_id)
         socialsub.needs_unread_recalc = True
