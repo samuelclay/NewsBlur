@@ -1257,8 +1257,7 @@ class Feed(models.Model):
         
     def get_next_scheduled_update(self, force=False, verbose=True):
         if self.min_to_decay and not force:
-            random_factor = random.randint(0, self.min_to_decay) / 4
-            return self.min_to_decay, random_factor
+            return self.min_to_decay
             
         # Use stories per month to calculate next feed update
         updates_per_month = self.stories_last_month
@@ -1313,9 +1312,9 @@ class Feed(models.Model):
         elif ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
             total = total * 12
         
-        # 1 month max
-        if total > 60*24*30:
-            total = 60*24*30
+        # 1 week max
+        if total > 60*24*7:
+            total = 60*24*7
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %sm (%s+%s+%s) Subs: %s/%s Stories: %s/%s" % (
@@ -1327,13 +1326,11 @@ class Feed(models.Model):
                                                 self.active_premium_subscribers,
                                                 self.average_stories_per_month,
                                                 self.stories_last_month))
-        random_factor = random.randint(0, total) / 4
-        
-        return total, random_factor
+        return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        total, random_factor = self.get_next_scheduled_update(force=True, verbose=verbose)
+        total = self.get_next_scheduled_update(force=True, verbose=verbose)
         error_count = self.error_count
         
         if error_count:
@@ -1342,7 +1339,8 @@ class Feed(models.Model):
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (
                               unicode(self)[:30], self.errors_since_good, total))
-            
+        
+        random_factor = random.randint(0, total) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
         
