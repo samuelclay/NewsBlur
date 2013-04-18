@@ -699,7 +699,7 @@ class MUserStory(mongo.Document):
         if self.story_db_id:
             r.srem('RS:%s' % self.user_id, self.story_db_id)
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
-            h.srem('RS:%s' % self.user_id, self.story_db_id)
+            h.srem('RS:%s' % self.user_id, self.feed_guid_hash)
             h.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.feed_guid_hash)
         
     @classmethod
