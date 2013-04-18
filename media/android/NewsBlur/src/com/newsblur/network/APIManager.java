@@ -451,10 +451,20 @@ public class APIManager {
 		}
 	}
 
-	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
+	/**
+     * Fetch the list of feeds/folders/socials from the backend.
+     * 
+     * @param doUpdateCounts forces a refresh of unread counts.  This has a high latency
+     *        cost and should not be set if the call is being used to display the UI for
+     *        the first time, in which case it is more appropriate to make a separate,
+     *        additional call to refreshFeedCounts().
+     */
+    public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		final ContentValues params = new ContentValues();
+		params.put( APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false") );
+		final APIResponse response = client.get(APIConstants.URL_FEEDS, params);
 		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {

@@ -1,5 +1,8 @@
 package com.newsblur.database;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,6 +14,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,31 +32,18 @@ import com.newsblur.util.AppConstants;
 
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
-	private Handler mHandler;
-	private boolean mAutoRequery;
-
-	// Child-type & Group-type IDs must be less than their respective type-counts, even though they're never implicitly mentioned as linked
-	private final int FOLDER = 0;
-	private final int BLOG = 0;
-	private final int FEED = 1;
-	private final int ALL_STORIES = 1;
-	private final int ALL_SHARED_STORIES = 2;
+    private enum GroupType { ALL_SHARED_STORIES, ALL_STORIES, FOLDER }
+    private enum ChildType { BLOG, FEED }
 
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
 	private MyCursorHelper folderCursorHelper, blogCursorHelper;
 	private ContentResolver contentResolver;
 	private Context context;
 
-	private int[] groupFrom;
-	private int[] groupTo;
-	private int[] childFrom;
-	private int[] childTo;
-	private int[] blogFrom;
-	private int[] blogTo;
+    private Map<Integer,Integer> groupColumnMap;
+    private Map<Integer,Integer> childColumnMap;
+    private Map<Integer,Integer> blogColumnMap;
 
-	private String[] childFromNames;
-
-	private final int childLayout, expandedGroupLayout, collapsedGroupLayout, blogGroupLayout;
 	private final LayoutInflater inflater;
 	private ViewBinder groupViewBinder;
 	private ViewBinder blogViewBinder;
@@ -60,13 +51,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int currentState = AppConstants.STATE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
 
-	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
-			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
+	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor) {
+
 		this.context = context;
-		this.expandedGroupLayout = expandedGroupLayout;
-		this.collapsedGroupLayout = collapsedGroupLayout;
-		this.childLayout = childLayout;
-		this.blogGroupLayout = blogGroupLayout;
 		this.allStoriesCountCursor = countCursor;
 		this.sharedStoriesCountCursor = sharedCountCursor;
 
@@ -78,26 +65,45 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 		mChildrenCursorHelpers = new SparseArray<MyCursorHelper>();
 
-		this.childFromNames = childFrom;
-		init(groupFrom, groupTo, childFrom, childTo, blogFrom, blogTo);
+		initColumnMaps();
 	}
 
-	private void init(final String[] groupFromNames, final int[] groupTo, final String[] childFromNames, final int[] childTo, final String[] blogFromNames, final int[] blogTo) {
-		this.groupTo = groupTo;
-		this.childTo = childTo;
-		this.blogTo = blogTo;
+	/**
+     * Load and store mappings from runtime DB column indicies to resource IDs needed by this class.
+     *
+     * TODO: this whole business with the mappings has a smell to it - figure out why.
+     */
+    private void initColumnMaps() {
 
-		initGroupFromColumns(groupFromNames);
-		initBlogFromColumns(blogFromNames);
-		initialiseChildBinds(childFromNames);
-	}
+        this.groupColumnMap = new HashMap<Integer,Integer>();
+        Cursor folderCursor = folderCursorHelper.getCursor();
+        this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.FOLDER_NAME), R.id.row_foldername);
+        this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS), R.id.row_foldersumpos);
+        this.groupColumnMap.put(folderCursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT), R.id.row_foldersumneu);
 
-	private void initialiseChildBinds(final String[] childFromNames) {
-		MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
-		if (tmpCursorHelper != null) {
-			initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
-			deactivateChildrenCursorHelper(0);
-		}
+        this.blogColumnMap = new HashMap<Integer,Integer>();
+        Cursor blogCursor = blogCursorHelper.getCursor();
+        this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_TITLE), R.id.row_socialfeed_name);
+        this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_ICON), R.id.row_socialfeed_icon);
+        this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT), R.id.row_socialsumneu);
+        this.blogColumnMap.put(blogCursor.getColumnIndexOrThrow(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT), R.id.row_socialsumpos);
+        
+        // child cursors are lazily initialized.  temporarily try to init the first one and use it, as
+        // all of them have the same column layout.  If there is not first folder, there is nothing we
+        // can do yet.  Leave the map null and we'll lazily init it later when the DB is up and going.
+        if (folderCursor.moveToPosition(0)) {
+            this.childColumnMap = new HashMap<Integer,Integer>();
+            Cursor childCursor = getChildrenCursor(folderCursor);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_TITLE), R.id.row_feedname);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_FAVICON_URL), R.id.row_feedfavicon);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_NEUTRAL_COUNT), R.id.row_feedneutral);
+            this.childColumnMap.put(childCursor.getColumnIndexOrThrow(DatabaseConstants.FEED_POSITIVE_COUNT), R.id.row_feedpositive);
+            // close the temp cursor
+            childCursor.close();
+        } else {
+            Log.w(this.getClass().getName(), "deferring init. of column mappings for child views");
+        }
+
 	}
 
 	public void setViewBinders(final ViewBinder groupViewBinder, final ViewBinder blogViewBinder) {
@@ -105,60 +111,45 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		this.blogViewBinder = blogViewBinder;
 	}
 
-	private void initFromColumns(Cursor cursor, String[] fromColumnNames, int[] fromColumns) {
-		for (int i = fromColumnNames.length - 1; i >= 0; i--) {
-			fromColumns[i] = cursor.getColumnIndexOrThrow(fromColumnNames[i]);
-		}
-	}
-
-	private void initGroupFromColumns(String[] groupFromNames) {
-		groupFrom = new int[groupFromNames.length];
-		initFromColumns(folderCursorHelper.getCursor(), groupFromNames, groupFrom);
-	}
-
-	private void initBlogFromColumns(String[] blogFromNames) {
-		blogFrom = new int[blogFromNames.length];
-		initFromColumns(blogCursorHelper.getCursor(), blogFromNames, blogFrom);
-	}
-
-	private void initChildrenFromColumns(String[] childFromNames, Cursor childCursor) {
-		childFrom = new int[childFromNames.length];
-		initFromColumns(childCursor, childFromNames, childFrom);
-	}
-
-	protected Cursor getChildrenCursor(Cursor folderCursor) {
+	private Cursor getChildrenCursor(Cursor folderCursor) {
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
 		Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return contentResolver.query(uri, null, null, new String[] { FeedProvider.getFolderSelectionFromState(currentState) }, null);
 	}
 
+    /*
+     * This next four methods are used by the framework to decide which views can
+     * be recycled when calling getChildView and getGroupView.
+     */
+
 	@Override
 	public int getGroupType(int groupPosition) {
 		if (groupPosition == 0) {
-			return ALL_SHARED_STORIES;
-		} else if (groupPosition == 1) {
-			return ALL_STORIES;
-		} else {
-			return FOLDER;
+			return GroupType.ALL_SHARED_STORIES.ordinal();
+		} else if (isFolderRoot(groupPosition)) {
+            return GroupType.ALL_STORIES.ordinal();
+        } else {
+			return GroupType.FOLDER.ordinal();
 		}
 	}
 
+    @Override
 	public int getChildType(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
-			return BLOG;
+			return ChildType.BLOG.ordinal();
 		} else {
-			return FEED;
+			return ChildType.FEED.ordinal();
 		}
-	};
+	}
 
 	@Override
 	public int getGroupTypeCount() {
-		return 3;
+		return GroupType.values().length;
 	}
 
 	@Override
 	public int getChildTypeCount() {
-		return 2;
+		return ChildType.values().length;
 	}
 
 	@Override
@@ -167,16 +158,17 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			blogCursorHelper.moveTo(childPosition);
 			return blogCursorHelper.getCursor();
 		} else {
-			groupPosition = groupPosition - 2;
-			return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
+			groupPosition = groupPosition - 1;
+			return getChildrenCursorHelper(groupPosition).moveTo(childPosition);
 		}
 	}
 
-	public long getChildId(int groupPosition, int childPosition) {
+	@Override
+    public long getChildId(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getId(childPosition);
 		} else {
-			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 2, true);
+			MyCursorHelper childrenCursorHelper = getChildrenCursorHelper(groupPosition - 1);
 			return childrenCursorHelper.getId(childPosition);
 		}
 	}
@@ -187,22 +179,20 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		if (groupPosition == 0) {
 			blogCursorHelper.moveTo(childPosition);
 			if (convertView == null) {
-				v = newBlogView(context, blogCursorHelper.getCursor(), parent);
+                v = inflater.inflate(R.layout.row_socialfeed, parent, false);
 			} else {
 				v = convertView;
 			}
 			bindBlogView(v, context, blogCursorHelper.getCursor());
 		} else {
-			groupPosition = groupPosition - 2;
-
-			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
-
+			groupPosition = groupPosition - 1;
+			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition);
 			Cursor cursor = cursorHelper.moveTo(childPosition);
 			if (cursor == null) {
 				throw new IllegalStateException("This should only be called when the cursor is valid");
 			}
 			if (convertView == null) {
-				v = newChildView(context, cursor, isLastChild, parent);
+				v = inflater.inflate(R.layout.row_feed, parent, false);
 			} else {
 				v = convertView;
 			}
@@ -215,65 +205,63 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int getChildrenCount(int groupPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getCount();
-		} else if (groupPosition == 1) {
-			return 0;
 		} else {
-			groupPosition = groupPosition - 2;
-			MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
+			groupPosition = groupPosition - 1;
+			MyCursorHelper helper = getChildrenCursorHelper(groupPosition);
 			return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 		}
 	}
 
-	public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
-		return inflater.inflate(childLayout, parent, false);
-	}
-
 	@Override
 	public Cursor getGroup(int groupPosition) {
-		return folderCursorHelper.moveTo(groupPosition - 2);
+		return folderCursorHelper.moveTo(groupPosition - 1);
 	}
 
 	public Cursor getBlogCursor(int childPosition) {
 		return blogCursorHelper.moveTo(childPosition);
 	}
 
-	public boolean isExpandable(int groupPosition) {
-		return (groupPosition == 0 || groupPosition > 1);
-	}
-
 	@Override
 	public int getGroupCount() {
-		return (folderCursorHelper.getCount() + 2);
+        // in addition to the real folders returned by the /reader/feeds API, there is a virtual folder for social feeds
+		return (folderCursorHelper.getCount() + 1);
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
-		if (groupPosition >= 2) {
-			return folderCursorHelper.getId(groupPosition-2);
-		} else {
-			return Long.MAX_VALUE - groupPosition;
+		if (groupPosition == 0) {
+            // the social folder doesn't have an ID, so just give it a really huge one
+            return Long.MAX_VALUE;
+        } else {
+			return folderCursorHelper.getId(groupPosition-1);
 		}
 	}
 	
 	public String getGroupName(int groupPosition) {
 		if (groupPosition == 0) {
 			return "[ALL_SHARED_STORIES]";
-		} else if(groupPosition == 1) {
-			return "[ALL_STORIES]";
 		} else {
 			Cursor cursor = folderCursorHelper.getCursor();
-			cursor.moveToPosition(groupPosition-2);
-			// Is folder name really always unique?
+			cursor.moveToPosition(groupPosition-1);
 			return cursor.getString(cursor.getColumnIndex("folder_name"));
 		}
 	}
 
+    /**
+     * Determines if the folder at the specified position is the special "root" folder.  This
+     * folder is returned by the API in a special way and the APIManager ensures it gets a
+     * specific name in the DB so we can find it.
+     */
+    public boolean isFolderRoot(int groupPosition) {
+        return ( getGroupName(groupPosition).equals(AppConstants.ROOT_FOLDER) );
+    }
+
 	public void setGroupCursor(Cursor cursor) {
-		folderCursorHelper.changeCursor(cursor, false);
+		folderCursorHelper.changeCursor(cursor);
 	}
 
 	public void setBlogCursor(Cursor blogCursor) {
-		blogCursorHelper.changeCursor(blogCursor, false);
+		blogCursorHelper.changeCursor(blogCursor);
 	}
 
 	public void setCountCursor(Cursor countCursor) {
@@ -314,7 +302,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			
 			v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
-		} else if (groupPosition == 1) {
+		} else if (isFolderRoot(groupPosition)) {
+            // the special "root" folder gets a unique layout and behaviour
 			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
 			allStoriesCountCursor.moveToFirst();
@@ -328,11 +317,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 					break;
 			}
- 			
 		} else {
-			cursor = folderCursorHelper.moveTo(groupPosition - 2);
+			cursor = folderCursorHelper.moveTo(groupPosition - 1);
 			if (convertView == null) {
-				v = newGroupView(context, cursor, isExpanded, parent);
+                // TODO: this code suggests that there was to be an alternate layout for collapsed folders, but it uses the same one either way?
+				v = inflater.inflate((isExpanded) ? R.layout.row_folder_collapsed : R.layout.row_folder_collapsed, parent, false);
 			} else {
 				v = convertView;
 			}
@@ -346,14 +335,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		return v;
 	}
 
-	private View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
-		return inflater.inflate((isExpanded) ? expandedGroupLayout : collapsedGroupLayout, parent, false);
-	}
-
-	private View newBlogView(Context context, Cursor cursor, ViewGroup parent) {
-		return inflater.inflate(blogGroupLayout, parent, false);
-	}
-
 	@Override
 	public boolean hasStableIds() {
 		return true;
@@ -364,44 +345,45 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		return true;
 	}
 
-
-	//-----------------------
-
-	protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
-		// This 'if' is for an edge case, where we've no intialised the child-from to cursor-column mapping yet because we've initialised the adapter but 
-		// it contained no group cursor yet. This happens when first registering, assuming the user initially has no data.
-		if (childFrom == null) {
-			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
-			if (tmpCursorHelper != null) {
-				initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
-			}
-		}
-		bindView(view, context, cursor, childFrom, childTo, groupViewBinder);
+	private void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
+        if (this.childColumnMap == null) {
+            // work-around: if the adapter was created before we had a DB, it may have been
+            // incompletely initialized.  Re-do it!
+            initColumnMaps();
+        }
+		bindView(view, context, cursor, this.childColumnMap, groupViewBinder);
 	}
 
-	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
-		bindView(view, context, cursor, groupFrom, groupTo, groupViewBinder);
+	private void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
+		bindView(view, context, cursor, this.groupColumnMap, groupViewBinder);
 		view.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
-		((ImageView) view.findViewById(R.id.row_folder_icon)).setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
-		((ImageView) view.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
+        ImageView folderIconView = ((ImageView) view.findViewById(R.id.row_folder_icon));
+        if ( folderIconView != null ) {
+		    folderIconView.setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
+        }
+        ImageView folderIndicatorView = ((ImageView) view.findViewById(R.id.row_folder_indicator));
+        if ( folderIndicatorView != null ) {
+		    folderIndicatorView.setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
+        }
 	}
 
-	protected void bindBlogView(View view, Context context, Cursor cursor) {
-		bindView(view, context, cursor, blogFrom, blogTo, blogViewBinder);
+	private void bindBlogView(View view, Context context, Cursor cursor) {
+		bindView(view, context, cursor, this.blogColumnMap, blogViewBinder);
 	}
 
-	private void bindView(View view, Context context, Cursor cursor, int[] from, int[] to, ViewBinder viewbinder) {
+	private void bindView(View view, Context context, Cursor cursor, Map<Integer,Integer> columnMap, ViewBinder viewbinder) {
 		final ViewBinder binder = viewbinder;
-		for (int i = 0; i < to.length; i++) {
-			View v = view.findViewById(to[i]);
+        for (Map.Entry<Integer,Integer> column : columnMap.entrySet()) {
+            // column.key is a DB column name, column.value is a resourceID
+			View v = view.findViewById(column.getValue());
 			if (v != null) {
 				boolean bound = false;
 				if (binder != null) {
-					bound = binder.setViewValue(v, cursor, from[i]);
+					bound = binder.setViewValue(v, cursor, column.getKey());
 				}
 
 				if (!bound) {
-					String text = cursor.getString(from[i]);
+					String text = cursor.getString(column.getKey());
 					if (text == null) {
 						text = "";
 					}
@@ -417,13 +399,10 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
-	synchronized void deactivateChildrenCursorHelper(int groupPosition) {
-		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
-		mChildrenCursorHelpers.remove(groupPosition);
-		cursorHelper.deactivate();
-	}
+	// This is synchronized with the process of resetting cursors, since it uses
+    // lazy init.
+    private synchronized MyCursorHelper getChildrenCursorHelper( int groupPosition ) {
 
-	synchronized MyCursorHelper getChildrenCursorHelper(int groupPosition, boolean requestCursor) {
 		MyCursorHelper cursorHelper = mChildrenCursorHelpers.get(groupPosition);
 
 		if (cursorHelper == null) {
@@ -437,60 +416,44 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		return cursorHelper;
 	}
 
-	private synchronized void releaseCursorHelpers() {
-		for (int pos = mChildrenCursorHelpers.size() - 1; pos >= 0; pos--) {
-			mChildrenCursorHelpers.valueAt(pos).deactivate();
-		}
-		mChildrenCursorHelpers.clear();
-	}
-
 	@Override
 	public void notifyDataSetChanged() {
-		notifyDataSetChanged(true);
-	}
-
-	public void notifyDataSetChanged(boolean releaseCursors) {
-		if (releaseCursors) {
-			releaseCursorHelpers();
-			if (allStoriesCountCursor != null) {
-				allStoriesCountCursor.deactivate();
-			}
-		}
+        // TODO: it probably isn't necessary to fully requery on every dataset change. a more
+        // granular set of refresh options might significantly speed up rendering on slow devices
+	    this.requery();
 		super.notifyDataSetChanged();
 	}
 
-	public void requery() {
-		notifyDataSetInvalidated();
+    @Override
+    public void notifyDataSetInvalidated() {
+        super.notifyDataSetInvalidated();
+        this.requery();
+    }
+
+    // TODO: the requery() method on cursors is deprecated.  This class needs a way
+    //  to re-create all cursors via the original means used to make them.
+	private synchronized void requery() {
 		folderCursorHelper.getCursor().requery();
 		blogCursorHelper.getCursor().requery();
 		allStoriesCountCursor.requery();
 		sharedStoriesCountCursor.requery();
-	}
-
-	@Override
-	public void notifyDataSetInvalidated() {
-		releaseCursorHelpers();
-		super.notifyDataSetInvalidated();
+		// no, SparseArrays really aren't Interable!
+        for (int i = 0; i < mChildrenCursorHelpers.size(); i++) {
+			mChildrenCursorHelpers.valueAt(i).deactivate();
+		}
+		mChildrenCursorHelpers.clear();
 	}
 
 	class MyCursorHelper {
 		private Cursor mCursor;
 		private boolean mDataValid;
 		private int mRowIDColumn;
-		private MyContentObserver mContentObserver;
-		private MyDataSetObserver mDataSetObserver;
 
 		MyCursorHelper(Cursor cursor) {
 			final boolean cursorPresent = cursor != null;
 			mCursor = cursor;
 			mDataValid = cursorPresent;
 			mRowIDColumn = cursorPresent ? cursor.getColumnIndex("_id") : -1;
-			mContentObserver = new MyContentObserver();
-			mDataSetObserver = new MyDataSetObserver();
-			if (cursorPresent) {
-				cursor.registerContentObserver(mContentObserver);
-				cursor.registerDataSetObserver(mDataSetObserver);
-			}
 		}
 
 		Cursor getCursor() {
@@ -526,21 +489,19 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			}
 		}
 
-		void changeCursor(Cursor cursor, boolean releaseCursors) {
+		void changeCursor(Cursor cursor) {
 			if (cursor == mCursor) return;
 
 			deactivate();
 			mCursor = cursor;
 			if (cursor != null) {
-				cursor.registerContentObserver(mContentObserver);
-				cursor.registerDataSetObserver(mDataSetObserver);
 				mRowIDColumn = cursor.getColumnIndex("_id");
 				mDataValid = true;
-				notifyDataSetChanged(releaseCursors);
+				notifyDataSetChanged();
 			} else {
 				mRowIDColumn = -1;
 				mDataValid = false;
-				notifyDataSetInvalidated();
+				notifyDataSetChanged();
 			}
 		}
 
@@ -548,9 +509,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			if (mCursor == null) {
 				return;
 			}
-
-			mCursor.unregisterContentObserver(mContentObserver);
-			mCursor.unregisterDataSetObserver(mDataSetObserver);
 			mCursor.close();
 			mCursor.deactivate();
 			mCursor = null;
@@ -560,40 +518,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return mDataValid && mCursor != null;
 		}
 
-		private class MyContentObserver extends ContentObserver {
-			public MyContentObserver() {
-				super(mHandler);
-			}
-
-			@Override
-			public boolean deliverSelfNotifications() {
-				return true;
-			}
-
-			@Override
-			public void onChange(boolean selfChange) {
-				if (mAutoRequery && mCursor != null) {
-					mDataValid = mCursor.requery();
-				}
-			}
-		}
-
-		private class MyDataSetObserver extends DataSetObserver {
-			@Override
-			public void onChanged() {
-				mDataValid = true;
-				notifyDataSetInvalidated();
-			}
-
-			@Override
-			public void onInvalidated() {
-				mDataValid = false;
-				notifyDataSetInvalidated();
-			}
-		}
 	}
 
-	protected void setViewImage(ImageView v, String value) {
+	private void setViewImage(ImageView v, String value) {
 		try {
 			v.setImageResource(Integer.parseInt(value));
 		} catch (NumberFormatException nfe) {

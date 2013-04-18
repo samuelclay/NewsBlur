@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,6 +17,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.AppConstants;
 
 public class FeedFolderResponse {
 	
@@ -35,10 +37,10 @@ public class FeedFolderResponse {
 	}
 	
 	public FeedFolderResponse(String json, Gson gson) {
-		// This is a mess but I don't see a way to parse the mixed content in
-		// folders w/o going to low level Gson API
+
 		JsonParser parser = new JsonParser();
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
+
 		JsonArray jsonFoldersArray = (JsonArray) asJsonObject.get("folders");
 		ArrayList<String> nestedFolderList = new ArrayList<String>();
 		folders = new HashMap<String, List<Long>>();
@@ -82,34 +84,43 @@ public class FeedFolderResponse {
 		}
 	}
 	
-	private void parseFeed(JsonObject asJsonObject2, List<String> parentFeedNames, Map<String, List<Long>> folders) {
-		Set<Entry<String, JsonElement>> entrySet = asJsonObject2.entrySet();
-		Iterator<Entry<String, JsonElement>> iterator = entrySet.iterator();
-		while(iterator.hasNext()) {
-			Entry<String, JsonElement> next = iterator.next();
-			String key = next.getKey();
-			JsonArray value = (JsonArray) next.getValue();
-			parseFeedArray(parentFeedNames, folders, key, value);
-		}
-	}
-
-	private void parseFeedArray(List<String> nestedFolderList,
+	/**
+     * Parses a folder, which is a list of feeds and/or more folders.  Nested folders
+     * are flattened into a single list, with names that are heirarchical.
+     *
+     * @param nestedFolderList a list of any parent folders that surrounded this folder.
+     * @param folders the sink
+     * @param name the name of this folder.
+     * @param arrayValue the actual contents to be parsed.
+     */
+    private void parseFeedArray(List<String> nestedFolderList,
 			Map<String, List<Long>> folders, String name, JsonArray arrayValue) {
+
+        // determine our text name, like "grandparent - parent - me"    
 		String fullFolderName = getFolderName(name, nestedFolderList);
+        // sink for any feeds found in this folder
 		ArrayList<Long> feedIds = new ArrayList<Long>();
-		for(int k=0;k<arrayValue.size();k++) {
-			JsonElement jsonElement = arrayValue.get(k);
+
+		for (JsonElement jsonElement : arrayValue) {
+            // a folder array contains either feed IDs or nested folder objects
 			if(jsonElement.isJsonPrimitive()) {
 				feedIds.add(jsonElement.getAsLong());
 			} else {
-				List<String> nestedFolerListCopy = new ArrayList<String>(nestedFolderList);
+                // if it wasn't a feed ID, it is a nested folder object
+                Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
+				List<String> nestedFolderListCopy = new ArrayList<String>(nestedFolderList);
 				if(name != null) {
-					nestedFolerListCopy.add(name);
+					nestedFolderListCopy.add(name);
 				}
-				parseFeed((JsonObject) jsonElement, nestedFolerListCopy, folders);
+                // recurse - nested folders are just objects with (usually one) field named for the folder
+                // that is a list of contained feeds or additional folders
+                for (Entry<String, JsonElement> next : entrySet) {
+                    parseFeedArray( nestedFolderListCopy, folders, next.getKey(), (JsonArray) next.getValue() );
+                }
 			}
 		}
 		folders.put(fullFolderName, feedIds);
+        //Log.d( this.getClass().getName(), "parsed folder '" + fullFolderName + "' with " + feedIds.size() + " feeds" );
 	}
 
 	private String getFolderName(String key, List<String> parentFeedNames) {
@@ -120,7 +131,11 @@ public class FeedFolderResponse {
 		}
 		if(key != null) {
 			builder.append(key);
-		}
+		} else {
+            // a null key means we are at the root.  give these a pseudo-folder name, since the DB and many
+            // classes would be very unhappy with a null foldername.
+            builder.append(AppConstants.ROOT_FOLDER);
+        }
 		return builder.toString();
 	}
 	
