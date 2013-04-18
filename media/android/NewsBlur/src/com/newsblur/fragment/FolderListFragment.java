@@ -87,7 +87,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	}
 
 	public void hasUpdated() {
-		folderAdapter.requery();
+		folderAdapter.notifyDataSetChanged();
 		checkOpenFolderPreferences();
 	}
 
@@ -161,7 +161,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 						values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
 						values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
 						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(info.id)).build(), values, null, null);
-						folderAdapter.requery();
+						folderAdapter.notifyDataSetChanged();
 						Toast.makeText(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT).show();
 					} else {
 						Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
@@ -191,7 +191,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					@Override
 					protected void onPostExecute(Boolean result) {
 						if (result) {
-							folderAdapter.requery();
+							folderAdapter.notifyDataSetChanged();
 							Toast.makeText(getActivity(), R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
@@ -206,7 +206,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					@Override
 					protected void onPostExecute(Boolean result) {
 						if (result.booleanValue()) {
-							folderAdapter.requery();
+							folderAdapter.notifyDataSetChanged();
 							Toast.makeText(getActivity(), R.string.toast_marked_socialfeed_as_read, Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
@@ -236,7 +236,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 							for (String feedId : feedIds) {
 								resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
 						  	}
-							folderAdapter.requery();
+							folderAdapter.notifyDataSetChanged();
 							Toast.makeText(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
