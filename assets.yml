@@ -22,7 +22,8 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery-2.0.0.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
@@ -66,26 +67,12 @@ javascripts:
         - media/js/newsblur/views/*.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/welcome/*.js
-    mobile:
-        - media/js/vendor/jquery-1.7.2.js
-        - media/js/mobile/jquery.mobile-1.0b1.js
-        - media/js/vendor/jquery.ajaxmanager.3.js
-        - media/js/vendor/underscore-*.js
-        - media/js/vendor/underscore.string.js
-        - media/js/vendor/inflector.js
-        - media/js/vendor/jquery.json.js
-        - media/js/vendor/jquery.easing.js
-        - media/js/vendor/jquery.newsblur.js
-        - media/js/vendor/backbone-*.js
-        - media/js/newsblur/reader/reader_utils.js
-        - media/js/newsblur/models/*.js
-        - media/js/newsblur/common/assetmodel.js
-        - media/js/mobile/newsblur/mobile_workspace.js
     payments:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-1.7.2.min.js
+        - media/js/vendor/jquery-2.0.0.min.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
@@ -97,7 +84,8 @@ javascripts:
         - media/js/vendor/underscore-*.js
         - media/js/vendor/readability-*.js
     blurblog:
-        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery-2.0.0.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
