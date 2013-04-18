@@ -378,11 +378,11 @@
                 $('.NB-task-add').tipsy({
                     gravity: 'sw',
                     delayIn: 375
-                });
+                }).tipsy('enable');
                 $('.NB-task-manage').tipsy({
                     gravity: 's',
                     delayIn: 375
-                });
+                }).tipsy('enable');
                 $('.NB-feed-story-view-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 'n',
                     delayIn: 375,
@@ -391,10 +391,12 @@
                     $(this).tipsy('enable');
                 });
             }
-            $('.NB-module-content-account-realtime').tipsy({
+            
+            $('.NB-module-content-account-realtime').tipsy('disable').tipsy({
                 gravity: 'se',
-                delayIn: 0
-            });
+                delayIn: 0,
+                live: true
+            }).tipsy('enable');
         },
         
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
@@ -3872,6 +3874,7 @@
                     
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites in real-time...').removeClass('NB-error').addClass('NB-active');
+                    this.apply_tipsy_titles();
                 }, this));
 
                 this.socket.removeAllListeners('feed:update');
@@ -3911,6 +3914,7 @@
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
+                    this.apply_tipsy_titles();
                 }, this));
                 this.socket.on('error', _.bind(function() {
                     NEWSBLUR.log(["Can't connect to real-time pubsub."]);
@@ -3918,6 +3922,7 @@
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
+                    this.apply_tipsy_titles();
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));
             }
@@ -3980,6 +3985,7 @@
             this.flags.refresh_interval = refresh_interval / 1000;
             if (!this.socket || !this.socket.socket.connected) {
                 $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
+                this.apply_tipsy_titles();
             } 
             NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
         },
