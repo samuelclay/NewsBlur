@@ -4897,7 +4897,7 @@ form.opml_import_form input {
 }
 
 .NB-module .NB-module-content-account-realtime {
-    background: transparent url('/media/img/reader/realtime_spinner.gif') no-repeat 0 1px;
+    background: transparent url('/media/img/reader/realtime_spinner_loading.gif') no-repeat 0 1px;
     font-size: 11px;
     text-transform: uppercase;
     color: #D8BD70;
@@ -4906,6 +4906,9 @@ form.opml_import_form input {
     width: 16px;
     height: 16px;
     margin: 0 4px 0 0;
+}
+.NB-module .NB-module-content-account-realtime.NB-active {
+    background: transparent url('/media/img/reader/realtime_spinner.gif') no-repeat 0 1px;
 }
 .NB-module .NB-module-content-account-realtime.NB-error {
     background: transparent url('/media/img/reader/realtime_spinner_error.gif') no-repeat 0 1px;
