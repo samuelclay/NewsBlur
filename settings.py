@@ -28,7 +28,8 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 # = Directory Declaractions =
 # ===========================
 
-CURRENT_DIR   = os.path.dirname(__file__)
+#CURRENT_DIR   = os.path.dirname(__file__)
+CURRENT_DIR   = "/var/www/vhosts/newsblur.wsartori.com/newsblur/"
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
@@ -260,7 +261,7 @@ INSTALLED_APPS = (
 
 if not DEVELOPMENT:
     INSTALLED_APPS += (
-        'gunicorn',
+#        'gunicorn',
         'raven.contrib.django',
     )
 

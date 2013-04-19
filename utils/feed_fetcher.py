@@ -539,8 +539,8 @@ class Dispatcher:
 
         if self.options['compute_scores']:
             stories = MStory.objects(story_feed_id=feed.pk,
-                                     story_date__gte=UNREAD_CUTOFF)\
-                            .read_preference(pymongo.ReadPreference.PRIMARY)
+                                     story_date__gte=UNREAD_CUTOFF)#\
+            #                .read_preference(pymongo.ReadPreference.PRIMARY)
             stories = Feed.format_stories(stories, feed.pk)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                           feed.title[:30], len(stories), user_subs.count(),

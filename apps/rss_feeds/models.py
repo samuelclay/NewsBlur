@@ -1556,7 +1556,7 @@ class MStory(mongo.Document):
         self.story_hash = self.feed_guid_hash
         
         if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content_z = zlib.compress(self.story_content.encode('utf-8'))
             self.story_content = None
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
