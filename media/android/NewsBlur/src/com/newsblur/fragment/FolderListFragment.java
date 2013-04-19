@@ -63,10 +63,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
-		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		Cursor sharedCountCursor = resolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
+		// all cursors are initially queried in the "some" unread state to match the default view mode
+        Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.getFolderSelectionFromState(AppConstants.STATE_SOME) }, null);
+		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
+		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
+		Cursor sharedCountCursor = resolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
 
 		ImageLoader imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		groupViewBinder = new FolderTreeViewBinder(imageLoader);
@@ -219,7 +220,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					
 					@Override
 					protected Boolean doInBackground(Void... arg) {
-						Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+						Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
 						while (cursor.moveToNext()) {
 							feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 						}
@@ -250,30 +251,18 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	}
 
 	public void changeState(int state) {
-		String groupSelection = null, blogSelection = null;
 		groupViewBinder.setState(state);
 		blogViewBinder.setState(state);
 		currentState = state;
-
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
-			break;
-		case (AppConstants.STATE_SOME):
-			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
-			break;
-		case (AppConstants.STATE_BEST):
-			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
-			break;
-		}
+        String groupSelection = DatabaseConstants.getFolderSelectionFromState(state);
+        String blogSelection = DatabaseConstants.getBlogSelectionFromState(state);
+        // the countCursor always counts neutral/"some" unreads, no matter what mode we are in
+        String countSelection = DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME);
 
 		folderAdapter.currentState = state;
 		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { groupSelection }, null);
 		Cursor blogCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, blogSelection, null, null);
-		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null); 
+		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, countSelection, null, null); 
 
 		folderAdapter.setBlogCursor(blogCursor);
 		folderAdapter.setGroupCursor(cursor);

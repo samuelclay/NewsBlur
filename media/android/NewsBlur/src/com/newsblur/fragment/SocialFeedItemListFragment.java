@@ -95,7 +95,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " desc");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " desc");
 	    return cursorLoader;
 	}
 
@@ -146,7 +146,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = FeedProvider.getStorySelectionFromState(state);
+		final String selection = DatabaseConstants.getStorySelectionFromState(state);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " desc");
 		adapter.swapCursor(cursor);
 		getActivity().startManagingCursor(cursor);
