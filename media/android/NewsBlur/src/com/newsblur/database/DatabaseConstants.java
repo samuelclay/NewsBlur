@@ -139,14 +139,14 @@ public class DatabaseConstants {
     // this union clause lets folder queries also select the "root" folder that should appear whether or not it has unread stories
     private static final String FOLDER_UNION_ROOT = " OR " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "'"; 
 
-	private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0";
-	private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
-	private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
+    private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0";
+    private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
+    private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
 
-	private static final String SOCIAL_INTELLIGENCE_ALL = "";
-	private static final String SOCIAL_INTELLIGENCE_SOME = " (" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-	private static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
-	private static final String SUM_STORY_TOTAL = "storyTotal";
+    private static final String SOCIAL_INTELLIGENCE_ALL = "";
+    private static final String SOCIAL_INTELLIGENCE_SOME = " (" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+    private static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+    private static final String SUM_STORY_TOTAL = "storyTotal";
 
 
 	private static String STORY_SUM_TOTAL = " CASE " + 
@@ -169,77 +169,77 @@ public class DatabaseConstants {
     /**
      * Selection args to filter stories.
      */
-	public static String getStorySelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = STORY_INTELLIGENCE_ALL;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = STORY_INTELLIGENCE_SOME;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = STORY_INTELLIGENCE_BEST;
-		break;
-		}
-		return selection;
-	}
-	
+    public static String getStorySelectionFromState(int state) {
+        String selection = null;
+        switch (state) {
+        case (AppConstants.STATE_ALL):
+            selection = STORY_INTELLIGENCE_ALL;
+        break;
+        case (AppConstants.STATE_SOME):
+            selection = STORY_INTELLIGENCE_SOME;
+        break;
+        case (AppConstants.STATE_BEST):
+            selection = STORY_INTELLIGENCE_BEST;
+        break;
+        }
+        return selection;
+    }
+    
     /**
      * Selection args to filter folders.  This always additionally includes the root folder and assumes folders are joined with feed counts.
      */
-	public static String getFolderSelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = FOLDER_INTELLIGENCE_ALL + FOLDER_UNION_ROOT;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = FOLDER_INTELLIGENCE_SOME + FOLDER_UNION_ROOT;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = FOLDER_INTELLIGENCE_BEST + FOLDER_UNION_ROOT;
-		break;
-		}
-		return selection;
-	}
+    public static String getFolderSelectionFromState(int state) {
+        String selection = null;
+        switch (state) {
+        case (AppConstants.STATE_ALL):
+            selection = FOLDER_INTELLIGENCE_ALL + FOLDER_UNION_ROOT;
+        break;
+        case (AppConstants.STATE_SOME):
+            selection = FOLDER_INTELLIGENCE_SOME + FOLDER_UNION_ROOT;
+        break;
+        case (AppConstants.STATE_BEST):
+            selection = FOLDER_INTELLIGENCE_BEST + FOLDER_UNION_ROOT;
+        break;
+        }
+        return selection;
+    }
 
     /**
      * Selection args to filter feeds. Watch out: cheats and uses the same args as from folder selection.
      */
-	public static String getFeedSelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = FOLDER_INTELLIGENCE_ALL;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = FOLDER_INTELLIGENCE_SOME;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = FOLDER_INTELLIGENCE_BEST;
-		break;
-		}
-		return selection;
-	}
+    public static String getFeedSelectionFromState(int state) {
+        String selection = null;
+        switch (state) {
+        case (AppConstants.STATE_ALL):
+            selection = FOLDER_INTELLIGENCE_ALL;
+        break;
+        case (AppConstants.STATE_SOME):
+            selection = FOLDER_INTELLIGENCE_SOME;
+        break;
+        case (AppConstants.STATE_BEST):
+            selection = FOLDER_INTELLIGENCE_BEST;
+        break;
+        }
+        return selection;
+    }
 
     /**
      * Selection args to filter social feeds.
      */
-	public static String getBlogSelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = SOCIAL_INTELLIGENCE_ALL;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = SOCIAL_INTELLIGENCE_SOME;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = SOCIAL_INTELLIGENCE_BEST;
-		break;
-		}
-		return selection;
-	}
+    public static String getBlogSelectionFromState(int state) {
+        String selection = null;
+        switch (state) {
+        case (AppConstants.STATE_ALL):
+            selection = SOCIAL_INTELLIGENCE_ALL;
+        break;
+        case (AppConstants.STATE_SOME):
+            selection = SOCIAL_INTELLIGENCE_SOME;
+        break;
+        case (AppConstants.STATE_BEST):
+            selection = SOCIAL_INTELLIGENCE_BEST;
+        break;
+        }
+        return selection;
+    }
 
 }
