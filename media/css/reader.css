@@ -131,7 +131,9 @@ body {
 .NB-show-reader .NB-feeds-header-user-dashboard:hover img {
     opacity: .9;
 }
-
+.NB-show-reader .NB-welcome-footer {
+    display: none;
+}
 .NB-splash-heading {
     display: none;
 }
