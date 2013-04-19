@@ -1069,15 +1069,18 @@ blockquote {
     .NB-story-comment-like {
         float: right;
         width: 16px;
-        background: transparent url('/media/embed/reader/star_grey.png') no-repeat center 0;
+        background: transparent url('/media/embed/icons/circular/g_icn_fav.png') no-repeat center 0;
+        background-size: 14px;
         text-transform: uppercase;
         padding: 1px 6px 1px 6px;
         height: 11px;
+        margin-top: -2px;
 
         &:hover,
         &.NB-active {
             cursor: pointer;
-            background: transparent url('/media/embed/reader/star_green.png') no-repeat center 0;
+            background: transparent url('/media/embed/icons/circular/g_icn_fav_active.png') no-repeat center 0;
+            background-size: 14px;
         }
         &:active {
             cursor: pointer;
