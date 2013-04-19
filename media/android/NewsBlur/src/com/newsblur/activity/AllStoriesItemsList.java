@@ -39,7 +39,7 @@ public class AllStoriesItemsList extends ItemsList {
 		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 		
-		Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
 
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

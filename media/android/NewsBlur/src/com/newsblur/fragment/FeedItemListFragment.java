@@ -88,7 +88,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 
 		setupFeed();
 
@@ -119,7 +119,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		return cursorLoader;
 	}
 
@@ -156,7 +156,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	}
 
 	private void refreshStories() {
-		final String selection = FeedProvider.getStorySelectionFromState(currentState);
+		final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
