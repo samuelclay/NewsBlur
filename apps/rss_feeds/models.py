@@ -203,7 +203,9 @@ class Feed(models.Model):
             duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
                                                   feed_link=self.feed_link)
             if not duplicate_feeds:
-                hash_address_and_link = hashlib.sha1(self.feed_address+self.feed_link).hexdigest()
+                feed_address = self.feed_address or ""
+                feed_link = self.feed_link or ""
+                hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
                 duplicate_feeds = Feed.objects.filter(hash_address_and_link=hash_address_and_link)
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
