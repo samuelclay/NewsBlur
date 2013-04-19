@@ -1023,44 +1023,35 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
             
     def trim_feed(self, verbose=False):
-        trim_cutoff = 500
-        if self.active_subscribers <= 0:
-            trim_cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
-            trim_cutoff = 100
-        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
-            trim_cutoff = 200
-        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
-            trim_cutoff = 300
-        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
-            trim_cutoff = 350
-        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
-            trim_cutoff = 400
-        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
-            trim_cutoff = 450
-            
+        if not settings.TRIM_STORIES:
+            return
+
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
-        
-        if stories.count() > trim_cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
-                          (unicode(self)[:30], stories.count(), trim_cutoff))
+
+        trim_cutoff = settings.TRIM_STORIES_KEEP_NUM
+        stories_count = stories.count()
+        if stories_count > trim_cutoff:
+            story_trim_date_bydate = datetime.datetime.utcnow() - datetime.timedelta(days=settings.TRIM_STORIES_KEEP_DAYS)
             try:
-                story_trim_date = stories[trim_cutoff].story_date
+                story_trim_date_bycount = stories[trim_cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
-                
-            extra_stories = MStory.objects(story_feed_id=self.pk, 
+            story_trim_date = story_trim_date_bycount if story_trim_date_bycount and story_trim_date_bycount < story_trim_date_bydate else story_trim_date_bydate
+            extra_stories = MStory.objects(story_feed_id=self.pk,
                                            story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
-            for story in extra_stories:
-                story.delete()
-            if verbose:
-                existing_story_count = MStory.objects(story_feed_id=self.pk).count()
-                print "Deleted %s stories, %s left." % (extra_stories_count,
-                                                        existing_story_count)
+            if extra_stories_count > 0:
+                logging.debug('   ---> [%-30s] ~FBFound %s (of %s) stories older than ~SB%s~SN...' %
+                              (unicode(self)[:30], extra_stories_count, stories_count, story_trim_date))
+                for story in extra_stories:
+                    story.delete()
+                if verbose:
+                    existing_story_count = MStory.objects(story_feed_id=self.pk).count()
+                    print "Deleted %s stories, %s left." % (extra_stories_count,
+                                                            existing_story_count)
 
     # @staticmethod
     # def clean_invalid_ids():
