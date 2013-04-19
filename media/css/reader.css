@@ -7448,7 +7448,8 @@ form.opml_import_form input {
     box-shadow:2px 2px 0 #E2D121;
 }
 .NB-modal-feedchooser .NB-creditcards img {
-    width: 28px;
+    width: 32px;
+    height: 20px;
     margin: 0 2px 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar {

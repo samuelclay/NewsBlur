@@ -160,10 +160,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       ]),
                       $.make('div', { className: 'NB-feedchooser-stripe' }, [
                         $.make('div', { className: 'NB-creditcards' }, [
-                            $.make('img', { src: "https://manage.stripe.com/img/credit_cards/visa.png" }),
-                            $.make('img', { src: "https://manage.stripe.com/img/credit_cards/mastercard.png" }),
-                            $.make('img', { src: "https://manage.stripe.com/img/credit_cards/amex.png" }),
-                            $.make('img', { src: "https://manage.stripe.com/img/credit_cards/discover.png" })
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_visa.png" }),
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_mastercard.png" }),
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_amex.png" }),
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_discover.png" })
                         ]),
                         $.make('div', { 
                             className: "NB-stripe-button NB-modal-submit-button NB-modal-submit-green"
