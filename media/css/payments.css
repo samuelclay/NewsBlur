@@ -107,6 +107,13 @@
 
 .NB-static-form .NB-creditcards {
     margin: 8px 0 0 150px;
+    overflow: hidden;
+}
+.NB-static-form .NB-creditcards img {
+    float: left;
+    margin-right: 4px;
+    width: 32px;
+    height: 20px;
 }
 
 .NB-static-form input[type=submit] {

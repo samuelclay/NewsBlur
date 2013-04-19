@@ -62,10 +62,10 @@ float: right;">
         <label>Username</label>
         <div class="NB-stripe-username">{{ user.username }}</div>
         <div class="NB-creditcards">
-            <img src="https://manage.stripe.com/img/credit_cards/visa.png">
-            <img src="https://manage.stripe.com/img/credit_cards/mastercard.png">
-            <img src="https://manage.stripe.com/img/credit_cards/amex.png">
-            <img src="https://manage.stripe.com/img/credit_cards/discover.png">
+            <img src="{{ MEDIA_URL }}img/reader/cc_visa.png">
+            <img src="{{ MEDIA_URL }}img/reader/cc_mastercard.png">
+            <img src="{{ MEDIA_URL }}img/reader/cc_amex.png">
+            <img src="{{ MEDIA_URL }}img/reader/cc_discover.png">
         </div>
         
         <form action="" method="POST" id="payment-form">{% csrf_token %}
