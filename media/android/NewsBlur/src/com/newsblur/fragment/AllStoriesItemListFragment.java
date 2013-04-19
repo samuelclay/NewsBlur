@@ -57,7 +57,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
@@ -95,7 +95,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = FeedProvider.getStorySelectionFromState(state);
+		final String selection = DatabaseConstants.getStorySelectionFromState(state);
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
@@ -131,7 +131,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		return cursorLoader;
 	}
 

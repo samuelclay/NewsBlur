@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.ValueMultimap;
@@ -31,7 +32,7 @@ public class FolderReading extends Reading {
 
 		Uri storiesURI = FeedProvider.MULTIFEED_STORIES_URI;
 		storiesToMarkAsRead = new ValueMultimap();
-		stories = contentResolver.query(storiesURI, null, FeedProvider.getStorySelectionFromState(currentState), feedIds, null);
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, null);
 
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 		setupPager();

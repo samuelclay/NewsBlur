@@ -114,7 +114,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private Cursor getChildrenCursor(Cursor folderCursor) {
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
 		Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
-		return contentResolver.query(uri, null, null, new String[] { FeedProvider.getFolderSelectionFromState(currentState) }, null);
+		return contentResolver.query(uri, null, null, new String[] { DatabaseConstants.getFeedSelectionFromState(currentState) }, null);
 	}
 
     /*

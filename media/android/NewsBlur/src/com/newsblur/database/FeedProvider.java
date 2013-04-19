@@ -273,6 +273,12 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
+        // TODO: the fact that most of the app uses this subclass of ContentProvider cast as such may
+        //  deepy confuse future maintainers as to why the .query() method magically does far, far more
+        //  than suggested by the normal contract and provided args.  This method should be renamed
+        //  to make it painfully obvious that it expands upon the normal ContentProvider.query contract.
+
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		switch (uriMatcher.match(uri)) {
 
@@ -421,6 +427,8 @@ public class FeedProvider extends ContentProvider {
 			StringBuilder folderBuilder = new StringBuilder();
 			folderBuilder.append(folderQuery);
 			if (selectionArgs != null && selectionArgs.length > 0) {
+                // TODO: by not iterating over the selectionArgs array, this method wildly breaks the contract of the query() method and
+                //  will almost certainly confuse callers eventually
 				folderBuilder.append(selectionArgs[0]);
 			}
 			folderBuilder.append(" ORDER BY ");
@@ -506,39 +514,5 @@ public class FeedProvider extends ContentProvider {
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
 	}
-	
-	public static String getStorySelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = DatabaseConstants.STORY_INTELLIGENCE_ALL;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = DatabaseConstants.STORY_INTELLIGENCE_SOME;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = DatabaseConstants.STORY_INTELLIGENCE_BEST;
-		break;
-		}
-		return selection;
-	}
-	
-	public static String getFolderSelectionFromState(int state) {
-		String selection = null;
-		switch (state) {
-		case (AppConstants.STATE_ALL):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
-		break;
-		case (AppConstants.STATE_SOME):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-		break;
-		case (AppConstants.STATE_BEST):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
-		break;
-		}
-		return selection;
-	}
-
-
 
 }
