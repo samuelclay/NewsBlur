@@ -86,7 +86,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.MULTIFEED_STORIES_URI;
 
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), feedIds, null);
+		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, null);
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
@@ -109,7 +109,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.MULTIFEED_STORIES_URI;
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.STORY_DATE + " DESC");
 		return cursorLoader;
 	}
 
@@ -142,7 +142,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = FeedProvider.getStorySelectionFromState(state);
+		final String selection = DatabaseConstants.getStorySelectionFromState(state);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.STORY_DATE + " DESC");
 		getActivity().startManagingCursor(cursor);
 		adapter.swapCursor(cursor);

@@ -102,7 +102,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 		adapter.swapCursor(cursor);
 	}
 
@@ -137,7 +137,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 		return cursorLoader;
 	}
 
