@@ -65,6 +65,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (clear_queue) {
             this.ajax[options['ajax_group']].clear(true);
         }
+        if (request_type == 'GET') {
+            var params = data && $.toJSON(data);
+            if (params && params.length > 2000) {
+                request_type = 'POST';
+            }
+        }
         this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
