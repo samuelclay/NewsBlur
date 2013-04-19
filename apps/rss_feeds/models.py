@@ -1300,10 +1300,8 @@ class Feed(models.Model):
                 slow_punishment = 6 * self.last_load_time
         total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers >= 3:
-            total = min(total, 3*60) # 1 hour minimum for premiums
-        elif self.active_premium_subscribers >= 2:
-            total = min(total, 9*60)
+        if self.active_premium_subscribers >= 2:
+            total = min(total, 3*60)
         elif self.active_premium_subscribers >= 1:
             total = min(total, 18*60)
 
