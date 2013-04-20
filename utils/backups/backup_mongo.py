@@ -9,7 +9,6 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import time
 import s3
-from django.conf import settings
 
 COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
 
@@ -26,6 +25,7 @@ for collection in collections:
     print "Dumping %s: %s" % (collection, cmd)
     os.system(cmd)
 
+print "Compressing %s..." % filename
 cmd = 'tar -jcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
