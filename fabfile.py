@@ -229,7 +229,11 @@ def celery_reload():
 
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
+        with settings(warn_only=True):
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
