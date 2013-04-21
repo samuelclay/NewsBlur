@@ -470,7 +470,7 @@ def setup_supervisor():
     sudo('sleep 2')
     sudo('/etc/init.d/supervisor start')
 
-# @parallel
+@parallel
 def setup_hosts():
     put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
 
