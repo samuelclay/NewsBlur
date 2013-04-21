@@ -430,7 +430,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db10',
+    'host': 'db12',
 }
 SESSION_REDIS_DB = 5
 

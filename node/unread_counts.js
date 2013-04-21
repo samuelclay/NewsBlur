@@ -6,7 +6,7 @@
 
   redis = require('redis');
 
-  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db10';
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db12';
 
   SECURE = !!process.env.NODE_SSL;
 
