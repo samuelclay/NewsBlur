@@ -296,6 +296,36 @@ class Profile(models.Model):
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
+
+    def send_first_share_to_blurblog_email(self, force=False):
+        from apps.social.models import MSocialProfile, MSharedStory
+        
+        if not self.user.email:
+            return
+
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='first_share')
+        
+        if not created and not force:
+            return
+        
+        social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+        params = {
+            'shared_stories': MSharedStory.objects.filter(user_id=self.user.pk).count(),
+            'blurblog_url': social_profile.blurblog_url,
+            'blurblog_rss': social_profile.blurblog_rss
+        }
+        user    = self.user
+        text    = render_to_string('mail/email_first_share_to_blurblog.txt', params)
+        html    = render_to_string('mail/email_first_share_to_blurblog.xhtml', params)
+        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
     
     def send_new_premium_email(self, force=False):
         subs = UserSubscription.objects.filter(user=self.user)
