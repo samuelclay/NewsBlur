@@ -891,6 +891,9 @@ class MSocialSubscription(mongo.Document):
                 story = MSharedStory.objects.get(user_id=self.subscription_user_id,
                                                  story_guid=story_id)
             except MSharedStory.DoesNotExist:
+                if settings.DEBUG:
+                    logging.user(request, "~BR~FYCould not find story: %s/%s" %
+                                          (self.subscription_user_id, story_id))
                 continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
@@ -905,11 +908,11 @@ class MSocialSubscription(mongo.Document):
                                                             "story_date": story.shared_date,
                                                         })
             except NotUniqueError:
-                if not mark_all_read:
+                if not mark_all_read or settings.DEBUG:
                     logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
                 continue
             except MUserStory.MultipleObjectsReturned:
-                if not mark_all_read:
+                if not mark_all_read or settings.DEBUG:
                     logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
