@@ -18,6 +18,9 @@ public class Story implements Serializable {
 
 	private static final long serialVersionUID = 7629596752129163308L;
 
+	public static final int UNREAD = 0;
+	public static final int READ = 1;
+	
 	public String id;
 
 	@SerializedName("story_permalink")
