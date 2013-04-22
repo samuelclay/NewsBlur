@@ -11,12 +11,21 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'render', 'defer_render');
-        this.collection.bind('reset', this.defer_render);
-        this.collection.bind('add', this.defer_render);
-        this.collection.bind('remove', this.defer_render);
-        this.collection.bind('change:ps', this.defer_render);
-        this.collection.bind('change:nt', this.defer_render);
-        this.collection.bind('change:ng', this.defer_render);
+        this.feed_collection = this.options.feed_collection;
+        this.socialfeed_collection = this.options.socialfeed_collection;
+        
+        this.feed_collection.bind('reset', this.defer_render);
+        this.feed_collection.bind('add', this.defer_render);
+        this.feed_collection.bind('remove', this.defer_render);
+        this.feed_collection.bind('change:ps', this.defer_render);
+        this.feed_collection.bind('change:nt', this.defer_render);
+        this.feed_collection.bind('change:ng', this.defer_render);
+        this.socialfeed_collection.bind('reset', this.defer_render);
+        this.socialfeed_collection.bind('add', this.defer_render);
+        this.socialfeed_collection.bind('remove', this.defer_render);
+        this.socialfeed_collection.bind('change:ps', this.defer_render);
+        this.socialfeed_collection.bind('change:nt', this.defer_render);
+        this.socialfeed_collection.bind('change:ng', this.defer_render);
     },
     
     defer_render: function() {
@@ -27,7 +36,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         this.count();
 
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
-        // NEWSBLUR.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
+        // NEWSBLUR.log(["render feed list header", this.feed_collection.length, this.feeds_count, hide_read_feeds]);
         var $header = _.template('\
             <div class="NB-feeds-header-left">\
                 <span class="NB-feeds-header-count NB-feeds-header-negative <% if (!negative_count) { %>NB-empty<% } %>"><%= negative_count %></span>\
@@ -57,7 +66,8 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     count: function() {
         this.unread_counts = NEWSBLUR.assets.folders.unread_counts();
-          
+        this.unread_counts = NEWSBLUR.assets.social_feeds.unread_counts(this.unread_counts);
+        
         if (!NEWSBLUR.Globals.is_authenticated) return;
         if (!NEWSBLUR.assets.preference('title_counts')) return;
         
@@ -82,19 +92,8 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         document.title = title;
     },
     
-    count_unreads_across_all_sites: function() {
-        return this.collection.reduce(function(m, v) {
-            if (v.get('active') && v.views && v.views.length) {
-                m['positive'] += v.get('ps');
-                m['neutral'] += v.get('nt');
-                m['negative'] += v.get('ng');
-            }
-            return m;
-        }, {'positive': 0, 'negative': 0, 'neutral': 0});
-    },
-    
     count_feeds: function() {
-        return this.collection.select(function(f) {
+        return this.feed_collection.select(function(f) {
             return f.get('active');
         }).length;
     },
