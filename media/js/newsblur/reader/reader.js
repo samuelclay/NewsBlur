@@ -4039,11 +4039,11 @@
             this.toggle_focus_in_slider();
         },
         
-        feed_unread_count: function(feed_id) {
+        feed_unread_count: function(feed_id, callback) {
             feed_id = feed_id || this.active_feed;
             if (!feed_id) return;
             
-            this.model.feed_unread_count(feed_id);
+            this.model.feed_unread_count(feed_id, callback);
         },
         
         // ===================

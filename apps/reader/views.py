@@ -854,17 +854,19 @@ def load_river_stories__redis(request):
 def mark_all_as_read(request):
     code = 1
     days = int(request.POST.get('days', 0))
+    read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)
-    for sub in feeds:
-        if days == 0:
-            sub.mark_feed_read()
-        else:
-            read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
-            if sub.mark_read_date < read_date:
-                sub.needs_unread_recalc = True
-                sub.mark_read_date = read_date
-                sub.save()
+    socialsubs = MSocialSubscription.objects.filter(user_id=request.user.pk)
+    for subtype in [feeds, socialsubs]:
+        for sub in subtype:
+            if days == 0:
+                sub.mark_feed_read()
+            else:
+                if sub.mark_read_date < read_date:
+                    sub.needs_unread_recalc = True
+                    sub.mark_read_date = read_date
+                    sub.save()
     
     logging.user(request, "~FMMarking all as read: ~SB%s days" % (days,))
     return dict(code=code)

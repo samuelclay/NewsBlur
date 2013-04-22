@@ -991,7 +991,7 @@ class MSocialSubscription(mongo.Document):
             latest_story_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
                 
         self.last_read_date = latest_story_date
-        self.mark_read_date = UNREAD_CUTOFF
+        self.mark_read_date = latest_story_date
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
