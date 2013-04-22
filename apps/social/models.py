@@ -897,8 +897,7 @@ class MSocialSubscription(mongo.Document):
                 continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            if not feed_id:
-                feed_id = story.story_feed_id
+            feed_id = story.story_feed_id
             try:
                 m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
                                                         feed_id=feed_id, 
