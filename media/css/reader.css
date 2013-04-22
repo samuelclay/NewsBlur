@@ -852,6 +852,9 @@ body {
     display: block !important;
     opacity: 1 !important;
 }
+.NB-selector-active .NB-feeds-list-empty {
+    display: none;
+}
 
 /* ================= */
 /* = Unread Counts = */

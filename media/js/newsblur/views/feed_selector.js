@@ -27,12 +27,14 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         var $input = this.$(".NB-feeds-selector-input");
         var $feed_list    = NEWSBLUR.reader.$s.$feed_list;
         var $social_feeds = NEWSBLUR.reader.$s.$social_feeds;
+        var $body = NEWSBLUR.reader.$s.$body;
 
         this.$el.show();
         $input.val('');
         $input.focus();
         $feed_list.addClass('NB-selector-active');
         $social_feeds.addClass('NB-selector-active');
+        $body.addClass('NB-selector-active');
         
         this.flags.showing_feed_selector = true;
         NEWSBLUR.reader.layout.leftLayout.sizePane('north');
@@ -44,12 +46,14 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         var $input = this.$(".NB-feeds-selector-input");
         var $feed_list    = NEWSBLUR.reader.$s.$feed_list;
         var $social_feeds = NEWSBLUR.reader.$s.$social_feeds;
+        var $body = NEWSBLUR.reader.$s.$body;
         
         $input.blur();
         this.$el.hide();
         this.$next_feed = null;
         $feed_list.removeClass('NB-selector-active');
         $social_feeds.removeClass('NB-selector-active');
+        $body.removeClass('NB-selector-active');
         $('.NB-feed-selector-selected').removeClass('NB-feed-selector-selected');
                     
         this.flags.showing_feed_selector = false;
