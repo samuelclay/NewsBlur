@@ -3894,7 +3894,7 @@
                 this.socket.removeAllListeners('feed:update');
                 this.socket.on('feed:update', _.bind(function(feed_id, message) {
                     NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                    this.feed_unread_count(feed_id);
+                    this.feed_unread_count(feed_id, {realtime: true});
                 }, this));
 
                 this.socket.removeAllListeners(NEWSBLUR.Globals.username);
@@ -4039,11 +4039,18 @@
             this.toggle_focus_in_slider();
         },
         
-        feed_unread_count: function(feed_id, callback) {
+        feed_unread_count: function(feed_id, options) {
+            options = options || {};
             feed_id = feed_id || this.active_feed;
             if (!feed_id) return;
             
-            this.model.feed_unread_count(feed_id, callback);
+            var feed = this.model.get_feed(feed_id);
+            var subs = feed.get('num_subscribers');
+            var delay = options.realtime ? subs * 2 : 0; // 1,000 subs = 2 seconds
+            
+            _.delay(_.bind(function() {
+                this.model.feed_unread_count(feed_id, options.callback);
+            }, this), Math.random() * delay);
         },
         
         // ===================
