@@ -952,11 +952,13 @@ class MSocialSubscription(mongo.Document):
                 story = MSharedStory.objects.get(user_id=self.subscription_user_id,
                                                  story_guid=story_id)
             except MSharedStory.DoesNotExist:
+                if settings.DEBUG:
+                    logging.user(request, "~BR~FYCould not find story: %s/%s" %
+                                          (self.subscription_user_id, story_id))
                 continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            if not feed_id:
-                feed_id = story.story_feed_id
+            feed_id = story.story_feed_id
             try:
                 m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
                                                         feed_id=feed_id, 
@@ -966,11 +968,11 @@ class MSocialSubscription(mongo.Document):
                                                             "story_date": story.shared_date,
                                                         })
             except NotUniqueError:
-                if not mark_all_read:
+                if not mark_all_read or settings.DEBUG:
                     logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
                 continue
             except MUserStory.MultipleObjectsReturned:
-                if not mark_all_read:
+                if not mark_all_read or settings.DEBUG:
                     logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
@@ -1052,7 +1054,7 @@ class MSocialSubscription(mongo.Document):
             latest_story_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
                 
         self.last_read_date = latest_story_date
-        self.mark_read_date = UNREAD_CUTOFF
+        self.mark_read_date = latest_story_date
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0

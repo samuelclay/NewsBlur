@@ -4046,11 +4046,11 @@
             this.toggle_focus_in_slider();
         },
         
-        feed_unread_count: function(feed_id) {
+        feed_unread_count: function(feed_id, callback) {
             feed_id = feed_id || this.active_feed;
             if (!feed_id) return;
             
-            this.model.feed_unread_count(feed_id);
+            this.model.feed_unread_count(feed_id, callback);
         },
         
         update_interactions_count: function() {
@@ -5530,9 +5530,9 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (self.flags.social_view && self.flags.river_view) {
+                if (_.contains(['river:blurblogs', 'river:global'], self.active_feed)) {
                     return;
-                } else if (self.flags.social_view && !self.flags.river_view) {
+                } else if (self.flags.social_view) {
                     self.mark_feed_as_read();
                 } else if (self.flags.river_view) {
                     if (self.active_feed == 'river:') {
