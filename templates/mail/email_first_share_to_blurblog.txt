@@ -1,0 +1,13 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Your shared story is now on your Blurblog
+
+You can view your Blurblog here: {{ blurblog_url }}
+
+Your Blurblog also has an RSS feed: {{ blurblog_rss }}
+
+{% if shared_stories > 1 %}You've already shared {{ shared_stories }} stories, but you may not have known that your shared stories are on your Blurblog.{% else %}You just shared your first story on NewsBlur. All of your shared stories are available on your Blurblog.{% endif %}
+
+This is a personal website made for you that you can customize. You can also share out links to your blurblog, where friends and followers can reply and re-share your stories.
+
+Blurblogs were built so you would have a way to share stories with people who aren't on NewsBlur and don't want to load the entire reader just to read and comment on your shared stories.{% endblock body %}

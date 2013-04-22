@@ -173,6 +173,13 @@ class MSocialProfile(mongo.Document):
             self.username_slug,
             Site.objects.get_current().domain.replace('www.', ''))
     
+    @property
+    def blurblog_rss(self):
+        return "%s%s" % (self.blurblog_url, reverse('shared-stories-rss-feed', 
+                                                    kwargs={'user_id': self.user_id, 
+                                                            'username': self.username_slug}))
+
+    
     def recommended_users(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         following_key = "F:%s:F" % (self.user_id)

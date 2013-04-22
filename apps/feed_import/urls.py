@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from apps.feed_import import views
 
 urlpatterns = patterns('apps.feed_import.views',

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 from apps.oauth import views
 
 urlpatterns = patterns('',

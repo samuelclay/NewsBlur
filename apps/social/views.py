@@ -17,7 +17,7 @@ from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MInteraction, MActivity, MFollowRequest
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
-from apps.social.tasks import UpdateRecalcForSubscription
+from apps.social.tasks import UpdateRecalcForSubscription, EmailFirstShare
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
@@ -590,6 +590,8 @@ def mark_story_as_shared(request):
     if shared_story.source_user_id and shared_story.comments:
         EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=shared_story.id),
                                        countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
+    
+    EmailFirstShare.apply_async(kwargs=dict(user_id=request.user.pk))
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)

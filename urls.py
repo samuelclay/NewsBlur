@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import include, url, patterns
+from django.conf.urls import include, url, patterns
 from django.conf import settings
 from apps.reader import views as reader_views
 from apps.static import views as static_views
