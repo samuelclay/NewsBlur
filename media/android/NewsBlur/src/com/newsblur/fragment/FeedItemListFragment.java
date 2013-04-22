@@ -2,16 +2,20 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -36,6 +40,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.MarkStoryAsReadTask;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -179,44 +184,47 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 		if (item.getItemId() == R.id.menu_mark_story_as_read) {
 			final Story story = adapter.getStory(menuInfo.position);
-			ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
-			storyIdsToMarkRead.add(story.id);
-			new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
-
-				@Override
-				protected void onPostExecute(Void result) {
-					// TODO this isn't sufficient. We also need to update counts
-					ContentValues values = new ContentValues();
-					values.put(DatabaseConstants.STORY_READ, true);
-					contentResolver.update(FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build(), values, null, null);
-					refreshStories();
-				}
-				
-			}.execute();
+			if(story.read == Story.UNREAD) {
+				ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
+				storiesToMarkAsRead.add(story);
+				markStoriesRead(storiesToMarkAsRead);
+			}
 		} else if (item.getItemId() == R.id.menu_mark_previous_stories_as_read) {
-			ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-			final ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
+			final ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
+			ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
 			for(Story story: previousStories) {
-				if(story.read == 0) {
-					storyIdsToMarkRead.add(story.id);
+				if(story.read == Story.UNREAD) {
+					storiesToMarkAsRead.add(story);
 				}
 			}
-			new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
-
-				@Override
-				protected void onPostExecute(Void result) {
-					// TODO this isn't sufficient. We also need to update counts
-					ContentValues values = new ContentValues();
-					values.put(DatabaseConstants.STORY_READ, true);
-					for(String storyId: storyIdsToMarkRead) {
-						contentResolver.update(FeedProvider.STORY_URI.buildUpon().appendPath(storyId).build(), values, null, null);
-					}
-					refreshStories();
-				}
-				
-			}.execute();
+			markStoriesRead(storiesToMarkAsRead);
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	private void markStoriesRead(final ArrayList<Story> storiesToMarkRead) {
+		ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
+		for(Story story: storiesToMarkRead) {
+			storyIdsToMarkRead.add(story.id);
+		}
+		new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
+
+			@Override
+			protected void onPostExecute(Void result) {
+				ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+				for(Story story: storiesToMarkRead) {
+					FeedUtils.appendStoryReadOperations(story, operations);
+				}
+				try {
+					contentResolver.applyBatch(FeedProvider.AUTHORITY, operations);
+				} catch (Exception e) {
+					Log.e(TAG, "Failed to update feed read status in local DB for " + storiesToMarkRead.size() + " stories");
+					e.printStackTrace();
+				}
+				refreshStories();
+			}
+			
+		}.execute();
 	}
 
 	@Override
