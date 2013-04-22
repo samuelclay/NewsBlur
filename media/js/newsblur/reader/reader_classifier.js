@@ -221,13 +221,15 @@ var classifier_prototype = {
         var offset_bottom = $(".NB-modal-submit-bottom", this.$modal).outerHeight(true);
         var container_height = $(".simplemodal-container").height();
         var new_form_height;
-        
+        var i = 0;
         while (form_outerheight + offset_top + offset_bottom > container_height) {
+            // console.log(["fit_classifiers", form_outerheight, offset_top, offset_bottom, container_height]);
+            i++;
             $form.height(form_height - 1);
             new_form_height = $form.innerHeight();
             form_outerheight = $form.outerHeight(true);
-            if (new_form_height == form_height) break;
-            form_height = new_form_height;
+            if (new_form_height == form_height || i > 500) break;
+            form_height = Math.min(new_form_height, form_height-1);
         }
     },
     
