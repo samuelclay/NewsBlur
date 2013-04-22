@@ -3575,8 +3575,7 @@
             
             var view_not_empty;
             if (unread_view >= 1) {
-                view_not_empty = this.model.preference('lock_green_slider') || 
-                                 NEWSBLUR.assets.feeds.any(function(feed) { 
+                view_not_empty = NEWSBLUR.assets.feeds.any(function(feed) { 
                     return feed.get('ps');
                 });
             } else {
@@ -3584,7 +3583,6 @@
                     return feed.get('ps') || feed.get('nt');
                 });                
             }
-
             $(".NB-feeds-list-empty").remove();
             if (!view_not_empty && !all_mode) {
                 var $empty = $.make("div", { className: "NB-feeds-list-empty" }, [
