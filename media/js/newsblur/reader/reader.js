@@ -5579,7 +5579,7 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (self.flags.social_view && self.flags.river_view) {
+                if (_.contains(['river:blurblogs', 'river:global'], self.active_feed)) {
                     return;
                 } else if (self.flags.social_view) {
                     self.mark_feed_as_read();
