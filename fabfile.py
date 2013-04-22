@@ -123,9 +123,11 @@ def post_deploy():
 def deploy(fast=False):
     deploy_code(copy_assets=False, fast=fast)
 
+@parallel
 def deploy_web(fast=False):
     deploy_code(copy_assets=True, fast=fast, full=False)
 
+@parallel
 def deploy_full(fast=False):
     deploy_code(copy_assets=True, fast=fast, full=True)
 
