@@ -762,7 +762,8 @@ def setup_db_firewall():
                   env.roledefs['dbdo'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
-                  env.roledefs['task']):
+                  env.roledefs['task'] + 
+                  env.roledefs['node']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
