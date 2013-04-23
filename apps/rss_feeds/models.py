@@ -1262,7 +1262,8 @@ class Feed(models.Model):
             return self.min_to_decay
         
         upd  = max(self.stories_last_month / 30.0, self.average_stories_per_month / 30.0)
-        subs = self.active_premium_subscribers + (self.active_subscribers / 10.0)
+        subs = (self.active_premium_subscribers + 
+                ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
         # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
         # UPD = 1  Subs = 1:  t = 60        # 17231  * 1440/60 =      413544
         # UPD < 1  Subs > 1:  t = 60        # 37904  * 1440/60 =      909696
@@ -1315,7 +1316,7 @@ class Feed(models.Model):
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
-                                                self.stories_last_month))
+                                                upd))
         return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
