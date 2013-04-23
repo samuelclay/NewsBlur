@@ -1261,7 +1261,7 @@ class Feed(models.Model):
         if self.min_to_decay and not force:
             return self.min_to_decay
         
-        upd  = self.stories_last_month / 30.0
+        upd  = max(self.stories_last_month / 30.0, self.average_stories_per_month / 30.0)
         subs = self.active_premium_subscribers + (self.active_subscribers / 10.0)
         # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
         # UPD = 1  Subs = 1:  t = 60        # 17231  * 1440/60 =      413544
