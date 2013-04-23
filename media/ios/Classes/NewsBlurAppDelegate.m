@@ -195,7 +195,6 @@
     [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
     splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
     //    splashView.frame = CGRectMake(-60, -80, 440, 728);
-    splashView.alpha = .4;
     [UIView commitAnimations];
     
     [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];

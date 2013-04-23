@@ -21,12 +21,25 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/NewsBlurAppDelegate.m"
-         timestampString = "387479373.491375"
+         timestampString = "388367641.684266"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "683"
-         endingLineNumber = "683"
+         startingLineNumber = "682"
+         endingLineNumber = "682"
          landmarkName = "-loadRiverFeedDetailView"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Classes/FeedDetailMenuViewController.m"
+         timestampString = "388368109.847691"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "74"
+         endingLineNumber = "74"
+         landmarkName = "-automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

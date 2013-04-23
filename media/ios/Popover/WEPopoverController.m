@@ -68,7 +68,8 @@
 }
 
 - (BOOL)forwardAppearanceMethods {
-    return ![contentViewController respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
+    return YES;
+    return ![contentViewController respondsToSelector:@selector(shouldAutomaticallyForwardAppearanceMethods)];
 }
 
 //Overridden setter to copy the passthroughViews to the background view if it exists already

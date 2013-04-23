@@ -25,6 +25,7 @@
 #import "WEPopoverController.h"
 #import "UIBarButtonItem+Image.h"
 #import "TransparentToolbar.h"
+#import "FeedDetailMenuViewController.h"
 
 
 #define kTableViewRowHeight 61;
@@ -1116,6 +1117,7 @@
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]
                                       initWithContentViewController:(UIViewController *)appDelegate.feedDetailMenuViewController];
+            [appDelegate.feedDetailMenuViewController buildMenuOptions];
             self.popoverController.delegate = self;
         } else {
             [self.popoverController dismissPopoverAnimated:YES];
@@ -1125,8 +1127,8 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        BOOL everything = appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"];
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, everything ? 38 * 2 : 38 * 6)];
+        int menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];
