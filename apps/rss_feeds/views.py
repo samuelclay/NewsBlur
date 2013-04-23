@@ -177,7 +177,7 @@ def load_feed_statistics(request, feed_id):
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
     
-    logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
+    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
 
     return stats
 
