@@ -1345,7 +1345,9 @@ class Feed(models.Model):
                                 minutes = total + random_factor)
         
         self.min_to_decay = total
-        if not skip_scheduling:
+        delta = self.next_scheduled_update - datetime.datetime.now()
+        minutes_to_next_fetch = delta.total_seconds() / 60
+        if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
                 r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
