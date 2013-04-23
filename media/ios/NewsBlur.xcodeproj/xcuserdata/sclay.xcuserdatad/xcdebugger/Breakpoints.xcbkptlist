@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/StoryPageControl.m"
-         timestampString = "388435656.299212"
+         timestampString = "388436032.669192"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "301"
-         endingLineNumber = "301"
+         startingLineNumber = "299"
+         endingLineNumber = "299"
          landmarkName = "-resizeScrollView"
          landmarkType = "5">
       </FileBreakpoint>

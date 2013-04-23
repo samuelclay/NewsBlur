@@ -493,7 +493,7 @@ def load_single_feed(request, feed_id):
     read_filter             = request.REQUEST.get('read_filter', 'all')
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
-    if page > 2: time.sleep(5)
+    
     dupe_feed_id = None
     userstories_db = None
     user_profiles = []
