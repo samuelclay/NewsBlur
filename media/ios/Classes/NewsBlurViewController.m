@@ -128,16 +128,16 @@ static const CGFloat kFolderTitleHeight = 28;
                                           barMetrics:UIBarMetricsDefault];
     [[UISegmentedControl appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [UIFont boldSystemFontOfSize:11.0f], UITextAttributeFont,
-                             UIColorFromRGB(0x505050), UITextAttributeTextColor,
+                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
                              UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]
      forState:UIControlStateNormal];
     [[UISegmentedControl appearance]
      setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [UIFont boldSystemFontOfSize:11.0f], UITextAttributeFont,
-                             UIColorFromRGB(0x505050), UITextAttributeTextColor,
+                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
                              UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
                              [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
                              nil]

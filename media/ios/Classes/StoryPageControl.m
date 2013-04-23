@@ -99,6 +99,7 @@
                             percentage:20];
     [self.traverseView addSubview:circularProgressView];
     [circularProgressView addGestureRecognizer:tap];
+    self.loadingIndicator.frame = self.circularProgressView.frame;
     self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
 
 
@@ -392,6 +393,7 @@
     
     [self resizeScrollView];
     [self.loadingIndicator stopAnimating];
+    self.circularProgressView.hidden = NO;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
@@ -957,6 +959,7 @@
     if (nextLocation == -1 && unreadCount > 0 &&
         fdvc.feedPage < 100) {
         [self.loadingIndicator startAnimating];
+        self.circularProgressView.hidden = YES;
         self.buttonNext.enabled = NO;
         // Fetch next page and see if it has the unreads.
         self.waitingForNextUnreadFromServer = YES;
@@ -974,6 +977,7 @@
 
 - (IBAction)doPreviousStory {
     [self.loadingIndicator stopAnimating];
+    self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
         [appDelegate.navigationController

@@ -55,7 +55,9 @@ static NSMutableDictionary *imageCache;
 
 + (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial {
     UIImage *image;
-    image = [imageCache objectForKey:filename];
+    if (filename && [[imageCache allKeys] containsObject:filename]) {
+        image = [imageCache objectForKey:filename];
+    }
     
     if (!image || [image class] == [NSNull class]) {
         // Image not in cache, search on disk.

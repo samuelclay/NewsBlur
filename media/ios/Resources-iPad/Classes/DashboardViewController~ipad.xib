@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1552</int>
-		<string key="IBDocument.SystemVersion">12C3006</string>
+		<string key="IBDocument.SystemVersion">12D78</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1187.34</string>
-		<string key="IBDocument.HIToolboxVersion">625.00</string>
+		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">2083</string>
@@ -150,6 +150,7 @@
 								<string key="NSFrame">{{119, 8}, {240, 30}}</string>
 								<reference key="NSSuperview" ref="166456364"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -157,8 +158,8 @@
 								<int key="IBNumberOfSegments">2</int>
 								<int key="IBSelectedSegmentIndex">0</int>
 								<array key="IBSegmentTitles">
-									<string>Interactions</string>
-									<string>Your Activities</string>
+									<string>INTERACTIONS</string>
+									<string>ACTIVITIES</string>
 								</array>
 								<array class="NSMutableArray" key="IBSegmentWidths">
 									<real value="0.0"/>
@@ -421,18 +422,13 @@
 					<string key="className">AddSiteViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="addFolder">id</string>
 						<string key="addSite">id</string>
 						<string key="checkSiteAddress">id</string>
 						<string key="doAddButton">id</string>
 						<string key="doCancelButton">id</string>
-						<string key="selectAddTypeSignup">id</string>
+						<string key="toggleAddFolder:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="addFolder">
-							<string key="name">addFolder</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="addSite">
 							<string key="name">addSite</string>
 							<string key="candidateClassName">id</string>
@@ -449,16 +445,16 @@
 							<string key="name">doCancelButton</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="selectAddTypeSignup">
-							<string key="name">selectAddTypeSignup</string>
+						<object class="IBActionInfo" key="toggleAddFolder:">
+							<string key="name">toggleAddFolder:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="activityIndicator">UIActivityIndicatorView</string>
 						<string key="addButton">UIBarButtonItem</string>
+						<string key="addFolderButton">UIButton</string>
 						<string key="addFolderInput">UITextField</string>
-						<string key="addTypeControl">UISegmentedControl</string>
 						<string key="addingLabel">UILabel</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="cancelButton">UIBarButtonItem</string>
@@ -480,13 +476,13 @@
 							<string key="name">addButton</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="addFolderButton">
+							<string key="name">addFolderButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="addFolderInput">
 							<string key="name">addFolderInput</string>
 							<string key="candidateClassName">UITextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="addTypeControl">
-							<string key="name">addTypeControl</string>
-							<string key="candidateClassName">UISegmentedControl</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="addingLabel">
 							<string key="name">addingLabel</string>
@@ -680,6 +676,7 @@
 						<string key="spacer3BarButton">UIBarButtonItem</string>
 						<string key="spacerBarButton">UIBarButtonItem</string>
 						<string key="storyTitlesTable">UITableView</string>
+						<string key="titleImageBarButton">UIBarButtonItem</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="appDelegate">
@@ -718,6 +715,10 @@
 							<string key="name">storyTitlesTable</string>
 							<string key="candidateClassName">UITableView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="titleImageBarButton">
+							<string key="name">titleImageBarButton</string>
+							<string key="candidateClassName">UIBarButtonItem</string>
+						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
@@ -744,33 +745,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FeedsMenuViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">FindSitesViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="sitesSearchBar">UISearchBar</string>
-						<string key="sitesTable">UITableView</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="appDelegate">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="sitesSearchBar">
-							<string key="name">sitesSearchBar</string>
-							<string key="candidateClassName">UISearchBar</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="sitesTable">
-							<string key="name">sitesTable</string>
-							<string key="candidateClassName">UITableView</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/FindSitesViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1329,6 +1303,14 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">NSLayoutConstraint</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurAppDelegate</string>
 					<string key="superclassName">BaseViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
@@ -1339,7 +1321,6 @@
 						<string key="feedDetailViewController">FeedDetailViewController</string>
 						<string key="feedsMenuViewController">FeedsMenuViewController</string>
 						<string key="feedsViewController">NewsBlurViewController</string>
-						<string key="findSitesViewController">FindSitesViewController</string>
 						<string key="firstTimeUserAddFriendsViewController">FirstTimeUserAddFriendsViewController</string>
 						<string key="firstTimeUserAddNewsBlurViewController">FirstTimeUserAddNewsBlurViewController</string>
 						<string key="firstTimeUserAddSitesViewController">FirstTimeUserAddSitesViewController</string>
@@ -1387,10 +1368,6 @@
 						<object class="IBToOneOutletInfo" key="feedsViewController">
 							<string key="name">feedsViewController</string>
 							<string key="candidateClassName">NewsBlurViewController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="findSitesViewController">
-							<string key="name">findSitesViewController</string>
-							<string key="candidateClassName">FindSitesViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="firstTimeUserAddFriendsViewController">
 							<string key="name">firstTimeUserAddFriendsViewController</string>
@@ -1588,6 +1565,9 @@
 						<string key="doCloseOriginalStoryViewController">id</string>
 						<string key="doOpenActionSheet">id</string>
 						<string key="loadAddress:">id</string>
+						<string key="webViewGoBack:">id</string>
+						<string key="webViewGoForward:">id</string>
+						<string key="webViewRefresh:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="doCloseOriginalStoryViewController">
@@ -1600,6 +1580,18 @@
 						</object>
 						<object class="IBActionInfo" key="loadAddress:">
 							<string key="name">loadAddress:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="webViewGoBack:">
+							<string key="name">webViewGoBack:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="webViewGoForward:">
+							<string key="name">webViewGoForward:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="webViewRefresh:">
+							<string key="name">webViewRefresh:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1691,8 +1683,11 @@
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="appdotnetButton">UIButton</string>
 						<string key="commentField">UITextView</string>
 						<string key="facebookButton">UIButton</string>
+						<string key="keyboardHeight">NSLayoutConstraint</string>
+						<string key="storyTitle">UILabel</string>
 						<string key="submitButton">UIBarButtonItem</string>
 						<string key="twitterButton">UIButton</string>
 					</dictionary>
@@ -1701,6 +1696,10 @@
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="appdotnetButton">
+							<string key="name">appdotnetButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="commentField">
 							<string key="name">commentField</string>
 							<string key="candidateClassName">UITextView</string>
@@ -1708,6 +1707,14 @@
 						<object class="IBToOneOutletInfo" key="facebookButton">
 							<string key="name">facebookButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="keyboardHeight">
+							<string key="name">keyboardHeight</string>
+							<string key="candidateClassName">NSLayoutConstraint</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="storyTitle">
+							<string key="name">storyTitle</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="submitButton">
 							<string key="name">submitButton</string>
@@ -1793,17 +1800,16 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="activity">UIBarButtonItem</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="bottomPlaceholderToolbar">UIToolbar</string>
 						<string key="buttonAction">UIBarButtonItem</string>
-						<string key="buttonNext">UIBarButtonItem</string>
-						<string key="buttonPrevious">UIBarButtonItem</string>
+						<string key="buttonNext">UIButton</string>
+						<string key="buttonPrevious">UIButton</string>
+						<string key="circularProgressView">THCircularProgressView</string>
 						<string key="fontSettingsButton">UIBarButtonItem</string>
+						<string key="loadingIndicator">UIActivityIndicatorView</string>
 						<string key="originalStoryButton">UIBarButtonItem</string>
 						<string key="pageControl">UIPageControl</string>
-						<string key="progressView">UIProgressView</string>
-						<string key="progressViewContainer">UIView</string>
 						<string key="rightToolbar">TransparentToolbar</string>
 						<string key="scrollView">UIScrollView</string>
 						<string key="separatorBarButton">UIBarButtonItem</string>
@@ -1811,13 +1817,9 @@
 						<string key="spacer3BarButton">UIBarButtonItem</string>
 						<string key="spacerBarButton">UIBarButtonItem</string>
 						<string key="subscribeButton">UIBarButtonItem</string>
-						<string key="toolbar">UIToolbar</string>
+						<string key="traverseView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="activity">
-							<string key="name">activity</string>
-							<string key="candidateClassName">UIBarButtonItem</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="appDelegate">
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
@@ -1832,15 +1834,23 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="buttonNext">
 							<string key="name">buttonNext</string>
-							<string key="candidateClassName">UIBarButtonItem</string>
+							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="buttonPrevious">
 							<string key="name">buttonPrevious</string>
-							<string key="candidateClassName">UIBarButtonItem</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="circularProgressView">
+							<string key="name">circularProgressView</string>
+							<string key="candidateClassName">THCircularProgressView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="fontSettingsButton">
 							<string key="name">fontSettingsButton</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="loadingIndicator">
+							<string key="name">loadingIndicator</string>
+							<string key="candidateClassName">UIActivityIndicatorView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="originalStoryButton">
 							<string key="name">originalStoryButton</string>
@@ -1849,14 +1859,6 @@
 						<object class="IBToOneOutletInfo" key="pageControl">
 							<string key="name">pageControl</string>
 							<string key="candidateClassName">UIPageControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="progressView">
-							<string key="name">progressView</string>
-							<string key="candidateClassName">UIProgressView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="progressViewContainer">
-							<string key="name">progressViewContainer</string>
-							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="rightToolbar">
 							<string key="name">rightToolbar</string>
@@ -1886,14 +1888,22 @@
 							<string key="name">subscribeButton</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="toolbar">
-							<string key="name">toolbar</string>
-							<string key="candidateClassName">UIToolbar</string>
+						<object class="IBToOneOutletInfo" key="traverseView">
+							<string key="name">traverseView</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/StoryPageControl.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">THCircularProgressView</string>
+					<string key="superclassName">UIView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/THCircularProgressView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

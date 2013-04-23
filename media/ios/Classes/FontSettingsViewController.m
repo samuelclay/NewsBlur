@@ -166,7 +166,7 @@
         cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
     } else if (indexPath.row == 2) {
         cell.textLabel.text = [@"Send to..." uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"email"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
     } else if (indexPath.row == 3) {
         cell.textLabel.text = [@"Train this story" uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];

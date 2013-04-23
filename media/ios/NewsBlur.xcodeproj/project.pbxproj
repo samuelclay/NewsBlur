@@ -290,9 +290,10 @@
 		FF9B566816E810900054BF68 /* Pocket-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566216E810900054BF68 /* Pocket-Icon@2x.png */; };
 		FF9B566916E810900054BF68 /* Readability-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566316E810900054BF68 /* Readability-Icon.png */; };
 		FF9B566A16E810900054BF68 /* Readability-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9B566416E810900054BF68 /* Readability-Icon@2x.png */; };
-		FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
+		FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FC1727098D001D132F /* menu_icn_mail.png */; };
+		FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
 		FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */; };
@@ -817,9 +818,10 @@
 		FF9B566216E810900054BF68 /* Pocket-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Pocket-Icon@2x.png"; sourceTree = "<group>"; };
 		FF9B566316E810900054BF68 /* Readability-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Readability-Icon.png"; sourceTree = "<group>"; };
 		FF9B566416E810900054BF68 /* Readability-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Readability-Icon@2x.png"; sourceTree = "<group>"; };
-		FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "StoryPageControl~ipad.xib"; path = "Resources-iPad/Classes/StoryPageControl~ipad.xib"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
+		FFB757FC1727098D001D132F /* menu_icn_mail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_mail.png; sourceTree = "<group>"; };
+		FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_mail@2x.png"; sourceTree = "<group>"; };
 		FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet_active.png; sourceTree = "<group>"; };
 		FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_appnet_active@2x.png"; sourceTree = "<group>"; };
 		FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet.png; sourceTree = "<group>"; };
@@ -1319,6 +1321,8 @@
 				FFDD848516E8EB1E000AA0A2 /* share@2x.png */,
 				FFDD846816E88722000AA0A2 /* clock.png */,
 				FFDD846916E88722000AA0A2 /* clock@2x.png */,
+				FFB757FC1727098D001D132F /* menu_icn_mail.png */,
+				FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */,
 				FFDD845016E8871A000AA0A2 /* menu_icn_delete.png */,
 				FFDD845116E8871A000AA0A2 /* menu_icn_delete@2x.png */,
 				FFDD845216E8871A000AA0A2 /* menu_icn_fetch_subscribers.png */,
@@ -1646,7 +1650,6 @@
 				FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
-				FFAD0BE61649EC1800EE33D0 /* StoryPageControl~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
 			);
 			name = "Resources-iPad";
@@ -2176,7 +2179,6 @@
 				FF41309D162CEC7100DDB6A7 /* time.png in Resources */,
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
-				FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */,
 				FF67D3B51689746B0057A7DA /* bricks.png in Resources */,
 				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
 				FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */,
@@ -2311,6 +2313,8 @@
 				FFDD848E16E8ED75000AA0A2 /* menu_icn_share.png in Resources */,
 				FFDD848F16E8ED75000AA0A2 /* menu_icn_share@2x.png in Resources */,
 				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
+				FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */,
+				FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
