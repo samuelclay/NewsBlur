@@ -21,10 +21,13 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="14sp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
+            android:shadowColor="@color/black"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -34,6 +37,9 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
+            android:shadowColor="@color/black"
+            android:shadowDy="1"
+            android:shadowRadius="1"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:paddingLeft="4dp"
