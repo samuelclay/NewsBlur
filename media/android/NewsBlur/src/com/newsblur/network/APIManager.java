@@ -468,6 +468,13 @@ public class APIManager {
 		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+
+            // if the response says we aren't logged in, clear the DB and prompt for login. We test this
+            // here, since this the first sync call we make on launch if we believe we are cookied.
+            if (! feedUpdate.isAuthenticated) {
+                PrefsUtils.logout(context);
+                return false;
+            }
 			
 			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
