@@ -407,10 +407,13 @@ class Feed(models.Model):
     
     def calculate_last_story_date(self):
         last_story_date = None
+
         try:
-            last_story_date = MStory.objects(
+            latest_story = MStory.objects(
                 story_feed_id=self.pk
-            ).limit(1).order_by('-story_date').only('story_date').first().story_date
+            ).limit(1).order_by('-story_date').only('story_date').first()
+            if latest_story:
+                last_story_date = latest_story.story_date
         except MStory.DoesNotExist:
             pass
 
