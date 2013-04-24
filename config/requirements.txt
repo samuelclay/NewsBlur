@@ -1,6 +1,6 @@
 BeautifulSoup==3.2.1
 boto==2.8.0
-celery==3.0.16
+celery==3.0.17
 chardet==2.1.1
 cssutils==0.9.10b1
 django-celery-with-redis==3.0

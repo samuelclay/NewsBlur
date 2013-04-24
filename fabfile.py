@@ -561,7 +561,11 @@ def setup_ulimit():
     run('echo "* soft nofile 10000" >> /etc/security/limits.conf', pty=False)
     run('echo "* hard nofile 10000" >> /etc/security/limits.conf', pty=False)
     sudo('chmod 644 /etc/security/limits.conf', pty=False)
-
+    sudo('chmod 666 /etc/sysctl.conf', pty=False)
+    run('echo "fs.file-max = 10000" >> /etc/sysctl.conf', pty=False)
+    sudo('chmod 644 /etc/sysctl.conf', pty=False)
+    sudo('sysctl -p')
+    
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
 
@@ -744,7 +748,7 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============    
 
-@parallel
+# @parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -761,7 +765,7 @@ def setup_db_firewall():
     
     # DigitalOcean
     for ip in set(env.roledefs['app'] + 
-                  env.roledefs['dbdo'] + 
+                  env.roledefs['db'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
                   env.roledefs['task'] + 
