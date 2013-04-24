@@ -126,7 +126,7 @@ def load_feed_statistics(request, feed_id):
     user = get_user(request)
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
-    feed.count_subscribers()
+    feed.update_all_statistics()
     feed.set_next_scheduled_update(verbose=True, skip_scheduling=True)
     feed.save_feed_story_history_statistics()
     feed.save_classifier_counts()

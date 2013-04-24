@@ -104,6 +104,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
               ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
+               data.update_interval_minutes > 60 &&
                   $.make('div', { className: 'NB-statistics-update-explainer' }, [
                     $.make('b', 'Why so infrequently?'),
                     'This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.'
