@@ -1,7 +1,5 @@
 package com.newsblur.fragment;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -12,14 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.activity.Login;
-import com.newsblur.database.BlurDatabase;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 
 public class LogoutDialogFragment extends DialogFragment {
-
-	protected static final String TAG = "LogoutDialogFragment";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,16 +30,7 @@ public class LogoutDialogFragment extends DialogFragment {
 		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
 		okayButton.setOnClickListener(new OnClickListener() {
 			public void onClick(final View v) {
-				SharedPreferences preferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-				preferences.edit().clear().commit();
-				
-				BlurDatabase databaseHelper = new BlurDatabase(getActivity().getApplicationContext());
-				databaseHelper.dropAndRecreateTables();
-				
-				PrefsUtils.clearLogin(getActivity());
-				Intent i = new Intent(getActivity(), Login.class);
-				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(i);
+                PrefsUtils.logout(getActivity());
 			}
 		});
 		

@@ -33,13 +33,14 @@ public class FeedFolderResponse {
 	@SerializedName("social_feeds")
 	public SocialFeed[] socialFeeds;
 
-	public FeedFolderResponse() {
-	}
+	public boolean isAuthenticated;
 	
 	public FeedFolderResponse(String json, Gson gson) {
 
 		JsonParser parser = new JsonParser();
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
+
+        this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
 
 		JsonArray jsonFoldersArray = (JsonArray) asJsonObject.get("folders");
 		ArrayList<String> nestedFolderList = new ArrayList<String>();
