@@ -126,7 +126,7 @@ def load_feed_statistics(request, feed_id):
     user = get_user(request)
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
-    feed.count_subscribers()
+    feed.update_all_statistics()
     feed.set_next_scheduled_update(verbose=True, skip_scheduling=True)
     feed.save_feed_story_history_statistics()
     feed.save_classifier_counts()
@@ -180,7 +180,7 @@ def load_feed_statistics(request, feed_id):
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
     
-    logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
+    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
 
     return stats
 
