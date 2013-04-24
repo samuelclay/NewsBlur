@@ -33,8 +33,8 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if tasked_feeds_size < 2000:
-            feeds = r.srandmember('queued_feeds', 2000)
+        if tasked_feeds_size < 5000:
+            feeds = r.srandmember('queued_feeds', 5000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
         else:
