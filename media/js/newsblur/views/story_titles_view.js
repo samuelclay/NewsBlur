@@ -207,7 +207,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var container_offset = $story_titles.position().top;
         var visible_height = $story_titles.height();
         var scroll_y = $story_titles.scrollTop();
-        var total_height = this.$el.outerHeight(true) + NEWSBLUR.reader.$s.$feedbar.outerHeight(true);
+        var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
         // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height]);
         if (visible_height + scroll_y >= total_height) {
