@@ -694,11 +694,11 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy():
+def setup_haproxy(debug=False):
     sudo('ufw allow 81') # nginx moved
     sudo('ufw allow 1936') # haproxy stats
     sudo('apt-get install -y haproxy')
-    sudo('apt-get remove haproxy')
+    sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -708,7 +708,10 @@ def setup_haproxy():
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
     sudo('mkdir -p /etc/haproxy')
-    put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    if debug:
+        put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    else:
+        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
