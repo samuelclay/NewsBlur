@@ -44,10 +44,7 @@
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:shadowColor="@color/black"
-            android:shadowDy="1"
-            android:shadowRadius="1"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14dp"
             android:textStyle="bold" />
 
@@ -59,9 +56,6 @@
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:shadowColor="@color/black"
-            android:shadowDy="1"
-            android:shadowRadius="1"
             android:textColor="@color/white"
             android:textSize="14dp"
             android:textStyle="bold" />
