@@ -25,7 +25,7 @@
             "fetched_once": false,
             "days_to_trim": 90,
             "num_subscribers": 1,
-            "queued_date": "2011-08-28 00:03:50",
+            "last_story_date": "2011-08-28 00:03:50",
             "min_to_decay": 720,
             "has_feed_exception": false
         }

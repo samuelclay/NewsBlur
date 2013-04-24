@@ -58,7 +58,7 @@ class Feed(models.Model):
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
-    queued_date = models.DateTimeField(db_index=True)
+    last_story_date = models.DateTimeField(null=True, blank=True)
     fetched_once = models.BooleanField(default=False)
     known_good = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -93,7 +93,7 @@ class Feed(models.Model):
             self.pk, 
             self.num_subscribers,
             self.active_subscribers,
-            self.premium_subscribers,
+            self.active_premium_subscribers,
             (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""))
     
     @property
@@ -178,8 +178,6 @@ class Feed(models.Model):
             self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
             self.next_scheduled_update = datetime.datetime.utcnow()
-        if not self.queued_date:
-            self.queued_date = datetime.datetime.utcnow()
         self.fix_google_alerts_urls()
         
         feed_address = self.feed_address or ""
@@ -395,17 +393,36 @@ class Feed(models.Model):
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         
+        if not self.last_story_date:
+            self.calculate_last_story_date()
+        
         count_extra = False
         if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
-        elif self.average_stories_per_month == 0 and self.stories_last_month > 0:
-            count_extra = True
-            
+        
+        if force or full:
+            self.save_feed_stories_last_month()
+
         if force or (full and count_extra):
-            self.count_stories()
             self.save_popular_authors()
             self.save_popular_tags()
+            self.save_feed_story_history_statistics()        
     
+    def calculate_last_story_date(self):
+        last_story_date = None
+        try:
+            last_story_date = MStory.objects(
+                story_feed_id=self.pk
+            ).limit(1).order_by('-story_date').only('story_date').first().story_date
+        except MStory.DoesNotExist:
+            pass
+
+        if not last_story_date or seconds_timesince(last_story_date) < 0:
+            last_story_date = datetime.datetime.now()
+
+        self.last_story_date = last_story_date
+        self.save()
+        
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
         logging.info(" ---> ~SN~FMScheduling immediate premium setup of ~SB%s~SN feeds..." % 
@@ -578,10 +595,6 @@ class Feed(models.Model):
                     self.feed_title,
                 ),
 
-    def count_stories(self, verbose=False):
-        self.save_feed_stories_last_month(verbose)
-        self.save_feed_story_history_statistics()
-    
     def _split_favicon_color(self):
         color = self.favicon_color
         if color:
@@ -1263,26 +1276,38 @@ class Feed(models.Model):
     def get_next_scheduled_update(self, force=False, verbose=True):
         if self.min_to_decay and not force:
             return self.min_to_decay
-            
-        # Use stories per month to calculate next feed update
-        updates_per_month = self.stories_last_month
-        # if updates_per_day < 1 and self.num_subscribers > 2:
-        #     updates_per_day = 1
-        # 0 updates per day = 24 hours
-        # 1 subscriber:
-        #   0 updates per month = 4 hours
-        #   1 update = 2 hours
-        #   2 updates = 1.5 hours
-        #   4 updates = 1 hours
-        #   10 updates = .5 hour
-        # 2 subscribers:
-        #   1 update per day = 1 hours
-        #   10 updates = 20 minutes
-        updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
-                                                    * (updates_per_month**0.25)))
-        if self.active_premium_subscribers > 0:
-            updates_per_day_delay /= min(self.active_subscribers+self.active_premium_subscribers, 4)
-        updates_per_day_delay = int(updates_per_day_delay)
+        
+        upd  = self.stories_last_month / 30.0
+        subs = (self.active_premium_subscribers + 
+                ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
+        # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
+        # UPD = 1  Subs = 1:  t = 60        # 17231  * 1440/60 =      413544
+        # UPD < 1  Subs > 1:  t = 60        # 37904  * 1440/60 =      909696
+        # UPD < 1  Subs = 1:  t = 60 * 12   # 143012 * 1440/(60*12) = 286024
+        # UPD = 0  Subs > 1:  t = 60 * 3    # 28351  * 1440/(60*3) =  226808
+        # UPD = 0  Subs = 1:  t = 60 * 24   # 807690 * 1440/(60*24) = 807690
+        if upd >= 1:
+            if subs > 1:
+                total = 10
+            else:
+                total = 60
+        elif upd > 0:
+            if subs > 1:
+                total = 60 - (upd * 60)
+            else:
+                total = 60*12 - (upd * 60*12)
+        elif upd == 0:
+            if subs > 1:
+                total = 60 * 6
+            else:
+                total = 60 * 24
+            months_since_last_story = seconds_timesince(self.last_story_date) * 60*60*24*30
+            total *= max(1, months_since_last_story)
+        # updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
+        #                                             * (self.stories_last_month**0.25)))
+        # if self.active_premium_subscribers > 0:
+        #     updates_per_day_delay /= min(self.active_subscribers+self.active_premium_subscribers, 4)
+        # updates_per_day_delay = int(updates_per_day_delay)
 
         # Lots of subscribers = lots of updates
         # 24 hours for 0 subscribers.
@@ -1290,45 +1315,25 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
-        if self.premium_subscribers > 0:
-            subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
-        subscriber_bonus = int(subscriber_bonus)
-        
-        slow_punishment = 0
-        if self.num_subscribers <= 1:
-            if 30 <= self.last_load_time < 60:
-                slow_punishment = self.last_load_time
-            elif 60 <= self.last_load_time < 200:
-                slow_punishment = 2 * self.last_load_time
-            elif self.last_load_time >= 200:
-                slow_punishment = 6 * self.last_load_time
-        total = max(10, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
-        
-        if self.active_premium_subscribers >= 2:
-            total = min(total, 3*60)
-        elif self.active_premium_subscribers >= 1:
-            total = min(total, 18*60)
+        # subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        # if self.premium_subscribers > 0:
+        #     subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
+        # subscriber_bonus = int(subscriber_bonus)
 
         if self.is_push:
-            total = total * 20
-        elif ((self.stories_last_month == 0 or self.average_stories_per_month == 0)):
             total = total * 12
         
-        # 1 week max
-        if total > 60*24*7:
-            total = 60*24*7
+        # 3 day max
+        if total > 60*24*3:
+            total = 60*24*3
         
         if verbose:
-            logging.debug("   ---> [%-30s] Fetched every %sm (%s+%s+%s) Subs: %s/%s Stories: %s/%s" % (
+            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
                                                 unicode(self)[:30], total, 
-                                                updates_per_day_delay,
-                                                subscriber_bonus, 
-                                                slow_punishment,
                                                 self.num_subscribers,
+                                                self.active_subscribers,
                                                 self.active_premium_subscribers,
-                                                self.average_stories_per_month,
-                                                self.stories_last_month))
+                                                upd))
         return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
@@ -1395,7 +1400,6 @@ class Feed(models.Model):
             self.schedule_feed_fetch_immediately()
         else:
             logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
-            # self.queued_date = datetime.datetime.utcnow()
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     

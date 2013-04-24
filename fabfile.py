@@ -874,6 +874,9 @@ def setup_redis(slave=False):
         put('config/redis_slave.conf', '/etc/redis_server.conf', use_sudo=True)
     else:
         put('config/redis_master.conf', '/etc/redis_server.conf', use_sudo=True)
+    sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
+    run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
+    sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')
