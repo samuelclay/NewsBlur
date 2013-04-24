@@ -33,7 +33,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-following' }, 'I\'m Following'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-followers' }, 'Following Me')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Friends and Followers'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Friends and Followers'
+            ]),
             $.make('div', { className: 'NB-tab NB-tab-findfriends NB-active' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Your profile'),
@@ -101,22 +104,25 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $services = $('.NB-friends-services', this.$modal).empty();
         var service_syncing = false;
         
-        _.each(['twitter', 'facebook'], _.bind(function(service) {
+        _.each(['twitter', 'facebook', 'appdotnet'], _.bind(function(service) {
             var $service;
             
             if (this.services && this.services[service][service+'_uid']) {
                 var syncing = this.services[service].syncing;
                 if (syncing) service_syncing = true;
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
+                    $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service.png' }),
+                        syncing ? 'Fetching...' : 'Connected'
+                    ])
                 ]);
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Find ' + _.string.capitalize(service) + ' Friends'
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service_off.png' }),
+                        'Find ' + NEWSBLUR.utils.service_name(service) + ' Friends'
                     ])
                 ]);
             }
@@ -134,8 +140,13 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $services.prepend($autofollow);
         
         $('.NB-friends-search').html($.make('div', [
-            $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
-            $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' }),
+            $.make('div', { className: "NB-module-search-input NB-module-search-people" }, [
+                $.make('div', { className: "NB-search-close" }),
+                $.make('label', { 'for': "NB-friends-search-input" }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "img/reader/search_icon2.png" })
+                ]),
+                $.make('input', { id: "NB-friends-search-input", className: 'NB-input', placeholder: "Username or email..." })
+            ]),
             $.make('div', { className: 'NB-loading NB-friends-search-loading' }),
             $.make('div', { className: 'NB-friends-search-badges' })
         ]));
@@ -193,10 +204,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
             $tab.append($ghost);
         } else {
-            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
-                'You are followed by ',
-                Inflector.pluralize('person', this.profile.get('follower_count'), true),
-                '.'
+            var $heading = $.make('fieldset', [
+                $.make('legend', { className: 'NB-profile-section-heading' }, [
+                    'You are followed by ',
+                    Inflector.pluralize('person', this.profile.get('follower_count'), true)
+                ])
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.follower_profiles.each(_.bind(function(profile) {
@@ -211,10 +223,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
             $tab.append($ghost);
         } else {
-            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
-                'You are following ',
-                Inflector.pluralize('person', this.profile.get('following_count'), true),
-                '.'
+            var $heading = $.make('fieldset', [
+                $.make('legend', { className: 'NB-profile-section-heading' }, [
+                    'You are following ',
+                    Inflector.pluralize('person', this.profile.get('following_count'), true)
+                ])
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.following_profiles.each(_.bind(function(profile) {
@@ -393,6 +406,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 service = 'twitter';
             } else if ($service.hasClass('NB-friends-service-facebook')) {
                 service = 'facebook';
+            } else if ($service.hasClass('NB-friends-service-appdotnet')) {
+                service = 'appdotnet';
             }
             if ($service.hasClass('NB-connected')) {
                 self.disconnect(service);

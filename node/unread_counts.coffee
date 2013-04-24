@@ -40,8 +40,12 @@ io.configure 'development', ->
 io.sockets.on 'connection', (socket) ->
     socket.on 'subscribe:feeds', (@feeds, @username) ->
         console.log "   ---> [#{@username}] Subscribing to #{feeds.length} feeds " +
-                    " (#{io.sockets.clients().length} users on)"
-
+                    " (#{io.sockets.clients().length} users on) " +
+                    " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+        
+        if not @username
+            return
+        
         socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.subscribe @feeds
@@ -56,6 +60,7 @@ io.sockets.on 'connection', (socket) ->
 
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
-        console.log "   ---> [#{@username}] Disconnect, there are now" +
-                    " #{io.sockets.clients().length-1} users. " +
+        ip = socket.handshake.address.address
+        console.log "   ---> [#{@username}] Disconnect (#{@feeds?.length} feeds, #{ip})," +
+                    " there are now #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"

@@ -1,6 +1,16 @@
 NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
+    events: {
+        "click .NB-feedbar-options"         : "open_options_popover"
+    },
+    
     el: $('.NB-feedbar'),
+    
+    initialize: function() {
+        this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
+            NEWSBLUR.reader.active_folder && 
+            (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
+    },
     
     render: function() {
         var $view;
@@ -17,17 +27,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 feedbar_view: this
             }).render();
             $view.append(this.view.$el);
-        } else if (NEWSBLUR.reader.flags['river_view'] && 
-            NEWSBLUR.reader.active_folder && 
-            NEWSBLUR.reader.active_folder.get('fake')) {
-            var title = "All Site Stories";
-            if (NEWSBLUR.reader.flags['social_view']) {
-                if (NEWSBLUR.reader.flags['global_blurblogs']) {
-                    title = "Global Shared Stories";
-                } else {
-                    title = "All Shared Stories";
-                }
-            }
+        } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-story-title-indicator">\
@@ -36,10 +36,22 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     </div>\
                     <div class="NB-folder-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text"><%= folder_title %></div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <% if (show_options) { %>\
+                        <div class="NB-feedbar-options-container">\
+                            <span class="NB-feedbar-options">\
+                                <div class="NB-icon"></div>\
+                                <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
+                                &middot;\
+                                <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
+                            </span>\
+                        </div>\
+                    <% } %>\
                 </div>\
             ', {
-                folder_title: title
+                folder_title: this.fake_folder_title(),
+                folder_id: NEWSBLUR.reader.active_feed,
+                show_options: !NEWSBLUR.reader.active_folder.get('fake')
             }));
         } else if (NEWSBLUR.reader.flags['river_view'] && 
                    NEWSBLUR.reader.active_folder &&
@@ -66,6 +78,19 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         return this;
     },
     
+    fake_folder_title: function() {
+        var title = "All Site Stories";
+        if (NEWSBLUR.reader.flags['social_view']) {
+            if (NEWSBLUR.reader.flags['global_blurblogs']) {
+                title = "Global Shared Stories";
+            } else {
+                title = "All Shared Stories";
+            }
+        }
+        
+        return title;
+    },
+    
     remove: function() {
         if (this.view) {
             this.view.remove();
@@ -78,9 +103,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     // ===========
     
     show_feed_hidden_story_title_indicator: function(is_feed_load) {
-        if (is_feed_load && NEWSBLUR.reader.flags['unread_threshold_temporarily']) return;
-        else NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
+        if (!is_feed_load) return;
         if (!NEWSBLUR.reader.active_feed) return;
+        NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
@@ -103,8 +128,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             return;
         }
         
-        $indicator.css({'display': 'block', 'opacity': 0});
         if (is_feed_load) {
+            $indicator.css({'display': 'block', 'opacity': 0});
             _.delay(function() {
                 $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
             }, 500);
@@ -153,6 +178,16 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                       .addClass('unread_threshold_negative');
             $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
         }
+    },
+    
+    open_options_popover: function() {
+        if (!this.showing_fake_folder) return;
+        
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: NEWSBLUR.reader.active_feed
+        });
     }
+
     
 });

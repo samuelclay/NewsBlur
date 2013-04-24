@@ -393,11 +393,10 @@
     [self refreshWithProfile:newProfile showStats:self.shouldShowStats withWidth:0];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     [self.activityIndicator stopAnimating];
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
-
 @end

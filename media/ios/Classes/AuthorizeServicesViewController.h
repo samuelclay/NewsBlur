@@ -13,14 +13,18 @@
 @interface AuthorizeServicesViewController : UIViewController <UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     NSString *url;
-    NSString *type;        
+    NSString *type;
+    BOOL fromStory;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *url;
 @property (nonatomic) NSString *type;
+@property (nonatomic, readwrite) BOOL fromStory;
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
+- (void)doCancelButton;
 - (void)showError:(NSString *)error;
+
 @end

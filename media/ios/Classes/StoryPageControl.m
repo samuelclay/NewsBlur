@@ -22,19 +22,22 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "SHK.h"
+#import "TransparentToolbar.h"
+#import "UIBarButtonItem+Image.h"
+#import "ShareThis.h"
+#import "THCircularProgressView.h"
 
 @implementation StoryPageControl
 
 @synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
-@synthesize progressView;
-@synthesize progressViewContainer;
-@synthesize toolbar;
+@synthesize circularProgressView;
+@synthesize separatorBarButton;
+@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
+@synthesize rightToolbar;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
-@synthesize activity;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
@@ -47,6 +50,8 @@
 @synthesize waitingForNextUnreadFromServer;
 @synthesize storyHUD;
 @synthesize scrollingToPage;
+@synthesize traverseView;
+@synthesize traversePinned, traverseFloating;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -77,32 +82,49 @@
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
     
     popoverClass = [WEPopoverController class];
-
-    // loading indicator
-    self.loadingIndicator = [[UIActivityIndicatorView alloc]
-                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    self.activity.customView = self.loadingIndicator;
     
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
     
-    [self.progressViewContainer addGestureRecognizer:tap];
-    self.progressViewContainer.hidden = YES;
+    CGFloat radius = 8;
+    circularProgressView = [[THCircularProgressView alloc]
+                            initWithCenter:CGPointMake(self.traverseView.frame.size.width - 101,
+                                                       self.traverseView.frame.size.height / 2)
+                            radius:radius
+                            lineWidth:radius / 4.0f
+                            progressMode:THProgressModeFill
+                            progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
+                            progressBackgroundMode:THProgressBackgroundModeCircumference
+                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
+                            percentage:20];
+    [self.traverseView addSubview:circularProgressView];
+    [circularProgressView addGestureRecognizer:tap];
+    self.loadingIndicator.frame = self.circularProgressView.frame;
+    self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
+
+
+    rightToolbar = [[TransparentToolbar alloc]
+                    initWithFrame:CGRectMake(0, 0, 80, 44)];
     
+    spacerBarButton = [[UIBarButtonItem alloc]
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacerBarButton.width = -12;
+    spacer2BarButton = [[UIBarButtonItem alloc]
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer2BarButton.width = -4;
+    spacer3BarButton = [[UIBarButtonItem alloc]
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer3BarButton.width = -10;
     
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleFontSize:)];
+    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
+    [separatorBarButton setEnabled:NO];
     
-    self.fontSettingsButton = settingsButton;
+    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(toggleFontSize:)];
     
-    // original button for iPhone
-    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Original"
-                                       style:UIBarButtonItemStyleBordered
-                                       target:self
-                                       action:@selector(showOriginalSubview:)
-                                       ];
-    
-    self.originalStoryButton = originalButton;
+    UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
+    originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(showOriginalSubview:)];
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
@@ -119,23 +141,22 @@
     self.buttonBack = backButton;
     
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        backBtn.frame = CGRectMake(0, 0, 51, 31);
-        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
-        [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
-        self.navigationItem.backBarButtonItem = back;
-        
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalButton, settingsButton, nil];
-    } else {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 fontSettingsButton,
+                                 spacer2BarButton,
+                                 separatorBarButton,
+                                 spacer3BarButton,
+                                 originalStoryButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
+    
+    _orientation = [UIApplication sharedApplication].statusBarOrientation;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -145,14 +166,16 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
             UIImage *titleImage;
-            if (appDelegate.isSocialRiverView) {
-                titleImage = [UIImage imageNamed:@"group_white.png"];
+            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_global"]) {
+                titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_blurblogs"]) {
+                titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
-                titleImage = [UIImage imageNamed:@"archive_white.png"];
+                titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
             } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
-                titleImage = [UIImage imageNamed:@"clock_white.png"];
+                titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder_white.png"];
+                titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
@@ -184,6 +207,9 @@
     }
     
     previousPage.view.hidden = YES;
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -203,7 +229,28 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        
+        
+        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        
+    } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
+        
+        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+    }
     [self refreshPages];
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
+}
+
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if (interfaceOrientation != _orientation) {
+        _orientation = interfaceOrientation;
+        [self refreshPages];
+        previousPage.view.hidden = YES;
+    }
 }
 
 - (void)resetPages {
@@ -230,9 +277,9 @@
 }
 
 - (void)refreshPages {
+    int pageIndex = currentPage.pageIndex;
     [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
-    int pageIndex = currentPage.pageIndex;
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
@@ -346,6 +393,7 @@
     
     [self resizeScrollView];
     [self.loadingIndicator stopAnimating];
+    self.circularProgressView.hidden = NO;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
@@ -400,6 +448,21 @@
 //    if (self.isDraggingScrollview) {
         [self setStoryFromScroll];
 //    }
+    
+    // Stick to bottom
+    CGRect tvf = self.traverseView.frame;
+    traversePinned = YES;
+    [UIView animateWithDuration:.3 delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         self.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                              self.scrollView.frame.size.height - tvf.size.height,
+                                                              tvf.size.width, tvf.size.height);
+                         self.traverseView.alpha = 1;
+                         self.traversePinned = YES;
+                     } completion:^(BOOL finished) {
+                         
+                     }];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -423,7 +486,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        keyPath == @"contentOffset" &&
+        [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
         CGFloat pageWidth = self.scrollView.frame.size.width;
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
@@ -531,10 +594,16 @@
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     self.bottomPlaceholderToolbar.hidden = YES;
-    self.progressViewContainer.hidden = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
+        [rightToolbar setItems: [NSArray arrayWithObjects:
+                                 spacerBarButton,
+                                 fontSettingsButton,
+                                 spacer2BarButton,
+                                 separatorBarButton,
+                                 spacer3BarButton,
+                                 originalStoryButton, nil]];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
     }
     
     [self setNextPreviousButtons];
@@ -554,13 +623,17 @@
     }
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSLog(@"Error in story detail: %@", [request error]);
+- (void)requestFailed:(id)request {
     NSString *error;
-    if ([request error]) {
-        error = [NSString stringWithFormat:@"%@", [request error]];
+    if ([request class] == [ASIHTTPRequest class]) {
+        NSLog(@"Error in story detail: %@", [request error]);
+        if ([request error]) {
+            error = [NSString stringWithFormat:@"%@", [request error]];
+        } else {
+            error = @"The server barfed!";
+        }
     } else {
-        error = @"The server barfed!";
+        error = request;
     }
     [self informError:error];
 }
@@ -579,34 +652,30 @@
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
             [buttonPrevious setEnabled:NO];
+            [buttonPrevious setAlpha:.4];
         } else {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
             [buttonPrevious setEnabled:YES];
+            [buttonPrevious setAlpha:1];
         }
     
     // setting up the NEXT UNREAD STORY BUTTON
+    buttonNext.enabled = YES;
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
-    if (nextIndex == -1 && unreadCount > 0) {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
-    } else if (nextIndex == -1) {
-        [buttonNext setStyle:UIBarButtonItemStyleDone];
-        [buttonNext setTitle:@"Done"];
+    if ((nextIndex == -1 && unreadCount > 0) ||
+        nextIndex != -1) {
+        [buttonNext setTitle:@"NEXT" forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"] forState:UIControlStateNormal];
     } else {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
+        [buttonNext setTitle:@"DONE" forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"] forState:UIControlStateNormal];
     }
-    buttonNext.enabled = YES;
     
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    [progressView setProgress:progress];
+    circularProgressView.percentage = progress;
 }
 
 - (void)markStoryAsRead {
@@ -693,10 +762,9 @@
 - (void)openSendToDialog {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
-    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory
-                                            objectForKey:@"story_title"]];
-    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-    [actionSheet showInView:self.view];
+    NSString *title = [appDelegate.activeStory
+                       objectForKey:@"story_title"];
+    [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
 }
 
 - (void)markStoryAsSaved {
@@ -786,8 +854,17 @@
         return [self requestFailed:request];
     }
     
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc]
+                             initWithDictionary:[responseString JSONValue]];
+    
+    if ([[results objectForKey:@"code"] intValue] < 0) {
+        return [self requestFailed:[results objectForKey:@"message"]];
+    }
+    
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self setNextPreviousButtons];
     
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
@@ -824,7 +901,7 @@
 
 - (IBAction)toggleFontSize:(id)sender {    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFontSettingsPopover:sender];
+        [appDelegate.masterContainerViewController showFontSettingsPopover:self.fontSettingsButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]
@@ -882,7 +959,7 @@
     if (nextLocation == -1 && unreadCount > 0 &&
         fdvc.feedPage < 100) {
         [self.loadingIndicator startAnimating];
-        self.activity.customView = self.loadingIndicator;
+        self.circularProgressView.hidden = YES;
         self.buttonNext.enabled = NO;
         // Fetch next page and see if it has the unreads.
         self.waitingForNextUnreadFromServer = YES;
@@ -900,6 +977,7 @@
 
 - (IBAction)doPreviousStory {
     [self.loadingIndicator stopAnimating];
+    self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
         [appDelegate.navigationController

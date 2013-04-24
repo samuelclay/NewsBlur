@@ -95,7 +95,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-error' }),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Send this story' }),
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Send this story' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
                 ])
@@ -242,7 +242,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
     handle_click: function(elem, e) {
         var self = this;
         
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
             e.preventDefault();
             
             self.save();

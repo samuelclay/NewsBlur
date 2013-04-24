@@ -35,12 +35,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
+            $.make('div', { className: 'NB-modal-loading' }),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Preferences'
+            ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
                     $.make('div', { className: 'NB-preference' }, [
@@ -155,7 +158,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-ssl-2', type: 'radio', name: 'ssl', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-ssl-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/lock.png' }),
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_lock.png' }),
                                     'Only use a secure https connection'
                                 ])
                             ])
@@ -501,7 +504,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/code_icon.png' }),
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
                                     'Show ',
                                     $.make('del', 'changes'),
                                     ' ',
@@ -518,6 +521,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Story changes'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-1', type: 'radio', name: 'truncate_story', value: 'social' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-1' }, [
+                                    'Only truncate long shared stories in blurblogs'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-2', type: 'radio', name: 'truncate_story', value: 'all' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-2' }, [
+                                    'Force all tall stories to have a max height'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-truncatestory-3', type: 'radio', name: 'truncate_story', value: 'none' }),
+                                $.make('label', { 'for': 'NB-preference-truncatestory-3' }, [
+                                    'Show the entire story, even if really, really long'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Truncate stories'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
@@ -577,18 +605,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Show all comments'
                         ])
                     ])
-                    
-                ]),
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+            ]),
+            $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
+                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...')
+            ])
         ]);
     },
     
@@ -666,6 +687,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=hide_story_changes]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=truncate_story]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.truncate_story) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -772,7 +799,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var self = this;
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
-        $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
+        $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function(data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();
@@ -832,8 +859,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             } else if ($t.hasClass('NB-modal-tab-stories')) {
                 newtab = 'stories';
             }
+            self.resize_modal();
             self.switch_tab(newtab);
         });        
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.save_preferences();
+        });
 
         $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
             e.preventDefault();
@@ -867,25 +900,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[type=radio],input[type=checkbox],select', this.$modal).bind('change', _.bind(this.enable_save, this));
     },
     
-    switch_tab: function(newtab) {
-        var $modal_tabs = $('.NB-modal-tab', this.$modal);
-        var $tabs = $('.NB-tab', this.$modal);
-        
-        $modal_tabs.removeClass('NB-active');
-        $tabs.removeClass('NB-active');
-        
-        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
-        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
-        
-        this.resize_modal();
-    },
-    
     enable_save: function() {
-        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
+        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text('Save Preferences');
     },
     
     disable_save: function() {
-        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
+        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text('Make changes above...');
     }
     
 });

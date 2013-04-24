@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from apps.mobile import views
 
 urlpatterns = patterns('apps.mobile.views',

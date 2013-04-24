@@ -54,8 +54,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
                       // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
-                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
-                      $.make('input', { type: 'submit', className: 'NB-modal-submit-add NB-modal-submit-green', value: 'First, add sites' })
+                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-button NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
+                      $.make('input', { type: 'submit', className: 'NB-modal-submit-add NB-modal-submit-button NB-modal-submit-green', value: 'First, add sites' })
                   ])
               ]).bind('submit', function(e) {
                   e.preventDefault();
@@ -75,7 +75,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       $.make('b', { style: 'display: block; margin: 8px 0' }, [
                           $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                           ' ',
-                          this.format_date(NEWSBLUR.Globals.premium_expire)
+                          NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
                       ]),
                       'Renew your premium subscription today.'
                   ])
@@ -177,17 +177,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               ])
             ])
         ]);
-    },
-    
-    format_date: function(date) {
-        var dayOfWeek = date.getDay();
-        var month = date.getMonth();
-        var year = date.getUTCFullYear();
-        var day = date.getDate();
-        var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];       
-
-        return dayNames[dayOfWeek] + ", " + monthNames[month] + " " + day + ", " + year;
     },
     
     make_paypal_button: function() {
@@ -449,7 +438,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var approve_list = this.approve_list;
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').removeClass('NB-modal-submit-green').val('Saving...');
-        this.update_homepage_count();
         
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
@@ -467,18 +455,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     open_stripe_form: function() {
         window.location.href = "https://" + NEWSBLUR.URLs.domain + "/profile/stripe_form?plan=" + this.plan;
-    },
-    
-    update_homepage_count: function() {
-      var $count = $('.NB-module-account-feedcount');
-      var $site_count = $('.NB-module-account-trainer-site-count');
-      var $button = $('.NB-module-account-upgrade');
-      var approve_list = this.approve_list;
-      
-      $count.text(approve_list.length);
-      $site_count.text(Inflector.pluralize('site', approve_list.length, true));
-      $button.removeClass('NB-modal-submit-green').addClass('NB-modal-submit-grey');
-      $('.NB-module-account-trainer').removeClass('NB-hidden').hide().slideDown(500);
     },
     
     choose_dollar_amount: function(plan) {

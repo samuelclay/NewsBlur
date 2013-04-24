@@ -295,6 +295,13 @@ def payment_history(request):
 
     return {'payments': history}
 
+@ajax_login_required
+@json.json_view
+def cancel_premium(request):
+    canceled = request.user.profile.cancel_premium()
+    
+    return {'code': 1 if canceled else -1}
+    
 @login_required
 @render_to('profile/delete_account.xhtml')
 def delete_account(request):

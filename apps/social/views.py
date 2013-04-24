@@ -17,7 +17,7 @@ from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MInteraction, MActivity, MFollowRequest
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
-from apps.social.tasks import UpdateRecalcForSubscription
+from apps.social.tasks import UpdateRecalcForSubscription, EmailFirstShare
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
@@ -34,7 +34,7 @@ from utils.story_functions import strip_tags
 from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
-    
+
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     user           = get_user(request)
@@ -325,35 +325,68 @@ def load_river_blurblog(request):
     }
     
 def load_social_page(request, user_id, username=None, **kwargs):
-    user = request.user
+    user = get_user(request.user)
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
-    page = request.REQUEST.get('page')
+    page = int(request.REQUEST.get('page', 1))
     format = request.REQUEST.get('format', None)
     has_next_page = False
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
-    if page: offset = limit * (int(page) - 1)
-
+    if page: 
+        offset = limit * (page-1)
     user_social_profile = None
     user_social_services = None
     user_following_social_profile = None
+    relative_user_id = user_id
     if user.is_authenticated():
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
+    
+    if '.dev' in username:
+        username = username.replace('.dev', '')
+    current_tab = "blurblogs"
+    global_feed = False
+    if username == "popular":
+        current_tab = username
+    elif username == "popular.global":
+        current_tab = "global"
+        global_feed = True
 
     if social_profile.private and (not user.is_authenticated() or 
                                    not social_profile.is_followed_by_user(user.pk)):
         stories = []
+    elif global_feed:
+        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
+        social_user_ids = [s.subscription_user_id for s in socialsubs]
+        story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+                                                 offset=offset, limit=limit+1,
+                                                 # order=order, read_filter=read_filter,
+                                                 relative_user_id=relative_user_id,
+                                                 everything_unread=True,
+                                                 cache=request.user.is_authenticated())
+        if len(story_ids) > limit:
+            has_next_page = True
+            story_ids = story_ids[:-1]
+        mstories = MStory.find_by_id(story_ids)
+        story_id_to_dates = dict(zip(story_ids, story_dates))
+        def sort_stories_by_id(a, b):
+            return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
+        sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+        stories = Feed.format_stories(sorted_mstories)
+        for story in stories:
+            story['shared_date'] = story['story_date']
     else:
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
+
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories)
+
         if len(stories) > limit:
             has_next_page = True
             stories = stories[:-1]
@@ -379,7 +412,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         if story['story_feed_id'] in feeds:
             # Feed could have been deleted.
             story['feed'] = feeds[story['story_feed_id']]
-        shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
+        shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['shared_date'] = shared_date
     
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
@@ -433,6 +466,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'holzer_truism' : random.choice(jennyholzer.TRUISMS), #if not has_next_page else None
         'facebook_app_id': settings.FACEBOOK_APP_ID,
         'active_story'  : active_story,
+        'current_tab'   : current_tab,
     }
 
     logging.user(request, "~FYLoading ~FMsocial ~SBpage~SN~FY: ~SB%s%s" % (
@@ -547,11 +581,17 @@ def mark_story_as_shared(request):
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
-                PostToService.delay(shared_story_id=shared_story.id, service=service)
+                if service == 'appdotnet':
+                    # XXX TODO: Remove. Only for www->dev.
+                    shared_story.post_to_service(service)
+                else:
+                    PostToService.delay(shared_story_id=shared_story.id, service=service)
     
     if shared_story.source_user_id and shared_story.comments:
         EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=shared_story.id),
                                        countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
+    
+    EmailFirstShare.apply_async(kwargs=dict(user_id=request.user.pk))
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
@@ -1074,7 +1114,7 @@ def like_comment(request):
     code     = 1
     feed_id  = int(request.POST['story_feed_id'])
     story_id = request.POST['story_id']
-    comment_user_id = request.POST['comment_user_id']
+    comment_user_id = int(request.POST['comment_user_id'])
     format = request.REQUEST.get('format', 'json')
     
     if comment_user_id == request.user.pk:
@@ -1276,6 +1316,8 @@ def load_interactions(request):
         'has_next_page': has_next_page
     }
     
+    logging.user(request, "~FBLoading interactions ~SBp/%s" % page)
+    
     if format == 'html':
         return render_to_response('reader/interactions_module.xhtml', data,
                                   context_instance=RequestContext(request))
@@ -1307,6 +1349,8 @@ def load_activities(request):
         'username': (user.username if public else 'You'),
     }
     
+    logging.user(request, "~FBLoading activities ~SBp/%s" % page)
+    
     if format == 'html':
         return render_to_response('reader/activities_module.xhtml', data,
                                   context_instance=RequestContext(request))
@@ -1319,5 +1363,16 @@ def comment(request, comment_id):
         shared_story = MSharedStory.objects.get(id=comment_id)
     except MSharedStory.DoesNotExist:
         raise Http404
-    
+    return shared_story.comments_with_author()
+
+@json.json_view
+def comment_reply(request, comment_id, reply_id):
+    try:
+        shared_story = MSharedStory.objects.get(id=comment_id)
+    except MSharedStory.DoesNotExist:
+        raise Http404
+        
+    for story_reply in shared_story.replies:
+        if story_reply.reply_id == ObjectId(reply_id):
+            return story_reply
     return shared_story.comments_with_author()

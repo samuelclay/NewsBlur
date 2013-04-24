@@ -42,7 +42,10 @@
         _this = this;
       this.feeds = feeds;
       this.username = username;
-      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on)"));
+      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
+      if (!this.username) {
+        return;
+      }
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
@@ -59,11 +62,12 @@
       });
     });
     return socket.on('disconnect', function() {
-      var _ref;
+      var ip, _ref, _ref1;
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
-      return console.log(("   ---> [" + this.username + "] Disconnect, there are now") + (" " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
+      ip = socket.handshake.address.address;
+      return console.log(("   ---> [" + this.username + "] Disconnect (" + ((_ref1 = this.feeds) != null ? _ref1.length : void 0) + " feeds, " + ip + "),") + (" there are now " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
   });
 

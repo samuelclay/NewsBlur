@@ -1,0 +1,16 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    
+    <p style="margin-top: 12px;">
+        Good news! NewsBlur has finished importing your starred stories from Google Reader. 
+        You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}
+        and have <b>{{ starred_count }}</b> saved stor{{ starred_count|pluralize:"y,ies" }}.
+    </p>
+        
+    <p>
+        Head over to <a href="http://{% current_domain %}">NewsBlur</a> and get reading.
+    </p>
+{% endblock %}

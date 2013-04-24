@@ -52,7 +52,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-tutorial NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('div', { className: 'NB-modal-page' }),
-            $.make('h2', { className: 'NB-modal-title' }),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                $.make('span', 'Tips &amp; Tricks')
+            ]),
             $.make('div', { className: 'NB-page NB-page-1' }, [
               $.make('h4', 'NewsBlur is a visual feed reader with intelligence.'),
               $.make('div', 'You\'ll figure out much of NewsBlur by playing around and trying things out. This tutorial is here to quickly offer a foundation.'),
@@ -143,7 +146,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                   ' are stories you like',
                   $.make('br'),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
                   ' are stories you have not yet rated',
                   $.make('br'),
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
@@ -154,11 +157,11 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                         $.make('ul', { className: 'segmented-control' }, [
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-red' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png' }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png' }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
                             ]),
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-yellow' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png' }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
                             ]),
                             $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-green' }, [
@@ -350,7 +353,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     },
     
     set_title: function() {
-      $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
+      $('.NB-modal-title span', this.$modal).text(this.TITLES[this.page_number-1]);
     },
 
     load_tips: function() {

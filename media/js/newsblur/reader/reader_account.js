@@ -36,113 +36,133 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal-account NB-modal' }, [
-            $.make('a', { href: '#preferences', className: 'NB-link-account-preferences NB-splash-link' }, 'Switch to Preferences'),
-            $.make('h2', { className: 'NB-modal-title' }, 'My Account'),
+            $.make('div', { className: 'NB-modal-tabs' }, [
+                $.make('div', { className: 'NB-modal-loading' }),
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, 'Account'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, 'Payments'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, 'Emails')
+            ]),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Account'
+            ]),
             $.make('form', { className: 'NB-preferences-form' }, [
-                $.make('div', { className: 'NB-preference NB-preference-username' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', { className: 'NB-preference-option' }, [
-                            $.make('input', { id: 'NB-preference-username', type: 'text', name: 'username', value: NEWSBLUR.Globals.username })
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        $.make('label', { 'for': 'NB-preference-username' }, 'Username'),
-
-                        $.make('div', { className: 'NB-preference-error'})
-                    ])
-                ]),
-                $.make('div', { className: 'NB-preference NB-preference-email' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', { className: 'NB-preference-option' }, [
-                            $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        $.make('label', { 'for': 'NB-preference-email' }, 'Email address'),
-
-                        $.make('div', { className: 'NB-preference-error'})
-                    ])
-                ]),
-                $.make('div', { className: 'NB-preference NB-preference-password' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', { className: 'NB-preference-option', style: (this.options.change_password ? 'opacity: .2' : '') }, [
-                            $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
-                            $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
-                        ]),
-                        $.make('div', { className: 'NB-preference-option' }, [
-                            $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
-                            $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Change password',
-                        $.make('div', { className: 'NB-preference-error'})
-                    ])
-                ]),
-                $.make('div', { className: 'NB-preference NB-preference-premium' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        (!NEWSBLUR.Globals.is_premium && $.make('a', { className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' }, 'Go Premium!')),
-                        (NEWSBLUR.Globals.is_premium && $.make('div', [
-                            'Thank you! You have a ',
-                            $.make('b', 'premium account'),
-                            '.'
-                        ]))
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Premium'
-                    ])
-                ]),
-                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('ul', { className: 'NB-account-payments' }, [
-                            $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Payment history'
-                    ])
-                ])),
-                $.make('div', { className: 'NB-preference NB-preference-opml' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Backup your sites',
-                        $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
-                    ])
-                ]),
-                $.make('div', { className: 'NB-preference NB-preference-emails' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', [
-                            $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
-                            $.make('label', { 'for': 'NB-preference-emails-1' }, [
-                                'Email replies, re-shares, and new followers'
+                $.make('div', { className: 'NB-tab NB-tab-account NB-active' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-username' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-option' }, [
+                                $.make('input', { id: 'NB-preference-username', type: 'text', name: 'username', value: NEWSBLUR.Globals.username })
                             ])
                         ]),
-                        $.make('div', [
-                            $.make('input', { id: 'NB-preference-emails-2', type: 'radio', name: 'send_emails', value: 'false' }),
-                            $.make('label', { 'for': 'NB-preference-emails-2' }, [
-                                'Never ever send me an email'
-                            ])
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('label', { 'for': 'NB-preference-username' }, 'Username'),
+
+                            $.make('div', { className: 'NB-preference-error'})
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Emails'
+                    $.make('div', { className: 'NB-preference NB-preference-email' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-option' }, [
+                                $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('label', { 'for': 'NB-preference-email' }, 'Email address'),
+
+                            $.make('div', { className: 'NB-preference-error'})
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-password' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-option', style: (this.options.change_password ? 'opacity: .2' : '') }, [
+                                $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
+                                $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option' }, [
+                                $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
+                                $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Change password',
+                            $.make('div', { className: 'NB-preference-error'})
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-opml' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Backup your sites',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Erase yourself',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Warning: This is actually permanent')
+                        ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-preference NB-preference-delete' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                $.make('div', { className: 'NB-tab NB-tab-premium' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-premium' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            (!NEWSBLUR.Globals.is_premium && $.make('a', { className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' }, 'Go Premium!')),
+                            (NEWSBLUR.Globals.is_premium && $.make('div', [
+                                'Thank you! You have a ',
+                                $.make('b', 'premium account'),
+                                '.',
+                                $.make('div', { className: 'NB-block' }, 'Your premium account will expire on:'),
+                                $.make('div', { className: 'NB-block' }, [
+                                    $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+                                    ' ',
+                                    NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
+                                ]),
+                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, 'Renew and change your payment amount'),
+                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-splash-link' }, 'Cancel subscription renewal')
+                            ]))
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Premium'
+                        ])
                     ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Erase yourself',
-                        $.make('div', { className: 'NB-preference-sublabel' }, 'Warning: This is actually permanent')
+                    $.make('div', { className: 'NB-preference NB-preference-premium-history' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('ul', { className: 'NB-account-payments' }, [
+                                $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Payment history'
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-tab NB-tab-emails' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-emails' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-emails-1' }, [
+                                    'Email replies, re-shares, and new followers'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-emails-2', type: 'radio', name: 'send_emails', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-emails-2' }, [
+                                    'Never ever send me an email'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Emails'
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: 'Change what you like above...' })
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();
@@ -154,6 +174,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     
     animate_fields: function() {
         if (this.options.animate_email) {
+            this.switch_tab('emails');
             _.delay(_.bind(function() {
                 var $emails = $('.NB-preference-emails', this.$modal);
                 var bgcolor = $emails.css('backgroundColor');
@@ -199,16 +220,20 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
     },
     
-    close_and_load_preferences: function() {
-      this.close(function() {
-          NEWSBLUR.reader.open_preferences_modal();
-      });
-    },
-    
     close_and_load_premium: function() {
       this.close(function() {
           NEWSBLUR.reader.open_feedchooser_modal();
       });
+    },
+    
+    cancel_premium: function() {
+        this.model.cancel_premium_subscription(_.bind(function(data) {
+            $(".NB-preference-premium .NB-error").remove();
+            $(".NB-preference-premium .NB-preference-options").append($.make("div", { className: "NB-error" }, "Your subscription will no longer automatically renew.").fadeIn(500));
+        }, this), _.bind(function(data) {
+            $(".NB-preference-premium .NB-error").remove();
+            $(".NB-preference-premium .NB-preference-options").append($.make("div", { className: "NB-error" }, data.message || "Could not cancel your membership. Contact support.").fadeIn(500));
+        }, this));
     },
     
     handle_cancel: function() {
@@ -294,16 +319,33 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     handle_click: function(elem, e) {
         var self = this;
         
+        $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function($t, $p) {
+            e.preventDefault();
+            var newtab;
+            if ($t.hasClass('NB-modal-tab-account')) {
+                newtab = 'account';
+            } else if ($t.hasClass('NB-modal-tab-premium')) {
+                newtab = 'premium';
+            } else if ($t.hasClass('NB-modal-tab-emails')) {
+                newtab = 'emails';
+            }
+            self.switch_tab(newtab);
+        });        
         $.targetIs(e, { tagSelector: '.NB-account-premium-modal' }, function($t, $p) {
             e.preventDefault();
             
             self.close_and_load_premium();
         });        
-        $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-account-premium-renew' }, function($t, $p) {
             e.preventDefault();
             
-            self.close_and_load_preferences();
-        });
+            self.close_and_load_premium();
+        });        
+        $.targetIs(e, { tagSelector: '.NB-account-premium-cancel' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.cancel_premium();
+        });        
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
             e.preventDefault();
             

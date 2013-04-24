@@ -56,7 +56,7 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
@@ -72,12 +72,15 @@
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
     // Background
-    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
-    [backgroundColor set];
-    CGContextFillRect(context, rect);
+    [NewsBlurAppDelegate fillGradient:rect
+                           startColor:UIColorFromRGB(0xEAECE5)
+                             endColor:UIColorFromRGB(0xDCDFD6)];
+//    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
+//    [backgroundColor set];
+//    CGContextFillRect(context, rect);
     
     // Borders
-    UIColor *topColor = UIColorFromRGB(0xE7EDF6);
+    UIColor *topColor = UIColorFromRGB(0xFDFDFD);
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
@@ -86,7 +89,7 @@
     CGContextStrokePath(context);
     
     // bottom border
-    UIColor *bottomColor = UIColorFromRGB(0xB7BDC6);
+    UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, 0, rect.size.height - .5f);
@@ -104,16 +107,16 @@
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [@"Saved Stories" uppercaseString];
     } else {
         folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
-    UIColor *shadowColor = UIColorFromRGB(0xE7EDF6);
+    UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
     
     [folderTitle
-     drawInRect:CGRectMake(36.0, 9, rect.size.width - 36 - 36 - countWidth, 14)
+     drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation
      alignment:UITextAlignmentLeft];
@@ -135,9 +138,11 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && folderName != @"saved_stories") {
+        if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
             if (!isFolderCollapsed) {
-                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
+                UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
+                [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
+//                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
             
             disclosureButton.tag = section;
@@ -155,21 +160,28 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     
-    if (section == 0 || section == 1) {
-        folderImage = [UIImage imageNamed:@"group.png"];
+    if (section == 0) {
+        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if (section == 1) {
+        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if (section == 2) {
-        folderImage = [UIImage imageNamed:@"archive.png"];
+        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
-    } else if (folderName == @"saved_stories") {
+    } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
@@ -178,16 +190,16 @@
         }
     } else {
         if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"folder_collapsed.png"];
+            folderImage = [UIImage imageNamed:@"g_icn_folder_rss"];
         } else {
-            folderImage = [UIImage imageNamed:@"folder_2.png"];
+            folderImage = [UIImage imageNamed:@"g_icn_folder"];
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         } else {
             folderImageViewX = 7;
         }
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 5, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import include, url, patterns
+from django.conf.urls import include, url, patterns
 from django.conf import settings
 from apps.reader import views as reader_views
 from apps.static import views as static_views
@@ -36,8 +36,8 @@ urlpatterns = patterns('',
     url(r'^ios/NewsBlur.plist', static_views.ios_plist, name='ios-download-plist'),
     url(r'^ios/NewsBlur.ipa', static_views.ios_ipa, name='ios-download-ipa'),
     url(r'^ios/?',          static_views.ios, name='ios-static'),
-    url(r'^iphone/?',       static_views.ios, name='ios-static'),
-    url(r'^ipad/?',         static_views.ios, name='ios-static'),
+    url(r'^iphone/?',       static_views.ios),
+    url(r'^ipad/?',         static_views.ios),
     url(r'^android/?',      static_views.android, name='android-static'),
     url(r'^firefox/?',      static_views.firefox, name='firefox'),
     url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),

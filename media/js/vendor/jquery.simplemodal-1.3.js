@@ -643,6 +643,7 @@
 
 			// prevent close when dialog does not exist
 			if (!s.d.data) {
+			    callback && callback();
 				return false;
 			}
 

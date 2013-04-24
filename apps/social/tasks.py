@@ -25,6 +25,12 @@ class EmailFollowRequest(Task):
     def run(self, follower_user_id, followee_user_id):
         user_profile = MSocialProfile.get_user(followee_user_id)
         user_profile.send_email_for_follow_request(follower_user_id)
+          
+class EmailFirstShare(Task):
+    
+    def run(self, user_id):
+        user = User.objects.get(pk=user_id)
+        user.profile.send_first_share_to_blurblog_email()
         
 class EmailCommentReplies(Task):
     
@@ -49,6 +55,12 @@ class SyncFacebookFriends(Task):
     def run(self, user_id):
         social_services = MSocialServices.objects.get(user_id=user_id)
         social_services.sync_facebook_friends()
+        
+class SyncAppdotnetFriends(Task):
+    
+    def run(self, user_id):
+        social_services = MSocialServices.objects.get(user_id=user_id)
+        social_services.sync_appdotnet_friends()
         
 class SharePopularStories(Task):
     name = 'share-popular-stories'

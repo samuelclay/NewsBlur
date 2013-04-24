@@ -123,9 +123,11 @@ def post_deploy():
 def deploy(fast=False):
     deploy_code(copy_assets=False, fast=fast)
 
+@parallel
 def deploy_web(fast=False):
     deploy_code(copy_assets=True, fast=fast, full=False)
 
+@parallel
 def deploy_full(fast=False):
     deploy_code(copy_assets=True, fast=fast, full=True)
 
@@ -229,7 +231,11 @@ def celery_reload():
 
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
+        with settings(warn_only=True):
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
@@ -255,8 +261,8 @@ def backup_mongo():
 def backup_postgresql():
     # crontab for postgres master server
     # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
-    
+    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         # run('./postgresql_backup.sh')
         run('python backup_psql.py')
@@ -547,6 +553,7 @@ def switch_forked_mongoengine():
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_ulimit():
     # Increase File Descriptor limits.
@@ -559,7 +566,11 @@ def setup_ulimit():
     run('echo "* soft nofile 10000" >> /etc/security/limits.conf', pty=False)
     run('echo "* hard nofile 10000" >> /etc/security/limits.conf', pty=False)
     sudo('chmod 644 /etc/security/limits.conf', pty=False)
-
+    sudo('chmod 666 /etc/sysctl.conf', pty=False)
+    run('echo "fs.file-max = 10000" >> /etc/sysctl.conf', pty=False)
+    sudo('chmod 644 /etc/sysctl.conf', pty=False)
+    sudo('sysctl -p')
+    
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
 
@@ -683,11 +694,11 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy():
+def setup_haproxy(debug=False):
     sudo('ufw allow 81') # nginx moved
     sudo('ufw allow 1936') # haproxy stats
     sudo('apt-get install -y haproxy')
-    sudo('apt-get remove haproxy')
+    sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -697,7 +708,10 @@ def setup_haproxy():
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
     sudo('mkdir -p /etc/haproxy')
-    put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    if debug:
+        put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    else:
+        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
@@ -742,7 +756,7 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============    
 
-@parallel
+# @parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -759,10 +773,11 @@ def setup_db_firewall():
     
     # DigitalOcean
     for ip in set(env.roledefs['app'] + 
-                  env.roledefs['dbdo'] + 
+                  env.roledefs['db'] + 
                   env.roledefs['dev'] + 
                   env.roledefs['debug'] + 
-                  env.roledefs['task']):
+                  env.roledefs['task'] + 
+                  env.roledefs['node']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
             ','.join(map(str, ports))
@@ -833,6 +848,7 @@ def setup_mongo():
     run('echo "ulimit -n 10000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_mongo_mms():
     pull()

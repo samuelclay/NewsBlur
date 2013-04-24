@@ -1,18 +1,17 @@
 # NewsBlur
 
- * A visual feed reader with intelligence.
- * Live at [www.newsblur.com](http://www.newsblur.com).
+ * NewsBlur is a personal news reader bringing people together 
+   to talk about the world. A new sound of an old instrument.
+ * [www.newsblur.com](http://www.newsblur.com).
  * Created by [Samuel Clay](http://www.samuelclay.com). 
  * Twitter: [@samuelclay](http://twitter.com/samuelclay) and 
    [@newsblur](http://twitter.com/newsblur).
-
 
 ## Features
 
  1. Shows the original site (you have to see it to believe it)
  2. Hides stories you don't want to read based on tags, keywords, authors, etc.
  3. Highlights stories you want to read, based on the same criteria.
-
 
 ## Technologies
 

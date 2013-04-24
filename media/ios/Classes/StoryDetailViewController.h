@@ -38,6 +38,7 @@
 
 - (void)initStory;
 - (void)drawStory;
+- (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;

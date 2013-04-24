@@ -16,7 +16,7 @@ from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, GoogleReaderImporter
 from apps.feed_import.models import OPMLImporter, OPMLExporter, UploadedOPML
-from apps.feed_import.tasks import ProcessOPML
+from apps.feed_import.tasks import ProcessOPML, ProcessReaderImport, ProcessReaderStarredImport
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
 from utils.feed_functions import TimeoutError
@@ -83,6 +83,12 @@ def opml_export(request):
 
 
 def reader_authorize(request): 
+    reader_importer = GoogleReaderImporter(request.user)
+    if reader_importer.test():
+        logging.user(request, "~BB~FW~SBSkipping Google Reader import, already tokened")
+        return render_to_response('social/social_connect.xhtml', {
+        }, context_instance=RequestContext(request))
+
     domain = Site.objects.get_current().domain
     STEP2_URI = "http://%s%s" % (
         (domain + '.com') if not domain.endswith('.com') else domain,
@@ -180,23 +186,50 @@ def reader_callback(request):
 def import_from_google_reader(request):
     code = 0
     feed_count = 0
+    starred_count = 0
+    delayed = False
     
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
         auto_active = bool(request.REQUEST.get('auto_active') or False)
+        
         try:
-            reader_importer.import_feeds(auto_active=auto_active)
-            reader_importer.import_starred_items()
-        except AssertionError:
-            code = -1
-        else:
-            code = 1
+            code = reader_importer.try_import_feeds(auto_active=auto_active)
+        except TimeoutError:
+            ProcessReaderImport.delay(request.user.pk, auto_active=auto_active)
+            feed_count = UserSubscription.objects.filter(user=request.user).count()
+            logging.user(request, "~FR~SBGoogle Reader import took too long, found %s feeds. Tasking..." % feed_count)
+            delayed = True
+            code = 2
+            
         if 'import_from_google_reader' in request.session:
             del request.session['import_from_google_reader']
     
         feed_count = UserSubscription.objects.filter(user=request.user).count()
         
-    return dict(code=code, feed_count=feed_count)
+    return dict(code=code, delayed=delayed, feed_count=feed_count, starred_count=starred_count)
+
+@json.json_view
+def import_starred_stories_from_google_reader(request):
+    code = 0
+    feed_count = 0
+    starred_count = 0
+    delayed = False
+    
+    if request.user.is_authenticated():
+        reader_importer = GoogleReaderImporter(request.user)
+        try:
+            starred_count = reader_importer.try_import_starred_stories()
+        except TimeoutError:
+            ProcessReaderStarredImport.delay(request.user.pk)
+            feed_count = UserSubscription.objects.filter(user=request.user).count()
+            logging.user(request, "~FR~SBGoogle Reader starred stories import took too long, found %s feeds, %s stories. Tasking..." % (feed_count, starred_count))
+            delayed = True
+            code = 2
+    
+        feed_count = UserSubscription.objects.filter(user=request.user).count()
+        
+    return dict(code=code, delayed=delayed, feed_count=feed_count, starred_count=starred_count)
 
 def import_signup(request):
     if request.method == "POST":

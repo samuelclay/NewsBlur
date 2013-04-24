@@ -10,6 +10,8 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "WEPopoverController.h"
+#import "TransparentToolbar.h"
+#import "THCircularProgressView.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
@@ -19,20 +21,21 @@
     
     NewsBlurAppDelegate *appDelegate;
 
-    UIProgressView *progressView;
-    UIToolbar *toolbar;
-    UIBarButtonItem *buttonPrevious;
-    UIBarButtonItem *buttonNext;
-    UIBarButtonItem *activity;
+    THCircularProgressView *circularProgressView;
+    UIButton *buttonPrevious;
+    UIButton *buttonNext;
     UIActivityIndicatorView *loadingIndicator;
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
+    TransparentToolbar * rightToolbar;
+    UIView *traverseView;
     
     WEPopoverController *popoverController;
 	Class popoverClass;
     
     BOOL isDraggingScrollview;
     BOOL waitingForNextUnreadFromServer;
+    UIInterfaceOrientation _orientation;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -42,19 +45,24 @@
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
-@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic) IBOutlet UIProgressView *progressView;
-@property (strong, nonatomic) IBOutlet UIView *progressViewContainer;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonPrevious;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonNext;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic) IBOutlet THCircularProgressView *circularProgressView;
+@property (nonatomic) IBOutlet UIButton *buttonPrevious;
+@property (nonatomic) IBOutlet UIButton *buttonNext;
 @property (nonatomic) UIBarButtonItem *buttonBack;
-@property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
+@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
+@property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
+@property (readwrite) BOOL traversePinned;
+@property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL waitingForNextUnreadFromServer;
@@ -65,6 +73,7 @@
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;

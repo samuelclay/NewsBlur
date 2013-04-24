@@ -187,7 +187,6 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     obj_identifier = obj
     if isinstance(obj, dict):
         obj_identifier = obj.keys()[0]
-        print obj, obj_identifier, folders
 
     if (not in_folder and not parent and 
         not isinstance(obj, dict) and 

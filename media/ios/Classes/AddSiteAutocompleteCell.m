@@ -13,6 +13,7 @@
 @synthesize feedTitle;
 @synthesize feedUrl;
 @synthesize feedSubs;
+@synthesize feedFavicon;
 
 - (id)initWithStyle:(UITableViewCellStyle)style 
     reuseIdentifier:(NSString *)reuseIdentifier {

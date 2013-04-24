@@ -94,7 +94,7 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
-    self.view.backgroundColor = [UIColor blackColor]; 
+    self.view.backgroundColor = UIColorFromRGB(0xC2C5BE);
     
     self.masterNavigationController = appDelegate.navigationController;
     self.feedsViewController = appDelegate.feedsViewController;
@@ -219,30 +219,11 @@
     
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.addSiteViewController];
-    
-    popoverController.delegate = self;
-    
+    [popoverController setDelegate:self];
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
-    
-    if ([sender class] == [InteractionCell class] ||
-        [sender class] == [ActivityCell class]) {
-        InteractionCell *cell = (InteractionCell *)sender;
-        
-        [popoverController presentPopoverFromRect:cell.bounds 
-                                           inView:cell
-                         permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                         animated:YES];
-    } else if ([sender class] == [UIBarButtonItem class]) {
-        [popoverController presentPopoverFromBarButtonItem:sender 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];  
-    } else {
-        CGRect frame = [sender CGRectValue];
-        [popoverController presentPopoverFromRect:frame 
-                                           inView:self.feedsViewController.view
-                         permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                         animated:YES];
-    } 
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
 }
 
 
@@ -252,16 +233,11 @@
         popoverController = nil;
         return;
     }
-    
+
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
-    
-    popoverController.delegate = self;
-    
-    
+    [popoverController setDelegate:self];
     [popoverController setPopoverContentSize:CGSizeMake(200, 76)];
-    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
-    //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -486,14 +462,13 @@
     self.storyPageControl.currentPage.webView.hidden = YES;
     self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
-    self.storyPageControl.progressViewContainer.hidden = YES;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        self.storyPageControl.progressView.progress = 1;
+        self.storyPageControl.circularProgressView.percentage = 1;
     } else {
-        self.storyPageControl.progressView.progress = 0;
+        self.storyPageControl.circularProgressView.percentage = 0;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -516,7 +491,6 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
-            
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
@@ -526,16 +500,14 @@
                 [self.masterNavigationController.view removeFromSuperview];
             }];
         }];
-        
-        
-        // set center title
+
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
     } else {
         // CASE: story titles on left
-        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
-        
-        [self.masterNavigationController pushViewController:self.feedDetailViewController animated:YES];
+        [self.masterNavigationController
+         pushViewController:self.feedDetailViewController
+         animated:YES];
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
                                                                vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
                                                                vb.size.height);
@@ -549,8 +521,8 @@
             [self.dashboardViewController.view removeFromSuperview];
         }];
 
-        // remove center title
         self.storyPageControl.navigationItem.titleView = nil;
+        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
     }
 }
 

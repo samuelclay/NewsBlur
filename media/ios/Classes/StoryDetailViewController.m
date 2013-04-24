@@ -22,7 +22,6 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "SHK.h"
 #import "StringHelper.h"
 
 @implementation StoryDetailViewController
@@ -54,17 +53,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-
-    // settings button to right
-//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-//    settings.bounds = CGRectMake(0, 0, 32, 32);
-//    [settings addTarget:self action:@selector(toggleFontSize:) forControlEvents:UIControlEventTouchUpInside];
-//    [settings setImage:settingsImage forState:UIControlStateNormal];
-//    
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                       initWithCustomView:settings];
-
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     self.webView.scalesPageToFit = YES;
@@ -73,6 +61,9 @@
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                                 context:nil];
     self.pageIndex = -2;
 }
 
@@ -118,7 +109,12 @@
 }
 
 - (void)drawStory {
-    if (self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self drawStory:NO withOrientation:orientation];
+}
+
+- (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
+    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
         NSLog(@"Already drawn story. Ignoring.");
 //        return;
     }
@@ -146,17 +142,19 @@
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     
-    if (contentWidth > 700) {
+    if (UIInterfaceOrientationIsLandscape(orientation) && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 480) {
+    } else if (UIInterfaceOrientationIsLandscape(orientation) || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";
     }
     
+    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+                            @"NB-river" : @"NB-non-river";
+    
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
                     
@@ -186,7 +184,7 @@
     NSString *htmlString = [NSString stringWithFormat:@
                             "<html>"
                             "<head>%@</head>" // header string
-                            "<body id=\"story_pane\" class=\"%@\">"
+                            "<body id=\"story_pane\" class=\"%@ %@\">"
                             "    <div class=\"%@\" id=\"NB-font-style\">"
                             "       <div class=\"%@\" id=\"NB-font-size\">"
                             "           <div id=\"NB-header-container\">%@</div>" // storyHeader
@@ -203,6 +201,7 @@
                             "</html>",
                             headerString,
                             contentWidthClass,
+                            riverClass,
                             fontStyleClass,
                             fontSizeClass,
                             storyHeader,
@@ -241,19 +240,11 @@
     }
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-    //    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
-    //                                                              appDelegate.isSocialView) ? -20 : -9)
-    //                                     animated:NO];
-    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                                 context:nil];
 
     self.activeStoryId = [self.activeStory objectForKey:@"id"];
 }
@@ -289,7 +280,7 @@
             int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
-            storyAuthor = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
+            storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
                            "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>",
                            author,
                            authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
@@ -336,15 +327,13 @@
     
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-date\">%@</div>"
                              "<div class=\"NB-story-title\">%@</div>"
+                             "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
                              "</div></div>",
-                             [storyTags length] ?
-                             [self.activeStory objectForKey:@"long_parsed_date"] :
-                             [self.activeStory objectForKey:@"short_parsed_date"],
                              storyTitle,
+                             [self.activeStory objectForKey:@"long_parsed_date"],
                              storyAuthor,
                              storyTags];
     return storyHeader;
@@ -382,30 +371,42 @@
 - (NSString *)getComments {
     NSString *comments = @"<div class=\"NB-feed-story-comments\">";
 
-    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
-        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
+    if ([self.activeStory objectForKey:@"comment_count"] != [NSNull null] &&
+        [[self.activeStory objectForKey:@"comment_count"] intValue] > 0) {
         
         NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
-
-        // add friends comments
-        for (int i = 0; i < friendsCommentsArray.count; i++) {
-            NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
-            comments = [comments stringByAppendingString:comment];
-        }
+        
+        if ([[story objectForKey:@"comment_count_friends"] intValue] > 0 ) {
+            NSString *commentHeader = [NSString stringWithFormat:@
+                                       "<div class=\"NB-story-comments-friends-header-wrapper\">"
+                                       "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                       "</div>",
+                                       [[story objectForKey:@"comment_count_friends"] intValue],
+                                       [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+            comments = [comments stringByAppendingString:commentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < friendsCommentsArray.count; i++) {
+                NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }        
         
         if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
-                                             "<div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
+                                             "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
                                              "</div>",
                                              [[story objectForKey:@"comment_count_public"] intValue],
                                              [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
             
+            comments = [comments stringByAppendingString:@"</div>"];
             comments = [comments stringByAppendingString:publicCommentHeader];
+            comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
             
-            // add friends comments
+            // add public comments
             for (int i = 0; i < publicCommentsArray.count; i++) {
                 NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
                 comments = [comments stringByAppendingString:comment];
@@ -413,7 +414,7 @@
         }
 
 
-        comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
+        comments = [comments stringByAppendingString:@"</div>"];
     }
     
     return comments;
@@ -498,7 +499,7 @@
     NSString *userEditButton = @"";
     NSString *userLikeButton = @"";
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSArray *likingUsersArray = [commentDict objectForKey:@"liking_users"];
     NSString *likingUsers = @"";
     
@@ -678,7 +679,7 @@
             NSString *userEditButton = @"";
             NSString *replyUserId = [NSString stringWithFormat:@"%@", [replyDict objectForKey:@"user_id"]];
             NSString *replyId = [replyDict objectForKey:@"reply_id"];
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             
             if ([replyUserId isEqualToString:currentUserId]) {
                 userEditButton = [NSString stringWithFormat:@
@@ -771,27 +772,23 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
-    if (keyPath == @"contentOffset") {
-        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1)) {
+    if ([keyPath isEqual:@"contentOffset"]) {
+        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
             // Pulling
             if (!pullingScrollview) {
                 pullingScrollview = YES;
-                [self.feedTitleGradient.layer setShadowOpacity:.5];
-                [self.webView insertSubview:self.feedTitleGradient belowSubview:self.webView.scrollView];
                 
                 for (id subview in self.webView.scrollView.subviews) {
                     UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
                     (UIImageView*)subview : nil;
                     // image views whose image is 1px wide are shadow images, hide them
-                    if (imgView && imgView.image.size.width == 1) {
-                        imgView.hidden = YES;
+                    if (imgView && imgView.image.size.width > 1) {
+                        [self.webView.scrollView insertSubview:self.feedTitleGradient
+                                                  belowSubview:subview];
+                        [self.webView.scrollView bringSubviewToFront:subview];
                     }
                 }
             }
-            float y = -1 * self.webView.scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height;
-            self.feedTitleGradient.frame = CGRectMake(0, y,
-                                                      self.feedTitleGradient.frame.size.width,
-                                                      self.feedTitleGradient.frame.size.height);
         } else {
             // Normal reading
             if (pullingScrollview) {
@@ -812,6 +809,81 @@
                     }
                 }
             }
+        }
+        
+        if (appDelegate.storyPageControl.currentPage != self) return;
+        
+        int webpageHeight = self.webView.scrollView.contentSize.height;
+        int viewportHeight = self.webView.scrollView.frame.size.height;
+        int topPosition = self.webView.scrollView.contentOffset.y;
+        int bottomPosition = webpageHeight - topPosition - viewportHeight;
+        BOOL singlePage = webpageHeight - 150 <= viewportHeight;
+        BOOL atBottom = bottomPosition < 150;
+        BOOL atTop = topPosition < 10;
+        if (!atTop && !atBottom) {
+            NSLog(@"A");
+            // Hide
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+            animations:^{
+                appDelegate.storyPageControl.traverseView.alpha = 0;
+            } completion:^(BOOL finished) {
+                
+            }];
+        } else if (singlePage) {
+            NSLog(@"Single-D");
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+
+            if (bottomPosition > 0) {
+                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                             self.webView.scrollView.frame.size.height - tvf.size.height,
+                                                                             tvf.size.width, tvf.size.height);
+            } else {
+                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                             (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                             tvf.size.width, tvf.size.height);
+            }
+        } else if (!singlePage && (atTop && !atBottom)) {
+            NSLog(@"B");
+            // Pin to bottom of viewport, regardless of scrollview
+            appDelegate.storyPageControl.traversePinned = YES;
+            appDelegate.storyPageControl.traverseFloating = NO;
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         self.webView.scrollView.frame.size.height - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+             animations:^{
+                appDelegate.storyPageControl.traverseView.alpha = 1;
+            } completion:^(BOOL finished) {
+                
+            }];
+        } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
+                   appDelegate.storyPageControl.traversePinned) {
+            NSLog(@"C");
+            // Scroll with bottom of scrollview, but smoothly
+            appDelegate.storyPageControl.traverseFloating = YES;
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            [UIView animateWithDuration:.3 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+             animations:^{
+             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
+             } completion:^(BOOL finished) {
+                 appDelegate.storyPageControl.traversePinned = NO;                 
+             }];
+        } else {
+            NSLog(@"D");
+            // Scroll with bottom of scrollview
+            appDelegate.storyPageControl.traversePinned = NO;
+            appDelegate.storyPageControl.traverseFloating = YES;
+            appDelegate.storyPageControl.traverseView.alpha = 1;
+            CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
+            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
+                                                                         (self.webView.scrollView.contentSize.height - self.webView.scrollView.contentOffset.y) - tvf.size.height,
+                                                                         tvf.size.width, tvf.size.height);
         }
     }
 }
@@ -836,7 +908,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
     }
     
-    NSLog(@"Tapped url: %@", url);
+//    NSLog(@"Tapped url: %@", url);
     // HACK: Using ios.newsblur.com to intercept the javascript share, reply, and edit events.
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
@@ -1001,7 +1073,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
         } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"] ||
@@ -1127,7 +1199,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // test to see if the user has commented
     // search for the comment from friends comments
     NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     for (int i = 0; i < friendComments.count; i++) {
         NSString *userId = [NSString stringWithFormat:@"%@",
                             [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
@@ -1223,7 +1295,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                    dispatch_get_current_queue(), ^{
         if (!replyId) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@",
-                                       [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+                                       [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
             NSString *jsFlashString = [[NSString alloc]
                                        initWithFormat:@"slideToComment('%@', true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
@@ -1273,7 +1345,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)scrolltoComment {
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }
@@ -1295,11 +1367,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         contentWidthClass = @"NB-iphone";
     }
+    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+                            @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"$('body').attr('class', '%@');"
+                          @"$('body').attr('class', '%@ %@');"
                           "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
+                          riverClass,
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     

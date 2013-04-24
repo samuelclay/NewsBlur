@@ -10,6 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
 #import "DashboardViewController.h"
+#import "InteractionsModule.h"
+#import "ActivityModule.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
@@ -22,7 +24,7 @@
 #import "Base64.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
-
+#import "AddSiteViewController.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -61,6 +63,9 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
 @synthesize inPullToRefresh_;
+@synthesize addBarButton;
+@synthesize settingsBarButton;
+@synthesize activitiesButton;
 
 #pragma mark -
 #pragma mark Globals
@@ -75,7 +80,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [super viewDidLoad];
     popoverClass = [WEPopoverController class];
     
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -89,10 +93,139 @@ static const CGFloat kFolderTitleHeight = 28;
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
     
-    [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
+    
+    UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
+                                          resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
+                                               forState:UIControlStateNormal
+                                             barMetrics:UIBarMetricsDefault];
+    UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
+                                        resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
+                                               forState:UIControlStateSelected
+                                             barMetrics:UIBarMetricsDefault];
+    UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
+                                    resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
+                                 forLeftSegmentState:UIControlStateNormal
+                                   rightSegmentState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
+                                  resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
+                                 forLeftSegmentState:UIControlStateSelected
+                                   rightSegmentState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
+                                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
+                                 forLeftSegmentState:UIControlStateNormal
+                                   rightSegmentState:UIControlStateSelected
+                                          barMetrics:UIBarMetricsDefault];
+    [[UISegmentedControl appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateNormal];
+    [[UISegmentedControl appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                             UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateSelected];
+    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
+    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
+
+    
+    UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
+                                                      forState:UIControlStateNormal
+                                                    barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
+
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
+                                                      forState:UIControlStateNormal
+                                                    barMetrics:UIBarMetricsLandscapePhone];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
+                                                      forState:UIControlStateHighlighted
+                                                    barMetrics:UIBarMetricsDefault];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
+                                                      forState:UIControlStateHighlighted 
+                                                    barMetrics:UIBarMetricsLandscapePhone];
+    
+    UIImage *b1 = [[UIImage imageNamed:@"button.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
+                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+    
+    [[UIBarButtonItem appearance] setBackgroundImage:b1
+                                            forState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:b2
+                                            forState:UIControlStateHighlighted
+                                          barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:b3
+                                            forState:UIControlStateNormal
+                                          barMetrics:UIBarMetricsLandscapePhone];
+    [[UIBarButtonItem appearance] setBackgroundImage:b4
+                                            forState:UIControlStateHighlighted
+                                          barMetrics:UIBarMetricsLandscapePhone];
+
+    [[UIBarButtonItem appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateSelected];
+    [[UIBarButtonItem appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateHighlighted];
+    [[UIBarButtonItem appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                             nil]
+     forState:UIControlStateDisabled];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
 }
@@ -148,12 +281,12 @@ static const CGFloat kFolderTitleHeight = 28;
         }
     }
     
-    
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
         [self.feedTitlesTable reloadData];
+        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
         [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                                           animated:NO 
@@ -190,6 +323,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [self setUserAvatarLayout:toInterfaceOrientation];
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
+    [self refreshHeaderCounts:toInterfaceOrientation];
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
@@ -227,6 +362,30 @@ static const CGFloat kFolderTitleHeight = 28;
     // e.g. self.myOutlet = nil;
 }
 
+- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.feedViewToolbar.frame = CGRectMake(-10.0f,
+                                                CGRectGetHeight(self.view.bounds) - toolbarSize.height,
+                                                toolbarSize.width + 20, toolbarSize.height);
+    } else {
+        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
+    }
+    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
+
+    int height = 16;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+        UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+        height = 8;
+    }
+
+    self.intelligenceControl.frame = CGRectMake(self.intelligenceControl.frame.origin.x,
+                                                self.intelligenceControl.frame.origin.y,
+                                                self.intelligenceControl.frame.size.width,
+                                                self.feedViewToolbar.frame.size.height -
+                                                height);
+    [self refreshHeaderCounts];
+}
 
 
 #pragma mark -
@@ -314,10 +473,10 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
-    // set title only if on currestont controller
-    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
-        [appDelegate setTitle:[results objectForKey:@"user"]];
-    }
+//    // set title only if on currestont controller
+//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
+//        [appDelegate setTitle:[results objectForKey:@"user"]];
+//    }
 
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
@@ -325,42 +484,54 @@ static const CGFloat kFolderTitleHeight = 28;
     NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage * userAvatarImage = [UIImage imageWithData:imageData];
     userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
-    
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
+    userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
-
-
-    UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
-                                   initWithCustomView:userAvatarButton];
+    UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
+                                          initWithCustomView:userAvatarButton];
     
-    self.navigationItem.leftBarButtonItem = userAvatar;
+    self.navigationItem.leftBarButtonItem = userInfoBarButton;
     [self setUserAvatarLayout:orientation];
     
-    // adding settings button to right
+    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    addButton.bounds = CGRectMake(0, 0, 34, 44);
+    [addButton setImage:addImage forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
+    [addBarButton setCustomView:addButton];
 
-//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-//    settings.bounds = CGRectMake(0, 0, 32, 32);
-//    [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-//    [settings setImage:settingsImage forState:UIControlStateNormal];
-//    
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                   initWithCustomView:settings];
+    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    settingsButton.bounds = CGRectMake(0, 0, 34, 44);
+    [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+    [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
+    [settingsBarButton setCustomView:settingsButton];
     
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsPopover:)];
-
-    
-    self.navigationItem.rightBarButtonItem = settingsButton;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                                           initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                           target:nil action:nil];
+        spacer.width = 12;
+        UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
+        UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [activityButton setImage:activityImage forState:UIControlStateNormal];
+        [activityButton sizeToFit];
+        [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
+        activitiesButton = [[UIBarButtonItem alloc]
+                            initWithCustomView:activityButton];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
+    }
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictUserProfile and userActivitiesArray
-    appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
+    // Set up dictSocialProfile and userActivitiesArray
+    appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
+    appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
+    appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
     // Only update the dashboard if there is a social profile
@@ -473,6 +644,7 @@ static const CGFloat kFolderTitleHeight = 28;
     
     [self calculateFeedLocations];
     [self.feedTitlesTable reloadData];
+    [self refreshHeaderCounts];
 
     // assign categories for FTUX
     
@@ -515,47 +687,49 @@ static const CGFloat kFolderTitleHeight = 28;
         [appDelegate showFirstTimeUser];
         return;
     }
-    
-    BOOL hasFocusStory = NO;
-    for (id feedId in appDelegate.dictFeeds) {
-        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
-        if ([[feed objectForKey:@"ps"] intValue] > 0) {
-            hasFocusStory = YES;
-            break;
-        }
-    }
 
-    if (!hasFocusStory) {
-        [self.intelligenceControl removeSegmentAtIndex:2 animated:NO];
-        [self.intelligenceControl setWidth:90 forSegmentAtIndex:0];
-        [self.intelligenceControl setWidth:90 forSegmentAtIndex:1];
-    } else {
-        UIImage *green = [UIImage imageNamed:@"green_focus.png"];
-        if (self.intelligenceControl.numberOfSegments == 2) {
-            [self.intelligenceControl insertSegmentWithImage:green atIndex:2 animated:NO];
-            [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
-            [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
-            [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-        }
-    }
-    
     self.intelligenceControl.hidden = NO;
+    
+    [self showExplainerOnEmptyFeedlist];
 }
 
 - (void)showUserProfile {
-    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];
+    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
+    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
     [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [appDelegate showAddSiteModal:sender];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController showSitePopover:self.addBarButton];
+    } else {
+        if (self.popoverController == nil) {
+            self.popoverController = [[WEPopoverController alloc]
+                                      initWithContentViewController:appDelegate.addSiteViewController];
+            
+            self.popoverController.delegate = self;
+        } else {
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
+        }
+        
+        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+        }
+        [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
+                                                                 self.view.frame.size.height - 28)];
+        [self.popoverController presentPopoverFromBarButtonItem:self.addBarButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionDown
+                                                       animated:YES];
+    }
+    
+    [appDelegate.addSiteViewController reload];
 }
 
-- (void)showSettingsPopover:(id)sender {
+- (IBAction)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFeedMenuPopover:sender];
+        [appDelegate.masterContainerViewController showFeedMenuPopover:self.settingsBarButton];
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]
@@ -571,11 +745,36 @@ static const CGFloat kFolderTitleHeight = 28;
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                       permittedArrowDirections:UIPopoverArrowDirectionUp
+        [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
     }
 }
+
+- (IBAction)showInteractionsPopover:(id)sender {    
+    if (self.popoverController == nil) {
+        self.popoverController = [[WEPopoverController alloc]
+                                  initWithContentViewController:appDelegate.dashboardViewController];
+        
+        self.popoverController.delegate = self;
+    } else {
+        [self.popoverController dismissPopoverAnimated:YES];
+        self.popoverController = nil;
+    }
+    
+    if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+        [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+    }
+    [self.popoverController setPopoverContentSize:CGSizeMake(self.view.frame.size.width - 36,
+                                                             self.view.frame.size.height - 60)];
+    [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
+                                   permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                   animated:YES];
+    
+    [appDelegate.dashboardViewController refreshInteractions];
+    [appDelegate.dashboardViewController refreshActivity];
+}
+
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 2) {
@@ -779,7 +978,7 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+    button.backgroundColor = UIColorFromRGB(0x214607);
 }
 
 - (IBAction)sectionUntapped:(UIButton *)button {
@@ -798,7 +997,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 0 && folderName != @"saved_stories") {
+    if (!visibleFeeds && section != 2 && section != 0 && ![folderName isEqual:@"saved_stories"]) {
         return 0;
     }
     
@@ -952,7 +1151,10 @@ heightForHeaderInSection:(NSInteger)section {
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
-    NSIndexPath *topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    NSIndexPath *topRow;
+    if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
+        topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    }
     int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
@@ -988,20 +1190,44 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable reloadData];
 
     NSIndexPath *newMiddleRow;
-    if ([self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
+    if (topRow && [self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
         newMiddleRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
-    } else {
+    } else if (topRow) {
         newMiddleRow = [NSIndexPath indexPathForRow:0 inSection:topRow.section];
     }
-    [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
-                                atScrollPosition:UITableViewScrollPositionTop
-                                        animated:NO];
+    if (newMiddleRow) {
+        [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
+                                    atScrollPosition:UITableViewScrollPositionTop
+                                            animated:NO];
+    }
     [self.feedTitlesTable
      reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
      withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];
     [self redrawUnreadCounts];
 
 	[hud hide:YES afterDelay:0.5];
+    [self showExplainerOnEmptyFeedlist];
+}
+
+- (void)showExplainerOnEmptyFeedlist {
+    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+    if (intelligenceLevel > 0) {
+        BOOL hasFocusStory = NO;
+        for (id feedId in appDelegate.dictFeeds) {
+            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
+            if ([[feed objectForKey:@"ps"] intValue] > 0) {
+                hasFocusStory = YES;
+                break;
+            }
+        }
+        if (!hasFocusStory) {
+            self.noFocusMessage.hidden = NO;
+        } else {
+            self.noFocusMessage.hidden = YES;
+        }
+    } else {
+        self.noFocusMessage.hidden = YES;
+    }
 }
 
 - (void)redrawUnreadCounts {
@@ -1069,7 +1295,6 @@ heightForHeaderInSection:(NSInteger)section {
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
-            
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
             [Utilities saveImage:faviconImage feedId:feed_id];
@@ -1120,6 +1345,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 #pragma mark -
@@ -1162,15 +1388,18 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
+    } else if ([request responseStatusCode] == 503) {
+        [pull finishedLoading];
+        return [self informError:@"In maintenance mode"];
     } else if ([request responseStatusCode] >= 500) {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
-    
-    NSString *responseString = [request responseString];   
+
+    NSString *responseString = [request responseString];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
+    NSDictionary *results = [NSJSONSerialization
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
@@ -1237,6 +1466,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
+    [self refreshHeaderCounts];
 }
 
 // called when the date shown needs to be updated, optional
@@ -1300,6 +1530,66 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.titleView = nil;
     self.navigationItem.rightBarButtonItem = nil;
+}
+
+- (void)refreshHeaderCounts {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self refreshHeaderCounts:orientation];
+}
+
+- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation {
+    if (!appDelegate.activeUsername) return;
+    
+    UIView *userInfoView = [[UIView alloc]
+                            initWithFrame:CGRectMake(0, 0,
+                                                     self.view.bounds.size.width,
+                                                     self.navigationController.toolbar.frame.size.height)];
+    int yOffset = 6;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        yOffset = 0;
+    }
+    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel.text = appDelegate.activeUsername;
+    userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    userLabel.textColor = UIColorFromRGB(0x404040);
+    userLabel.backgroundColor = [UIColor clearColor];
+    userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
+    [userInfoView addSubview:userLabel];
+    
+    [appDelegate.folderCountCache removeObjectForKey:@"everything"];
+    UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
+    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
+    [userInfoView addSubview:yellow];
+    
+    UILabel *neutralCount = [[UILabel alloc] init];
+    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
+                                    yellow.frame.origin.y - 3, 100, 16);
+    neutralCount.text = [NSString stringWithFormat:@"%d", counts.nt];
+    neutralCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    neutralCount.textColor = UIColorFromRGB(0x707070);
+    neutralCount.backgroundColor = [UIColor clearColor];
+    [neutralCount sizeToFit];
+    [userInfoView addSubview:neutralCount];
+    
+    UIImageView *green = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
+    green.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
+                             yellow.frame.origin.y, 8, 8);
+    [userInfoView addSubview:green];
+    
+    UILabel *positiveCount = [[UILabel alloc] init];
+    positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x + 2,
+                                     green.frame.origin.y - 3, 100, 16);
+    positiveCount.text = [NSString stringWithFormat:@"%d", counts.ps];
+    positiveCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    positiveCount.textColor = UIColorFromRGB(0x707070);
+    positiveCount.backgroundColor = [UIColor clearColor];
+    [positiveCount sizeToFit];
+    [userInfoView addSubview:positiveCount];
+    
+    
+    self.navigationItem.titleView = userInfoView;
 }
 
 

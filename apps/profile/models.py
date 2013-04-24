@@ -6,6 +6,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
 from django.db.models.signals import post_save
+from django.db.models import Sum, Avg, Count
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -296,6 +297,36 @@ class Profile(models.Model):
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
+
+    def send_first_share_to_blurblog_email(self, force=False):
+        from apps.social.models import MSocialProfile, MSharedStory
+        
+        if not self.user.email:
+            return
+
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='first_share')
+        
+        if not created and not force:
+            return
+        
+        social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+        params = {
+            'shared_stories': MSharedStory.objects.filter(user_id=self.user.pk).count(),
+            'blurblog_url': social_profile.blurblog_url,
+            'blurblog_rss': social_profile.blurblog_rss
+        }
+        user    = self.user
+        text    = render_to_string('mail/email_first_share_to_blurblog.txt', params)
+        html    = render_to_string('mail/email_first_share_to_blurblog.xhtml', params)
+        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
     
     def send_new_premium_email(self, force=False):
         subs = UserSubscription.objects.filter(user=self.user)
@@ -366,6 +397,40 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send()
                 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
+    
+    def send_import_reader_finished_email(self, feed_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_finished.xhtml', locals())
+        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
+    
+    def send_import_reader_starred_finished_email(self, feed_count, starred_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_starred_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_starred_finished.xhtml', locals())
+        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader starred stories import: %s" % self.user.email)
     
     def send_launch_social_email(self, force=False):
         if not self.user.email or not self.send_emails:
@@ -587,3 +652,19 @@ class PaymentHistory(models.Model):
             'payment_amount': self.payment_amount,
             'payment_provider': self.payment_provider,
         }
+    
+    @classmethod
+    def report(cls, months=12):
+        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
+        print "Total: $%s" % total['sum']
+        
+        for m in range(months):
+            now = datetime.datetime.now()
+            start_date = now - datetime.timedelta(days=(m+1)*30)
+            end_date = now - datetime.timedelta(days=m*30)
+            payments = cls.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
+            payments = payments.aggregate(avg=Avg('payment_amount'), 
+                                          sum=Sum('payment_amount'), 
+                                          count=Count('user'))
+            print "%s months ago: avg=$%s sum=$%s users=%s" % (
+                m, payments['avg'], payments['sum'], payments['count'])

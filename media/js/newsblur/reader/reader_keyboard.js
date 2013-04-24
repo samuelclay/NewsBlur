@@ -1,11 +1,16 @@
 NEWSBLUR.ReaderKeyboard = function(options) {
-    var defaults = {};
+    var defaults = {
+        width: 620
+    };
     
     this.options = $.extend({}, defaults, options);
     this.runner();
 };
 
-NEWSBLUR.ReaderKeyboard.prototype = {
+NEWSBLUR.ReaderKeyboard.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderKeyboard.prototype.constructor = NEWSBLUR.ReaderKeyboard;
+
+_.extend(NEWSBLUR.ReaderKeyboard.prototype, {
     
     runner: function() {
         this.make_modal();
@@ -19,7 +24,10 @@ NEWSBLUR.ReaderKeyboard.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Keyboard shortcuts'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Keyboard shorcuts'
+            ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story'),
@@ -220,6 +228,20 @@ NEWSBLUR.ReaderKeyboard.prototype = {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Expand story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'x'
+                ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Scroll to comments'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'c'
+                ])
+              ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Share this story'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
@@ -282,35 +304,6 @@ NEWSBLUR.ReaderKeyboard.prototype = {
         ]);
     },
     
-    open_modal: function() {
-        var self = this;
-        
-        this.$modal.modal({
-            'minWidth': 620,
-            'maxWidth': 620,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                    $(window).resize();
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
-    },
-    
     handle_cancel: function() {
         var $cancel = $('.NB-modal-cancel', this.$modal);
         
@@ -334,4 +327,4 @@ NEWSBLUR.ReaderKeyboard.prototype = {
         });
     }
     
-};
+});

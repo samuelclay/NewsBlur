@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from apps.reader import views
 
 urlpatterns = patterns('',
@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^favicons', views.load_feed_favicons, name='load-feed-favicons'),
     url(r'^river_stories', views.load_river_stories__redis, name='load-river-stories'),
     url(r'^refresh_feeds', views.refresh_feeds, name='refresh-feeds'),
+    url(r'^interactions_count', views.interactions_count, name='interactions-count'),
     url(r'^feed_unread_count', views.feed_unread_count, name='feed-unread-count'),
     url(r'^starred_stories', views.load_starred_stories, name='load-starred-stories'),
     url(r'^mark_all_as_read', views.mark_all_as_read, name='mark-all-as-read'),

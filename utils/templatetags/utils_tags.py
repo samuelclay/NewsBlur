@@ -1,9 +1,10 @@
+import struct
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django import template
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
-from apps.social.models import MInteraction, MActivity, MSocialProfile
+from apps.social.models import MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 
@@ -12,7 +13,10 @@ register = template.Library()
 @register.simple_tag
 def current_domain():
     current_site = Site.objects.get_current()
-    return current_site and current_site.domain
+    domain = current_site and current_site.domain
+    if settings.SERVER_NAME == "dev" and domain:
+        domain = domain.replace("www", "dev")
+    return domain
 
 @register.simple_tag(takes_context=True)
 def localdatetime(context, date, date_format):
@@ -22,10 +26,12 @@ def localdatetime(context, date, date_format):
     
 @register.inclusion_tag('reader/feeds_skeleton.xhtml', takes_context=True)
 def render_feeds_skeleton(context):
-    user         = get_user(context['user'])
+    user = get_user(context['user'])
+    social_profile = MSocialProfile.get_user(user.pk)
 
     return {
         'user': user,
+        'social_profile': social_profile,
         'MEDIA_URL': settings.MEDIA_URL,
     }
 
@@ -50,38 +56,58 @@ def render_recommended_users(context):
         'user': user,
         'profile': profile,
     }
-          
-@register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
-def render_interactions_module(context, page=1):
-    user = get_user(context['user'])
-    interactions, has_next_page = MInteraction.user(user.pk, page)
-    
+
+@register.inclusion_tag('reader/getting_started.xhtml', takes_context=True)
+def render_getting_started(context):
+    user    = get_user(context['user'])
+    profile = MSocialProfile.profile(user.pk)
+
     return {
         'user': user,
-        'interactions': interactions,
-        'page': page,
-        'has_next_page': has_next_page,
-        'MEDIA_URL': context['MEDIA_URL'],
+        'user_profile': user.profile,
+        'social_profile': profile,
+    }
+
+@register.inclusion_tag('reader/account_module.xhtml', takes_context=True)
+def render_account_module(context):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'user_profile': user.profile,
+        'social_profile': context['social_profile'],
+        'feed_count': context['feed_count'],
     }
     
-@register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
-def render_activities_module(context, page=1):
-    user = get_user(context['user'])
-    activities, has_next_page = MActivity.user(user.pk, page)
-    
+@register.inclusion_tag('reader/footer.xhtml', takes_context=True)
+def render_footer(context, page=None):
     return {
-        'user': user,
-        'activities': activities,
         'page': page,
-        'has_next_page': has_next_page,
-        'username': 'You',
-        'MEDIA_URL': context['MEDIA_URL'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
 
 @register.filter
 def get(h, key):
     print h, key
     return h[key]
+
+@register.filter
+def hex2rgba(hex, alpha):
+    colors = struct.unpack('BBB', hex.decode('hex'))
+    return "rgba(%s, %s, %s, %s)" % (colors[0], colors[1], colors[2], alpha)
+    
+@register.filter
+def rgb2rgba(rgb, alpha):
+    rgb = rgb.replace('rgb', 'rgba')
+    rgb = rgb.replace(')', ", %s)" % alpha)
+    return rgb
+
+@register.filter
+def color2rgba(color, alpha):
+    if "#" in color:
+        return hex2rgba(color, alpha)
+    elif "rgb" in color:
+        return rgb2rgba(color, alpha)
     
 @register.filter
 def get_range( value ):

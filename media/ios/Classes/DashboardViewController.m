@@ -36,19 +36,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     self.interactionsModule.hidden = NO;
     self.activitiesModule.hidden = YES;
     self.feedbackWebView.hidden = YES;
     self.feedbackWebView.delegate = self;
-    
     self.segmentedButton.selectedSegmentIndex = 0;
     
     self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     // preload feedback
     self.feedbackWebView.scalesPageToFit = YES;
-    
     
     NSString *urlAddress = FEEDBACK_URL;
     //Create a URL object.
@@ -110,6 +107,9 @@
 # pragma mark Interactions
 
 - (void)refreshInteractions {
+    appDelegate.userInteractionsArray = nil;
+    [self.interactionsModule.interactionsTable reloadData];
+    [self.interactionsModule.interactionsTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     [self.interactionsModule fetchInteractionsDetail:1];    
 }
 
@@ -117,6 +117,9 @@
 # pragma mark Activities
 
 - (void)refreshActivity {
+    appDelegate.userActivitiesArray = nil;
+    [self.activitiesModule.activitiesTable reloadData];
+    [self.activitiesModule.activitiesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     [self.activitiesModule fetchActivitiesDetail:1];    
 }
 

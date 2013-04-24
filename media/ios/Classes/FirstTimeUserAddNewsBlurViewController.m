@@ -34,11 +34,6 @@
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"All Done!";
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.instructionsLabel.font = [UIFont systemFontOfSize:14];
-    }
-    
 }
 
 - (void)viewDidUnload
@@ -140,6 +135,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 - (void)finishAddSite:(ASIHTTPRequest *)request {

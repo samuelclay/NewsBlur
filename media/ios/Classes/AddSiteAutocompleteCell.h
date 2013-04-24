@@ -12,10 +12,12 @@
     UILabel *feedTitle;
     UILabel *feedUrl;
     UILabel *feedSubs;
+    UIImageView *feedFavicon;
 }
 
 @property (nonatomic) IBOutlet UILabel *feedTitle;
 @property (nonatomic) IBOutlet UILabel *feedUrl;
 @property (nonatomic) IBOutlet UILabel *feedSubs;
+@property (nonatomic) IBOutlet UIImageView *feedFavicon;
 
 @end

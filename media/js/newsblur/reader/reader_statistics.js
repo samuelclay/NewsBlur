@@ -77,7 +77,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         setTimeout(function() {
             self.make_charts(data);  
-        }, this.first_load ? 500 : 50);
+        }, this.first_load ? 200 : 50);
         
         setTimeout(function() {
             $.modal.impl.resize(self.$modal);
@@ -85,8 +85,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     },
     
     make_stats: function(data) {
-        var update_interval = this.calculate_update_interval(data['update_interval_minutes']);
-        var premium_update_interval = this.calculate_update_interval(data['premium_update_interval_minutes']);
+        var update_interval = NEWSBLUR.utils.calculate_update_interval(data['update_interval_minutes']);
+        var premium_update_interval = NEWSBLUR.utils.calculate_update_interval(data['premium_update_interval_minutes']);
         
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
@@ -95,8 +95,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-label' }, 'Every'),
-                $.make('div', { className: 'NB-statistics-count' }, update_interval)
+                (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
+                    $.make('div', { className: 'NB-statistics-label' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/realtime_spinner.gif', className: 'NB-statisics-realtime-spinner' }),
+                        'Real-time'
+                    ]),
+                    $.make('div', { className: 'NB-statistics-count' }, 'Supplemented by checks every ' + update_interval)
+                ])),
+                (!data['push'] && $.make('div', [
+                    $.make('div', { className: 'NB-statistics-label' }, 'Every'),
+                    $.make('div', { className: 'NB-statistics-count' }, update_interval)
+                ]))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
@@ -108,6 +117,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                     $.make('b', 'Why so infrequently?'),
                     'This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.'
                   ])),
+              (data.errors_since_good &&
+                  $.make('div', { className: 'NB-statistics-update-explainer' }, [
+                    $.make('b', 'Why is the next update not at the normal rate?'),
+                    'This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to see the exact status codes for the feed. The more errors for the feed, the longer time taken between fetches.'
+                  ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
                     $.make('div', { className: 'NB-statistics-label' }, [
@@ -117,7 +131,14 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                         $.make('br'),
                         'this site would update every'
                     ]),
-                    $.make('div', { className: 'NB-statistics-count' }, premium_update_interval)
+                    $.make('div', { className: 'NB-statistics-count' }, premium_update_interval),
+                    (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
+                        $.make('div', { className: 'NB-statistics-label' }, [
+                            'but it wouldn\'t matter because',
+                            $.make('br'),
+                            'this site is already in real-time'
+                        ])
+                    ]))
                   ])
               ]))
             ])),
@@ -125,7 +146,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')
                 ]),
-                $.make('div', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
+                $.make('canvas', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ]),
             (data.classifier_counts && $.make('div', { className: 'NB-statistics-state NB-statistics-classifiers' }, [
                 this.make_classifier_count('tag', data.classifier_counts['tag']),
@@ -150,25 +171,6 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         ]);
         
         return $stats;
-    },
-    
-    calculate_update_interval: function(update_interval_minutes) {
-        if (!update_interval_minutes) return '&nbsp;';
-        
-        var interval_start = update_interval_minutes;
-        var interval_end = update_interval_minutes * 1.25;
-        var interval = '';
-        if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
-        } else {
-            var interval_start_hours = parseInt(interval_start / 60, 10);
-            var interval_end_hours = parseInt(interval_end / 60, 10);
-            var dec_start = interval_start % 60;
-            var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
-        }
-        
-        return interval;
     },
     
     make_classifier_count: function(facet, data) {
@@ -245,24 +247,41 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     },
     
     make_charts: function(data) {
-        data['story_count_history'] = _.map(data['story_count_history'], function(date) {
+        var labels = _.map(data['story_count_history'], function(date) {
             var date_matched = date[0].match(/(\d{4})-(\d{1,2})/);
-            return [(new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1)).getTime(),
-                    date[1]];
+            var date = (new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1));
+            return NEWSBLUR.utils.shortMonthNames[date.getMonth()] + " " + date.getUTCFullYear();
         });
-        var $plot = $(".NB-statistics-history-chart");
-        var plot = $.plot($plot,
-            [ { data: data['story_count_history'], label: "Stories"} ], {
-                series: {
-                    lines: { show: true },
-                    points: { show: true }
-                },
-                average: data['average_stories_per_month'],
-                legend: { show: false },
-                grid: { hoverable: true, clickable: true },
-                yaxis: { tickDecimals: 0, min: 0 },
-                xaxis: { mode: 'time', minTickSize: [1, 'month'], timeformat: '%b %y' }
+        if (labels.length > 16) {
+            var cut_size = Math.round(labels.length / 16.0);
+            labels = _.map(labels, function(label, c) {
+                if ((c % cut_size) == 0) return label;
+                return "";
             });
+        }
+        var values = _.map(data['story_count_history'], function(date) {
+            return date[1];
+        });
+        var points = {
+            labels: labels,
+            datasets: [
+                {
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    data : values
+                }
+            ]
+        };
+        var $plot = $(".NB-statistics-history-chart");
+        var width = $plot.width();
+        var height = $plot.height();
+        $plot.attr('width', width);
+        $plot.attr('height', height);
+        var myLine = new Chart($plot.get(0).getContext("2d")).Line(points, {
+            scaleLabel : "<%= Math.round(value) %>"
+        });
     },
     
     close_and_load_premium: function() {
