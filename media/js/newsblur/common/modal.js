@@ -29,6 +29,9 @@ NEWSBLUR.Modal.prototype = {
                         if (self.options.onOpen) {
                             self.options.onOpen();
                         }
+                        if (callback) {
+                            callback();
+                        }
                     });
                     setTimeout(function() {
                         $(window).resize();

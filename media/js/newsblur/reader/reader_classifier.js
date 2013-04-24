@@ -97,7 +97,9 @@ var classifier_prototype = {
         this.make_modal_feed();
         this.make_modal_title();
         this.handle_cancel();
-        this.open_modal();
+        this.open_modal(_.bind(function() {
+            this.fit_classifiers();
+        }, this));
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
@@ -125,7 +127,9 @@ var classifier_prototype = {
         this.handle_text_highlight();
         this.make_modal_title();
         this.handle_cancel();
-        this.open_modal();
+        this.open_modal(_.bind(function() {
+            this.fit_classifiers();
+        }, this));
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
