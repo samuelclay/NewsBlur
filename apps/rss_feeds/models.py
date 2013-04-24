@@ -58,7 +58,7 @@ class Feed(models.Model):
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
-    queued_date = models.DateTimeField(db_index=True)
+    last_story_date = models.DateTimeField(null=True, blank=True)
     fetched_once = models.BooleanField(default=False)
     known_good = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -178,8 +178,6 @@ class Feed(models.Model):
             self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
             self.next_scheduled_update = datetime.datetime.utcnow()
-        if not self.queued_date:
-            self.queued_date = datetime.datetime.utcnow()
         self.fix_google_alerts_urls()
         
         feed_address = self.feed_address or ""
@@ -395,6 +393,9 @@ class Feed(models.Model):
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         
+        if not self.last_story_date:
+            self.calculate_last_story_date()
+        
         count_extra = False
         if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
@@ -407,6 +408,21 @@ class Feed(models.Model):
             self.save_popular_tags()
             self.save_feed_story_history_statistics()        
     
+    def calculate_last_story_date(self):
+        last_story_date = None
+        try:
+            last_story_date = MStory.objects(
+                story_feed_id=self.pk
+            ).limit(1).order_by('-story_date').only('story_date').first().story_date
+        except MStory.DoesNotExist:
+            pass
+
+        if not last_story_date or seconds_timesince(last_story_date) < 0:
+            last_story_date = datetime.datetime.now()
+
+        self.last_story_date = last_story_date
+        self.save()
+        
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
         logging.info(" ---> ~SN~FMScheduling immediate premium setup of ~SB%s~SN feeds..." % 
@@ -1261,7 +1277,7 @@ class Feed(models.Model):
         if self.min_to_decay and not force:
             return self.min_to_decay
         
-        upd  = max(self.stories_last_month / 30.0, self.average_stories_per_month / 30.0)
+        upd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
                 ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
         # UPD = 1  Subs > 1:  t = 5         # 11625  * 1440/5 =       3348000
@@ -1272,7 +1288,7 @@ class Feed(models.Model):
         # UPD = 0  Subs = 1:  t = 60 * 24   # 807690 * 1440/(60*24) = 807690
         if upd >= 1:
             if subs > 1:
-                total = 5
+                total = 10
             else:
                 total = 60
         elif upd > 0:
@@ -1282,10 +1298,11 @@ class Feed(models.Model):
                 total = 60*12 - (upd * 60*12)
         elif upd == 0:
             if subs > 1:
-                total = 60 * 3
+                total = 60 * 6
             else:
                 total = 60 * 24
-        
+            months_since_last_story = seconds_timesince(self.last_story_date) * 60*60*24*30
+            total *= max(1, months_since_last_story)
         # updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
         #                                             * (self.stories_last_month**0.25)))
         # if self.active_premium_subscribers > 0:
@@ -1306,9 +1323,9 @@ class Feed(models.Model):
         if self.is_push:
             total = total * 12
         
-        # 1 week max
-        if total > 60*24*7:
-            total = 60*24*7
+        # 3 day max
+        if total > 60*24*3:
+            total = 60*24*3
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
@@ -1383,7 +1400,6 @@ class Feed(models.Model):
             self.schedule_feed_fetch_immediately()
         else:
             logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
-            # self.queued_date = datetime.datetime.utcnow()
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     

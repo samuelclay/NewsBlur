@@ -153,6 +153,8 @@ def relative_timeuntil(value):
     return _do_timesince(now, chunks, value)
 
 def seconds_timesince(value):
+    if not value:
+        return 0
     now = datetime.datetime.utcnow()
     delta = now - value
     
