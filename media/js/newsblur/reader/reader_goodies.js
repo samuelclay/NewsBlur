@@ -73,6 +73,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://windowsphone.com/s?appid=2585d348-0894-41b6-8c26-77aeb257f9d8'
+              }, 'View in Windows Phone Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Metroblur: User-Created Windows Phone App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://projects.developer.nokia.com/feed_reader'
               }, 'View in Nokia Store'),
               $.make('div', { className: 'NB-goodies-nokia' }),
