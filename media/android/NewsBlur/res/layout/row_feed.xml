@@ -27,7 +27,10 @@
             android:gravity="center"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:textColor="@color/black"
+            android:shadowColor="@color/black"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -40,6 +43,9 @@
             android:gravity="center"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
+            android:shadowColor="@color/black"
+            android:shadowDy="1"
+            android:shadowRadius="1"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
