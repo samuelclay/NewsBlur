@@ -1390,9 +1390,9 @@ background: transparent;
     -ms-transition: opacity .12s ease-out;
 }
 
-.NB-intelligence-positive .NB-story-title.NB-story-neutral.NB-story-hidden-visible .NB-hidden-fade,
-.NB-intelligence-positive .NB-story-title.NB-story-negative.NB-story-hidden-visible .NB-hidden-fade,
-.NB-intelligence-neutral .NB-story-title.NB-story-negative.NB-story-hidden-visible .NB-hidden-fade {
+.NB-intelligence-positive .NB-story-title.NB-story-neutral .NB-hidden-fade,
+.NB-intelligence-positive .NB-story-title.NB-story-negative .NB-hidden-fade,
+.NB-intelligence-neutral .NB-story-title.NB-story-negative .NB-hidden-fade {
   opacity: .5;
 }
 
@@ -1925,25 +1925,6 @@ background: transparent;
     background-color: #F8F8F6;
 }
 
-.NB-feed-story-header-info .NB-feed-story-header-collapse {
-    display: none;
-}
-.NB-story-titles .NB-feed-story-header-info .NB-feed-story-header-collapse {
-    display: block;
-    position: absolute;
-    right: 16px;
-    top: 6px;
-    width: 16px;
-    height: 16px;
-    background: transparent url('/media/embed/reader/toggle_minus.png') no-repeat 0 0;
-    background-size: 16px;
-    cursor: pointer;
-    opacity: .6;
-}
-.NB-story-titles .NB-feed-story-header-info .NB-feed-story-header-collapse:hover {
-    opacity: 1;
-}
-
 .NB-feed-story-header-feed {
     background: #404040 url('/media/embed/reader/feed_view_feed_background.png') repeat-x 0 0;
     background-image: -webkit-gradient(
@@ -2247,7 +2228,7 @@ background: transparent;
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-now-0:hover {
     /* Grey, active */
-    background-color: #D8DEE2;
+    background-color: rgba(0, 0, 0, .1);
     color: #9D9A95;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     opacity: 1;

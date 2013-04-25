@@ -890,12 +890,10 @@ var classifier_prototype = {
         
         this.update_opinions();
         NEWSBLUR.assets.recalculate_story_scores(feed_id);
+        NEWSBLUR.assets.stories.trigger('render:intelligence');
         this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.feed_unread_count(feed_id);
-                // NEWSBLUR.reader.force_feed_refresh();
-                // NEWSBLUR.reader.open_feed(self.feed_id, true);
-                // TODO: Update counts in active feed.
                 $.modal.close();
             }
         });
