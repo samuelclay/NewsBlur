@@ -8,12 +8,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 
+import com.newsblur.activity.Login;
+import com.newsblur.database.BlurDatabase;
 import com.newsblur.domain.UserDetails;
 
 public class PrefsUtils {
@@ -26,17 +29,24 @@ public class PrefsUtils {
 		edit.commit();
 	}
 
-	/**
-	 * Removes the current login session (i.e. logout)
-	 */
-	public static void clearLogin(final Context context) {
-		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		final Editor edit = preferences.edit();
-		edit.putString(PrefConstants.PREF_COOKIE, null);
-		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, null);
-		edit.commit();
-	}
-	
+    public static void logout(Context context) {
+
+        // TODO: stop or wait for any BG processes
+
+        // wipe the prefs store
+        context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
+        
+        // wipe the local DB
+        BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
+        databaseHelper.dropAndRecreateTables();
+        
+        // prompt for a new login
+        Intent i = new Intent(context, Login.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(i);
+
+    }
+
 	/**
 	 * Retrieves the current unique login key. This key will be unique for each
 	 * login. If this login key doesn't match the login key you have then assume
