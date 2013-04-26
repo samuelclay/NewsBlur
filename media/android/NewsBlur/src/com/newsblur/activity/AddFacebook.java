@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.newsblur.network.APIConstants;
 import com.newsblur.R;
 
 public class AddFacebook extends NbFragmentActivity {
@@ -22,7 +23,7 @@ public class AddFacebook extends NbFragmentActivity {
 		
 		webview.setWebViewClient(new WebViewClient() {
 		    public boolean shouldOverrideUrlLoading(WebView view, String url){
-		    	if (TextUtils.equals(url, "http://www.newsblur.com/")) {
+		    	if (TextUtils.equals(url, APIConstants.NEWSBLUR_URL + "/")) {
 		    		AddFacebook.this.setResult(FACEBOOK_AUTHED);
 		    		AddFacebook.this.finish();
 		    		return true;
@@ -32,7 +33,7 @@ public class AddFacebook extends NbFragmentActivity {
 		   }
 		});
 		
-		webview.loadUrl("http://www.newsblur.com/oauth/facebook_connect/");
+		webview.loadUrl(APIConstants.URL_CONNECT_FACEBOOK);
 	}
 	
 }
