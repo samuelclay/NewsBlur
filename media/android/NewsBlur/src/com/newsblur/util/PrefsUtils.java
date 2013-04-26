@@ -11,9 +11,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.newsblur.activity.Login;
 import com.newsblur.database.BlurDatabase;
@@ -28,6 +30,35 @@ public class PrefsUtils {
 		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
 	}
+
+    /**
+     * Check to see if this is the first launch of the app after an upgrade, in which case
+     * we clear the DB to prevent bugs associated with non-forward-compatibility.
+     */
+    public static void checkForUpgrade(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+
+        String version;
+        try {
+            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (NameNotFoundException nnfe) {
+            Log.w(PrefsUtils.class.getName(), "could not determine app version");
+            return;
+        }
+        Log.i(PrefsUtils.class.getName(), "launching version: " + version);
+
+        String oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null);
+        if ( (oldVersion == null) || (!oldVersion.equals(version)) ) {
+            Log.i(PrefsUtils.class.getName(), "detected new version of app, clearing local data");
+            // wipe the local DB
+            BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
+            databaseHelper.dropAndRecreateTables();
+            // store the current version
+            prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
+        }
+
+    }
 
     public static void logout(Context context) {
 
