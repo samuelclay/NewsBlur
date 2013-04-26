@@ -51,6 +51,7 @@
 @synthesize storyHUD;
 @synthesize scrollingToPage;
 @synthesize traverseView;
+@synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
