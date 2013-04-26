@@ -167,6 +167,8 @@
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     
+    appDelegate.originalStoryCount = [appDelegate unreadCount];
+    
 	[super viewWillAppear:animated];
         
     if ((appDelegate.isSocialRiverView ||
@@ -791,7 +793,6 @@
     [cell setNeedsLayout];
     int storyIndex = [appDelegate indexFromLocation:row];
     appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
-    appDelegate.originalStoryCount = [appDelegate unreadCount];
     [appDelegate loadStoryDetailView];
 }
 
