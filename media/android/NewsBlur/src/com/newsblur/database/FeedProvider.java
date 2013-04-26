@@ -439,7 +439,8 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
-            // Note the extra special pre-select UNION clause here!
+            // Note the extra special pre-select UNION clause here! Due to an undocumented feature/bug in sqlite,
+            // if the two sides of the union are reversed, the result columns are incorrectly prefixed.
 			String folderQuery = DatabaseConstants.FOLDER_UNION_ROOT +
             "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
 			" INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 

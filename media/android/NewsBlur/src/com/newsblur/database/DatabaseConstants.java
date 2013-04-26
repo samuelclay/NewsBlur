@@ -138,7 +138,9 @@ public class DatabaseConstants {
 
     // this union clause lets folder queries also select the "root" folder that should appear whether or not
     // it has unread stories. Note that this goes *before* the normal ALL_FOLDERS select statement. The zero-valued
-    // pseudo-columns are safe because said columns are ignored for the root folder.
+    // pseudo-columns are safe because said columns are ignored for the root folder. This is necessary because the
+    // joins used in order to fetch folders by unread count are all inner joins, and sqlite does not support
+    // full outer joins.
     public static final String FOLDER_UNION_ROOT = "SELECT " +
             FOLDER_ID + ", " +
             FOLDER_NAME +
