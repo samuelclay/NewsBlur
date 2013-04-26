@@ -42,6 +42,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         this.story = story;
         this.$el.html(new NEWSBLUR.Views.StoryDetailView({
             model: this.story,
+            collection: this.story.collection,
             show_feed_title: true,
             skip_content: true,
             text_view: true,
