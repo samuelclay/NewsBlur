@@ -8,6 +8,8 @@ public class APIConstants {
 	public static final String PARAMETER_CATEGORY = "category";
 	public static final String URL_ADD_CATEGORIES = NEWSBLUR_URL + "/categories/subscribe";
 	public static final String URL_AUTOFOLLOW_PREF = NEWSBLUR_URL + "/profile/set_preference";
+	public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
+	public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
 	
 
 	// TODO: make use of trailing slashes on URLs consistent or document why
