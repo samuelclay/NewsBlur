@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.newsblur.network.APIConstants;
 import com.newsblur.R;
 
 public class ImageLoader {
@@ -118,7 +119,7 @@ public class ImageLoader {
 
 		try {
 			if (url.startsWith("/")) {
-				url = AppConstants.NEWSBLUR_URL + url;
+				url = APIConstants.NEWSBLUR_URL + url;
 			}
 			final URL imageUrl = new URL(url);
 			final HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
