@@ -334,6 +334,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 scroll_offset: -50,
                 scroll_to_comments: true
             });
+        } else if (NEWSBLUR.assets.preference('feed_view_single_story')) {
+            NEWSBLUR.app.story_list.scroll_to_selected_story(model, {
+                'scroll_to_top': true
+            });
         } else if (selected && 
             !options.selected_by_scrolling &&
             (NEWSBLUR.reader.story_view == 'feed' ||
@@ -443,9 +447,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ===========
     // = Actions =
     // ===========
-    
-    select_story: function() {
-    },
     
     preserve_classifier_color: function(classifier_type, value, score) {
         var $tag;

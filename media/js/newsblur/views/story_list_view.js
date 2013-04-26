@@ -9,6 +9,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('add', this.add, this);
         this.collection.bind('add', this.reset_story_positions, this);
         this.collection.bind('no_more_stories', this.show_no_more_stories, this);
+        this.collection.bind('change:selected', this.show_only_selected_story, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
         this.$el.scroll(_.bind(this.handle_scroll_feed_view, this));
         this.reset_flags();
@@ -90,7 +91,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (!story || !story.story_view) return;
         var $story = story.story_view.$el;
 
-        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        if (NEWSBLUR.assets.preference('feed_view_single_story')) {
+            options.immediate = true;
+        }
         if (!NEWSBLUR.assets.preference('animations')) options.immediate = true;
         if (options.scroll_to_comments) {
             $story = $('.NB-feed-story-comments', $story);
@@ -103,7 +106,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         this.$el.scrollable().stop();
-        this.$el.scrollTo($story, { 
+        var scroll_to = options.scroll_to_top ? 0 : $story;
+        this.$el.scrollTo(scroll_to, { 
             duration: options.immediate ? 0 : 340,
             axis: 'y', 
             easing: 'easeInOutQuint', 
@@ -115,6 +119,19 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 }, 100);
             }
         });
+    },
+    
+    show_only_selected_story: function() {
+        if (!NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        
+        this.collection.each(function(story) {
+            if (story.get('selected')) {
+                story.story_view.$el.show();                
+            } else {
+                story.story_view.$el.hide();
+            }
+        });
+        
     },
     
     show_no_more_stories: function() {
