@@ -162,3 +162,16 @@
     display: block;
     font-weight: bold;
 }
+
+.NB-static-form .payextra-label {
+    clear: none;
+    width: 200px;
+    text-transform: none;
+}
+.NB-static-form .payextra-label input {
+    width: auto;
+    margin: 0 4px 0 0;
+}
+.NB-static-form input[name=plan] {
+    display: none;
+}

@@ -95,7 +95,11 @@ float: right;">
                 }
                 </style>
                 {{ zebra_form.plan.label_tag }}
-                {{ zebra_form.plan|safe }}
+                <label for="payextra" class="payextra-label">
+                    <input type="checkbox" id="payextra" name="payextra" />
+                    I'm feeling generous
+                    {{ zebra_form.plan|safe }}
+                </label>
             </div>
             
             {{ zebra_form.last_4_digits }}
