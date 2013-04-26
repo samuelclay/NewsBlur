@@ -172,7 +172,7 @@ public class APIManager {
 			CookieSyncManager.createInstance(context.getApplicationContext());
 			CookieManager cookieManager = CookieManager.getInstance();
 
-			cookieManager.setCookie(".newsblur.com", response.cookie);
+			cookieManager.setCookie(APIConstants.COOKIE_DOMAIN, response.cookie);
 			CookieSyncManager.getInstance().sync();
 
 			return loginResponse;
