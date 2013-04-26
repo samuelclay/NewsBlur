@@ -2529,8 +2529,8 @@
             NEWSBLUR.account = new NEWSBLUR.ReaderAccount(options);
         },
         
-        open_feedchooser_modal: function() {
-            NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser();
+        open_feedchooser_modal: function(options) {
+            NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
         
         open_feed_exception_modal: function(feed_id) {
@@ -2644,6 +2644,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
+                    ])),
+                    (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-keyboard' }, [
@@ -5015,6 +5019,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
                         self.open_feedchooser_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-premium' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_feedchooser_modal({'premium_only': true});
                     });
                 }
             });  
