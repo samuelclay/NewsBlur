@@ -821,7 +821,7 @@
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
-            NSLog(@"A");
+//            NSLog(@"A");
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -831,7 +831,7 @@
                 
             }];
         } else if (singlePage) {
-            NSLog(@"Single-D");
+//            NSLog(@"Single-D");
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
 
             if (bottomPosition > 0) {
@@ -844,7 +844,7 @@
                                                                              tvf.size.width, tvf.size.height);
             }
         } else if (!singlePage && (atTop && !atBottom)) {
-            NSLog(@"B");
+//            NSLog(@"B");
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPageControl.traversePinned = YES;
             appDelegate.storyPageControl.traverseFloating = NO;
@@ -861,7 +861,7 @@
             }];
         } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
                    appDelegate.storyPageControl.traversePinned) {
-            NSLog(@"C");
+//            NSLog(@"C");
             // Scroll with bottom of scrollview, but smoothly
             appDelegate.storyPageControl.traverseFloating = YES;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
@@ -875,7 +875,7 @@
                  appDelegate.storyPageControl.traversePinned = NO;                 
              }];
         } else {
-            NSLog(@"D");
+//            NSLog(@"D");
             // Scroll with bottom of scrollview
             appDelegate.storyPageControl.traversePinned = NO;
             appDelegate.storyPageControl.traverseFloating = YES;

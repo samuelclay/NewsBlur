@@ -791,7 +791,7 @@
     [cell setNeedsLayout];
     int storyIndex = [appDelegate indexFromLocation:row];
     appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
-    [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
+    appDelegate.originalStoryCount = [appDelegate unreadCount];
     [appDelegate loadStoryDetailView];
 }
 
