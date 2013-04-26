@@ -10,7 +10,8 @@ public class APIConstants {
 	public static final String URL_AUTOFOLLOW_PREF = NEWSBLUR_URL + "/profile/set_preference";
 	public static final String URL_CONNECT_FACEBOOK = NEWSBLUR_URL + "/oauth/facebook_connect/";
 	public static final String URL_CONNECT_TWITTER = NEWSBLUR_URL + "/oauth/twitter_connect/";
-	
+	public static final String URL_IMPORT_AUTHORIZATION = NEWSBLUR_URL + "/import/authorize/";
+
 
 	// TODO: make use of trailing slashes on URLs consistent or document why
 	// they are not.
