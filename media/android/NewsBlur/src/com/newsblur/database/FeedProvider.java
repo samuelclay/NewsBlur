@@ -12,9 +12,17 @@ import android.util.Log;
 
 import com.newsblur.util.AppConstants;
 
+/**
+ * A magic subclass of ContentProvider that enhances calls to the DB for presumably more simple caller syntax.
+ * 
+ * TODO: the fact that most of the app uses this subclass of ContentProvider cast as such may
+ *  deepy confuse future maintainers as to why the methods within magically do far, far more
+ *  than suggested by the normal contract and provided args.  When time and resources permit,
+ *  this paradigm could be replaced with a much more straightforward if slightly more verbose
+ *  use of Plain Old Raw Queries.  Alternatively, the DB could be renormalized so that it is not
+ *  necessary to use queries of such intense complexity.
+ */
 public class FeedProvider extends ContentProvider {
-
-	private static final String TAG = "FeedProvider";
 
 	public static final String AUTHORITY = "com.newsblur";
 	public static final String VERSION = "v1";
@@ -67,7 +75,8 @@ public class FeedProvider extends ContentProvider {
 
 	private static UriMatcher uriMatcher;
 	static {
-		// TODO: Tidy this url-structure. It's not forward-facing but it's kind of a mess.
+		// TODO: get rid of the hard-coded URL paths and replace then with the constant values in DatabaseConstants
+        //  that they actually represent.
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
@@ -259,7 +268,7 @@ public class FeedProvider extends ContentProvider {
 			break;		
 
 		case UriMatcher.NO_MATCH:
-			Log.e(TAG, "No match found for URI: " + uri.toString());
+			Log.e(this.getClass().getName(), "No match found for URI: " + uri.toString());
 			break;
 		}
 		return resultUri;
@@ -271,15 +280,28 @@ public class FeedProvider extends ContentProvider {
 		return true;
 	}
 
+    /**
+     * A simple utility wrapper that lets us log the insanely complex queries used below for debugging.
+     */
+    class LoggingDatabase {
+        SQLiteDatabase mdb; 
+        public LoggingDatabase(SQLiteDatabase db) {
+            mdb = db;
+        }
+        public Cursor rawQuery(String sql, String[] selectionArgs) {
+            //Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
+            return mdb.rawQuery(sql, selectionArgs);
+        }
+        public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+            return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
+        }
+    }
+
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        // TODO: the fact that most of the app uses this subclass of ContentProvider cast as such may
-        //  deepy confuse future maintainers as to why the .query() method magically does far, far more
-        //  than suggested by the normal contract and provided args.  This method should be renamed
-        //  to make it painfully obvious that it expands upon the normal ContentProvider.query contract.
-
-		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
+		final SQLiteDatabase rdb = databaseHelper.getReadableDatabase();
+        final LoggingDatabase db = new LoggingDatabase(rdb);
 		switch (uriMatcher.match(uri)) {
 
 			// Query for all feeds (by default only return those that have unread items in them)
@@ -417,7 +439,10 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
-			String folderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
+            // Note the extra special pre-select UNION clause here! Due to an undocumented feature/bug in sqlite,
+            // if the two sides of the union are reversed, the result columns are incorrectly prefixed.
+			String folderQuery = DatabaseConstants.FOLDER_UNION_ROOT +
+            "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
 			" INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 
 			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
