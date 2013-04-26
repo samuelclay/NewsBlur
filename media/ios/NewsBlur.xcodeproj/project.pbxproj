@@ -437,6 +437,10 @@
 		FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */; };
 		FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */; };
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
+		FFECD016172B0D4200D45A62 /* SafariService.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECD015172B0D4100D45A62 /* SafariService.m */; };
+		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
+		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
+		FFECD01D172B10BD00D45A62 /* SafariActivityItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FFECD01C172B10BD00D45A62 /* SafariActivityItem.m */; };
 		FFFC608517165A1D00DC22E2 /* THCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC60831716578E00DC22E2 /* THCircularProgressView.m */; };
 /* End PBXBuildFile section */
 
@@ -1055,6 +1059,12 @@
 		FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailMenuViewController.xib; sourceTree = "<group>"; };
 		FFE5322D144C8AC300ACFDE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
+		FFECD014172B0D4100D45A62 /* SafariService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SafariService.h; sourceTree = "<group>"; };
+		FFECD015172B0D4100D45A62 /* SafariService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SafariService.m; sourceTree = "<group>"; };
+		FFECD017172B105800D45A62 /* UIActivitySafari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UIActivitySafari.png; sourceTree = "<group>"; };
+		FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UIActivitySafari@2x.png"; sourceTree = "<group>"; };
+		FFECD01B172B10BD00D45A62 /* SafariActivityItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SafariActivityItem.h; sourceTree = "<group>"; };
+		FFECD01C172B10BD00D45A62 /* SafariActivityItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SafariActivityItem.m; sourceTree = "<group>"; };
 		FFFC60821716578E00DC22E2 /* THCircularProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = THCircularProgressView.h; sourceTree = "<group>"; };
 		FFFC60831716578E00DC22E2 /* THCircularProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = THCircularProgressView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1314,6 +1324,8 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFECD017172B105800D45A62 /* UIActivitySafari.png */,
+				FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */,
 				FFB5F50A17187B6F00C8B432 /* big_world.png */,
 				FFDD848816E8EBF8000AA0A2 /* train.png */,
 				FFDD848916E8EBF8000AA0A2 /* train@2x.png */,
@@ -1786,10 +1798,14 @@
 				FF9B565E16E810900054BF68 /* Assets */,
 				FFDC9F9716E8064C000D8E0C /* EmailService.h */,
 				FFDC9F9816E8064C000D8E0C /* EmailService.m */,
+				FFECD014172B0D4100D45A62 /* SafariService.h */,
+				FFECD015172B0D4100D45A62 /* SafariService.m */,
 				FFDC9F9916E8064C000D8E0C /* FacebookService.h */,
 				FFDC9F9A16E8064C000D8E0C /* FacebookService.m */,
 				FFDC9F9B16E8064C000D8E0C /* InstapaperActivityItem.h */,
 				FFDC9F9C16E8064C000D8E0C /* InstapaperActivityItem.m */,
+				FFECD01B172B10BD00D45A62 /* SafariActivityItem.h */,
+				FFECD01C172B10BD00D45A62 /* SafariActivityItem.m */,
 				FFDC9F9D16E8064C000D8E0C /* InstapaperService.h */,
 				FFDC9F9E16E8064C000D8E0C /* InstapaperService.m */,
 				FFDC9F9F16E8064C000D8E0C /* KeyChainItemWrapper */,
@@ -2315,6 +2331,8 @@
 				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
 				FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */,
 				FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */,
+				FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */,
+				FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2480,6 +2498,8 @@
 				FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */,
 				FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */,
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
+				FFECD016172B0D4200D45A62 /* SafariService.m in Sources */,
+				FFECD01D172B10BD00D45A62 /* SafariActivityItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,12 +1,14 @@
 /* Copyright 2012 IGN Entertainment, Inc. */
 
 #import "ShareThis.h"
+#import "SafariActivityItem.h"
 #import "InstapaperActivityItem.h"
 #import "PocketActivityItem.h"
 #import "TwitterService.h"
 #import "FacebookService.h"
 #import "EmailService.h"
 #import "MessageService.h"
+#import "SafariService.h"
 #import "InstapaperService.h"
 #import "PocketService.h"
 #import "ReadabilityService.h"
@@ -85,6 +87,9 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
         case STServiceTypeMail:
             [EmailService shareWithParams:params onViewController:viewController];
             break;
+        case STServiceTypeSafari:
+            [SafariService shareWithParams:params onViewController:viewController];
+            break;
         case STServiceTypeMessage:
             [MessageService shareWithParams:params onViewController:viewController];
             break;
@@ -138,6 +143,7 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
 - (void)showActivityView
 {
     NSArray *activityItems = [[NSArray alloc] initWithObjects:[self.params objectForKey:@"title"], [self.params objectForKey:@"url"], [self.params objectForKey:@"image"], nil];
+    SafariActivityItem *safariActivity = [[SafariActivityItem alloc] init];
     InstapaperActivityItem *instapaperActivity = [[InstapaperActivityItem alloc] init];
     PocketActivityItem *pocketActivity = [[PocketActivityItem alloc] init];
     ReadabilityActivityItem *readabilityActivity = [[ReadabilityActivityItem alloc] init];
@@ -147,7 +153,7 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
     switch (self.contentType) {
         case STContentTypeAll:
         case STContentTypeArticle:
-            applicationActivities = [NSMutableArray arrayWithObject:instapaperActivity];
+            applicationActivities = [NSMutableArray arrayWithObjects:safariActivity, instapaperActivity, nil];
             
             if (self.pocketAPIKey) {
                 [applicationActivities addObject:pocketActivity];
@@ -178,18 +184,20 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
         NSMutableArray *buttonTitles;
         
         if ([FacebookService facebookAvailable]) {
-            buttonTitles = [[NSMutableArray alloc] initWithObjects:@"Facebook", @"Twitter", @"Email", @"Message", nil];
+            buttonTitles = [[NSMutableArray alloc] initWithObjects:@"Facebook", @"Twitter", @"Email", @"Message", @"Safari", nil];
             if (!self.actionSheetServiceButtonList) {
                 self.actionSheetServiceButtonList = [[NSMutableArray alloc] initWithObjects:[[NSNumber alloc] initWithInt:STServiceTypeFacebook],
                                                      [[NSNumber alloc] initWithInt:STServiceTypeTwitter],
                                                      [[NSNumber alloc] initWithInt:STServiceTypeMail],
-                                                     [[NSNumber alloc] initWithInt:STServiceTypeMessage], nil];
+                                                     [[NSNumber alloc] initWithInt:STServiceTypeMessage],
+                                                     [[NSNumber alloc] initWithInt:STServiceTypeSafari], nil];
             }
         } else {
-            buttonTitles = [[NSMutableArray alloc] initWithObjects:@"Twitter", @"Email", @"Message", nil];
+            buttonTitles = [[NSMutableArray alloc] initWithObjects:@"Twitter", @"Email", @"Message", @"Safari", nil];
             self.actionSheetServiceButtonList = [[NSMutableArray alloc] initWithObjects:[[NSNumber alloc] initWithInt:STServiceTypeTwitter],
                                                  [[NSNumber alloc] initWithInt:STServiceTypeMail],
-                                                 [[NSNumber alloc] initWithInt:STServiceTypeMessage], nil];
+                                                 [[NSNumber alloc] initWithInt:STServiceTypeMessage],
+                                                 [[NSNumber alloc] initWithInt:STServiceTypeSafari], nil];
         }
         
         switch (self.contentType) {
@@ -245,6 +253,9 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
             break;
         case STServiceTypeMail:
             [EmailService shareWithParams:self.params onViewController:self.viewControllerToShowServiceOn];
+            break;
+        case STServiceTypeSafari:
+            [SafariService shareWithParams:self.params onViewController:self.viewControllerToShowServiceOn];
             break;
         case STServiceTypeMessage:
             [MessageService shareWithParams:self.params onViewController:self.viewControllerToShowServiceOn];

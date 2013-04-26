@@ -6,6 +6,7 @@ typedef enum {
     STServiceTypeFacebook,
     STServiceTypeTwitter,
     STServiceTypeMail,
+    STServiceTypeSafari,
     STServiceTypeMessage,
     STServiceTypeInstapaper,
     STServiceTypePocket,
