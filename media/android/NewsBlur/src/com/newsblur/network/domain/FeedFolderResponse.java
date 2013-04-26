@@ -83,6 +83,13 @@ public class FeedFolderResponse {
 			}
 			socialFeeds = socialFeedsList.toArray(new SocialFeed[socialFeedsArray.size()]);
 		}
+        
+        // sometimes the API won't declare the top-level/root folder, but most of the
+        // codebase expects it to exist.  Declare it as empty if missing.
+        if (!folders.containsKey(AppConstants.ROOT_FOLDER)) {
+            folders.put(AppConstants.ROOT_FOLDER, new ArrayList<Long>());
+            Log.d( this.getClass().getName(), "root folder was missing.  added it.");
+        } 
 	}
 	
 	/**

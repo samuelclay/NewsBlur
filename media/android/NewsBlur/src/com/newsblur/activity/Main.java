@@ -16,6 +16,7 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbFragmentActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
@@ -29,6 +30,9 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
+        PrefsUtils.checkForUpgrade(this);
+
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);

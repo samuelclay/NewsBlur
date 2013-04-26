@@ -17,4 +17,6 @@ public class AppConstants {
     // the name to give the "root" folder in the local DB since the API does not assign it one.
     // this name should be unique and such that it will sort to the beginning of a list, ideally.
     public static final String ROOT_FOLDER = "0000_TOP_LEVEL_";
+
+    public static final String LAST_APP_VERSION = "LAST_APP_VERSION";
 }
