@@ -19,6 +19,11 @@ public class UIUtils {
 	 */
 	
 	public static Bitmap roundCorners(Bitmap source, final float radius) {
+    
+        if (source == null ) {
+            return null;
+        }
+
         int width = source.getWidth();
         int height = source.getHeight();
 
