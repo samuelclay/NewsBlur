@@ -133,6 +133,7 @@ these after the installation below.
     
         ./manage.py syncdb --all
         ./manage.py migrate --fake
+        ./manage.py migrate
         ./manage.py loaddata config/fixtures/bootstrap.json
         
     If you don't create a user during `syncdb`, the `bootstrap.json` file will create a 
