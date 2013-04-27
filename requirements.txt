@@ -1,4 +1,15 @@
 raven
 mongoengine
 pyyaml
-
+lxml
+feedparser
+celery
+django
+redis
+nltk
+django-extensions
+pyes
+stripe
+cssutils
+django-subdomains
+python-gflags
