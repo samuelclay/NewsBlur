@@ -88,6 +88,12 @@ Not the easiest to get installed. If you are running Mac OS X, you have a few op
  * Use MacPorts: `sudo port install py26-numpy py26-scipy`
  * Install from source (grueling): [http://www.scipy.org/Download](http://www.scipy.org/Download)
  * Use a combination of pip, easy_install, and [homebrew](http://mxcl.github.com/homebrew/): `pip install numpy && brew install gfortran && easy_install scipy`
+
+#### Other assorted packages
+
+From inside the repository, run: 
+
+    pip install -r requirements.txt
  
 ### Configure paths
 
@@ -150,6 +156,13 @@ these after the installation below.
  
         ./manage.py runserver
  
+ 5. Navigate to: 
+
+         http://localhost:8000/ 
+
+    Create an account. At the end of the account creation process, you
+    will be redirected to https://localhost/profile/stripe_form. Hit
+    the back button a few times, and you will be inside the app.
     
 ### Installing on Linux / Ubuntu
 
