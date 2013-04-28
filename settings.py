@@ -67,8 +67,7 @@ LOGIN_URL             = '/reader/login'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
-# EMAIL_BACKEND         = 'django_mailgun.MailgunBackend'
-EMAIL_BACKEND         = 'django_ses.SESBackend'
+EMAIL_BACKEND         = 'django.core.mail.backends.console.EmailBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
@@ -235,7 +234,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    'django_ses',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -257,12 +255,6 @@ INSTALLED_APPS = (
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
 )
-
-if not DEVELOPMENT:
-    INSTALLED_APPS += (
-        'gunicorn',
-        'raven.contrib.django',
-    )
 
 # ==========
 # = Stripe =
@@ -482,6 +474,14 @@ except ImportError, e:
 
 from local_settings import *
 
+if not DEVELOPMENT:
+    INSTALLED_APPS += (
+        'gunicorn',
+        'raven.contrib.django',
+         'django_ses', 
+
+    )
+
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -501,6 +501,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 if not DEVELOPMENT:
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+    EMAIL_BACKEND         = 'django_ses.SESBackend'
 
 # =========
 # = Redis =
