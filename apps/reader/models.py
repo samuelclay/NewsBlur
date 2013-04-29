@@ -112,9 +112,9 @@ class UserSubscription(models.Model):
         hashpipe.execute()
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
-    
+        
         stories_key         = 'F:%s' % (self.feed_id)
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
@@ -169,14 +169,11 @@ class UserSubscription(models.Model):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
-        # XXX TODO: Remove below line after combing redis for these None's.
-        story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
-        
         if withscores:
             return story_ids
         elif story_ids:
             story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-            mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            mstories = MStory.objects(story_hash__in=story_ids).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
             return stories
         else:
@@ -184,7 +181,7 @@ class UserSubscription(models.Model):
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
             range_func = r.zrange
@@ -196,8 +193,8 @@ class UserSubscription(models.Model):
 
         unread_ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
-            story_guids = range_func(unread_ranked_stories_keys, offset, limit)
-            return story_guids
+            story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+            return story_hashes
         else:
             r.delete(unread_ranked_stories_keys)
 
@@ -206,17 +203,17 @@ class UserSubscription(models.Model):
                 us = cls.objects.get(user=user_id, feed=feed_id)
             except cls.DoesNotExist:
                 continue
-            story_guids = us.get_stories(offset=0, limit=200, 
-                                         order=order, read_filter=read_filter, 
-                                         withscores=True)
+            story_hashes = us.get_stories(offset=0, limit=200, 
+                                          order=order, read_filter=read_filter, 
+                                          withscores=True)
 
-            if story_guids:
-                r.zadd(unread_ranked_stories_keys, **dict(story_guids))
+            if story_hashes:
+                r.zadd(unread_ranked_stories_keys, **dict(story_hashes))
             
-        story_guids = range_func(unread_ranked_stories_keys, offset, limit)
+        story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         r.expire(unread_ranked_stories_keys, 24*60*60)
         
-        return story_guids
+        return story_hashes
         
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True,

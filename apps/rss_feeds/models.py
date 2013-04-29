@@ -1126,6 +1126,7 @@ class Feed(models.Model):
             
         story_content = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story                     = {}
+        story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_authors']    = story_db.story_author_name
@@ -1622,7 +1623,23 @@ class MStory(mongo.Document):
         if len(stories) < count:
             shared_stories = list(MSharedStory.objects(id__in=story_ids))
             stories.extend(shared_stories)
-        print stories, multiple, story_ids, type(story_ids)
+        
+        if not multiple:
+            stories = stories[0]
+        
+        return stories
+        
+    @classmethod
+    def find_by_story_hashes(cls, story_hashes):
+        from apps.social.models import MSharedStory
+        count = len(story_hashes)
+        multiple = isinstance(story_hashes, list) or isinstance(story_hashes, tuple)
+        
+        stories = list(cls.objects(story_hash__in=story_hashes))
+        if len(stories) < count:
+            shared_stories = list(MSharedStory.objects(story_hash__in=story_hashes))
+            stories.extend(shared_stories)
+        
         if not multiple:
             stories = stories[0]
         
