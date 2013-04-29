@@ -1,6 +1,7 @@
 /* Copyright 2012 IGN Entertainment, Inc. */
 
 #import "EmailService.h"
+#import "NewsBlurAppDelegate.h"
 
 static EmailService *_manager;
 
@@ -25,11 +26,15 @@ static EmailService *_manager;
         MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
         [[mailer navigationBar] setTintColor:[UIColor blackColor]];
         mailer.mailComposeDelegate = self;
-        mailer.modalPresentationStyle = UIModalPresentationPageSheet;
+        mailer.modalPresentationStyle = UIModalPresentationCurrentContext;
         [mailer setSubject:[params objectForKey:@"title"]];
-        
-        NSString *emailBody = [[params objectForKey:@"url"] absoluteString];
-        [mailer setMessageBody:emailBody isHTML:NO];
+        NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+
+        NSString *emailBody = [NSString stringWithFormat:@"<p><a href=\"%@\">%@</a></p><hr><br>%@",
+                               [[params objectForKey:@"url"] absoluteString],
+                               [[params objectForKey:@"title"] absoluteString],
+                               [appDelegate.activeStory objectForKey:@"story_content"]];
+        [mailer setMessageBody:emailBody isHTML:YES];
         [viewController presentModalViewController:mailer animated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failure"

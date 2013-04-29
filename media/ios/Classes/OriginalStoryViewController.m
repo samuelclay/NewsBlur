@@ -7,6 +7,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import "NBContainerViewController.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
@@ -299,7 +300,11 @@
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
     NSString *title = [appDelegate.activeStory
                        objectForKey:@"story_title"];
-    [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
+    } else {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+    }
 }
 
 @end

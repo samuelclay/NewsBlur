@@ -447,7 +447,7 @@
     [self hidePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];
-        
+    
     // adding feedDetailViewController 
     [self addChildViewController:self.feedDetailViewController];
     [self.view addSubview:self.feedDetailViewController.view];
@@ -471,39 +471,39 @@
         self.storyPageControl.circularProgressView.percentage = 0;
     }
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-        // CASE: story titles on bottom
-        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
-        
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
-        self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
-                                                              self.storyTitlesYCoordinate, 
-                                                              vb.size.width, 
-                                                              vb.size.height - storyTitlesYCoordinate);
-        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
-        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
-        
-        [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width, self.storyTitlesYCoordinate);
-            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
-                                                                  self.storyTitlesYCoordinate, 
-                                                                  vb.size.width, 
-                                                                  vb.size.height - storyTitlesYCoordinate);
-        } completion:^(BOOL finished) {
-            [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-                self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
-                self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
-                self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            } completion:^(BOOL finished) {
-                [self.dashboardViewController.view removeFromSuperview];
-                [self.masterNavigationController.view removeFromSuperview];
-            }];
-        }];
-
-        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyPageControl.navigationItem.titleView = titleLabel;
-    } else {
+//    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+//	if (NO && UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+//        // CASE: story titles on bottom
+//        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
+//        
+//        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
+//        self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
+//                                                              self.storyTitlesYCoordinate, 
+//                                                              vb.size.width, 
+//                                                              vb.size.height - storyTitlesYCoordinate);
+//        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
+//        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
+//        
+//        [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+//            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width, self.storyTitlesYCoordinate);
+//            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
+//                                                                  self.storyTitlesYCoordinate, 
+//                                                                  vb.size.width, 
+//                                                                  vb.size.height - storyTitlesYCoordinate);
+//        } completion:^(BOOL finished) {
+//            [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+//                self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
+//                self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+//                self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+//            } completion:^(BOOL finished) {
+//                [self.dashboardViewController.view removeFromSuperview];
+//                [self.masterNavigationController.view removeFromSuperview];
+//            }];
+//        }];
+//
+//        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+//        self.storyPageControl.navigationItem.titleView = titleLabel;
+//    } else {
         // CASE: story titles on left
         [self.masterNavigationController
          pushViewController:self.feedDetailViewController
@@ -523,7 +523,7 @@
 
         self.storyPageControl.navigationItem.titleView = nil;
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
-    }
+//    }
 }
 
 - (void)transitionFromFeedDetail {

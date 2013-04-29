@@ -311,9 +311,9 @@
         UITouch *theTouch = [touches anyObject];
         if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
             self.inTouchMove = YES;
-            CGPoint touchLocation = [theTouch locationInView:self.view];
-            CGFloat y = touchLocation.y;
-            [appDelegate.masterContainerViewController dragStoryToolbar:y];
+//            CGPoint touchLocation = [theTouch locationInView:self.view];
+//            CGFloat y = touchLocation.y;
+//            [appDelegate.masterContainerViewController dragStoryToolbar:y];
         }
     }
 }
@@ -765,7 +765,11 @@
                                        objectForKey:@"story_permalink"]];
     NSString *title = [appDelegate.activeStory
                        objectForKey:@"story_title"];
-    [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
+    } else {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+    }
 }
 
 - (void)markStoryAsSaved {
