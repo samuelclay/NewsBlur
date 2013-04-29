@@ -13,11 +13,11 @@ ACCESS_KEY  = settings.S3_ACCESS_KEY
 SECRET      = settings.S3_SECRET
 BUCKET_NAME = settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
 
-def save_file_in_s3(filename):
+def save_file_in_s3(filename, name=None):
     conn   = S3Connection(ACCESS_KEY, SECRET)
     bucket = conn.get_bucket(BUCKET_NAME)
     k      = Key(bucket)
-    k.key  = filename
+    k.key  = name or filename
 
     k.set_contents_from_filename(filename)
 
