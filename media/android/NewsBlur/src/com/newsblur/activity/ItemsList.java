@@ -12,6 +12,7 @@ import com.newsblur.R;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener {
@@ -30,6 +31,9 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	protected String TAG = "ItemsList";
 	protected int currentState;
 	private Menu menu;
+	
+	// TODO use property value
+	protected StoryOrder storyOrder = StoryOrder.NEWEST;
 
 	@Override
 	protected void onCreate(Bundle bundle) {

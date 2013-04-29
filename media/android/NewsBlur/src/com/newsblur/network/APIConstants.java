@@ -61,6 +61,7 @@ public class APIConstants {
 	public static final String PARAMETER_UPDATE_COUNTS = "update_counts";
 	
 	public static final String PARAMETER_PAGE_NUMBER = "page";
+	public static final String PARAMETER_ORDER = "order";
 	
 	public static final String NEWSBLUR_URL = "http://newsblur.com";
 	public static final String URL_CATEGORIES = "http://newsblur.com/categories/" ;

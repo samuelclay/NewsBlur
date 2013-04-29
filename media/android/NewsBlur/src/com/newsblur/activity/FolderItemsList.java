@@ -20,6 +20,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.StoryOrder;
 
 public class FolderItemsList extends ItemsList {
 
@@ -88,6 +89,7 @@ public class FolderItemsList extends ItemsList {
 			feedIds.toArray(feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+            intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
 			startService(intent);
 		}
 	}

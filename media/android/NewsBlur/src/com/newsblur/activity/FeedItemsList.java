@@ -128,6 +128,7 @@ public class FeedItemsList extends ItemsList {
 			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
+            intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
 			startService(intent);
 		}
 	}

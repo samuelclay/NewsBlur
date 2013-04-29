@@ -80,6 +80,7 @@ public class AllStoriesItemsList extends ItemsList {
 			feedIds.toArray(feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
 
 			startService(intent);
 		}

@@ -36,6 +36,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
@@ -61,6 +62,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	private ArrayList<ContentProviderOperation> operations;
 	protected Cursor stories;
 	private HashSet<String> storiesToMarkAsRead;
+	
+	// TODO use property value
+	protected StoryOrder storyOrder = StoryOrder.NEWEST;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
