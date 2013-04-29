@@ -588,6 +588,7 @@ class MUserStory(mongo.Document):
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField()
+    story_hash = mongo.StringField()
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
@@ -607,6 +608,8 @@ class MUserStory(mongo.Document):
     }
     
     def save(self, *args, **kwargs):
+        self.story_hash = self.feed_guid_hash
+        
         self.sync_redis()
         
         super(MUserStory, self).save(*args, **kwargs)
@@ -622,7 +625,7 @@ class MUserStory(mongo.Document):
     
     @property
     def feed_guid_hash(self):
-        return "%s:%s" % (self.feed_id, self.guid_hash)
+        return "%s:%s" % (self.feed_id or "0", self.guid_hash)
     
     @classmethod
     def delete_old_stories(cls, feed_id):
