@@ -1189,6 +1189,7 @@ class MSharedStory(mongo.Document):
     replies                  = mongo.ListField(mongo.EmbeddedDocumentField(MCommentReply))
     source_user_id           = mongo.IntField()
     story_db_id              = mongo.ObjectIdField()
+    story_hash               = mongo.StringField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -1241,7 +1242,7 @@ class MSharedStory(mongo.Document):
     
     @property
     def feed_guid_hash(self):
-        return "%s:%s" % (self.story_feed_id, self.guid_hash)
+        return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
     
     def to_json(self):
         return {
@@ -1265,7 +1266,8 @@ class MSharedStory(mongo.Document):
 
         self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
         self.story_title = strip_tags(self.story_title)
-        
+        self.story_hash = self.feed_guid_hash
+
         self.comments = linkify(strip_tags(self.comments))
         for reply in self.replies:
             reply.comments = linkify(strip_tags(reply.comments))
