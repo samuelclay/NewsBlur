@@ -452,6 +452,10 @@ static const CGFloat kFolderTitleHeight = 28;
         if ([request responseStatusCode] == 429) {
             return [self informError:@"Slow down. You're rate-limited."];
         }
+        if ([request responseStatusCode] == 503) {
+            [pull finishedLoading];
+            return [self informError:@"In maintenance mode"];
+        }
         return [self informError:@"The server barfed!"];
     }
     
