@@ -29,7 +29,7 @@ class Migration(DataMigration):
                                 )
             for i, story in enumerate(stories):
                 
-                db.prod_newsblur.starred_stories.update({"_id": story.id}, {"$set": {
+                db.newsblur.starred_stories.update({"_id": story.id}, {"$set": {
                     "story_hash": story.feed_guid_hash
                 }})
             stories = MSharedStory.objects(user_id=user_id, story_hash__exists=False)\
@@ -38,7 +38,7 @@ class Migration(DataMigration):
                                     pymongo.ReadPreference.SECONDARY
                                 )
             for i, story in enumerate(stories):
-                db.prod_newsblur.shared_stories.update({"_id": story.id}, {"$set": {
+                db.newsblur.shared_stories.update({"_id": story.id}, {"$set": {
                     "story_hash": story.feed_guid_hash
                 }})
         
