@@ -9332,8 +9332,8 @@ form.opml_import_form input {
     line-height: 17px;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-bio {
-    font-size: 15px;
-    padding: 2px 0 0;
+    font-size: 13px;
+    padding: 6px 0 0;
 }
 .NB-profile-badge .NB-profile-badge-stats {
     clear: left;
