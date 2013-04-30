@@ -9,7 +9,7 @@
 
 ## Features
 
- 1. Shows the original site (you have to see it to believe it)
+ 1. Shows the original site (you have to see it to believe it).
  2. Hides stories you don't want to read based on tags, keywords, authors, etc.
  3. Highlights stories you want to read, based on the same criteria.
 
@@ -44,7 +44,7 @@
 
 #### Relational Database (MySQL, PostgreSQL)
 
-You will want to have your database setup before you begin installation. Fabric can install
+You will want to have your database set up before you begin installation. Fabric can install
 both PostgreSQL and MongoDB for you, but only on Ubuntu. Mac OS X users will want to have
 MySQL or PostgreSQL already installed. You can [download MySQL](http://dev.mysql.com/downloads/mysql/)
 or [download PostgreSQL](http://www.postgresql.org/download/). Additionally,
@@ -166,7 +166,7 @@ these after the installation below.
     
 ### Installing on Linux / Ubuntu
 
-If you are on Ubuntu, you can simple use [Fabric](http://docs.fabfile.org/) to install 
+If you are on Ubuntu, you can simply use [Fabric](http://docs.fabfile.org/) to install 
 NewsBlur and its many components. NewsBlur is designed to run on three separate servers: 
 an app server, a db server, and assorted task servers. To install everything on a single 
 machine, read through `fabfile.py` and setup all three servers without repeating the 

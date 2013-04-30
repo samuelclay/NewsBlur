@@ -95,6 +95,7 @@ javascripts:
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.url.js
         - media/js/vendor/underscore-*.js
+        - media/js/vendor/underscore.noconflict.js
         - media/js/vendor/readability-*.js
     blurblog:
         - media/js/vendor/jquery-1.7.2.js
