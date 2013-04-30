@@ -1723,6 +1723,7 @@ class MStarredStory(mongo.Document):
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
+    story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
 
     meta = {
@@ -1740,6 +1741,8 @@ class MStarredStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
+        self.story_hash = self.feed_guid_hash
+        
         super(MStarredStory, self).save(*args, **kwargs)
 
         # self.index_for_search()
@@ -1758,6 +1761,10 @@ class MStarredStory(mongo.Document):
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
 
+    @property
+    def feed_guid_hash(self):
+        return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
+    
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
         
