@@ -1637,7 +1637,9 @@ class MStory(mongo.Document):
         
         stories = list(cls.objects(story_hash__in=story_hashes))
         if len(stories) < count:
-            shared_stories = list(MSharedStory.objects(story_hash__in=story_hashes))
+            story_feed_ids = [h.split(':')[0] for h in story_hashes]
+            shared_stories = list(MSharedStory.objects(story_feed_id__in=story_feed_ids,
+                                                       story_hash__in=story_hashes))
             stories.extend(shared_stories)
         
         if not multiple:
