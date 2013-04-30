@@ -1232,13 +1232,7 @@ class MSharedStory(mongo.Document):
 
     @property
     def guid_hash(self):
-        if self.story_guid_hash:
-            return self.story_guid_hash
-        
-        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
-        self.save()
-        
-        return self.story_guid_hash
+        return hashlib.sha1(self.story_guid).hexdigest()[:6]
     
     @property
     def feed_guid_hash(self):

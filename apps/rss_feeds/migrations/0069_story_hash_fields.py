@@ -1,36 +1,46 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings
+import pymongo
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         from apps.rss_feeds.models import MStarredStory
         from apps.social.models import MSharedStory
-        
-        GROUPS = 1000
+        db = settings.MONGODB
+
         starred_count = MStarredStory.objects.count()
         print " ---> Saving %s starred stories..." % starred_count
-        group_size = starred_count/GROUPS
-        for group in range(GROUPS):
-            offset = group_size*group
-            print " ---> Group offset: %s/%s-%s" % (group, offset, group_size*(group+1))
-            stories = MStarredStory.objects.order_by('id')[offset:group_size*(group+1)]
-            for i, story in enumerate(stories):
-                story.save()
-        
         shared_count = MSharedStory.objects.count()
         print " ---> Saving %s shared stories..." % shared_count
-        group_size = shared_count/GROUPS
-        for group in range(GROUPS):
-            offset = group_size*group
-            print " ---> Group offset: %s/%s-%s" % (group, offset, group_size*(group+1))
-            stories = MSharedStory.objects.order_by('id')[offset:group_size*(group+1)]
+
+        start = 0
+        user_count = User.objects.latest('pk').pk
+        for user_id in xrange(start, user_count):
+            if user_id % 1000 == 0:
+                print " ---> %s/%s" % (user_id, user_count)
+
+            stories = MStarredStory.objects(user_id=user_id, story_hash__exists=False)\
+                                .only('id', 'story_feed_id', 'story_guid')\
+                                .read_preference(
+                                    pymongo.ReadPreference.SECONDARY
+                                )
             for i, story in enumerate(stories):
-                story.save()
-        
+                
+                db.newsblur.starred_stories.update({"_id": story.id}, {"$set": {
+                    "story_hash": story.feed_guid_hash
+                }})
+            stories = MSharedStory.objects(user_id=user_id, story_hash__exists=False)\
+                                .only('id', 'user_id', 'story_feed_id', 'story_guid')\
+                                .read_preference(
+                                    pymongo.ReadPreference.SECONDARY
+                                )
+            for i, story in enumerate(stories):
+                db.newsblur.shared_stories.update({"_id": story.id}, {"$set": {
+                    "story_hash": story.feed_guid_hash
+                }})
         
 
     def backwards(self, orm):
