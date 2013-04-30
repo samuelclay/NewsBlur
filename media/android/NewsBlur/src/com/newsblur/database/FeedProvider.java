@@ -439,26 +439,36 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
-            // Note the extra special pre-select UNION clause here! Due to an undocumented feature/bug in sqlite,
-            // if the two sides of the union are reversed, the result columns are incorrectly prefixed.
-			String folderQuery = DatabaseConstants.FOLDER_UNION_ROOT +
-            "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
-			" INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 
-			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
-			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
-			" GROUP BY " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME;
+            // Of note about the following query:
+            //  1) the union clause lets ALL_FOLDER queries also select the "root" folder that appears in the UI whether
+            //     or not it has unread stories in it.
+            //  2) the root folder is excluded from the final join so as not to create a duplicate root folder
+            //  3) values of the pos/neut/neg columns for the root folder are ignored by the UI
+            //  4) we use a union rather than a full outer join because sqlite doesn't support the latter
+            //  5) the order of the left and right sides of the union are important: due to an undocumented feature/bug in sqlite,
+            //     if the two sides of the union are reversed, the result columns are incorrectly prefixed.
+            String folderQuery = "SELECT " + DatabaseConstants.FOLDER_ID + ", " + DatabaseConstants.FOLDER_NAME + ", 0 AS " + DatabaseConstants.SUM_POS + ", 0 AS " + DatabaseConstants.SUM_NEUT + ", 0 AS " + DatabaseConstants.SUM_NEG +
+            " FROM " + DatabaseConstants.FOLDER_TABLE +
+            " WHERE " + DatabaseConstants.FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "' UNION" +
+            " SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + 
+            " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
+            " INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 
+            " ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
+            " INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+            " ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
+            " WHERE NOT " + DatabaseConstants.FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "'" +
+            " GROUP BY " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME;
 
-			StringBuilder folderBuilder = new StringBuilder();
-			folderBuilder.append(folderQuery);
-			if (selectionArgs != null && selectionArgs.length > 0) {
+            StringBuilder folderBuilder = new StringBuilder();
+            folderBuilder.append(folderQuery);
+            if (selectionArgs != null && selectionArgs.length > 0) {
                 // TODO: by not iterating over the selectionArgs array, this method wildly breaks the contract of the query() method and
                 //  will almost certainly confuse callers eventually
-				folderBuilder.append(selectionArgs[0]);
-			}
-			folderBuilder.append(" ORDER BY ");
-			folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
-			return db.rawQuery(folderBuilder.toString(), null);
+                folderBuilder.append(selectionArgs[0]);
+            }
+            folderBuilder.append(" ORDER BY ");
+            folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
+            return db.rawQuery(folderBuilder.toString(), null);
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
