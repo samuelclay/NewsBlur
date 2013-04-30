@@ -125,10 +125,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (!NEWSBLUR.assets.preference('feed_view_single_story')) return;
         
         this.collection.each(function(story) {
-            if (story.get('selected')) {
-                story.story_view.$el.show();                
-            } else {
-                story.story_view.$el.hide();
+            if (story && story.story_view) {
+                if (story.get('selected')) {
+                    story.story_view.$el.show();                
+                } else {
+                    story.story_view.$el.hide();
+                }
             }
         });
         
