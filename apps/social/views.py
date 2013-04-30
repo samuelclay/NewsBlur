@@ -216,7 +216,8 @@ def load_river_blurblog(request):
     sorted_mstories = sorted(mstories, cmp=sort_stories_by_hash)
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
-        story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
+        timestamp = story_hashes_to_dates[story['story_hash']]
+        story['story_date'] = datetime.datetime.fromtimestamp(timestamp)
     share_relative_user_id = relative_user_id
     if global_feed:
         share_relative_user_id = user.pk
