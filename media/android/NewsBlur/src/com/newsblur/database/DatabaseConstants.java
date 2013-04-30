@@ -136,20 +136,6 @@ public class DatabaseConstants {
 		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
 	};
 
-    // this union clause lets folder queries also select the "root" folder that should appear whether or not
-    // it has unread stories. Note that this goes *before* the normal ALL_FOLDERS select statement. The zero-valued
-    // pseudo-columns are safe because said columns are ignored for the root folder. This is necessary because the
-    // joins used in order to fetch folders by unread count are all inner joins, and sqlite does not support
-    // full outer joins.
-    public static final String FOLDER_UNION_ROOT = "SELECT " +
-            FOLDER_ID + ", " +
-            FOLDER_NAME +
-            ", 0 AS " + SUM_POS +
-            ", 0 AS " + SUM_NEUT +
-            ", 0 AS " + SUM_NEG +
-            " FROM " + FOLDER_TABLE +
-            " WHERE " + FOLDER_NAME + "='" + AppConstants.ROOT_FOLDER + "' UNION ";
-
     private static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0";
     private static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
     private static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0";
