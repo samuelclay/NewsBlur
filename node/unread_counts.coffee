@@ -39,8 +39,10 @@ io.configure 'development', ->
 #     redisClient : rclient
 
 io.sockets.on 'connection', (socket) ->
+    ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address
+    
     socket.on 'subscribe:feeds', (@feeds, @username) ->
-        log.info @username, "Subscribing to #{feeds.length} feeds " +
+        log.info @username, "Subscribing to #{feeds.length} feeds, #{ip}," +
                  " (#{io.sockets.clients().length} users on) " +
                  " #{if SECURE then "(SSL)" else "(non-SSL)"}"
         
@@ -61,7 +63,6 @@ io.sockets.on 'connection', (socket) ->
 
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
-        ip = socket.handshake.address.address
         log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                     " there are now #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
