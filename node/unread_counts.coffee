@@ -3,7 +3,7 @@ redis  = require 'redis'
 
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db12'
 SECURE = !!process.env.NODE_SSL
-client = redis.createClient 6379, REDIS_SERVER
+# client = redis.createClient 6379, REDIS_SERVER
 
 # RedisStore  = require 'socket.io/lib/stores/redis'
 # rpub        = redis.createClient 6379, REDIS_SERVER
