@@ -769,10 +769,10 @@ def load_river_stories__redis(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids = UserSubscription.feed_stories(user.pk, feed_ids, offset=offset, limit=limit,
-                                              order=order, read_filter=read_filter)
+    story_hashes = UserSubscription.feed_stories(user.pk, feed_ids, offset=offset, limit=limit,
+                                                 order=order, read_filter=read_filter)
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-    mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+    mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)

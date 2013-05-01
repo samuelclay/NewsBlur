@@ -853,7 +853,7 @@ class MSocialSubscription(mongo.Document):
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
                     withscores=False, everything_unread=False):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
         stories_key         = 'B:%s' % (self.subscription_user_id)
@@ -893,11 +893,11 @@ class MSocialSubscription(mongo.Document):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
 
-        return [story_id for story_id in story_ids if story_id and story_id != 'None']
+        return story_ids
         
     @classmethod
     def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, everything_unread=False, cache=True):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not relative_user_id:
             relative_user_id = user_id
@@ -912,9 +912,9 @@ class MSocialSubscription(mongo.Document):
 
         unread_ranked_stories_keys  = 'zU:%s:social' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys) and cache:
-            story_guids = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
-            if story_guids:
-                return zip(*story_guids)
+            story_hashes = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
+            if story_hashes:
+                return zip(*story_hashes)
             else:
                 return [], []
         else:
@@ -922,17 +922,17 @@ class MSocialSubscription(mongo.Document):
 
         for social_user_id in social_user_ids:
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
-            story_guids = us.get_stories(offset=0, limit=50, 
-                                         order=order, read_filter=read_filter, 
-                                         withscores=True, everything_unread=everything_unread)
-            if story_guids:
-                r.zadd(unread_ranked_stories_keys, **dict(story_guids))
+            story_hashes = us.get_stories(offset=0, limit=50, 
+                                          order=order, read_filter=read_filter, 
+                                          withscores=True, everything_unread=everything_unread)
+            if story_hashes:
+                r.zadd(unread_ranked_stories_keys, **dict(story_hashes))
             
-        story_guids = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
+        story_hashes = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
         r.expire(unread_ranked_stories_keys, 24*60*60)
         
-        if story_guids:
-            return zip(*story_guids)
+        if story_hashes:
+            return zip(*story_hashes)
         else:
             return [], []
         
