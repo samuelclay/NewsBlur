@@ -922,7 +922,7 @@ class MSocialSubscription(mongo.Document):
 
         for social_user_id in social_user_ids:
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
-            story_hashes = us.get_stories(offset=0, limit=50, 
+            story_hashes = us.get_stories(offset=0, limit=100,
                                           order=order, read_filter=read_filter, 
                                           withscores=True, everything_unread=everything_unread)
             if story_hashes:
