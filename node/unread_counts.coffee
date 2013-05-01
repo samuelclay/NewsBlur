@@ -42,7 +42,7 @@ io.sockets.on 'connection', (socket) ->
     ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address
     
     socket.on 'subscribe:feeds', (@feeds, @username) ->
-        log.info @username, "Subscribing to #{feeds.length} feeds, #{ip}," +
+        log.info @username, "Connecting (#{feeds.length} feeds, #{ip})," +
                  " (#{io.sockets.clients().length} users on) " +
                  " #{if SECURE then "(SSL)" else "(non-SSL)"}"
         

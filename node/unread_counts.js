@@ -44,7 +44,7 @@
         _this = this;
       this.feeds = feeds;
       this.username = username;
-      log.info(this.username, ("Subscribing to " + feeds.length + " feeds, " + ip + ",") + (" (" + (io.sockets.clients().length) + " users on) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
+      log.info(this.username, ("Connecting (" + feeds.length + " feeds, " + ip + "),") + (" (" + (io.sockets.clients().length) + " users on) ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
       if (!this.username) {
         return;
       }
