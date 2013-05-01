@@ -30,6 +30,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FolderItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -46,17 +47,21 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	private boolean requestedPage = false;
 	private boolean doRequest = true;
 	private Folder folder;
+	
+	// TODO update on property change
+    private StoryOrder storyOrder;
 
 	public static int ITEMLIST_LOADER = 0x01;
 
 
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState) {
+	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putStringArrayList("feedIds", feedIds);
 		args.putString("folderName", folderName);
+		args.putSerializable("storyOrder", storyOrder);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -67,6 +72,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
+		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
 		feedIdArrayList.toArray(feedIds);
@@ -86,7 +92,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.MULTIFEED_STORIES_URI;
 
-		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, null);
+		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
@@ -109,7 +115,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.MULTIFEED_STORIES_URI;
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		return cursorLoader;
 	}
 

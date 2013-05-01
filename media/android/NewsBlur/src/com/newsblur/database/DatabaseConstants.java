@@ -3,6 +3,7 @@ package com.newsblur.database;
 import android.provider.BaseColumns;
 
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.StoryOrder;
 
 public class DatabaseConstants {
 
@@ -237,6 +238,14 @@ public class DatabaseConstants {
         break;
         }
         return selection;
+    }
+
+    public static String getStorySortOrder(StoryOrder storyOrder) {
+        if (storyOrder == StoryOrder.NEWEST) {
+            return STORY_DATE + " DESC";
+        } else {
+            return STORY_DATE + " ASC";
+        }
     }
 
 }

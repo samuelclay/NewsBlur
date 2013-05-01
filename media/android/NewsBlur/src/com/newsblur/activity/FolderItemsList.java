@@ -20,7 +20,6 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.StoryOrder;
 
 public class FolderItemsList extends ItemsList {
 
@@ -50,7 +49,7 @@ public class FolderItemsList extends ItemsList {
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState);
+			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, storyOrder);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);

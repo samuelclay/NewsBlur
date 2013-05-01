@@ -32,7 +32,7 @@ public class FolderReading extends Reading {
 
 		Uri storiesURI = FeedProvider.MULTIFEED_STORIES_URI;
 		storiesToMarkAsRead = new ValueMultimap();
-		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, null);
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 		setupPager();

@@ -42,6 +42,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener, OnCreateContextMenuListener {
@@ -61,13 +62,17 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private int READING_RETURNED = 0x02;
 	private Feed feed;
 	private Cursor feedCursor;
+	
+	// TODO update on property change
+    private StoryOrder storyOrder;
 
-	public static FeedItemListFragment newInstance(String feedId, int currentState) {
+	public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
+		args.putSerializable("storyOrder", storyOrder);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -78,6 +83,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
+		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest = false;
@@ -93,7 +99,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 
 		setupFeed();
 
@@ -124,7 +130,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		return cursorLoader;
 	}
 

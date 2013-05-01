@@ -47,7 +47,7 @@ public class AllStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState);
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, storyOrder);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);

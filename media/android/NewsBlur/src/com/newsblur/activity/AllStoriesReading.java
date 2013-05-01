@@ -31,8 +31,8 @@ public class AllStoriesReading extends Reading {
 		setResult(RESULT_OK);
 
 		setupCountCursor();
-
-		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
+		
+		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		setTitle(getResources().getString(R.string.all_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
