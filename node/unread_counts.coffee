@@ -1,5 +1,6 @@
 fs     = require 'fs'
 redis  = require 'redis'
+log    = require './log.js'
 
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db12'
 SECURE = !!process.env.NODE_SSL
@@ -39,9 +40,9 @@ io.configure 'development', ->
 
 io.sockets.on 'connection', (socket) ->
     socket.on 'subscribe:feeds', (@feeds, @username) ->
-        console.log "   ---> [#{@username}] Subscribing to #{feeds.length} feeds " +
-                    " (#{io.sockets.clients().length} users on) " +
-                    " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+        log.info @username, "Subscribing to #{feeds.length} feeds " +
+                 " (#{io.sockets.clients().length} users on) " +
+                 " #{if SECURE then "(SSL)" else "(non-SSL)"}"
         
         if not @username
             return
@@ -52,7 +53,7 @@ io.sockets.on 'connection', (socket) ->
         socket.subscribe.subscribe @username
 
         socket.subscribe.on 'message', (channel, message) =>
-            console.log "   ---> [#{@username}] Update on #{channel}: #{message}"
+            log.info @username, "Update on #{channel}: #{message}"
             if channel == @username
                 socket.emit 'user:update', channel, message
             else
@@ -61,6 +62,6 @@ io.sockets.on 'connection', (socket) ->
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
         ip = socket.handshake.address.address
-        console.log "   ---> [#{@username}] Disconnect (#{@feeds?.length} feeds, #{ip})," +
+        log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                     " there are now #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
