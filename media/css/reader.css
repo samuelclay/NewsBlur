@@ -1497,7 +1497,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     margin: -1px 6px 0 0;
-    background: transparent url('/media/embed/icons/circular/share.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_share.png') no-repeat 0 0;
     background-size: 16px;
     float: left;
     display: none;
@@ -6072,7 +6072,7 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-unread .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
     background-size: 8px;
 }
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
