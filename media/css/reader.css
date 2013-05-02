@@ -8673,8 +8673,8 @@ form.opml_import_form input {
 }
 .NB-static-iphone .NB-ios-features .NB-ios-feature img.NB-ios-iphone-screenshot {
     width: 60px;
-    height: 88px;
-    top: 84px;
+    height: 110px;
+    top: 64px;
     left: 6px;
 }
 .NB-static-iphone .NB-ios-features .NB-ios-feature img.NB-ios-ipad-screenshot {
@@ -8731,10 +8731,10 @@ form.opml_import_form input {
 .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
     position: absolute;
     bottom: -24px;
-    left: 0;
-    width: 228px;
-    height: 437px;
-    z-index: 0;
+    left: -34px;
+    width: 267px;
+    height: 483px;
+    z-index: 3;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton img {
     width: 100%;
@@ -8746,7 +8746,7 @@ form.opml_import_form input {
     left: 48px;
     width: 500px;
     height: 640px;
-    z-index: 0;
+    z-index: 1;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-ipad-skeleton img {
     width: 100%;
@@ -8755,24 +8755,26 @@ form.opml_import_form input {
 .NB-static-iphone .NB-ios-mockup .NB-ios-features-iphone {
     overflow: hidden;
     width: 192px;
-    height: 276px;
+    height: 338px;
     display: block;
     position: absolute;
-    top: 301px;
-    left: 19px;
+    top: 241px;
+    left: 4px;
     padding: 0;
     margin: 0;
+    z-index: 2;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-features-ipad {
     overflow: hidden;
-    width: 386px;
-    height: 504px;
+    width: 390px;
+    height: 515px;
     display: block;
     position: absolute;
-    top: 64px;
-    left: 105px;
+    top: 54px;
+    left: 103px;
     padding: 0;
     margin: 0;
+    z-index: 0;
 }
 
 .NB-static-iphone .NB-ios-mockup .NB-ios-feature {
@@ -8782,8 +8784,8 @@ form.opml_import_form input {
     border: none;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-feature img.NB-ios-ipad-screenshot {
-    width: 386px;
-    height: 504px;
+    width: 390px;
+    height: 515px;
     top: 0;
     left: 0;
     border-left: none;
@@ -8793,7 +8795,7 @@ form.opml_import_form input {
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-feature img.NB-ios-iphone-screenshot {
     width: 192px;
-    height: 276px;
+    height: 338px;
     top: 0;
     left: 0;
     border-left: none;
@@ -8810,7 +8812,7 @@ form.opml_import_form input {
         left: 115px;
     }
     .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
-        left: -64px;
+        left: -34px;
     }
     .NB-static-iphone .NB-ios-mockup .NB-ios-features-ipad {
         left: 172px;
