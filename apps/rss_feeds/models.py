@@ -230,7 +230,7 @@ class Feed(models.Model):
     
     
     def sync_redis(self):
-        return MStory.sync_all_redis(self.pk)
+        return MStory.sync_feed_redis(self.pk)
     
     def sync_autocompletion(self):
         if self.num_subscribers <= 10 and not settings.DEBUG: return
@@ -1652,53 +1652,38 @@ class MStory(mongo.Document):
         
         return stories
         
-    def sync_redis(self, r=None, h=None):
+    def sync_redis(self, r=None):
         if not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        if not h:
-            h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
-            r.sadd('F:%s' % self.story_feed_id, self.id)
-            r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+            r.sadd('F:%s' % self.story_feed_id, self.story_hash)
+            r.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
             r.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
             r.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
-            h.sadd('F:%s' % self.story_feed_id, self.story_hash)
-            h.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
-            h.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
-            h.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
     
-    def remove_from_redis(self, r=None, h=None):
+    def remove_from_redis(self, r=None):
         if not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        if not h:
-            h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if self.id:
-            r.srem('F:%s' % self.story_feed_id, self.id)
-            r.zrem('zF:%s' % self.story_feed_id, self.id)
-            h.srem('F:%s' % self.story_feed_id, self.story_hash)
-            h.zrem('zF:%s' % self.story_feed_id, self.story_hash)
+            r.srem('F:%s' % self.story_feed_id, self.story_hash)
+            r.zrem('zF:%s' % self.story_feed_id, self.story_hash)
 
     @classmethod
-    def sync_all_redis(cls, story_feed_id=None):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    def sync_feed_redis(cls, story_feed_id):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        feed = None
-        if story_feed_id:
-            feed = Feed.get_by_id(story_feed_id)
-        stories = cls.objects.filter(story_date__gte=UNREAD_CUTOFF)
-        if story_feed_id:
-            stories = stories.filter(story_feed_id=story_feed_id)
-            r.delete('F:%s' % story_feed_id)
-            r.delete('zF:%s' % story_feed_id)
-            h.delete('F:%s' % story_feed_id)
-            h.delete('zF:%s' % story_feed_id)
+        feed = Feed.get_by_id(story_feed_id)
+        stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
+        r.delete('F:%s' % story_feed_id)
+        r.delete('zF:%s' % story_feed_id)
 
         logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
+        p = r.pipeline()
         for story in stories:
-            story.sync_redis(r=r, h=h)
+            story.sync_redis(r=p)
+        p.execute()
         
     def count_comments(self):
         from apps.social.models import MSharedStory
