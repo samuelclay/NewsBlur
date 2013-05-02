@@ -1484,7 +1484,6 @@ class MSharedStory(mongo.Document):
     @classmethod
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if drop:
             for key_name in ["C", "S"]:
@@ -1494,7 +1493,7 @@ class MSharedStory(mongo.Document):
                     r.delete(key)
         for story in cls.objects.all():
             story.sync_redis_shares(r=r)
-            story.sync_redis_story(r=s, h=h)
+            story.sync_redis_story(r=h)
     
     def sync_redis(self):
         self.sync_redis_shares()
@@ -1512,26 +1511,19 @@ class MSharedStory(mongo.Document):
         else:
             r.srem(comment_key, self.user_id)
 
-    def sync_redis_story(self, r=None, h=None):
+    def sync_redis_story(self, r=None):
         if not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        if not h:
-            h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not self.story_db_id:
             self.ensure_story_db_id(save=True)
             
         if self.story_db_id:
-            r.sadd('B:%s' % self.user_id, self.story_db_id)
-            r.zadd('zB:%s' % self.user_id, self.story_db_id,
+            r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+            r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
                    time.mktime(self.shared_date.timetuple()))
             r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
             r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            h.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-            h.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-                   time.mktime(self.shared_date.timetuple()))
-            h.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            h.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1541,9 +1533,6 @@ class MSharedStory(mongo.Document):
         comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
         r.srem(comment_key, self.user_id)
 
-        s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        s.srem('B:%s' % self.user_id, self.story_db_id)
-        s.zrem('zB:%s' % self.user_id, self.story_db_id)
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         h.srem('B:%s' % self.user_id, self.feed_guid_hash)
         h.zrem('zB:%s' % self.user_id, self.feed_guid_hash)

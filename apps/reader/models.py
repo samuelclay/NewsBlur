@@ -95,8 +95,7 @@ class UserSubscription(models.Model):
             sub.sync_redis(skip_feed=skip_feed)
         
     def sync_redis(self, skip_feed=False):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)        
         
         userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id,
@@ -105,11 +104,9 @@ class UserSubscription(models.Model):
         logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s)" % (total, self))
         
         pipeline = r.pipeline()
-        hashpipe = h.pipeline()
         for userstory in userstories:
-            userstory.sync_redis(pipeline=pipeline, hashpipe=hashpipe)
+            userstory.sync_redis(r=pipeline)
         pipeline.execute()
-        hashpipe.execute()
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -671,41 +668,28 @@ class MUserStory(mongo.Document):
             
             return story.id
             
-    def sync_redis(self, r=None, pipeline=None, hashpipe=None):
-        if pipeline:
-            r = pipeline
-        if hashpipe:
-            h = pipeline
-        elif not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-            h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    def sync_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if self.story_db_id:
             all_read_stories_key = 'RS:%s' % (self.user_id)
-            r.sadd(all_read_stories_key, self.story_db_id)
+            r.sadd(all_read_stories_key, self.feed_guid_hash)
             r.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
-            h.sadd(all_read_stories_key, self.feed_guid_hash)
-            h.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
 
             read_story_key = 'RS:%s:%s' % (self.user_id, self.feed_id)
-            r.sadd(read_story_key, self.story_db_id)
+            r.sadd(read_story_key, self.feed_guid_hash)
             r.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
-            h.sadd(read_story_key, self.feed_guid_hash)
-            h.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
 
     def remove_from_redis(self):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if self.story_db_id:
-            r.srem('RS:%s' % self.user_id, self.story_db_id)
-            r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
-            h.srem('RS:%s' % self.user_id, self.feed_guid_hash)
-            h.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.feed_guid_hash)
+            r.srem('RS:%s' % self.user_id, self.feed_guid_hash)
+            r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.feed_guid_hash)
         
     @classmethod
     def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD+1)
         
         if feed_id and user_id:
@@ -714,17 +698,12 @@ class MUserStory(mongo.Document):
                                               read_date__gte=UNREAD_CUTOFF)
             key = "RS:%s:%s" % (user_id, feed_id)
             r.delete(key)
-            h.delete(key)
         elif feed_id:
             read_stories = cls.objects.filter(feed_id=feed_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:*:%s" % feed_id)
             print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
             for key in keys:
                 r.delete(key)
-            keys = h.keys("RS:*:%s" % feed_id)
-            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
-            for key in keys:
-                h.delete(key)
         elif user_id:
             read_stories = cls.objects.filter(user_id=user_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:%s:*" % user_id)
@@ -732,11 +711,6 @@ class MUserStory(mongo.Document):
             print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
             for key in keys:
                 r.delete(key)            
-            keys = h.keys("RS:%s:*" % user_id)
-            h.delete("RS:%s" % user_id)
-            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
-            for key in keys:
-                h.delete(key)            
         elif force:
             read_stories = cls.objects.all(read_date__gte=UNREAD_CUTOFF)
         else:
@@ -745,21 +719,16 @@ class MUserStory(mongo.Document):
         total = read_stories.count()
         logging.debug(" ---> ~SN~FMSyncing ~SB%s~SN stories (%s/%s)" % (total, user_id, feed_id))
         pipeline = None
-        hashpipe = None
         for i, read_story in enumerate(read_stories):
             if not pipeline:
                 pipeline = r.pipeline()
-                hashpipe = h.pipeline()
             if (i+1) % 1000 == 0: 
                 print " ---> %s/%s" % (i+1, total)
                 pipeline.execute()
-                hashpipe.execute()
                 pipeline = r.pipeline()
-                hashpipe = h.pipeline()
-            read_story.sync_redis(r, pipeline=pipeline, hashpipe=hashpipe)
+            read_story.sync_redis(r=pipeline)
         if pipeline:
             pipeline.execute()
-            hashpipe.execute()
         
 class UserSubscriptionFolders(models.Model):
     """
