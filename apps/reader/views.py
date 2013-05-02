@@ -503,7 +503,7 @@ def load_single_feed(request, feed_id):
     
     if query:
         stories = feed.find_stories(query, offset=offset, limit=limit)
-    elif usersub and (read_filter == 'unread' or order == 'oldest'):
+    elif usersub:
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
