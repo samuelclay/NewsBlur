@@ -186,7 +186,7 @@
             if ((NEWSBLUR.reader.layout.contentLayout.panes.north &&
                  NEWSBLUR.reader.layout.contentLayout.panes.north.width() < 600) ||
                 (NEWSBLUR.reader.layout.contentLayout.panes.center &&
-                 NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 700)) {
+                 NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 720)) {
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.addClass('NB-feed-story-view-narrow');
             } else {

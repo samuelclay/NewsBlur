@@ -1200,7 +1200,7 @@ def shared_stories_rss_feed(request, user_id, username):
         
     logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
         user.username,
-        request.META['HTTP_USER_AGENT'][:24]
+        request.META.get('HTTP_USER_AGENT', "")[:24]
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
