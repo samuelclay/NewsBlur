@@ -204,7 +204,7 @@
             }
 
             if ((north && north.width() < 600) ||
-                (center && center.width() < 700)) {
+                (center && center.width() < 720)) {
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
                 this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.addClass('NB-feed-story-view-narrow');
