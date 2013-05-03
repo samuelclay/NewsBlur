@@ -588,7 +588,7 @@ class RUserStory:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         story_hash = cls.story_hash(story_hash, story_feed_id=story_feed_id)
-        print story_hash
+        
         if not story_hash: return
         
         all_read_stories_key = 'RS:%s' % (user_id)

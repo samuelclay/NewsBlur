@@ -802,7 +802,7 @@ class MSocialSubscription(mongo.Document):
 
         if not r.exists(stories_key):
             return []
-        elif everything_unread or read_filter != 'unread' or not r.exists(read_stories_key):
+        elif read_filter != 'unread' or not r.exists(read_stories_key):
             ignore_user_stories = True
             unread_stories_key = stories_key
         else:
@@ -852,39 +852,38 @@ class MSocialSubscription(mongo.Document):
             social_user_ids = [social_user_ids]
 
         ranked_stories_keys  = 'zU:%s:social' % (user_id)
-        unread_ranked_stories_keys  = 'zfU:%s:social' % (user_id)
-        unread_story_hashes = cache.get(unread_ranked_stories_keys)
-        if offset and r.exists(ranked_stories_keys) and unread_story_hashes:
+        read_ranked_stories_keys  = 'zfU:%s:social' % (user_id)
+        if offset and r.exists(ranked_stories_keys) and r.exists(read_ranked_stories_keys):
             story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
+            read_story_hashes = range_func(read_ranked_stories_keys, 0, -1)
             if story_hashes:
                 story_hashes, story_dates = zip(*story_hashes)
-                return story_hashes, story_dates, unread_story_hashes
+                return story_hashes, story_dates, read_story_hashes
             else:
-                return [], [], {}
+                return [], [], []
         else:
             r.delete(ranked_stories_keys)
-            cache.delete(unread_ranked_stories_keys)
+            r.delete(read_ranked_stories_keys)
         
-        unread_feed_story_hashes = {}
         for social_user_id in social_user_ids:
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_hashes = us.get_stories(offset=0, limit=100, 
                                           order=order, read_filter=read_filter, 
                                           withscores=True, everything_unread=everything_unread)
-            unread_feed_story_hashes[social_user_id] = us.get_stories(read_filter='unread', limit=500,
-                                                                      fetch_stories=False)
             if story_hashes:
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
-            
+        
+        r.zinterstore(read_ranked_stories_keys, [ranked_stories_keys, "RS:%s" % user_id])
         story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
+        read_story_hashes = range_func(read_ranked_stories_keys, offset, limit)
         r.expire(ranked_stories_keys, 24*60*60)
-        cache.set(unread_ranked_stories_keys, unread_feed_story_hashes, 24*60*60)
+        r.expire(read_ranked_stories_keys, 24*60*60)
 
         if story_hashes:
             story_hashes, story_dates = zip(*story_hashes)
-            return story_hashes, story_dates, unread_feed_story_hashes
+            return story_hashes, story_dates, read_story_hashes
         else:
-            return [], [], {}
+            return [], [], []
         
     def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_ids)
