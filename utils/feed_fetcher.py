@@ -9,6 +9,7 @@ import random
 import pymongo
 from django.conf import settings
 from django.db import IntegrityError
+from django.core.cache import cache
 from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
@@ -542,6 +543,7 @@ class Dispatcher:
                                      story_date__gte=UNREAD_CUTOFF)\
                             .read_preference(pymongo.ReadPreference.PRIMARY)
             stories = Feed.format_stories(stories, feed.pk)
+            cache.set("S:%s" % feed.pk, stories, 60)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                           feed.title[:30], len(stories), user_subs.count(),
                           feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
