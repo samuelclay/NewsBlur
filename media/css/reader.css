@@ -808,6 +808,7 @@ body {
 .NB-feedlists .folder_title .unread_count {
     margin-top: -3px;
     line-height: 14px;
+    padding-top: 2px;
 }
 .NB-feeds-header .unread_count {
     margin-top: 2px;
@@ -864,8 +865,8 @@ body {
     float: right;
     font-weight: bold;
     color: #FFF;
-    padding: 3px 1px 2px;
-    margin: 2px 1px 0;
+    padding: 2px 1px 2px;
+    margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
     line-height: 10px;
