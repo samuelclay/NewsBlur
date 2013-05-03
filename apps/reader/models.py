@@ -8,6 +8,7 @@ from utils import json_functions as json
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
@@ -396,6 +397,9 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
         
+        if not stories:
+            stories = cache.get('S:%s' % self.feed_id)
+            
         if not stories:
             stories_db = MStory.objects(story_feed_id=self.feed_id,
                                         story_date__gte=date_delta)
