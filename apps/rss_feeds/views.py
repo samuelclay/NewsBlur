@@ -100,7 +100,7 @@ def feed_autocomplete(request):
             'label': feed.feed_title,
             'tagline': feed.data and feed.data.feed_tagline,
             'num_subscribers': feed.num_subscribers,
-        } for feed in feeds]
+        } for feed in feeds if feed]
     else:
         feeds = [feed.canonical(full=True) for feed in feeds]
     feeds = sorted(feeds, key=lambda f: -1 * f['num_subscribers'])
