@@ -267,9 +267,9 @@ def load_river_blurblog(request):
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
-        if story['id'] in starred_stories:
+        if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
@@ -278,12 +278,12 @@ def load_river_blurblog(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
-        if story['id'] in shared_stories:
+        if story['story_hash'] in shared_stories:
             story['shared'] = True
-            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
+            shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
-            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
+            story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
             if story['shared_date'] < UNREAD_CUTOFF or story['story_hash'] in read_feed_story_hashes:
                 story['read_status'] = 1
 
