@@ -19,7 +19,7 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
-from apps.reader.models import UserSubscription, MUserStory
+from apps.reader.models import UserSubscription, MUserStory, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
@@ -917,6 +917,7 @@ class MSocialSubscription(mongo.Document):
             date = now if now > story.story_date else story.story_date # For handling future stories
             feed_id = story.story_feed_id
             try:
+                RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
                 m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
                                                         feed_id=feed_id, 
                                                         story_id=story.story_guid,
@@ -979,6 +980,7 @@ class MSocialSubscription(mongo.Document):
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             try:
+                RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
                 m, _ = MUserStory.objects.get_or_create(user_id=user_id, 
                                                         feed_id=story.story_feed_id, 
                                                         story_id=story.story_guid,
@@ -1066,20 +1068,13 @@ class MSocialSubscription(mongo.Document):
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
         usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
 
-        # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
-        # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
-        read_stories_ids = []
-        if story_feed_ids:
-            read_stories = MUserStory.objects(user_id=self.user_id,
-                                              feed_id__in=story_feed_ids,
-                                              story_id__in=story_ids).only('story_id')
-            read_stories_ids = list(set(rs.story_id for rs in read_stories))
-
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
+        
         oldest_unread_story_date = now
         unread_stories_db = []
 
         for story in stories_db:
-            if getattr(story, 'story_guid', None) in read_stories_ids:
+            if story['story_hash'] not in unread_story_hashes:
                 continue
             feed_id = story.story_feed_id
             if usersubs_map.get(feed_id) and story.shared_date < usersubs_map[feed_id].mark_read_date:

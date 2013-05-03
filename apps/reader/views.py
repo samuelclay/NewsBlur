@@ -934,6 +934,7 @@ def mark_social_stories_as_read(request):
                 code = -1
                 errors.append("Already read story: %s" % e)
             except MSocialSubscription.DoesNotExist:
+                print "Unsub: %s" % story_ids
                 MSocialSubscription.mark_unsub_story_ids_as_read(request.user.pk, social_user_id,
                                                                  story_ids, feed_id,
                                                                  request=request)
