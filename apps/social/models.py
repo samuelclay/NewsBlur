@@ -18,6 +18,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
+from django.core.cache import cache
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -791,7 +792,7 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, everything_unread=False):
+                    withscores=False, everything_unread=False, fetch_stories=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -808,7 +809,8 @@ class MSocialSubscription(mongo.Document):
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
 
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
-        unread_ranked_stories_key   = 'zUB:%s:%s' % (self.user_id, self.subscription_user_id)
+        unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('f' if fetch_stories else '', 
+                                                       self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
@@ -849,31 +851,40 @@ class MSocialSubscription(mongo.Document):
         if not isinstance(social_user_ids, list):
             social_user_ids = [social_user_ids]
 
-        unread_ranked_stories_keys  = 'zU:%s:social' % (user_id)
-        if offset and r.exists(unread_ranked_stories_keys):
-            story_hashes = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
+        ranked_stories_keys  = 'zU:%s:social' % (user_id)
+        unread_ranked_stories_keys  = 'zfU:%s:social' % (user_id)
+        unread_story_hashes = cache.get(unread_ranked_stories_keys)
+        if offset and r.exists(ranked_stories_keys) and unread_story_hashes:
+            story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
             if story_hashes:
-                return zip(*story_hashes)
+                story_hashes, story_dates = zip(*story_hashes)
+                return story_hashes, story_dates, unread_story_hashes
             else:
-                return [], []
+                return [], [], {}
         else:
-            r.delete(unread_ranked_stories_keys)
-
+            r.delete(ranked_stories_keys)
+            cache.delete(unread_ranked_stories_keys)
+        
+        unread_feed_story_hashes = {}
         for social_user_id in social_user_ids:
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_hashes = us.get_stories(offset=0, limit=100, 
                                           order=order, read_filter=read_filter, 
                                           withscores=True, everything_unread=everything_unread)
+            unread_feed_story_hashes[social_user_id] = us.get_stories(read_filter='unread', limit=500,
+                                                                      fetch_stories=False)
             if story_hashes:
-                r.zadd(unread_ranked_stories_keys, **dict(story_hashes))
+                r.zadd(ranked_stories_keys, **dict(story_hashes))
             
-        story_hashes = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
-        r.expire(unread_ranked_stories_keys, 24*60*60)
-        
+        story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
+        r.expire(ranked_stories_keys, 24*60*60)
+        cache.set(unread_ranked_stories_keys, unread_feed_story_hashes, 24*60*60)
+
         if story_hashes:
-            return zip(*story_hashes)
+            story_hashes, story_dates = zip(*story_hashes)
+            return story_hashes, story_dates, unread_feed_story_hashes
         else:
-            return [], []
+            return [], [], {}
         
     def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_ids)

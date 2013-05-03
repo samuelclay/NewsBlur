@@ -188,7 +188,8 @@ class UserSubscription(models.Model):
             story_hashes = us.get_stories(offset=0, limit=200, 
                                           order=order, read_filter=read_filter, 
                                           withscores=True)
-            unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500, fetch_stories=False)
+            unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                               fetch_stories=False)
             if story_hashes:
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
             

@@ -177,7 +177,6 @@ def load_river_blurblog(request):
     relative_user_id  = request.REQUEST.get('relative_user_id', None)
     global_feed       = request.REQUEST.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if global_feed:
         global_user = User.objects.get(username='popular')
@@ -193,11 +192,12 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_hashes, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
-                                                 offset=offset, limit=limit,
-                                                 order=order, read_filter=read_filter,
-                                                 relative_user_id=relative_user_id,
-                                                 everything_unread=global_feed)
+    story_hashes, story_dates, unread_feed_story_hashes = MSocialSubscription.feed_stories(
+                                                            user.pk, social_user_ids, 
+                                                            offset=offset, limit=limit,
+                                                            order=order, read_filter=read_filter,
+                                                            relative_user_id=relative_user_id,
+                                                            everything_unread=global_feed)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(zip(story_hashes, story_dates))
     def sort_stories_by_hash(a, b):
@@ -222,7 +222,6 @@ def load_river_blurblog(request):
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
     
-    # Find starred stories
     if story_feed_ids:
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(
@@ -236,17 +235,10 @@ def load_river_blurblog(request):
                                      .only('story_hash', 'shared_date', 'comments')
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                        comments=story.comments))
-                           for story in shared_stories])
-
-        userstories_db = MUserStory.objects(user_id=user.pk,
-                                            feed_id__in=story_feed_ids,
-                                            story_id__in=story_ids).only('story_id')
-        userstories = set(us.story_id for us in userstories_db)
-  
+                           for story in shared_stories])  
     else:
         starred_stories = {}
         shared_stories = {}
-        userstories = []
     
     # Intelligence classifiers for all feeds involved
     if story_feed_ids:
@@ -268,12 +260,12 @@ def load_river_blurblog(request):
     
     # Just need to format stories
     for story in stories:
-        if story['id'] in userstories:
-            story['read_status'] = 1
-        elif story['story_date'] < UNREAD_CUTOFF:
-            story['read_status'] = 1
-        else:
-            story['read_status'] = 0
+        story['read_status'] = 1
+        print unread_feed_story_hashes
+        for social_user_id in unread_feed_story_hashes.keys():
+            if story['story_hash'] in unread_feed_story_hashes[social_user_id]:
+                story['read_status'] = 0
+                break
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
