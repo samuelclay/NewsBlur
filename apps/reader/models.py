@@ -381,6 +381,9 @@ class UserSubscription(models.Model):
             self.mark_read_date = date_delta
         
         if not stories:
+            stories = cache.get('S:%s' % self.feed_id)
+            
+        if not stories:
             stories_db = MStory.objects(story_feed_id=self.feed_id,
                                         story_date__gte=date_delta)
             stories = Feed.format_stories(stories_db, self.feed_id)
