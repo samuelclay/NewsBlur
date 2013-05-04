@@ -1055,8 +1055,9 @@ class MSocialSubscription(mongo.Document):
         else:
             self.mark_read_date = date_delta
 
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
-                                          shared_date__gte=date_delta)
+                                          story_hash__in=unread_story_hashes)
         story_feed_ids = set()
         story_ids = []
         for s in stories_db:
@@ -1066,8 +1067,6 @@ class MSocialSubscription(mongo.Document):
 
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
         usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
-
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
         
         oldest_unread_story_date = now
         unread_stories_db = []
