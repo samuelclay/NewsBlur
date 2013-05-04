@@ -36,7 +36,7 @@ public class SocialFeedItemsList extends ItemsList {
 		setTitle(title);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState);
+			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, storyOrder);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);

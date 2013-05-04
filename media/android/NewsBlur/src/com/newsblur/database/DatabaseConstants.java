@@ -247,5 +247,13 @@ public class DatabaseConstants {
             return STORY_DATE + " ASC";
         }
     }
+    
+    public static String getStorySharedSortOrder(StoryOrder storyOrder) {
+        if (storyOrder == StoryOrder.NEWEST) {
+            return STORY_SHARED_DATE + " DESC";
+        } else {
+            return STORY_SHARED_DATE + " ASC";
+        }
+    }
 
 }

@@ -35,7 +35,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState);
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, storyOrder);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);

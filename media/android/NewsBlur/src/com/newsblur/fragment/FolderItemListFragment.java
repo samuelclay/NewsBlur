@@ -149,7 +149,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	public void changeState(int state) {
 		currentState = state;
 		final String selection = DatabaseConstants.getStorySelectionFromState(state);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		getActivity().startManagingCursor(cursor);
 		adapter.swapCursor(cursor);
 	}

@@ -28,6 +28,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -45,12 +46,13 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	private ListView itemList;
 	private String[] groupFrom;
 	private int[] groupTo;
+    private StoryOrder storyOrder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
-
+        storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest  = false;
 		}
@@ -102,14 +104,15 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		adapter.swapCursor(cursor);
 	}
 
-	public static ItemListFragment newInstance(int currentState) {
+	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
+		arguments.putSerializable("storyOrder", storyOrder);
 		everythingFragment.setArguments(arguments);
 
 		return everythingFragment;
@@ -137,7 +140,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		return cursorLoader;
 	}
 

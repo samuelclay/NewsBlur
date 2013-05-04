@@ -168,7 +168,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	private void refreshStories() {
 		final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
 		adapter.swapCursor(cursor);
 	}
 
