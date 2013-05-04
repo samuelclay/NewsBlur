@@ -354,22 +354,22 @@ class UserSubscription(models.Model):
             
         return data
     
-    def calculate_feed_scores(self, silent=False, stories=None):
+    def calculate_feed_scores(self, silent=False, stories=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
-        if self.user.profile.last_seen_on < UNREAD_CUTOFF:
+        if self.user.profile.last_seen_on < UNREAD_CUTOFF and not force:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return
         
-        if not self.feed.fetched_once:
-            if not silent:
-                logging.info(' ---> [%s] NOT Computing scores: %s' % (self.user, self.feed))
-            self.needs_unread_recalc = False
-            self.save()
-            return
+        # if not self.feed.fetched_once:
+        #     if not silent:
+        #         logging.info(' ---> [%s] NOT Computing scores: %s' % (self.user, self.feed))
+        #     self.needs_unread_recalc = False
+        #     self.save()
+        #     return
             
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
