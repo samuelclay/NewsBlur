@@ -383,12 +383,12 @@ class UserSubscription(models.Model):
         if not stories:
             stories = cache.get('S:%s' % self.feed_id)
             
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
+        
         if not stories:
             stories_db = MStory.objects(story_feed_id=self.feed_id,
-                                        story_date__gte=date_delta)
+                                        story_hash__in=unread_story_hashes)
             stories = Feed.format_stories(stories_db, self.feed_id)
-        
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
         
         oldest_unread_story_date = now
         unread_stories = []
