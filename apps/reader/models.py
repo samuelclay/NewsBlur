@@ -386,8 +386,7 @@ class UserSubscription(models.Model):
         unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
         
         if not stories:
-            stories_db = MStory.objects(story_feed_id=self.feed_id,
-                                        story_hash__in=unread_story_hashes)
+            stories_db = MStory.objects(story_hash__in=unread_story_hashes)
             stories = Feed.format_stories(stories_db, self.feed_id)
         
         oldest_unread_story_date = now
