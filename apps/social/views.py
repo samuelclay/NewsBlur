@@ -61,11 +61,11 @@ def load_social_stories(request, user_id, username=None):
     if social_profile.private and not social_profile.is_followed_by_user(user.pk):
         message = "%s has a private blurblog and you must be following them in order to read it." % social_profile.username
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
-        story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
-        if story_ids:
+        if story_hashes:
             mstories = MSharedStory.objects(user_id=social_user.pk,
-                                            story_db_id__in=story_ids).order_by(story_date_order)
+                                            story_hash__in=story_hashes).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
     else:
         mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
@@ -203,19 +203,21 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+    story_hashes, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
                                                  offset=offset, limit=limit,
                                                  order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
                                                  everything_unread=global_feed)
-    mstories = MStory.find_by_id(story_ids)
-    story_id_to_dates = dict(zip(story_ids, story_dates))
-    def sort_stories_by_id(a, b):
-        return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
-    sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+    mstories = MStory.find_by_story_hashes(story_hashes)
+    story_hashes_to_dates = dict(zip(story_hashes, story_dates))
+    def sort_stories_by_hash(a, b):
+        return (int(story_hashes_to_dates[str(b.story_hash)]) -
+                int(story_hashes_to_dates[str(a.story_hash)]))
+    sorted_mstories = sorted(mstories, cmp=sort_stories_by_hash)
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
-        story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
+        timestamp = story_hashes_to_dates[story['story_hash']]
+        story['story_date'] = datetime.datetime.fromtimestamp(timestamp)
     share_relative_user_id = relative_user_id
     if global_feed:
         share_relative_user_id = user.pk
@@ -1206,7 +1208,7 @@ def shared_stories_rss_feed(request, user_id, username):
         
     logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
         user.username,
-        request.META['HTTP_USER_AGENT'][:24]
+        request.META.get('HTTP_USER_AGENT', "")[:24]
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
