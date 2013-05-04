@@ -21,7 +21,7 @@ from apps.social.tasks import UpdateRecalcForSubscription, EmailFirstShare
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.reader.models import MUserStory, UserSubscription
+from apps.reader.models import UserSubscription
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
