@@ -102,6 +102,10 @@ def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
     server()
+
+def all():
+    server()
+    env.roles = ['app', 'dev', 'db', 'task', 'debug']
     
 # ==========
 # = Deploy =
