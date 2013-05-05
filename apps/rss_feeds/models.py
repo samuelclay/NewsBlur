@@ -1545,7 +1545,6 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'sparse': True,
                      'types': False, 
                      'drop_dups': True }],
         'index_drop_dups': True,
