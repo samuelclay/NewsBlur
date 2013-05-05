@@ -29,6 +29,8 @@
             padding: 0;
             border: 0;
             background-color: #304332;
+        }
+        table {
             background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#304332), to(#172018));
             background: -moz-linear-gradient(center top , #304332 0%, #172018 100%) repeat scroll 0 0 transparent;
 
@@ -79,8 +81,8 @@
                         <img src="/media/img/logo_512.png" class="logo">
                         <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
                         <div class="description">
-                            <p>This will take approximately 5 minutes (although all of my tests have taken less than 5 seconds to run). I'm implementing a new scheduling system. This means that when you right-click a site and open Statistics, you will now see more frequently scheduled feed fetches. This will take a few days to tweak, though, and it may be doubled at the drop of a hat — say, if it's too much to handle at once.</p>
-                            <p>Since you're reading this far, I'll just share with you that my projection is to hit 3MM fetches within 48 hours.</p>
+                            <p>Good news! This is the second to last migration needed before the big sharding that will happen in a week or two. Sharding = scale, and this migration will speed things up considerably. I realize everything's already pretty fast, but times could really be cut in half. They won't be immediately, but eventually they will be under 100ms (0.10 sec) on average.</p>
+                            <p>This will take approximately 1 minute. I'm just switching the primary database host to it can be repaired for increased performance. I'll have to switch it back again (along with another 1 minute of downtime) about 2 hours from now. And that'll be that for the night.</p>
                             <p>To pass the time, go surf <a href="http://mlkshk.com/popular" target="_blank">MLKSHK's popular page</a>.</p>
                             <p></p>
                         </div>
