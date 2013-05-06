@@ -98,10 +98,20 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     show_no_more_stories: function() {
+        var pane_height = NEWSBLUR.reader.$s.$story_pane.height();
+        var indicator_position = NEWSBLUR.assets.preference('lock_mouse_indicator');
+        var endbar_height = 20;
+        if (indicator_position) {
+            var last_visible_story = _.last(NEWSBLUR.assets.stories.visible());
+            var last_story_height = last_visible_story && last_visible_story.story_view.$el.height() || 100;
+            endbar_height = pane_height - indicator_position - last_story_height;
+            if (endbar_height <= 20) endbar_height = 20;
+        }
+        
         this.$('.NB-feed-story-endbar').remove();
         var $end_stories_line = $.make('div', { 
             className: 'NB-feed-story-endbar'
-        }).css('paddingBottom', NEWSBLUR.assets.preference('lock_mouse_indicator'));
+        }).css('paddingBottom', endbar_height);
         
         this.$el.append($end_stories_line);
     },
