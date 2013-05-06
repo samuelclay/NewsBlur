@@ -581,12 +581,12 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}    
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 
-def change_password(user, old_password, new_password):
+def change_password(user, old_password, new_password, only_check=False):
     user_db = authenticate(username=user.username, password=old_password)
     if user_db is None:
         blank = blank_authenticate(user.username)
-        if blank:
-            user.set_password(user.username)
+        if blank and not only_check:
+            user.set_password(new_password or user.username)
             user.save()
     if user_db is None:
         user_db = authenticate(username=user.username, password=user.username)
@@ -594,13 +594,14 @@ def change_password(user, old_password, new_password):
     if not user_db:
         return -1
     else:
-        user_db.set_password(new_password)
-        user_db.save()
+        if not only_check:
+            user_db.set_password(new_password)
+            user_db.save()
         return 1
 
 def blank_authenticate(username, password=""):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username__iexact=username)
     except User.DoesNotExist:
         return
     

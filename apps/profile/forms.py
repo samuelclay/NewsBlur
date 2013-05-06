@@ -3,6 +3,8 @@ from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from apps.profile.models import change_password, blank_authenticate
+from apps.social.models import MSocialProfile
 
 PLANS = [
     ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
@@ -48,7 +50,6 @@ class DeleteAccountForm(forms.Form):
         super(DeleteAccountForm, self).__init__(*args, **kwargs)
     
     def clean_password(self):
-        from apps.profile.models import blank_authenticate
         user_auth = authenticate(username=self.user.username, 
                                  password=self.cleaned_data['password'])
         if not user_auth:
@@ -89,3 +90,93 @@ class ForgotPasswordReturnForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(),
                                label="Your new password",
                                required=False)
+
+class AccountSettingsForm(forms.Form):
+    username = forms.RegexField(regex=r'^\w+$',
+                                max_length=30,
+                                widget=forms.TextInput(attrs={'class': 'NB-input'}),
+                                label='username',
+                                required=False,
+                                error_messages={
+                                    'invalid': "Your username may only contain letters and numbers."
+                                })
+    email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
+                             label='email address',
+                             required=False)  
+                             # error_messages={'required': 'Please enter your email.'})
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
+                                   label='password',
+                                   required=False)
+                                   # error_messages={'required': 'Please enter a password.'})
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
+                                   label='password',
+                                   required=False)
+                                   # error_messages={'required': 'Please enter a password.'})
+    
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(AccountSettingsForm, self).__init__(*args, **kwargs)
+        
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        return username
+
+    def clean_password(self):
+        if not self.cleaned_data['password']:
+            return ""
+        return self.cleaned_data['password']
+            
+    def clean_email(self):
+        if not self.cleaned_data['email']:
+            return ""
+        return self.cleaned_data['email']
+    
+    def clean(self):
+        username = self.cleaned_data.get('username', '')
+        new_password = self.cleaned_data.get('new_password', '')
+        old_password = self.cleaned_data.get('old_password', '')
+        email = self.cleaned_data.get('email', None)
+        
+        if username and self.user.username != username:
+            try:
+                User.objects.get(username__iexact=username)
+            except User.DoesNotExist:
+                pass
+            else:
+                raise forms.ValidationError("This username is already taken. Try something different.")
+        
+        if self.user.email != email:
+            if email and User.objects.filter(email__iexact=email).count():
+                raise forms.ValidationError("This email is already being used by another account. Try something different.")
+        
+        if old_password or new_password:
+            code = change_password(self.user, old_password, new_password, only_check=True)
+            if code <= 0:
+                raise forms.ValidationError("Your old password is incorrect.")    
+
+        return self.cleaned_data
+        
+    def save(self, profile_callback=None):
+        username = self.cleaned_data['username']
+        new_password = self.cleaned_data.get('new_password', None)
+        old_password = self.cleaned_data.get('old_password', None)
+        email = self.cleaned_data.get('email', None)
+        
+        if username and self.user.username != username:
+            change_password(self.user, self.user.username, username)
+            self.user.username = username
+            self.user.save()
+            social_profile = MSocialProfile.get_user(self.user.pk)
+            social_profile.username = username
+            social_profile.save()
+
+        
+        if self.user.email != email:
+            self.user.email = email
+            self.user.save()
+        
+        if old_password or new_password:
+            change_password(self.user, old_password, new_password)
+        
+
+        

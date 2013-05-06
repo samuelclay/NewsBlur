@@ -11,10 +11,10 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password, PaymentHistory
+from apps.profile.models import Profile, PaymentHistory
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
-from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm
+from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -79,35 +79,15 @@ def get_preference(request):
 @require_POST
 @json.json_view
 def set_account_settings(request):
-    code = 1
-    message = ''
-    post_settings = request.POST
-    
-    if post_settings['username'] and request.user.username != post_settings['username']:
-        try:
-            User.objects.get(username__iexact=post_settings['username'])
-        except User.DoesNotExist:
-            request.user.username = post_settings['username']
-            request.user.save()
-            social_profile = MSocialProfile.get_user(request.user.pk)
-            social_profile.username = post_settings['username']
-            social_profile.save()
-        else:
-            code = -1
-            message = "This username is already taken. Try something different."
-    
-    if request.user.email != post_settings['email']:
-        if not post_settings['email'] or not User.objects.filter(email=post_settings['email']).count():
-            request.user.email = post_settings['email']
-            request.user.save()
-        else:
-            code = -2
-            message = "This email is already being used by another account. Try something different."
-        
-    if code != -1 and (post_settings['old_password'] or post_settings['new_password']):
-        code = change_password(request.user, post_settings['old_password'], post_settings['new_password'])
-        if code == -3:
-            message = "Your old password is incorrect."
+    code = -1
+    message = 'OK'
+
+    form = AccountSettingsForm(user=request.user, data=request.POST)
+    if form.is_valid():
+        form.save()
+        code = 1
+    else:
+        message = form.errors['__all__'][0]
     
     payload = {
         "username": request.user.username,
