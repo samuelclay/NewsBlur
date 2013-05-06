@@ -102,6 +102,10 @@ def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
     server()
+
+def all():
+    server()
+    env.roles = ['app', 'dev', 'db', 'task', 'debug']
     
 # ==========
 # = Deploy =
@@ -147,8 +151,6 @@ def deploy_code(copy_assets=False, full=False, fast=False):
                     sudo('./utils/kill_gunicorn.sh')
                 else:
                     run('./utils/kill_gunicorn.sh')
-        # run('curl -s http://%s > /dev/null' % env.host)
-        # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
 @parallel
 def kill():
@@ -264,7 +266,6 @@ def backup_postgresql():
     # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
     # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        # run('./postgresql_backup.sh')
         run('python backup_psql.py')
 
 # ===============
