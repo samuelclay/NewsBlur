@@ -151,8 +151,6 @@ def deploy_code(copy_assets=False, full=False, fast=False):
                     sudo('./utils/kill_gunicorn.sh')
                 else:
                     run('./utils/kill_gunicorn.sh')
-        # run('curl -s http://%s > /dev/null' % env.host)
-        # run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
 @parallel
 def kill():
@@ -264,7 +262,6 @@ def backup_postgresql():
     # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
     
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        # run('./postgresql_backup.sh')
         run('python backup_psql.py')
 
 # ===============
