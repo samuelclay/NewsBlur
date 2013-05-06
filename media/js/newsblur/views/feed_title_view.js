@@ -5,15 +5,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         selected: false
     },
     
+    flags: {},
+    
     events: {
+        "dblclick .feed_counts"             : "mark_feed_as_read",
+        "dblclick"                          : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
         "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
-        "dblclick .feed_counts"             : "mark_feed_as_read",
-        "dblclick"                          : "open_feed_link",
         "click"                             : "open",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
@@ -236,7 +238,16 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // = Events =
     // ==========
     
-    open: function(e) {
+    open: function(e, options) {
+        options = options || {};
+        if (!options.ignore_double_click && $(e.target).closest('.feed_counts').length) {
+            _.delay(_.bind(function() {
+                if (!this.flags.double_click) {
+                    this.open(e, {ignore_double_click: true});
+                }
+            }, this), 250);
+            return;
+        }
         e.preventDefault();
         e.stopPropagation();
         if (this.options.feed_chooser) return;
@@ -259,6 +270,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
+        this.flags.double_click = true;
+        _.delay(_.bind(function() {
+            this.flags.double_click = false;
+        }, this), 500);
+
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();
@@ -267,11 +283,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     mark_feed_as_read: function(e) {
-        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
-        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+        this.flags.double_click = true;
+        _.delay(_.bind(function() {
+            this.flags.double_click = false;
+        }, this), 500);
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+        if (e) {
             return false;
         }
     },
