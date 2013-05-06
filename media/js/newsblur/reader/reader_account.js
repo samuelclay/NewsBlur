@@ -294,6 +294,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             NEWSBLUR.Globals.username = data.payload.username;
             NEWSBLUR.Globals.email = data.payload.email;
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
+            $('.NB-feeds-header-user-name').text(NEWSBLUR.Globals.username);
             self.close();
         });
     },

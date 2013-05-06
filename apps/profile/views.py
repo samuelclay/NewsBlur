@@ -87,7 +87,7 @@ def set_account_settings(request):
         form.save()
         code = 1
     else:
-        message = form.errors['__all__'][0]
+        message = form.errors[form.errors.keys()[0]][0]
     
     payload = {
         "username": request.user.username,
