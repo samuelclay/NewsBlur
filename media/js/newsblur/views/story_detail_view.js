@@ -37,7 +37,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
-        this.collection.bind('render:intelligence', this.render_intelligence, this);
+        if (this.collection) {
+            this.collection.bind('render:intelligence', this.render_intelligence, this);
+        }
         
         // Binding directly instead of using event delegation. Need for speed.
         // this.$el.bind('mouseenter', this.mouseenter);
