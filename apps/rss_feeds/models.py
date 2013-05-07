@@ -306,13 +306,17 @@ class Feed(models.Model):
                 return {'%s' % key: value}
             
         def by_url(address):
-            feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
+            feed = cls.objects.filter(
+                branch_from_feed=None
+            ).filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
             if not feed and aggressive:
-                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
+                feed = cls.objects.filter(
+                    branch_from_feed=None
+                ).filter(**criteria('feed_link', address)).order_by('-num_subscribers')
                 
             return feed
         
@@ -1929,6 +1933,9 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                                                   duplicate_feed.feed_link,
                                                   " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else ""))
 
+    original_feed.branch_from_feed = None
+    original_feed.save()
+    
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
@@ -1959,8 +1966,9 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.duplicate_feed_id = duplicate_feed.pk
         dupe_feed.save()
     
-    logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
-                  (duplicate_feed.num_subscribers, original_feed.num_subscribers))
+    logging.debug(' ---> Dupe subscribers (%s): %s, Original subscribers (%s): %s' %
+                  (duplicate_feed.pk, duplicate_feed.num_subscribers, 
+                   original_feed.pk, original_feed.num_subscribers))
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:
