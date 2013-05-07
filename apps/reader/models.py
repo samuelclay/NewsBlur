@@ -493,9 +493,12 @@ class UserSubscription(models.Model):
         self.feed = new_feed
         self.needs_unread_recalc = True
         try:
+            new_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
+        except UserSubscription.DoesNotExist:
             self.save()
             user_sub_folders.rewrite_feed(new_feed, old_feed)
-        except (IntegrityError, OperationError):
+        else:
+            # except (IntegrityError, OperationError):
             logging.info("      !!!!> %s already subscribed" % self.user)
             self.delete()
             return
