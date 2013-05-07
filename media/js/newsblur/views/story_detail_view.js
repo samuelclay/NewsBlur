@@ -527,6 +527,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         } else {
             window.open(href);
         }
+        
+        this.model.set('selected', true, {selected_by_scrolling: true});
     },
     
     mouseenter_manage_icon: function() {
