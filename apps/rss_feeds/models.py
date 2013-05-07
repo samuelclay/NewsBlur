@@ -1934,7 +1934,6 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                                                   " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else ""))
 
     original_feed.branch_from_feed = None
-    original_feed.save()
     
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
