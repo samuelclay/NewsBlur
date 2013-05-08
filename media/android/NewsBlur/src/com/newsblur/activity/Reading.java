@@ -2,6 +2,7 @@ package com.newsblur.activity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -41,7 +42,6 @@ import com.newsblur.util.UIUtils;
 public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
-	public static final String TAG = "ReadingActivity";
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
 	public static final String EXTRA_USERNAME = "username";
@@ -58,9 +58,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected ContentResolver contentResolver;
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
-	private ArrayList<ContentProviderOperation> operations;
 	protected Cursor stories;
-	private HashSet<String> storiesToMarkAsRead;
+	private Set<Story> storiesToMarkAsRead;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -69,10 +68,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
-		operations = new ArrayList<ContentProviderOperation>();
 		fragmentManager = getSupportFragmentManager();
 		
-		storiesToMarkAsRead = new HashSet<String>();
+        storiesToMarkAsRead = new HashSet<Story>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -192,27 +190,24 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	protected void onPause() {
-		if (isFinishing()) {
-			try {
-				contentResolver.applyBatch(FeedProvider.AUTHORITY, operations);
-			} catch (RemoteException e) {
-				Log.e(TAG, "Failed to do any updating.");
-				e.printStackTrace();
-			} catch (OperationApplicationException e) {
-				Log.e(TAG, "Failed to do any updating.");
-				e.printStackTrace();
-			}
-		}
+        synchronized(this.storiesToMarkAsRead) {
+            FeedUtils.markStoriesAsRead(this.storiesToMarkAsRead, this);
+            this.storiesToMarkAsRead.clear();
+        }
 		super.onPause();
 	}
 
-	protected void addStoryToMarkAsRead(Story story) {
-		if (story.read != Story.READ && !storiesToMarkAsRead.contains(story.id)) {
-			storiesToMarkAsRead.add(story.id);
-			FeedUtils.appendStoryReadOperations(story, operations);
-		}
-	}
-
+    /** 
+     * Log a story as having been read. The local DB and remote server will be updated
+     * batch-wise when the activity pauses.
+     */
+    protected void addStoryToMarkAsRead(Story story) {
+        if (story == null) return;
+        if (story.read != Story.UNREAD) return;
+        synchronized (this.storiesToMarkAsRead) {
+            this.storiesToMarkAsRead.add(story);
+        }
+    }
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
