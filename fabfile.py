@@ -1041,17 +1041,18 @@ def setup_do(name, size=2):
 
 def add_user_to_do():
     env.user = "root"
+    doUser = "sclay"
     with settings(warn_only=True):
-        run('useradd -m %s' % (env.user))
-        setup_sudoers("%s" % (env.user))
-    run('mkdir -p ~%s/.ssh && chmod 700 ~%s/.ssh' % (env.user, env.user))
-    run('rm -fr ~%s/.ssh/id_dsa*' % (env.user))
-    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (env.user, env.user))
-    run('touch ~%s/.ssh/authorized_keys' % (env.user, env.user))
+        run('useradd -m %s' % (doUser))
+        setup_sudoers("%s" % (doUser))
+    run('mkdir -p ~%s/.ssh && chmod 700 ~%s/.ssh' % (doUser, doUser))
+    run('rm -fr ~%s/.ssh/id_dsa*' % (doUser))
+    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (doUser, doUser))
+    run('touch ~%s/.ssh/authorized_keys' % (doUser, doUser))
     put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (env.user))
+    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (doUser))
     run('rm authorized_keys')
-    run('chown %s.%s -R ~%s/.ssh' % (env.user, env.user, env.user))
+    run('chown %s.%s -R ~%s/.ssh' % (doUser, doUser, doUser))
     env.user = "%s"
 
 # ===============
