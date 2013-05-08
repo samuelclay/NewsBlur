@@ -568,7 +568,7 @@ if DEBUG:
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ELASTICSEARCH_HOSTS[0],
+        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
         'INDEX_NAME': 'haystack',
     },
 }
