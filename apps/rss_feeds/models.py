@@ -38,6 +38,7 @@ from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from vendor.redis_completion.engine import RedisEngine
+from vendor.haystack.query import SearchQuerySet
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -247,14 +248,12 @@ class Feed(models.Model):
         
     @classmethod
     def autocomplete(self, prefix, limit=5):
-        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        results = engine.search(phrase=prefix, limit=limit, autoboost=True)
+        results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
         
         if len(results) < limit:
-            engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-            results += engine.search(phrase=prefix, limit=limit-len(results), autoboost=True, filters=[lambda f: f not in results])
-            
-        return results
+            results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
+        
+        return list(set([int(f.pk) for f in results]))
         
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):

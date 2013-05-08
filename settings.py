@@ -254,7 +254,20 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
+    'vendor.haystack',
 )
+
+# ============
+# = Haystack =
+# ============
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # ==========
 # = Stripe =
