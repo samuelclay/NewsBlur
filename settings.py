@@ -257,18 +257,6 @@ INSTALLED_APPS = (
     'vendor.haystack',
 )
 
-# ============
-# = Haystack =
-# ============
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
-}
-
 # ==========
 # = Stripe =
 # ==========
@@ -572,6 +560,18 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+
+# ============
+# = Haystack =
+# ============
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ELASTICSEARCH_HOSTS[0],
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # =======
 # = AWS =
