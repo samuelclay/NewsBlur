@@ -942,12 +942,12 @@ def setup_original_page_server():
     sudo('supervisorctl reload')
 
 def setup_elasticsearch():
-    ES_VERSION = "0.20.1"
+    ES_VERSION = "0.90.0"
     sudo('apt-get update')
     sudo('apt-get install openjdk-7-jre -y')
     
     with cd(env.VENDOR_PATH):
-        run('mkdir elasticsearch')
+        run('mkdir elasticsearch-%s' % ES_VERSION)
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
