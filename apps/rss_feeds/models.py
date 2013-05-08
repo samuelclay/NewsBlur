@@ -9,7 +9,6 @@ import zlib
 import hashlib
 import redis
 import pymongo
-from urlparse import urlparse
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -37,7 +36,6 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
-from vendor.redis_completion.engine import RedisEngine
 from vendor.haystack.query import SearchQuerySet
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -214,8 +212,6 @@ class Feed(models.Model):
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
         
-        self.sync_autocompletion()
-        
         return self
 
     def index_for_search(self):
@@ -230,22 +226,6 @@ class Feed(models.Model):
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
     
-    def sync_autocompletion(self):
-        if self.num_subscribers <= 10 and not settings.DEBUG: return
-        if self.branch_from_feed: return
-        if any(t in self.feed_address for t in ['token', 'private']): return
-
-        parts = urlparse(self.feed_address)
-        if not parts.hostname: return
-        
-        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        engine.store(self.pk, title=self.feed_title)
-        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
-        
-        engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        engine.store(self.pk, title=parts.hostname)
-        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
-        
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
