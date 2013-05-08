@@ -11,14 +11,11 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
-import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class AllStoriesReading extends Reading {
 
 	private Cursor stories;
-	private ValueMultimap storiesToMarkAsRead;
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean stopLoading = false;
@@ -34,15 +31,13 @@ public class AllStoriesReading extends Reading {
 
 		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_stories));
-		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 
-		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-		storiesToMarkAsRead.put(readingAdapter.getStory(passedPosition).feedId, readingAdapter.getStory(passedPosition).id);
+        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
-
+    
 	private void setupCountCursor() {
 		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
 		feedIds = new ArrayList<String>();
@@ -54,15 +49,8 @@ public class AllStoriesReading extends Reading {
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
-		storiesToMarkAsRead.put(readingAdapter.getStory(position).feedId, readingAdapter.getStory(position).id);
 		addStoryToMarkAsRead(readingAdapter.getStory(position));
 		checkStoryCount(position);
-	}
-
-	@Override
-	protected void onDestroy() {
-		new MarkMixedStoriesAsReadTask(this, syncFragment, storiesToMarkAsRead).execute();
-		super.onDestroy();
 	}
 
 	@Override

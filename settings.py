@@ -249,6 +249,7 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
+    'vendor.haystack',
 )
 
 # ==========
@@ -559,7 +560,6 @@ REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3
 REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 # REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_AUTOCOMPLETE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=7)
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
@@ -569,6 +569,18 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+
+# ============
+# = Haystack =
+# ============
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # =======
 # = AWS =
