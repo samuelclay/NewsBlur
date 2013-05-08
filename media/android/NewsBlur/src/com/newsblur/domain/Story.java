@@ -178,4 +178,27 @@ public class Story implements Serializable {
 		return score;
 
 	}
+
+    /**
+     * Custom equality based on storyID/feedID equality so that a Set can de-duplicate story objects.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof Story)) return false;
+        Story s = (Story) o;
+        return ( (this.id == null ? s.id == null : this.id.equals(s.id)) && (this.feedId == null ? s.feedId == null : this.feedId.equals(s.feedId)) );
+    }
+
+    /**
+     * Per the contract of Object, since we redefined equals(), we have to redefine hashCode().
+     */
+    @Override
+    public int hashCode() {
+        int result = 17;
+        if (this.id == null) { result = 37*result; } else { result = 37*result + this.id.hashCode();}
+        if (this.feedId == null) { result = 37*result; } else { result = 37*result + this.feedId.hashCode();}
+        return result;
+    }
+
 }

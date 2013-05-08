@@ -13,12 +13,10 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
-import com.newsblur.network.MarkSocialStoryAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class SocialFeedReading extends Reading {
 
-	MarkSocialAsReadUpdate markSocialAsReadList;
 	private String userId;
 	private String username;
 	private SocialFeed socialFeed;
@@ -34,7 +32,6 @@ public class SocialFeedReading extends Reading {
 
 		userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
 		username = getIntent().getStringExtra(Reading.EXTRA_USERNAME);
-		markSocialAsReadList = new MarkSocialAsReadUpdate(userId);
 
 		Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
@@ -47,54 +44,15 @@ public class SocialFeedReading extends Reading {
 
 		setupPager();
 
-		Story story = readingAdapter.getStory(passedPosition);
-		addStoryToMarkAsRead(story);
-		markSocialAsReadList.add(story.feedId, story.id);
+		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
 
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
-		Story story = readingAdapter.getStory(position);
-		if (story != null) {
-			markSocialAsReadList.add(story.feedId, story.id);
-			addStoryToMarkAsRead(story);
-		}
+        addStoryToMarkAsRead(readingAdapter.getStory(position));
 		checkStoryCount(position);
 	}
-
-	@Override
-	protected void onDestroy() {
-		new MarkSocialStoryAsReadTask(this, syncFragment, markSocialAsReadList).execute();
-		super.onDestroy();
-	}
-
-	public class MarkSocialAsReadUpdate {
-		public String userId;
-		HashMap<String, Set<String>> feedStoryMap;
-
-		public MarkSocialAsReadUpdate(final String userId) {
-			this.userId = userId;
-			feedStoryMap = new HashMap<String, Set<String>>();
-		}
-
-		public void add(final String feedId, final String storyId) {
-			if (feedStoryMap.get(feedId) == null) {
-				Set<String> storiesForFeed = new HashSet<String>();
-				storiesForFeed.add(storyId);
-				feedStoryMap.put(feedId, storiesForFeed);
-			} else {
-				feedStoryMap.get(feedId).add(storyId);
-			}
-		}
-
-		public Object getJsonObject() {
-			HashMap<String, HashMap<String, Set<String>>> jsonMap = new HashMap<String, HashMap<String, Set<String>>>();
-			jsonMap.put(userId, feedStoryMap);
-			return jsonMap;
-		}
-	}
-
 
 	@Override
 	public void triggerRefresh() {
