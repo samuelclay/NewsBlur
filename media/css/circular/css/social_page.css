@@ -55,7 +55,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 body {
-  background: #ebedee url('/../../../media/img/circular/background.png?1368056698') repeat 0 0;
+  background: #ebedee url('/../../../media/img/circular/background.png?1368059710') repeat 0 0;
   font-family: Helvetica, arial, sans-serif;
   color: #333333;
   -webkit-text-size-adjust: 100%;
@@ -381,51 +381,51 @@ blockquote {
   }
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-blurblog-tab {
-  background: url('/../../../media/img/circular/header/icon_activity_active.png?1368056698') no-repeat -9999px -9999px;
+  background: url('/../../../media/img/circular/header/icon_activity_active.png?1368059710') no-repeat -9999px -9999px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-blurblog-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_activity.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_activity.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-blurblog-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-blurblog-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_activity_active.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_activity_active.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-trending-tab {
-  background: url('/../../../media/img/circular/header/icon_trending_active.png?1368056698') no-repeat -9999px -9999px;
+  background: url('/../../../media/img/circular/header/icon_trending_active.png?1368059710') no-repeat -9999px -9999px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-trending-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-trending-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-trending-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending_active.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending_active.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-following-tab {
-  background: url('/../../../media/img/circular/header/icon_follow_active.png?1368056698') no-repeat -9999px -9999px;
+  background: url('/../../../media/img/circular/header/icon_follow_active.png?1368059710') no-repeat -9999px -9999px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-following-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-following-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-following-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow_active.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow_active.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-user-tab {
-  background: url('/../../../media/img/circular/header/icon_circular_active.png?1368056698') no-repeat -9999px -9999px;
+  background: url('/../../../media/img/circular/header/icon_circular_active.png?1368059710') no-repeat -9999px -9999px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-user-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_circular.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_circular.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-user-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-user-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_circular_active.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_circular_active.png?1368059710') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active {
-  background: url('/../../../media/img/circular/header_highlight_border.png?1368056698') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header_highlight_border.png?1368059710') no-repeat center bottom;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active div.NB-tab-inner {
   color: #62a4d3;
@@ -435,7 +435,8 @@ blockquote {
   background-color: rgba(255, 255, 255, 0.3);
   padding: 36px 0;
   margin-bottom: 36px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .NB-banner {
@@ -676,7 +677,7 @@ blockquote {
   width: 100%;
   height: 14px;
   z-index: 0;
-  background: transparent url('/../../../media/img/circular/module_cutoff.png?1368056698') repeat-x left bottom;
+  background: transparent url('/../../../media/img/circular/module_cutoff.png?1368059710') repeat-x left bottom;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
@@ -1185,8 +1186,8 @@ blockquote {
 
 .NB-page-controls {
   margin: 0 auto 54px;
-  border-top: 2px solid #626262;
-  border-bottom: 2px solid #626262;
+  border-top: 1px solid #626262;
+  border-bottom: 1px solid #626262;
   padding: 1px 0;
   text-align: center;
   overflow: hidden;
@@ -1251,11 +1252,11 @@ footer {
   overflow: hidden;
   background-color: rgba(240, 240, 230, 0.4);
   text-align: center;
-  border-top: 1px solid silver;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .NB-footer-logo {
-  border-top: 1px solid white;
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .NB-footer-logo img {

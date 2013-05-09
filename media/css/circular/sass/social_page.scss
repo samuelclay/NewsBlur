@@ -417,7 +417,8 @@ blockquote {
     background-color: rgba(255, 255, 255, .3);
     padding: 36px 0;
     margin-bottom: 36px;
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-bottom: 1px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 
 .NB-banner {
@@ -1114,8 +1115,8 @@ blockquote {
 
 .NB-page-controls {
     margin: 0 auto 54px;
-    border-top: 2px solid #626262;
-    border-bottom: 2px solid #626262;
+    border-top: 1px solid #626262;
+    border-bottom: 1px solid #626262;
     padding: 1px 0;
     text-align: center;
     overflow: hidden;
@@ -1180,10 +1181,10 @@ footer {
     overflow: hidden;
     background-color: rgba(240, 240, 230, .4);
     text-align: center;
-    border-top: 1px solid #C0C0C0;
+    border-top: 1px solid rgba(0, 0, 0, .1);
 }
 .NB-footer-logo {
-    border-top: 1px solid #FFF;
+    border-top: 1px solid rgba(255, 255, 255, .6);
 }
 .NB-footer-logo img {
     margin: 36px auto;
