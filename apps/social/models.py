@@ -792,7 +792,7 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, everything_unread=False, fetch_stories=True):
+                    withscores=False, everything_unread=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -809,7 +809,7 @@ class MSocialSubscription(mongo.Document):
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
 
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
-        unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('f' if fetch_stories else '', 
+        unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('h' if hashes_only else '', 
                                                        self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
@@ -1055,7 +1055,7 @@ class MSocialSubscription(mongo.Document):
         else:
             self.mark_read_date = date_delta
 
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           story_hash__in=unread_story_hashes)
         story_feed_ids = set()

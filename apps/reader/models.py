@@ -88,7 +88,7 @@ class UserSubscription(models.Model):
             else:
                 self.delete()
         
-    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False, fetch_stories=True):
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -96,7 +96,7 @@ class UserSubscription(models.Model):
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
 
-        unread_ranked_stories_key  = 'z%sU:%s:%s' % ('f' if fetch_stories else '', 
+        unread_ranked_stories_key  = 'z%sU:%s:%s' % ('h' if hashes_only else '', 
                                                      self.user_id, self.feed_id)
         if offset and not withscores and r.exists(unread_ranked_stories_key):
             pass
@@ -147,7 +147,7 @@ class UserSubscription(models.Model):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
-        if withscores or not fetch_stories:
+        if withscores or hashes_only:
             return story_ids
         elif story_ids:
             story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -188,8 +188,8 @@ class UserSubscription(models.Model):
             story_hashes = us.get_stories(offset=0, limit=200, 
                                           order=order, read_filter=read_filter, 
                                           withscores=True)
-            unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
-                                                               fetch_stories=False)
+            unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=200,
+                                                               hashes_only=True)
             if story_hashes:
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
             
@@ -383,7 +383,7 @@ class UserSubscription(models.Model):
         if not stories:
             stories = cache.get('S:%s' % self.feed_id)
             
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, fetch_stories=False)
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
         
         if not stories:
             stories_db = MStory.objects(story_hash__in=unread_story_hashes)
