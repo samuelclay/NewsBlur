@@ -11,8 +11,8 @@ $link-color-hover: #740417;
 $link-color-active: #550B14;
 $highlight-text-color: #62a4d3;
 $grey-text-color: #707070;
-$light-text-color: #808080;
-$lighter-text-color: #A0A0A0;
+$light-text-color: rgba(102, 93, 67, .6);
+$lighter-text-color: rgba(132, 123, 107, .6);
 $more-text-color: #1a9fff;
 $more-text-color-hover: #306187;
 $more-text-color-active: #722125;
@@ -203,7 +203,7 @@ blockquote {
 .NB-page {
     max-width: $page-width;
     min-width: 300px;
-    margin: 36px auto 54px;
+    margin: 0 auto;
     padding: 0 10px;
 }
 
@@ -413,8 +413,14 @@ blockquote {
 // = Banner =
 // ==========
 
+.NB-banner-wrapper {
+    background-color: rgba(255, 255, 255, .3);
+    padding: 36px 0;
+    margin-bottom: 36px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
 .NB-banner {
-    padding: 12px 0 18px 0;
     overflow: hidden;
 
     @media screen and (max-width: 580px) {
@@ -477,11 +483,11 @@ blockquote {
     }
     .NB-title .NB-title-bio {
         clear: left;
-        color: $lighter-text-color;
+        color: $light-text-color;
         font-size: $small-title-font-size;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
         line-height: 22px;
-        padding-top: 6px;
+        padding-top: 8px;
     }
     .NB-button-follow,
     .NB-button-following {
@@ -505,8 +511,8 @@ blockquote {
     font-weight: bold;
     color: $lighter-text-color;
     text-align: center;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    margin-top: 6px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+    margin-top: 8px;
     
     .NB-banner-stat {
         float: left;
@@ -518,7 +524,6 @@ blockquote {
         b {
             color: $light-text-color;
             margin: 0 0 2px;
-            font-size: 16px;
         }
     }
 }
@@ -1118,17 +1123,17 @@ blockquote {
 
 .NB-page-controls-next,
 .NB-page-controls-end {
-    background-color: #6eb4e3;
+    background-color: rgba(255, 255, 255, .4);
     height: 20px;
     padding: 20px 28px 20px;
     position: relative;
     overflow: hidden;
-    text-shadow: 0 1px 0 #141F48;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
     
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: all .32s ease-out;
+    -moz-transition: all .32s ease-out;
+    -o-transition: all .32s ease-out;
+    -ms-transition: all .32s ease-out;
     
     .NB-page-controls-text {
         position: absolute;
@@ -1140,13 +1145,14 @@ blockquote {
         color: white;
     }
     
-    &:hover {
+    &:not(.NB-loaded,.NB-loading):hover {
         background-color: #2B478C;
         background-image: none;
         cursor: pointer;
     }
     &.NB-loaded {
         cursor: default;
+        background-color: rgba(0, 0, 0, .3);
     }
     &.NB-loading {
         cursor: wait;

@@ -92,7 +92,7 @@
 </head>
 
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
-<div class="NB-container" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor|color2rgba:".1 " }}{% else %}rgba(235, 197, 95, .1){% endif %}">
+<div class="NB-container" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor|color2rgba:".3 " }}{% else %}rgba(195, 197, 161, .3){% endif %}">
     
 <header class="NB-header">
     <div class="NB-header-inner">
@@ -160,9 +160,8 @@
     </div>
 </header>
 
-<div class="NB-page">
-
-    <div class="NB-banner">
+<div class="NB-banner-wrapper">
+    <div class="NB-banner NB-page">
         <table class="NB-banner-table">
             <tr>
                 <td class="NB-title-photo">
@@ -204,7 +203,11 @@
             {# <a type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
         </div>
     </div>
-    
+
+</div>
+
+<div class="NB-page">
+
     {% for story in stories %}
         {% render_social_story story %}
     {% endfor %}
@@ -223,7 +226,7 @@
         </div>
     </div>
 {% endif %}
-    
+
 <footer>
     <div class="NB-footer-logo">
         <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/logo_newsblur_blur.png" /></a>
