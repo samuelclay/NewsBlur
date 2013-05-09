@@ -1025,6 +1025,7 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
     multiple = len(feed_ids) > 1
     code = 1
@@ -1050,6 +1051,7 @@ def mark_feed_as_read(request):
         
         try:
             sub.mark_feed_read()
+            r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError:
             code = -1
             
