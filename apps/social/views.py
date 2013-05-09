@@ -373,7 +373,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         if len(story_ids) > limit:
             has_next_page = True
             story_ids = story_ids[:-1]
-        mstories = MStory.find_by_id(story_ids)
+        mstories = MStory.find_by_story_hashes(story_ids)
         story_id_to_dates = dict(zip(story_ids, story_dates))
         def sort_stories_by_id(a, b):
             return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
