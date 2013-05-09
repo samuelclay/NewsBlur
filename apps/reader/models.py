@@ -466,22 +466,11 @@ class UserSubscription(models.Model):
             logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
             return
     
-        # Switch to original feed for the user subscription
         logging.info("      ===> %s " % self.user)
-        self.feed = new_feed
-        self.needs_unread_recalc = True
-        try:
-            new_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
-        except UserSubscription.DoesNotExist:
-            self.save()
-            user_sub_folders.rewrite_feed(new_feed, old_feed)
-        else:
-            # except (IntegrityError, OperationError):
-            logging.info("      !!!!> %s already subscribed" % self.user)
-            self.delete()
-            return
-        
+
         # Switch read stories
+        stories = RUserStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk,
+                                         new_feed_id=new_feed.pk)
         user_stories = MUserStory.objects(user_id=self.user_id, feed_id=old_feed.pk)
         if user_stories.count() > 0:
             logging.info(" ---> %s read stories" % user_stories.count())
@@ -506,7 +495,7 @@ class UserSubscription(models.Model):
                     user_story.delete()
             else:
                 user_story.delete()
-            
+
         def switch_feed_for_classifier(model):
             duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
             if duplicates.count():
@@ -526,6 +515,20 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierAuthor)
         switch_feed_for_classifier(MClassifierFeed)
         switch_feed_for_classifier(MClassifierTag)
+
+        # Switch to original feed for the user subscription
+        self.feed = new_feed
+        self.needs_unread_recalc = True
+        try:
+            new_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
+        except UserSubscription.DoesNotExist:
+            self.save()
+            user_sub_folders.rewrite_feed(new_feed, old_feed)
+        else:
+            # except (IntegrityError, OperationError):
+            logging.info("      !!!!> %s already subscribed" % self.user)
+            self.delete()
+            return
     
     @classmethod
     def collect_orphan_feeds(cls, user):
@@ -563,7 +566,7 @@ class UserSubscription(models.Model):
 
 class RUserStory:
     
-    RE_STORY_HASH = re.compile(r"^\d{1,10}:\w{6}$")
+    RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
     
     @classmethod
     def story_hash(cls, story_id, story_feed_id):
@@ -573,6 +576,14 @@ class RUserStory:
             story_id = story.story_hash
         
         return story_id
+    
+    @classmethod
+    def split_story_hash(cls, story_hash):
+        matches = cls.RE_STORY_HASH.match(story_hash)
+        if matches:
+            groups = matches.groups()
+            return groups[0], groups[1]
+        return None, None
     
     @classmethod
     def story_hashes(cls, story_ids):
@@ -608,6 +619,29 @@ class RUserStory:
         r.srem('RS:%s' % user_id, story_hash)
         r.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
     
+    @staticmethod
+    def get_stories(user_id, feed_id, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        story_hashes = r.smembers("RS:%s:%s" % (user_id, feed_id))
+        return story_hashes
+        
+    @classmethod
+    def switch_feed(cls, user_id, old_feed_id, new_feed_id):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        p = r.pipeline()
+        story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
+
+        for story_hash in story_hashes:
+            _, hash_story = cls.split_story_hash(story_hash)
+            new_story_hash = "%s:%s" % (new_feed_id, hash_story)
+            p.sadd("RS:%s:%s" % (user_id, new_feed_id), new_story_hash)
+        
+        p.execute()
+        
+        if len(story_hashes) > 0:
+            logging.info(" ---> %s read stories" % len(story_hashes))
+
 
 class MUserStory(mongo.Document):
     """
@@ -640,12 +674,12 @@ class MUserStory(mongo.Document):
     def save(self, *args, **kwargs):
         self.story_hash = self.feed_guid_hash
         
-        self.sync_redis()
+        # self.sync_redis()
         
         super(MUserStory, self).save(*args, **kwargs)
         
     def delete(self, *args, **kwargs):
-        self.remove_from_redis()
+        # self.remove_from_redis()
         
         super(MUserStory, self).delete(*args, **kwargs)
         
