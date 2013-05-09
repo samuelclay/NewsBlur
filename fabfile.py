@@ -1041,19 +1041,19 @@ def setup_do(name, size=2):
 
 def add_user_to_do():
     env.user = "root"
-    doUser = "sclay"
+    repo_user = "sclay"
     with settings(warn_only=True):
-        run('useradd -m %s' % (doUser))
-        setup_sudoers("%s" % (doUser))
-    run('mkdir -p ~%s/.ssh && chmod 700 ~%s/.ssh' % (doUser, doUser))
-    run('rm -fr ~%s/.ssh/id_dsa*' % (doUser))
-    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (doUser, doUser))
-    run('touch ~%s/.ssh/authorized_keys' % (doUser, doUser))
+        run('useradd -m %s' % (repo_user))
+        setup_sudoers("%s" % (repo_user))
+    run('mkdir -p ~%s/.ssh && chmod 700 ~%s/.ssh' % (repo_user, repo_user))
+    run('rm -fr ~%s/.ssh/id_dsa*' % (repo_user))
+    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (repo_user, repo_user))
+    run('touch ~%s/.ssh/authorized_keys' % (repo_user, repo_user))
     put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (doUser))
+    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (repo_user))
     run('rm authorized_keys')
-    run('chown %s.%s -R ~%s/.ssh' % (doUser, doUser, doUser))
-    env.user = "%s"
+    run('chown %s.%s -R ~%s/.ssh' % (repo_user, repo_user, repo_user))
+    env.user = repo_user
 
 # ===============
 # = Setup - EC2 =

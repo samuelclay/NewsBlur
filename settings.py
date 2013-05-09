@@ -79,7 +79,7 @@ ALLOWED_HOSTS         = ['*']
 
 PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
 STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
-DEVELOPMENT = (NEWSBLUR_DIR.find('/Users/') == 0) or (NEWSBLUR_DIR.find('/home/') == 0)  # the path to ~/ is only "Users" on a mac. it's `home` on linux
+DEVELOPMENT = (NEWSBLUR_DIR.find('/Users/') == 0)
 
 # ===========================
 # = Django-specific Modules =
