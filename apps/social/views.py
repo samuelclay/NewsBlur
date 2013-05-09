@@ -376,7 +376,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         mstories = MStory.find_by_story_hashes(story_ids)
         story_id_to_dates = dict(zip(story_ids, story_dates))
         def sort_stories_by_id(a, b):
-            return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
+            return int(story_id_to_dates[str(b.story_hash)]) - int(story_id_to_dates[str(a.story_hash)])
         sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
         stories = Feed.format_stories(sorted_mstories)
         for story in stories:
