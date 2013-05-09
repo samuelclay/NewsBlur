@@ -792,7 +792,7 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, everything_unread=False, hashes_only=False):
+                    withscores=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -837,7 +837,7 @@ class MSocialSubscription(mongo.Document):
         return story_ids
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, everything_unread=False):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not relative_user_id:
@@ -852,7 +852,7 @@ class MSocialSubscription(mongo.Document):
             social_user_ids = [social_user_ids]
 
         ranked_stories_keys  = 'zU:%s:social' % (user_id)
-        read_ranked_stories_keys  = 'zfU:%s:social' % (user_id)
+        read_ranked_stories_keys  = 'zhU:%s:social' % (user_id)
         if offset and r.exists(ranked_stories_keys) and r.exists(read_ranked_stories_keys):
             story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
             read_story_hashes = range_func(read_ranked_stories_keys, 0, -1)
@@ -869,7 +869,7 @@ class MSocialSubscription(mongo.Document):
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_hashes = us.get_stories(offset=0, limit=100, 
                                           order=order, read_filter=read_filter, 
-                                          withscores=True, everything_unread=everything_unread)
+                                          withscores=True)
             if story_hashes:
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
         

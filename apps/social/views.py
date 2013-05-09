@@ -197,8 +197,7 @@ def load_river_blurblog(request):
                                                             user.pk, social_user_ids, 
                                                             offset=offset, limit=limit,
                                                             order=order, read_filter=read_filter,
-                                                            relative_user_id=relative_user_id,
-                                                            everything_unread=global_feed)
+                                                            relative_user_id=relative_user_id)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(zip(story_hashes, story_dates))
     def sort_stories_by_hash(a, b):
@@ -502,7 +501,6 @@ def mark_story_as_shared(request):
             "user_id": request.user.pk,
             "comments": comments,
             "has_comments": bool(comments),
-            "story_db_id": story.id,
         }
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:

@@ -170,7 +170,7 @@ class UserSubscription(models.Model):
             feed_ids = [feed_ids]
 
         ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
-        unread_ranked_stories_keys  = 'zfU:%s:feeds' % (user_id)
+        unread_ranked_stories_keys  = 'zhU:%s:feeds' % (user_id)
         unread_story_hashes = cache.get(unread_ranked_stories_keys)
         if offset and r.exists(ranked_stories_keys) and unread_story_hashes:
             story_hashes = range_func(ranked_stories_keys, offset, limit)
@@ -194,7 +194,7 @@ class UserSubscription(models.Model):
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
             
         story_hashes = range_func(ranked_stories_keys, offset, limit)
-        r.expire(ranked_stories_keys, 24*60*60)
+        r.expire(ranked_stories_keys, 60*60)
         cache.set(unread_ranked_stories_keys, unread_feed_story_hashes, 24*60*60)
         
         return story_hashes, unread_feed_story_hashes
