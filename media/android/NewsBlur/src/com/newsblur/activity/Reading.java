@@ -188,14 +188,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
 
-	@Override
-	protected void onPause() {
-        synchronized(this.storiesToMarkAsRead) {
-            FeedUtils.markStoriesAsRead(this.storiesToMarkAsRead, this);
-            this.storiesToMarkAsRead.clear();
-        }
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        flushStoriesMarkedRead();
+        super.onPause();
+    }
 
     /** 
      * Log a story as having been read. The local DB and remote server will be updated
@@ -206,6 +203,19 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         if (story.read != Story.UNREAD) return;
         synchronized (this.storiesToMarkAsRead) {
             this.storiesToMarkAsRead.add(story);
+        }
+        // flush immediately if the batch reaches a sufficient size
+        if (this.storiesToMarkAsRead.size() >= AppConstants.MAX_MARK_READ_BATCH) {
+            flushStoriesMarkedRead();
+        }
+    }
+
+    private void flushStoriesMarkedRead() {
+        synchronized(this.storiesToMarkAsRead) {
+            if (this.storiesToMarkAsRead.size() > 0) {
+                FeedUtils.markStoriesAsRead(this.storiesToMarkAsRead, this);
+                this.storiesToMarkAsRead.clear();
+            }
         }
     }
 
