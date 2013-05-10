@@ -10,14 +10,11 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
-import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class AllSharedStoriesReading extends Reading {
 
 	private Cursor stories;
-	private ValueMultimap storiesToMarkAsRead;
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean requestingPage = false;
@@ -33,13 +30,11 @@ public class AllSharedStoriesReading extends Reading {
 
 		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		setTitle(getResources().getString(R.string.all_shared_stories));
-		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-		storiesToMarkAsRead.put(readingAdapter.getStory(passedPosition).feedId, readingAdapter.getStory(passedPosition).id);
 	}
 
 	private void setupCountCursor() {
@@ -55,15 +50,8 @@ public class AllSharedStoriesReading extends Reading {
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
-		storiesToMarkAsRead.put(readingAdapter.getStory(position).feedId, readingAdapter.getStory(position).id);
 		addStoryToMarkAsRead(readingAdapter.getStory(position));
 		checkStoryCount(position);
-	}
-
-	@Override
-	protected void onDestroy() {
-		new MarkMixedStoriesAsReadTask(this, syncFragment, storiesToMarkAsRead).execute();
-		super.onDestroy();
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.domain.OfflineUpdate;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIConstants;
@@ -60,7 +59,6 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_FOLDER_UPDATE_TWO_STEP = 30;
 	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
-	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
 	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
@@ -116,38 +114,11 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping(true);
 				break;	
 
-			case EXTRA_TASK_MARK_STORY_READ:
-				final String feedId = intent.getStringExtra(EXTRA_TASK_FEED_ID);
-				final ArrayList<String> storyIds = intent.getStringArrayListExtra(EXTRA_TASK_STORY_ID);
-				if (!TextUtils.isEmpty(feedId) && storyIds.size() > 0) {
-					if (!apiManager.markStoryAsRead(feedId, storyIds)) {
-						for (String storyId : storyIds) {
-							OfflineUpdate update = new OfflineUpdate();
-							update.arguments = new String[] { feedId, storyId };
-							update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
-							getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
-						}
-					}
-				} else {
-					Log.e(this.getClass().getName(), "No feed/stories to mark as read included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
-				}
-				break;
-
 			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
 				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
 				ContentValues values = new ContentValues();
 				values.put(APIConstants.PARAMETER_FEEDS_STORIES, stories.getJsonString());
-				if (!apiManager.markMultipleStoriesAsRead(values)) {
-					for (String key : stories.getKeys()) {
-						for (String value : stories.getValues(key)) {
-							OfflineUpdate update = new OfflineUpdate();
-							update.arguments = new String[] { key, value };
-							update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
-							getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
-						}
-					}
-				}
+				apiManager.markMultipleStoriesAsRead(values);
 				break;	
 
 			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
@@ -259,20 +230,5 @@ public class SyncService extends IntentService {
 			Log.e(this.getClass().getName(), "No receiver attached to Sync?");
 		}
 	}
-
-    /* TODO: this code existed in the refresh_feeds intent, but was never used.  Now that
-             we are actually using the API as intended, it is possible this needs to
-             actually get called somewhere.
-    Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
-    while (cursor.moveToNext()) {
-        OfflineUpdate update = OfflineUpdate.fromCursor(cursor);
-        ArrayList<String> storyId = new ArrayList<String>();
-        storyId.add(update.arguments[1]);
-        if (apiManager.markStoryAsRead(update.arguments[0], storyId)) {
-            getContentResolver().delete(FeedProvider.OFFLINE_URI, DatabaseConstants.UPDATE_ID + " = ?", new String[] { Integer.toString(update.id) });
-        }
-    }
-    cursor.close();
-    */
 
 }

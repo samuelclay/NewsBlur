@@ -224,6 +224,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/mark_feed_as_read', {
             feed_id: feed_ids
         }, callback);
+
+        if (feed_id == NEWSBLUR.reader.active_feed) {
+            this.stories.each(function(story) {
+                story.set('read_status', true);
+            });
+        }
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {

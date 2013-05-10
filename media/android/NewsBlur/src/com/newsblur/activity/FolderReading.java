@@ -3,17 +3,14 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
-import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class FolderReading extends Reading {
-	protected ValueMultimap storiesToMarkAsRead;
+
 	private String[] feedIds;
 	private String folderName;
 	private boolean stopLoading = false;
@@ -31,28 +28,19 @@ public class FolderReading extends Reading {
 		setTitle(folderName);		
 
 		Uri storiesURI = FeedProvider.MULTIFEED_STORIES_URI;
-		storiesToMarkAsRead = new ValueMultimap();
-		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, null);
 
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 		setupPager();
 
-		storiesToMarkAsRead.put(readingAdapter.getStory(passedPosition).feedId, readingAdapter.getStory(passedPosition).id);
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
 
 	@Override
 	public void onPageSelected(int position) {
-		storiesToMarkAsRead.put(readingAdapter.getStory(position).feedId, readingAdapter.getStory(position).id);
 		addStoryToMarkAsRead(readingAdapter.getStory(position));
 		checkStoryCount(position);
 		super.onPageSelected(position);
-	}
-
-	@Override
-	protected void onDestroy() {
-		new MarkMixedStoriesAsReadTask(this, syncFragment, storiesToMarkAsRead).execute();
-		super.onDestroy();
 	}
 
 	@Override

@@ -1,0 +1,33 @@
+{% load i18n %}
+<table>
+    <thead>
+        <tr>
+            <th style="width: 50%">{% trans 'Query' %}</th>
+            <th style="width: 10%">{% trans 'Backend Alias' %}</th>
+            <th style="width: 25%">{% trans 'Timeline' %}</th>
+            <th style="width: 5%">{% trans 'Time' %}&nbsp;(ms)</th>
+            <th style="width: 10%">{% trans 'Kwargs' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for query in queries %}
+            <tr class="{% cycle 'djDebugOdd' 'djDebugEven' %}">
+                <td class="syntax">
+                    <div class="djDebugSqlWrap">
+                        <div class="djDebugSql">{{ query.query_string|safe }}</div>
+                    </div>
+                </td>
+                <td>{{ query.alias }}</td>
+                <td>
+                    <span class="djDebugLineChart{% if query.is_slow %} djDebugLineChartWarning{% endif %}" style="width:{{ query.width_ratio }}%; left:{{ query.start_offset }}%; position: relative;">&nbsp;</span>
+                </td>
+                <td>{{ query.time }}</td>
+                <td>
+                {% for key, value in query.additional_kwargs.items %}
+                    <strong>'{{ key }}':</strong> {{ value|stringformat:"r" }}<br>
+                {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

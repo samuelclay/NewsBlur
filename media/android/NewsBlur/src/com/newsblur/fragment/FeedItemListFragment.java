@@ -39,7 +39,6 @@ import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
-import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
@@ -193,7 +192,8 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 			if(story.read == Story.UNREAD) {
 				ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
 				storiesToMarkAsRead.add(story);
-				markStoriesRead(storiesToMarkAsRead);
+				FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
+                refreshStories();
 			}
 		} else if (item.getItemId() == R.id.menu_mark_previous_stories_as_read) {
 			final ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
@@ -203,34 +203,10 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 					storiesToMarkAsRead.add(story);
 				}
 			}
-			markStoriesRead(storiesToMarkAsRead);
+			FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
+            refreshStories();
 		}
 		return super.onContextItemSelected(item);
-	}
-
-	private void markStoriesRead(final ArrayList<Story> storiesToMarkRead) {
-		ArrayList<String> storyIdsToMarkRead = new ArrayList<String>();
-		for(Story story: storiesToMarkRead) {
-			storyIdsToMarkRead.add(story.id);
-		}
-		new MarkStoryAsReadTask(getActivity(), storyIdsToMarkRead, feedId) {
-
-			@Override
-			protected void onPostExecute(Void result) {
-				ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
-				for(Story story: storiesToMarkRead) {
-					FeedUtils.appendStoryReadOperations(story, operations);
-				}
-				try {
-					contentResolver.applyBatch(FeedProvider.AUTHORITY, operations);
-				} catch (Exception e) {
-					Log.e(TAG, "Failed to update feed read status in local DB for " + storiesToMarkRead.size() + " stories");
-					e.printStackTrace();
-				}
-				refreshStories();
-			}
-			
-		}.execute();
 	}
 
 	@Override

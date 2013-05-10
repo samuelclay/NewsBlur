@@ -127,21 +127,6 @@ public class APIManager {
 		}
 	}
 
-	public boolean markStoryAsRead(final String feedId, final ArrayList<String> storyIds) {
-		final APIClient client = new APIClient(context);
-		final ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		for (String storyId : storyIds) {
-			values.put(APIConstants.PARAMETER_STORYID, storyId);
-		}
-		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values, false);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public boolean markSocialStoryAsRead(final String updateJson) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();

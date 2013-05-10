@@ -1883,8 +1883,8 @@
         mark_feed_as_read: function(feed_id) {
             feed_id = feed_id || this.active_feed;
             
-            this.mark_feed_as_read_update_counts(feed_id);
             this.model.mark_feed_as_read([feed_id]);
+            this.mark_feed_as_read_update_counts(feed_id);
             
             if (feed_id == this.active_feed) {
                 this.model.stories.each(function(story) {
@@ -1897,10 +1897,10 @@
             var folder = folder || this.active_folder;
             var feeds = folder.feed_ids_in_folder();
 
+            this.model.mark_feed_as_read(feeds);
             _.each(feeds, _.bind(function(feed_id) {
                 this.mark_feed_as_read_update_counts(feed_id);
             }, this));
-            this.model.mark_feed_as_read(feeds);
             
             if (folder == this.active_folder) {
                 this.model.stories.each(function(story) {

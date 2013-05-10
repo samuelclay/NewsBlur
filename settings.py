@@ -79,7 +79,7 @@ ALLOWED_HOSTS         = ['*']
 
 PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
 STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
-DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
+DEVELOPMENT = (NEWSBLUR_DIR.find('/Users/') == 0)
 
 # ===========================
 # = Django-specific Modules =
@@ -123,7 +123,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '[%(asctime)-12s] %(message)s', 
+            'format': '[%(asctime)-12s] %(message)s',
             'datefmt': '%b %d %H:%M:%S'
         },
         'simple': {
@@ -197,7 +197,7 @@ ROOT_URLCONF            = 'urls'
 INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
-SOUTH_TESTS_MIGRATE     = False 
+SOUTH_TESTS_MIGRATE     = False
 SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
@@ -254,6 +254,7 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
+    'vendor.haystack',
 )
 
 # ==========
@@ -327,8 +328,8 @@ CELERY_QUEUES = {
 CELERY_DEFAULT_QUEUE = "work_queue"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
-                               "apps.social.tasks", 
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
+                               "apps.social.tasks",
                                "apps.reader.tasks",
                                "apps.feed_import.tasks",
                                "apps.statistics.tasks",)
@@ -402,22 +403,22 @@ MONGO_ANALYTICS_DB = {
 
 class MasterSlaveRouter(object):
     """A router that sets up a simple master/slave configuration"""
-    
+
     def db_for_read(self, model, **hints):
         "Point all read operations to a random slave"
         return 'slave'
-    
+
     def db_for_write(self, model, **hints):
         "Point all write operations to the master"
         return 'default'
-    
+
     def allow_relation(self, obj1, obj2, **hints):
         "Allow any relation between two objects in the db pool"
         db_list = ('slave','default')
         if obj1._state.db in db_list and obj2._state.db in db_list:
             return True
         return None
-    
+
     def allow_syncdb(self, db, model):
         "Explicitly put all models on all databases."
         return True
@@ -478,7 +479,7 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
         'raven.contrib.django',
-         'django_ses', 
+         'django_ses',
 
     )
 
@@ -550,7 +551,6 @@ REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3
 REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 # REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_AUTOCOMPLETE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=7)
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
@@ -560,6 +560,18 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+
+# ============
+# = Haystack =
+# ============
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # =======
 # = AWS =

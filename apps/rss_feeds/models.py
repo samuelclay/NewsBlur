@@ -9,7 +9,6 @@ import zlib
 import hashlib
 import redis
 import pymongo
-from urlparse import urlparse
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -37,7 +36,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
-from vendor.redis_completion.engine import RedisEngine
+from vendor.haystack.query import SearchQuerySet
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -213,8 +212,6 @@ class Feed(models.Model):
                 feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
         
-        self.sync_autocompletion()
-        
         return self
 
     def index_for_search(self):
@@ -229,32 +226,14 @@ class Feed(models.Model):
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
     
-    def sync_autocompletion(self):
-        if self.num_subscribers <= 10 and not settings.DEBUG: return
-        if self.branch_from_feed: return
-        if any(t in self.feed_address for t in ['token', 'private']): return
-
-        parts = urlparse(self.feed_address)
-        if not parts.hostname: return
-        
-        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        engine.store(self.pk, title=self.feed_title)
-        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
-        
-        engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        engine.store(self.pk, title=parts.hostname)
-        engine.boost(self.pk, max(1, self.num_subscribers / 10000.))
-        
     @classmethod
     def autocomplete(self, prefix, limit=5):
-        engine = RedisEngine(prefix="FT", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-        results = engine.search(phrase=prefix, limit=limit, autoboost=True)
+        results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
         
         if len(results) < limit:
-            engine = RedisEngine(prefix="FA", connection_pool=settings.REDIS_AUTOCOMPLETE_POOL)
-            results += engine.search(phrase=prefix, limit=limit-len(results), autoboost=True, filters=[lambda f: f not in results])
-            
-        return results
+            results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
+        
+        return list(set([int(f.pk) for f in results]))
         
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
@@ -306,13 +285,17 @@ class Feed(models.Model):
                 return {'%s' % key: value}
             
         def by_url(address):
-            feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
+            feed = cls.objects.filter(
+                branch_from_feed=None
+            ).filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
             if not feed and aggressive:
-                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
+                feed = cls.objects.filter(
+                    branch_from_feed=None
+                ).filter(**criteria('feed_link', address)).order_by('-num_subscribers')
                 
             return feed
         
@@ -1545,7 +1528,6 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'sparse': True,
                      'types': False, 
                      'drop_dups': True }],
         'index_drop_dups': True,
@@ -1930,6 +1912,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                                                   duplicate_feed.feed_link,
                                                   " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else ""))
 
+    original_feed.branch_from_feed = None
+    
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
@@ -1960,8 +1944,9 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.duplicate_feed_id = duplicate_feed.pk
         dupe_feed.save()
     
-    logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
-                  (duplicate_feed.num_subscribers, original_feed.num_subscribers))
+    logging.debug(' ---> Dupe subscribers (%s): %s, Original subscribers (%s): %s' %
+                  (duplicate_feed.pk, duplicate_feed.num_subscribers, 
+                   original_feed.pk, original_feed.num_subscribers))
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:

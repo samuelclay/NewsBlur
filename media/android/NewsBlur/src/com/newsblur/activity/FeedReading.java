@@ -1,29 +1,20 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Story;
 import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
 
 public class FeedReading extends Reading {
 
-	protected Set<String> storiesToMarkAsRead;
 	String feedId;
 	private Feed feed;
 	private int currentPage;
@@ -42,8 +33,7 @@ public class FeedReading extends Reading {
 		Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		storiesToMarkAsRead = new HashSet<String>();
-		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
@@ -62,19 +52,14 @@ public class FeedReading extends Reading {
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 		}
 
-		updateReadStories(readingAdapter.getStory(passedPosition));
-	}
-
-	private void updateReadStories(Story story) {
-		storiesToMarkAsRead.add(story.id);
-		addStoryToMarkAsRead(story);
+		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
 
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
 		if (readingAdapter.getStory(position) != null) {
-			updateReadStories(readingAdapter.getStory(position));
+			addStoryToMarkAsRead(readingAdapter.getStory(position));
 			checkStoryCount(position);
 		}
 	}
@@ -95,14 +80,6 @@ public class FeedReading extends Reading {
 			currentPage += 1;
 			triggerRefresh(currentPage);
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		ArrayList<String> storyIds = new ArrayList<String>();
-		storyIds.addAll(storiesToMarkAsRead);
-		new MarkStoryAsReadTask(this, syncFragment, storyIds, feedId).execute();
-		super.onDestroy();
 	}
 
 	@Override
