@@ -8173,12 +8173,12 @@ form.opml_import_form input {
     margin: 8px 0;
     display: block;
 }
-.NB-modal-account .NB-account-payments {
+.NB-account-payments {
     margin: 0;
     padding: 0;
     list-style: none;
 }
-.NB-modal-account .NB-account-payments .NB-account-payment {
+.NB-account-payments .NB-account-payment {
     clear: both;
     overflow: hidden;
     list-style: none;
@@ -8186,25 +8186,25 @@ form.opml_import_form input {
     padding: 0 0 12px;
     border-bottom: 1px solid #E0E0E0;
 }
-.NB-modal-account .NB-account-payments li:last-child {
+.NB-account-payments li:last-child {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
-.NB-modal-account .NB-account-payments .NB-payments-loading {
+.NB-account-payments .NB-payments-loading {
     padding: 0 0 0 20px;
     background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat left 3px;
 }
-.NB-modal-account .NB-account-payments .NB-account-payment-date {
+.NB-account-payments .NB-account-payment-date {
     float: left;
     width: 140px;
     font-weight: bold;
 }
-.NB-modal-account .NB-account-payments .NB-account-payment-amount {
+.NB-account-payments .NB-account-payment-amount {
     float: left;
     width: 100px;
 }
-.NB-modal-account .NB-account-payments .NB-account-payment-provider {
+.NB-account-payments .NB-account-payment-provider {
     float: left;
     width: 100px;
 }
