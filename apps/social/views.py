@@ -351,7 +351,6 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                  offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
-                                                 everything_unread=True,
                                                  cache=request.user.is_authenticated())
         if len(story_ids) > limit:
             has_next_page = True
