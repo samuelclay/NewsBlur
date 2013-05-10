@@ -301,7 +301,7 @@ def refund_premium(request):
     try:
         refunded = user.profile.refund_premium()
     except stripe.InvalidRequestError, e:
-        refunded = e
+        refunded = e.msg
 
     return {'code': 1 if refunded else -1, 'refunded': refunded}
 
