@@ -17,7 +17,8 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from apps.reader.models import UserSubscription, MUserStory
+from django.core.cache import cache
+from apps.reader.models import UserSubscription, MUserStory, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
@@ -852,7 +853,7 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, everything_unread=False):
+                    withscores=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -862,14 +863,15 @@ class MSocialSubscription(mongo.Document):
 
         if not r.exists(stories_key):
             return []
-        elif everything_unread or read_filter != 'unread' or not r.exists(read_stories_key):
+        elif read_filter != 'unread' or not r.exists(read_stories_key):
             ignore_user_stories = True
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
 
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
-        unread_ranked_stories_key   = 'zUB:%s:%s' % (self.user_id, self.subscription_user_id)
+        unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('h' if hashes_only else '', 
+                                                       self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
@@ -896,7 +898,7 @@ class MSocialSubscription(mongo.Document):
         return story_ids
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, everything_unread=False, cache=True):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, cache=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not relative_user_id:
@@ -910,31 +912,41 @@ class MSocialSubscription(mongo.Document):
         if not isinstance(social_user_ids, list):
             social_user_ids = [social_user_ids]
 
-        unread_ranked_stories_keys  = 'zU:%s:social' % (user_id)
-        if offset and r.exists(unread_ranked_stories_keys) and cache:
-            story_hashes = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
+        ranked_stories_keys  = 'zU:%s:social' % (user_id)
+        read_ranked_stories_keys  = 'zhU:%s:social' % (user_id)
+        if (offset and cache and 
+            r.exists(ranked_stories_keys) and 
+            r.exists(read_ranked_stories_keys)):
+            story_hashes = range_func(ranked_stories_keys, offset, offset+limit, withscores=True)
+            read_story_hashes = range_func(read_ranked_stories_keys, 0, -1)
             if story_hashes:
-                return zip(*story_hashes)
+                story_hashes, story_dates = zip(*story_hashes)
+                return story_hashes, story_dates, read_story_hashes
             else:
-                return [], []
+                return [], [], []
         else:
-            r.delete(unread_ranked_stories_keys)
-
+            r.delete(ranked_stories_keys)
+            r.delete(read_ranked_stories_keys)
+        
         for social_user_id in social_user_ids:
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_hashes = us.get_stories(offset=0, limit=100,
                                           order=order, read_filter=read_filter, 
-                                          withscores=True, everything_unread=everything_unread)
+                                          withscores=True)
             if story_hashes:
-                r.zadd(unread_ranked_stories_keys, **dict(story_hashes))
-            
-        story_hashes = range_func(unread_ranked_stories_keys, offset, offset+limit, withscores=True)
-        r.expire(unread_ranked_stories_keys, 24*60*60)
+                r.zadd(ranked_stories_keys, **dict(story_hashes))
         
+        r.zinterstore(read_ranked_stories_keys, [ranked_stories_keys, "RS:%s" % user_id])
+        story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
+        read_story_hashes = range_func(read_ranked_stories_keys, offset, limit)
+        r.expire(ranked_stories_keys, 24*60*60)
+        r.expire(read_ranked_stories_keys, 24*60*60)
+
         if story_hashes:
-            return zip(*story_hashes)
+            story_hashes, story_dates = zip(*story_hashes)
+            return story_hashes, story_dates, read_story_hashes
         else:
-            return [], []
+            return [], [], []
         
     def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_ids)
@@ -967,6 +979,7 @@ class MSocialSubscription(mongo.Document):
             date = now if now > story.story_date else story.story_date # For handling future stories
             feed_id = story.story_feed_id
             try:
+                RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
                 m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
                                                         feed_id=feed_id, 
                                                         story_id=story.story_guid,
@@ -1029,6 +1042,7 @@ class MSocialSubscription(mongo.Document):
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             try:
+                RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
                 m, _ = MUserStory.objects.get_or_create(user_id=user_id, 
                                                         feed_id=story.story_feed_id, 
                                                         story_id=story.story_guid,
@@ -1104,8 +1118,9 @@ class MSocialSubscription(mongo.Document):
         else:
             self.mark_read_date = date_delta
 
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
-                                          shared_date__gte=date_delta)
+                                          story_hash__in=unread_story_hashes)
         story_feed_ids = set()
         story_ids = []
         for s in stories_db:
@@ -1115,21 +1130,12 @@ class MSocialSubscription(mongo.Document):
 
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
         usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
-
-        # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
-        # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
-        read_stories_ids = []
-        if story_feed_ids:
-            read_stories = MUserStory.objects(user_id=self.user_id,
-                                              feed_id__in=story_feed_ids,
-                                              story_id__in=story_ids).only('story_id')
-            read_stories_ids = list(set(rs.story_id for rs in read_stories))
-
+        
         oldest_unread_story_date = now
         unread_stories_db = []
 
         for story in stories_db:
-            if getattr(story, 'story_guid', None) in read_stories_ids:
+            if story['story_hash'] not in unread_story_hashes:
                 continue
             feed_id = story.story_feed_id
             if usersubs_map.get(feed_id) and story.shared_date < usersubs_map[feed_id].mark_read_date:
