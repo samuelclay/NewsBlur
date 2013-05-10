@@ -283,7 +283,8 @@ def load_river_blurblog(request):
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
-            if story['shared_date'] < UNREAD_CUTOFF or story['story_hash'] in read_feed_story_hashes:
+            if (shared_stories[story['story_hash']]['shared_date'] < UNREAD_CUTOFF or 
+                story['story_hash'] in read_feed_story_hashes):
                 story['read_status'] = 1
 
 
@@ -347,7 +348,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     elif global_feed:
         socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
         social_user_ids = [s.subscription_user_id for s in socialsubs]
-        story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+        story_ids, story_dates, _ = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
                                                  offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
