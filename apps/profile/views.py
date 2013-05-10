@@ -298,7 +298,10 @@ def cancel_premium(request):
 def refund_premium(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    refunded = user.profile.refund_premium()
+    try:
+        refunded = user.profile.refund_premium()
+    except stripe.InvalidRequestError, e:
+        refunded = e
 
     return {'code': 1 if refunded else -1, 'refunded': refunded}
 
