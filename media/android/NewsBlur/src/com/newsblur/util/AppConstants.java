@@ -19,4 +19,7 @@ public class AppConstants {
     public static final String ROOT_FOLDER = "0000_TOP_LEVEL_";
 
     public static final String LAST_APP_VERSION = "LAST_APP_VERSION";
+
+    // the max number of mark-as-read ops to batch up before flushing to the server
+    public static final int MAX_MARK_READ_BATCH = 5;
 }
