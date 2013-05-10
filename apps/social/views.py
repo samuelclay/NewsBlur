@@ -21,7 +21,7 @@ from apps.social.tasks import UpdateRecalcForSubscription, EmailFirstShare
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.reader.models import MUserStory, UserSubscription
+from apps.reader.models import UserSubscription
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
@@ -97,53 +97,43 @@ def load_social_stories(request, user_id, username=None):
     classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
-    story_ids = [story['id'] for story in stories]
-    userstories_db = MUserStory.objects(user_id=user.pk,
-                                        feed_id__in=story_feed_ids,
-                                        story_id__in=story_ids).only('story_id')
-    userstories = set(us.story_id for us in userstories_db)
+    unread_story_hashes = []
+    if read_filter == 'all' and socialsub:
+        unread_story_hashes = socialsub.get_stories(read_filter='unread', limit=500)
+    story_hashes = [story['story_hash'] for story in stories]
 
     starred_stories = MStarredStory.objects(user_id=user.pk, 
-                                            story_guid__in=story_ids).only('story_guid', 'starred_date')
+                                            story_hash__in=story_hashes)\
+                                   .only('story_hash', 'starred_date')
     shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                          story_guid__in=story_ids)\
-                                 .only('story_guid', 'shared_date', 'comments')
-    starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
-    shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                                          story_hash__in=story_hashes)\
+                                 .only('story_hash', 'shared_date', 'comments')
+    starred_stories = dict([(story.story_hash, story.starred_date) for story in starred_stories])
+    shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
+                                                   comments=story.comments))
                            for story in shared_stories])
     
     for story in stories:
         story['social_user_id'] = social_user_id
-        story_feed_id = story['story_feed_id']
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
         
-        if not socialsub:
-            story['read_status'] = 1
-        elif story['id'] in userstories:
-            story['read_status'] = 1
-        elif story['shared_date'] < date_delta:
-            story['read_status'] = 1
-        elif not usersubs_map.get(story_feed_id):
+        story['read_status'] = 1
+        if read_filter == 'unread' and socialsub:
             story['read_status'] = 0
-        elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
-            story['read_status'] = 1
-        elif not story.get('read_status') and story['shared_date'] < date_delta:
-            story['read_status'] = 1
-        # elif not story.get('read_status') and socialsub and story['shared_date'] > socialsub.last_read_date:
-        #     story['read_status'] = 0
-        else:
-            story['read_status'] = 0
+        elif read_filter == 'all' and socialsub:
+            story['read_status'] = story['story_hash'] not in unread_story_hashes
 
-        if story['id'] in starred_stories:
+        if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+                                                  user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
-        if story['id'] in shared_stories:
+        if story['story_hash'] in shared_stories:
             story['shared'] = True
-            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
+            story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
 
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
@@ -188,7 +178,7 @@ def load_river_blurblog(request):
     global_feed       = request.REQUEST.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    
+
     if global_feed:
         global_user = User.objects.get(username='popular')
         relative_user_id = global_user.pk
@@ -203,11 +193,11 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_hashes, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
-                                                 offset=offset, limit=limit,
-                                                 order=order, read_filter=read_filter,
-                                                 relative_user_id=relative_user_id,
-                                                 everything_unread=global_feed)
+    story_hashes, story_dates, read_feed_story_hashes = MSocialSubscription.feed_stories(
+                                                            user.pk, social_user_ids, 
+                                                            offset=offset, limit=limit,
+                                                            order=order, read_filter=read_filter,
+                                                            relative_user_id=relative_user_id)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(zip(story_hashes, story_dates))
     def sort_stories_by_hash(a, b):
@@ -232,30 +222,23 @@ def load_river_blurblog(request):
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
     
-    # Find starred stories
     if story_feed_ids:
-        story_ids = [story['id'] for story in stories]
+        story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
-            story_guid__in=story_ids
-        ).only('story_guid', 'starred_date')
-        starred_stories = dict([(story.story_guid, story.starred_date) 
+            story_hash__in=story_hashes
+        ).only('story_hash', 'starred_date')
+        starred_stories = dict([(story.story_hash, story.starred_date) 
                                 for story in starred_stories])
         shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                              story_guid__in=story_ids)\
-                                     .only('story_guid', 'shared_date', 'comments')
-        shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
-                           for story in shared_stories])
-
-        userstories_db = MUserStory.objects(user_id=user.pk,
-                                            feed_id__in=story_feed_ids,
-                                            story_id__in=story_ids).only('story_id')
-        userstories = set(us.story_id for us in userstories_db)
-  
+                                              story_hash__in=story_hashes)\
+                                     .only('story_hash', 'shared_date', 'comments')
+        shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
+                                                       comments=story.comments))
+                           for story in shared_stories])  
     else:
         starred_stories = {}
         shared_stories = {}
-        userstories = []
     
     # Intelligence classifiers for all feeds involved
     if story_feed_ids:
@@ -277,18 +260,15 @@ def load_river_blurblog(request):
     
     # Just need to format stories
     for story in stories:
-        if story['id'] in userstories:
+        story['read_status'] = 0
+        if story['story_hash'] in read_feed_story_hashes:
             story['read_status'] = 1
-        elif story['story_date'] < UNREAD_CUTOFF:
-            story['read_status'] = 1
-        else:
-            story['read_status'] = 0
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
-        if story['id'] in starred_stories:
+        if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
@@ -297,12 +277,15 @@ def load_river_blurblog(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
-        if story['id'] in shared_stories:
+        if story['story_hash'] in shared_stories:
             story['shared'] = True
-            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
+            shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
-            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
+            story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
+            if story['shared_date'] < UNREAD_CUTOFF or story['story_hash'] in read_feed_story_hashes:
+                story['read_status'] = 1
+
 
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
                                            classifier_feeds=classifier_feeds,
@@ -393,7 +376,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
                 story['shared_by_user'] = True
                 shared_story = MSharedStory.objects.get(user_id=user.pk, 
                                                         story_feed_id=story['story_feed_id'],
-                                                        story_guid=story['id'])
+                                                        story_hash=story['story_hash'])
                 story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
@@ -502,10 +485,11 @@ def mark_story_as_shared(request):
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
-                                               story_guid=story_id).limit(1).first()
+                                               story_hash=story['story_hash']).limit(1).first()
     if not shared_story:
         story_db = {
             "story_guid": story.story_guid,
+            "story_hash": story.story_hash,
             "story_permalink": story.story_permalink,
             "story_title": story.story_title,
             "story_feed_id": story.story_feed_id,
@@ -517,7 +501,6 @@ def mark_story_as_shared(request):
             "user_id": request.user.pk,
             "comments": comments,
             "has_comments": bool(comments),
-            "story_db_id": story.id,
         }
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
@@ -583,7 +566,7 @@ def mark_story_as_unshared(request):
     
     shared_story = MSharedStory.objects(user_id=request.user.pk, 
                                         story_feed_id=feed_id, 
-                                        story_guid=story_id).limit(1).first()
+                                        story_hash=story['story_hash']).limit(1).first()
     if not shared_story:
         return json.json_response(request, {'code': -1, 'message': 'Shared story not found.'})
     
