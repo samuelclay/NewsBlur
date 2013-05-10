@@ -80,12 +80,6 @@ public class LoginProgressFragment extends Fragment {
 		protected LoginResponse doInBackground(String... params) {
 			LoginResponse response = apiManager.login(username, password);
 			apiManager.updateUserProfile();
-			try {
-				// TODO: get rid of this and use proper UI transactions
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Log.e(this.getClass().getName(), "Error sleeping during login.");
-			}
 			return response;
 		}
 
