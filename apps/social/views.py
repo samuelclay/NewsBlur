@@ -124,7 +124,7 @@ def load_social_stories(request, user_id, username=None):
         if read_filter == 'unread' and socialsub:
             story['read_status'] = 0
         elif read_filter == 'all' and socialsub:
-            story['read_status'] = story['story_hash'] not in unread_story_hashes
+            story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
 
         if story['story_hash'] in starred_stories:
             story['starred'] = True

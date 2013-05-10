@@ -569,7 +569,7 @@ def load_single_feed(request, feed_id):
             if read_filter == 'unread' and usersub:
                 story['read_status'] = 0
             elif read_filter == 'all' and usersub:
-                story['read_status'] = story['story_hash'] not in unread_story_hashes
+                story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
             if story['story_hash'] in starred_stories:
                 story['starred'] = True
                 starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
