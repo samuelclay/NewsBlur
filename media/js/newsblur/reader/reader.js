@@ -2242,7 +2242,9 @@
         },
         
         open_user_admin_modal: function(options) {
-            NEWSBLUR.user_admin = new NEWSBLUR.ReaderUserAdmin(options);
+            $.modal.close(function() {
+                NEWSBLUR.user_admin = new NEWSBLUR.ReaderUserAdmin(options);
+            });
         },
         
         check_hide_getting_started: function(force) {

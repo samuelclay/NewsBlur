@@ -6381,6 +6381,7 @@ form.opml_import_form input {
 .NB-modal-admin .NB-profile-badge {
     border-bottom: none;
 }
+.NB-modal-admin .NB-account-payments,
 .NB-modal-admin .NB-admin-actions {
     overflow: hidden;
     padding: 12px 24px;
