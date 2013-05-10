@@ -1414,8 +1414,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this), null, {request_type: 'GET'});
     },
     
-    fetch_payment_history: function(callback) {
-        this.make_request('/profile/payment_history', {}, callback, null, {request_type: 'GET'});
+    fetch_payment_history: function(user_id, callback) {
+        this.make_request('/profile/payment_history', {
+            user_id: user_id
+        }, callback, null, {request_type: 'GET'});
+    },
+    
+    upgrade_premium: function(user_id, callback, error_callback) {
+        this.make_request('/profile/upgrade_premium', {
+            user_id: user_id
+        }, callback, error_callback);
+    },
+    
+    refund_premium: function(user_id, callback, error_callback) {
+        this.make_request('/profile/refund_premium', {
+            user_id: user_id
+        }, callback, error_callback);
     },
     
     follow_twitter_account: function(username, callback) {

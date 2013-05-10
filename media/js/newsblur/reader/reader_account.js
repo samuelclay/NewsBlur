@@ -300,7 +300,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
     
     fetch_payment_history: function() {
-        this.model.fetch_payment_history(_.bind(function(data) {
+        this.model.fetch_payment_history(NEWSBLUR.Globals.user_id, _.bind(function(data) {
             var $history = $('.NB-account-payments', this.$modal).empty();
             _.each(data.payments, function(payment) {
                 $history.append($.make('li', { className: 'NB-account-payment' }, [

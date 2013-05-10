@@ -6,6 +6,7 @@ from django.contrib.auth import logout as logout_user
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -271,9 +272,18 @@ def load_activities(request):
 @ajax_login_required
 @json.json_view
 def payment_history(request):
-    history = PaymentHistory.objects.filter(user=request.user)
+    user = request.user
+    if request.user.is_staff:
+        user_id = request.REQUEST.get('user_id', request.user.pk)
+        user = User.objects.get(pk=user_id)
 
-    return {'payments': history}
+    history = PaymentHistory.objects.filter(user=user)
+
+    return {
+        'is_premium': user.profile.is_premium,
+        'premium_expire': user.profile.premium_expire,
+        'payments': history
+    }
 
 @ajax_login_required
 @json.json_view
@@ -281,6 +291,26 @@ def cancel_premium(request):
     canceled = request.user.profile.cancel_premium()
     
     return {'code': 1 if canceled else -1}
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def refund_premium(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    refunded = user.profile.refund_premium()
+
+    return {'code': 1 if refunded else -1, 'refunded': refunded}
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def upgrade_premium(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    upgraded = user.profile.activate_premium()
+    
+    return {'code': 1 if upgraded else -1}
     
 @login_required
 @render_to('profile/delete_account.xhtml')

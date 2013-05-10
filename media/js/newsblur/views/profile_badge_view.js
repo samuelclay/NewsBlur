@@ -10,6 +10,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         "click .NB-profile-badge-action-ignore": "ignore_user",
         "click .NB-profile-badge-username": "open_profile",
         "click .NB-profile-badge-action-edit": "open_edit_profile",
+        "click .NB-profile-badge-action-admin": "open_user_admin",
         "mouseenter .NB-profile-badge-action-unfollow": "mouseenter_unfollow",
         "mouseleave .NB-profile-badge-action-unfollow": "mouseleave_unfollow",
         "mouseenter .NB-profile-badge-action-follow": "mouseenter_follow",
@@ -60,6 +61,10 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                         (this.model.get('following_you') && $.make('span', [
                             ' &middot; ',
                             $.make('div', { className: 'NB-profile-badge-following-you' }, 'Follows you')
+                        ])),
+                        (NEWSBLUR.Globals.is_admin && $.make('span', [
+                            ' &middot; ',
+                            $.make('span', { className: 'NB-profile-badge-action-admin' })
                         ]))
                     ]))
                 ])
@@ -249,6 +254,10 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     mouseleave_follow: function() {
         this.$('.NB-profile-badge-action-follow span').text('Follow').removeClass('NB-active');
+    },
+    
+    open_user_admin: function() {
+        NEWSBLUR.reader.open_user_admin_modal({user: this.model});
     }
     
 });

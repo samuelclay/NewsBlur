@@ -2241,6 +2241,10 @@
             NEWSBLUR.intro = new NEWSBLUR.ReaderIntro(options);
         },
         
+        open_user_admin_modal: function(options) {
+            NEWSBLUR.user_admin = new NEWSBLUR.ReaderUserAdmin(options);
+        },
+        
         check_hide_getting_started: function(force) {
             var feeds = this.model.preference('has_setup_feeds');
             var friends = this.model.preference('has_found_friends');

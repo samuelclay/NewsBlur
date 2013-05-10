@@ -6366,6 +6366,28 @@ form.opml_import_form input {
   padding: 0 1px;
 }
 
+/* ==================== */
+/* = User Admin Modal = */
+/* ==================== */
+
+.NB-modal-admin .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_admin.png');
+    background-size: 28px;
+}
+.NB-modal-admin .NB-profile-badge-actions,
+.NB-modal-admin .NB-profile-badge-action-admin {
+    display: none;
+}
+.NB-modal-admin .NB-profile-badge {
+    border-bottom: none;
+}
+.NB-modal-admin .NB-admin-actions {
+    overflow: hidden;
+    padding: 12px 24px;
+}
+.NB-modal-admin .NB-modal-submit-button {
+    float: left;
+}
 
 /* ===================== */
 /* = Email Story Modal = */
@@ -9415,6 +9437,15 @@ form.opml_import_form input {
 .NB-profile-badge-actions .NB-profile-badge-action-buttons img {
   width: 16px;
   height: 16px;
+}
+.NB-profile-badge-action-admin {
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: bottom;
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/g_icn_hands.png');
+    background-size: 16px;
 }
 .NB-profile-badge-info .NB-profile-badge-actions .NB-loading {
     margin: 6px 12px 0 0;

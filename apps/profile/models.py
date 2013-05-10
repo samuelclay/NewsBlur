@@ -141,10 +141,13 @@ class Profile(models.Model):
             sub.active = True
             try:
                 sub.save()
-            except IntegrityError, Feed.DoesNotExist:
+            except (IntegrityError, Feed.DoesNotExist):
                 pass
         
-        scheduled_feeds = [sub.feed.pk for sub in subs]
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
         logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
@@ -153,6 +156,8 @@ class Profile(models.Model):
         self.setup_premium_history()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+        
+        return True
     
     def deactivate_premium(self):
         self.is_premium = False
@@ -164,7 +169,7 @@ class Profile(models.Model):
             try:
                 sub.save()
                 sub.feed.setup_feed_for_premium_subscribers()
-            except IntegrityError, Feed.DoesNotExist:
+            except (IntegrityError, Feed.DoesNotExist):
                 pass
         
         logging.user(self.user, "~BY~FW~SBBOO! Deactivating premium account: ~FR%s subscriptions~SN!" % (subs.count()))
@@ -222,13 +227,18 @@ class Profile(models.Model):
             self.save()
 
     def refund_premium(self):
+        refunded = False
+        
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
             stripe_payments[0].refund()
-            logging.user(self.user, "~FRRefunding stripe payment: $%s" % (stripe_payments[0].amount/1000))
+            logging.user(self.user, "~FRRefunding stripe payment: $%s" % (stripe_payments[0].amount/100))
             self.cancel_premium()
+            refunded = stripe_payments[0].amount/100
+        
+        return refunded
             
     def cancel_premium(self):
         self.cancel_premium_paypal()
