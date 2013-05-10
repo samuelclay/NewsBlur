@@ -498,9 +498,6 @@ def load_single_feed(request, feed_id):
     except UserSubscription.DoesNotExist:
         usersub = None
     
-    if usersub and random.random() < 0.01:
-        usersub.sync_redis()
-    
     if query:
         stories = feed.find_stories(query, offset=offset, limit=limit)
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
