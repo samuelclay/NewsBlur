@@ -27,7 +27,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, RUserStory, Feature
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
@@ -1002,15 +1002,8 @@ def mark_story_as_unread(request):
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
 
-    try:
-        m = MUserStory.objects.get(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
-        m.delete()
-    except MUserStory.DoesNotExist:
-        if usersub and story.story_date > usersub.mark_read_date:
-            logging.user(request, "~SB~FRCouldn't find read story to mark as unread.")
-        else:
-            data['code'] = -1
-    RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id, story_hash=story.story_hash)
+    RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id,
+                           story_hash=story.story_hash)
     
     r = redis.Redis(connection_pool=settings.REDIS_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)

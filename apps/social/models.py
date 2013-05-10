@@ -19,7 +19,7 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
-from apps.reader.models import UserSubscription, MUserStory, RUserStory
+from apps.reader.models import UserSubscription, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
@@ -915,22 +915,7 @@ class MSocialSubscription(mongo.Document):
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             feed_id = story.story_feed_id
-            try:
-                RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
-                m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
-                                                        feed_id=feed_id, 
-                                                        story_id=story.story_guid,
-                                                        defaults={
-                                                            "read_date": date,
-                                                            "story_date": story.shared_date,
-                                                        })
-            except NotUniqueError:
-                if not mark_all_read or settings.DEBUG:
-                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
-                continue
-            except MUserStory.MultipleObjectsReturned:
-                if not mark_all_read or settings.DEBUG:
-                    logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
+            RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
@@ -978,17 +963,7 @@ class MSocialSubscription(mongo.Document):
                 continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            try:
-                RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
-                m, _ = MUserStory.objects.get_or_create(user_id=user_id, 
-                                                        feed_id=story.story_feed_id, 
-                                                        story_id=story.story_guid,
-                                                        defaults={
-                                                            "read_date": date,
-                                                            "story_date": story.shared_date,
-                                                        })
-            except MUserStory.MultipleObjectsReturned:
-                logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
+            RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
             
             # Also count on original subscription
             usersubs = UserSubscription.objects.filter(user=user_id, feed=story.story_feed_id)
@@ -1026,11 +1001,6 @@ class MSocialSubscription(mongo.Document):
         story_ids = [s.story_guid for s in stories]
         self.mark_story_ids_as_read(story_ids, mark_all_read=True)
         
-        # Cannot delete these stories, since the original feed may not be read. 
-        # Just go 2 weeks back.
-        # UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        # MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id, mark_read_date=UNREAD_CUTOFF)
-                
         self.save()
     
     def calculate_feed_scores(self, force=False, silent=False):
