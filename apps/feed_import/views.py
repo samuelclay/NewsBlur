@@ -3,6 +3,7 @@ import pickle
 import base64
 from utils import log as logging
 from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
+from bson.errors import InvalidStringData
 import uuid
 from django.contrib.sites.models import Site
 # from django.db import IntegrityError
@@ -36,7 +37,7 @@ def opml_upload(request):
             xml_opml = file.read()
             try:
                 uploaded_opml = UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
-            except UnicodeDecodeError:
+            except (UnicodeDecodeError, InvalidStringData):
                 uploaded_opml = None
                 folders = None
                 code = -1
