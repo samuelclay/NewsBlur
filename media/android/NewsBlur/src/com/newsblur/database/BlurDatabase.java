@@ -10,7 +10,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	private final String TEXT = " text";
 	private final String INTEGER = " integer";
-	private final static String TAG = "DatabaseHelper";
 	public final static String DB_NAME = "blur.db";
 	private final static int VERSION = 1;
 
@@ -105,7 +104,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_FRIEND_USER_IDS + TEXT + ", " +
 		DatabaseConstants.STORY_TAGS + TEXT + ", " +
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
-		DatabaseConstants.STORY_READ + TEXT + ", " +
+		DatabaseConstants.STORY_READ + INTEGER + ", " +
 		DatabaseConstants.STORY_TITLE + TEXT + 
 		")";
 

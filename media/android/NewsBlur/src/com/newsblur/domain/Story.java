@@ -18,9 +18,6 @@ public class Story implements Serializable {
 
 	private static final long serialVersionUID = 7629596752129163308L;
 
-	public static final int UNREAD = 0;
-	public static final int READ = 1;
-	
 	public String id;
 
 	@SerializedName("story_permalink")
@@ -42,7 +39,7 @@ public class Story implements Serializable {
 	public int commentCount;
 
 	@SerializedName("read_status")
-	public int read;
+	public boolean read;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -135,7 +132,7 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
+		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ)) > 0;
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
