@@ -60,8 +60,7 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
 
-		// 1 is read
-		if (Story.fromCursor(cursor).read == Story.UNREAD) {
+		if (! Story.fromCursor(cursor).read) {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			
