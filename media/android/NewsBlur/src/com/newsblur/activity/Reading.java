@@ -200,7 +200,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
     protected void addStoryToMarkAsRead(Story story) {
         if (story == null) return;
-        if (story.read != Story.UNREAD) return;
+        if (story.read) return;
         synchronized (this.storiesToMarkAsRead) {
             this.storiesToMarkAsRead.add(story);
         }
