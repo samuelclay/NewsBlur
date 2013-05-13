@@ -9,7 +9,7 @@
             <div class="NB-story-header-wrapper">
                 <div class="NB-story-header">
                     <h2 class="NB-story-title">
-                        <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title }}</a> 
+                        <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title|safe }}</a> 
                         {% if story.story_authors %}
                             <span class="NB-story-author">by {{ story.story_authors }}</span>
                         {% endif %}
