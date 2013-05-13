@@ -341,11 +341,6 @@ class UserSubscription(models.Model):
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
         for story_id in set(story_ids):
-            story, _ = MStory.find_story(story_feed_id=self.feed_id, story_id=story_id)
-            if not story: continue
-            now = datetime.datetime.utcnow()
-            # For handling future stories
-            date = now if now > story.story_date else story.story_date
             RUserStory.mark_read(self.user_id, self.feed_id, story_id)
             
         return data
