@@ -111,7 +111,6 @@ class UserSubscription(models.Model):
             else:
                 r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
             sorted_stories_key          = 'zF:%s' % (self.feed_id)
-            unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
             r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)

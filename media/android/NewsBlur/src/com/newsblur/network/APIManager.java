@@ -44,27 +44,24 @@ import com.newsblur.network.domain.Message;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.util.PrefsUtils;
 
 public class APIManager {
 
 	private Context context;
-	private static Gson gson;
+	private Gson gson;
 	private ContentResolver contentResolver;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		contentResolver = context.getContentResolver();
-		initGsonIfNeededBuilder();
-	}
-
-	private static synchronized void initGsonIfNeededBuilder() {
-		if(gson == null) {
-			final GsonBuilder builder = new GsonBuilder();
-			builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
-			gson = builder.create();
-		}
+		this.contentResolver = context.getContentResolver();
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
+                .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
+                .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
+                .create();
 	}
 
 	public LoginResponse login(final String username, final String password) {
