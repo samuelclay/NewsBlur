@@ -323,6 +323,8 @@ class UserSubscription(models.Model):
         
         self.save()
         
+        return True
+        
     def mark_story_ids_as_read(self, story_ids, request=None):
         data = dict(code=0, payload=story_ids)
         
