@@ -1,3 +1,4 @@
+import time
 import datetime
 import stripe
 import hashlib
@@ -679,3 +680,39 @@ class PaymentHistory(models.Model):
                                           count=Count('user'))
             print "%s months ago: avg=$%s sum=$%s users=%s" % (
                 m, payments['avg'], payments['sum'], payments['count'])
+
+class RNewUserQueue:
+    
+    KEY = "new_user_queue"
+    
+    @classmethod
+    def add_user(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        now = time.time()
+        
+        r.zadd(cls.KEY, user_id, now)
+    
+    @classmethod
+    def user_count(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        count = r.zcard(cls.KEY)
+
+        return count
+    
+    @classmethod
+    def user_position(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        count = r.zrank(cls.KEY, user_id)
+
+        return count
+    
+    @classmethod
+    def pop_user(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        if cls.user_count() == 0:
+            return
+        
+        user = r.zrange(cls.KEY, 0, 1)
+        r.zrem(cls.KEY, user)
+        return user
+    
