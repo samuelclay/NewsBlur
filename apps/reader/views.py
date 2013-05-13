@@ -1061,7 +1061,7 @@ def mark_feed_as_read(request):
         
         try:
             sub.mark_feed_read()
-            r.publish(request.user.username, 'feed:%s' % feed_id)
+            # r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError:
             code = -1
             
