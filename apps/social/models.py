@@ -1054,13 +1054,13 @@ class MSocialSubscription(mongo.Document):
         self.unread_count_neutral = 0
         self.unread_count_updated = datetime.datetime.utcnow()
         self.oldest_unread_story_date = latest_story_date
-        self.needs_unread_recalc = False
         
         # Manually mark all shared stories as read.
         stories = MSharedStory.objects.filter(user_id=self.subscription_user_id,
                                               shared_date__gte=UNREAD_CUTOFF).only('story_guid')
         story_ids = [s.story_guid for s in stories]
         self.mark_story_ids_as_read(story_ids, mark_all_read=True)
+        self.needs_unread_recalc = False
         
         self.save()
     
