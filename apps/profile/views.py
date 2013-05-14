@@ -249,8 +249,8 @@ def stripe_form(request):
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
     new_user_queue_behind = 0
     if new_user_queue_position >= 0:
-        new_user_queue_position -= 1
         new_user_queue_behind = new_user_queue_count - new_user_queue_position 
+        new_user_queue_position -= 1
     
     logging.user(request, "~BM~FBLoading Stripe form")
 
