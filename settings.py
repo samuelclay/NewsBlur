@@ -377,6 +377,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=24),
         'options': {'queue': 'beat_tasks'},
     },
+    'activate-next-new-user': {
+        'task': 'activate-next-new-user',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # =========

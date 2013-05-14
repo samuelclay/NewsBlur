@@ -12,7 +12,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, PaymentHistory
+from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
@@ -245,6 +245,13 @@ def stripe_form(request):
         return render_to_response('reader/paypal_return.xhtml', 
                                   {}, context_instance=RequestContext(request))
     
+    new_user_queue_count = RNewUserQueue.user_count()
+    new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
+    new_user_queue_behind = 0
+    if new_user_queue_position >= 0:
+        new_user_queue_position -= 1
+        new_user_queue_behind = new_user_queue_count - new_user_queue_position 
+    
     logging.user(request, "~BM~FBLoading Stripe form")
 
     return render_to_response('profile/stripe_form.xhtml',
@@ -252,6 +259,9 @@ def stripe_form(request):
           'zebra_form': zebra_form,
           'publishable': settings.STRIPE_PUBLISHABLE,
           'success_updating': success_updating,
+          'new_user_queue_count': new_user_queue_count - 1,
+          'new_user_queue_position': new_user_queue_position,
+          'new_user_queue_behind': new_user_queue_behind,
         },
         context_instance=RequestContext(request)
     )

@@ -7,7 +7,7 @@ from django.db.models import Q
 from apps.reader.models import Feature
 from apps.profile.tasks import EmailNewUser
 from apps.social.models import MActivity
-from apps.profile.models import blank_authenticate
+from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
 
 class LoginForm(forms.Form):
@@ -52,8 +52,6 @@ class LoginForm(forms.Form):
             if self.user_cache is None:
                 logging.info(" ***> [%s] Bad Login" % username)
                 raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
-            if not self.user_cache.is_active:
-                raise forms.ValidationError(_("This account is inactive."))
         elif username and not user:
             raise forms.ValidationError(_("That username is not registered. Please try again."))
             
@@ -79,8 +77,8 @@ class SignupForm(forms.Form):
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
                              label=_(u'email address'),
-                             required=False)  
-                             # error_messages={'required': 'Please enter your email.'})
+                             required=True,
+                             error_messages={'required': 'Please enter an email.'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
                                label=_(u'password'),
                                required=False)
@@ -96,8 +94,6 @@ class SignupForm(forms.Form):
         return self.cleaned_data['password']
             
     def clean_email(self):
-        if not self.cleaned_data['email']:
-            return ""
         return self.cleaned_data['email']
     
     def clean(self):
@@ -138,13 +134,15 @@ class SignupForm(forms.Form):
             
         new_user = User(username=username)
         new_user.set_password(password)
-        new_user.is_active = True
+        new_user.is_active = False
         new_user.email = email
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
         
         MActivity.new_signup(user_id=new_user.pk)
+        
+        RNewUserQueue.add_user(new_user.pk)
         
         if new_user.email:
             EmailNewUser.delay(user_id=new_user.pk)

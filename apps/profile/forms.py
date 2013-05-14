@@ -102,8 +102,8 @@ class AccountSettingsForm(forms.Form):
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
                              label='email address',
-                             required=False)  
-                             # error_messages={'required': 'Please enter your email.'})
+                             required=True,
+                             error_messages={'required': 'Please enter an email.'})
     new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
                                    label='password',
                                    required=False)
@@ -127,8 +127,6 @@ class AccountSettingsForm(forms.Form):
         return self.cleaned_data['password']
             
     def clean_email(self):
-        if not self.cleaned_data['email']:
-            return ""
         return self.cleaned_data['email']
     
     def clean(self):

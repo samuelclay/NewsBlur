@@ -91,6 +91,11 @@ def dashboard(request, **kwargs):
     if start_import_from_google_reader:
         del request.session['import_from_google_reader']
     
+    if not user.is_active:
+        url = "https://%s%s" % (Site.objects.get_current().domain,
+                                 reverse('stripe-form'))
+        return HttpResponseRedirect(url)
+    
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,

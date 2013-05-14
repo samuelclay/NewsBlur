@@ -2,6 +2,7 @@ import time
 import datetime
 import stripe
 import hashlib
+import redis
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
@@ -135,6 +136,8 @@ class Profile(models.Model):
         
         self.is_premium = True
         self.save()
+        self.user.is_active = True
+        self.user.save()
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
@@ -175,6 +178,14 @@ class Profile(models.Model):
         
         logging.user(self.user, "~BY~FW~SBBOO! Deactivating premium account: ~FR%s subscriptions~SN!" % (subs.count()))
     
+    def activate_free(self):
+        if self.user.is_active:
+            return
+        
+        self.user.is_active = True
+        self.user.save()
+        self.send_new_user_queue_email()
+        
     def setup_premium_history(self):
         existing_history = PaymentHistory.objects.filter(user=self.user)
         if existing_history.count():
@@ -391,7 +402,29 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
+    
+    def send_new_user_queue_email(self, force=False):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
         
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='new_user_queue')
+        if not created and not force:
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_new_user_queue.txt', locals())
+        html    = render_to_string('mail/email_new_user_queue.xhtml', locals())
+        subject = "Your free account is now ready to go on NewsBlur"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
+    
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print "Please provide an email address."
@@ -686,6 +719,18 @@ class RNewUserQueue:
     KEY = "new_user_queue"
     
     @classmethod
+    def activate_next(cls):
+        count = cls.user_count()
+        if not count:
+            return
+        
+        user_id = cls.pop_user()
+        user = User.objects.get(pk=user_id)
+        logging.user(user, "~FBActivating free account. %s still in queue." % (count-1))
+
+        user.profile.activate_free()
+        
+    @classmethod
     def add_user(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         now = time.time()
@@ -702,17 +747,15 @@ class RNewUserQueue:
     @classmethod
     def user_position(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        count = r.zrank(cls.KEY, user_id)
-
-        return count
+        position = r.zrank(cls.KEY, user_id)
+        if position >= 0:
+            return position + 1
     
     @classmethod
-    def pop_user(cls, user_id):
+    def pop_user(cls):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        if cls.user_count() == 0:
-            return
-        
-        user = r.zrange(cls.KEY, 0, 1)
+        user = r.zrange(cls.KEY, 0, 0)[0]
         r.zrem(cls.KEY, user)
+
         return user
     
