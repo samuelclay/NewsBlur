@@ -237,16 +237,18 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				commentCursor.moveToNext();
 			}
 
-			for (final String userId : story.sharedUserIds) {
-				if (!commentIds.contains(userId)) {
-					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
-					UserProfile user = UserProfile.fromCursor(userCursor);
-					userCursor.close();
+            for (final String userId : story.sharedUserIds) {
+                if (!commentIds.contains(userId)) {
+                    Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
+                    if (userCursor.getCount() > 0) {
+                        UserProfile user = UserProfile.fromCursor(userCursor);
+                        userCursor.close();
 
-					ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
-					sharedGrid.addView(image);
-				}
-			}
+                        ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+                        sharedGrid.addView(image);
+                    }
+                }
+            }
 
 			commentCursor.moveToFirst();
 
