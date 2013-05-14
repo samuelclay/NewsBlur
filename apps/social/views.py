@@ -370,8 +370,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
             params['story_feed_id'] = feed_id
 
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
-        stories = Feed.format_stories(mstories)
-
+        stories = Feed.format_stories(mstories, include_permalinks=True)
+        
         if len(stories) > limit:
             has_next_page = True
             stories = stories[:-1]

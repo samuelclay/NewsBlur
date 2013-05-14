@@ -1094,17 +1094,17 @@ class Feed(models.Model):
         return stories
         
     @classmethod
-    def format_stories(cls, stories_db, feed_id=None):
+    def format_stories(cls, stories_db, feed_id=None, include_permalinks=False):
         stories = []
 
         for story_db in stories_db:
-            story = cls.format_story(story_db, feed_id)
+            story = cls.format_story(story_db, feed_id, include_permalinks=include_permalinks)
             stories.append(story)
             
         return stories
     
     @classmethod
-    def format_story(cls, story_db, feed_id=None, text=False):
+    def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False):
         if isinstance(story_db.story_content_z, unicode):
             story_db.story_content_z = story_db.story_content_z.decode('base64')
             
@@ -1130,7 +1130,7 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
-        if hasattr(story_db, 'blurblog_permalink'):
+        if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
             from BeautifulSoup import BeautifulSoup
