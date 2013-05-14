@@ -76,6 +76,14 @@ def dev():
     server()
     env.roles = ['dev']
 
+def debug():
+    server()
+    env.roles = ['debug']
+
+def node():
+    server()
+    env.roles = ['node']
+
 def db():
     server()
     env.roles = ['db']
@@ -87,18 +95,6 @@ def task():
 def ec2task():
     ec2()
     env.roles = ['ec2task']
-
-def vps():
-    server()
-    env.roles = ['vps']
-
-def do():
-    server()
-    env.roles = ['do']
-
-def debug():
-    server()
-    env.roles = ['debug']
 
 def ec2():
     env.user = 'ubuntu'
@@ -166,7 +162,6 @@ def kill():
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
-        run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
