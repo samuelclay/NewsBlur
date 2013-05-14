@@ -54,11 +54,20 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		}
 	}
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (PrefsUtils.isTimeToAutoSync(this)) {
+            triggerRefresh();
+        }
+    }
+
     /**
      * Triggers an initial two-phase sync, so the UI can display quickly using /reader/feeds and
      * then call /reader/refresh_feeds to get updated counts.
      */
 	private void triggerFirstSync() {
+        PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
 		if (menu != null) {
 			menu.findItem(R.id.menu_refresh).setEnabled(false);
@@ -74,6 +83,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
      * Triggers a full, manually requested refresh of feed/folder data and counts.
      */
     private void triggerRefresh() {
+        PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
 		if (menu != null) {
 			menu.findItem(R.id.menu_refresh).setEnabled(false);

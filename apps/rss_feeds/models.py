@@ -438,7 +438,8 @@ class Feed(models.Model):
                     feed_address = feed_address_from_link
         
             if feed_address:
-                if feed_address.endswith('feedburner.com/atom.xml'):
+                if (feed_address.endswith('feedburner.com/atom.xml') or
+                    feed_address.endswith('feedburner.com/feed/')):
                     logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False, self
                 try:

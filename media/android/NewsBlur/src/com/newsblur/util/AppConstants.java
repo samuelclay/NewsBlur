@@ -22,4 +22,10 @@ public class AppConstants {
 
     // the max number of mark-as-read ops to batch up before flushing to the server
     public static final int MAX_MARK_READ_BATCH = 5;
+
+    // a pref for the time we completed the last full sync of the feed/fodler list
+    public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
+
+    // how long to wait before auto-syncing the feed/folder list
+    public static final long AUTO_SYNC_TIME_MILLIS = 10L * 60L * 1000L;
 }

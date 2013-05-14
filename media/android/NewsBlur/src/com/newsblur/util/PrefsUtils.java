@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 import android.content.Context;
 import android.content.Intent;
@@ -159,5 +160,23 @@ public class PrefsUtils {
 		}
 	}
 
+    /**
+     * Check to see if it has been sufficiently long since the last sync of the feed/folder
+     * data to justify automatically syncing again.
+     */
+    public static boolean isTimeToAutoSync(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        long lastTime = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L);
+        return ( (lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS) < (new Date()).getTime() );
+    }
+
+    /**
+     * Make note that a sync of the feed/folder list has been completed, so we can track
+     * how long it has been until another is needed.
+     */
+    public static void updateLastSyncTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
+    }
 
 }
