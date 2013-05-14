@@ -967,16 +967,13 @@ class Feed(models.Model):
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
-        from apps.reader.models import MUserStory
+        from apps.reader.models import RUserStory
         from apps.social.models import MSharedStory
-        read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
-        for story in read_stories:
-            story.story_id = new_story_guid
-            try:
-                story.save()
-            except OperationError:
-                # User read both new and old. Just toss.
-                pass
+        
+        old_hash = RUserStory.story_hash(old_story_guid, self.pk)
+        new_hash = RUserStory.story_hash(new_story_guid, self.pk)
+        RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
                                                      story_guid=old_story_guid)
         for story in shared_stories:
