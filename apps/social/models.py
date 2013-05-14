@@ -10,7 +10,6 @@ import random
 import requests
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
-from mongoengine.queryset import NotUniqueError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -912,8 +911,7 @@ class MSocialSubscription(mongo.Document):
                     logging.user(request, "~BR~FYCould not find story: %s/%s" %
                                           (self.subscription_user_id, story_id))
                 continue
-            now = datetime.datetime.utcnow()
-            date = now if now > story.story_date else story.story_date # For handling future stories
+            
             feed_id = story.story_feed_id
             RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
             
@@ -924,13 +922,13 @@ class MSocialSubscription(mongo.Document):
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
             if friends_with_shares:
-                socialsubs = MSocialSubscription.objects.filter(user_id=self.user_id,
-                                                                subscription_user_id__in=friends_with_shares)
+                socialsubs = MSocialSubscription.objects.filter(
+                                user_id=self.user_id,
+                                subscription_user_id__in=friends_with_shares)
                 for socialsub in socialsubs:
                     if not socialsub.needs_unread_recalc:
                         socialsub.needs_unread_recalc = True
                         socialsub.save()
-                    # XXX TODO: Real-time notification, just for this user
             
             # Also count on original subscription
             usersubs = UserSubscription.objects.filter(user=self.user_id, feed=feed_id)
@@ -939,7 +937,7 @@ class MSocialSubscription(mongo.Document):
                 if not usersub.needs_unread_recalc:
                     usersub.needs_unread_recalc = True
                     usersub.save()
-                # XXX TODO: Real-time notification, just for this user
+        
         return data
         
     @classmethod
