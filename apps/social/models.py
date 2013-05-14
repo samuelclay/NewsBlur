@@ -145,7 +145,7 @@ class MSocialProfile(mongo.Document):
         
         # Not enough? Grab popular users.
         if len(nonfriend_user_ids) < RECOMMENDATIONS_LIMIT:
-            homepage_user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+            homepage_user = User.objects.get(username='popular')
             suggested_users_list = r.sdiff("F:%s:F" % homepage_user.pk, following_key)
             suggested_users_list = [int(f) for f in suggested_users_list]
             suggested_user_ids = []
