@@ -5,7 +5,7 @@
 {% block body %}
     <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Your free account is ready, {{ user.username }}.</p>
     <p style="line-height: 20px;">Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.</p>
-    <p style="line-height: 20px;">http://{% current_domain %}{{ user.profile.autologin_url }}</p>
+    <p style="line-height: 20px;">http://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
     <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>
     <p style="line-height: 20px;">- Sam Clay</p>
 {% endblock %}

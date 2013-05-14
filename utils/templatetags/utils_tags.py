@@ -11,10 +11,10 @@ from utils.user_functions import get_user
 register = template.Library()
 
 @register.simple_tag
-def current_domain():
+def current_domain(dev=False):
     current_site = Site.objects.get_current()
     domain = current_site and current_site.domain
-    if settings.SERVER_NAME in ["dev", "work"] and domain:
+    if dev and settings.SERVER_NAME in ["dev", "work"] and domain:
         domain = domain.replace("www", "dev")
     return domain
 
