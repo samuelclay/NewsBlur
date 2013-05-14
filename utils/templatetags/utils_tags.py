@@ -14,7 +14,7 @@ register = template.Library()
 def current_domain():
     current_site = Site.objects.get_current()
     domain = current_site and current_site.domain
-    if settings.SERVER_NAME == "dev" and domain:
+    if settings.SERVER_NAME in ["dev", "work"] and domain:
         domain = domain.replace("www", "dev")
     return domain
 
