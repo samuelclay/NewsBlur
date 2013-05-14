@@ -163,7 +163,7 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
-            url = "https://%s%s" % (Site.objects.get_current().domain,
+            url = "https://%s%s" % (Site.objects.get_current().domain.replace("www", "dev"),
                                      reverse('stripe-form'))
             return HttpResponseRedirect(url)
 
