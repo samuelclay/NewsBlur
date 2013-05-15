@@ -143,8 +143,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (indicator_position) {
             var last_visible_story = _.last(NEWSBLUR.assets.stories.visible());
             var last_story_height = last_visible_story && last_visible_story.story_view.$el.height() || 100;
+            var last_story_offset = _.last(this.cache.feed_view_story_positions_keys);
             endbar_height = pane_height - indicator_position - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
+
+            var empty_space = pane_height - last_story_offset - last_story_height - endbar_height;
+            if (empty_space > 0) endbar_height += empty_space + 1;
         }
         
         this.$('.NB-feed-story-endbar').remove();
