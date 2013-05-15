@@ -3,7 +3,6 @@ import time
 import boto
 import redis
 import requests
-import random
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -27,7 +26,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, RUserStory, Feature
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
@@ -538,7 +537,7 @@ def load_single_feed(request, feed_id):
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_feed_id=feed_id, 
                                               story_hash__in=story_hashes)\
-                                     .only('story_guid', 'shared_date', 'comments')
+                                     .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, story.starred_date) for story in starred_stories])
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
                                for story in shared_stories])
@@ -979,8 +978,8 @@ def mark_story_as_unread(request):
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
                                        story_date__lte=usersub.mark_read_date
-                                       ).only('story_guid')
-        newer_stories = [s.story_guid for s in newer_stories]
+                                       ).only('story_hash')
+        newer_stories = [s.story_hash for s in newer_stories]
         usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
         usersub.needs_unread_recalc = True
         usersub.save()
@@ -1002,15 +1001,8 @@ def mark_story_as_unread(request):
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
 
-    try:
-        m = MUserStory.objects.get(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
-        m.delete()
-    except MUserStory.DoesNotExist:
-        if usersub and story.story_date > usersub.mark_read_date:
-            logging.user(request, "~SB~FRCouldn't find read story to mark as unread.")
-        else:
-            data['code'] = -1
-    RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id, story_hash=story.story_hash)
+    RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id,
+                           story_hash=story.story_hash)
     
     r = redis.Redis(connection_pool=settings.REDIS_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)

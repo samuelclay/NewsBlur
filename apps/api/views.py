@@ -294,7 +294,7 @@ def share_story(request, token):
     
     socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
                                                 subscription_user_id=profile.user.pk)
-    socialsub.mark_story_ids_as_read([shared_story.story_guid], 
+    socialsub.mark_story_ids_as_read([shared_story.story_hash], 
                                       shared_story.story_feed_id, 
                                       request=request)
 
