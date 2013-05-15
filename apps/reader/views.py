@@ -998,7 +998,7 @@ def mark_story_as_unread(request):
                                        story_date__gte=story.story_date,
                                        story_date__lte=usersub.mark_read_date
                                        ).only('story_guid')
-        newer_stories = [s.story_guid for s in newer_stories]
+        newer_stories = [s.story_hash for s in newer_stories]
         usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
         usersub.needs_unread_recalc = True
         usersub.save()

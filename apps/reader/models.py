@@ -3,7 +3,6 @@ import time
 import redis
 import hashlib
 import re
-import mongoengine as mongo
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
@@ -325,8 +324,8 @@ class UserSubscription(models.Model):
         
         return True
         
-    def mark_story_ids_as_read(self, story_ids, request=None):
-        data = dict(code=0, payload=story_ids)
+    def mark_story_ids_as_read(self, story_hashes, request=None):
+        data = dict(code=0, payload=story_hashes)
         
         if not request:
             request = self.user
@@ -335,13 +334,13 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = True
             self.save()
     
-        if len(story_ids) > 1:
-            logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), self.feed))
+        if len(story_hashes) > 1:
+            logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
         else:
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
-        for story_id in set(story_ids):
-            RUserStory.mark_read(self.user_id, self.feed_id, story_id)
+        for story_hash in set(story_hashes):
+            RUserStory.mark_read(self.user_id, self.feed_id, story_hash)
             
         return data
     
@@ -460,8 +459,8 @@ class UserSubscription(models.Model):
         logging.info("      ===> %s " % self.user)
 
         # Switch read stories
-        stories = RUserStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk,
-                                         new_feed_id=new_feed.pk)
+        RUserStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk,
+                               new_feed_id=new_feed.pk)
 
         def switch_feed_for_classifier(model):
             duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
@@ -487,7 +486,7 @@ class UserSubscription(models.Model):
         self.feed = new_feed
         self.needs_unread_recalc = True
         try:
-            new_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
+            UserSubscription.objects.get(user=self.user, feed=new_feed)
         except UserSubscription.DoesNotExist:
             self.save()
             user_sub_folders.rewrite_feed(new_feed, old_feed)
