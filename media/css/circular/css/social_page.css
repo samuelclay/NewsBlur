@@ -682,6 +682,7 @@ blockquote {
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
+  padding: 0 0 10px 0;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   line-height: 8px;
