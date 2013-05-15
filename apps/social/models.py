@@ -1015,10 +1015,8 @@ class MSocialSubscription(mongo.Document):
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           story_hash__in=unread_story_hashes)
         story_feed_ids = set()
-        story_ids = []
         for s in stories_db:
             story_feed_ids.add(s['story_feed_id'])
-            story_ids.append(s['story_guid'])
         story_feed_ids = list(story_feed_ids)
 
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
@@ -1550,8 +1548,7 @@ class MSharedStory(mongo.Document):
                 shared_stories = []
                 if sharer_user_ids:
                     params = {
-                        'story_guid': story['id'],
-                        'story_feed_id': story['story_feed_id'],
+                        'story_hash': story['story_hash'],
                         'user_id__in': sharer_user_ids,
                     }
                     shared_stories = cls.objects.filter(**params)

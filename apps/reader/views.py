@@ -3,7 +3,6 @@ import time
 import boto
 import redis
 import requests
-import random
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -538,7 +537,7 @@ def load_single_feed(request, feed_id):
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_feed_id=feed_id, 
                                               story_hash__in=story_hashes)\
-                                     .only('story_guid', 'shared_date', 'comments')
+                                     .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, story.starred_date) for story in starred_stories])
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
                                for story in shared_stories])
@@ -979,7 +978,7 @@ def mark_story_as_unread(request):
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
                                        story_date__lte=usersub.mark_read_date
-                                       ).only('story_guid')
+                                       ).only('story_hash')
         newer_stories = [s.story_hash for s in newer_stories]
         usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
         usersub.needs_unread_recalc = True
