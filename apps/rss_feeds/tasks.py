@@ -87,7 +87,6 @@ class TaskFeeds(Task):
             cp4 - cp3
         ))
         
-        # Feed.task_feeds(feeds, verbose=False)
         Feed.task_feeds(refresh_feeds, verbose=False)
         Feed.task_feeds(old_feeds, verbose=False)
 
