@@ -1886,7 +1886,7 @@ class DuplicateFeed(models.Model):
         if len(self.duplicate_link) > max_link:
             self.duplicate_link = self.duplicate_link[:max_link]
             
-        super(Feed, self).save(*args, **kwargs)
+        super(DuplicateFeed, self).save(*args, **kwargs)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription
