@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.core.cache import cache
 from apps.reader.models import UserSubscription, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -884,8 +883,8 @@ class MSocialSubscription(mongo.Document):
         else:
             return [], [], []
         
-    def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
-        data = dict(code=0, payload=story_ids)
+    def mark_story_ids_as_read(self, story_hashes, feed_id=None, mark_all_read=False, request=None):
+        data = dict(code=0, payload=story_hashes)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if not request:
@@ -897,27 +896,19 @@ class MSocialSubscription(mongo.Document):
     
         sub_username = MSocialProfile.get_user(self.subscription_user_id).username
         
-        if len(story_ids) > 1:
-            logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), sub_username))
+        if len(story_hashes) > 1:
+            logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_hashes), sub_username))
         else:
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
-        for story_id in set(story_ids):
-            try:
-                story = MSharedStory.objects.get(user_id=self.subscription_user_id,
-                                                 story_guid=story_id)
-            except MSharedStory.DoesNotExist:
-                if settings.DEBUG:
-                    logging.user(request, "~BR~FYCould not find story: %s/%s" %
-                                          (self.subscription_user_id, story_id))
-                continue
-            
-            feed_id = story.story_feed_id
-            RUserStory.mark_read(self.user_id, feed_id, story.story_hash)
+        for story_hash in set(story_hashes):
+            if not feed_id:
+                feed_id, _ = RUserStory.split_story_hash(story_hash)
+            RUserStory.mark_read(self.user_id, feed_id, story_hash)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
-            share_key = "S:%s:%s" % (feed_id, story.guid_hash)
+            share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
@@ -926,7 +917,7 @@ class MSocialSubscription(mongo.Document):
                                 user_id=self.user_id,
                                 subscription_user_id__in=friends_with_shares)
                 for socialsub in socialsubs:
-                    if not socialsub.needs_unread_recalc:
+                    if not socialsub.needs_unread_recalc and not mark_all_read:
                         socialsub.needs_unread_recalc = True
                         socialsub.save()
             
@@ -959,8 +950,7 @@ class MSocialSubscription(mongo.Document):
                                                  story_guid=story_id)
             except MSharedStory.DoesNotExist:
                 continue
-            now = datetime.datetime.utcnow()
-            date = now if now > story.story_date else story.story_date # For handling future stories
+                
             RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
             
             # Also count on original subscription
@@ -993,10 +983,8 @@ class MSocialSubscription(mongo.Document):
         self.oldest_unread_story_date = latest_story_date
         
         # Manually mark all shared stories as read.
-        stories = MSharedStory.objects.filter(user_id=self.subscription_user_id,
-                                              shared_date__gte=UNREAD_CUTOFF).only('story_guid')
-        story_ids = [s.story_guid for s in stories]
-        self.mark_story_ids_as_read(story_ids, mark_all_read=True)
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
+        self.mark_story_ids_as_read(unread_story_hashes, mark_all_read=True)
         self.needs_unread_recalc = False
         
         self.save()
