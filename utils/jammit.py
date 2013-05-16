@@ -1,6 +1,6 @@
 import os
 from fnmatch import fnmatch
-import yaml
+from vendor import yaml
 from django.conf import settings
 
 DATA_URI_START = "<!--[if (!IE)|(gte IE 8)]><!-->"

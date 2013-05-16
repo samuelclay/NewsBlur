@@ -1,28 +1,5 @@
 import sys
-import logging
 import os
-import datetime
-import redis
-import raven
-import django.http
-import re
-from mongoengine import connect
-from boto.s3.connection import S3Connection
-from utils import jammit
-
-# ===================
-# = Server Settings =
-# ===================
-
-ADMINS       = (
-    ('Samuel Clay', 'samuel@newsblur.com'),
-)
-
-SERVER_NAME  = 'newsblur'
-SERVER_EMAIL = 'server@newsblur.com'
-HELLO_EMAIL  = 'hello@newsblur.com'
-NEWSBLUR_URL = 'http://www.newsblur.com'
-SECRET_KEY            = 'YOUR_SECRET_KEY'
 
 # ===========================
 # = Directory Declaractions =
@@ -48,6 +25,31 @@ if '/utils' not in ' '.join(sys.path):
 
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
+
+import logging
+import datetime
+import redis
+import raven
+import django.http
+import re
+from mongoengine import connect
+from boto.s3.connection import S3Connection
+from utils import jammit
+
+# ===================
+# = Server Settings =
+# ===================
+
+ADMINS       = (
+    ('Samuel Clay', 'samuel@newsblur.com'),
+)
+
+SERVER_NAME  = 'newsblur'
+SERVER_EMAIL = 'server@newsblur.com'
+HELLO_EMAIL  = 'hello@newsblur.com'
+NEWSBLUR_URL = 'http://www.newsblur.com'
+SECRET_KEY            = 'YOUR_SECRET_KEY'
+
 
 # ===================
 # = Global Settings =

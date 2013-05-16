@@ -6,11 +6,11 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
+from vendor import yaml
 import os
 import time
 import sys
 import re
-import yaml
 try:
     import dop.client
 except ImportError:
