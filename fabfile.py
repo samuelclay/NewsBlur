@@ -6,11 +6,11 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
+from vendor import yaml
 import os
 import time
 import sys
 import re
-import yaml
 try:
     import dop.client
 except ImportError:
@@ -370,7 +370,7 @@ def setup_task(queue=None, skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-numpy python-scipy python-imaging curl monit ufw')
 
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
