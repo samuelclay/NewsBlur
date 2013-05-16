@@ -472,9 +472,11 @@ def refresh_feed(request, feed_id):
 def load_single_feed(request, feed_id):
     start                   = time.time()
     user                    = get_user(request)
-    offset                  = int(request.REQUEST.get('offset', 0))
-    limit                   = int(request.REQUEST.get('limit', 6))
+    # offset                  = int(request.REQUEST.get('offset', 0))
+    # limit                   = int(request.REQUEST.get('limit', 6))
+    limit                   = 6
     page                    = int(request.REQUEST.get('page', 1))
+    offset                  = limit * (page-1)
     order                   = request.REQUEST.get('order', 'newest')
     read_filter             = request.REQUEST.get('read_filter', 'all')
     query                   = request.REQUEST.get('query')
@@ -483,7 +485,6 @@ def load_single_feed(request, feed_id):
     dupe_feed_id = None
     user_profiles = []
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    if page: offset = limit * (page-1)
     if not feed_id: raise Http404
 
     feed_address = request.REQUEST.get('feed_address')
