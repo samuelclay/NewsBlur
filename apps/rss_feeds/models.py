@@ -969,7 +969,7 @@ class Feed(models.Model):
         
         old_hash = RUserStory.story_hash(old_story_guid, self.pk)
         new_hash = RUserStory.story_hash(new_story_guid, self.pk)
-        RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        # RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
                                                      story_guid=old_story_guid)
