@@ -4,7 +4,7 @@ import os
 import select
 import subprocess
 import sys
-import yaml
+from vendor import yaml
 
 
 IGNORE_HOSTS = [
