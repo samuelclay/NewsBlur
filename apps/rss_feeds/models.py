@@ -1880,7 +1880,7 @@ class DuplicateFeed(models.Model):
         if len(self.duplicate_address) > max_address:
             self.duplicate_address = self.duplicate_address[:max_address]
         max_link = DuplicateFeed._meta.get_field('duplicate_link').max_length
-        if len(self.duplicate_link) > max_link:
+        if self.duplicate_link and len(self.duplicate_link) > max_link:
             self.duplicate_link = self.duplicate_link[:max_link]
             
         super(DuplicateFeed, self).save(*args, **kwargs)
