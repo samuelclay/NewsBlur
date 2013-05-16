@@ -32,14 +32,12 @@ except ImportError:
 env.NEWSBLUR_PATH = "~/projects/newsblur"
 env.SECRETS_PATH = "~/projects/secrets-newsblur"
 env.VENDOR_PATH   = "~/projects/code"
-
-env.EC2_KEY_NAME = "sclay"
+env.user = 'sclay'
 
 # =========
 # = Roles =
 # =========
 
-env.user = 'sclay'     # Why is this being set? It should be correctly set by fabric.
 try:
     hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
     roles = yaml.load(open(hosts_path))
@@ -485,7 +483,6 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     put('../secrets-newsblur/configs/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
@@ -586,7 +583,7 @@ def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
 
 def setup_nginx():
-    NGINX_VERSION = '1.2.8'
+    NGINX_VERSION = '1.4.1'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -759,7 +756,7 @@ def downgrade_pil():
 # = Setup - DB =
 # ==============
 
-# @parallel
+@parallel
 def setup_db_firewall():
     ports = [
         5432,   # PostgreSQL
@@ -1005,7 +1002,7 @@ def copy_task_settings():
 
 def setup_do(name, size=2):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 12.04 x64 Server"
+    IMAGE_NAME = "Ubuntu 12.10 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
@@ -1051,8 +1048,8 @@ def add_user_to_do():
         setup_sudoers("%s" % (repo_user))
     run('mkdir -p ~%s/.ssh && chmod 700 ~%s/.ssh' % (repo_user, repo_user))
     run('rm -fr ~%s/.ssh/id_dsa*' % (repo_user))
-    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (repo_user, repo_user))
-    run('touch ~%s/.ssh/authorized_keys' % (repo_user, repo_user))
+    run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (repo_user))
+    run('touch ~%s/.ssh/authorized_keys' % (repo_user))
     put("~/.ssh/id_dsa.pub", "authorized_keys")
     run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (repo_user))
     run('rm authorized_keys')
@@ -1069,7 +1066,7 @@ def setup_ec2():
     INSTANCE_TYPE = 'c1.medium'
     conn = EC2Connection(django_settings.AWS_ACCESS_KEY_ID, django_settings.AWS_SECRET_ACCESS_KEY)
     reservation = conn.run_instances(AMI_NAME, instance_type=INSTANCE_TYPE,
-                                     key_name=env.EC2_KEY_NAME,
+                                     key_name=env.user,
                                      security_groups=['db-mongo'])
     instance = reservation.instances[0]
     print "Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE)
