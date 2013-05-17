@@ -13,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/folder_open" />
+        android:src="@drawable/g_icn_folder_rss" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
