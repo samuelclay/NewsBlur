@@ -13,7 +13,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/group" />
+        android:src="@drawable/ak_icon_blurblogs" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
