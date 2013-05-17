@@ -840,6 +840,8 @@ def unread_story_hashes(request):
             us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
         except UserSubscription.DoesNotExist:
             continue
+        if not us.unread_count_neutral and not us.unread_count_positive:
+            continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            hashes_only=True)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
