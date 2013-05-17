@@ -832,9 +832,9 @@ def load_river_stories__redis(request):
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds)" % 
+                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids)))
+                               len(feed_ids), len(original_feed_ids), order, read_filter))
     
     return dict(stories=stories,
                 classifiers=classifiers, 
