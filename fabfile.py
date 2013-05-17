@@ -677,10 +677,13 @@ def copy_app_settings():
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
-    run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
+    cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
+    run('mkdir -p %s' % cert_path)
+    put('../secrets-newsblur/certificates/newsblur.com.crt', cert_path)
+    put('../secrets-newsblur/certificates/newsblur.com.key', cert_path)
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    # put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -715,7 +718,6 @@ def setup_haproxy(debug=False):
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
     put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
     sudo('restart rsyslog')
