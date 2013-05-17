@@ -834,6 +834,7 @@ def unread_story_hashes(request):
         feed_ids = [sub.feed_id for sub in usersubs]
     
     unread_feed_story_hashes = {}
+    story_hash_count = 0
     for feed_id in feed_ids:
         try:
             us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
@@ -841,7 +842,11 @@ def unread_story_hashes(request):
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            hashes_only=True)
-    
+        story_hash_count += len(unread_feed_story_hashes[feed_id])
+
+    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
+                           (len(feed_ids), story_hash_count))
+
     return dict(unread_feed_story_hashes=unread_feed_story_hashes)
 
 @ajax_login_required
