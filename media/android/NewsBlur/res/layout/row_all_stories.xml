@@ -13,7 +13,7 @@
         android:layout_marginLeft="18dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/archive" />
+        android:src="@drawable/ak_icon_allstories" />
 
     <TextView
         android:id="@+id/row_everythingtext"
