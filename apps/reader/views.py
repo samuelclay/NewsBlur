@@ -741,8 +741,8 @@ def load_river_stories__redis(request):
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if not feed_ids:
-        usersubs = UserSubscription.objects.filter(user=user, active=True)
-        feed_ids = [sub.feed.pk for sub in usersubs]
+        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        feed_ids = [sub.feed_id for sub in usersubs]
     
     offset = (page-1) * limit
     limit = page * limit - 1
