@@ -279,12 +279,12 @@ def load_river_blurblog(request):
         }
         if story['story_hash'] in shared_stories:
             story['shared'] = True
+            if story['shared_date'] < UNREAD_CUTOFF or story['story_hash'] in read_feed_story_hashes:
+                story['read_status'] = 1
             shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
-            if story['shared_date'] < UNREAD_CUTOFF or story['story_hash'] in read_feed_story_hashes:
-                story['read_status'] = 1
 
 
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
