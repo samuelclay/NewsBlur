@@ -823,7 +823,27 @@ def load_river_stories__redis(request):
                 elapsed_time=timediff, 
                 user_profiles=user_profiles)
     
+
+@json.json_view
+def unread_story_hashes(request):
+    user              = get_user(request)
+    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     
+    if not feed_ids:
+        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        feed_ids = [sub.feed_id for sub in usersubs]
+    
+    unread_feed_story_hashes = {}
+    for feed_id in feed_ids:
+        try:
+            us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
+        except UserSubscription.DoesNotExist:
+            continue
+        unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                           hashes_only=True)
+    
+    return dict(unread_feed_story_hashes=unread_feed_story_hashes)
+
 @ajax_login_required
 @json.json_view
 def mark_all_as_read(request):
