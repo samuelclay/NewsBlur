@@ -287,7 +287,6 @@ def load_river_blurblog(request):
                 story['story_hash'] in read_feed_story_hashes):
                 story['read_status'] = 1
 
-
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
                                            classifier_feeds=classifier_feeds,
                                            classifier_authors=classifier_authors,
