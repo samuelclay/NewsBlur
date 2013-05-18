@@ -438,7 +438,8 @@ class Feed(models.Model):
                     feed_address = feed_address_from_link
         
             if feed_address:
-                if feed_address.endswith('feedburner.com/atom.xml'):
+                if (feed_address.endswith('feedburner.com/atom.xml') or
+                    feed_address.endswith('feedburner.com/feed/')):
                     logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False, self
                 try:
@@ -963,16 +964,13 @@ class Feed(models.Model):
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
-        from apps.reader.models import MUserStory
+        from apps.reader.models import RUserStory
         from apps.social.models import MSharedStory
-        read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
-        for story in read_stories:
-            story.story_id = new_story_guid
-            try:
-                story.save()
-            except OperationError:
-                # User read both new and old. Just toss.
-                pass
+        
+        old_hash = RUserStory.story_hash(old_story_guid, self.pk)
+        new_hash = RUserStory.story_hash(new_story_guid, self.pk)
+        # RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
                                                      story_guid=old_story_guid)
         for story in shared_stories:
@@ -1093,17 +1091,17 @@ class Feed(models.Model):
         return stories
         
     @classmethod
-    def format_stories(cls, stories_db, feed_id=None):
+    def format_stories(cls, stories_db, feed_id=None, include_permalinks=False):
         stories = []
 
         for story_db in stories_db:
-            story = cls.format_story(story_db, feed_id)
+            story = cls.format_story(story_db, feed_id, include_permalinks=include_permalinks)
             stories.append(story)
             
         return stories
     
     @classmethod
-    def format_story(cls, story_db, feed_id=None, text=False):
+    def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False):
         if isinstance(story_db.story_content_z, unicode):
             story_db.story_content_z = story_db.story_content_z.decode('base64')
             
@@ -1129,7 +1127,7 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
-        if hasattr(story_db, 'blurblog_permalink'):
+        if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
             from BeautifulSoup import BeautifulSoup
@@ -1876,6 +1874,16 @@ class DuplicateFeed(models.Model):
             'duplicate_feed_id': self.duplicate_feed_id,
             'feed_id': self.feed_id
         }
+    
+    def save(self, *args, **kwargs):
+        max_address = DuplicateFeed._meta.get_field('duplicate_address').max_length
+        if len(self.duplicate_address) > max_address:
+            self.duplicate_address = self.duplicate_address[:max_address]
+        max_link = DuplicateFeed._meta.get_field('duplicate_link').max_length
+        if self.duplicate_link and len(self.duplicate_link) > max_link:
+            self.duplicate_link = self.duplicate_link[:max_link]
+            
+        super(DuplicateFeed, self).save(*args, **kwargs)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription

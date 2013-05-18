@@ -19,11 +19,9 @@ class NBMuninGraph(MuninGraph):
 
     def calculate_metrics(self):
         from apps.rss_feeds.models import MStory
-        from apps.reader.models import MUserStory
 
         return {
             'stories': MStory.objects().count(),
-            'read_stories': MUserStory.objects().count(),
         }
 
 if __name__ == '__main__':

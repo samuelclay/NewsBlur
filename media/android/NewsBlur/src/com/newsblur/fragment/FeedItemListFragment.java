@@ -189,7 +189,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 		if (item.getItemId() == R.id.menu_mark_story_as_read) {
 			final Story story = adapter.getStory(menuInfo.position);
-			if(story.read == Story.UNREAD) {
+			if(! story.read) {
 				ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
 				storiesToMarkAsRead.add(story);
 				FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
@@ -199,7 +199,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 			final ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
 			ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
 			for(Story story: previousStories) {
-				if(story.read == Story.UNREAD) {
+				if(! story.read) {
 					storiesToMarkAsRead.add(story);
 				}
 			}
