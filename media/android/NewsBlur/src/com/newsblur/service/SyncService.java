@@ -23,6 +23,7 @@ import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 /**
@@ -45,6 +46,7 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
 	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
 	public static final String EXTRA_TASK_ORDER = "order";
+	public static final String EXTRA_TASK_READ_FILTER = "read_filter";
 	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
 
 	// TODO: replace these with enums
@@ -133,7 +135,7 @@ public class SyncService extends IntentService {
 
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
-					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER));
+					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (storiesForFeed != null && storiesForFeed.stories.length != 0) {
 						receiver.send(STATUS_FINISHED, null);
 					} else {
@@ -148,7 +150,7 @@ public class SyncService extends IntentService {
 
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
-					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER));
+					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (storiesForFeeds != null && storiesForFeeds.stories.length != 0) {
 						receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 					} else {

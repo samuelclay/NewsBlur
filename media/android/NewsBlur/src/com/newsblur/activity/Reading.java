@@ -31,6 +31,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
@@ -55,8 +56,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
 
-	// TODO use property value
+	// TODO use property values
 	protected StoryOrder storyOrder = StoryOrder.NEWEST;
+	protected ReadFilter readFilter = ReadFilter.ALL;
 
 	private Set<Story> storiesToMarkAsRead;
 

@@ -82,6 +82,7 @@ public class AllStoriesReading extends Reading {
 				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			}
 			intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
+			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, readFilter);
 
 			startService(intent);
 		}
