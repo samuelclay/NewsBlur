@@ -53,41 +53,49 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
+def do_roledefs(*roledefs):
+    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
+    droplets = doapi.show_active_droplets()
+    for roledef in roledefs:
+        env.roledefs[roledef] = [droplet.ip_address for droplet in droplets if roledef in droplet.name]
+    
 # ================
 # = Environments =
 # ================
 
-def server():
+def do():
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
+    do_roledefs('app', 'task', 'db', 'node', 'dev', 'debug', 'www')
 
 def app():
-    server()
+    do()
     env.roles = ['app']
+    print env.roledefs['app']
 
 def work():
-    server()
+    do()
     env.roles = ['work']
 
 def dev():
-    server()
+    do()
     env.roles = ['dev']
 
 def debug():
-    server()
+    do()
     env.roles = ['debug']
 
 def node():
-    server()
+    do()
     env.roles = ['node']
 
 def db():
-    server()
+    do()
     env.roles = ['db']
 
 def task():
-    server()
+    do()
     env.roles = ['task']
 
 def ec2task():
@@ -97,10 +105,10 @@ def ec2task():
 def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
-    server()
+    do()
 
 def all():
-    server()
+    do()
     env.roles = ['app', 'dev', 'db', 'task', 'debug']
 
 # ==========
@@ -292,6 +300,7 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
+    setup_time_calibration()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -317,7 +326,6 @@ def setup_all():
 def setup_app(skip_common=False):
     if not skip_common:
         setup_common()
-    setup_vps()
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
@@ -333,7 +341,6 @@ def setup_app(skip_common=False):
 def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
-    setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
@@ -358,7 +365,6 @@ def setup_db(engine=None, skip_common=False):
 def setup_task(queue=None, skip_common=False):
     if not skip_common:
         setup_common()
-    setup_vps()
     setup_task_firewall()
     setup_task_motd()
     copy_task_settings()
@@ -607,14 +613,6 @@ def configure_nginx():
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
     copy_certificates()
-
-def setup_vps():
-    # VPS suffer from severe time drift. Force blunt hourly time recalibration.
-    setup_time_calibration()
-
-def setup_baremetal():
-    # Bare metal doesn't suffer from severe time drift. Use standard ntp slow-drift-calibration.
-    sudo('apt-get -y install ntp')
 
 # ===============
 # = Setup - App =
