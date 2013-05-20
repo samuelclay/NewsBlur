@@ -7,6 +7,7 @@ from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
 from vendor import yaml
+from pprint import pprint
 import os
 import time
 import sys
@@ -53,27 +54,44 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
-def do_roledefs(*roledefs):
+def do_roledefs(split=False):
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
-    for roledef in roledefs:
-        env.roledefs[roledef] = [droplet.ip_address for droplet in droplets if roledef in droplet.name]
+    for droplet in droplets:
+        roledef = re.split(r"([0-9]+)", droplet.name)[0]
+        if roledef not in env.roledefs:
+            env.roledefs[roledef] = []
+        if split:
+            env.roledefs[roledef].append((droplet.name, droplet.ip_address))
+        elif droplet.ip_address not in env.roledefs[roledef]:
+            env.roledefs[roledef].append(droplet.ip_address)
     return droplets
+
+def list_do():
+    do(split=True)
+    pprint(env.roledefs)
+
+def host(name):
+    droplets = do(split=True)
+    for droplet in droplets:
+        if name == droplet.name:
+            env.hosts = [droplet.ip_address]
+            break
     
 # ================
 # = Environments =
 # ================
 
-def do():
+def do(split=False):
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
-    do_roledefs('app', 'task', 'db', 'node', 'dev', 'debug', 'www')
+    droplets = do_roledefs(split=split)
+    return droplets
 
 def app():
     do()
     env.roles = ['app']
-    print env.roledefs['app']
 
 def work():
     do()
@@ -301,10 +319,10 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
-    setup_time_calibration()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
+    setup_time_calibration()
     setup_libxml()
     setup_python()
     # setup_psycopg()
@@ -417,12 +435,12 @@ def add_machine_to_ssh():
     run("rm local_keys")
 
 def setup_repo():
-    with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    # with settings(warn_only=True):
-    #     sudo('ln -f -s /home/%s/code /srv/' % env.user)
-    sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
+    with settings(warn_only=True):
+        run('git clone https://github.com/samuelclay/NewsBlur.git %s/newsblur' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        sudo('ln -f -s /srv/code /home/%s/code' % env.user)
+        sudo('ln -f -s /srv/newsblur /home/%s/newsblur' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -1047,7 +1065,7 @@ def do_name(name):
         print " ---> Using %s as hostname" % name
         return name
     else:
-        hosts = do_roledefs()
+        hosts = do_roledefs(split=False)
         hostnames = [host.name for host in hosts]
         existing_hosts = [hostname for hostname in hostnames if name in hostname]
         for i in range(10, 50):
