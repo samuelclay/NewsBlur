@@ -53,41 +53,49 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
+def do_roledefs(*roledefs):
+    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
+    droplets = doapi.show_active_droplets()
+    for roledef in roledefs:
+        env.roledefs[roledef] = [droplet.ip_address for droplet in droplets if roledef in droplet.name]
+    
 # ================
 # = Environments =
 # ================
 
-def server():
+def do():
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
+    do_roledefs('app', 'task', 'db', 'node', 'dev', 'debug', 'www')
 
 def app():
-    server()
+    do()
     env.roles = ['app']
+    print env.roledefs['app']
 
 def work():
-    server()
+    do()
     env.roles = ['work']
 
 def dev():
-    server()
+    do()
     env.roles = ['dev']
 
 def debug():
-    server()
+    do()
     env.roles = ['debug']
 
 def node():
-    server()
+    do()
     env.roles = ['node']
 
 def db():
-    server()
+    do()
     env.roles = ['db']
 
 def task():
-    server()
+    do()
     env.roles = ['task']
 
 def ec2task():
@@ -97,10 +105,10 @@ def ec2task():
 def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
-    server()
+    do()
 
 def all():
-    server()
+    do()
     env.roles = ['app', 'dev', 'db', 'task', 'debug']
 
 # ==========
