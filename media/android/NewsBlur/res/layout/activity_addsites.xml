@@ -58,16 +58,4 @@
         </LinearLayout>
     </ScrollView>
 
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:background="@drawable/inverted_orangeline_shadow"
-        android:layout_above="@id/addsites_button_bar" />
-    
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:background="@drawable/orangeline_shadow" />
-
 </RelativeLayout>

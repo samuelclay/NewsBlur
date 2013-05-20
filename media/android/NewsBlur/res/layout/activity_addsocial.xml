@@ -30,16 +30,5 @@
             android:textSize="14sp" />
         
     </LinearLayout>
-    
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:layout_above="@id/addsocial_button_bar"
-        android:background="@drawable/inverted_orangeline_shadow" />
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:background="@drawable/orangeline_shadow" />
 
 </RelativeLayout>

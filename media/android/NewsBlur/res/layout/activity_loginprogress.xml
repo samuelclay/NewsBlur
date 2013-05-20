@@ -12,10 +12,4 @@
         android:gravity="center"
         android:padding="30dp" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/orangeline_shadow" />
-
 </RelativeLayout>
