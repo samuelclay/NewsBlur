@@ -97,6 +97,10 @@ def work():
     do()
     env.roles = ['work']
 
+def www():
+    do()
+    env.roles = ['www']
+
 def dev():
     do()
     env.roles = ['dev']
