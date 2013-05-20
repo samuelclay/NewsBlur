@@ -3,7 +3,7 @@ import os
 import dop.client
 from django.conf import settings
 
-sys.path.append(os.getcwd())
+sys.path.append('/srv/newsblur')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 

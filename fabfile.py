@@ -58,6 +58,7 @@ def do_roledefs(*roledefs):
     droplets = doapi.show_active_droplets()
     for roledef in roledefs:
         env.roledefs[roledef] = [droplet.ip_address for droplet in droplets if roledef in droplet.name]
+    return droplets
     
 # ================
 # = Environments =
@@ -1010,6 +1011,7 @@ def setup_do(name, size=2):
     region_id = doapi.regions()[0].id
     images = dict((s.name, s.id) for s in doapi.images())
     image_id = images[IMAGE_NAME]
+    name = do_name(name)
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
                                     image_id=image_id,
@@ -1040,6 +1042,22 @@ def setup_do(name, size=2):
     time.sleep(10)
     add_user_to_do()
 
+def do_name(name):
+    if re.search(r"[0-9]", name):
+        print " ---> Using %s as hostname" % name
+        return name
+    else:
+        hosts = do_roledefs()
+        hostnames = [host.name for host in hosts]
+        existing_hosts = [hostname for hostname in hostnames if name in hostname]
+        for i in range(10, 50):
+            try_host = "%s%02d" % (name, i)
+            if try_host not in existing_hosts:
+                print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
+                                                                    ', '.join(existing_hosts), try_host)
+                return try_host
+        
+    
 def add_user_to_do():
     env.user = "root"
     repo_user = "sclay"
