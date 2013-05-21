@@ -440,11 +440,12 @@ def add_machine_to_ssh():
 
 def setup_repo():
     sudo('mkdir -p /srv')
+    sudo('chown -R %s.%s /srv' % (env.user, env.user))
     with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git %s/newsblur' % env.NEWSBLUR_PATH)
+        run('git clone https://github.com/samuelclay/NewsBlur.git %s' % env.NEWSBLUR_PATH)
     with settings(warn_only=True):
-        sudo('ln -f -s /srv/code /home/%s/code' % env.user)
-        sudo('ln -f -s /srv/newsblur /home/%s/newsblur' % env.user)
+        sudo('ln -sfn /srv/code /home/%s/code' % env.user)
+        sudo('ln -sfn /srv/newsblur /home/%s/newsblur' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -550,7 +551,7 @@ def setup_mongoengine():
         run('git clone https://github.com/MongoEngine/mongoengine.git')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
-        sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' %
+        sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/mongoengine' %
              os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
 
 def setup_pymongo_repo():
@@ -561,7 +562,7 @@ def setup_pymongo_repo():
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
-    sudo('ln -fs %s /usr/local/lib/python2.7/dist-packages/' %
+    sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/' %
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
 
 def setup_forked_mongoengine():
