@@ -9,7 +9,6 @@
         android:layout_marginTop="12dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/selector_sharebutton_background"
         android:padding="10dp"
         android:text="@string/share_this" />
     
@@ -22,7 +21,6 @@
         android:layout_marginTop="12dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/selector_savebutton_background"
         android:padding="10dp"
         android:text="@string/save_this" />
 

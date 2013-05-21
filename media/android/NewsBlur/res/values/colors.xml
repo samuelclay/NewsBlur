@@ -7,11 +7,9 @@
     <color name="hintgray">#66bbbbbb</color>
     <color name="midgray">#bbbbbb</color>
     <color name="lightgray">#ccc</color>
-    <color name="lightorange">#d98800</color>
-    <color name="darkorange">#b44a00</color>
 
-	<color name="folder_background_start">#E9EBE4</color>
-	<color name="folder_background_end">#DDE0D7</color>
+	<color name="folder_background_end">#E9EBE4</color>
+	<color name="folder_background_start">#DDE0D7</color>
     <color name="folder_text">#4C4C4C</color>
     <color name="feed_background">#F7F8F5</color>
     <color name="feed_title_text_background">#606060</color>
@@ -46,7 +44,7 @@
     <color name="positive_drop_shadow">#417E53</color>
     <color name="positive_read">#A8CA92</color>
     
-    <color name="highlight">#d2e6fd</color>
+    <color name="highlight">#fef7ab</color>
     
     <color name="darkneutral">#C59A00</color>
     <color name="neutral">#B3B6AD</color>
@@ -63,7 +61,10 @@
     <color name="tag_green">#BECCA4</color>
     <color name="tag_gray">#A2A2A2</color>
     
-    <color name="half_newsblur_blue">#770b445a</color>
     <color name="newsblur_blue">#0b445a</color>
-    <color name="light_newsblur_blue">#47A2C4</color>
+
+    <!-- To use a selector on a bg colour, the options must be drawables, not colours. -->
+    <drawable name="toggle_bg_selected">#fdfdfd</drawable>
+    <drawable name="toggle_bg_normal">#dfe1dd</drawable>
+
 </resources>
