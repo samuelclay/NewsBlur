@@ -33,9 +33,11 @@
             background-color: #304332;
         }
         table {
-            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#304332), to(#172018));
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#533754), to(#372238));
+            background: -moz-linear-gradient(center top , #533754 0%, #372238 100%) repeat scroll 0 0 transparent;
+/*            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#304332), to(#172018));
             background: -moz-linear-gradient(center top , #304332 0%, #172018 100%) repeat scroll 0 0 transparent;
-        }
+*/        }
         #container {
             width: 500px
         }
@@ -80,9 +82,11 @@
                 <td align="center" valign="middle">
                     <div id="container">
                         <img src="/media/img/logo_512.png" class="logo">
-                        <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
+                        <h1>NewsBlur is in <span class="error404">upgrade mode</span></h1>
                         <div class="description">
-                            <p>Slight bit of maintenance to fix a redis cluster issue. Back up in a few minutes.</p>
+                            <p>I can actually perform the upgrade instantaneously, but this way I can make sure you reload the site.</p>
+                            <p>This is the redesign of NewsBlur. It's for iOS, Android, web, and blurblogs. I hope you love it as much as I do.</p>
+                            <p>Give me 10 minutes to make sure the gears are turning without a squeak.</p>
                             <p>To pass the time, go surf <a href="http://mlkshk.com/popular" target="_blank">MLKSHK's popular page</a>.</p>
                             <p></p>
                         </div>
@@ -90,5 +94,13 @@
                 </td>
             </tr>
         </table>
+        
+        <script type="text/javascript" charset="utf-8">
+        if (window.parent && window.parent != window) {
+            window.setTimeout(function() {
+                parent.window.window.location.href = "/";
+            }, 1000);
+        }
+        </script>
     </body>
 </html>
