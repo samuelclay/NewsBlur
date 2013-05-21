@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/login_logging_in"
-                android:textColor="@color/white"
                 android:textSize="16dp" />
 
             <ProgressBar
@@ -56,7 +55,6 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="20dp"
                 android:text="@string/login_retrieving_feeds"
-                android:textColor="@color/white"
                 android:textSize="16dp" />
 
             <ProgressBar
@@ -69,15 +67,6 @@
                 android:visibility="invisible" />
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/login_lets_go"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/login_lets_go"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
     </LinearLayout>
 
 </RelativeLayout>

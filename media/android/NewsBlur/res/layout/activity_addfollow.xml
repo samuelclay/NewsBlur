@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/newsblur_blue"
         android:id="@+id/addfollow_button_bar"
         android:gravity="right" 
         android:padding="10dp">
@@ -31,16 +30,4 @@
         
     </LinearLayout>
     
-    
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:background="@drawable/inverted_orangeline_shadow"
-        android:layout_above="@id/addfollow_button_bar" />
-    
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:background="@drawable/orangeline_shadow" />
-
 </RelativeLayout>

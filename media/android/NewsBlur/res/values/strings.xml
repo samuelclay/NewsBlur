@@ -12,9 +12,7 @@
     <string name="login_logged_in">Logged in!</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_retrieved_feeds">Retrieved feeds!</string>
-    <string name="login_lets_go">Let\'s go!</string>
-    
-    <string name="hello">Hello World!</string>
+    <string name="login_next">Next</string>
     
     <string name="title_feed_search">Search for feeds</string>
     <string name="add_feed_message">Add \"%s\" to your feeds?</string>
@@ -128,7 +126,6 @@
     <string name="twitter">Twitter</string>
     <string name="facebook">Facebook</string>
     <string name="auto_follow_friends">Auto-follow friends</string>
-    <string name="faster_faster">Faster! Faster! Until the thrill of speed overcomes the fear of death!</string>
     <string name="add_twitter">Add Twitter friends</string>
     <string name="add_facebook">Add Facebook friends</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
@@ -141,7 +138,6 @@
     <string name="share_this_story">Share this story</string>
     <string name="comment_favourited">Comment favorited</string>
     <string name="error_liking_comment">Error favoriting comment</string>
-    <string name="let_s_go_">Let&amp;apos;s go!</string>
     <string name="public_comment_count">%d PUBLIC COMMENTS</string>
     <string name="friends_comments_count">%d COMMENTS</string>
     <string name="toast_marked_all_stories_as_read">All stories marked as read</string>
