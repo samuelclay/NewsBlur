@@ -56,10 +56,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
 
-	// TODO use property values
-	protected StoryOrder storyOrder = StoryOrder.NEWEST;
-	protected ReadFilter readFilter = ReadFilter.ALL;
-
 	private Set<Story> storiesToMarkAsRead;
 
 	@Override

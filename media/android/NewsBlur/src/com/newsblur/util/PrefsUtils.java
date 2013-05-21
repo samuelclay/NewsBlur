@@ -179,4 +179,27 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
+    public static StoryOrder getStoryOrderForFeed(Context context, String feedId)
+    {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, StoryOrder.NEWEST.getParameterValue()));
+    }
+    
+    public static StoryOrder getStoryOrderForFolder(Context context, String folderName)
+    {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, StoryOrder.NEWEST.getParameterValue()));
+    }
+    
+    public static ReadFilter getReadFilterForFeed(Context context, String feedId)
+    {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, ReadFilter.ALL.getParameterValue()));
+    }
+    
+    public static ReadFilter getReadFilterForFolder(Context context, String folderName)
+    {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, ReadFilter.ALL.getParameterValue()));
+    }
 }

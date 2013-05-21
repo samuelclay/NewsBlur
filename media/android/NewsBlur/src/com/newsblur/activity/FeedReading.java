@@ -12,6 +12,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefsUtils;
 
 public class FeedReading extends Reading {
 
@@ -98,8 +99,8 @@ public class FeedReading extends Reading {
 			if (page > 1) {
 				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			}
-            intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
-            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, readFilter);
+            intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFeed(this, feedId));
+            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, feedId));
 			startService(intent);
 		}
 	}
