@@ -252,6 +252,9 @@ class GoogleReaderImporter(Importer):
             self.process_feeds(feeds_xml)
         
     def send_request(self, url):
+        if not self.user.is_authenticated():
+            return
+            
         user_tokens = OAuthToken.objects.filter(user=self.user)
 
         if user_tokens.count():
