@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
 {% block title %}The NewsBlur API{% endblock %}
@@ -14,8 +16,8 @@
   <div class="NB-module">
     <h5 class="NB-module-title">Introduction to the API</h5>
     <div class="NB-module-content">
-      <p><a href="/">NewsBlur</a> is a social news reader with intelligence. A new sound of 
-      an old instrument.</p>
+      <p><a href="/">NewsBlur</a> is a personal news reader that brings people together to 
+      talk about the world. A new sound of an old instrument.</p>
       <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
       statistics, and individual feed stories. No API key is required, but you are required
       to authenticate before using any of the API endpoints. Please be considerate, and don't
@@ -148,3 +150,7 @@
   </div>
   
 {% endblock content %}
+
+{% block footer %}
+    {% render_footer "api" %}
+{% endblock footer %}

@@ -22,7 +22,8 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery-2.0.0.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
@@ -46,46 +47,32 @@ javascripts:
         - media/js/vendor/jquery.layout.js
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.fieldselection.js
-        - media/js/vendor/jquery.flot.js
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
-        # - media/js/vendor/jquery.linkify.js
-        - media/js/vendor/bootstrap.*.js
+        - media/js/vendor/chart.js
         - media/js/vendor/audio.js
         - media/js/vendor/socket.io-client.*.js
         - media/js/vendor/inflector.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
+        - media/js/vendor/bootstrap-transition.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/reader/reader.js
+        - media/js/newsblur/reader/reader_popover.js
         - media/js/newsblur/common/*.js
         - media/js/newsblur/models/*.js
         - media/js/newsblur/views/*.js
-        - media/js/newsblur/reader/reader_utils.js
-        - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/welcome/*.js
-    mobile:
-        - media/js/vendor/jquery-1.7.2.js
-        - media/js/mobile/jquery.mobile-1.0b1.js
-        - media/js/vendor/jquery.ajaxmanager.3.js
-        - media/js/vendor/underscore-*.js
-        - media/js/vendor/underscore.string.js
-        - media/js/vendor/inflector.js
-        - media/js/vendor/jquery.json.js
-        - media/js/vendor/jquery.easing.js
-        - media/js/vendor/jquery.newsblur.js
-        - media/js/vendor/backbone-*.js
-        - media/js/newsblur/reader/reader_utils.js
-        - media/js/newsblur/models/*.js
-        - media/js/newsblur/common/assetmodel.js
-        - media/js/mobile/newsblur/mobile_workspace.js
     payments:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-1.7.2.min.js
+        - media/js/vendor/jquery-2.0.0.min.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
@@ -98,13 +85,17 @@ javascripts:
         - media/js/vendor/underscore.noconflict.js
         - media/js/vendor/readability-*.js
     blurblog:
-        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery-2.0.0.js
+        - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/inflector.js
+        - media/js/vendor/bootstrap-tooltip.js
+        - media/js/vendor/bootstrap-*.js
+        - media/js/vendor/bootstrapx-*.js
         - media/js/newsblur/social_page/*.js
         - media/js/newsblur/models/comments.js
         - media/js/newsblur/views/story_share_view.js
@@ -121,6 +112,7 @@ stylesheets:
         - media/css/status.css
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
+        - media/css/vendor/bootstrap-progressbar.css
         - media/css/*.css
     mobile:
         - media/css/mobile/jquery.mobile-1.0b1.css
@@ -131,5 +123,5 @@ stylesheets:
         - media/css/bookmarklet/bookmarklet.css
     blurblog:
         - media/css/jquery.tipsy.css
-        - media/css/social/social_page.css
-        - media/css/modals.css
+        - media/css/vendor/bootstrap-*.css
+        - media/css/circular/css/social_page.css

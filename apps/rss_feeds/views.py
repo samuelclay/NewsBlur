@@ -63,15 +63,16 @@ def load_feed_favicon(request, feed_id):
         not_found = True
         
     if not_found or not feed_icon.data:
-        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/silk/world.png')
+        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/circular/world.png')
         
     icon_data = feed_icon.data.decode('base64')
     return HttpResponse(icon_data, mimetype='image/png')
 
 @json.json_view
 def feed_autocomplete(request):
-    query = request.GET.get('term')
+    query = request.GET.get('term') or request.GET.get('query')
     version = int(request.GET.get('v', 1))
+    format = request.GET.get('format', 'autocomplete')
     
     # user = get_user(request)
     # if True or not user.profile.is_premium:
@@ -92,13 +93,16 @@ def feed_autocomplete(request):
         
     feed_ids = Feed.autocomplete(query)
     feeds = [Feed.get_by_id(feed_id) for feed_id in feed_ids]
-    feeds = [{
-        'id': feed.pk,
-        'value': feed.feed_address,
-        'label': feed.feed_title,
-        'tagline': feed.data and feed.data.feed_tagline,
-        'num_subscribers': feed.num_subscribers,
-    } for feed in feeds if feed]
+    if format == 'autocomplete':
+        feeds = [{
+            'id': feed.pk,
+            'value': feed.feed_address,
+            'label': feed.feed_title,
+            'tagline': feed.data and feed.data.feed_tagline,
+            'num_subscribers': feed.num_subscribers,
+        } for feed in feeds if feed]
+    else:
+        feeds = [feed.canonical(full=True) for feed in feeds]
     feeds = sorted(feeds, key=lambda f: -1 * f['num_subscribers'])
     
     feed_ids = [f['id'] for f in feeds]
@@ -134,17 +138,12 @@ def load_feed_statistics(request, feed_id):
     # Dates of last and next update
     stats['active'] = feed.active
     stats['last_update'] = relative_timesince(feed.last_update)
-    if feed.is_push:
-        stats['next_update'] = "real-time..."
-    else:
-        stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
+    stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
+    stats['push'] = feed.is_push
 
     # Minutes between updates
     update_interval_minutes = feed.get_next_scheduled_update(force=True, verbose=False)
-    if feed.is_push:
-        stats['update_interval_minutes'] = 0
-    else:
-        stats['update_interval_minutes'] = update_interval_minutes
+    stats['update_interval_minutes'] = update_interval_minutes
     original_active_premium_subscribers = feed.active_premium_subscribers
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
@@ -152,10 +151,8 @@ def load_feed_statistics(request, feed_id):
     premium_update_interval_minutes = feed.get_next_scheduled_update(force=True, verbose=False)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
-    if feed.is_push:
-        stats['premium_update_interval_minutes'] = 0
-    else:
-        stats['premium_update_interval_minutes'] = premium_update_interval_minutes
+    stats['premium_update_interval_minutes'] = premium_update_interval_minutes
+    stats['errors_since_good'] = feed.errors_since_good
     
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history

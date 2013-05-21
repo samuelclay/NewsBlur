@@ -2,23 +2,26 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     
     events: {
         "click .NB-story-comment-reply-button"  : "check_reply_or_login",
-        "focus .NB-story-comment-input"         : "check_comment_or_login",
+        "click .NB-story-comment-input"         : "check_comment_or_login",
+        "click .NB-story-comment-save"          : "check_comment_or_login",
+        "click .NB-story-comment-like"          : "check_comment_or_login",
         "click .NB-story-comments-public-teaser": "load_public_story_comments"
     },
     
     initialize: function() {
-        this.comment_views = [];
         this.story_view = this.options.story_view;
+        this.page_view = this.options.page_view;
         
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.attach_comments();
+            var $comments = this.$('.NB-story-comment');
+            this.attach_comments($comments);
         }
     },
     
-    attach_comments: function() {
+    attach_comments: function($comments) {
         var self = this;
         
-        this.$('.NB-story-comment').each(function() {
+        $comments.each(function() {
             var $comment = $(this);
             var comment = new NEWSBLUR.Models.Comment({
                 id: $comment.data('id'),
@@ -33,7 +36,6 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
                 model: comment,
                 public_comment: $comment.closest(".NB-story-comments-public").length
             });
-            self.comment_views.push(comment_view);
         });
     },
     
@@ -45,10 +47,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.story_view.login_view.toggle_login_dialog({
-                resize_open: true,
-                scroll: true
-            });
+            this.page_view.login_view.toggle_login_dialog({});
             return false;
         }
     },
@@ -57,10 +56,8 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.story_view.expand_story({instant: true});
-            this.story_view.login_view.toggle_login_dialog({
-                resize_open: true,
-                scroll: true
+            this.page_view.login_view.toggle_login_dialog({
+                open: true
             });
             return false;
         }
@@ -91,15 +88,18 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         this.initialize();
     },
     
-    replace_comment: function(comment_user_id, html) {
-        var comment_view = _.detect(this.comment_views, function(view) {
-            return view.model.get('user_id') == comment_user_id;
-        });
+    replace_comment: function(comment_view, html) {
+        if (html && html.code < 0) {
+            console.log(["error", html]);
+            return;
+        }
         var $new_comment = $(html);
+        
         comment_view.$el.replaceWith($new_comment);
-        comment_view.setElement($new_comment);
+        comment_view.remove();
+
         this.story_view.attach_tooltips();
-        this.initialize();
+        this.attach_comments($new_comment);
     }
     
 });

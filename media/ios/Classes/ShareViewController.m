@@ -20,11 +20,13 @@
 
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize appdotnetButton;
 @synthesize submitButton;
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
 @synthesize currentType;
+@synthesize storyTitle;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -66,23 +68,13 @@
     commentField.layer.cornerRadius = 4;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences integerForKey:@"shareToFacebook"]){
-        facebookButton.selected = YES;
-    }
-    if ([userPreferences integerForKey:@"shareToTwitter"]){
-        twitterButton.selected = YES;
-    }
+    twitterButton.layer.borderWidth = 1.0f;
+    twitterButton.layer.cornerRadius = 1.0f;
+    facebookButton.layer.borderWidth = 1.0f;
+    facebookButton.layer.cornerRadius = 1.0f;
+    appdotnetButton.layer.borderWidth = 1.0f;
+    appdotnetButton.layer.cornerRadius = 1.0f;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f
-                                                                            green:0.36f
-                                                                             blue:0.46
-                                                                            alpha:0.9];
-    } else {
-        self.submitButton.tintColor = UIColorFromRGB(0x709d3c);
-    }
-
     [super viewDidLoad];
 }
 
@@ -109,23 +101,82 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [self adjustCommentField];
+    [self adjustShareButtons];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
         [self.commentField becomeFirstResponder];
-        [self adjustCommentField];
+        
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                               [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+        UIImage *titleImage  = [Utilities getImage:feedIdStr];
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+        titleImageView.hidden = YES;
+        titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.navigationItem.titleView = titleImageView;
+        titleImageView.hidden = NO;
+    }
+}
+
+- (void)adjustShareButtons {
+    if (twitterButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
+          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
+        [self doToggleButton:twitterButton];
+    } else {
+        twitterButton.selected = NO;
+        twitterButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+    }
+    
+    if (facebookButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
+          objectForKey:@"facebook_uid"] class] == [NSNull class]) {
+        [self doToggleButton:facebookButton];
+    } else {
+        facebookButton.selected = NO;
+        facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+    }
+    
+    if (appdotnetButton.selected &&
+        [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
+          objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
+        [self doToggleButton:appdotnetButton];
+    } else {
+        appdotnetButton.selected = NO;
+        appdotnetButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     }
 }
 
 - (void)adjustCommentField {
-	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
-    if (UIInterfaceOrientationIsPortrait(orientation)){
-        self.commentField.frame = CGRectMake(20, 20, 280, 124);
-        self.twitterButton.frame = CGRectMake(228, 152, 32, 32);
-        self.facebookButton.frame = CGRectMake(268, 152, 32, 32);
-    } else {
-        self.commentField.frame = CGRectMake(60, 20, 400, 74);
-        self.twitterButton.frame = CGRectMake(15, 20, 32, 32);
-        self.facebookButton.frame = CGRectMake(15, 63, 32, 32);
+    CGSize v = self.view.frame.size;
+    int bP = 8;
+    int bW = 32;
+    int bH = 24;
+    int k = 0;
+    int stOffset = 6;
+    int stHeight = 0;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication]
+                                                                      statusBarOrientation];
+        k = UIInterfaceOrientationIsPortrait(orientation) ? 216 : 162;
+        self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
+        stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
+        stHeight = self.storyTitle.frame.size.height;
     }
+    NSLog(@"Share type: %@", self.currentType);
+    BOOL showingShareButtons = [self.currentType isEqualToString:@"share"] ||
+                               [self.currentType isEqualToString:@"edit-share"];
+    self.commentField.frame = CGRectMake(20, stOffset + 4,
+                                         v.width - 20*2,
+                                         v.height - k - (showingShareButtons ? bH + bP*2 : 6) - 12 - stHeight);
+    CGPoint o = self.commentField.frame.origin;
+    CGSize c = self.commentField.frame.size;
+    self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
+    self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
+    self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -134,30 +185,64 @@
 
 - (IBAction)doToggleButton:(id)sender {
     UIButton *button = (UIButton *)sender;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     button.selected = !button.selected;
     int selected = button.selected ? 1 : 0;
     
-    if (button.tag == 1) {
-        [userPreferences setInteger:selected forKey:@"shareToTwitter"];
-    } else if (button.tag == 2) {
-        [userPreferences setInteger:selected forKey:@"shareToFacebook"];
+    if (button.tag == 1) { // Twitter
+        if (selected) {
+            [self checkService:@"twitter"];
+            button.layer.borderColor = [UIColorFromRGB(0x4E8ECD) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
+    } else if (button.tag == 2) { // Facebook
+        if (selected) {
+            [self checkService:@"facebook"];
+            button.layer.borderColor = [UIColorFromRGB(0x6884CD) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
+    } else if (button.tag == 3) { // App.net
+        if (selected) {
+            [self checkService:@"appdotnet"];
+            button.layer.borderColor = [UIColorFromRGB(0xD16857) CGColor];
+        } else {
+            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
+        }
     }
-    
-    [userPreferences synchronize];
+}
+
+- (void)checkService:(NSString *)service {
+    if ([service isEqualToString:@"twitter"] &&
+        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
+          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
+    } else if ([service isEqualToString:@"facebook"] &&
+              [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
+                objectForKey:@"facebook_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
+    } else if ([service isEqualToString:@"appdotnet"] &&
+              [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
+                objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
+        [appDelegate showConnectToService:service];
+    }
+}
+
+- (void)setCommentType:(NSString *)type {
+    self.currentType = type;
 }
 
 - (void)setSiteInfo:(NSString *)type
           setUserId:(NSString *)userId
         setUsername:(NSString *)username
          setReplyId:(NSString *)replyId {
+    NSLog(@"SetSiteInfo: %@", type);
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
-        self.currentType = nil;
         [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-//        self.navigationItem.title = @"Edit Your Reply";
+        appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
         
@@ -179,40 +264,29 @@
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-//        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
+        appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
-        if (![self.currentType isEqualToString:@"share"] &&
-            ![self.currentType isEqualToString:@"reply"]) {
-            self.commentField.text = @"";
-            self.currentType = type;
-        }
+        self.commentField.text = @"";
     } else if ([type isEqualToString: @"edit-share"]) {
-        self.currentType = nil;
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
+        appdotnetButton.hidden = NO;
         
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            self.navigationItem.title = @"Edit Your Comment";
-//            [submitButton setTitle:@"Save your comments"];
-//        } else {
-//            self.navigationItem.title = @"Edit Comment";
-//            [submitButton setTitle:@"Save"];
-//        }
         [submitButton setTitle:@"Save your comments"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
+        appdotnetButton.hidden = NO;
         [submitButton setTitle:@"Share this story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
         if (![self.currentType isEqualToString:@"share"] &&
             ![self.currentType isEqualToString:@"reply"]) {
             self.commentField.text = @"";
-            self.currentType = type;
         }
     }
 }
@@ -220,6 +294,9 @@
 - (void)clearComments {
     self.commentField.text = nil;
     self.currentType = nil;
+    self.twitterButton.selected = NO;
+    self.facebookButton.selected = NO;
+    self.appdotnetButton.selected = NO;
 }
 
 # pragma mark
@@ -239,12 +316,14 @@
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
-    if ([userPreferences integerForKey:@"shareToFacebook"]){
+    if (facebookButton.selected) {
         [request addPostValue:@"facebook" forKey:@"post_to_services"];     
     }
-    if ([userPreferences integerForKey:@"shareToTwitter"]){
-        [request addPostValue:@"twitter" forKey:@"post_to_services"];     
+    if (twitterButton.selected) {
+        [request addPostValue:@"twitter" forKey:@"post_to_services"];
+    }
+    if (appdotnetButton.selected) {
+        [request addPostValue:@"appdotnet" forKey:@"post_to_services"];
     }
     
     if (appDelegate.isSocialRiverView) {
@@ -337,10 +416,10 @@
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
@@ -389,8 +468,10 @@
         } else {
             self.submitButton.title = @"Share this story";
         }   
+    } else if ([self.currentType isEqualToString: @"reply"] ||
+               [self.currentType isEqualToString:@"edit-reply"]) {
+        self.submitButton.enabled = [self.commentField.text length] > 0;
     }
-    
     
 
 }

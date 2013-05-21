@@ -101,6 +101,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         this.hide_tryout();
         
         this.flags.on_header_caption = true;
+        this.flags.on_signin = true;
         
         this.$el.scrollTo(0, 500, {queue: false, easing: 'easeInOutQuint'});
         

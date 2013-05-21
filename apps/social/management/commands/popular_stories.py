@@ -6,4 +6,4 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list
 
     def handle(self, *args, **options):
-        MSharedStory.share_popular_stories(verbose=True)
+        MSharedStory.share_popular_stories()

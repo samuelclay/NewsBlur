@@ -62,7 +62,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         var $header = $.make('div', { 
             className: 'NB-story-comments-public-header-wrapper' 
         }, $.make('div', { 
-            className: 'NB-story-comments-public-header' 
+            className: 'NB-story-comments-public-header NB-module-header' 
         }, [
             Inflector.pluralize(' comment', this.model.get('comment_count_friends'), true)
         ]));
@@ -84,7 +84,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         
         if (NEWSBLUR.assets.preference('hide_public_comments')) {
             var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-                $.make('div', { className: 'NB-story-comments-public-teaser' }, [
+                $.make('div', { className: 'NB-story-comments-public-teaser NB-module-header' }, [
+                    $.make('div', { className: 'NB-story-comments-expand-icon' }),
                     'There ',
                     Inflector.pluralize('is', this.model.get('comment_count_public')),
                     ' ',
@@ -98,7 +99,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             var $header = $.make('div', { 
                 className: 'NB-story-comments-public-header-wrapper' 
             }, $.make('div', { 
-                className: 'NB-story-comments-public-header' 
+                className: 'NB-story-comments-public-header NB-module-header' 
             }, Inflector.pluralize(' public comment', this.model.get('comment_count_public'), true)));
         
             this.$el.append($header);
@@ -153,7 +154,10 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     
     load_public_story_comments: function() {
         var following_user_ids = NEWSBLUR.assets.user_profile.get('following_user_ids');
+        this.$(".NB-story-comments-expand-icon").addClass("NB-loading");
+        
         NEWSBLUR.assets.load_public_story_comments(this.model.id, this.model.get('story_feed_id'), _.bind(function(comments) {
+            this.$(".NB-story-comments-expand-icon").addClass("NB-loading");
             var $comments = $.make('div', { className: 'NB-story-comments-public' });
             var public_comments = comments.select(_.bind(function(comment) {
                 return !_.contains(following_user_ids, comment.get('user_id'));
@@ -161,7 +165,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             var $header = $.make('div', { 
                 className: 'NB-story-comments-public-header-wrapper' 
             }, $.make('div', { 
-                className: 'NB-story-comments-public-header' 
+                className: 'NB-story-comments-public-header NB-module-header' 
             }, Inflector.pluralize(' public comment', public_comments.length, true))).prependTo($comments);
 
             _.each(public_comments, _.bind(function(comment) {

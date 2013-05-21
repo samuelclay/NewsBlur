@@ -14,6 +14,11 @@
 
 @synthesize interactionLabel;
 @synthesize avatarView;
+@synthesize topMargin;
+@synthesize bottomMargin;
+@synthesize leftMargin;
+@synthesize rightMargin;
+@synthesize avatarSize;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
@@ -35,18 +40,18 @@
         UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         self.selectedBackgroundView = myBackView;
+        
+        topMargin = 15;
+        bottomMargin = 15;
+        leftMargin = 20;
+        rightMargin = 20;
+        avatarSize = 48;
     }
     
     return self;
 }
 
-- (void)layoutSubviews {
-    #define topMargin 15
-    #define bottomMargin 15
-    #define leftMargin 20
-    #define rightMargin 20
-    #define avatarSize 48
-    
+- (void)layoutSubviews {    
     [super layoutSubviews];
     
     // determine outer bounds

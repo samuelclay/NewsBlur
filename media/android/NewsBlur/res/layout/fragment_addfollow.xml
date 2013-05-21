@@ -20,7 +20,6 @@
         android:layout_below="@id/addfollow_text"
         android:layout_gravity="center_vertical"
         android:layout_margin="20dp"
-        android:background="@drawable/newsblur_background"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp" >
@@ -49,7 +48,6 @@
         android:layout_below="@id/addfollow_newsblur"
         android:layout_gravity="center_vertical"
         android:layout_margin="20dp"
-        android:background="@drawable/newsblur_background"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp" >

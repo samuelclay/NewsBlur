@@ -35,10 +35,12 @@
 }
 
 - (void)viewDidLoad {    
-    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+    folderImage.frame = CGRectMake(0, 0, 16, 16);
     [toFolderInput setLeftView:folderImage];
     [toFolderInput setLeftViewMode:UITextFieldViewModeAlways];
-    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
+    folderImage2.frame = CGRectMake(0, 0, 16, 16);
     [fromFolderInput setLeftView:folderImage2];
     [fromFolderInput setLeftViewMode:UITextFieldViewModeAlways];
         
@@ -85,7 +87,8 @@
 
 
 - (void)reload {
-    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] || appDelegate.activeFolder == @"everything";
+    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] ||
+                      [appDelegate.activeFolder isEqual:@"everything"];
     int row = 0;
     [toFolderInput setText:@""];
     
@@ -238,6 +241,7 @@
         if ([folder isEqualToString:@"everything"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder isEqualToString:@"saved_stories"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
         if (appDelegate.isRiverView) {
             if (![folder containsString:appDelegate.activeFolder]) {

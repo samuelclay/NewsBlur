@@ -9,9 +9,7 @@
         android:id="@+id/login_add_reader_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/newsblur_blue"
         android:text="@string/login_google_reader"
-        android:textColor="@color/white"
         android:textSize="14sp" />
 
     <TextView

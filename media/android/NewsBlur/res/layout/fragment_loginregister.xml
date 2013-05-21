@@ -27,7 +27,6 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="@string/need_to_register"
-                android:textColor="@color/lightorange"
                 android:textSize="15sp" />
 
             <Button
@@ -53,8 +52,6 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username_hint"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/white"
-                android:textColorHint="@color/lightorange"
                 android:textSize="22dp" />
 
             <EditText
@@ -66,13 +63,11 @@
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 android:nextFocusDown="@+id/login_button"
-                android:textColor="@color/white"
-                android:textColorHint="@color/lightorange"
                 android:textSize="22dp" />
         </LinearLayout>
     </RelativeLayout>
     
-     <RelativeLayout
+    <RelativeLayout
         android:id="@+id/registration_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -92,7 +87,6 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="@string/need_to_login"
-                android:textColor="@color/lightorange"
                 android:textSize="15sp" />
 
             <Button
@@ -122,8 +116,6 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/login_username_hint"
                     android:inputType="textEmailAddress"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/lightorange"
                     android:textSize="22dp" >
 
                 </EditText>
@@ -136,8 +128,6 @@
                     android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:nextFocusDown="@+id/registration_email"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/lightorange"
                     android:textSize="22dp" />
 
                 <EditText
@@ -149,8 +139,6 @@
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
                     android:nextFocusDown="@+id/registration_button"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/lightorange"
                     android:textSize="22dp" />
             </LinearLayout>
         </ScrollView>

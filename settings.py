@@ -7,7 +7,8 @@ import os
 
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
-TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
+TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),
+                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
 STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
@@ -87,12 +88,6 @@ DEVELOPMENT = (NEWSBLUR_DIR.find('/Users/') == 0)
 # = Django-specific Modules =
 # ===========================
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
@@ -379,6 +374,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=24),
         'options': {'queue': 'beat_tasks'},
     },
+    'activate-next-new-user': {
+        'task': 'activate-next-new-user',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # =========
@@ -500,6 +500,20 @@ DEBUG_TOOLBAR_CONFIG = {
 if not DEVELOPMENT:
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     EMAIL_BACKEND         = 'django_ses.SESBackend'
+
+if DEBUG:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.filesystem.Loader',
+         'django.template.loaders.app_directories.Loader',
+        ),
+    )
+else:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.cached.Loader', (
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        )),
+    )
 
 # =========
 # = Redis =

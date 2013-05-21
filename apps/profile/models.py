@@ -1,11 +1,14 @@
+import time
 import datetime
 import stripe
 import hashlib
+import redis
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
 from django.db.models.signals import post_save
+from django.db.models import Sum, Avg, Count
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -133,6 +136,8 @@ class Profile(models.Model):
         
         self.is_premium = True
         self.save()
+        self.user.is_active = True
+        self.user.save()
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
@@ -140,10 +145,13 @@ class Profile(models.Model):
             sub.active = True
             try:
                 sub.save()
-            except IntegrityError, Feed.DoesNotExist:
+            except (IntegrityError, Feed.DoesNotExist):
                 pass
         
-        scheduled_feeds = [sub.feed.pk for sub in subs]
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
         logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
@@ -152,6 +160,8 @@ class Profile(models.Model):
         self.setup_premium_history()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+        
+        return True
     
     def deactivate_premium(self):
         self.is_premium = False
@@ -163,11 +173,19 @@ class Profile(models.Model):
             try:
                 sub.save()
                 sub.feed.setup_feed_for_premium_subscribers()
-            except IntegrityError, Feed.DoesNotExist:
+            except (IntegrityError, Feed.DoesNotExist):
                 pass
         
         logging.user(self.user, "~BY~FW~SBBOO! Deactivating premium account: ~FR%s subscriptions~SN!" % (subs.count()))
     
+    def activate_free(self):
+        if self.user.is_active:
+            return
+        
+        self.user.is_active = True
+        self.user.save()
+        self.send_new_user_queue_email()
+        
     def setup_premium_history(self):
         existing_history = PaymentHistory.objects.filter(user=self.user)
         if existing_history.count():
@@ -221,13 +239,18 @@ class Profile(models.Model):
             self.save()
 
     def refund_premium(self):
+        refunded = False
+        
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
             stripe_payments[0].refund()
-            logging.user(self.user, "~FRRefunding stripe payment: $%s" % (stripe_payments[0].amount/1000))
+            logging.user(self.user, "~FRRefunding stripe payment: $%s" % (stripe_payments[0].amount/100))
             self.cancel_premium()
+            refunded = stripe_payments[0].amount/100
+        
+        return refunded
             
     def cancel_premium(self):
         self.cancel_premium_paypal()
@@ -379,7 +402,29 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
+    
+    def send_new_user_queue_email(self, force=False):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
         
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='new_user_queue')
+        if not created and not force:
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_new_user_queue.txt', locals())
+        html    = render_to_string('mail/email_new_user_queue.xhtml', locals())
+        subject = "Your free account is now ready to go on NewsBlur"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
+    
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print "Please provide an email address."
@@ -396,6 +441,40 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send()
                 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
+    
+    def send_import_reader_finished_email(self, feed_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_finished.xhtml', locals())
+        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
+    
+    def send_import_reader_starred_finished_email(self, feed_count, starred_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_import_reader_starred_finished.txt', locals())
+        html    = render_to_string('mail/email_import_reader_starred_finished.xhtml', locals())
+        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for Google Reader starred stories import: %s" % self.user.email)
     
     def send_launch_social_email(self, force=False):
         if not self.user.email or not self.send_emails:
@@ -546,12 +625,12 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}    
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 
-def change_password(user, old_password, new_password):
+def change_password(user, old_password, new_password, only_check=False):
     user_db = authenticate(username=user.username, password=old_password)
     if user_db is None:
         blank = blank_authenticate(user.username)
-        if blank:
-            user.set_password(user.username)
+        if blank and not only_check:
+            user.set_password(new_password or user.username)
             user.save()
     if user_db is None:
         user_db = authenticate(username=user.username, password=user.username)
@@ -559,13 +638,14 @@ def change_password(user, old_password, new_password):
     if not user_db:
         return -1
     else:
-        user_db.set_password(new_password)
-        user_db.save()
+        if not only_check:
+            user_db.set_password(new_password)
+            user_db.save()
         return 1
 
 def blank_authenticate(username, password=""):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username__iexact=username)
     except User.DoesNotExist:
         return
     
@@ -617,3 +697,65 @@ class PaymentHistory(models.Model):
             'payment_amount': self.payment_amount,
             'payment_provider': self.payment_provider,
         }
+    
+    @classmethod
+    def report(cls, months=12):
+        total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
+        print "Total: $%s" % total['sum']
+        
+        for m in range(months):
+            now = datetime.datetime.now()
+            start_date = now - datetime.timedelta(days=(m+1)*30)
+            end_date = now - datetime.timedelta(days=m*30)
+            payments = cls.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
+            payments = payments.aggregate(avg=Avg('payment_amount'), 
+                                          sum=Sum('payment_amount'), 
+                                          count=Count('user'))
+            print "%s months ago: avg=$%s sum=$%s users=%s" % (
+                m, payments['avg'], payments['sum'], payments['count'])
+
+class RNewUserQueue:
+    
+    KEY = "new_user_queue"
+    
+    @classmethod
+    def activate_next(cls):
+        count = cls.user_count()
+        if not count:
+            return
+        
+        user_id = cls.pop_user()
+        user = User.objects.get(pk=user_id)
+        logging.user(user, "~FBActivating free account. %s still in queue." % (count-1))
+
+        user.profile.activate_free()
+        
+    @classmethod
+    def add_user(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        now = time.time()
+        
+        r.zadd(cls.KEY, user_id, now)
+    
+    @classmethod
+    def user_count(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        count = r.zcard(cls.KEY)
+
+        return count
+    
+    @classmethod
+    def user_position(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        position = r.zrank(cls.KEY, user_id)
+        if position >= 0:
+            return position + 1
+    
+    @classmethod
+    def pop_user(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
+        user = r.zrange(cls.KEY, 0, 0)[0]
+        r.zrem(cls.KEY, user)
+
+        return user
+    

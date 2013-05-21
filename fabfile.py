@@ -7,6 +7,7 @@ from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
 from vendor import yaml
+from pprint import pprint
 import os
 import time
 import sys
@@ -53,30 +54,52 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
-def do_roledefs(*roledefs):
+def do_roledefs(split=False):
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
-    for roledef in roledefs:
-        env.roledefs[roledef] = [droplet.ip_address for droplet in droplets if roledef in droplet.name]
+    for droplet in droplets:
+        roledef = re.split(r"([0-9]+)", droplet.name)[0]
+        if roledef not in env.roledefs:
+            env.roledefs[roledef] = []
+        if split:
+            env.roledefs[roledef].append((droplet.name, droplet.ip_address))
+        elif droplet.ip_address not in env.roledefs[roledef]:
+            env.roledefs[roledef].append(droplet.ip_address)
+    return droplets
+
+def list_do():
+    do(split=True)
+    pprint(env.roledefs)
+
+def host(name):
+    droplets = do(split=True)
+    for droplet in droplets:
+        if name == droplet.name:
+            env.hosts = [droplet.ip_address]
+            break
     
 # ================
 # = Environments =
 # ================
 
-def do():
+def do(split=False):
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
-    do_roledefs('app', 'task', 'db', 'node', 'dev', 'debug', 'www')
+    droplets = do_roledefs(split=split)
+    return droplets
 
 def app():
     do()
     env.roles = ['app']
-    print env.roledefs['app']
 
 def work():
     do()
     env.roles = ['work']
+
+def www():
+    do()
+    env.roles = ['www']
 
 def dev():
     do()
@@ -236,7 +259,11 @@ def celery_reload():
 
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
+        with settings(warn_only=True):
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
@@ -262,8 +289,8 @@ def backup_mongo():
 def backup_postgresql():
     # crontab for postgres master server
     # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
-
+    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('python backup_psql.py')
 
@@ -296,10 +323,10 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
-    setup_time_calibration()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
+    setup_time_calibration()
     setup_libxml()
     setup_python()
     # setup_psycopg()
@@ -412,12 +439,13 @@ def add_machine_to_ssh():
     run("rm local_keys")
 
 def setup_repo():
-    with settings(warn_only=True):
-        run('git clone https://github.com/samuelclay/NewsBlur.git ~/newsblur')
     sudo('mkdir -p /srv')
-    # with settings(warn_only=True):
-    #     sudo('ln -f -s /home/%s/code /srv/' % env.user)
-    sudo('ln -f -s /home/%s/newsblur /srv/' % env.user)
+    sudo('chown -R %s.%s /srv' % (env.user, env.user))
+    with settings(warn_only=True):
+        run('git clone https://github.com/samuelclay/NewsBlur.git %s' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        sudo('ln -sfn /srv/code /home/%s/code' % env.user)
+        sudo('ln -sfn /srv/newsblur /home/%s/newsblur' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -523,7 +551,7 @@ def setup_mongoengine():
         run('git clone https://github.com/MongoEngine/mongoengine.git')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
-        sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' %
+        sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/mongoengine' %
              os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
 
 def setup_pymongo_repo():
@@ -534,7 +562,7 @@ def setup_pymongo_repo():
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridfs*')
-    sudo('ln -fs %s /usr/local/lib/python2.7/dist-packages/' %
+    sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/' %
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
 
 def setup_forked_mongoengine():
@@ -555,6 +583,7 @@ def switch_forked_mongoengine():
 
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_ulimit():
     # Increase File Descriptor limits.
@@ -670,10 +699,13 @@ def copy_app_settings():
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
-    run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
-    put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
+    cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
+    run('mkdir -p %s' % cert_path)
+    put('../secrets-newsblur/certificates/newsblur.com.crt', cert_path)
+    put('../secrets-newsblur/certificates/newsblur.com.key', cert_path)
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    # put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -687,11 +719,11 @@ def maintenance_off():
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
         run('git checkout templates/maintenance_off.html')
 
-def setup_haproxy():
-    sudo('ufw allow 81')        # nginx moved
-    sudo('ufw allow 1936')      # haproxy stats
+def setup_haproxy(debug=False):
+    sudo('ufw allow 81')    # nginx moved
+    sudo('ufw allow 1936')  # haproxy stats
     sudo('apt-get install -y haproxy')
-    sudo('apt-get remove haproxy')
+    sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
         run('wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz')
         run('tar -xf haproxy-1.5-dev17.tar.gz')
@@ -701,11 +733,13 @@ def setup_haproxy():
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
     sudo('mkdir -p /etc/haproxy')
-    put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    if debug:
+        put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+    else:
+        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    run('cat %s/intermediate.crt >> %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
     put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
     sudo('restart rsyslog')
@@ -838,6 +872,7 @@ def setup_mongo():
     run('echo "ulimit -n 10000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
+    put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
 
 def setup_mongo_mms():
     pull()
@@ -999,6 +1034,7 @@ def setup_do(name, size=2):
     region_id = doapi.regions()[0].id
     images = dict((s.name, s.id) for s in doapi.images())
     image_id = images[IMAGE_NAME]
+    name = do_name(name)
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
                                     image_id=image_id,
@@ -1029,6 +1065,22 @@ def setup_do(name, size=2):
     time.sleep(10)
     add_user_to_do()
 
+def do_name(name):
+    if re.search(r"[0-9]", name):
+        print " ---> Using %s as hostname" % name
+        return name
+    else:
+        hosts = do_roledefs(split=False)
+        hostnames = [host.name for host in hosts]
+        existing_hosts = [hostname for hostname in hostnames if name in hostname]
+        for i in range(10, 50):
+            try_host = "%s%02d" % (name, i)
+            if try_host not in existing_hosts:
+                print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
+                                                                    ', '.join(existing_hosts), try_host)
+                return try_host
+        
+    
 def add_user_to_do():
     env.user = "root"
     repo_user = "sclay"

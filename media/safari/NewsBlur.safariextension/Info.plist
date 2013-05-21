@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Nick Peelman</string>
+	<key>Builder Version</key>
+	<string>8536.28.10</string>
+	<key>CFBundleDisplayName</key>
+	<string>NewsBlur</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.newsblur.safariext</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Global Page</key>
+		<string>global.html</string>
+		<key>Menus</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>MenuNewsBlur</string>
+				<key>Menu Items</key>
+				<array>
+					<dict>
+						<key>Disabled</key>
+						<true/>
+						<key>Identifier</key>
+						<string>menuFocused</string>
+						<key>Title</key>
+						<string>Focused</string>
+					</dict>
+					<dict>
+						<key>Disabled</key>
+						<true/>
+						<key>Identifier</key>
+						<string>menuNormal</string>
+						<key>Title</key>
+						<string>Normal</string>
+					</dict>
+					<dict>
+						<key>Command</key>
+						<string>openNewsBlur</string>
+						<key>Identifier</key>
+						<string>menuOpenNewsBlur</string>
+						<key>Title</key>
+						<string>Open NewsBlur</string>
+					</dict>
+				</array>
+			</dict>
+		</array>
+		<key>Toolbar Items</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>ShowNewsBlurMenu</string>
+				<key>Image</key>
+				<string>toolbar.png</string>
+				<key>Label</key>
+				<string>NewsBlur</string>
+				<key>Menu</key>
+				<string>MenuNewsBlur</string>
+				<key>Palette Label</key>
+				<string>NewsBlur Menu</string>
+				<key>Tool Tip</key>
+				<string>NewsBlur Menu</string>
+			</dict>
+		</array>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>End</key>
+			<array>
+				<string>bookmarklet.js</string>
+			</array>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Shows unread NewsBlur Items!</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Include Secure Pages</key>
+			<true/>
+			<key>Level</key>
+			<string>All</string>
+		</dict>
+	</dict>
+	<key>Website</key>
+	<string>http://newsblur.com</string>
+</dict>
+</plist>

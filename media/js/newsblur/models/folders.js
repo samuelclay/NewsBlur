@@ -8,6 +8,8 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
             if (this.feed) {
                 this.set('is_feed', true);
             }
+        } else if (model && model.fake) {
+            this.folders = model.folders;
         } else if (model) {
             var title = _.keys(model)[0];
             var children = model[title];
@@ -51,10 +53,18 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     },
     
     feed_ids_in_folder: function() {
-        if (this.is_feed()) {
+        if (this.is_feed() && this.feed.get('active')) {
             return this.feed.id;
         } else if (this.is_folder()) {
             return this.folders.feed_ids_in_folder();
+        }
+    },
+    
+    feeds_with_unreads: function(options) {
+        if (this.is_feed()) {
+            return this.feed.has_unreads(options) && this.feed;
+        } else if (this.is_folder()) {
+            return this.folders.feeds_with_unreads(options);
         }
     },
     
@@ -176,6 +186,14 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         })));
     },
     
+    feeds_with_unreads: function(options) {
+        options = options || {};
+        
+        return _.compact(_.flatten(this.map(function(item) {
+            return item.feeds_with_unreads(options);
+        })));
+    },
+    
     selected: function() {
         var selected_folder;
         this.any(function(folder) {
@@ -200,7 +218,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         });
     },
     
-    unread_counts: function() {
+    unread_counts: function(sum_total) {
         var counts = this.reduce(function(counts, item) {
             if (item.is_feed()) {
                 var feed_counts = item.feed.unread_counts();
@@ -222,6 +240,12 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         
         this.counts = counts;
         
+        if (sum_total) {
+            var unread_view = NEWSBLUR.reader.get_unread_view_name();
+            if (unread_view == 'positive') return counts['ps'];
+            if (unread_view == 'neutral')  return counts['ps'] + counts['nt'];
+            if (unread_view == 'negative') return counts['ps'] + counts['nt'] + counts['ng'];
+        }
         return counts;
     },
     
@@ -237,18 +261,6 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         });
     },
     
-    feeds_with_unreads: function(options) {
-        options = options || {};
-        
-        return _.compact(_.flatten(this.map(function(item) {
-            if (item.is_feed()) {
-                return item.feed.has_unreads(options) && item.feed;
-            } else if (item.is_folder()) {
-                return item.folders.feeds_with_unreads(options);
-            }
-        })));
-    },
-        
     propagate_feed_selected: function() {
         if (this.parent_folder) {
             this.parent_folder.trigger('change:feed_selected');

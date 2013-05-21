@@ -6,6 +6,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         "click .NB-story-comment-reply .NB-modal-submit-green": "save_social_comment_reply",
         "click .NB-story-comment-reply .NB-modal-submit-delete": "delete_social_comment_reply",
         "click .NB-story-comment-reply-button": "open_reply",
+        "click .NB-story-comment-edit-reply-button": "edit_reply",
         "click .NB-story-comment-like": "like_comment"
     },
     
@@ -47,6 +48,17 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         }, this));
     },
     
+    edit_reply: function(e) {
+        var $reply = $(e.currentTarget).closest(".NB-story-comment-reply");
+        
+        this.open_reply({
+            $reply: $reply,
+            is_editing: true,
+            reply_comments: $(".NB-story-comment-reply-content", $reply).text(),
+            reply_id: $reply.data("id")
+        });
+    },
+    
     open_reply: function(options) {
         options = options || {};
         var current_user = NEWSBLUR.assets.user_profile;
@@ -56,18 +68,17 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
             $error.text("You must be following " + NEWSBLUR.Globals.blurblog_username + " to reply");
             return;
         }
-        var reply_comments = options.reply && options.reply.stripped_comments();
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
-            $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
+            $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
-            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: reply_comments }),
+            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply_comments }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
-            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-delete' }, 'Delete'))
+            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, 'Delete'))
         ]);
         this.remove_social_comment_reply_form();
         
         if (options.is_editing && options.$reply) {
-            $form.data('reply_id', options.reply.get("reply_id"));
+            $form.data('reply_id', options.reply_id);
             options.$reply.hide().addClass('NB-story-comment-reply-hidden');
             options.$reply.after($form);
         } else {
@@ -120,13 +131,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                                       comment_user_id, comment_reply, 
                                       reply_id,
                                       _.bind(function(data) {
-            if (this.options.on_social_page) {
-                this.options.story_comments_view.replace_comment(this.model.get('user_id'), data);
-            } else {
-                this.model.set(data.comment);
-                this.render();
-                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-            }
+            this.options.story_comments_view.replace_comment(this, data);
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
             if (!NEWSBLUR.Globals.is_authenticated) {
@@ -163,13 +168,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                                              this.options.story.get('story_feed_id'), 
                                              comment_user_id, reply_id,
                                              _.bind(function(data) {
-            if (this.options.on_social_page) {
-                this.options.story_comments_view.replace_comment(this.model.get('user_id'), data);
-            } else {
-                this.model.set(data.comment);
-                this.render();
-                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-            }
+            this.options.story_comments_view.replace_comment(this, data);
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this reply could not be deleted.";
             var $error = $.make('div', { className: 'NB-error' }, message);
@@ -184,20 +183,21 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
     },
     
     like_comment: function() {
-        var liking_user_ids = this.model.get('liking_users') || [];
         var comment_user_id = this.model.get('user_id');
-        var liked = _.contains(liking_user_ids, NEWSBLUR.Globals.user_id);
+        var liked = $(".NB-story-comment-like", this.$el).hasClass('NB-active');
         
         if (!liked) {
-            this.model.set('liking_users', _.union(liking_user_ids, NEWSBLUR.Globals.user_id));
             NEWSBLUR.assets.like_comment(this.options.story.id, 
                                          this.options.story.get('story_feed_id'),
-                                         comment_user_id);
+                                         comment_user_id, _.bind(function(data) {
+            this.options.story_comments_view.replace_comment(this, data);
+        }, this));
         } else {
-            this.model.set('liking_users', _.without(liking_user_ids, NEWSBLUR.Globals.user_id));
             NEWSBLUR.assets.remove_like_comment(this.options.story.id, 
                                                 this.options.story.get('story_feed_id'),
-                                                comment_user_id);
+                                                comment_user_id, _.bind(function(data) {
+            this.options.story_comments_view.replace_comment(this, data);
+        }, this));
         }
     }
     

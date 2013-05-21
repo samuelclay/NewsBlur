@@ -29,7 +29,6 @@
 
             <Button
                 android:id="@+id/profile_follow_button"
-                style="@style/slimGreenButton"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/description_follow_button"
@@ -39,7 +38,6 @@
             
             <Button
                 android:id="@+id/profile_unfollow_button"
-                style="@style/slimButton"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/description_follow_button"

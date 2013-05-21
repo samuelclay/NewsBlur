@@ -156,6 +156,8 @@
   float: left;
   margin: 2px 4px 0 0;
   cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 .NB-bookmarklet .NB-bookmarklet-new-folder-container {
   display: none;
@@ -173,8 +175,10 @@
   width: 156px;
 }
 .NB-bookmarklet .NB-bookmarklet-folder-new-label {
-  margin: 4px 4px 0 0;
+  margin: 8px 4px 0 0;
   float: left;
+  height: 8px;
+  width: 8px;
 }
 .NB-bookmarklet .NB-folders {
   width: 186px;

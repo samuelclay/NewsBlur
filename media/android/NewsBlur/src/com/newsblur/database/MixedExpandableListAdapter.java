@@ -359,7 +359,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		view.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
         ImageView folderIconView = ((ImageView) view.findViewById(R.id.row_folder_icon));
         if ( folderIconView != null ) {
-		    folderIconView.setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
+		    folderIconView.setImageResource(isExpanded ? R.drawable.g_icn_folder : R.drawable.g_icn_folder_rss);
         }
         ImageView folderIndicatorView = ((ImageView) view.findViewById(R.id.row_folder_indicator));
         if ( folderIndicatorView != null ) {

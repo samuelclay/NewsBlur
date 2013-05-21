@@ -27,28 +27,27 @@
     UIPickerView *folderPicker;
     UITableView *siteTable;
     UIScrollView *siteScrollView;
+    UIButton *addFolderButton;
     
     UINavigationBar *navBar;
     UIActivityIndicatorView *activityIndicator;
     UIActivityIndicatorView *siteActivityIndicator;
     UILabel *addingLabel;
     UILabel *errorLabel;
-    UISegmentedControl *addTypeControl;
 }
 
 - (void)reload;
 - (IBAction)addSite;
 - (void)autocompleteSite:(ASIHTTPRequest *)request;
-- (IBAction)addFolder;
-- (IBAction)selectAddTypeSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
-- (void)animateLoop;
 - (void)showFolderPicker;
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 - (void)reloadSearchResults;
+- (IBAction)toggleAddFolder:(id)sender;
+- (NSArray *)folders;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;
@@ -60,6 +59,7 @@
 @property (nonatomic) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic) IBOutlet UITableView *siteTable;
 @property (nonatomic) IBOutlet UIScrollView *siteScrollView;
+@property (nonatomic) IBOutlet UIButton *addFolderButton;
 @property (nonatomic) NSMutableData * jsonString;
 @property (nonatomic) NSMutableArray *autocompleteResults;
 
@@ -68,6 +68,5 @@
 @property (nonatomic) IBOutlet UIActivityIndicatorView *siteActivityIndicator;
 @property (nonatomic) IBOutlet UILabel *addingLabel;
 @property (nonatomic) IBOutlet UILabel *errorLabel;
-@property (nonatomic) IBOutlet UISegmentedControl *addTypeControl;
 
 @end

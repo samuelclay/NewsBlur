@@ -15,11 +15,15 @@ static UIColor *indicatorWhiteColor = nil;
 static UIColor *indicatorBlackColor = nil;
 static UIColor *positiveBackgroundColor = nil;
 static UIColor *neutralBackgroundColor = nil;
+static UIColor *positiveBackgroundShadowColor = nil;
+static UIColor *neutralBackgroundShadowColor = nil;
 static UIColor *negativeBackgroundColor = nil;
 static UIColor *blueBackgroundColor = nil;
+static UIColor *blueBackgroundShadowColor = nil;
 
 @implementation UnreadCountView
 
+const int COUNT_HEIGHT = 15;
 @synthesize appDelegate;
 @synthesize psWidth, psPadding, ntWidth, ntPadding;
 @synthesize psCount, ntCount, blueCount;
@@ -31,14 +35,17 @@ static UIColor *blueBackgroundColor = nil;
         indicatorWhiteColor = [UIColor whiteColor];
         indicatorBlackColor = [UIColor blackColor];
         
-        UIColor *ps = UIColorFromRGB(0x3B7613);
-        UIColor *nt = UIColorFromRGB(0xF9C72A);
+        UIColor *ps = UIColorFromRGB(0x6EA74A);
+        UIColor *nt = UIColorFromRGB(0xB3B6AD);
         UIColor *ng = UIColorFromRGB(0xCC2A2E);
         UIColor *blue = UIColorFromRGB(0x11448B);
         positiveBackgroundColor = ps;
         neutralBackgroundColor = nt;
+        positiveBackgroundShadowColor = UIColorFromRGB(0x4E872A);
         negativeBackgroundColor = ng;
+        neutralBackgroundShadowColor = UIColorFromRGB(0x93968D);
         blueBackgroundColor = blue;
+        blueBackgroundShadowColor = UIColorFromRGB(0x01346B);
         //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
         //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
         //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
@@ -70,63 +77,92 @@ static UIColor *blueBackgroundColor = nil;
     int ntOffset = nt == 0 ? 0 : ntWidth - 20;
     
     if (ps > 0 || blueCount) {
+        CGRect rr;
+        
+        if (listType == NBFeedListSocial) {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, COUNT_HEIGHT);
+            } else {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, COUNT_HEIGHT);
+            }
+        } else if (listType == NBFeedListFolder) {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 8, psWidth, COUNT_HEIGHT);
+        } else {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, COUNT_HEIGHT);
+        }
+        
+        if (blueCount) {
+            [blueBackgroundShadowColor set];
+        } else {
+            [positiveBackgroundShadowColor set];
+        }
+        CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
+        [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
+        
         if (blueCount) {
             [blueBackgroundColor set];
         } else {
             [positiveBackgroundColor set];
         }
-        CGRect rr;
-        
-        if (listType == NBFeedListSocial) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
-            } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
-            }
-        } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 7, psWidth, 17);
-        } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
-        }
-        
         [UIView drawRoundRectangleInRect:rr withRadius:4];
         
-        [indicatorWhiteColor set];
-
+        
         NSString *psStr = [NSString stringWithFormat:@"%d", ps];
         CGSize size = [psStr sizeWithFont:indicatorFont];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
+        
+        if (blueCount) {
+            [indicatorBlackColor set];
+        } else {
+            [positiveBackgroundShadowColor set];
+        }
+        [psStr
+         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
+         withFont:indicatorFont];
+        
+        [indicatorWhiteColor set];
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];
+        
     }
     
-    if (nt > 0 && appDelegate.selectedIntelligence <= 0) {
-        [neutralBackgroundColor set];
-        
+    if (nt > 0 && appDelegate.selectedIntelligence <= 0) {        
         CGRect rr;
         if (listType == NBFeedListSocial) {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, COUNT_HEIGHT);
             } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, COUNT_HEIGHT);
             }
         } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 7, ntWidth, 17);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 8, ntWidth, COUNT_HEIGHT);
         } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, COUNT_HEIGHT);
         }
         
+        
+        [neutralBackgroundShadowColor set];
+        CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
+        [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
+        
+        [neutralBackgroundColor set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];
         //        [UIView drawLinearGradientInRect:rr colors:ntColors];
         
-        [indicatorBlackColor set];
         
         NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
         CGSize size = [ntStr sizeWithFont:indicatorFont];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
+        
+        [neutralBackgroundShadowColor set];
+        [ntStr
+         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
+         withFont:indicatorFont];
+        
+        [indicatorWhiteColor set];
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];

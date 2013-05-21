@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
+#import "ShareViewController.h"
 
 @implementation AuthorizeServicesViewController
 
@@ -17,6 +18,7 @@
 @synthesize webView;
 @synthesize url;
 @synthesize type;
+@synthesize fromStory;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,22 +44,39 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    
     if ([type isEqualToString:@"google"]) {
         self.navigationItem.title = @"Google Reader";
     } else if ([type isEqualToString:@"facebook"]) {
         self.navigationItem.title = @"Facebook";
     } else if ([type isEqualToString:@"twitter"]) {
-        self.navigationItem.title = @"Twitter";    
-    }    
+        self.navigationItem.title = @"Twitter";
+    } else if ([type isEqualToString:@"appdotnet"]) {
+        self.navigationItem.title = @"App.net";
+    }
     NSString *urlAddress = [NSString stringWithFormat:@"http://%@%@", NEWSBLUR_URL, url];
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
     [self.webView loadRequest:requestObj];
+
+    if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
+                                         initWithTitle: @"Cancel"
+                                         style: UIBarButtonSystemItemCancel
+                                         target: self
+                                         action: @selector(doCancelButton)];
+        self.navigationItem.leftBarButtonItem = cancelButton;
+        self.view.frame = CGRectMake(0, 0, 320, 416);
+        self.contentSizeForViewInPopover = self.view.frame.size;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
+}
+
+- (void)doCancelButton {
+    [appDelegate.shareViewController adjustShareButtons];
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -65,30 +84,37 @@
     NSLog(@"URL STRING IS %@", URLString);
     
     if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/", NEWSBLUR_URL]]) {
-        
-        
         NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
         
-        [self.navigationController popViewControllerAnimated:YES];
-        if ([type isEqualToString:@"google"]) {
-            if (error.length) {
-                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
-            } else {
-                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
-            }
-
-        } else if ([type isEqualToString:@"facebook"]) {
-            if (error.length) {
-                [self showError:error];
-            } else {
-                [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
-            }
-            
-        } else if ([type isEqualToString:@"twitter"]) {
-            if (error.length) {
-                [self showError:error];
-            } else {
-                [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+        if (self.fromStory) {
+            [appDelegate refreshUserProfile:^{
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    [appDelegate.shareNavigationController viewWillAppear:YES];
+                    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+                } else {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            }];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
+            if ([type isEqualToString:@"google"]) {
+                if (error.length) {
+                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
+                } else {
+                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
+                }
+            } else if ([type isEqualToString:@"facebook"]) {
+                if (error.length) {
+                    [self showError:error];
+                } else {
+                    [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+                }
+            } else if ([type isEqualToString:@"twitter"]) {
+                if (error.length) {
+                    [self showError:error];
+                } else {
+                    [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+                }
             }
         }
         return NO;

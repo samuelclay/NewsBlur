@@ -62,6 +62,8 @@ def json_encode(data, *args, **kwargs):
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
         elif isinstance(data, basestring):
             ret = unicode(data)
+        elif isinstance(data, Exception):
+            ret = unicode(data)
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
             ret = force_unicode(data)

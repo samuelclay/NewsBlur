@@ -9,6 +9,7 @@
 #import "InteractionsModule.h"
 #import "NewsBlurAppDelegate.h"
 #import "InteractionCell.h"
+#import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
@@ -75,7 +76,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // if there is no social profile, we are DONE
-//    if ([[appDelegate.dictUserProfile allKeys] count] == 0) {
+//    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
 //        [self.interactionsTable reloadData];
 //        return;
@@ -99,7 +100,7 @@
                                "http://%@/social/interactions?user_id=%@&page=%i&limit=10"
                                "&category=follow&category=comment_reply&category=comment_like&category=reply_reply&category=story_reshare",
                                NEWSBLUR_URL,
-                               [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                               [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
         NSURL *url = [NSURL URLWithString:urlString];
@@ -150,13 +151,14 @@
         appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }
     
-
+    
     [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 #pragma mark -
@@ -177,7 +179,12 @@
         return MINIMUM_INTERACTION_HEIGHT;
     }
     
-    InteractionCell *interactionCell = [[InteractionCell alloc] init];
+    InteractionCell *interactionCell;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        interactionCell = [[InteractionCell alloc] init];
+    } else {
+        interactionCell = [[SmallInteractionCell alloc] init];
+    }
     int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
@@ -199,10 +206,14 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    InteractionCell *cell = [tableView 
+    InteractionCell *cell = [tableView
                              dequeueReusableCellWithIdentifier:@"InteractionCell"];
     if (cell == nil) {
-        cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        } else {
+            cell = [[SmallInteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
+        }
     }
     
     if (indexPath.row >= [appDelegate.userInteractionsArray count]) {

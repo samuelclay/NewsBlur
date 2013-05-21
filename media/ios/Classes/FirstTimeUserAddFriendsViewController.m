@@ -43,11 +43,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Find Friends";
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.friendsLabel.font = [UIFont systemFontOfSize:14];
-    }
+    self.navigationItem.title = @"Friends";
 }
 
 - (void)viewDidUnload {
@@ -125,6 +121,12 @@
     [request setDidFinishSelector:@selector(finishConnectFromSocial:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 - (void)finishConnectFromSocial:(ASIHTTPRequest *)request {

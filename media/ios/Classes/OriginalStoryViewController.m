@@ -7,11 +7,13 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import "NBContainerViewController.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
-#import "SHK.h"
 #import "MBProgressHUD.h"
+#import "UIBarButtonItem+Image.h"
+#import "ShareThis.h"
 
 @implementation OriginalStoryViewController
 
@@ -36,10 +38,12 @@
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
 
-    toolbar.tintColor = UIColorFromRGB(0x183353);
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
     [self updateAddress:request];
     [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
@@ -57,11 +61,19 @@
     return YES;
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
+}
+
 - (void)viewDidLoad {
     CGRect navBarFrame = self.view.bounds;
     navBarFrame.size.height = kNavBarHeight;
     UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:navBarFrame];
     navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    toolbar.autoresizingMask = toolbar.autoresizingMask | UIViewAutoresizingFlexibleHeight | UIViewContentModeBottom;
+    [navBar
+     setBackgroundImage:[UIImage imageNamed:@"toolbar_tall_background.png"]
+     forBarMetrics:UIBarMetricsDefault];
     
     CGRect labelFrame = CGRectMake(kMargin, kSpacer,
                                    navBar.bounds.size.width - 2*kMargin, 
@@ -70,9 +82,9 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:12];
-    label.textColor = [UIColor colorWithRed:0.97f green:0.98f blue:0.99 alpha:0.95];
-    label.shadowColor = [UIColor colorWithRed:0.06f green:0.12f blue:0.16f alpha:0.4f];
-    label.shadowOffset = CGSizeMake(0.0f, 1.0f);
+    label.textColor = UIColorFromRGB(0x404040);
+    label.shadowColor = UIColorFromRGB(0xFAFAFA);
+    label.shadowOffset = CGSizeMake(0.0f, -1.0f);
     label.textAlignment = UITextAlignmentCenter;
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [navBar addSubview:label];
@@ -119,18 +131,66 @@
     
     [self.view addSubview:navBar];
     
-    CGRect webViewFrame = CGRectMake(0, 
+    UIImage *backImage = [UIImage imageNamed:@"barbutton_back.png"];
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    backButton.bounds = CGRectMake(0, 0, 44, 44);
+    [backButton setImage:backImage forState:UIControlStateNormal];
+    [backButton addTarget:self action:@selector(webViewGoBack:) forControlEvents:UIControlEventTouchUpInside];
+    [back setCustomView:backButton];
+    
+    UIImage *forwardImage = [UIImage imageNamed:@"barbutton_forward.png"];
+    UIButton *forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    forwardButton.bounds = CGRectMake(0, 0, 44, 44);
+    [forwardButton setImage:forwardImage forState:UIControlStateNormal];
+    [forwardButton addTarget:self action:@selector(webViewGoForward:) forControlEvents:UIControlEventTouchUpInside];
+    [forward setCustomView:forwardButton];
+    
+    UIImage *refreshImage = [UIImage imageNamed:@"barbutton_refresh.png"];
+    UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    refreshButton.bounds = CGRectMake(0, 0, 44, 44);
+    [refreshButton setImage:refreshImage forState:UIControlStateNormal];
+    [refreshButton addTarget:self action:@selector(webViewRefresh:) forControlEvents:UIControlEventTouchUpInside];
+    [refresh setCustomView:refreshButton];
+    
+    UIImage *sendtoImage = [UIImage imageNamed:@"barbutton_sendto.png"];
+    UIButton *sendtoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    sendtoButton.bounds = CGRectMake(0, 0, 44, 44);
+    [sendtoButton setImage:sendtoImage forState:UIControlStateNormal];
+    [sendtoButton addTarget:self action:@selector(doOpenActionSheet) forControlEvents:UIControlEventTouchUpInside];
+    [pageAction setCustomView:sendtoButton];
+    
+    CGRect webViewFrame = CGRectMake(0,
                                      navBarFrame.origin.y + 
                                      navBarFrame.size.height, 
                                      self.view.frame.size.width, 
                                      self.view.frame.size.height - kNavBarHeight - 44);
     self.webView.frame = webViewFrame;
-        
-    navBar.tintColor = UIColorFromRGB(0x183353);
-    
-
 }
 
+- (IBAction)webViewGoBack:(id)sender {
+    [webView goBack];
+}
+
+- (IBAction)webViewGoForward:(id)sender {
+    [webView goForward];
+}
+
+- (IBAction)webViewRefresh:(id)sender {
+    [webView reload];
+}
+
+- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    CGSize toolbarSize = [self.toolbar sizeThatFits:self.view.bounds.size];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.toolbar.frame = CGRectMake(-10.0f,
+                                        CGRectGetHeight(self.view.bounds) - toolbarSize.height,
+                                        toolbarSize.width + 20, toolbarSize.height);
+    } else {
+        self.toolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) -
+                                                  toolbarSize.height), toolbarSize};
+        self.webView.frame = (CGRect){CGPointMake(0, kNavBarHeight), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame) - kNavBarHeight)};
+    }
+}
 
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -232,53 +292,19 @@
 
 - (IBAction)doCloseOriginalStoryViewController {
 //    NSLog(@"Close Original Story: %@", appDelegate);
-    [appDelegate closeOriginalStory];
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)doOpenActionSheet {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory 
-                                            objectForKey:@"story_title"]];
-    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-    [actionSheet showInView:self.view];
-
-//    UIActionSheet *options = [[UIActionSheet alloc] 
-//                              initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
-//                              delegate:self
-//                              cancelButtonTitle:nil
-//                              destructiveButtonTitle:nil
-//                              otherButtonTitles:nil];
-//
-//    NSArray *buttonTitles;
-//    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-//        buttonTitles = [NSArray arrayWithObjects:@"Open Story in Safari", nil];
-//    } else {
-//        buttonTitles = [NSArray arrayWithObjects:@"Open this Page in Safari", 
-//                                                 @"Open Original in Safari", nil];
-//    }
-//    for (id title in buttonTitles) {
-//        [options addButtonWithTitle:title];
-//    }
-//    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-//
-//    [options showInView:self.view];
-//    [options release];
+    NSString *title = [appDelegate.activeStory
+                       objectForKey:@"story_title"];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
+    } else {
+        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+    }
 }
-
-//- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-//
-//    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-//        if (buttonIndex == 0) {
-//            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-//        }
-//    } else {
-//        if (buttonIndex == 0) {
-//            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-//        } else if (buttonIndex == 1) {
-//            [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
-//        }
-//    }
-//}
 
 @end

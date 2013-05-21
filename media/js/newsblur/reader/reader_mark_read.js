@@ -1,6 +1,7 @@
 NEWSBLUR.ReaderMarkRead = function(options) {
     var defaults = {
-        'days': 1
+        days: 1,
+        modal_container_class: "NB-full-container"
     };
     
     this.flags = {};
@@ -31,14 +32,15 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Mark old stories as read'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Mark old stories as read'
+            ]),
             $.make('form', { className: 'NB-markread-form' }, [
                 $.make('div', { className: 'NB-markread-slider'}),
                 $.make('div', { className: 'NB-markread-explanation'}),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Do it' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Do it' })
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();
@@ -46,36 +48,6 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                 return false;
             })
         ]);
-    },
-    
-    open_modal: function() {
-        var self = this;
-        
-        this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-                // $('.NB-classifier-tag', self.$modal).corner('4px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-                $(document).unbind('.mark_read');
-            }
-        });
     },
     
     load_slider: function() {
@@ -105,16 +77,16 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
     },
     
     generate_explanation: function(value) {
-        var $explanation = $('.NB-markread-explanation', this.$modal);
+        var $button = $('.NB-modal-submit-button', this.$modal);
         var explanation;
         
         if (value == 0) {
-            explanation = "Mark <b>every story</b> as read.";
+            explanation = "Mark every story as read";
         } else if (value >= 1) {
-            explanation = "Mark all stories older than <b>" + value + " day" + (value==1?'':'s') + " old</b> as read.";
+            explanation = "Mark all stories older than " + value + " day" + (value==1?'':'s') + " old as read";
         }
         
-        $explanation.html(explanation);
+        $button.val(explanation);
     },
     
     save_mark_read: function() {
