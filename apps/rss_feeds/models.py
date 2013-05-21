@@ -674,7 +674,10 @@ class Feed(models.Model):
         month_count = 0
         if not current_counts:
             current_counts = self.data.story_count_history and json.decode(self.data.story_count_history)
-        
+
+        if isinstance(current_counts, dict):
+            current_counts = current_counts['months']
+
         if not current_counts:
             current_counts = []
 

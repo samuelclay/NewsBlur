@@ -4,8 +4,11 @@ import os
 import select
 import subprocess
 import sys
-import yaml
 
+sys.path.insert(0, '/srv/newsblur')
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+import fabfile
 
 IGNORE_HOSTS = [
     'push',
@@ -17,19 +20,18 @@ def main(role="app", role2="dev", command=None, path=None):
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
-    hosts_path = os.path.expanduser(os.path.join('../secrets-newsblur/configs/hosts.yml'))
-    hosts = yaml.load(open(hosts_path))
-    
-    for r in [role, role2]:
-        if isinstance(hosts[r], dict):
-            hosts[r] = ["%s:%s" % (hosts[r][k][-1], k) for k in hosts[r].keys()]
-    
+
+    fabfile.do(split=True)
+    hosts = fabfile.env.roledefs
+
     for hostname in set(hosts[role] + hosts[role2]):
-        if any(h in hostname for h in IGNORE_HOSTS): continue
         if ':' in hostname:
             hostname, address = hostname.split(':', 1)
+        elif isinstance(hostname, tuple):
+            hostname, address = hostname[0], hostname[1]
         else:
             address = hostname
+        if any(h in hostname for h in IGNORE_HOSTS): continue
         if 'ec2' in hostname:
             s = subprocess.Popen(["ssh", "-i", os.path.expanduser("~/.ec2/sclay.pem"), 
                                   address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
@@ -57,4 +59,4 @@ def main(role="app", role2="dev", command=None, path=None):
         print " --- End of Logging ---"
 
 if __name__ == "__main__":
-    main()
+    main(*sys.argv[1:])

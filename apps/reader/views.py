@@ -759,8 +759,8 @@ def load_river_stories__redis(request):
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if not feed_ids:
-        usersubs = UserSubscription.objects.filter(user=user, active=True)
-        feed_ids = [sub.feed.pk for sub in usersubs]
+        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        feed_ids = [sub.feed_id for sub in usersubs]
     
     offset = (page-1) * limit
     limit = page * limit - 1
@@ -832,16 +832,43 @@ def load_river_stories__redis(request):
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds)" % 
+                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids)))
+                               len(feed_ids), len(original_feed_ids), order, read_filter))
     
     return dict(stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
                 user_profiles=user_profiles)
     
+
+@json.json_view
+def unread_story_hashes(request):
+    user              = get_user(request)
+    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     
+    if not feed_ids:
+        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        feed_ids = [sub.feed_id for sub in usersubs]
+    
+    unread_feed_story_hashes = {}
+    story_hash_count = 0
+    for feed_id in feed_ids:
+        try:
+            us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
+        except UserSubscription.DoesNotExist:
+            continue
+        if not us.unread_count_neutral and not us.unread_count_positive:
+            continue
+        unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                           hashes_only=True)
+        story_hash_count += len(unread_feed_story_hashes[feed_id])
+
+    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
+                           (len(feed_ids), story_hash_count))
+
+    return dict(unread_feed_story_hashes=unread_feed_story_hashes)
+
 @ajax_login_required
 @json.json_view
 def mark_all_as_read(request):

@@ -14,7 +14,7 @@ Stay up to date and in touch with a few different ways:
     * Read the NewsBlur Blog: http://blog.newsblur.com
     * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur/
 
-There's plenty of ways to use NewsBlur beyond the website:
+There are plenty of ways to use NewsBlur beyond the website:
 
     * Download the free iPad/iPhone App: http://{% current_domain %}/ios/
     * Download the free Android App: http://{% current_domain %}/android/
