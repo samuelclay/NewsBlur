@@ -38,7 +38,7 @@
             
             <Button
                 android:id="@+id/profile_unfollow_button"
-                android:layout_width="70dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_unfollow"

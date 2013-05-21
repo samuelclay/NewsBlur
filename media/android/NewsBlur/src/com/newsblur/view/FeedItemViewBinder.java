@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Html;
 import android.text.TextUtils;
@@ -56,13 +57,16 @@ public class FeedItemViewBinder implements ViewBinder {
 			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
 			int score = Story.getIntelligenceTotal(title, authors, tags, feed);
 			
-			if (score > 0) {
-				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.positive_count_circle : R.drawable.positive_count_circle_read);
+			Drawable icon;
+            if (score > 0) {
+                icon = view.getResources().getDrawable(R.drawable.g_icn_focus);
 			} else if (score == 0) {
-				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.neutral_count_circle : R.drawable.neutral_count_circle_read);
+                icon = view.getResources().getDrawable(R.drawable.g_icn_unread);
 			} else {
-				view.setBackgroundResource(R.drawable.negative_count_circle);
+                icon = view.getResources().getDrawable(R.drawable.g_icn_hidden);
 			}
+            icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
+            view.setBackgroundDrawable(icon);
 			
 			((TextView) view).setText("");
 			return true;
