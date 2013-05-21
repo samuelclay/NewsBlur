@@ -91,7 +91,7 @@ def dashboard(request, **kwargs):
         del request.session['import_from_google_reader']
     
     if not user.is_active:
-        url = "https://%s%s" % (Site.objects.get_current().domain.replace("www", "dev"),
+        url = "https://%s%s" % (Site.objects.get_current().domain,
                                  reverse('stripe-form'))
         return HttpResponseRedirect(url)
     
@@ -162,7 +162,7 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
-            url = "https://%s%s" % (Site.objects.get_current().domain.replace("www", "dev"),
+            url = "https://%s%s" % (Site.objects.get_current().domain,
                                      reverse('stripe-form'))
             return HttpResponseRedirect(url)
 

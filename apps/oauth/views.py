@@ -137,7 +137,7 @@ def facebook_connect(request):
 @login_required
 @render_to('social/social_connect.xhtml')
 def appdotnet_connect(request):
-    domain = Site.objects.get_current().domain.replace("www", "dev")
+    domain = Site.objects.get_current().domain
     args = {
         "client_id": settings.APPDOTNET_CLIENTID,
         "client_secret": settings.APPDOTNET_SECRET,
