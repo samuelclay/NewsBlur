@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/newsblur_blue"
         android:id="@+id/addfollow_button_bar"
         android:gravity="right" 
         android:padding="10dp">

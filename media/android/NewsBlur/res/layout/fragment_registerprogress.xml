@@ -24,7 +24,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Registering..."
-            android:textColor="@color/lightorange"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -47,16 +46,6 @@
                 android:layout_height="200dp"
                 android:src="@drawable/logo" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/registerprogress_logo"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:text="@string/faster_faster"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
         </LinearLayout>
 
         <Button
@@ -65,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:text="@string/login_lets_go"
+            android:text="@string/login_next"
             android:textSize="20sp" />
     </RelativeLayout>
 

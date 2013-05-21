@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/newsblur_blue"
         android:id="@+id/addsites_button_bar"
         android:gravity="right" 
         android:padding="10dp">
@@ -40,7 +39,6 @@
                 android:layout_margin="20dp"
                 android:gravity="center"
                 android:text="Start your collection of great sites to follow."
-                android:textColor="@color/lightorange"
                 android:textSize="20sp" />
 
             <View
