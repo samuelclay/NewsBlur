@@ -15,12 +15,13 @@ class NBMuninGraph(MuninGraph):
             'monthly.label': 'monthly',
             'daily.label': 'daily',
             'premium.label': 'premium',
+            'queued.label': 'queued',
         }
 
     def calculate_metrics(self):
         import datetime
         from django.contrib.auth.models import User
-        from apps.profile.models import Profile
+        from apps.profile.models import Profile, RNewUserQueue
 
         last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         last_day = datetime.datetime.utcnow() - datetime.timedelta(minutes=60*24)
@@ -30,6 +31,7 @@ class NBMuninGraph(MuninGraph):
             'monthly': Profile.objects.filter(last_seen_on__gte=last_month).count(),
             'daily': Profile.objects.filter(last_seen_on__gte=last_day).count(),
             'premium': Profile.objects.filter(is_premium=True).count(),
+            'queued': RNewUserQueue.user_count(),
         }
 
 if __name__ == '__main__':

@@ -1,0 +1,1327 @@
+@import "compass/reset";
+@import "compass/css3";
+
+$page-width: 700px;
+$comment-width: 586px;
+$max-story-height: 400px;
+
+$text-color: #333333;
+$link-color: #22258C;
+$link-color-hover: #740417;
+$link-color-active: #550B14;
+$highlight-text-color: #62a4d3;
+$grey-text-color: #707070;
+$light-text-color: rgba(102, 93, 67, .6);
+$lighter-text-color: rgba(132, 123, 107, .6);
+$more-text-color: #1a9fff;
+$more-text-color-hover: #306187;
+$more-text-color-active: #722125;
+$border-color: #bdbdbd;
+$border-color-hover: #ABABAB;
+$border-color-active: #9D9D9D;
+
+$title-font-size: 21px;
+$small-title-font-size: 16px;
+$small-font-size: 14px;
+$small-iphone-font-size: 12px;
+$smallest-font-size: 12px;
+$smallest-iphone-font-size: 11px;
+$tiny-font-size: 11px;
+$tiny-iphone-font-size: 10px;
+
+$default-text-shadow-color: white;
+$default-text-shadow-blur: 1px;
+$default-text-shadow-v-offset: 1px;
+$default-box-shadow-color: $border-color;
+$default-box-shadow-v-offset: 0px;
+$default-box-shadow-blur: 1px;
+
+// ==========
+// = Mixins =
+// ==========
+
+@mixin NB-default-button {
+    border: 1px solid $border-color;
+    @include border-radius(2px);
+    @include background-image(linear-gradient(#F8F8F8, #E5E5E5));
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, .5);
+    
+    color: $light-text-color;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    padding: 4px 12px;
+    font-size: $small-font-size;
+    font-weight: normal;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    &:hover {
+        border: 1px solid $border-color-hover;
+        color: $grey-text-color;
+        @include background-image(linear-gradient(#EFEFEF, #DFDFDF));
+    }
+    
+    &:active {
+        border: 1px solid $border-color-active;
+        @include background-image(linear-gradient(#e9e9e9, #e9e9e9));
+        @include single-box-shadow(#c1c1c1, 0px, 0px, 10px, false, true);
+        color: $text-color;
+    }
+    @media screen and (max-width: 580px) {
+        padding: 2px 6px;
+        font-size: $small-iphone-font-size;
+    }
+}
+
+@mixin NB-blue-button {
+    border: 1px solid #4388b5;
+    @include border-radius(2px);
+    @include background-image(linear-gradient(#6bb1e0, #5AA1D8));
+    color: white;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    padding: 4px 12px;
+    font-size: $small-font-size;
+    font-weight: normal;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    
+    &:hover {
+        border: 1px solid #3573A5;
+        @include background-image(linear-gradient(#5AA1D8, #4d98d2));
+    }
+    
+    &:active {
+        border: 1px solid #2B5C84;
+        @include background-image(linear-gradient(#4d98d2, #4d98d2));
+        @include single-box-shadow(#1f74b8, 0px, 0px, 10px, false, true);
+    }
+    @media screen and (max-width: 580px) {
+        padding: 2px 6px;
+        font-size: $small-iphone-font-size;
+    }
+}
+
+// ===========
+// = Globals =
+// ===========
+
+body {
+    background: #ebedee image-url('background.png') repeat 0 0;
+    font-family: Helvetica, arial, sans-serif;
+    color: $text-color;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    
+    @media screen and ( max-width: 580px) {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+
+a {
+    color: $link-color;
+    text-decoration: none;
+    
+    &:hover {
+        color: $link-color-hover;
+    }
+    &:active {
+        color: $link-color-active;
+    }
+}
+
+.NB-hidden {
+  display: none;
+}
+
+.NB-left {
+  float: left;
+}
+.NB-right {
+  float: right;
+}
+.NB-raquo {
+  font-size: 18px;
+  vertical-align: baseline;
+  line-height: 12px;
+}
+
+.tipsy {
+    font-size: 11px;
+}
+.tipsy-inner {
+    padding: 2px 9px 2px;
+}
+
+blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 10px;
+}
+.NB-spinner {
+    width: 16px;
+    height: 16px;
+    background: url('/media/embed/reader/recycle_spinner.gif') no-repeat 0 0;
+    display: none;
+    float: right;
+    margin-top: -2px;
+}
+.NB-spinner.NB-active {
+    display: block;
+}
+.tipsy {
+    .tipsy-arrow {
+        display: none;
+    }
+}
+
+// ========
+// = Page =
+// ========
+
+.NB-container {
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    padding-top: 36px;
+}
+
+// ==========
+// = Header =
+// ==========
+
+.NB-page {
+    max-width: $page-width;
+    min-width: 300px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.NB-watermark-logo {
+    margin: 20px auto;
+    max-width: $page-width;
+    min-width: 300px;
+    text-align: center;
+    opacity: 0.0;
+    height: 60px;
+    
+    @media screen and ( max-width: 580px) {
+        height: 40px;
+        margin: 10px auto;
+    }
+    
+    .NB-authenticated & {
+        opacity: 0.4;
+    }
+}
+
+.NB-blue-button {
+    @include NB-blue-button;
+}
+.NB-grey-button {
+    @include NB-default-button;
+}
+
+
+.NB-header {
+    @include single-box-shadow(#7d7d7d, 0px, 0px, 10px, false, false);
+    width: 100%;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    position: fixed;
+    @include background-image(linear-gradient(#F3F3EE, #F3F3EE 70%, #E8EBE4));
+    height: 44px;
+    bottom: 0;
+    
+    @media screen and ( max-width: 580px) {
+        position: absolute;
+        height: 60px;
+    }
+    
+    .NB-header-inner {
+        max-width: $page-width;
+        min-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .NB-header-tabs {
+        margin: 0 70px;
+        
+        @media screen and ( max-width: 580px) {
+            margin: 0 0;
+        }
+
+        .NB-header-tab {
+            height: 44px;
+            float: left;
+            vertical-align: top;
+            width: 25%;
+            text-transform: uppercase;
+            font-size: $smallest-font-size;
+            border-right: 1px solid #cdcdcd;
+            @include box-sizing(border-box);
+            text-align: center;
+            font-weight: bold;
+            @include single-text-shadow;
+            cursor: pointer;
+            color: $text-color;
+            
+            .popover {
+                cursor: default;
+            }
+            
+            &:first-child{
+                border-left: 1px solid #cdcdcd;
+            }
+            
+            @media screen and (max-width: 580px) {
+                height: 60px;
+                font-size: $smallest-iphone-font-size;
+                
+                &:last-child {
+                    border-right: none;
+                }
+                &:first-child{
+                    border-left: none;
+                }
+            }
+            
+            &:hover, &.open {
+                div.NB-tab-inner {
+                    color: $highlight-text-color;
+                }                    
+            }
+            
+            div.NB-tab-inner {
+                display: inline-block;
+                line-height: 44px;
+                
+                @media screen and (max-width: 580px) {
+                    line-height: 28px;
+                }
+            }
+            
+            img.NB-arrow {
+                float: right;
+                margin-right: -8px;
+                margin-left: 4px;
+                
+                @media screen and (max-width: 580px) {
+                    display: none;
+                }
+            }
+            img.NB-user-avatar {
+                height: 16px;
+                width: 16px;
+                @include border-radius(3px, 3px);
+            }
+            
+            img,
+            .NB-icon {
+                float: left;
+                margin-top: 13px;
+                margin-right: 7px;
+                width: 17px;
+                height: 17px; 
+
+                @media screen and (max-width: 580px) {
+                    float: none;
+                    display: block;
+                    margin: 10px auto 0;
+                }
+            }
+            
+            &.NB-blurblog-tab {
+                background: image-url('header/icon_activity_active.png') no-repeat -9999px -9999px;
+            }
+            &.NB-blurblog-tab .NB-icon {
+                background: image-url('header/icon_activity.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-active.NB-blurblog-tab .NB-icon,
+            &.NB-blurblog-tab:hover .NB-icon {
+                background: image-url('header/icon_activity_active.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-trending-tab {
+                background: image-url('header/icon_trending_active.png') no-repeat -9999px -9999px;
+            }
+            &.NB-trending-tab .NB-icon {
+                background: image-url('header/icon_trending.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-active.NB-trending-tab .NB-icon,
+            &.NB-trending-tab:hover .NB-icon {
+                background: image-url('header/icon_trending_active.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-following-tab {
+                background: image-url('header/icon_follow_active.png') no-repeat -9999px -9999px;
+            }
+            &.NB-following-tab .NB-icon {
+                background: image-url('header/icon_follow.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-active.NB-following-tab .NB-icon,
+            &.NB-following-tab:hover .NB-icon {
+                background: image-url('header/icon_follow_active.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-user-tab {
+                background: image-url('header/icon_circular_active.png') no-repeat -9999px -9999px;
+            }
+            &.NB-user-tab .NB-icon {
+                background: image-url('header/icon_circular.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-active.NB-user-tab .NB-icon,
+            &.NB-user-tab:hover .NB-icon {
+                background: image-url('header/icon_circular_active.png') no-repeat center bottom;
+                background-size: 17px;
+            }
+            
+            &.NB-active {
+                background: image-url('header_highlight_border.png') no-repeat center bottom;
+                
+                div.NB-tab-inner {
+                    color: $highlight-text-color;
+                }
+            }
+        }
+    }
+}
+
+// ==========
+// = Banner =
+// ==========
+
+.NB-banner-wrapper {
+    background-color: rgba(255, 255, 255, .3);
+    padding: 36px 0;
+    margin-bottom: 36px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+}
+
+.NB-banner {
+    overflow: hidden;
+
+    @media screen and (max-width: 580px) {
+        padding: 18px 0 0;
+    }
+
+    .NB-banner-table {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    .NB-banner-table td {
+        text-align: left;
+    }
+
+    .NB-title-photo {
+        vertical-align: top;
+        padding: 0 18px 0 0;
+        z-index: 2;
+        position: relative;
+    }
+    .NB-title-photo img {
+        max-width: 108px;
+        max-height: 108px;
+        border-radius: 2px;
+    }
+    @media all and (max-width: 580px) {
+        .NB-title-photo img {
+            max-width: 72px;
+            max-height: 72px;
+        }
+    }
+    .NB-title {
+        vertical-align: middle;
+        width: 100%;
+        font-weight: bold;
+        margin: 0;
+        position: relative;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    }
+    .NB-title-content {
+        padding: 0 0 12px;
+        z-index: 1;
+        position: relative;
+    }
+    .NB-title .NB-title-name {
+        font-size: 28px;
+        line-height: 28px;
+    }
+    .NB-title.NB-title-no-bio .NB-title-name {
+        margin-bottom: 6px;
+    }
+    .NB-title .NB-title-name a {
+        text-decoration: none;
+        color: #202020;
+    }
+    .NB-title .NB-title-name a:hover {
+        text-decoration: none;
+        color: #182066;
+    }
+    .NB-title .NB-title-bio {
+        clear: left;
+        color: rgba(62,53,27,0.6);
+        font-size: $small-title-font-size;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+        line-height: 22px;
+        padding-top: 8px;
+    }
+    .NB-button-follow,
+    .NB-button-following {
+        height: auto;
+
+        @media screen and (max-width: 580px) {
+            line-height: 14px;
+        }
+    }
+    .NB-button-follow, .NB-button-following {
+        padding: 2px;
+    }
+}
+
+/* ================ */
+/* = Right banner = */
+/* ================ */
+
+.NB-banner-stats {
+    font-size: 14px;
+    font-weight: bold;
+    color: $lighter-text-color;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+    margin-top: 8px;
+    
+    .NB-banner-stat {
+        float: left;
+        padding: 0 6px;
+        
+        &:first-child {
+            padding-left: 0;
+        }
+        b {
+            color: $light-text-color;
+            margin: 0 0 2px;
+        }
+    }
+}
+
+// =========
+// = Story =
+// =========
+
+.NB-shared-story {
+    margin: 20px 0 50px 0;
+}
+
+.NB-story {
+    border-left: 4px solid #6A6A6A;
+    border-right: 4px solid #6A6A6A;
+    background: #fff;
+    @include single-box-shadow(rgba(0, 0, 0, .15), 0px, 0px, 10px, false, false);
+    position: relative;
+    z-index: 1;
+    
+    .NB-story-inner {
+        border-left: 1px solid #525252;
+        border-right: 1px solid #525252;
+        padding: 25px 25px 15px;
+        overflow: hidden;
+        position: relative; /* contains all children */
+        
+        @media screen and ( max-width: 580px) {
+            padding: 12px 12px 15px;
+        }
+    }
+    
+    .NB-story-title {
+        .NB-story-title-link {
+            font-size: $title-font-size;
+            font-weight: bold;
+            line-height: 120%;
+            text-decoration: none;
+            color: $text-color;
+            
+            @media screen and ( max-width: 580px) {
+                font-size: $small-title-font-size;
+            }
+        }
+        .NB-story-permalink {
+            a {
+                color: $light-text-color;
+            }
+        }
+    }
+    
+    .NB-story-author {
+        color: $light-text-color;
+        font-size: $title-font-size;
+        white-space: nowrap;
+        
+        @media screen and ( max-width: 580px) {
+            font-size: $small-title-font-size;
+        }
+    }
+    
+    .NB-story-metadata {
+        font-size: $small-font-size;
+        color: $light-text-color;
+        font-weight: normal;
+        display: block;
+        margin: 5px 0 8px;
+        
+        @media screen and ( max-width: 580px) {
+            font-size: $smallest-font-size;
+        }
+    }
+    
+    .NB-feed {
+        margin: 2px 8px 8px 0;
+        text-transform: capitalize;
+        float: left;
+        white-space: nowrap;
+        
+        .NB-feed-favicon,
+        .NB-feed-title {
+            float: left;
+        }
+        
+        
+        @media screen and ( max-width: 580px)    {
+            clear: both;
+        }
+
+        a {
+            display: inline-block;
+            color: $light-text-color;
+            font-size: $smallest-font-size;
+            
+            @media screen and ( max-width: 580px) {
+                font-size: $smallest-iphone-font-size;
+            }
+        }
+
+        img {
+            float: left;
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+        }
+    }
+}
+
+.NB-story-content-wrapper {
+    max-height: $max-story-height;
+    position: relative;
+    clear: both;
+
+    &.NB-story-content-wrapper-height-fudged {
+        max-height: none;
+    }
+    
+    .NB-story-content-expander {
+        display: none;
+        position: absolute;
+        bottom: -25px;
+        left: 0;
+        width: 100%;
+        cursor: pointer;
+        color: $more-text-color;
+        font-size: $smallest-font-size;
+        background: #fff;
+        
+        .NB-story-content-expander-inner {
+            position: relative;
+            padding: 18px 25px 14px 0;
+        }
+        
+        &:hover {
+            color: $more-text-color-hover;
+        }
+        &:active {
+            color: $more-text-color-active;
+        }
+        
+        .NB-story-cutoff {
+            position: absolute;
+            top: -14px;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            z-index: 0;
+            background: transparent image-url('module_cutoff.png') repeat-x left bottom;
+        }
+        
+        .NB-story-content-expander-text,
+        .NB-story-content-expander-pages {
+            display: inline-block;
+            padding: 0 0 10px 0;
+        }
+        
+        .NB-story-content-expander-pages {
+            line-height: 8px;
+            padding: 0 12px;
+            font-size: 24px;
+            
+            @media screen and ( max-width: 580px)    {
+                padding: 0 4px;
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+.NB-story-content {
+    font-size: $small-font-size;
+    line-height: 140%;
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0;
+    
+    @media screen and ( max-width: 580px)    {
+        font-size: $smallest-font-size;
+        line-height: 160%;
+    }
+        
+    p {
+        margin: 10px 0;
+    }
+    
+    img {
+        margin: 10px 0;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    ins {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    del {
+        display: none;
+    }
+    
+}
+
+// ==========
+// = Shares =
+// ==========
+
+.NB-story-shares-container {
+    text-align: right;
+    color: $light-text-color;
+    font-size: $smallest-font-size;
+    line-height: 16px;
+    float: right;
+    
+    @media screen and ( max-width: 580px)    {
+        text-align: left;
+        font-size: $smallest-iphone-font-size;
+    }
+    
+    .NB-story-share-label {
+        float: left;
+        vertical-align: top;
+        margin: 3px 4px 0;
+    }
+    
+    .NB-story-share-profiles,
+    .NB-story-share-profiles-shares-friends,
+    .NB-story-share-profiles-shares-public,
+    .NB-story-share-profiles-comments-friends,
+    .NB-story-share-profiles-comments-public {
+        font-size: 0;
+        display: inline;
+    }
+    
+    .NB-story-share-profiles-shares-public,
+    .NB-story-share-profiles-comments-public {
+        opacity: .5;
+    }
+    
+    .NB-user-avatar {
+        float: left;
+        margin: 2px 1px 0 2px;
+        
+        @media screen and ( max-width: 580px)    {
+            margin: 2px 3px 0 0px;
+        }
+    
+        img {
+            @include single-box-shadow;
+            width: 16px;
+            height: 16px;
+            display: block;
+        }
+    }
+    
+
+}
+
+.NB-story-comments-container {
+    font-size: $small-font-size;
+    z-index: 10;
+    margin: 0 30px;
+    background: #f6f6f6;
+    border: 1px solid #CCC;
+    padding: 0 20px;
+    border-top: 0;
+
+    @media screen and ( max-width: 580px)    {
+       margin: 0 10px;
+       padding: 0 10px;
+       font-size: $small-iphone-font-size;
+    }
+
+    .NB-user-avatar img,
+    img.NB-user-avatar {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        top: 12px;
+        left: 0;
+         @include border-radius(3px, 3px);
+         /* @include single-box-shadow; gets in the way of transparent PNGs */
+         
+        @media screen and ( max-width: 580px)    {
+            height: 24px;
+            width: 24px;
+            top: 12px;
+        }
+    }
+    
+    
+    .NB-user-avatar.NB-story-comment-reshare img {
+        top: 27px;
+        left: 0px;
+        z-index: 2;
+        width: 24px;
+        height: 24px;
+        
+        @media screen and ( max-width: 580px)    {
+            height: 24px;
+            width: 24px;
+            top: 8px;
+        }
+    }
+
+    .NB-story-comment {
+        margin-top: -1px;
+        padding: 10px 0 12px 44px;
+        border-top: 1px solid $border-color;
+        position: relative;
+        min-height: 32px;
+
+        @media screen and (max-width: 580px) {
+            padding: 10px 0 12px 34px;
+        }
+        
+        .NB-story-comment-username {
+            float: left;
+            font-size: $smallest-font-size;
+            font-weight: bold;
+        }
+        
+        .NB-story-comment-date {
+            float: right;
+            margin-left: 6px;
+            font-size: $smallest-font-size;
+            color: $light-text-color;
+            @include single-text-shadow;
+            @media screen and (max-width: 580px) {
+                padding-top: 1px;
+                font-size: $smallest-iphone-font-size;
+            }
+        }
+        
+        .NB-story-comment-location {
+            font-size: $tiny-font-size;
+            color: $lighter-text-color;
+            padding-top: 10px;
+            text-transform: uppercase;
+            @include single-text-shadow;
+            @media screen and (max-width: 580px) {
+                font-size: $tiny-iphone-font-size;
+                padding-top: 4px;
+            }
+        } 
+        
+        .NB-story-comment-content {
+            padding-top: 4px;
+            line-height: 18px;
+            clear: both;
+            
+            @media screen and (max-width: 580px) {
+                padding-top: 0;
+                line-height: 16px;
+            }
+        }
+                
+        .NB-story-comment-reshares .NB-user-avatar img {
+            top: 15px;
+            left: 12px;
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            
+            @media screen and (max-width: 580px) {
+                display: none;
+            }
+        }
+    }
+    
+    .NB-story-comment-reply {
+        margin-top: 15px;
+        padding: 15px 0 0px 44px;
+        border-top: 1px solid $border-color;
+        position: relative;
+        min-height: 32px;
+        overflow: hidden;
+        
+        @media screen and ( max-width: 580px)    {
+            margin-top: 6px;
+            padding: 12px 0 0px 32px;
+        }
+        
+        .NB-story-comment-reply-content {
+            padding-top: 4px;
+            line-height: 18px;
+            clear: both;
+            
+            @media screen and (max-width: 580px) {
+                line-height: 16px;
+            }
+        }
+        
+    }
+    
+    .NB-story-comment-button {
+        margin-top: -6px;
+        padding: 4px 6px;
+        float: right;
+        cursor: pointer;
+        
+        .NB-story-comment-button-wrapper {
+            text-transform: uppercase;
+            background-color: #E9AF86;
+            border-top: 1px solid rgba(255, 255, 255, .15);
+            border-left: 1px solid rgba(255, 255, 255, .15);
+            border-bottom: 1px solid rgba(0, 0, 0, .1);
+            border-right: 1px solid rgba(0, 0, 0, .1);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+            color: white;
+            padding: 2px 4px 1px;
+            line-height: 10px;
+            font-size: 9px;
+            @media screen and (max-width: 580px)    {
+                margin-top: 2px;
+                padding-top: 1px;
+            }
+        }
+
+        .NB-story-comment-reply-button-wrapper {
+            background-color: #E9AF86;
+        }
+        &:hover .NB-story-comment-reply-button-wrapper {
+            background-color: #DE772B;
+        }
+        &:active .NB-story-comment-reply-button-wrapper {
+            background-color: #9F3A00;
+        }
+
+        .NB-story-comment-edit-button-wrapper {
+            background-color: #74A2E7;
+        }
+        &:hover .NB-story-comment-edit-button-wrapper {
+            background-color: #5073BC;
+        }
+        &:active .NB-story-comment-edit-button-wrapper {
+            background-color: #2A3B72;
+        }
+        
+        .NB-reply-lock {
+            padding-right: 6px;
+            width: 9px;
+            height: 9px;
+            vertical-align: bottom;
+            float: left;
+        }
+    }
+    
+    .NB-story-comment-input {
+        width: 380px;
+        height: 32px;
+        font-size: 12px;
+        padding: 6px 4px;
+        margin-top: 3px;
+        border: 1px solid $border-color;
+        float: left;
+        
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+
+        @media screen and (max-width: 580px) {
+            width: 100%;
+            height: 48px;
+            float: none;
+        }
+    }
+    
+    .NB-story-comment-reply-form {
+        padding-top: 11px;
+        
+        .NB-story-comment-reply-username {
+            margin: 12px 8px 6px 0;
+
+            @media screen and (max-width: 580px) {
+                margin: 6px 6px 6px 0;
+            }
+        }
+        .NB-story-comment-reply-comments {
+            margin: 6px 8px 4px 0;
+            width: 50%;
+            display: block;
+            float: left;
+            font-size: 12px;
+            height: 20px;
+
+            @media screen and (max-width: 580px) {
+                clear: both;
+                margin: 4px 4px 4px 0;
+                width: 68%;
+            }
+        }
+        .NB-modal-submit-button {
+            float: left;
+            margin: 4px 4px 0 0;
+            @include NB-default-button;
+            
+            @media screen and (max-width: 580px) {
+                height: auto;
+            }
+            
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+        .NB-error {
+            font-size: 10px;
+            color: #6A1000;
+            padding: 4px 0 0;
+            line-height: 14px;
+            font-weight: bold;
+            clear: both;
+        }
+    }
+
+    .NB-story-comment-buttons {
+        .NB-story-comment-save {
+            float: right;
+            width: 164px;
+            margin: 3px 0 0 0;
+            @include NB-default-button;
+            
+            @media screen and (max-width: 580px) {
+                clear: both;
+                float: none;
+                margin: 8px 0 0;
+                width: 100%;
+            }
+        }
+        
+        .NB-story-comment-delete {
+            display: none;
+        }
+    }
+    
+    .NB-story-comments-public-header-wrapper {
+        clear: both;
+        margin-top: 6px;
+        color: $light-text-color;
+        font-size: $smallest-font-size;
+        border-bottom: 1px solid $border-color;
+        padding: 3px 0;
+    }
+    
+    .NB-story-comment-likes {
+        overflow: hidden;
+        height: 14px;
+        margin: 3px 2px 0;
+    }
+    .NB-story-comment-like {
+        float: right;
+        width: 16px;
+        background: transparent url('/media/embed/icons/circular/g_icn_fav.png') no-repeat center 0;
+        background-size: 14px;
+        text-transform: uppercase;
+        padding: 1px 6px 1px 6px;
+        height: 11px;
+        margin-top: -2px;
+
+        &:hover,
+        &.NB-active {
+            cursor: pointer;
+            background: transparent url('/media/embed/icons/circular/g_icn_fav_active.png') no-repeat center 0;
+            background-size: 14px;
+        }
+        &:active {
+            cursor: pointer;
+        }
+    }
+    .NB-story-comment-likes-users {
+        .NB-user-avatar {
+            float: right;
+            width: auto;
+            height: auto;
+            margin-left: 4px;
+            
+            img {
+                position: static;
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+    }
+}
+
+// ==========
+// = Footer =
+// ==========
+
+.NB-page-controls {
+    margin: 0 auto 54px;
+    border-top: 1px solid #626262;
+    border-bottom: 1px solid #626262;
+    padding: 1px 0;
+    text-align: center;
+    overflow: hidden;
+}
+
+.NB-page-controls-next,
+.NB-page-controls-end {
+    background-color: rgba(255, 255, 255, .4);
+    height: 20px;
+    padding: 20px 28px 20px;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+    
+    -webkit-transition: all .32s ease-out;
+    -moz-transition: all .32s ease-out;
+    -o-transition: all .32s ease-out;
+    -ms-transition: all .32s ease-out;
+    
+    .NB-page-controls-text {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        bottom: 20px;
+        font-size: 20px;
+        color: white;
+    }
+    
+    &:not(.NB-loaded,.NB-loading):hover {
+        background-color: #2B478C;
+        background-image: none;
+        cursor: pointer;
+    }
+    &.NB-loaded {
+        cursor: default;
+        background-color: rgba(0, 0, 0, .3);
+    }
+    &.NB-loading {
+        cursor: wait;
+    }
+}
+
+.NB-page-controls-end {
+    background-color: #3B3E49;
+    cursor: default;
+    height: auto;
+    margin-bottom: 0;
+
+    .NB-page-controls-text {
+        height: auto;
+        position: static;
+    }
+    &:hover {
+        background-color: #3B3E49;
+        background-image: none;
+        cursor: default;
+    }
+}
+
+footer {
+    overflow: hidden;
+    background-color: rgba(240, 240, 230, .4);
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+}
+.NB-footer-logo {
+    border-top: 1px solid rgba(255, 255, 255, .6);
+}
+.NB-footer-logo img {
+    margin: 36px auto;
+    border: none;
+}
+
+// ============
+// = Dropdown =
+// ============
+
+.dropdown-menu {
+    min-width: 138px;
+    text-align: left;
+    cursor: default;
+    left: inherit;
+    right: 0;
+
+    &:before {
+        position: absolute;
+        top: -7px;
+        right: 60px;
+        display: inline-block;
+        border-right: 7px solid rgba(0, 0, 0, 0);
+        border-bottom: 7px solid #CCC;
+        border-left: 7px solid rgba(0, 0, 0, 0);
+        border-bottom-color: rgba(0, 0, 0, 0.2);
+        content: '';
+    }
+    &:after {
+        position: absolute;
+        top: -6px;
+        right: 61px;
+        display: inline-block;
+        border-right: 6px solid rgba(0, 0, 0, 0);
+        border-bottom: 6px solid #FFF;
+        border-left: 6px solid rgba(0, 0, 0, 0);
+        content: '';
+    }
+    li:hover {
+        cursor: pointer;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+    }
+    .divider {
+        margin: 4px 0;
+        &:hover {
+            cursor: default;
+        }
+    }
+}
+
+// ===========
+// = Popover =
+// ===========
+
+.NB-popover-content,
+.NB-popover-title {
+    display: none;
+}
+
+.popover {
+    text-shadow: inherit;
+    cursor: normal;
+
+    &.bottom .arrow:after {
+        border-bottom-color: #F7F7F7;
+    }
+    
+    .popover-title {
+        padding: 16px 14px;
+        border-bottom: 1px solid #C0C0C0;
+        position: relative;
+    }
+    
+    .popover-content {
+        padding: 16px 14px;
+        position: relative;
+    }
+    
+    input {
+        border: 1px solid $border-color;
+        border: 1px solid #BDBDBD;
+        padding: 5px;
+        width: 100%;
+        margin-bottom: 8px;
+        font-size: $small-font-size;
+        font-weight: normal;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+    }
+    
+    .NB-error {
+        font-size: $smallest-font-size;
+        color: #6A1000;
+        padding: 15px 0 0;
+        font-weight: bold;
+        line-height: 140%;
+        text-transform: none;
+    }
+    
+    @media screen and (max-width: 580px) {
+        .arrow {
+            left: 88% !important;
+        }
+        
+        & {
+            left: inherit !important;
+            right: 12px !important;
+        }
+    }
+}    
+
+// ==================
+// = Login / Signup =
+// ==================
+
+.NB-switch-login-button {
+    display: none;
+}
+
+.NB-signup {
+    display: none;
+}
+
+.NB-show-signup {
+    .NB-switch-login-button {
+        display: block;
+    }
+    .NB-switch-signup-button {
+        display: none;
+    }
+    
+    .NB-signup {
+        display: block;
+    }
+    .NB-login {
+        display: none;
+    }
+}

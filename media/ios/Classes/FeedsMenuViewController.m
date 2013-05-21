@@ -37,8 +37,8 @@
                         initWithObjects:[@"Find Friends" uppercaseString],
                                         [@"Logout" uppercaseString], nil];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
 }
 
 - (void)viewDidUnload
@@ -81,9 +81,9 @@
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
     
     if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"rainbow.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_followers.png"];
     } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"user_orange.png"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
     }
     
     return cell;

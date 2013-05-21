@@ -13,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/folder_open" />
+        android:src="@drawable/g_icn_folder_rss" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
@@ -26,12 +26,12 @@
         android:src="@drawable/indicator_collapsed" />
     
      <LinearLayout
-        android:id="@+id/row_foldersums"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="38dp" >
+         android:id="@+id/row_foldersums"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentRight="true"
+         android:layout_centerVertical="true"
+         android:layout_marginRight="38dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
@@ -41,7 +41,10 @@
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="@color/black"
+            android:shadowColor="@color/neutral_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -53,6 +56,9 @@
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
             android:padding="5dp"
+            android:shadowColor="@color/positive_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />

@@ -43,6 +43,36 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return NEWSBLUR.assets.stories.mark_read(this, options);
     },
     
+    star_story: function() {
+        this.set('starred', !this.get('starred'));
+        if (this.get('starred')) {
+            NEWSBLUR.assets.mark_story_as_starred(this.id);
+        } else {
+            NEWSBLUR.assets.mark_story_as_unstarred(this.id);
+        }
+        NEWSBLUR.reader.update_starred_count();
+    },
+    
+    open_story_in_new_tab: function() {
+        this.mark_read({skip_delay: true});
+        window.open(this.get('story_permalink'), '_blank');
+        window.focus();
+    },
+    
+    open_share_dialog: function(e, view) {
+        if (view == 'title') {
+            var $story_title = this.story_title_view.$st;
+            this.story_title_view.mouseenter_manage_icon();
+            NEWSBLUR.reader.show_manage_menu('story', $story_title, {story_id: this.id});
+            NEWSBLUR.reader.show_confirm_story_share_menu_item(this.id);
+        } else {
+            var $story = this.latest_story_detail_view.$el;
+            this.latest_story_detail_view.share_view.toggle_feed_story_share_dialog({
+                animate_scroll: true
+            });
+        }
+    },
+    
     change_selected: function(model, selected) {
         if (model.collection) {
             model.collection.detect_selected_story(model, selected);
@@ -206,6 +236,17 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         return this.select(function(story) {
             return story.score() >= score || story.get('visible');
         });
+    },
+    
+    last_visible: function(score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+        
+        for (var i=this.size(); i >= 0; i--) {
+            var story = this.at(i);
+            if (story.score() >= score || story.get('visible')) {
+                return story;
+            }
+        }
     },
     
     visible_and_unread: function(score, include_active_story) {

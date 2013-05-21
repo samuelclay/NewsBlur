@@ -112,6 +112,40 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
+    delete_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_id, callback, error_callback) {
+        this.make_request('/social/remove_comment_reply', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            reply_id: reply_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
+    like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        this.make_request('/social/like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
+    remove_like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        this.make_request('/social/remove_like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
     login: function(username, password, callback, error_callback) {
         this.make_request('/api/login', {
             username: username,
@@ -121,7 +155,13 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
-    signup: function(username, password, email, callback, error_callback) {
+    logout: function(callback, error_callback) {
+        this.make_request('/api/logout', {}, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
+    signup: function(username, email, password, callback, error_callback) {
         this.make_request('/api/signup', {
             username: username,
             password: password,
@@ -131,11 +171,26 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
+    request_invite: function(email, callback, error_callback) {
+        this.make_request('/social/request_invite', {
+            email: email
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, callback, callback, {
             request_type: 'POST'
         });
+    },
+    
+    unfollow_user: function(user_id, callback) {
+        this.make_request('/social/unfollow', {'user_id': user_id}, callback, callback, {
+            request_type: 'POST'
+        });
     }
+
 
     
 });

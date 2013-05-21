@@ -18,10 +18,14 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIButton *facebookButton;
 @property (nonatomic) IBOutlet UIButton *twitterButton;
+@property (nonatomic) IBOutlet UIButton *appdotnetButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
+@property (nonatomic) IBOutlet UILabel *storyTitle;
 @property (nonatomic) NSString * activeReplyId;
 @property (nonatomic) NSString* currentType;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight;
 
+- (void)setCommentType:(NSString *)type;
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;
@@ -32,6 +36,7 @@
 - (void)finishAddReply:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId;
+- (void)adjustShareButtons;
 - (void)adjustCommentField;
 - (NSString *)stringByStrippingHTML:(NSString *)s;
 

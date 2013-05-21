@@ -36,7 +36,7 @@ try:
 except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
-from apps.social.models import MSocialSubscription, MActivity
+from apps.social.models import MSocialSubscription, MActivity, MInteraction
 from apps.categories.models import MCategory
 from apps.social.views import load_social_page
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
@@ -75,14 +75,14 @@ def index(request, **kwargs):
 def dashboard(request, **kwargs):
     user              = request.user
     feed_count        = UserSubscription.objects.filter(user=request.user).count()
-    active_count      = UserSubscription.objects.filter(user=request.user, active=True).count()
-    train_count       = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False,
-                                                        feed__stories_last_month__gte=1).count()
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
-                                                       approved_date__lte=datetime.datetime.now())\
-                                                       .select_related('feed')[:2]
-    unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
-                                                       declined_date__isnull=True).select_related('feed')[:2]
+                                                       approved_date__lte=datetime.datetime.now()
+                                                       ).select_related('feed')[:2]
+    unmoderated_feeds = []
+    if user.is_staff:
+        unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
+                                                           declined_date__isnull=True
+                                                           ).select_related('feed')[:2]
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
 
@@ -90,11 +90,14 @@ def dashboard(request, **kwargs):
     if start_import_from_google_reader:
         del request.session['import_from_google_reader']
     
+    if not user.is_active:
+        url = "https://%s%s" % (Site.objects.get_current().domain,
+                                 reverse('stripe-form'))
+        return HttpResponseRedirect(url)
+    
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
-        'active_count'      : active_count,
-        'train_count'       : active_count - train_count,
         'account_images'    : range(1, 4),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
@@ -258,9 +261,6 @@ def load_feeds(request):
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
     
-    user.profile.dashboard_date = datetime.datetime.now()
-    user.profile.save()
-    
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
@@ -299,7 +299,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "1.7"
+    iphone_version = "2.0"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -351,6 +351,7 @@ def load_feeds_flat(request):
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
+    social_services = MSocialServices.profile(user.pk)
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     categories = None
@@ -365,6 +366,7 @@ def load_feeds_flat(request):
         "feeds": feeds,
         "social_feeds": social_feeds,
         "social_profile": social_profile,
+        "social_services": social_services,
         "user": user.username,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
@@ -420,13 +422,29 @@ def refresh_feeds(request):
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id__in=missing_feed_ids)
             for duplicate_feed in duplicate_feeds:
                 feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed_id}
+    
+    interactions_count = MInteraction.user_unread_count(user.pk)
 
     if True or settings.DEBUG or check_fetch_status:
         logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
             len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
         
-    return {'feeds': feeds, 'social_feeds': social_feeds}
+    return {
+        'feeds': feeds, 
+        'social_feeds': social_feeds,
+        'interactions_count': interactions_count,
+    }
 
+@json.json_view
+def interactions_count(request):
+    user = get_user(request)
+
+    interactions_count = MInteraction.user_unread_count(user.pk)
+
+    return {
+        'interactions_count': interactions_count,
+    }
+    
 @never_cache
 @ajax_login_required
 @json.json_view
@@ -1092,6 +1110,8 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
+    folder = request.POST.get('folder', '')
+    new_folder = request.POST.get('new_folder')
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
     feed = None
@@ -1100,7 +1120,11 @@ def add_url(request):
         code = -1
         message = 'Enter in the website address or the feed URL.'
     else:
-        folder = request.POST.get('folder', '')
+        if new_folder:
+            usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+            usf.add_folder(folder, new_folder)
+            folder = new_folder
+
         code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
@@ -1453,7 +1477,7 @@ def send_story_email(request):
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
-    # share_user_profile = MSocialProfile.get_user(request.user.pk)
+    share_user_profile = MSocialProfile.get_user(request.user.pk)
 
     if not to_addresses:
         code = -1
@@ -1471,9 +1495,20 @@ def send_story_email(request):
         story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
         feed    = Feed.get_by_id(story['story_feed_id'])
-        text    = render_to_string('mail/email_story_text.xhtml', locals())
-        html    = render_to_string('mail/email_story_html.xhtml', locals())
-        subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
+        params  = {
+            "to_addresses": to_addresses,
+            "from_name": from_name,
+            "from_email": from_email,
+            "email_cc": email_cc,
+            "comments": comments,
+            "from_address": from_address,
+            "story": story,
+            "feed": feed,
+            "share_user_profile": share_user_profile,
+        }
+        text    = render_to_string('mail/email_story_text.xhtml', params)
+        html    = render_to_string('mail/email_story_html.xhtml', params)
+        subject = '%s is sharing a story with you: "%s"' % (from_name, story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]

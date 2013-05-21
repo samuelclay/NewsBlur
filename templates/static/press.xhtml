@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-press{% endblock %}
 
 {% block title %}Press Kit and Recent Press{% endblock %}
@@ -563,3 +565,7 @@
   </div>
 
 {% endblock content %}
+
+{% block footer %}
+    {% render_footer "press" %}
+{% endblock footer %}

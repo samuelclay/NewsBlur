@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load utils_tags %}
+
 {% block bodyclass %}NB-static NB-static-iphone NB-static-android{% endblock %}
 
 {% block title %}The NewsBlur Android App{% endblock %}
@@ -28,7 +30,7 @@
   <div class="NB-ios-main NB-android-main">
     
     <div class="NB-ios-title">
-        <div><a href="/">NewsBlur</a> is a free social news reader.</div>
+        <div><a href="/">NewsBlur</a> is a personal news reader.</div>
         <div class="NB-ios-subtitle">Built <a href="http://github.com/samuelclay/">in the open</a> in New York and San Francisco.</div>
         
     </div>
@@ -179,3 +181,7 @@ $(document).ready(function() {
 });
 </script>
 {% endblock %}
+
+{% block footer %}
+    {% render_footer "android" %}
+{% endblock footer %}

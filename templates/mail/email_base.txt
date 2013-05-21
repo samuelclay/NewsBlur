@@ -2,9 +2,9 @@
 
 -----------------------------------------------------------------------------
 
-NewsBlur is a social news network that brings people together to talk about the world. A new sound of an old instrument.
+NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.
 
-Stay up to date and in touch with us, yr. developers, in a few different ways:
+Stay up to date and in touch with a few different ways:
 
     * Follow @newsblur on Twitter: http://twitter.com/newsblur/
     * Follow @samuelclay on GitHub: http://github.com/samuelclay/
@@ -14,7 +14,7 @@ Stay up to date and in touch with us, yr. developers, in a few different ways:
     * Read the NewsBlur Blog: http://blog.newsblur.com
     * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur/
 
-There's plenty of ways to use NewsBlur beyond the website:
+There are plenty of ways to use NewsBlur beyond the website:
 
     * Download the free iPad/iPhone App: http://{% current_domain %}/ios/
     * Download the free Android App: http://{% current_domain %}/android/

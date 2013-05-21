@@ -1,0 +1,53 @@
+<div class="NB-module NB-module-gettingstarted">
+    <h5 class="NB-module-header">
+        <div class="NB-module-header-right">
+            <a href="#" class="NB-splash-link NB-module-gettingstarted-hide">Hide</a>
+        </div>
+        Getting Started
+    </h5>
+
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-intro-avatar">
+            <div class="NB-intro-avatar-bezel">
+                <img src="{{ social_profile.large_photo_url }}" />
+            </div>
+        </div>
+
+        <div class="NB-intro-progress">
+            <div class="NB-intro-progress-goal NB-1 NB-intro-goal-sites {% if user_profile.has_setup_feeds %}NB-done{% else %}NB-not-done{% endif %}"></div>
+            <div class="NB-intro-progress-goal NB-2 NB-intro-goal-friends {% if user_profile.has_found_friends %}NB-done{% else %}NB-not-done{% endif %}"></div>
+            <div class="NB-intro-progress-goal NB-3 NB-intro-goal-train {% if user_profile.has_trained_intelligence %}NB-done{% else %}NB-not-done{% endif %}"></div>
+            <div class="progress active">
+                <div class="bar-first bar {% if not user_profile.has_setup_feeds %}bar-striped{% endif %} bar-warning" style="width: 50%;"></div>
+                <div class="bar-second bar {% if not user_profile.has_found_friends %}bar-striped{% endif %} bar-warning " style="width: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="NB-intro-goals">
+            <div class="NB-intro-goal NB-intro-goal-sites {% if user_profile.has_setup_feeds %}NB-done{% else %}NB-not-done{% endif %}">
+                <span>Setup NewsBlur.</span>
+                <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-launch-intro NB-javascript">
+                    <div class="NB-icon"></div>
+                    Import Sites
+                </div>
+                <div class="NB-done">Complete!</div>
+            </div>
+            <div class="NB-intro-goal NB-intro-goal-friends {% if user_profile.has_found_friends %}NB-done{% else %}NB-not-done{% endif %}">
+                <span>Share with friends.</span>
+                <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">
+                    <div class="NB-icon"></div>
+                    Find friends
+                </div>
+                <div class="NB-done">Complete!</div>
+            </div>
+            <div class="NB-intro-goal NB-intro-goal-train {% if user_profile.has_trained_intelligence %}NB-done{% else %}NB-not-done{% endif %}">
+                <span>Train stories.</span>
+                <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">
+                    <div class="NB-icon"></div>
+                    Launch Intel
+                </div>
+                <div class="NB-done">Complete!</div>
+            </div>
+        </div>
+    </div>
+</div>

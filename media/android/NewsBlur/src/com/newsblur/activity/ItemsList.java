@@ -28,7 +28,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected SyncUpdateFragment syncFragment;
-	private FeedIntelligenceSelectorFragment intelligenceSelectorFragment;
 	protected String TAG = "ItemsList";
 	protected int currentState;
 	private Menu menu;
@@ -47,11 +46,10 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
 
+        // our intel state is entirely determined by the state of the Main view
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		intelligenceSelectorFragment = (FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag(FeedIntelligenceSelectorFragment.FRAGMENT_TAG);
-		intelligenceSelectorFragment.setState(currentState);
 	}
 
 

@@ -56,6 +56,12 @@ class SyncFacebookFriends(Task):
         social_services = MSocialServices.objects.get(user_id=user_id)
         social_services.sync_facebook_friends()
         
+class SyncAppdotnetFriends(Task):
+    
+    def run(self, user_id):
+        social_services = MSocialServices.objects.get(user_id=user_id)
+        social_services.sync_appdotnet_friends()
+        
 class SharePopularStories(Task):
     name = 'share-popular-stories'
 

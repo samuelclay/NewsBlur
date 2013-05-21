@@ -19,7 +19,6 @@
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
-#import "FindSitesViewController.h"
 #import "MoveSiteViewController.h"
 #import "TrainerViewController.h"
 #import "OriginalStoryViewController.h"
@@ -27,7 +26,6 @@
 #import "UserProfileViewController.h"
 #import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
-#import "findSitesViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -37,6 +35,9 @@
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
+#import "AuthorizeServicesViewController.h"
+#import "ShareThis.h"
+
 
 @implementation NewsBlurAppDelegate
 
@@ -48,6 +49,7 @@
 @synthesize navigationController;
 @synthesize modalNavigationController;
 @synthesize shareNavigationController;
+@synthesize trainNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -63,7 +65,6 @@
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
-@synthesize findSitesViewController;
 @synthesize moveSiteViewController;
 @synthesize trainerViewController;
 @synthesize originalStoryViewController;
@@ -120,7 +121,9 @@
 @synthesize dictFeeds;
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
+@synthesize dictSocialProfile;
 @synthesize dictUserProfile;
+@synthesize dictSocialServices;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -136,6 +139,7 @@
     
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
+    self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -149,10 +153,10 @@
         [window addSubview:self.navigationController.view];
         self.window.rootViewController = self.navigationController;
     }
-            
+    
+    
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
-    
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
@@ -174,25 +178,50 @@
         splashView.frame = self.view.frame;
         splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
     } else if (IS_IPHONE_5) {
-        splashView.frame = self.window.frame;
+        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
         splashView.image = [UIImage imageNamed:@"Default-568h.png"];
     } else {
         splashView.frame = self.window.frame;
         splashView.image = [UIImage imageNamed:@"Default.png"];
     }
     
-    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+//    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     splashView.alpha = 1.0;
-    [window addSubview:splashView];
-    [window bringSubviewToFront:splashView];
+    [window.rootViewController.view addSubview:splashView];
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:.6];
     [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
-    splashView.alpha = 0.0;
-//    splashView.frame = CGRectMake(-60, -80, 440, 728);
+    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
+    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
+    
+    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
+    
+    [[UINavigationBar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
+     forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
+     forBarMetrics:UIBarMetricsLandscapePhone];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"toolbar_background.png"]
+     forToolbarPosition:UIToolbarPositionBottom barMetrics:UIBarMetricsDefault];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
+     forToolbarPosition:UIToolbarPositionTop barMetrics:UIBarMetricsDefault];
+    [[UIToolbar appearance]
+     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
+     forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsLandscapePhone];
+
+    [[UINavigationBar appearance]
+     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
+                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
+                             UITextAttributeTextShadowOffset,
+                             nil]];
     
 //    [self showFirstTimeUser];
 	return YES;
@@ -208,25 +237,17 @@
     [splashView removeFromSuperview];
 }
 
-
-#pragma mark -
-#pragma mark FeedsView
-
-- (void)showAddSiteModal:(id)sender {
-//    FindSitesViewController *sitesVC = [[FindSitesViewController alloc] init];    
-//    self.findSitesViewController = sitesVC;
-//    
-//    UINavigationController *sitesNav = [[UINavigationController alloc] initWithRootViewController:sitesVC];
-//    self.modalNavigationController = sitesNav;
-//    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    [self.addSiteViewController reload];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showSitePopover:sender];
-    } else {
-        [navigationController presentModalViewController:self.addSiteViewController animated:YES];
-    }
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
 }
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
+}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [ShareThis handleFacebookOpenUrl:url];
+}
+
 
 #pragma mark -
 #pragma mark Social Views
@@ -294,7 +315,6 @@
     
     self.friendsListViewController = friendsBVC;    
     self.modalNavigationController = friendsNav;
-    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -310,6 +330,7 @@
           setUsername:(NSString *)username 
       setReplyId:(NSString *)replyId {
     
+    [self.shareViewController setCommentType:type];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
     } else {
@@ -318,9 +339,10 @@
                                                 initWithRootViewController:self.shareViewController];
             self.shareNavigationController = shareNav;
         }
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
         [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
     }
-    
+
     [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
@@ -376,8 +398,6 @@
     
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
-    ftux.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
     self.ftuxNavigationController = ftux;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -416,9 +436,13 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentModalViewController:trainerViewController animated:YES];        
-        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsButton];
+        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsBarButton];
     } else {
-        [navController presentModalViewController:trainerViewController animated:YES];
+        if (self.trainNavigationController == nil) {
+            self.trainNavigationController = [[UINavigationController alloc]
+                                              initWithRootViewController:self.trainerViewController];
+        }
+        [navController presentModalViewController:self.trainNavigationController animated:YES];
     }
 }
 
@@ -429,42 +453,41 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showTrainingPopover:sender];
     } else {
-        [navController presentModalViewController:trainerViewController animated:YES];
+        if (self.trainNavigationController == nil) {
+            self.trainNavigationController = [[UINavigationController alloc]
+                                              initWithRootViewController:self.trainerViewController];
+        }
+        [navController presentModalViewController:self.trainNavigationController animated:YES];
     }
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:NO];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)loadFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
-    
-    self.inFeedDetail = YES;
-
-    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
-    
+    self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
     
-    [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
+                                      initWithTitle: @"All"
+                                      style: UIBarButtonItemStyleBordered
+                                      target: nil
+                                      action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
     } else {
-    
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
-                                                                         action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;        
-        [navController pushViewController:feedDetailViewController animated:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        [navigationController pushViewController:feedDetailViewController
+                                        animated:YES];
     }
+    
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -475,6 +498,9 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
+        }
     }
     
     NSDictionary *feed = nil;
@@ -506,7 +532,7 @@
     [self loadFeedDetailView];
     
     if (showHUD) {
-        [self.storyPageControl showShareHUD:@"Loading story"];
+        [self.storyPageControl showShareHUD:@"Finding story..."];
     }
 }
 
@@ -553,6 +579,51 @@
                                                   otherButtonTitles:@"Logout", nil];
     [logoutConfirm show];
     [logoutConfirm setTag:1];
+}
+
+- (void)showConnectToService:(NSString *)serviceName {
+    AuthorizeServicesViewController *serviceVC = [[AuthorizeServicesViewController alloc] init];
+    serviceVC.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
+    serviceVC.type = serviceName;
+    serviceVC.fromStory = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UINavigationController *connectNav = [[UINavigationController alloc]
+                                              initWithRootViewController:serviceVC];
+        self.modalNavigationController = connectNav;
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self.masterContainerViewController presentModalViewController:modalNavigationController
+                                                              animated:YES];
+    } else {
+        [self.shareNavigationController pushViewController:serviceVC animated:YES];
+    }
+}
+
+- (void)refreshUserProfile:(void(^)())callback {
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/social/load_user_profile",
+                                       NEWSBLUR_URL]];
+    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+    __weak ASIHTTPRequest *request = _request;
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed user profile");
+        callback();
+    }];
+    [request setCompletionBlock:^(void) {
+        NSString *responseString = [request responseString];
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions
+                                 error:&error];
+        
+        self.dictUserProfile = [results objectForKey:@"user_profile"];
+        self.dictSocialServices = [results objectForKey:@"services"];
+        callback();
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -607,7 +678,6 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:feedDetailViewController animated:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
@@ -747,40 +817,33 @@
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:storyPageControl animated:YES];
-        //self.storyDetailViewController.navigationItem.titleView = nil;
         [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
     
 }
 
 - (void)navigationController:(UINavigationController *)navController 
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (viewController == feedDetailViewController) {
-        UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
-        UIButton *myBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [myBackButton setFrame:CGRectMake(0,0,70,35)];
-        [myBackButton setImage:[UIImage imageNamed:@"toolbar_back_button.png"] forState:UIControlStateNormal];
-        [myBackButton setEnabled:YES];
-        [myBackButton addTarget:viewController.navigationController action:@selector(popViewControllerAnimated:) forControlEvents:UIControlEventTouchUpInside];
-        [backButtonView addSubview:myBackButton];
-        UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithCustomView:backButtonView];
-        viewController.navigationItem.leftBarButtonItem = backButton;
-        navController.navigationItem.leftBarButtonItem = backButton;
-        viewController.navigationItem.hidesBackButton = YES;
-        navController.navigationItem.hidesBackButton = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+         [viewController viewWillAppear:animated];
     }
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [viewController viewDidAppear:animated];
+    }    
 }
 
 - (void)setTitle:(NSString *)title {
     UILabel *label = [[UILabel alloc] init];
     [label setFont:[UIFont boldSystemFontOfSize:16.0]];
     [label setBackgroundColor:[UIColor clearColor]];
-    [label setTextColor:[UIColor whiteColor]];
+    [label setTextColor:UIColorFromRGB(0x404040)];
     [label setText:title];
     [label setShadowOffset:CGSizeMake(0, -1)];
-    [label setShadowColor:UIColorFromRGB(0x306070)];
+    [label setShadowColor:UIColorFromRGB(0xFAFAFA)];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
 }
@@ -795,7 +858,9 @@
 }
 
 - (void)closeOriginalStory {
-    [originalStoryViewController dismissModalViewControllerAnimated:YES];
+    if (![[self modalViewController] isBeingDismissed]) {
+        [originalStoryViewController dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)hideStoryDetailView {
@@ -969,16 +1034,16 @@
     int total = 0;
     NSArray *folder;
     
-    if (folderName == @"river_blurblogs" ||
-        (!folderName && self.activeFolder == @"river_blurblogs")) {
+    if ([folderName isEqual:@"river_blurblogs"] ||
+        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
-    } else if (folderName == @"river_global" ||
-               (!folderName && self.activeFolder == @"river_global")) {
+    } else if ([folderName isEqual:@"river_global"] ||
+               (!folderName && [self.activeFolder isEqual:@"river_global"])) {
         total = 0;
-    } else if (folderName == @"everything" ||
-               (!folderName && self.activeFolder == @"everything")) {
+    } else if ([folderName isEqual:@"everything"] ||
+               (!folderName && [self.activeFolder isEqual:@"everything"])) {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -1015,12 +1080,8 @@
     }
     
     counts.ps += [[feed objectForKey:@"ps"] intValue];
-    if ([self selectedIntelligence] <= 0) {
-        counts.nt += [[feed objectForKey:@"nt"] intValue];
-    }
-    if ([self selectedIntelligence] <= -1) {
-        counts.ng += [[feed objectForKey:@"ng"] intValue];
-    }
+    counts.nt += [[feed objectForKey:@"nt"] intValue];
+    counts.ng += [[feed objectForKey:@"ng"] intValue];
     
     return counts;
 }
@@ -1036,18 +1097,20 @@
         return counts;
     }
     
-    if (folderName == @"river_blurblogs" ||
-        (!folderName && self.activeFolder == @"river_blurblogs")) {
+    if ([folderName isEqual:@"river_blurblogs"] ||
+        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
-    } else if (folderName == @"river_global" ||
-            (!folderName && self.activeFolder == @"river_global")) {
+    } else if ([folderName isEqual:@"river_global"] ||
+            (!folderName && [self.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
-    } else if (folderName == @"everything" ||
-               (!folderName && self.activeFolder == @"everything")) {
-        for (id feedId in self.dictFeeds) {
-            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+    } else if ([folderName isEqual:@"everything"] ||
+               (!folderName && [self.activeFolder isEqual:@"everything"])) {
+        for (NSArray *folder in [self.dictFolders allValues]) {
+            for (id feedId in folder) {
+                [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+            }
         }
     } else {
         if (!folderName) {
@@ -1416,7 +1479,7 @@
 }
 
 - (void)markActiveFolderAllRead {
-    if (self.activeFolder == @"everything") {
+    if ([self.activeFolder isEqual:@"everything"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -1483,7 +1546,7 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        folderName == @"everything") {
+        [folderName isEqual:@"everything"]) {
         folderName = @"";
     }
     
@@ -1499,7 +1562,7 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        folderName == @"everything") {
+        [folderName isEqual:@"everything"]) {
         folderName = @"";
     }
     if ([folderName containsString:@" - "]) {
@@ -1527,6 +1590,34 @@
 
 #pragma mark -
 #pragma mark Feed Templates
+
++ (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    UIGraphicsPushContext(context);
+    
+    CGGradientRef gradient;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[2] = {0.0f, 1.0f};
+    CGFloat startRed, startGreen, startBlue, startAlpha;
+    CGFloat endRed, endGreen, endBlue, endAlpha;
+    
+    [startColor getRed:&startRed green:&startGreen blue:&startBlue alpha:&startAlpha];
+    [endColor getRed:&endRed green:&endGreen blue:&endBlue alpha:&endAlpha];
+    
+    CGFloat components[8] = {
+        startRed, startGreen, startBlue, startAlpha,
+        endRed, endGreen, endBlue, endAlpha
+    };
+    gradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, 2);
+    CGColorSpaceRelease(colorSpace);
+    
+    CGPoint startPoint = CGPointMake(CGRectGetMinX(r), r.origin.y);
+    CGPoint endPoint = CGPointMake(startPoint.x, r.origin.y + r.size.height);
+    
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGGradientRelease(gradient);
+    UIGraphicsPopContext();
+}
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
     UIView *gradientView = [[UIView alloc] initWithFrame:rect];
@@ -1642,10 +1733,10 @@
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
-    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.textColor = UIColorFromRGB(0x404040);
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     titleLabel.numberOfLines = 1;
-    titleLabel.shadowColor = [UIColor blackColor];
+    titleLabel.shadowColor = UIColorFromRGB(0xF5F5F5);
     titleLabel.shadowOffset = CGSizeMake(0, -1);
     titleLabel.center = CGPointMake(0, -2);
     [titleLabel sizeToFit];
@@ -1654,14 +1745,16 @@
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (self.isSocialRiverView) {
-            titleImage = [UIImage imageNamed:@"group_white.png"];
+        if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_global"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        } else if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_blurblogs"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
-            titleImage = [UIImage imageNamed:@"archive_white.png"];
+            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
-            titleImage = [UIImage imageNamed:@"clock_white.png"];
+            titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (self.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder_white.png"];
+            titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
         } else {
             titleImage = [Utilities getImage:feedIdStr];
         }
@@ -1859,6 +1952,12 @@
     
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+    [self informError:error];
 }
 
 @end

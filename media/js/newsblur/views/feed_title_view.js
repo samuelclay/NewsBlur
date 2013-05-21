@@ -14,8 +14,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
-        "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
+        "click .NB-feedbar-options"         : "open_options_popover",
         "click"                             : "open",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
@@ -68,29 +68,24 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
-            <% if (type == "story") { %>\
-                <div class="NB-story-title-indicator">\
-                    <div class="NB-story-title-indicator-count"></div>\
-                    <span class="NB-story-title-indicator-text">show hidden stories</span>\
-                </div>\
-            <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-                <span class="NB-feedbar-settings" title="Site settings"></span>\
+                <div class="NB-feedbar-mark-feed-read"></div>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
-            <div class="NB-feedbar-last-updated">\
-              <span class="NB-feedbar-last-updated-label">Updated:</span>\
-              <span class="NB-feedbar-last-updated-date">\
-                <% if (feed.get("updated")) { %>\
-                  <%= feed.get("updated") %> ago\
-                <% } else { %>\
-                  Loading...\
-                <% } %>\
-              </span>\
-            </div>\
-            <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+              <div class="NB-story-title-indicator">\
+                  <div class="NB-story-title-indicator-count"></div>\
+                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
+              </div>\
+              <div class="NB-feedbar-options-container">\
+                  <span class="NB-feedbar-options">\
+                      <div class="NB-icon"></div>\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                      &middot;\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                  </span>\
+              </div>\
           <% } %>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
@@ -170,7 +165,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     render_counts: function() {
-        this.counts_view = new NEWSBLUR.Views.FeedCount({model: this.model}).render();
+        this.counts_view = new NEWSBLUR.Views.UnreadCount({model: this.model}).render();
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {
             this.$('.NB-story-title-indicator-count').html(this.counts_view.$el.clone());
@@ -208,7 +203,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var $highlight = this.$('.NB-feed-highlight');
         $highlight.stop();
         $highlight.css({
-            'backgroundColor': '#F0F076',
+            'backgroundColor': '#FED54A',
             'display': 'block'
         });
         $highlight.animate({
@@ -268,6 +263,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
         
+        if (this.options.type == "story") return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         this.flags.double_click = true;
@@ -344,12 +340,15 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         NEWSBLUR.reader.open_feed_statistics_modal();
     },
     
-    open_settings: function(e) {
-        this.show_manage_menu(e);
-    },
-    
     show_hidden_story_titles: function() {
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+    },
+    
+    open_options_popover: function() {
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: this.model.id
+        });
     }
     
 });

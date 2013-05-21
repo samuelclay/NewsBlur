@@ -8,15 +8,9 @@
         {% endfor %}
 
         <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
-            {% if user_social_profile.large_photo_url %}
-                <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
-                    <img src="{{ user_social_profile.large_photo_url }}">
-                </a>
-            {% else %}
-                <div class="NB-user-avatar">
-                    <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png">
-                </div>
-            {% endif %}
+            <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
+                <img src="{% if user_social_profile.photo_url %}{{ user_social_profile.photo_url }}{% else %}{{ MEDIA_URL }}/img/circular/circular_avatar.png{% endif %}">
+            </a>
             <div class="NB-story-comment-input-form">
                 <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>
                 <div class="NB-story-comment-buttons">
@@ -46,13 +40,5 @@
         </div>
     
     </div>
-
-    {# {% if story.comment_count_public %} #}
-    {# <div class="NB-story-comments-public-teaser-wrapper"> #}
-    {#     <div class="NB-story-comments-public-teaser"> #}
-    {#         There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }} #}
-    {#     </div> #}
-    {# </div> #}
-    {# {% endif %} #}
     
 </div>

@@ -40,7 +40,7 @@
 /* ========== */
 
 .NB-static-form-wrapper {
-  margin: 56px 0 18px;
+  margin: 48px 0 18px;
   background-color: #D3E7BA;
   border-top: 1px solid #A0A0A0;
   border-bottom: 1px solid #A0A0A0;
@@ -161,4 +161,17 @@
     color: #600000;
     display: block;
     font-weight: bold;
+}
+
+.NB-static-form .payextra-label {
+    clear: none;
+    width: 200px;
+    text-transform: none;
+}
+.NB-static-form .payextra-label input {
+    width: auto;
+    margin: 0 4px 0 0;
+}
+.NB-static-form input[name=plan] {
+    display: none;
 }

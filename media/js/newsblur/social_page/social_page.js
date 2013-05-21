@@ -10,7 +10,8 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         
     events: {
         "click .NB-page-controls-next:not(.NB-loaded):not(.NB-loading)" : "next_page",
-        "click .NB-follow-user" : "follow_user"
+        "click .NB-button-follow" : "follow_user",
+        "click .NB-button-following" : "unfollow_user"
     },
     
     stories: {},
@@ -21,28 +22,66 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         'queue': false
     },
     
+    flags: {
+        loading_page: false
+    },
+    
     initialize: function() {
         NEWSBLUR.assets = new NEWSBLUR.SocialPageAssets();
         NEWSBLUR.router = new NEWSBLUR.Router;
-        Backbone.history.start({pushState: true});
+        this.cached_page_control_y = 0;
         
+        Backbone.history.start({pushState: true});
+
+        _.bindAll(this, 'detect_scroll');
+        $(window).scroll(this.detect_scroll);
+        
+        this.login_view = new NEWSBLUR.Views.SocialPageLoginSignupView({
+            el: this.el
+        });
+
         this.initialize_stories();
     },
     
     initialize_stories: function($stories) {
         var self = this;
         $stories = $stories || this.$el;
-        
-        $('.NB-story', $stories).each(function() {
+        $('.NB-shared-story', $stories).each(function() {
             var $story = $(this);
             var guid = $story.data('guid');
             if (!self.stories[guid]) {
-                var story_view = new NEWSBLUR.Views.SocialPageStory({el: $(this)});
+                var story_view = new NEWSBLUR.Views.SocialPageStory({
+                    el: $(this),
+                    page_view: self
+                });
                 self.stories[story_view.story_guid] = story_view;
             }
         });
         
         this.find_story();
+    },
+    
+    detect_scroll: function(){
+        if (this.flags.loading_page) {
+            return;
+        }
+        
+        var viewport_y = $(window).height() + $(window).scrollTop();
+
+        // this prevents calculating when we are scrolling in previously loaded content        
+        if (viewport_y < this.cached_page_control_y) {
+            return;
+        }
+        
+        var $controls = this.$('.NB-page-controls');
+        if ($controls.length) {
+            var page_control_y = $controls.last().offset().top + 25;
+            if (viewport_y > page_control_y) {
+                this.cached_page_control_y = page_control_y;
+                this.flags.loading_page = true;
+                this.next_page();
+            }
+        }
     },
     
     find_story: function() {
@@ -64,8 +103,10 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     scroll_to_story: function(story_view, run) {
+        var offset = navigator.platform.indexOf("iPhone") != -1 ? 12 : 12 + 48;
+        
         $('html,body').stop().animate({
-            scrollTop: story_view.$mark.offset().top - 8
+            scrollTop: story_view.$mark.offset().top - offset
         }, {
             duration: run == 1 ? 1000 : 500,
             easing: run == 1 ? 'easeInQuint' : 'easeOutQuint',
@@ -121,6 +162,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         var $loaded = $('.NB-page-controls-text-loaded', $controls);
         var height = $controls.height();
         var innerheight = $button.height();
+        this.flags.loading_page = false;
         
         $button.removeClass('NB-loading').addClass('NB-loaded');
         $button.stop(true).animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'easing': 'easeOutExpo', 'queue': false});
@@ -151,6 +193,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         });
         
         this.page -= 1;
+        this.flags.loading_page = false;
         
         $next.text('Whoops! Something went wrong. Try again.')
              .animate({'bottom': innerheight}, this.next_animation_options);
@@ -160,13 +203,30 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     follow_user: function() {
-        this.$(".NB-follow-user").html('Following...');
+        var $button = this.$(".NB-button-follow");
+        $button.html('Following...');
         NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function(data) {
             var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
             if (data.follow_profile.requested_follow) {
                 message = 'Your request to follow ' + NEWSBLUR.Globals.blurblog_username + ' has been sent';
             }
-            this.$(".NB-follow-user").replaceWith(message);
+            $button.html('Following').removeClass('NB-button-follow')
+                                     .removeClass('NB-blue-button')
+                                     .addClass('NB-grey-button')
+                                     .addClass('NB-button-following');
+            this.$('.NB-stat-followers').html("<b>" + data.follow_profile.follower_count + "</b> " + Inflector.pluralize('follower', data.follow_profile.follower_count));
+        }, this));
+    },
+    
+    unfollow_user: function() {
+        var $button = this.$(".NB-button-following");
+        $button.html('Unfollowing...');
+        NEWSBLUR.assets.unfollow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function(data) {
+            $button.html('Follow ' + NEWSBLUR.Globals.blurblog_username).removeClass('NB-button-following')
+                                  .removeClass('NB-grey-button')
+                                  .addClass('NB-button-follow')
+                                  .addClass('NB-blue-button');
+            this.$('.NB-stat-followers').html("<b>" + data.unfollow_profile.follower_count + "</b> " + Inflector.pluralize('follower', data.unfollow_profile.follower_count));
         }, this));
     }
     

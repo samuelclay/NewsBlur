@@ -41,6 +41,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      abortIsNoSuccess: false, 
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
+        this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -59,6 +60,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             clear_queue = true;
         }
         if (options['ajax_group'] == 'statistics') {
+            clear_queue = true;
+        }
+        if (options['ajax_group'] == 'interactions') {
             clear_queue = true;
         }
         
@@ -508,7 +512,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             callback && callback();
         }, this);
         
-        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
+        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {
+            request_type: 'GET'
+        });
     },
     
     fetch_starred_stories: function(page, callback, error_callback, first_load) {
@@ -759,6 +765,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    interactions_count: function(callback, error_callback) {
+        this.make_request('/reader/interactions_count', {}, callback, error_callback, {
+            'request_type': 'GET'
+        });
+    },
+    
     count_unfetched_feeds: function() {
         var counts = this.feeds.reduce(function(counts, feed) {
             if (feed.get('active')) {
@@ -941,8 +953,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'url': url,
             'folder': folder,
             'auto_active': options.auto_active
-        }, callback, function() {
-          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.'});
+        }, callback, function(data) {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this site. Please try a different URL.'});
         });
     },
     
@@ -950,8 +962,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/add_folder/', {
             'folder': folder,
             'parent_folder': parent_folder
-        }, callback, function() {
-          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this folder. Please try a different URL.'});
+        }, callback, function(data) {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this folder.'});
         });
     },
     
@@ -1090,14 +1102,28 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/social/interactions', {
             'page': page,
             'format': 'html'
-        }, callback, error_callback, {request_type: 'GET'});
+        }, function(data) {
+            callback(data, 'interactions');
+        }, error_callback, {
+            'ajax_group': 'interactions',
+            'request_type': 'GET'
+        });
     },
     
     load_activities_page: function(page, callback, error_callback) {
         this.make_request('/profile/activities', {
             'page': page,
             'format': 'html'
-        }, callback, error_callback, {request_type: 'GET'});
+        }, function(data) {
+            callback(data, 'activities');
+        }, error_callback, {
+            'ajax_group': 'interactions',
+            'request_type': 'GET'
+        });
+    },
+    
+    cancel_premium_subscription: function(callback, error_callback) {
+        this.make_request('/profile/cancel_premium', {}, callback, error_callback);
     },
     
     approve_feed_in_moderation_queue: function(feed_id, date, callback) {
@@ -1164,6 +1190,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     start_import_from_google_reader: function(callback) {
         this.make_request('/import/import_from_google_reader/', {}, callback);
+    },
+    
+    start_import_starred_stories_from_google_reader: function(callback) {
+        this.make_request('/import/import_starred_stories_from_google_reader/', {}, callback);
     },
     
     save_recommended_site: function(data, callback) {
@@ -1284,6 +1314,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
+    search_for_feeds: function(query, callback) {
+        this.make_request('/rss_feeds/feed_autocomplete', {
+            'query': query,
+            'format': 'full',
+            'v': 2
+        }, callback, callback, {
+            ajax_group: 'feed',
+            request_type: 'GET'
+        });
+    },
+    
     search_for_friends: function(query, callback) {
         this.make_request('/social/find_friends', {'query': query}, callback, callback, {
             ajax_group: 'feed',
@@ -1373,8 +1414,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this), null, {request_type: 'GET'});
     },
     
-    fetch_payment_history: function(callback) {
-        this.make_request('/profile/payment_history', {}, callback, null, {request_type: 'GET'});
+    fetch_payment_history: function(user_id, callback) {
+        this.make_request('/profile/payment_history', {
+            user_id: user_id
+        }, callback, null, {request_type: 'GET'});
+    },
+    
+    upgrade_premium: function(user_id, callback, error_callback) {
+        this.make_request('/profile/upgrade_premium', {
+            user_id: user_id
+        }, callback, error_callback);
+    },
+    
+    refund_premium: function(user_id, callback, error_callback) {
+        this.make_request('/profile/refund_premium', {
+            user_id: user_id
+        }, callback, error_callback);
     },
     
     follow_twitter_account: function(username, callback) {
@@ -1386,10 +1441,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     fetch_original_text: function(story_id, feed_id, callback, error_callback) {
+        var story = this.get_story(story_id);
         this.make_request('/rss_feeds/original_text', {
             story_id: story_id,
             feed_id: feed_id
-        }, callback, error_callback, {
+        }, function(data) {
+            story.set('original_text', data.original_text);
+            callback(data);
+        }, error_callback, {
             request_type: 'GET',
             ajax_group: 'statistics'
         });

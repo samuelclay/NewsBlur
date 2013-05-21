@@ -25,6 +25,9 @@ media/maintenance.html
 media/maintenance.html.unused
 config/settings
 static.tgz
+.sass-cache
+media/css/circular/.sass-cache
+media/css/circular/sass/.sass-cache
 media/css/circular
 config/settings
 config/secrets
@@ -54,3 +57,4 @@ media/android/NewsBlurTest/gen/
 media/android/NewsBlur/local.properties
 media/android/NewsBlurTest/local.properties
 originals
+media/safari/NewsBlur.safariextz

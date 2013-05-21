@@ -1,5 +1,16 @@
 NEWSBLUR.utils = {
-
+    
+    service_name: function(service) {
+        switch (service) {
+            case 'twitter':
+            return 'Twitter';
+            case 'facebook':
+            return 'Facebook';
+            case 'appdotnet':
+            return 'App.net';
+        }
+    },
+    
     compute_story_score: function(story) {
       var score = 0;
       var intelligence = story.get('intelligence');
@@ -122,6 +133,19 @@ NEWSBLUR.utils = {
         return _.string.include(feed_id, 'social:');
     },
     
+    monthNames: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    shortMonthNames: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    
+    format_date: function(date) {
+        var dayOfWeek = date.getDay();
+        var month = date.getMonth();
+        var year = date.getUTCFullYear();
+        var day = date.getDate();
+
+        return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
+    },
+    
     make_folders: function(model, selected_folder_title) {
         var folders = model.get_folders();
         var $options = $.make('select', { className: 'NB-folders'});
@@ -156,6 +180,7 @@ NEWSBLUR.utils = {
         // Also change in utils/page_importer.py.
         var BROKEN_URLS = [
             'nytimes.com',
+            'github.com',
             'washingtonpost.com',
             'stackoverflow.com',
             'stackexchange.com',
@@ -165,6 +190,27 @@ NEWSBLUR.utils = {
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);
         });
+    },
+    
+    calculate_update_interval: function(update_interval_minutes) {
+        if (!update_interval_minutes) return '&nbsp;';
+        
+        var interval_start = update_interval_minutes;
+        var interval_end = update_interval_minutes * 1.25;
+        var interval = '';
+        if (interval_start < 60) {
+            interval = interval_start + ' to ' + interval_end + ' minutes';
+        } else {
+            var interval_start_hours = parseInt(interval_start / 60, 10);
+            var interval_end_hours = parseInt(interval_end / 60, 10);
+            var dec_start = interval_start % 60;
+            var dec_end = interval_end % 60;
+            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+        }
+        
+        return interval;
     }
+    
+
   
 };

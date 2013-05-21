@@ -38,6 +38,9 @@ UIPopoverControllerDelegate> {
 	UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
     UIBarButtonItem * homeButton;
+    UIBarButtonItem * addBarButton;
+    UIBarButtonItem * settingsBarButton;
+    UIBarButtonItem * activitiesButton;
     UISegmentedControl * intelligenceControl;
     WEPopoverController *popoverController;
 	Class popoverClass;
@@ -49,6 +52,9 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
@@ -62,6 +68,7 @@ UIPopoverControllerDelegate> {
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
@@ -78,6 +85,7 @@ UIPopoverControllerDelegate> {
 - (IBAction)sectionUntapped:(UIButton *)button;
 - (IBAction)sectionUntappedOutside:(UIButton *)button;
 - (void)redrawUnreadCounts;
+- (void)showExplainerOnEmptyFeedlist;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (void)loadFavicons;
 - (void)loadAvatars;
@@ -87,12 +95,15 @@ UIPopoverControllerDelegate> {
 - (void)refreshFeedList:(id)feedId;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)showUserProfile;
-- (void)showSettingsPopover:(id)sender;
+- (IBAction)showSettingsPopover:(id)sender;
+- (IBAction)showInteractionsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)resetToolbar;
+- (void)refreshHeaderCounts;
+- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
 
 
 @end

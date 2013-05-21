@@ -38,7 +38,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, 'Profile'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, 'Blurblog')
             ]),
-            $.make('h2', { className: 'NB-modal-title' }, 'Your Profile'),
+            $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Profile'
+            ]),
             $.make('div', { className: 'NB-tab NB-tab-profile NB-active' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Preview'),
@@ -101,7 +104,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-protected', className: 'NB-profile-protected-label' }, [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
+                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
                                         $.make('b', 'Protected:'),
                                         $.make('span', 'My shared stories are public but only people I approve can reply')
                                     ])
@@ -117,7 +120,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-private', className: 'NB-profile-protected-label' }, [
-                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
+                                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
                                         $.make('b', 'Private:'),
                                         $.make('span', 'Only people I approve can see my shared stories and reply to me')
                                     ])
@@ -126,7 +129,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
@@ -146,7 +149,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' }, this.profile.get('custom_css'))
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
@@ -573,29 +576,25 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     
     enable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
-            .removeClass('NB-modal-submit-grey')
-            .addClass('NB-modal-submit-green')
+            .removeClass('NB-disabled')
             .text('Save My Profile');
     },
     
     enable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
-            .removeClass('NB-modal-submit-grey')
-            .addClass('NB-modal-submit-green')
+            .removeClass('NB-disabled')
             .text('Save My Blurblog Settings');
     },
     
     disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
-            .addClass('NB-modal-submit-grey')
-            .removeClass('NB-modal-submit-green')
+            .addClass('NB-disabled')
             .text('Change what you like above...');
     },
     
     disable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
-            .addClass('NB-modal-submit-grey')
-            .removeClass('NB-modal-submit-green')
+            .addClass('NB-disabled')
             .text('Change what you like above...');
     }
     

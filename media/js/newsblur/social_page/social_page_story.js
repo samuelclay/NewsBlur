@@ -2,7 +2,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     FUDGE_CONTENT_HEIGHT_OVERAGE: 250,
     
-    STORY_CONTENT_MAX_HEIGHT: 500, // ALSO CHANGE IN social_page.css
+    STORY_CONTENT_MAX_HEIGHT: 400, // ALSO CHANGE IN social_page.css
     
     flags: {},
     
@@ -34,14 +34,15 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         this.story_guid = story_guid;
 
         this.comments_view = new NEWSBLUR.Views.SocialPageComments({
-            el: this.$('.NB-story-comments-container'),
+            el: this.$('.NB-story-comments'),
             model: this.model,
-            story_view: this
+            story_view: this,
+            page_view: this.options.page_view
         });
         this.model.social_page_comments = this.comments_view;
 
         this.shares_view = new NEWSBLUR.Views.SocialPageSharesView({
-            el: this.$('.NB-story-shares-container'),
+            el: this.$('.NB-story-shares'),
             model: this.model,
             story_view: this
         });
@@ -60,18 +61,6 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
                     social_services: NEWSBLUR.assets.social_services,
                     profile: NEWSBLUR.assets.user_profile
                 })));
-            }, this), 50);
-        } else {
-            _.delay(_.bind(function() {
-                this.login_view = new NEWSBLUR.Views.SocialPageLoginView({
-                    el: this.el,
-                    model: this.model,
-                    story_url: this.story_url()
-                });
-                $sideoptions.append($(this.login_view.template({
-                    story: this.model
-                })));
-
             }, this), 50);
         }
         
@@ -101,11 +90,12 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     truncate_story_height: function() {
         var $expander = this.$(".NB-story-content-expander");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
-        var content_height = this.$(".NB-story-content").outerHeight();
+        var content_height = $content.outerHeight(true);
         
         if (content_height > max_height && 
             content_height < max_height + this.FUDGE_CONTENT_HEIGHT_OVERAGE) {
@@ -113,6 +103,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             $wrapper.addClass('NB-story-content-wrapper-height-fudged');
         } else if (content_height > max_height) {
             $expander.css('display', 'block');
+            $expander_cutoff.css('display', 'block');
             $wrapper.removeClass('NB-story-content-wrapper-height-fudged');
             $wrapper.addClass('NB-story-content-wrapper-height-truncated');
             var pages = Math.round(content_height / max_height, true);
@@ -252,14 +243,15 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
-    
+     
     expand_story: function(options) {
         options = options || {};
         var $expander = this.$(".NB-story-content-expander");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
-        var content_height = this.$(".NB-story-content").height();
+        var content_height = $content.outerHeight(true);
         var height_ratio = content_height / max_height;
         
         if (content_height < max_height) return;
@@ -268,19 +260,21 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         $wrapper.animate({
             maxHeight: content_height
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(350 * height_ratio, 10)),
-            easing: 'easeOutQuart'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart'
         });
         
-        $expander.animate({
-            bottom: -1 * $expander.outerHeight()
+        $expander.add($expander_cutoff).animate({
+            bottom: -1 * $expander.outerHeight() - 48
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(350 * height_ratio, 10)),
-            easing: 'easeOutQuart'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart'
         });
+        
     },
     
     focus_comment_input: function() {
+        console.log("in focus_comment_input");
         var $form = this.$('.NB-story-comment-input-form');
         var $input = this.$('.NB-story-comment-input');
         var $buttons = this.$('.NB-story-comment-buttons');

@@ -39,16 +39,16 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
-@class FindSitesViewController;
 @class UnreadCounts;
 
-@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
+@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
     UINavigationController *modalNavigationController;
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
+    UINavigationController *trainNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -70,7 +70,6 @@
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
-    FindSitesViewController *findSitesViewController;
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
@@ -120,7 +119,9 @@
     NSMutableDictionary * dictFeeds;
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
+    NSDictionary * dictSocialProfile;
     NSDictionary * dictUserProfile;
+    NSDictionary * dictSocialServices;
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
@@ -135,6 +136,7 @@
 @property (nonatomic) IBOutlet UINavigationController *navigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
+@property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
@@ -148,7 +150,6 @@
 @property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
-@property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
@@ -205,7 +206,9 @@
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
+@property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
+@property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
@@ -225,7 +228,6 @@
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
 
-- (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
 - (void)openTrainSite;
 - (void)openTrainStory:(id)sender;
@@ -251,6 +253,8 @@
 - (NSString *)orderKey;
 - (NSString *)readFilterKey;
 - (void)confirmLogout;
+- (void)showConnectToService:(NSString *)serviceName;
+- (void)refreshUserProfile:(void(^)())callback;
 
 - (int)indexOfNextUnreadStory;
 - (int)locationOfNextUnreadStory;
@@ -291,6 +295,7 @@
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 
++ (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;

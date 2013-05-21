@@ -35,8 +35,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
 }
 
 - (void)viewDidUnload
@@ -78,20 +78,23 @@
     return YES;
 }
 
-- (void)buildMenuOptions {    
+- (void)buildMenuOptions {
+    BOOL everything = appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"];
+
     NSMutableArray *options = [NSMutableArray array];
     
     //    NSString *title = appDelegate.isRiverView ?
     //                        appDelegate.activeFolder :
     //                        [appDelegate.activeFeed objectForKey:@"feed_title"];
     
-    NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
-                            appDelegate.isRiverView ?
-                            @"this entire folder" :
-                            @"this site"];
-    [options addObject:[deleteText uppercaseString]];
-    
-    [options addObject:[@"Move to another folder" uppercaseString]];
+    if (!everything) {
+        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
+                                appDelegate.isRiverView ?
+                                @"this entire folder" :
+                                @"this site"];
+        [options addObject:[deleteText uppercaseString]];
+        [options addObject:[@"Move to another folder" uppercaseString]];
+    }
     
     if (!appDelegate.isRiverView) {
         [options addObject:[@"Train this site" uppercaseString]];
@@ -136,13 +139,13 @@
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
 
     if (indexPath.row == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"bin_closed"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
     } else if (indexPath.row == 1) {
-        cell.imageView.image = [UIImage imageNamed:@"arrow_branch"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_move.png"];
     } else if (indexPath.row == 2) {
-        cell.imageView.image = [UIImage imageNamed:@"bricks"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 3) {
-        cell.imageView.image = [UIImage imageNamed:@"car"];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_fetch.png"];
     }
     
     return cell;
@@ -186,15 +189,11 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    UIFont *font = [UIFont boldSystemFontOfSize:11.0f];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:UITextAttributeFont];
     
     orderSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                              kMenuOptionHeight - 7*2);
     [orderSegmentedControl setTitle:[@"Newest first" uppercaseString] forSegmentAtIndex:0];
     [orderSegmentedControl setTitle:[@"Oldest" uppercaseString] forSegmentAtIndex:1];
-    [orderSegmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    [orderSegmentedControl setTintColor:UIColorFromRGB(0x738570)];
     
     [cell addSubview:orderSegmentedControl];
     
@@ -205,15 +204,10 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    UIFont *font = [UIFont boldSystemFontOfSize:11.0f];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:UITextAttributeFont];
-    
     readFilterSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                                   kMenuOptionHeight - 7*2);
     [readFilterSegmentedControl setTitle:[@"All stories" uppercaseString] forSegmentAtIndex:0];
     [readFilterSegmentedControl setTitle:[@"Unread only" uppercaseString] forSegmentAtIndex:1];
-    [readFilterSegmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    [readFilterSegmentedControl setTintColor:UIColorFromRGB(0x738570)];
     
     [cell addSubview:readFilterSegmentedControl];
     

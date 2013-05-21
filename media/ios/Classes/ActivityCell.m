@@ -94,19 +94,25 @@
 //        UIImage *placeholder = [UIImage imageNamed:@"user_light"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
                          placeholderImage:nil];
-    } else if ([category isEqualToString:@"sharedstory"]) {
-//        UIImage *placeholder = [UIImage imageNamed:@"user_light"];
-        [self.faviconView setImageWithURL:[NSURL URLWithString:[userProfile objectForKey:@"photo_url"]]
-                         placeholderImage:nil];
-    } else if ([category isEqualToString:@"feedsub"]) {
+    } else if ([category isEqualToString:@"sharedstory"] ||
+               [category isEqualToString:@"feedsub"] ||
+               [category isEqualToString:@"star"]) {
 //        UIImage *placeholder = [UIImage imageNamed:@"world"];
-        NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i", 
-                                NEWSBLUR_URL,
-                                [[activity objectForKey:@"feed_id"] intValue]];
-        [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl ]
-                         placeholderImage:nil];
-        self.faviconView.contentMode = UIViewContentModeScaleAspectFit;
-        self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
+        id feedId;
+        if ([category isEqualToString:@"feedsub"]) {
+            feedId = [activity objectForKey:@"feed_id"];
+        } else {
+            feedId = [activity objectForKey:@"story_feed_id"];
+        }
+        if (feedId && [feedId class] != [NSNull class]) {
+            NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i",
+                                    NEWSBLUR_URL,
+                                    [feedId intValue]];
+            [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl]
+                             placeholderImage:nil];
+            self.faviconView.contentMode = UIViewContentModeScaleAspectFit;
+            self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
+        }
     }
     
     if ([category isEqualToString:@"follow"]) {

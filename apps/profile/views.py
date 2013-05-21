@@ -6,15 +6,16 @@ from django.contrib.auth import logout as logout_user
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password, PaymentHistory
+from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
-from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm
+from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -79,35 +80,15 @@ def get_preference(request):
 @require_POST
 @json.json_view
 def set_account_settings(request):
-    code = 1
-    message = ''
-    post_settings = request.POST
-    
-    if post_settings['username'] and request.user.username != post_settings['username']:
-        try:
-            User.objects.get(username__iexact=post_settings['username'])
-        except User.DoesNotExist:
-            request.user.username = post_settings['username']
-            request.user.save()
-            social_profile = MSocialProfile.get_user(request.user.pk)
-            social_profile.username = post_settings['username']
-            social_profile.save()
-        else:
-            code = -1
-            message = "This username is already taken. Try something different."
-    
-    if request.user.email != post_settings['email']:
-        if not post_settings['email'] or not User.objects.filter(email=post_settings['email']).count():
-            request.user.email = post_settings['email']
-            request.user.save()
-        else:
-            code = -2
-            message = "This email is already being used by another account. Try something different."
-        
-    if code != -1 and (post_settings['old_password'] or post_settings['new_password']):
-        code = change_password(request.user, post_settings['old_password'], post_settings['new_password'])
-        if code == -3:
-            message = "Your old password is incorrect."
+    code = -1
+    message = 'OK'
+
+    form = AccountSettingsForm(user=request.user, data=request.POST)
+    if form.is_valid():
+        form.save()
+        code = 1
+    else:
+        message = form.errors[form.errors.keys()[0]][0]
     
     payload = {
         "username": request.user.username,
@@ -264,6 +245,13 @@ def stripe_form(request):
         return render_to_response('reader/paypal_return.xhtml', 
                                   {}, context_instance=RequestContext(request))
     
+    new_user_queue_count = RNewUserQueue.user_count()
+    new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
+    new_user_queue_behind = 0
+    if new_user_queue_position >= 0:
+        new_user_queue_behind = new_user_queue_count - new_user_queue_position 
+        new_user_queue_position -= 1
+    
     logging.user(request, "~BM~FBLoading Stripe form")
 
     return render_to_response('profile/stripe_form.xhtml',
@@ -271,6 +259,9 @@ def stripe_form(request):
           'zebra_form': zebra_form,
           'publishable': settings.STRIPE_PUBLISHABLE,
           'success_updating': success_updating,
+          'new_user_queue_count': new_user_queue_count - 1,
+          'new_user_queue_position': new_user_queue_position,
+          'new_user_queue_behind': new_user_queue_behind,
         },
         context_instance=RequestContext(request)
     )
@@ -291,10 +282,49 @@ def load_activities(request):
 @ajax_login_required
 @json.json_view
 def payment_history(request):
-    history = PaymentHistory.objects.filter(user=request.user)
+    user = request.user
+    if request.user.is_staff:
+        user_id = request.REQUEST.get('user_id', request.user.pk)
+        user = User.objects.get(pk=user_id)
 
-    return {'payments': history}
+    history = PaymentHistory.objects.filter(user=user)
 
+    return {
+        'is_premium': user.profile.is_premium,
+        'premium_expire': user.profile.premium_expire,
+        'payments': history
+    }
+
+@ajax_login_required
+@json.json_view
+def cancel_premium(request):
+    canceled = request.user.profile.cancel_premium()
+    
+    return {'code': 1 if canceled else -1}
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def refund_premium(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    try:
+        refunded = user.profile.refund_premium()
+    except stripe.InvalidRequestError, e:
+        refunded = e
+
+    return {'code': 1 if refunded else -1, 'refunded': refunded}
+
+@staff_member_required
+@ajax_login_required
+@json.json_view
+def upgrade_premium(request):
+    user_id = request.REQUEST.get('user_id')
+    user = User.objects.get(pk=user_id)
+    upgraded = user.profile.activate_premium()
+    
+    return {'code': 1 if upgraded else -1}
+    
 @login_required
 @render_to('profile/delete_account.xhtml')
 def delete_account(request):

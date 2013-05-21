@@ -14,7 +14,7 @@ NEWSBLUR.Views.ProfileThumb = Backbone.View.extend({
     
     render: function() {
         var $profile = $.make('div', { className: 'NB-user-avatar', title: this.model.get('username') }, [
-            (this.model.get('private') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png', className: 'NB-user-avatar-private' })),
+            (this.model.get('private') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png', className: 'NB-user-avatar-private' })),
             $.make('img', { src: this.model.get('photo_url'), className: 'NB-user-avatar-image' })
         ]).tipsy({
             delayIn: 50,

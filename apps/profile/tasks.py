@@ -1,6 +1,6 @@
 import datetime
 from celery.task import Task
-from apps.profile.models import Profile
+from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 
 
@@ -36,3 +36,9 @@ class PremiumExpire(Task):
         for profile in expired_profiles:
             profile.send_premium_expire_email()
             profile.deactivate_premium()
+
+class ActivateNextNewUser(Task):
+    name = 'activate-next-new-user'
+    
+    def run(self):
+        RNewUserQueue.activate_next()

@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "ActivityCell.h"
+#import "SmallActivityCell.h"
 
 @implementation ActivityModule
 
@@ -73,7 +74,7 @@
 - (void)fetchActivitiesDetail:(int)page {
     
     // if there is no social profile, we are DONE
-//    if ([[appDelegate.dictUserProfile allKeys] count] == 0) {
+//    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
 //        [self.activitiesTable reloadData];
 //        return;
@@ -96,7 +97,7 @@
                                "http://%@/social/activities?user_id=%@&page=%i&limit=10"
                                "&category=signup&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                                NEWSBLUR_URL,
-                               [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                               [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
         
         NSURL *url = [NSURL URLWithString:urlString];
@@ -152,6 +153,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [appDelegate informError:error];
 }
 
 #pragma mark -
@@ -174,9 +176,14 @@
         return MINIMUM_ACTIVITY_HEIGHT;
     }
     
-    ActivityCell *activityCell = [[ActivityCell alloc] init];
+    id activityCell;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        activityCell = [[ActivityCell alloc] init];
+    } else {
+        activityCell = [[SmallActivityCell alloc] init];
+    }
     
-    NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+    NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
     [userProfile setValue:@"You" forKey:@"username"];
     
     int height = [activityCell setActivity:[appDelegate.userActivitiesArray 
@@ -189,20 +196,26 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ActivityCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:@"ActivityCell"];
+    ActivityCell *cell = [tableView
+                          dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
-        cell = [[ActivityCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:@"ActivityCell"];
-    } 
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cell = [[ActivityCell alloc]
+                     initWithStyle:UITableViewCellStyleDefault 
+                     reuseIdentifier:@"ActivityCell"];
+        } else {
+            cell = [[SmallActivityCell alloc]
+                    initWithStyle:UITableViewCellStyleDefault
+                    reuseIdentifier:@"ActivityCell"];
+        }
+    }
     
     if (indexPath.row >= [appDelegate.userActivitiesArray count]) {
         // add in loading cell
         return [self makeLoadingCell];
     } else {
 
-        NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+        NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
         [userProfile setValue:@"You" forKey:@"username"];
         
         NSDictionary *activitiy = [appDelegate.userActivitiesArray 
@@ -249,23 +262,38 @@
             [appDelegate showUserProfileModal:cell];
         } else if ([category isEqualToString:@"comment_reply"] ||
                    [category isEqualToString:@"comment_like"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@",
+                                      [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:YES
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:YES];
             appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"sharedstory"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [appDelegate.dictSocialProfile objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@",
+                                      [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:YES
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:YES];
             appDelegate.tryFeedCategory = category;
-
         } else if ([category isEqualToString:@"feedsub"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [activity objectForKey:@"feed_id"]];
             NSString *contentIdStr = nil;
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"] showFindingStory:NO];
+            [appDelegate loadTryFeedDetailView:feedIdStr
+                                     withStory:contentIdStr
+                                      isSocial:NO
+                                      withUser:[activity objectForKey:@"with_user"]
+                              showFindingStory:NO];
             appDelegate.tryFeedCategory = category;
-
-        } 
+        }
 
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];

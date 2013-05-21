@@ -59,7 +59,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     
     show_counts: function(options) {
         var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
-        var $counts = new NEWSBLUR.Views.FolderCount({
+        var $counts = new NEWSBLUR.Views.UnreadCount({
             collection: NEWSBLUR.assets.social_feeds
         }).render().$el;
         

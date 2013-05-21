@@ -114,4 +114,29 @@ $(function() {
         // adding the input field names is the last step, in case an earlier step errors                
         addInputNames();
     }
+    
+    
+    var $payextra = $("input[name=payextra]");
+    var $label2 = $("label[for=id_plan_1]");
+    var $label3 = $("label[for=id_plan_2]");
+    var $radio2 = $("input#id_plan_1");
+    var $radio3 = $("input#id_plan_2");
+    var change_payextra = function() {
+        if ($payextra.is(':checked')) {
+            $label2.hide();
+            $label3.show();
+            $radio3.attr('checked', true);
+        } else {
+            $label2.show();
+            $label3.hide();
+            $radio2.attr('checked', true);                            
+        }
+    };
+    $("input[name=payextra]").on('change', change_payextra);
+    if ($radio3.is(':checked')) {
+        $payextra.attr('checked', 'checked').change();
+    } else {
+        $payextra.change();
+    }
+
 });

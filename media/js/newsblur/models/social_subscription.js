@@ -90,7 +90,8 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
         });
     },
     
-    unread_counts: function() {
+    unread_counts: function(existing_counts) {
+        existing_counts = existing_counts || {};
         var counts = this.reduce(function(counts, item) {
             var feed_counts = item.unread_counts();
             counts['ps'] += feed_counts['ps'];
@@ -98,9 +99,9 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
             counts['ng'] += feed_counts['ng'];
             return counts;
         }, {
-            ps: 0,
-            nt: 0,
-            ng: 0
+            ps: existing_counts['ps'] || 0,
+            nt: existing_counts['nt'] || 0,
+            ng: existing_counts['ng'] || 0
         });
         
         return counts;
