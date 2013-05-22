@@ -7920,7 +7920,8 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference {
   overflow: hidden;
-  margin: 12px 0 12px;
+  margin: 12px 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, .05);
   padding: 12px;
   background-color: #F7F7F5;
   border-radius: 4px;
@@ -7968,6 +7969,14 @@ form.opml_import_form input {
   font-weight: bold;
 }
 
+.NB-modal-preferences .NB-preferences-notpremium {
+    padding: 6px 12px;
+    background-color: #FEF4D9;
+    text-align: center;
+    margin: 12px 0;
+    border-radius: 3px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
 .NB-modal-preferences .NB-preference-view {
   padding-bottom: 4px;
 }
@@ -8067,7 +8076,8 @@ form.opml_import_form input {
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
 }
-.NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay {
+.NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,
+.NB-modal-preferences .NB-preference-slider {
     display: inline-block;
     margin: 0 16px 0 8px;
     top: 2px;
