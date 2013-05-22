@@ -37,7 +37,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories')
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, 'Keyboard')
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
@@ -605,6 +606,77 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Show all comments'
                         ])
                     ])
+                ]),
+                $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
+                    (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' }, [
+                        'You must have a ',
+                        $.make('div', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
+                        ' to change keyboard shortcuts.'
+                    ])),
+                    $.make('div', { className: 'NB-preference NB-preference-keyboard-verticalarrows' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-verticalarrows-1', 
+                                    type: 'radio', 
+                                    name: 'keyboard_verticalarrows', 
+                                    value: 'story',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, 'Navigate between stories')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-verticalarrows-2', 
+                                    type: 'radio', 
+                                    name: 'keyboard_verticalarrows', 
+                                    value: 'scroll',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, 'Scroll up/down in story')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2193;'
+                            ]),
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2191;'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-horizontalarrows-1', 
+                                    type: 'radio', 
+                                    name: 'keyboard_horizontalarrows', 
+                                    value: 'view',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, 'Switch views (original, feed, text, story)')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-horizontalarrows-2', 
+                                    type: 'radio', 
+                                    name: 'keyboard_horizontalarrows', 
+                                    value: 'site',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, 'Open the next site/folder')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2190;'
+                            ]),
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2192;'
+                            ])
+                        ])
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
@@ -739,6 +811,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=keyboard_verticalarrows]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.keyboard_verticalarrows) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=keyboard_horizontalarrows]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.keyboard_horizontalarrows) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         var order = NEWSBLUR.Preferences['default_order'];
         var read_filter = NEWSBLUR.Preferences['default_read_filter'];
         $('.NB-preference-view-setting-order-oldest', $modal).toggleClass('NB-active', order == 'oldest');
@@ -858,6 +942,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 newtab = 'feeds';
             } else if ($t.hasClass('NB-modal-tab-stories')) {
                 newtab = 'stories';
+            } else if ($t.hasClass('NB-modal-tab-keyboard')) {
+                newtab = 'keyboard';
             }
             self.resize_modal();
             self.switch_tab(newtab);
