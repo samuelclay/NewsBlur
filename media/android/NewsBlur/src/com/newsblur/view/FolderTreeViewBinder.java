@@ -33,7 +33,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			if (cursor.getString(columnIndex) != null) {
 				String imageUrl = cursor.getString(columnIndex);
-				imageLoader.displayImage(imageUrl, (ImageView)view);
+				imageLoader.displayImage(imageUrl, (ImageView)view, false);
 			} else {
 				Bitmap bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.world);
 				((ImageView) view).setImageBitmap(bitmap);
