@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
@@ -17,6 +16,7 @@ import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 
 public class SocialFeedItemsList extends ItemsList {
 
@@ -38,7 +38,7 @@ public class SocialFeedItemsList extends ItemsList {
 		setTitle(title);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
+			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -106,5 +106,11 @@ public class SocialFeedItemsList extends ItemsList {
 
 	@Override
 	public void closeAfterUpdate() { }
+
+
+    @Override
+    protected StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
 
 }

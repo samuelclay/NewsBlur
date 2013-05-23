@@ -23,6 +23,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 
 public class FeedItemsList extends ItemsList {
 
@@ -51,7 +52,7 @@ public class FeedItemsList extends ItemsList {
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, PrefsUtils.getStoryOrderForFeed(this, feedId));
+			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -129,7 +130,7 @@ public class FeedItemsList extends ItemsList {
 			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
-            intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFeed(this, feedId));
+            intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
             intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, feedId));
 			startService(intent);
 		}
@@ -144,6 +145,11 @@ public class FeedItemsList extends ItemsList {
 	public void closeAfterUpdate() {
 		finish();
 	}
+
+    @Override
+    protected StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrderForFeed(this, feedId);
+    }
 
 
 }

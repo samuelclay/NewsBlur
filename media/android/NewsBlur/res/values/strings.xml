@@ -143,4 +143,8 @@
     <string name="toast_marked_all_stories_as_read">All stories marked as read</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
+    
+    <string name="oldest">Oldest</string>
+    <string name="newest">Newest</string>
+    <string name="menu_story_order">Story Order</string>
 </resources>

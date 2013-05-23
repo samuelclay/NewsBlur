@@ -10,7 +10,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.ItemListFragment;
+import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener {
@@ -21,6 +23,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
 	public static final String RESULT_EXTRA_READ_STORIES = "storiesToMarkAsRead";
 	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
+	private static final String STORY_ORDER = "storyOrder";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
@@ -64,10 +67,17 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
 			markItemListAsRead();
 			return true;
-		}
+		} else if (item.getItemId() == R.id.menu_story_order) {
+            StoryOrder currentValue = getStoryOrder();
+            StoryOrderDialogFragment storyOrder = StoryOrderDialogFragment.newInstance(currentValue);
+            storyOrder.show(getSupportFragmentManager(), STORY_ORDER);
+            return true;
+        }
 	
 		return false;
 	}
+	
+	protected abstract StoryOrder getStoryOrder();
 	
 	@Override
 	public void updateAfterSync() {
