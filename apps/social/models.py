@@ -2014,7 +2014,7 @@ class MSocialServices(mongo.Document):
             },
             'gravatar': {
                 'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
-                                        hashlib.md5(user.email).hexdigest()
+                                        hashlib.md5(user.email.lower()).hexdigest()
             },
             'upload': {
                 'upload_picture_url': self.upload_picture_url
