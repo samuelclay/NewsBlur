@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <Button
-        android:id="@+id/share_story_button"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:padding="10dp"
-        android:text="@string/share_this" />
-    
-    <Button
-        android:id="@+id/save_story_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:padding="10dp"
-        android:text="@string/save_this" />
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp" >
+
+        <Button
+            android:id="@+id/share_story_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:padding="10dp"
+            android:text="@string/share_this" />
+        
+        <Button
+            android:id="@+id/save_story_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:padding="10dp"
+            android:text="@string/save_this" />
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/reading_shared_container"
