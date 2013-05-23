@@ -22,11 +22,11 @@
 
         <TextView
             android:id="@+id/row_item_sidebar"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="2dp"
-            android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
+            android:layout_toRightOf="@id/row_item_favicon_borderbar_2" />
 
         <TextView
             android:id="@+id/row_item_title"

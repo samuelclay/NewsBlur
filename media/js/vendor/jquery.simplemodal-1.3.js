@@ -222,7 +222,7 @@
 			}
 
 			// $.boxModel is undefined if checked earlier
-			ieQuirks = $.browser.msie && !$.boxModel;
+			ieQuirks = $.browser.msie && (parseInt($.browser.version, 10) <= 7 && !$.boxModel);
 
 			// merge defaults and user options
 			s.o = $.extend({}, $.modal.defaults, options);

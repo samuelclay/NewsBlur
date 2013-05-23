@@ -3,6 +3,7 @@ package com.newsblur.view;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,13 +40,16 @@ public class SocialItemViewBinder implements ViewBinder {
 			
 			int score = Story.getIntelligenceTotal(title, authors, tags, feed);
 			
-			if (score > 0) {
-				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.positive_count_circle : R.drawable.positive_count_circle_read);
+			Drawable icon;
+            if (score > 0) {
+                icon = view.getResources().getDrawable(R.drawable.g_icn_focus);
 			} else if (score == 0) {
-				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.neutral_count_circle : R.drawable.neutral_count_circle_read);
+                icon = view.getResources().getDrawable(R.drawable.g_icn_unread);
 			} else {
-				view.setBackgroundResource(R.drawable.negative_count_circle);
+                icon = view.getResources().getDrawable(R.drawable.g_icn_hidden);
 			}
+            icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
+            view.setBackgroundDrawable(icon);
 
 			((TextView) view).setText("");
 			return true;

@@ -54,7 +54,8 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('div', { className: 'NB-modal-page' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                $.make('span', 'Tips &amp; Tricks')
+                $.make('span', 'Tips &amp; Tricks'),
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-page NB-page-1' }, [
               $.make('h4', 'NewsBlur is a visual feed reader with intelligence.'),

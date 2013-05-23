@@ -26,7 +26,8 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Keyboard shorcuts'
+                'Keyboard shorcuts',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
@@ -115,7 +116,9 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Text view'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                    'shift+enter'
+                    'shift',
+                    $.make('span', '+'),
+                    'enter'
                 ])
               ])
             ]),

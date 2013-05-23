@@ -114,7 +114,15 @@ fieldset legend {
     float: left;
     margin: 0 12px 0 0;
 }
-
+.NB-modal .NB-icon-dropdown {
+    display: inline-block;
+    padding: 0 6px;
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/img/icons/circular/g_icn_arrow_down.png') no-repeat center center;
+    background-size: 8px;
+    cursor: pointer;
+}
 .NB-modal h5,
 .NB-module h5,
 .NB-module-header {

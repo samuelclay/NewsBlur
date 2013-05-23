@@ -36,7 +36,8 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Recommend this Site'
+                'Recommend this Site',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),

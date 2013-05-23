@@ -306,7 +306,8 @@ var classifier_prototype = {
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal NB-modal-trainer'}, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Intelligence Trainer'
+                'Intelligence Trainer',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
             $.make('ol', { className: 'NB-trainer-points NB-classifiers' }, [

@@ -40,7 +40,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Profile'
+                'Profile',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-tab NB-tab-profile NB-active' }, [
                 $.make('fieldset', [

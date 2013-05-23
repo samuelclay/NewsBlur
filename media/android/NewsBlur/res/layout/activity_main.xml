@@ -20,4 +20,11 @@
         android:layout_alignParentTop="true"
         android:tag="folderFeedListFragment" />
 
+    <View
+        android:id="@+id/feedintelligenceselector_border"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/midgray"
+        android:layout_below="@id/fragment_folderfeedlist" />
+
 </RelativeLayout>

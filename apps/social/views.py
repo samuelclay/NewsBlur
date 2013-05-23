@@ -340,7 +340,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     elif username == "popular.global":
         current_tab = "global"
         global_feed = True
-
+    
     if social_profile.private and (not user.is_authenticated() or 
                                    not social_profile.is_followed_by_user(user.pk)):
         stories = []

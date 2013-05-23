@@ -21,7 +21,7 @@
             {% if new_user_queue_position == 0 %}
                 You are at the front of the line! Just a few more minutes<br />until you receive your free invite to use NewsBlur.
             {% else %}
-                There {{ new_user_queue_position|pluralize:"is,are" }} {{ new_user_queue_position }} {{ new_user_queue_position|pluralize:"person,people" }} in front of you{% if new_user_queue_behind %} <span style="color:#999">(and {{ new_user_queue_behind }} {{ new_user_queue_behind|pluralize:"person,people" }} behind you)</span>{% endif %}, {{ new_user_queue_position|pluralize:",all" }} patiently waiting<br /> on their free accounts on NewsBlur.
+                There {{ new_user_queue_position|pluralize:"is,are" }} {{ new_user_queue_position|commify }} {{ new_user_queue_position|pluralize:"person,people" }} in front of you{% if new_user_queue_behind %} <span style="color:#999">(and {{ new_user_queue_behind|commify }} {{ new_user_queue_behind|pluralize:"person,people" }} behind you)</span>{% endif %}, {{ new_user_queue_position|pluralize:",all" }} patiently waiting<br /> on their free accounts on NewsBlur.
             {% endif %}
         </p>
         <p style="margin: 6px 0 0;color: #355599;font-weight: bold;">By going premium you can get full and immediate access to NewsBlur.</p>

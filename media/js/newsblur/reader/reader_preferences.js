@@ -37,12 +37,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories')
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, 'Keyboard')
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Preferences'
+                'Preferences',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
@@ -605,6 +607,100 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Show all comments'
                         ])
                     ])
+                ]),
+                $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
+                    (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' }, [
+                        'You must have a ',
+                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
+                        ' to change keyboard shortcuts.'
+                    ])),
+                    $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-horizontalarrows-1', 
+                                    type: 'radio', 
+                                    name: 'keyboard_horizontalarrows', 
+                                    value: 'view',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, 'Switch between views (original, feed, text, story)')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-horizontalarrows-2', 
+                                    type: 'radio', 
+                                    name: 'keyboard_horizontalarrows', 
+                                    value: 'site',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, 'Open the next site/folder')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2190;'
+                            ]),
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2192;'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-keyboard-verticalarrows' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-verticalarrows-1', 
+                                    type: 'radio', 
+                                    name: 'keyboard_verticalarrows', 
+                                    value: 'story',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, 'Navigate between stories')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { 
+                                    id: 'NB-preference-keyboard-verticalarrows-2', 
+                                    type: 'radio', 
+                                    name: 'keyboard_verticalarrows', 
+                                    value: 'scroll',
+                                    disabled: !NEWSBLUR.Globals.is_premium
+                                }),
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, [
+                                    'Scroll up/down in story by ',
+                                    $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
+                                    $.make('span', { className: 'NB-tangle-arrowscrollspacing' }, '100'),
+                                    'px.',
+                                    $.make('input', { name: 'arrow_scroll_spacing', value: NEWSBLUR.Preferences.arrow_scroll_spacing, type: 'hidden' })
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2193;'
+                            ]),
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                '&#x2191;'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-keyboard-spacebar' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                'Page down by ',
+                                $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
+                                ' ',
+                                $.make('span', { className: 'NB-tangle-spacescrollspacing' }, '40%'),
+                                ' of the screen',
+                                $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                                'space'
+                            ])
+                        ])
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
@@ -739,6 +835,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=keyboard_verticalarrows]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.keyboard_verticalarrows) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=keyboard_horizontalarrows]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.keyboard_horizontalarrows) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=arrow_scroll_spacing]', $modal).val(NEWSBLUR.Preferences.arrow_scroll_spacing);
+        $('input[name=space_scroll_spacing]', $modal).val(NEWSBLUR.Preferences.space_scroll_spacing);
+        
         var order = NEWSBLUR.Preferences['default_order'];
         var read_filter = NEWSBLUR.Preferences['default_read_filter'];
         $('.NB-preference-view-setting-order-oldest', $modal).toggleClass('NB-active', order == 'oldest');
@@ -762,7 +873,27 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             value: NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1,
             slide: _.bind(this.slide_read_story_delay_slider, this)
         });
+        $(".NB-tangle-arrowscrollspacing-control", $modal).slider({
+            range: 'min',
+            min: 20,
+            max: 500,
+            step: 20,
+            value: NEWSBLUR.Preferences.arrow_scroll_spacing,
+            slide: _.bind(this.slide_arrow_scroll_spacing_slider, this),
+            disabled: !NEWSBLUR.Globals.is_premium
+        });
+        $(".NB-tangle-spacescrollspacing-control", $modal).slider({
+            range: 'min',
+            min: 10,
+            max: 100,
+            step: 10,
+            value: NEWSBLUR.Preferences.space_scroll_spacing,
+            slide: _.bind(this.slide_space_scroll_spacing_slider, this),
+            disabled: !NEWSBLUR.Globals.is_premium
+        });
         this.slide_read_story_delay_slider();
+        this.slide_arrow_scroll_spacing_slider();
+        this.slide_space_scroll_spacing_slider();
     },
     
     slide_read_story_delay_slider: function(e, ui) {
@@ -776,7 +907,34 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             }
         }
     },
-    
+
+    slide_arrow_scroll_spacing_slider: function(e, ui) {
+        var value = (ui && ui.value) || NEWSBLUR.Preferences.arrow_scroll_spacing;
+        if (!NEWSBLUR.Globals.is_premium) {
+            value = NEWSBLUR.Preferences.arrow_scroll_spacing;
+        }
+        $(".NB-tangle-arrowscrollspacing", this.$modal).text(value);
+        $("input[name=arrow_scroll_spacing]", this.$modal).val(value);
+        if (NEWSBLUR.Preferences.keyboard_verticalarrows == 'scroll' || ui) {
+            $("#NB-preference-keyboard-verticalarrows-2", this.$modal).attr('checked', true);
+            if (ui) {
+                this.enable_save();
+            }
+        }
+    },
+
+    slide_space_scroll_spacing_slider: function(e, ui) {
+        var value = (ui && ui.value) || NEWSBLUR.Preferences.space_scroll_spacing;
+        if (!NEWSBLUR.Globals.is_premium) {
+            value = NEWSBLUR.Preferences.space_scroll_spacing;
+        }
+        $(".NB-tangle-spacescrollspacing", this.$modal).text(value + "%");
+        $("input[name=space_scroll_spacing]", this.$modal).val(value);
+        if (ui) {
+            this.enable_save();
+        }
+    },
+
     serialize_preferences: function() {
         var preferences = {};
 
@@ -788,6 +946,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[type=checkbox]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).is(':checked');
+        });
+        $('input[type=hidden]', this.$modal).each(function() {
+            preferences[$(this).attr('name')] = $(this).val();
         });
         preferences['default_order'] = $('.NB-preference-view-setting-order li.NB-active', this.$modal).hasClass('NB-preference-view-setting-order-oldest') ? 'oldest' : 'newest';
         preferences['default_read_filter'] = $('.NB-preference-view-setting-read-filter li.NB-active', this.$modal).hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
@@ -828,6 +989,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
       });
     },
     
+    close_and_load_feedchooser: function() {
+        this.close(function() {
+            NEWSBLUR.reader.open_feedchooser_modal();
+        });
+    },
+    
     change_view_setting: function(view, setting) {
         if (view == 'order') {
             $('.NB-preference-view-setting-order-oldest').toggleClass('NB-active', setting == 'oldest');
@@ -858,6 +1025,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 newtab = 'feeds';
             } else if ($t.hasClass('NB-modal-tab-stories')) {
                 newtab = 'stories';
+            } else if ($t.hasClass('NB-modal-tab-keyboard')) {
+                newtab = 'keyboard';
             }
             self.resize_modal();
             self.switch_tab(newtab);
@@ -882,6 +1051,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             
             self.close();
+        });
+        $.targetIs(e, { tagSelector: '.NB-premium-link' }, function($t, $p) {
+            e.preventDefault();
+            self.close_and_load_feedchooser();
         });
         $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function($t, $p) {
             e.preventDefault();

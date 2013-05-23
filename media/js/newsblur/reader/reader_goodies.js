@@ -24,7 +24,8 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Goodies &amp; Extras'
+                'Goodies &amp; Extras',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             
             $.make('fieldset', [
