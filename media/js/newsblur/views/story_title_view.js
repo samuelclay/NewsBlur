@@ -67,12 +67,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         <div class="NB-story-detail"></div>\
     '),
     
-    render_inline_story_detail: function() {
-        if (NEWSBLUR.reader.story_view == 'text') {
+    render_inline_story_detail: function(temporary_text) {
+        if (NEWSBLUR.reader.story_view == 'text' || temporary_text) {
             this.text_view = new NEWSBLUR.Views.TextTabView({
                 el: null
             });
-            this.text_view.fetch_and_render(this.model);
+            this.text_view.fetch_and_render(this.model, temporary_text);
             this.$(".NB-story-detail").html(this.text_view.$el);
         } else {
             this.story_detail = new NEWSBLUR.Views.StoryDetailView({

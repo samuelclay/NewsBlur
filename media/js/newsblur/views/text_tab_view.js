@@ -136,8 +136,9 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     // ==========
     
     select_story: function(story, selected) {
-        if (selected && NEWSBLUR.reader.story_view == 'text' &&
-            NEWSBLUR.assets.preference('story_layout') == 'split') {
+        if (!selected) return;
+        if ((NEWSBLUR.reader.story_view == 'text' &&
+             NEWSBLUR.assets.preference('story_layout') == 'split')) {
             if (NEWSBLUR.reader.flags['temporary_story_view']) {
                 NEWSBLUR.reader.switch_to_correct_view();
             }
