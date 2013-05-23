@@ -10,6 +10,8 @@
 
 	<color name="folder_background_end">#E9EBE4</color>
 	<color name="folder_background_start">#DDE0D7</color>
+	<color name="folder_background_selected_end">#fdfcca</color>
+	<color name="folder_background_selected_start">#fbec8c</color>
     <color name="folder_text">#4C4C4C</color>
     <color name="feed_background">#F7F8F5</color>
     <color name="feed_title_text_background">#606060</color>
