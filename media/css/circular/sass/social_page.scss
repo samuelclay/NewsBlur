@@ -1130,7 +1130,8 @@ blockquote {
     padding: 20px 28px 20px;
     position: relative;
     overflow: hidden;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+    color: rgba(0, 0, 0, .5);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
     
     -webkit-transition: all .32s ease-out;
     -moz-transition: all .32s ease-out;
@@ -1144,7 +1145,6 @@ blockquote {
         height: 20px;
         bottom: 20px;
         font-size: 20px;
-        color: white;
     }
     
     &:not(.NB-loaded,.NB-loading):hover {
@@ -1155,6 +1155,8 @@ blockquote {
     &.NB-loaded {
         cursor: default;
         background-color: rgba(0, 0, 0, .3);
+        color: white;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
     }
     &.NB-loading {
         cursor: wait;
