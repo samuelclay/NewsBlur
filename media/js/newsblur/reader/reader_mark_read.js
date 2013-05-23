@@ -34,7 +34,8 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Mark old stories as read'
+                'Mark old stories as read',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-markread-form' }, [
                 $.make('div', { className: 'NB-markread-slider'}),

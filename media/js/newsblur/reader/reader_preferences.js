@@ -43,7 +43,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Preferences'
+                'Preferences',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [

@@ -44,7 +44,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Account'
+                'Account',
+                $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-account NB-active' }, [
