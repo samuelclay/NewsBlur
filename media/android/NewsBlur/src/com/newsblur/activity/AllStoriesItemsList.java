@@ -21,6 +21,8 @@ import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class AllStoriesItemsList extends ItemsList {
 
@@ -47,7 +49,7 @@ public class AllStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, storyOrder);
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -80,8 +82,8 @@ public class AllStoriesItemsList extends ItemsList {
 			feedIds.toArray(feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-			intent.putExtra(SyncService.EXTRA_TASK_ORDER, storyOrder);
-			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, readFilter);
+			intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
+			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
 
 			startService(intent);
 		}

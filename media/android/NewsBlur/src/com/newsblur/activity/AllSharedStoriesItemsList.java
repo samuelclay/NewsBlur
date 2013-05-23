@@ -14,6 +14,8 @@ import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class AllSharedStoriesItemsList extends ItemsList {
 
@@ -35,7 +37,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, storyOrder);
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);

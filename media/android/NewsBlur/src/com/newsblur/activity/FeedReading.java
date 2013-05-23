@@ -13,6 +13,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 
 public class FeedReading extends Reading {
 
@@ -34,7 +35,8 @@ public class FeedReading extends Reading {
 		Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		StoryOrder storyOrder = PrefsUtils.getStoryOrderForFeed(this, feedId);
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);

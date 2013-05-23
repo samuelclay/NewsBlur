@@ -179,27 +179,23 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
-    public static StoryOrder getStoryOrderForFeed(Context context, String feedId)
-    {
+    public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, StoryOrder.NEWEST.getParameterValue()));
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, StoryOrder.getDefaultValue().toString()));
     }
     
-    public static StoryOrder getStoryOrderForFolder(Context context, String folderName)
-    {
+    public static StoryOrder getStoryOrderForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, StoryOrder.NEWEST.getParameterValue()));
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, StoryOrder.getDefaultValue().toString()));
     }
     
-    public static ReadFilter getReadFilterForFeed(Context context, String feedId)
-    {
+    public static ReadFilter getReadFilterForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, ReadFilter.ALL.getParameterValue()));
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, ReadFilter.getDefaultValue().toString()));
     }
     
-    public static ReadFilter getReadFilterForFolder(Context context, String folderName)
-    {
+    public static ReadFilter getReadFilterForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, ReadFilter.ALL.getParameterValue()));
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, ReadFilter.getDefaultValue().toString()));
     }
 }

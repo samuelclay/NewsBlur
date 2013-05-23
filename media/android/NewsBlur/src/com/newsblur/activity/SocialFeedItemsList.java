@@ -15,6 +15,8 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 public class SocialFeedItemsList extends ItemsList {
 
@@ -36,7 +38,7 @@ public class SocialFeedItemsList extends ItemsList {
 		setTitle(title);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, storyOrder);
+			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
