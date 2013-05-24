@@ -1064,6 +1064,7 @@ def setup_do(name, size=2):
     env.host_string = host
     time.sleep(10)
     add_user_to_do()
+    do()
 
 def do_name(name):
     if re.search(r"[0-9]", name):
