@@ -2493,8 +2493,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2517,8 +2517,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "0E4D73FC-DFF6-4E38-BA47-4A3F5AC9C6A2";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "0E4D73FC-DFF6-4E38-BA47-4A3F5AC9C6A2";
+				PROVISIONING_PROFILE = "3A91A886-5038-41A3-B9DB-C1A1FF5F519B";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "3A91A886-5038-41A3-B9DB-C1A1FF5F519B";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2532,8 +2532,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2553,8 +2553,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "0E4D73FC-DFF6-4E38-BA47-4A3F5AC9C6A2";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "0E4D73FC-DFF6-4E38-BA47-4A3F5AC9C6A2";
+				PROVISIONING_PROFILE = "3A91A886-5038-41A3-B9DB-C1A1FF5F519B";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "3A91A886-5038-41A3-B9DB-C1A1FF5F519B";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = armv7;
