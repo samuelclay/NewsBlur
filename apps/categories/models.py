@@ -59,7 +59,7 @@ class MCategory(mongo.Document):
             try:
                 category = cls.objects.get(title=category_title)
             except cls.DoesNotExist, e:
-                print " ***> Missing category: %s" % e
+                print " ***> Missing category: %s" % category_title
                 continue
             category.feed_ids = [site.feed_id for site in sites]
             category.save()
