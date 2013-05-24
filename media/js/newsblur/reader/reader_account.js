@@ -100,10 +100,19 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                            $.make('div', { className: 'NB-splash-link NB-account-delete-all-sites' }, 'Delete all of my sites')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Erase yourself',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Notice: You will be emailed a backup of your sites')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Erase yourself permanently',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Warning: This is actually permanent')
                         ])
                     ])
@@ -237,6 +246,19 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         }, this));
     },
     
+    delete_all_sites: function() {
+        var $link = $(".NB-account-delete-all-sites", this.$modal);
+
+        if (window.confirm("Positive you want to delete everything?")) {
+            NEWSBLUR.assets.delete_all_sites(_.bind(function() {
+                NEWSBLUR.assets.load_feeds();
+                $link.replaceWith($.make('div', 'Everything has been deleted.'));
+            }, this), _.bind(function() {
+                $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your sites.'));
+            }, this));
+        }
+    },
+    
     handle_cancel: function() {
         var $cancel = $('.NB-modal-cancel', this.$modal);
         
@@ -347,6 +369,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
             
             self.cancel_premium();
+        });           
+        $.targetIs(e, { tagSelector: '.NB-account-delete-all-sites' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.delete_all_sites();
         });        
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
             e.preventDefault();

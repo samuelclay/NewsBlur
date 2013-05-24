@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
@@ -390,3 +390,20 @@ def forgot_password_return(request):
     return {
         'forgot_password_return_form': form,
     }
+
+@ajax_login_required
+@json.json_view
+def delete_all_sites(request):
+    request.user.profile.send_opml_export_email()
+    
+    subs = UserSubscription.objects.filter(user=request.user)
+    sub_count = subs.count()
+    subs.delete()
+    
+    usf = UserSubscriptionFolders.objects.get(user=request.user)
+    usf.folders = '[]'
+    usf.save()
+    
+    logging.user(request.user, "~BC~FRDeleting %s sites" % sub_count)
+
+    return dict(code=1)

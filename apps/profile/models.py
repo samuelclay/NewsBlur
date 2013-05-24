@@ -20,7 +20,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
 from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.feed_import.models import GoogleReaderImporter
+from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
 from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
@@ -304,7 +304,7 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling Stripe subscription")
         
         return True
-
+    
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
             new_feeds = UserSubscription.objects.filter(user=self.user, 
@@ -353,7 +353,34 @@ class Profile(models.Model):
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
+    
+    def send_opml_export_email(self):
+        if not self.user.email:
+            return
+        
+        MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                         email_type='opml_export')
+        
+        exporter = OPMLExporter(self.user)
+        opml     = exporter.process()
 
+        params = {
+            'feed_count': UserSubscription.objects.filter(user=self.user).count(),
+        }
+        user    = self.user
+        text    = render_to_string('mail/email_opml_export.txt', params)
+        html    = render_to_string('mail/email_opml_export.xhtml', params)
+        subject = "Backup OPML file of your NewsBlur sites"
+        filename= 'NewsBlur Subscriptions - %s.xml' % datetime.datetime.now().strftime('%Y-%m-%d')
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.attach(filename, opml, 'text/xml')
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
+    
     def send_first_share_to_blurblog_email(self, force=False):
         from apps.social.models import MSocialProfile, MSharedStory
         
