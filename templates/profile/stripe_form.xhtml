@@ -78,6 +78,9 @@ float: right;">
             <div>
                 {{ zebra_form.card_number.label_tag }}
                 {{ zebra_form.card_number }}
+                {% if error %}
+                    <label class="error">{{ error }}</label>
+                {% endif %}
             </div>
             <div>
                 {{ zebra_form.card_cvv.label_tag }}
