@@ -212,4 +212,18 @@ public class PrefsUtils {
         editor.putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString());
         editor.commit();
     }
+    
+    public static void setReadFilterForFolder(Context context, String folderName, ReadFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setReadFilterForFeed(Context context, String feedId, ReadFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString());
+        editor.commit();
+    }
 }

@@ -138,4 +138,8 @@
     <string name="oldest">Oldest</string>
     <string name="newest">Newest First</string>
     <string name="menu_story_order">Story Order</string>
+    
+    <string name="all_stories">All Stories</string>
+    <string name="unread_only">Unread Only</string>
+    <string name="menu_read_filter">Read Filter</string>
 </resources>
