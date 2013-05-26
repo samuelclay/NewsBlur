@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,10 +14,12 @@ import android.widget.RadioButton;
 
 import com.newsblur.R;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StoryOrderChangedListener;
 
-public class StoryOrderDialogFragment extends DialogFragment {
+public class StoryOrderDialogFragment extends DialogFragment implements OnClickListener {
 	
 	private static String CURRENT_ORDER = "currentOrder";
+	private StoryOrder currentValue;
 
 	public static StoryOrderDialogFragment newInstance(StoryOrder currentValue) {
 		StoryOrderDialogFragment dialog = new StoryOrderDialogFragment();
@@ -34,23 +37,35 @@ public class StoryOrderDialogFragment extends DialogFragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-		StoryOrder currentValue = (StoryOrder) getArguments().getSerializable(CURRENT_ORDER);
+		currentValue = (StoryOrder) getArguments().getSerializable(CURRENT_ORDER);
 		View v = inflater.inflate(R.layout.storyorder_dialog, null);
 		RadioButton newestButton = (RadioButton) v.findViewById(R.id.radio_newest);
+		newestButton.setOnClickListener(this);
+		newestButton.setChecked(currentValue == StoryOrder.NEWEST);
 		RadioButton oldestButton = (RadioButton) v.findViewById(R.id.radio_oldest);
-		if (currentValue == StoryOrder.NEWEST) {
-		    newestButton.setChecked(true);
-		} else {
-            oldestButton.setChecked(true);
-		}
+		oldestButton.setOnClickListener(this);
+		oldestButton.setChecked(currentValue == StoryOrder.OLDEST);
 		
 		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		
-		//seekBar.setOnSeekBarChangeListener((OnSeekBarChangeListener) getActivity());
-		
 		return v;
 	}
-	
+
+    @Override
+    public void onClick(View v) {
+        StoryOrderChangedListener listener = (StoryOrderChangedListener)getActivity();
+        if (v.getId() == R.id.radio_oldest) {
+            if (currentValue == StoryOrder.NEWEST) {
+                listener.storyOrderChanged(StoryOrder.OLDEST);
+            }
+        } else {
+            if (currentValue == StoryOrder.OLDEST) {
+                listener.storyOrderChanged(StoryOrder.NEWEST);
+            }
+        }
+        
+        dismiss();
+    }
 }

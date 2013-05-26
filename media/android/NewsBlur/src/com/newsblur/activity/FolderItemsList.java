@@ -29,7 +29,6 @@ public class FolderItemsList extends ItemsList {
 	private String folderName;
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -113,13 +112,6 @@ public class FolderItemsList extends ItemsList {
 		}.execute(folderName);
 	}
 
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
 	@Override
 	public void closeAfterUpdate() { }
 
@@ -127,5 +119,10 @@ public class FolderItemsList extends ItemsList {
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, folderName);
+    }
+
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, folderName, newValue);
     }
 }

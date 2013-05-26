@@ -3,4 +3,7 @@
     <item android:id="@+id/menu_mark_all_as_read"
           android:title="@string/menu_mark_all_as_read"
           android:showAsAction="ifRoom" android:icon="@drawable/markread" />
+    <item android:id="@+id/menu_story_order"
+          android:title="@string/menu_story_order"
+          android:showAsAction="never" />
 </menu>

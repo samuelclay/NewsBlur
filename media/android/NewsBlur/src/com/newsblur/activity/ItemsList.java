@@ -13,9 +13,10 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener {
+public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener, StoryOrderChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -31,6 +32,8 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	protected String TAG = "ItemsList";
 	protected int currentState;
 	private Menu menu;
+	
+	protected boolean stopLoading = false;
 	
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -104,12 +107,24 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 			setSupportProgressBarIndeterminateVisibility(true);
 		}
 	}
+	
+	@Override
+    public void setNothingMoreToUpdate() {
+        stopLoading = true;
+    }
 
 	@Override
 	public void changedState(int state) {
 		itemListFragment.changeState(state);
 	}
-
-
-
+	
+	@Override
+    public void storyOrderChanged(StoryOrder newValue) {
+        updateStoryOrderPreference(newValue);
+        itemListFragment.setStoryOrder(newValue);
+        stopLoading = false;
+        triggerRefresh();
+    }
+	
+	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 }

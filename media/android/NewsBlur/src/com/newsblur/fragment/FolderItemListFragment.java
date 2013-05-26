@@ -48,7 +48,6 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	private boolean doRequest = true;
 	private Folder folder;
 	
-	// TODO update on property change
     private StoryOrder storyOrder;
 
 	public static int ITEMLIST_LOADER = 0x01;
@@ -165,5 +164,9 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
-
+	
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }

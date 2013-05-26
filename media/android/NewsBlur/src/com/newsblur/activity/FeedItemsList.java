@@ -34,7 +34,6 @@ public class FeedItemsList extends ItemsList {
 	private String feedTitle;
 	private String folderName;
 	private APIManager apiManager;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -137,11 +136,6 @@ public class FeedItemsList extends ItemsList {
 	}
 
 	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
 	public void closeAfterUpdate() {
 		finish();
 	}
@@ -151,5 +145,8 @@ public class FeedItemsList extends ItemsList {
         return PrefsUtils.getStoryOrderForFeed(this, feedId);
     }
 
-
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFeed(this, feedId, newValue);
+    }
 }

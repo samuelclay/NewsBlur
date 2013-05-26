@@ -21,7 +21,6 @@ import com.newsblur.util.StoryOrder;
 public class SocialFeedItemsList extends ItemsList {
 
 	private String userIcon, userId, username, title;
-	private boolean stopLoading = false;
 	private APIManager apiManager;
 
 	@Override
@@ -97,13 +96,6 @@ public class SocialFeedItemsList extends ItemsList {
 		}.execute(userId);
 	}
 
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
 	@Override
 	public void closeAfterUpdate() { }
 
@@ -113,4 +105,8 @@ public class SocialFeedItemsList extends ItemsList {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
     }
 
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
 }

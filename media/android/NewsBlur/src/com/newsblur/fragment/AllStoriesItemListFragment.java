@@ -38,7 +38,6 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	private boolean requestedPage;
 	private int currentPage = 0;
 	
-	// TODO update on property change
     private StoryOrder storyOrder;
 
 	public static int ITEMLIST_LOADER = 0x01;
@@ -141,5 +140,8 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 		return cursorLoader;
 	}
 
-
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }

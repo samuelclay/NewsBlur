@@ -2,20 +2,15 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -62,7 +57,6 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private Feed feed;
 	private Cursor feedCursor;
 	
-	// TODO update on property change
     private StoryOrder storyOrder;
 
 	public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder) {
@@ -216,5 +210,10 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		
 		inflater.inflate(R.menu.context_story, menu);
 	}
+
+    @Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 
 }

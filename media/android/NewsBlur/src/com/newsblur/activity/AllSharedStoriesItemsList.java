@@ -21,7 +21,6 @@ import com.newsblur.util.StoryOrder;
 public class AllSharedStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -82,12 +81,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	public void markItemListAsRead() { }
 
 	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
-	@Override
 	public void closeAfterUpdate() { }
 
 
@@ -96,4 +89,8 @@ public class AllSharedStoriesItemsList extends ItemsList {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
     }
 
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
 }

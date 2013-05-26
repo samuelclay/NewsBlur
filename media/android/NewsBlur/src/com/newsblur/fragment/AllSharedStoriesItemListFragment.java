@@ -144,5 +144,8 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		return cursorLoader;
 	}
 
-
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }

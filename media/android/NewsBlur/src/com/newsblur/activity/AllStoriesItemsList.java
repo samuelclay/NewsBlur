@@ -30,7 +30,6 @@ public class AllStoriesItemsList extends ItemsList {
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
 	private ContentResolver resolver;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -129,12 +128,6 @@ public class AllStoriesItemsList extends ItemsList {
 	}
 
 	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
-	@Override
 	public void closeAfterUpdate() { }
 
 
@@ -143,4 +136,8 @@ public class AllStoriesItemsList extends ItemsList {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
     }
 
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
+    }
 }

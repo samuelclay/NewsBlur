@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -161,5 +160,9 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
-
+	
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }
