@@ -1116,6 +1116,7 @@ class Feed(models.Model):
         story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date.replace(tzinfo=None)
+        story['story_timestamp']  = story_db.story_date.strftime('%s')
         story['story_authors']    = story_db.story_author_name
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
