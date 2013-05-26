@@ -44,6 +44,7 @@ def load_recommended_feed(request):
             'has_previous_page' : page != 0,
             'unmoderated'       : unmoderated,
             'today'             : datetime.datetime.now(),
+            'page'              : page,
         }, context_instance=RequestContext(request))
     else:
         return HttpResponse("")

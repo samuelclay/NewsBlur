@@ -56,7 +56,11 @@ class MCategory(mongo.Document):
         
         category_groups = groupby(sorted(category_sites, key=lambda c: c.category_title), key=lambda c: c.category_title)
         for category_title, sites in category_groups:
-            category = cls.objects.get(title=category_title)
+            try:
+                category = cls.objects.get(title=category_title)
+            except cls.DoesNotExist, e:
+                print " ***> Missing category: %s" % category_title
+                continue
             category.feed_ids = [site.feed_id for site in sites]
             category.save()
             print " ---> Reloaded category: %s" % category

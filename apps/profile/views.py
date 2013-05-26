@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
@@ -217,6 +217,7 @@ def stripe_form(request):
     stripe.api_key = settings.STRIPE_SECRET
     plan = int(request.GET.get('plan', 2))
     plan = PLANS[plan-1][0]
+    error = None
     
     if request.method == 'POST':
         zebra_form = StripePlusPaymentForm(request.POST, email=user.email)
@@ -224,19 +225,22 @@ def stripe_form(request):
             user.email = zebra_form.cleaned_data['email']
             user.save()
             
-            customer = stripe.Customer.create(**{
-                'card': zebra_form.cleaned_data['stripe_token'],
-                'plan': zebra_form.cleaned_data['plan'],
-                'email': user.email,
-                'description': user.username,
-            })
-            
-            user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
-            user.profile.stripe_id = customer.id
-            user.profile.save()
-            user.profile.activate_premium() # TODO: Remove, because webhooks are slow
+            try:
+                customer = stripe.Customer.create(**{
+                    'card': zebra_form.cleaned_data['stripe_token'],
+                    'plan': zebra_form.cleaned_data['plan'],
+                    'email': user.email,
+                    'description': user.username,
+                })
+            except stripe.CardError:
+                error = "This card was declined."
+            else:
+                user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                user.profile.stripe_id = customer.id
+                user.profile.save()
+                user.profile.activate_premium() # TODO: Remove, because webhooks are slow
 
-            success_updating = True
+                success_updating = True
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
@@ -262,6 +266,7 @@ def stripe_form(request):
           'new_user_queue_count': new_user_queue_count - 1,
           'new_user_queue_position': new_user_queue_position,
           'new_user_queue_behind': new_user_queue_behind,
+          'error': error,
         },
         context_instance=RequestContext(request)
     )
@@ -390,3 +395,20 @@ def forgot_password_return(request):
     return {
         'forgot_password_return_form': form,
     }
+
+@ajax_login_required
+@json.json_view
+def delete_all_sites(request):
+    request.user.profile.send_opml_export_email()
+    
+    subs = UserSubscription.objects.filter(user=request.user)
+    sub_count = subs.count()
+    subs.delete()
+    
+    usf = UserSubscriptionFolders.objects.get(user=request.user)
+    usf.folders = '[]'
+    usf.save()
+    
+    logging.user(request.user, "~BC~FRDeleting %s sites" % sub_count)
+
+    return dict(code=1)

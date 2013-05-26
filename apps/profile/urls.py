@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^delete_account/?', views.delete_account, name='profile-delete-account'),
     url(r'^forgot_password_return/?', views.forgot_password_return, name='profile-forgot-password-return'),
     url(r'^forgot_password/?', views.forgot_password, name='profile-forgot-password'),
+    url(r'^delete_all_sites/?', views.delete_all_sites, name='profile-delete-all-sites'),
 )

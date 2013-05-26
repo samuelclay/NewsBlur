@@ -52,7 +52,7 @@ class TaskFeeds(Task):
         cp2 = time.time()
         
         # Mistakenly inactive feeds
-        hours_ago = (now - datetime.timedelta(hours=1)).strftime('%s')
+        hours_ago = (now - datetime.timedelta(minutes=10)).strftime('%s')
         old_tasked_feeds = r.zrangebyscore('tasked_feeds', 0, hours_ago)
         inactive_count = len(old_tasked_feeds)
         if inactive_count:

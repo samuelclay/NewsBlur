@@ -125,6 +125,7 @@
     width: 100%;
     margin-left: 150px;
     text-transform: none;
+    color: darkred;
 }
 
 .NB-static-form #payment-form > div {

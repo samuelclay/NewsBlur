@@ -5468,6 +5468,11 @@
                 e.preventDefault();
                 self.toggle_story_titles_pane(true);
             });
+            $document.bind('keydown', 'shift+f', function(e) {
+                e.preventDefault();
+                self.toggle_sidebar();
+                self.toggle_story_titles_pane(true);
+            });
             $document.bind('keydown', 'n', function(e) {
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();

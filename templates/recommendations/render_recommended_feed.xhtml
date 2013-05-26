@@ -1,5 +1,5 @@
 {% load utils_tags %}
-<div class="NB-module-recommended NB-module {% if unmoderated %}NB-recommended-unmoderated{% endif %}">
+<div class="NB-module-recommended NB-module {% if unmoderated and not page %}NB-recommended-unmoderated{% endif %}">
   <h5 class="NB-module-header">
     {% if unmoderated %}
       Moderation Queue

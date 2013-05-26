@@ -1432,6 +1432,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
     
+    delete_all_sites: function(callback, error_callback) {
+        this.make_request('/profile/delete_all_sites', {}, callback, error_callback);
+    },
+    
     follow_twitter_account: function(username, callback) {
         this.make_request('/oauth/follow_twitter_account', {'username': username}, callback);
     },

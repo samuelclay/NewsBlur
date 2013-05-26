@@ -1,0 +1,15 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    
+    <p style="margin-top: 12px;">
+        Here's a backup of your sites on NewsBlur. It contains <b>{{ feed_count }}</b> 
+        site{{ feed_count|pluralize }}.
+    </p>
+    <p style="margin-top: 12px;">
+        You can re-upload the attached file to NewsBlur and get all of your sites back. <br />
+        Just go to Manage > Import > Upload OPML.
+    </p>
+{% endblock %}
