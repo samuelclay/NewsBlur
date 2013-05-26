@@ -57,6 +57,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>newsblur</string>
 				<string>fb230426707030569newsblur</string>
 			</array>
 		</dict>

@@ -1,5 +1,7 @@
 /* Copyright 2012 IGN Entertainment, Inc. */
 
+#import <ARChromeActivity/ARChromeActivity.h>
+
 #import "ShareThis.h"
 #import "SafariActivityItem.h"
 #import "InstapaperActivityItem.h"
@@ -147,13 +149,14 @@ NSString *const AppWillTerminateNotificationName = @"appWillTerminate";
     InstapaperActivityItem *instapaperActivity = [[InstapaperActivityItem alloc] init];
     PocketActivityItem *pocketActivity = [[PocketActivityItem alloc] init];
     ReadabilityActivityItem *readabilityActivity = [[ReadabilityActivityItem alloc] init];
+    ARChromeActivity *chromeActivity = [[ARChromeActivity alloc] initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]];
     
 //    NSArray *applicationActivities;
     NSMutableArray *applicationActivities;
     switch (self.contentType) {
         case STContentTypeAll:
         case STContentTypeArticle:
-            applicationActivities = [NSMutableArray arrayWithObjects:safariActivity, instapaperActivity, nil];
+            applicationActivities = [NSMutableArray arrayWithObjects:safariActivity, instapaperActivity, chromeActivity, nil];
             
             if (self.pocketAPIKey) {
                 [applicationActivities addObject:pocketActivity];
