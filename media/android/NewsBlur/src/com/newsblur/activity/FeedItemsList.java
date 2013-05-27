@@ -23,6 +23,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 public class FeedItemsList extends ItemsList {
@@ -148,5 +149,15 @@ public class FeedItemsList extends ItemsList {
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
         PrefsUtils.setStoryOrderForFeed(this, feedId, newValue);
+    }
+    
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFeed(this, feedId, newValue);
+    }
+    
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFeed(this, feedId);
     }
 }

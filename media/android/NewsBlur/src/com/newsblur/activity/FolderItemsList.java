@@ -21,6 +21,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 public class FolderItemsList extends ItemsList {
@@ -124,5 +125,15 @@ public class FolderItemsList extends ItemsList {
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
         PrefsUtils.setStoryOrderForFolder(this, folderName, newValue);
+    }
+    
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFolder(this, folderName, newValue);
+    }
+
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFolder(this, folderName);
     }
 }

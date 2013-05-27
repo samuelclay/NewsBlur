@@ -16,6 +16,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesItemsList extends ItemsList {
@@ -92,5 +93,15 @@ public class AllSharedStoriesItemsList extends ItemsList {
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
         PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
     }
 }
