@@ -17,8 +17,4 @@ public enum StoryOrder {
     public String getParameterValue() {
         return parameterValue;
     }
-    
-    public static StoryOrder getDefaultValue() {
-        return NEWEST;
-    }
 }

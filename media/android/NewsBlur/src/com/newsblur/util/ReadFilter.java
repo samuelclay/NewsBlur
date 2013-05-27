@@ -17,8 +17,4 @@ public enum ReadFilter {
     public String getParameterValue() {
         return parameterValue;
     }
-    
-    public static ReadFilter getDefaultValue() {
-        return ALL;
-    }
 }

@@ -181,22 +181,22 @@ public class PrefsUtils {
 
     public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, StoryOrder.getDefaultValue().toString()));
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder().toString()));
     }
     
     public static StoryOrder getStoryOrderForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, StoryOrder.getDefaultValue().toString()));
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder().toString()));
     }
     
     public static ReadFilter getReadFilterForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, ReadFilter.getDefaultValue().toString()));
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter().toString()));
     }
     
     public static ReadFilter getReadFilterForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, ReadFilter.getDefaultValue().toString()));
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter().toString()));
     }
 
     public static void setStoryOrderForFolder(Context context, String folderName, StoryOrder newValue) {
@@ -225,5 +225,13 @@ public class PrefsUtils {
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString());
         editor.commit();
+    }
+    
+    public static StoryOrder getDefaultStoryOrder() {
+        return StoryOrder.NEWEST;
+    }
+    
+    public static ReadFilter getDefaultReadFilter() {
+        return ReadFilter.ALL;
     }
 }
