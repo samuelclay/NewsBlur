@@ -622,15 +622,16 @@ class RUserStory:
     def switch_hash(cls, feed_id, old_hash, new_hash):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
-        user_feeds = r.keys("RS:*:%s" % feed_id)
-        logging.info(" ---> %s user RS keys to switch hashes..." % len(user_feeds))
-        for rs_key in user_feeds:
+        usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
+        logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
+        for sub in usersubs:
+            rs_key = "RS:%s:%s" % (sub.user.pk, feed_id)
             read = r.sismember(rs_key, old_hash)
             if read:
-                user_id, _ = cls.split_rs_key(rs_key)
                 p.sadd(rs_key, new_hash)
-                p.sadd("RS:%s" % user_id, new_hash)
+                p.sadd("RS:%s" % sub.user.pk, new_hash)
         
         p.execute()
 

@@ -934,7 +934,7 @@ class Feed(models.Model):
                 # if existing_story.story_title != story.get('title'):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                 if existing_story.story_guid != story.get('guid'):
-                    self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
+                    self.update_story_with_new_guid(existing_story, story.get('guid'))
 
                 if settings.DEBUG and False:
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(story_content_diff), len(story_content)))
@@ -969,18 +969,21 @@ class Feed(models.Model):
         
         return ret_values
     
-    def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
+    def update_story_with_new_guid(self, existing_story, new_story_guid):
         from apps.reader.models import RUserStory
         from apps.social.models import MSharedStory
+
+        existing_story.remove_from_redis()
         
-        old_hash = RUserStory.story_hash(old_story_guid, self.pk)
+        old_hash = existing_story.story_hash
         new_hash = RUserStory.story_hash(new_story_guid, self.pk)
-        # RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
-                                                     story_guid=old_story_guid)
+                                                     story_hash=old_hash)
         for story in shared_stories:
             story.story_guid = new_story_guid
+            story.story_hash = new_hash
             story.save()
                 
     def save_popular_tags(self, feed_tags=None, verbose=False):
