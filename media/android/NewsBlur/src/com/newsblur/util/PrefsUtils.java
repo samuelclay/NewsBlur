@@ -179,4 +179,59 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (new Date()).getTime()).commit();
     }
 
+    public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder().toString()));
+    }
+    
+    public static StoryOrder getStoryOrderForFolder(Context context, String folderName) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryOrder.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder().toString()));
+    }
+    
+    public static ReadFilter getReadFilterForFeed(Context context, String feedId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter().toString()));
+    }
+    
+    public static ReadFilter getReadFilterForFolder(Context context, String folderName) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter().toString()));
+    }
+
+    public static void setStoryOrderForFolder(Context context, String folderName, StoryOrder newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setStoryOrderForFeed(Context context, String feedId, StoryOrder newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setReadFilterForFolder(Context context, String folderName, ReadFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setReadFilterForFeed(Context context, String feedId, ReadFilter newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString());
+        editor.commit();
+    }
+    
+    public static StoryOrder getDefaultStoryOrder() {
+        return StoryOrder.NEWEST;
+    }
+    
+    public static ReadFilter getDefaultReadFilter() {
+        return ReadFilter.ALL;
+    }
 }

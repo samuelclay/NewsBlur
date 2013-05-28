@@ -3,12 +3,12 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefsUtils;
 
 public class FolderReading extends Reading {
 
@@ -60,7 +60,9 @@ public class FolderReading extends Reading {
 		if (page > 1) {
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 		}
-
+        intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFolder(this, folderName));
+        intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, folderName));
+        
 		startService(intent);
 	}
 

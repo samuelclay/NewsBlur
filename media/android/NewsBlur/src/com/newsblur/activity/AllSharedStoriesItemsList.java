@@ -14,11 +14,14 @@ import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -35,7 +38,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState);
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -79,12 +82,26 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	public void markItemListAsRead() { }
 
 	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
-	@Override
 	public void closeAfterUpdate() { }
 
+
+    @Override
+    protected StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
 }

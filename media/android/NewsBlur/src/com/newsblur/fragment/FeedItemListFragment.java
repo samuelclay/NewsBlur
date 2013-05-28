@@ -2,20 +2,15 @@ package com.newsblur.fragment;
 
 import java.util.ArrayList;
 
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -41,6 +36,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener, OnCreateContextMenuListener {
@@ -60,13 +56,16 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private int READING_RETURNED = 0x02;
 	private Feed feed;
 	private Cursor feedCursor;
+	
+    private StoryOrder storyOrder;
 
-	public static FeedItemListFragment newInstance(String feedId, int currentState) {
+	public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
+		args.putSerializable("storyOrder", storyOrder);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -77,6 +76,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
+		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest = false;
@@ -92,7 +92,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 
 		setupFeed();
 
@@ -123,7 +123,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		return cursorLoader;
 	}
 
@@ -161,7 +161,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	private void refreshStories() {
 		final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
 		adapter.swapCursor(cursor);
 	}
 
@@ -210,5 +210,10 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		
 		inflater.inflate(R.menu.context_story, menu);
 	}
+
+    @Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 
 }

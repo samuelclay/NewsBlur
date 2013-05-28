@@ -11,6 +11,9 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesReading extends Reading {
 
@@ -28,7 +31,8 @@ public class AllSharedStoriesReading extends Reading {
 
 		setupCountCursor();
 
-		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+		StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		setTitle(getResources().getString(R.string.all_shared_stories));
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
@@ -38,7 +42,8 @@ public class AllSharedStoriesReading extends Reading {
 	}
 
 	private void setupCountCursor() {
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
+	    StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		startManagingCursor(cursor);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {

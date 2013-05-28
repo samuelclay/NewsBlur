@@ -1,22 +1,17 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
@@ -25,7 +20,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
-import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -37,6 +31,8 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 
 public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
@@ -59,6 +55,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
+
 	private Set<Story> storiesToMarkAsRead;
 
 	@Override

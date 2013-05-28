@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -48,16 +48,15 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private String[] groupFroms;
 	private int[] groupTos;
 	private ListView itemList;
+    private StoryOrder storyOrder;
 
-	public SocialFeedItemListFragment(final String userId, final String username, final int currentState) {
-		this.userId = userId;
-		this.username = username;
-		this.currentState = currentState;
-	}
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		currentState = getArguments().getInt("currentState");
+        userId = getArguments().getString("userId");
+        username = getArguments().getString("username");
+        storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		
@@ -75,8 +74,15 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 	}
 	
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState) {
-		return new SocialFeedItemListFragment(userId, username, currentState);
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder) {
+	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
+		Bundle args = new Bundle();
+        args.putInt("currentState", currentState);
+        args.putString("userId", userId);
+        args.putString("username", username);
+        args.putSerializable("storyOrder", storyOrder);
+        fragment.setArguments(args);
+        return fragment;
 	}
 	
 	@Override
@@ -95,7 +101,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " desc");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
 	    return cursorLoader;
 	}
 
@@ -147,12 +153,16 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	public void changeState(int state) {
 		currentState = state;
 		final String selection = DatabaseConstants.getStorySelectionFromState(state);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " desc");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
 		adapter.swapCursor(cursor);
 		getActivity().startManagingCursor(cursor);
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
-
+	
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }

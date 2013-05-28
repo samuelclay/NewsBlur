@@ -21,13 +21,16 @@ import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 public class AllStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
 	private ContentResolver resolver;
-	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -47,7 +50,7 @@ public class AllStoriesItemsList extends ItemsList {
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState);
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -80,6 +83,8 @@ public class AllStoriesItemsList extends ItemsList {
 			feedIds.toArray(feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
+			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
 
 			startService(intent);
 		}
@@ -124,12 +129,26 @@ public class AllStoriesItemsList extends ItemsList {
 	}
 
 	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
-	@Override
 	public void closeAfterUpdate() { }
 
+
+    @Override
+    protected StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
 }

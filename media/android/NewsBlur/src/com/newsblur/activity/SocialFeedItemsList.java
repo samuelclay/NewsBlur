@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
@@ -15,11 +14,14 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 public class SocialFeedItemsList extends ItemsList {
 
 	private String userIcon, userId, username, title;
-	private boolean stopLoading = false;
 	private APIManager apiManager;
 
 	@Override
@@ -36,7 +38,7 @@ public class SocialFeedItemsList extends ItemsList {
 		setTitle(title);
 		
 		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState);
+			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -95,14 +97,27 @@ public class SocialFeedItemsList extends ItemsList {
 		}.execute(userId);
 	}
 
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-
 	@Override
 	public void closeAfterUpdate() { }
 
+
+    @Override
+    protected StoryOrder getStoryOrder() {
+        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void updateStoryOrderPreference(StoryOrder newValue) {
+        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+    }
+    
+    @Override
+    protected ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
 }

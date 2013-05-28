@@ -1,24 +1,19 @@
 package com.newsblur.activity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Story;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryOrder;
 
 public class FeedReading extends Reading {
 
@@ -40,7 +35,8 @@ public class FeedReading extends Reading {
 		Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		StoryOrder storyOrder = PrefsUtils.getStoryOrderForFeed(this, feedId);
+		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
@@ -105,6 +101,8 @@ public class FeedReading extends Reading {
 			if (page > 1) {
 				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			}
+            intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFeed(this, feedId));
+            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, feedId));
 			startService(intent);
 		}
 	}

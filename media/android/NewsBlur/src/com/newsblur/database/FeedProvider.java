@@ -358,7 +358,7 @@ public class FeedProvider extends ContentProvider {
 				selection = DatabaseConstants.STORY_FEED_ID + " = ?";
 			}
 			selectionArgs = new String[] { uri.getLastPathSegment() };
-			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, DatabaseConstants.STORY_DATE + " DESC");
+			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, sortOrder);
 			
 			// Querying for all stories
 		case ALL_STORIES:
@@ -368,7 +368,7 @@ public class FeedProvider extends ContentProvider {
 			" FROM " + DatabaseConstants.STORY_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
-			" WHERE " + selection + " ORDER BY " + DatabaseConstants.STORY_DATE + " DESC";
+			" WHERE " + selection + " ORDER BY " + sortOrder;
 			return db.rawQuery(allStoriesQuery, null);
 			
 			// Querying for a stories from a selection of feeds
@@ -384,7 +384,7 @@ public class FeedProvider extends ContentProvider {
 			" FROM " + DatabaseConstants.STORY_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
-			" WHERE " + selection + " ORDER BY " + DatabaseConstants.STORY_DATE + " DESC";
+			" WHERE " + selection + " ORDER BY " + sortOrder;
 			
 			return db.rawQuery(userQuery, null);
 			
