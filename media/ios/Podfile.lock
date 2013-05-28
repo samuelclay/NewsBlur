@@ -5,6 +5,6 @@ DEPENDENCIES:
   - ARChromeActivity
 
 SPEC CHECKSUMS:
-  ARChromeActivity: bc451ea1d8f1ab142ea2b3aed1e4dc0afcb53cc5
+  ARChromeActivity: 8e5ee511e332018d01eb08582f007802af8a1334
 
-COCOAPODS: 0.20.1
+COCOAPODS: 0.20.2
