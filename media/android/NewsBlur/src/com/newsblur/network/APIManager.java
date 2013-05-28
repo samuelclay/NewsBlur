@@ -47,6 +47,8 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 public class APIManager {
 
@@ -193,12 +195,14 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber) {
+	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber, StoryOrder order, ReadFilter filter) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
+		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
 		final APIResponse response = client.get(feedUri.toString(), values);
 		Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
@@ -232,7 +236,7 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber) {
+	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
@@ -241,6 +245,8 @@ public class APIManager {
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
+		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 		final APIResponse response = client.get(APIConstants.URL_RIVER_STORIES, values);
 
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);

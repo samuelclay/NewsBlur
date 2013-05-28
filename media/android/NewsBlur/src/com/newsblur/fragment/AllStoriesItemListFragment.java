@@ -26,6 +26,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class AllStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -36,6 +37,8 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	private SimpleCursorAdapter adapter;
 	private boolean requestedPage;
 	private int currentPage = 0;
+	
+    private StoryOrder storyOrder;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	
@@ -43,6 +46,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
+		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
 
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest  = false;
@@ -57,7 +61,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
@@ -96,14 +100,15 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	public void changeState(int state) {
 		currentState = state;
 		final String selection = DatabaseConstants.getStorySelectionFromState(state);
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
 		adapter.swapCursor(cursor);
 	}
 
-	public static ItemListFragment newInstance(int currentState) {
+	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder) {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
+		arguments.putSerializable("storyOrder", storyOrder);
 		everythingFragment.setArguments(arguments);
 
 		return everythingFragment;
@@ -131,9 +136,12 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		return cursorLoader;
 	}
 
-
+	@Override
+    public void setStoryOrder(StoryOrder storyOrder) {
+        this.storyOrder = storyOrder;
+    }
 }
