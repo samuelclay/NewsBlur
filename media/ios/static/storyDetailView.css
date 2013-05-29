@@ -328,6 +328,10 @@ body.NB-iphone {
 
 a {
     text-decoration: none;
+    color: #1B248C;
+}
+a:active {
+    color: #82301A;
 }
 
 .NB-story blockquote {

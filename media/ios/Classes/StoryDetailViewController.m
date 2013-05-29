@@ -189,7 +189,7 @@
                             "       <div class=\"%@\" id=\"NB-font-size\">"
                             "           <div id=\"NB-header-container\">%@</div>" // storyHeader
                             "           %@" // shareBar
-                            "           <div class=\"NB-story\">%@</div>"
+                            "           <div id=\"NB-story\" class=\"NB-story\">%@</div>"
                             "           %@" // share
                             "           <div id=\"NB-comments-wrapper\">"
                             "               %@" // friends comments
@@ -1391,5 +1391,50 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
 }
+
+#pragma mark -
+#pragma mark Text view
+
+- (void)fetchTextView {
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"Fetching text...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/original_text",
+                           NEWSBLUR_URL];
+    ASIFormDataRequest *request = [self formRequestWithURL:urlString];
+    [request addPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [request addPostValue:[appDelegate.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    [request setDidFinishSelector:@selector(finishFetchTextView:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+
+- (void)finishFetchTextView:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    
+    if ([[results objectForKey:@"failed"] boolValue]) {
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+        [self informError:@"Could not fetch text"];
+        return;
+    }
+    
+    NSString *originalText = [[[results objectForKey:@"original_text"]stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-story').innerHTML = '%@'; loadImages();",
+                          originalText];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+}
+
 
 @end

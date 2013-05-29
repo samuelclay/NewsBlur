@@ -1,10 +1,14 @@
-$('.NB-story img').each(function () {
-    setImage(this);
-});
+var loadImages = function() {
+    
+    $('.NB-story img').each(function () {
+        setImage(this);
+    });
 
-$('.NB-story img').bind('load', function () {
-    setImage(this);
-});
+    $('.NB-story img').bind('load', function () {
+        setImage(this);
+    });
+
+};
 
 $('a.NB-show-profile').live('click', function () {
     var offset = $('img', this).offset();
@@ -173,6 +177,8 @@ function attachFastClick() {
         new NoClickDelay(author);
     }
 }
+
+loadImages();
 
 Zepto(function($) {
       attachFastClick();

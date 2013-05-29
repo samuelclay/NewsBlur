@@ -31,7 +31,6 @@ static const CGFloat kButtonWidth   = 48.0f;
     UIBarButtonItem* forward;
     UIBarButtonItem* refresh;
     UIBarButtonItem* pageAction;
-    UIBarButtonItem *switchViewButton;
     UILabel *pageTitle;
     UITextField *pageUrl;
     UIToolbar *toolbar;
@@ -44,7 +43,6 @@ static const CGFloat kButtonWidth   = 48.0f;
 @property (nonatomic) IBOutlet UIBarButtonItem* forward;
 @property (nonatomic) IBOutlet UIBarButtonItem* refresh;
 @property (nonatomic) IBOutlet UIBarButtonItem* pageAction;
-@property (nonatomic) IBOutlet UIBarButtonItem* switchViewButton;
 @property (nonatomic) IBOutlet UILabel *pageTitle;
 @property (nonatomic) IBOutlet UITextField *pageUrl;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
@@ -59,6 +57,5 @@ static const CGFloat kButtonWidth   = 48.0f;
 - (void)updateTitle:(UIWebView*)aWebView;
 - (void)updateAddress:(NSURLRequest*)request;
 - (void)updateButtons;
-- (IBAction)toggleView:(id)sender;
 
 @end

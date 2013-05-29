@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/StoryPageControl.m"
-         timestampString = "388700366.875143"
+         timestampString = "391480100.311232"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "300"
-         endingLineNumber = "300"
+         startingLineNumber = "302"
+         endingLineNumber = "302"
          landmarkName = "-resizeScrollView"
          landmarkType = "5">
       </FileBreakpoint>
@@ -27,19 +27,6 @@
          startingLineNumber = "682"
          endingLineNumber = "682"
          landmarkName = "-loadRiverFeedDetailView"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "Other Sources/ShareThis/ShareThis.m"
-         timestampString = "388952533.179322"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "88"
-         endingLineNumber = "88"
-         landmarkName = "+shareURL:title:image:withService:onViewController:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

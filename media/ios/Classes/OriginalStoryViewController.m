@@ -27,7 +27,6 @@
 @synthesize pageTitle;
 @synthesize pageUrl;
 @synthesize toolbar;
-@synthesize switchViewButton;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -108,26 +107,11 @@
     [tools setTintColor:UIColorFromRGB(0x183353)];
     [navBar addSubview:tools];
 
-    
-    UIImage *switchImage = [UIImage imageNamed:@"nav_story_original.png"];
-    switchViewButton = [UIBarButtonItem barItemWithImage:switchImage target:self action:@selector(toggleView:)];
-    switchViewButton.width = switchImage.size.width;
-    CGRect switchViewFrame = CGRectMake(labelFrame.size.width - switchViewButton.width - kMargin,
-                                         kSpacer*2.0 + kLabelHeight - 7.0f,
-                                         switchViewButton.width,
-                                         44.0);
-    TransparentToolbar* switchTools = [[TransparentToolbar alloc]
-                                 initWithFrame:switchViewFrame];
-    [switchTools setItems:[NSArray arrayWithObject:switchViewButton] animated:NO];
-    [switchTools setTintColor:UIColorFromRGB(0x183353)];
-    [navBar addSubview:switchTools];
-
-    
     CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x + 
                                      closeButtonFrame.size.width +
                                      kMargin, 
                                      kSpacer*2.0 + kLabelHeight,
-                                     labelFrame.size.width - switchViewFrame.size.width
+                                     labelFrame.size.width
                                      - kButtonWidth - kMargin*2,
                                      kAddressHeight);
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
@@ -321,10 +305,6 @@
     } else {
         [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
     }
-}
-
-- (IBAction)toggleView:(id)sender {
-    NSLog(@"Toggle");
 }
 
 @end

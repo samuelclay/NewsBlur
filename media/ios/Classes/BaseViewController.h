@@ -17,5 +17,6 @@
 
 - (void)informError:(id)error;
 - (void)informMessage:(NSString *)message;
+- (void)informLoadingMessage:(NSString *)message;
 
 @end

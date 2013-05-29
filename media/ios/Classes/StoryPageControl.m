@@ -99,7 +99,9 @@
                             progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
                             percentage:20];
     [self.traverseView addSubview:circularProgressView];
-    [circularProgressView addGestureRecognizer:tap];
+    UIView *tapIndicator = [[UIView alloc] initWithFrame:CGRectMake(circularProgressView.frame.origin.x - circularProgressView.frame.size.width / 2, circularProgressView.frame.origin.y - circularProgressView.frame.size.height / 2, circularProgressView.frame.size.width*2, circularProgressView.frame.size.height*2)];
+    [tapIndicator addGestureRecognizer:tap];
+    [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
     self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
 
@@ -898,6 +900,10 @@
 
 - (void)subscribeToBlurblog {
     [self.currentPage subscribeToBlurblog];
+}
+
+- (IBAction)toggleView:(id)sender {
+    [self.currentPage fetchTextView];
 }
 
 #pragma mark -

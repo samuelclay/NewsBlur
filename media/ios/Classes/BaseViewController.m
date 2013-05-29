@@ -82,12 +82,19 @@
 //    [alertView release];
 }
 
-- (void)informMessage:(NSString *)message {    
+- (void)informMessage:(NSString *)message {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	HUD.mode = MBProgressHUDModeText;
     HUD.labelText = message;
     [HUD hide:YES afterDelay:.75];
+}
+
+- (void)informLoadingMessage:(NSString *)message {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = message;
+    [HUD hide:YES afterDelay:2];
 }
 
 #pragma mark -

@@ -416,15 +416,15 @@ def status(request):
 @required_params('story_id', feed_id=int)
 @json.json_view
 def original_text(request):
-    story_id = request.GET['story_id']
-    feed_id = request.GET['feed_id']
-    force = request.GET.get('force', False)
+    story_id = request.REQUEST.get('story_id')
+    feed_id = request.REQUEST.get('feed_id')
+    force = request.REQUEST.get('force', False)
     
     story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
 
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story text: ~FRstory not found")
-        return {'code': -1, 'message': 'Story not found.'}
+        return {'code': -1, 'message': 'Story not found.', 'original_text': None, 'failed': True}
     
     original_text = story.fetch_original_text(force=force, request=request)
 
@@ -432,4 +432,5 @@ def original_text(request):
         'feed_id': feed_id,
         'story_id': story_id,
         'original_text': original_text,
+        'failed': not original_text or len(original_text) < 100,
     }
