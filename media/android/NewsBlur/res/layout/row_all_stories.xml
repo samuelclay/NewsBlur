@@ -23,7 +23,7 @@
         android:layout_marginLeft="50dp"
         android:paddingBottom="15dp"
         android:paddingTop="15dp"
-        android:text="@string/all_stories"
+        android:text="@string/all_stories_row_title"
         android:textColor="@color/folder_text"
         android:textSize="16dp"
         android:textStyle="bold" />
