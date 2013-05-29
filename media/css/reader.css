@@ -6400,6 +6400,7 @@ form.opml_import_form input {
 .NB-modal-email label {
   float: left;
   padding-top: 4px;
+  font-weight: bold;
 }
 
 .NB-modal-email .NB-input,
@@ -6454,9 +6455,11 @@ form.opml_import_form input {
 }
 .NB-modal-email .NB-modal-email-to-container {
   margin: 4px 0;
-  border-top: 1px solid #D0D0D0;
 }
 .NB-modal-email .NB-modal-email-from-container {
+}
+.NB-modal-email form {
+    margin: 24px 0 0;
 }
 .NB-modal-email .NB-modal-email-cc {
     float: left;
