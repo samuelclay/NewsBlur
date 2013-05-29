@@ -535,6 +535,11 @@ def config_monit_task():
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
+def config_monit_node():
+    put('config/monit_node.conf', '/etc/monit/conf.d/node.conf', use_sudo=True)
+    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+
 def config_monit_app():
     put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
