@@ -6,6 +6,7 @@ import feedparser
 import time
 import urllib2
 import httplib
+from socket import error as SocketError
 from boto.s3.key import Key
 from django.conf import settings
 from django.utils.text import compress_string
@@ -80,7 +81,7 @@ class PageImporter(object):
                         response = requests.get(feed_link, headers=self.headers)
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except AttributeError, e:
+                    except (AttributeError, SocketError), e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return
