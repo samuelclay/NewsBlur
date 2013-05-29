@@ -1825,7 +1825,10 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.push_history or []
 
         history.insert(0, (date, code, message))
-        history = history[:5]
+        if code and code >= 400:
+            history = history[:50]
+        else:
+            history = history[:5]
 
         if fetch_type == 'feed':
             fetch_history.feed_fetch_history = history
