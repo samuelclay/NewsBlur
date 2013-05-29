@@ -33,7 +33,7 @@
 	<string name="reading_shared_count">%s SHARES</string>
 	<string name="reading_comment_count">%s COMMENTS</string>
 	
-	<string name="all_stories">ALL STORIES</string>
+	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
 	
 	<string name="now">now</string>
