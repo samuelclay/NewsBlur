@@ -1,9 +1,9 @@
 NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     events: {
-        "click .NB-premium-only a" : function(e) {
+        "click .NB-text-view-premium-only a" : function(e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         }
     },
     
@@ -114,7 +114,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
                 'The full ',
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/silk/application_view_columns.png' }),
+                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/circular/nav_story_text_active.png' }),
                 ' Text view is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                 '.'

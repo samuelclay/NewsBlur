@@ -2435,10 +2435,10 @@ background: transparent;
     background-size: 25px 50px;
 }
 .NB-text-view-premium-only img {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 15px;
     vertical-align: text-bottom;
-    margin: 0 -2px 0 2px;
+    margin: 0 2px 0 2px;
 }
 
 .NB-premium-only .NB-feed-story-sideoptions-container {
