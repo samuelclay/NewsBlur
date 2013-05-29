@@ -24,6 +24,7 @@
     THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
+    UIButton *buttonText;
     UIActivityIndicatorView *loadingIndicator;
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
@@ -51,6 +52,7 @@
 @property (nonatomic) IBOutlet THCircularProgressView *circularProgressView;
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
+@property (nonatomic) IBOutlet UIButton *buttonText;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
@@ -93,6 +95,7 @@
 - (void)requestFailedMarkStoryRead:(ASIHTTPRequest *)request;
 
 - (void)setNextPreviousButtons;
+- (void)setTextButton;
 - (void)markStoryAsRead;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)openSendToDialog;

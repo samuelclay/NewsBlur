@@ -23,6 +23,7 @@
     UIWebView *webView;
     NSInteger pageIndex;
     BOOL pullingScrollview;
+    BOOL inTextView;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -33,6 +34,7 @@
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 @property (nonatomic, assign) BOOL pullingScrollview;
+@property (nonatomic, assign) BOOL inTextView;
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
 

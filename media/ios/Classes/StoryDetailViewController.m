@@ -36,7 +36,7 @@
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
-
+@synthesize inTextView;
 
 
 #pragma mark -
@@ -65,6 +65,7 @@
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
     self.pageIndex = -2;
+    self.inTextView = NO;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -115,7 +116,7 @@
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
     if (!force && self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
-        NSLog(@"Already drawn story. Ignoring.");
+        NSLog(@"Already drawn story.");
 //        return;
     }
     
@@ -247,6 +248,7 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
 
     self.activeStoryId = [self.activeStory objectForKey:@"id"];
+    self.inTextView = NO;
 }
 
 - (void)showStory {
@@ -1396,6 +1398,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Text view
 
 - (void)fetchTextView {
+    if (self.inTextView) {
+        self.inTextView = NO;
+        [appDelegate.storyPageControl setTextButton];
+        [self drawStory];
+        return;
+    }
+    
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"Fetching text...";
@@ -1424,6 +1433,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([[results objectForKey:@"failed"] boolValue]) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         [self informError:@"Could not fetch text"];
+        self.inTextView = NO;
+        [appDelegate.storyPageControl setTextButton];
         return;
     }
     
@@ -1434,6 +1445,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    
+    self.inTextView = YES;
+    [appDelegate.storyPageControl setTextButton];
 }
 
 

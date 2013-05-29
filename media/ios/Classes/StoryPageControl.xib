@@ -71,22 +71,22 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<object class="NSCustomResource" key="IBUIImage" id="543665480">
+								<object class="NSCustomResource" key="IBUIImage" id="166114345">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">traverse_background.png</string>
 								</object>
 							</object>
-							<object class="IBUIImageView" id="374961301">
+							<object class="IBUIImageView" id="653704557">
 								<reference key="NSNextResponder" ref="853089862"/>
 								<int key="NSvFlags">1292</int>
 								<string key="NSFrame">{{4, 4}, {105, 44}}</string>
 								<reference key="NSSuperview" ref="853089862"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="594836585"/>
+								<reference key="NSNextKeyView" ref="766212644"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<reference key="IBUIImage" ref="543665480"/>
+								<reference key="IBUIImage" ref="166114345"/>
 							</object>
 							<object class="IBUIButton" id="24321768">
 								<reference key="NSNextResponder" ref="853089862"/>
@@ -146,7 +146,7 @@
 								<double key="IBUIContentEdgeInsets.left">0.0</double>
 								<double key="IBUIContentEdgeInsets.right">20</double>
 								<string key="IBUINormalTitle">         NEXT</string>
-								<object class="NSColor" key="IBUIHighlightedTitleColor" id="357480704">
+								<object class="NSColor" key="IBUIHighlightedTitleColor" id="702273313">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
 								</object>
@@ -158,7 +158,7 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC41ODgyMzUzMTg3IDAuNTk2MDc4NDU1NCAwLjU3MjU0OTA0NTEAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUINormalTitleShadowColor" id="561610849">
+								<object class="NSColor" key="IBUINormalTitleShadowColor" id="459165776">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC41AA</bytes>
 								</object>
@@ -166,7 +166,7 @@
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">traverse_next.png</string>
 								</object>
-								<object class="IBUIFontDescription" key="IBUIFontDescription" id="440489592">
+								<object class="IBUIFontDescription" key="IBUIFontDescription" id="801482590">
 									<string key="name">Helvetica-Bold</string>
 									<string key="family">Helvetica</string>
 									<int key="traits">2</int>
@@ -174,7 +174,7 @@
 								</object>
 								<reference key="IBUIFont" ref="165876350"/>
 							</object>
-							<object class="IBUIButton" id="594836585">
+							<object class="IBUIButton" id="766212644">
 								<reference key="NSNextResponder" ref="853089862"/>
 								<int key="NSvFlags">1292</int>
 								<string key="NSFrame">{{9, 9.5}, {94, 34}}</string>
@@ -191,7 +191,7 @@
 								<double key="IBUIContentEdgeInsets.left">0.0</double>
 								<double key="IBUIContentEdgeInsets.right">20</double>
 								<string key="IBUINormalTitle">           TEXT</string>
-								<reference key="IBUIHighlightedTitleColor" ref="357480704"/>
+								<reference key="IBUIHighlightedTitleColor" ref="702273313"/>
 								<object class="NSColor" key="IBUISelectedTitleColor">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC4xOTY5OTQ3NTM2AA</bytes>
@@ -200,12 +200,12 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC41ODgyMzUzMTg3IDAuNTk2MDc4NDU1NCAwLjU3MjU0OTA0NTEAA</bytes>
 								</object>
-								<reference key="IBUINormalTitleShadowColor" ref="561610849"/>
+								<reference key="IBUINormalTitleShadowColor" ref="459165776"/>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">traverse_text.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="440489592"/>
+								<reference key="IBUIFontDescription" ref="801482590"/>
 								<reference key="IBUIFont" ref="165876350"/>
 							</object>
 							<object class="IBUIActivityIndicatorView" id="744070155">
@@ -229,7 +229,7 @@
 						<string key="NSFrame">{{4.5, 409}, {315.5, 51}}</string>
 						<reference key="NSSuperview" ref="179724038"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="374961301"/>
+						<reference key="NSNextKeyView" ref="653704557"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="815601484"/>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -4686,6 +4686,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">buttonText</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="766212644"/>
+					</object>
+					<int key="connectionID">84</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="757323871"/>
 						<reference key="destination" ref="372490531"/>
@@ -4713,7 +4721,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">toggleView:</string>
-						<reference key="source" ref="594836585"/>
+						<reference key="source" ref="766212644"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -4762,8 +4770,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="910120672"/>
 							<reference ref="24321768"/>
 							<reference ref="744070155"/>
-							<reference ref="374961301"/>
-							<reference ref="594836585"/>
+							<reference ref="653704557"/>
+							<reference ref="766212644"/>
 						</array>
 						<reference key="parent" ref="179724038"/>
 					</object>
@@ -4789,12 +4797,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">80</int>
-						<reference key="object" ref="374961301"/>
+						<reference key="object" ref="653704557"/>
 						<reference key="parent" ref="853089862"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">81</int>
-						<reference key="object" ref="594836585"/>
+						<reference key="object" ref="766212644"/>
 						<reference key="parent" ref="853089862"/>
 					</object>
 				</array>
@@ -4825,7 +4833,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">83</int>
+			<int key="maxID">84</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6023,7 +6031,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="pageTitle">UILabel</string>
 						<string key="pageUrl">UITextField</string>
 						<string key="refresh">UIBarButtonItem</string>
-						<string key="switchViewButton">UIButton</string>
 						<string key="toolbar">UIToolbar</string>
 						<string key="webView">UIWebView</string>
 					</dictionary>
@@ -6059,10 +6066,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="IBToOneOutletInfo" key="refresh">
 							<string key="name">refresh</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="switchViewButton">
-							<string key="name">switchViewButton</string>
-							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="toolbar">
 							<string key="name">toolbar</string>
@@ -6157,17 +6160,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<object class="IBPartialClassDescription">
 					<string key="className">StoryDetailViewController</string>
 					<string key="superclassName">BaseViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">toggleView:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">toggleView:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">toggleView:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="feedTitleGradient">UIView</string>
@@ -6245,6 +6237,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="buttonAction">UIBarButtonItem</string>
 						<string key="buttonNext">UIButton</string>
 						<string key="buttonPrevious">UIButton</string>
+						<string key="buttonText">UIButton</string>
 						<string key="circularProgressView">THCircularProgressView</string>
 						<string key="fontSettingsButton">UIBarButtonItem</string>
 						<string key="loadingIndicator">UIActivityIndicatorView</string>
@@ -6280,6 +6273,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						</object>
 						<object class="IBToOneOutletInfo" key="buttonPrevious">
 							<string key="name">buttonPrevious</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="buttonText">
+							<string key="name">buttonText</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="circularProgressView">
