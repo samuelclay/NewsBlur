@@ -142,4 +142,25 @@
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
     <string name="menu_read_filter">Read Filter</string>
+    
+    <string name="settings">Settings</string>
+    <string name="settings_default_story_order">Default Story Order</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string-array name="default_story_order_values">
+        <item>NEWEST</item>
+        <item>OLDEST</item>
+    </string-array>
+    <string name="default_story_order_value">NEWEST</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="default_read_filter_values">
+        <item>ALL</item>
+        <item>UNREAD</item>
+    </string-array>
+    <string name="default_read_filter_value">ALL</string>
 </resources>

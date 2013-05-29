@@ -2,6 +2,7 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	public void onCreate(Bundle savedInstanceState) {
 
         PrefsUtils.checkForUpgrade(this);
+        PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -125,7 +127,11 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		} else if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
 			newFragment.show(getSupportFragmentManager(), "dialog");
-		}
+		} else if (item.getItemId() == R.id.menu_settings) {
+            Intent settingsIntent = new Intent(this, Settings.class);
+            startActivity(settingsIntent);
+            return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 	
