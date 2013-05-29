@@ -19,7 +19,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from mongoengine.queryset import OperationError, Q
+from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
@@ -984,7 +984,11 @@ class Feed(models.Model):
         for story in shared_stories:
             story.story_guid = new_story_guid
             story.story_hash = new_hash
-            story.save()
+            try:
+                story.save()
+            except NotUniqueError:
+                # Story is already shared, skip.
+                pass
                 
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
