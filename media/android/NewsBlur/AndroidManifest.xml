@@ -73,6 +73,10 @@
             android:label="@string/profile"/>
         
         <activity
+            android:name=".activity.Settings"
+            android:label="@string/settings"/>
+        
+        <activity
             android:name=".activity.FeedItemsList" />
         
         <activity
