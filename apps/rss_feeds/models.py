@@ -1483,7 +1483,7 @@ class MFeedIcon(mongo.Document):
         if self.icon_url:
             self.icon_url = unicode(self.icon_url)
         try:    
-            super(MFeedIcon, self).save(*args, **kwargs)
+            return super(MFeedIcon, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
             # print "Error on Icon: %s" % e
             if hasattr(self, '_id'): self.delete()
@@ -1501,7 +1501,7 @@ class MFeedPage(mongo.Document):
     def save(self, *args, **kwargs):
         if self.page_data:
             self.page_data = zlib.compress(self.page_data)
-        super(MFeedPage, self).save(*args, **kwargs)
+        return super(MFeedPage, self).save(*args, **kwargs)
     
     @classmethod
     def get_data(cls, feed_id):
@@ -1589,6 +1589,8 @@ class MStory(mongo.Document):
         super(MStory, self).save(*args, **kwargs)
         
         self.sync_redis()
+        
+        return self
     
     def delete(self, *args, **kwargs):
         self.remove_from_redis()
@@ -1749,7 +1751,7 @@ class MStarredStory(mongo.Document):
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
         
-        super(MStarredStory, self).save(*args, **kwargs)
+        return super(MStarredStory, self).save(*args, **kwargs)
 
         # self.index_for_search()
         
