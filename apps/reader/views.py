@@ -610,9 +610,10 @@ def load_single_feed(request, feed_id):
     diff4 = checkpoint4-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
-        diff1, diff2, diff3, diff4)
-        if timediff > 1 else "")
+    time_breakdown = ""
+    if timediff > 1 or settings.DEBUG:
+        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
+                          diff1, diff2, diff3, diff4)
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
     
