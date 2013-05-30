@@ -228,7 +228,14 @@ class Feed(models.Model):
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
-    
+        
+    def expire_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
@@ -1545,8 +1552,7 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'types': False, 
-                     'drop_dups': True }],
+                     'types': False, }],
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -1656,8 +1662,6 @@ class MStory(mongo.Document):
         if self.id and self.story_date > UNREAD_CUTOFF:
             r.sadd('F:%s' % self.story_feed_id, self.story_hash)
             r.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self, r=None):
         if not r:

@@ -134,185 +134,6 @@ def all():
     do()
     env.roles = ['app', 'dev', 'db', 'task', 'debug']
 
-# ==========
-# = Deploy =
-# ==========
-
-@parallel
-def pull():
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-
-def pre_deploy():
-    compress_assets(bundle=True)
-
-@serial
-def post_deploy():
-    cleanup_assets()
-
-@parallel
-def deploy(fast=False):
-    deploy_code(copy_assets=False, fast=fast)
-
-@parallel
-def deploy_web(fast=False):
-    deploy_code(copy_assets=True, fast=fast, full=False)
-
-@parallel
-def deploy_full(fast=False):
-    deploy_code(copy_assets=True, fast=fast, full=True)
-
-@parallel
-def deploy_code(copy_assets=False, full=False, fast=False):
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-        run('mkdir -p static')
-        if full:
-            run('rm -fr static/*')
-        if copy_assets:
-            transfer_assets()
-        sudo('supervisorctl reload')
-        if fast:
-            with settings(warn_only=True):
-                if env.user == 'ubuntu':
-                    sudo('./utils/kill_gunicorn.sh')
-                else:
-                    run('./utils/kill_gunicorn.sh')
-
-@parallel
-def kill():
-    sudo('supervisorctl reload')
-    with settings(warn_only=True):
-        if env.user == 'ubuntu':
-            sudo('./utils/kill_gunicorn.sh')
-        else:
-            run('./utils/kill_gunicorn.sh')
-
-def deploy_node():
-    with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl restart node_unread')
-        run('sudo supervisorctl restart node_favicons')
-
-def gunicorn_restart():
-    restart_gunicorn()
-
-def restart_gunicorn():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
-        run('sudo supervisorctl restart gunicorn')
-
-def gunicorn_stop():
-    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
-        run('sudo supervisorctl stop gunicorn')
-
-def staging():
-    with cd('~/staging'):
-        run('git pull')
-        run('kill -HUP `cat logs/gunicorn.pid`')
-        run('curl -s http://dev.newsblur.com > /dev/null')
-        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-
-def staging_full():
-    with cd('~/staging'):
-        run('git pull')
-        run('./manage.py migrate')
-        run('kill -HUP `cat logs/gunicorn.pid`')
-        run('curl -s http://dev.newsblur.com > /dev/null')
-        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-
-@parallel
-def celery():
-    celery_slow()
-
-def celery_slow():
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-    celery_stop()
-    celery_start()
-
-@parallel
-def celery_fast():
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-    celery_reload()
-
-@parallel
-def celery_stop():
-    with cd(env.NEWSBLUR_PATH):
-        sudo('supervisorctl stop celery')
-        with settings(warn_only=True):
-            if env.user == 'ubuntu':
-                sudo('./utils/kill_celery.sh')
-            else:
-                run('./utils/kill_celery.sh')
-
-@parallel
-def celery_start():
-    with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl start celery')
-        run('tail logs/newsblur.log')
-
-@parallel
-def celery_reload():
-    with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl reload celery')
-        run('tail logs/newsblur.log')
-
-def kill_celery():
-    with cd(env.NEWSBLUR_PATH):
-        with settings(warn_only=True):
-            if env.user == 'ubuntu':
-                sudo('./utils/kill_celery.sh')
-            else:
-                run('./utils/kill_celery.sh')  
-
-def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
-    local('tar -czf static.tgz static/*')
-
-def transfer_assets():
-    put('static.tgz', '%s/static/' % env.NEWSBLUR_PATH)
-    run('tar -xzf static/static.tgz')
-    run('rm -f static/static.tgz')
-
-def cleanup_assets():
-    local('rm -f static.tgz')
-
-# ===========
-# = Backups =
-# ===========
-
-def backup_mongo():
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        # run('./mongo_backup.sh')
-        run('python backup_mongo.py')
-
-def backup_postgresql():
-    # crontab for postgres master server
-    # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
-    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
-    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('python backup_psql.py')
-
-# ===============
-# = Calibration =
-# ===============
-
-def sync_time():
-    with settings(warn_only=True):
-        sudo("/etc/init.d/ntp stop")
-        sudo("ntpdate pool.ntp.org")
-        sudo("/etc/init.d/ntp start")
-
-def setup_time_calibration():
-    sudo('apt-get -y install ntp')
-    put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
-    sudo('chown root.root %s/ntpdate.cron' % env.NEWSBLUR_PATH)
-    sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
-    sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
-    with settings(warn_only=True):
-        sudo('/etc/cron.hourly/ntpdate')
-
 # =============
 # = Bootstrap =
 # =============
@@ -327,6 +148,7 @@ def setup_common():
     setup_repo_local_settings()
     setup_local_files()
     setup_time_calibration()
+    setup_psql_client()
     setup_libxml()
     setup_python()
     # setup_psycopg()
@@ -407,9 +229,6 @@ def setup_installs():
 
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
-    sudo('apt-get -y install postgresql-client')
-    sudo('mkdir -p /var/run/postgresql')
-    sudo('chown postgres.postgres /var/run/postgresql')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     with settings(warn_only=True):
@@ -463,6 +282,11 @@ def setup_local_files():
     put('config/gitconfig.txt', './.gitconfig')
     put('config/ssh.conf', './.ssh/config')
 
+def setup_psql_client():
+    sudo('apt-get -y install postgresql-client')
+    sudo('mkdir -p /var/run/postgresql')
+    sudo('chown postgres.postgres /var/run/postgresql')
+
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
 
@@ -505,7 +329,7 @@ def setup_supervisor():
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     sudo('/etc/init.d/supervisor stop')
     sudo('sleep 2')
-    sudo('/etc/init.d/supervisor start')
+    sudo('ulimit -n 100000 && /etc/init.d/supervisor start')
 
 @parallel
 def setup_hosts():
@@ -605,6 +429,7 @@ def setup_ulimit():
     run('echo "fs.file-max = 100000" >> /etc/sysctl.conf', pty=False)
     sudo('chmod 644 /etc/sysctl.conf', pty=False)
     sudo('sysctl -p')
+    run('ulimit -n 100000')
 
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
@@ -852,7 +677,7 @@ def setup_postgres(standby=False):
     # sudo('sysctl -p')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.1/recovery.conf', use_sudo=True)
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.2/recovery.conf', use_sudo=True)
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
@@ -863,7 +688,7 @@ def copy_postgres_to_standby():
     # Need to give postgres accounts keys in authroized_keys.
 
     # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
-    sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.1/main postgres@%s:/var/lib/postgresql/9.1/ --exclude postmaster.pid\"' % slave, pty=False)
+    sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
     # sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
 
 def setup_mongo():
@@ -1136,7 +961,184 @@ def setup_ec2():
     host = instance.public_dns_name
     env.host_string = host
 
+# ==========
+# = Deploy =
+# ==========
 
+@parallel
+def pull():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+
+def pre_deploy():
+    compress_assets(bundle=True)
+
+@serial
+def post_deploy():
+    cleanup_assets()
+
+@parallel
+def deploy(fast=False):
+    deploy_code(copy_assets=False, fast=fast)
+
+@parallel
+def deploy_web(fast=False):
+    deploy_code(copy_assets=True, fast=fast, full=False)
+
+@parallel
+def deploy_full(fast=False):
+    deploy_code(copy_assets=True, fast=fast, full=True)
+
+@parallel
+def deploy_code(copy_assets=False, full=False, fast=False):
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+        run('mkdir -p static')
+        if full:
+            run('rm -fr static/*')
+        if copy_assets:
+            transfer_assets()
+        sudo('supervisorctl reload')
+        if fast:
+            with settings(warn_only=True):
+                if env.user == 'ubuntu':
+                    sudo('./utils/kill_gunicorn.sh')
+                else:
+                    run('./utils/kill_gunicorn.sh')
+
+@parallel
+def kill():
+    sudo('supervisorctl reload')
+    with settings(warn_only=True):
+        if env.user == 'ubuntu':
+            sudo('./utils/kill_gunicorn.sh')
+        else:
+            run('./utils/kill_gunicorn.sh')
+
+def deploy_node():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_favicons')
+
+def gunicorn_restart():
+    restart_gunicorn()
+
+def restart_gunicorn():
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl restart gunicorn')
+
+def gunicorn_stop():
+    with cd(env.NEWSBLUR_PATH), settings(warn_only=True):
+        run('sudo supervisorctl stop gunicorn')
+
+def staging():
+    with cd('~/staging'):
+        run('git pull')
+        run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://dev.newsblur.com > /dev/null')
+        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
+
+def staging_full():
+    with cd('~/staging'):
+        run('git pull')
+        run('./manage.py migrate')
+        run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://dev.newsblur.com > /dev/null')
+        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
+
+@parallel
+def celery():
+    celery_slow()
+
+def celery_slow():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+    celery_stop()
+    celery_start()
+
+@parallel
+def celery_fast():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+    celery_reload()
+
+@parallel
+def celery_stop():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('supervisorctl stop celery')
+        with settings(warn_only=True):
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')
+
+@parallel
+def celery_start():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl start celery')
+        run('tail logs/newsblur.log')
+
+@parallel
+def celery_reload():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl reload celery')
+        run('tail logs/newsblur.log')
+
+def kill_celery():
+    with cd(env.NEWSBLUR_PATH):
+        with settings(warn_only=True):
+            if env.user == 'ubuntu':
+                sudo('./utils/kill_celery.sh')
+            else:
+                run('./utils/kill_celery.sh')  
+
+def compress_assets(bundle=False):
+    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
+    local('tar -czf static.tgz static/*')
+
+def transfer_assets():
+    put('static.tgz', '%s/static/' % env.NEWSBLUR_PATH)
+    run('tar -xzf static/static.tgz')
+    run('rm -f static/static.tgz')
+
+def cleanup_assets():
+    local('rm -f static.tgz')
+
+# ===========
+# = Backups =
+# ===========
+
+def backup_mongo():
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
+        # run('./mongo_backup.sh')
+        run('python backup_mongo.py')
+
+def backup_postgresql():
+    # crontab for postgres master server
+    # 0 4 * * * python /srv/newsblur/utils/backups/backup_psql.py
+    # 0 * * * * sudo find /var/lib/postgresql/9.2/archive -mtime +1 -exec rm {} \;
+    # 0 */4 * * * sudo find /var/lib/postgresql/9.2/archive -type f -mmin +360 -delete
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
+        run('python backup_psql.py')
+
+# ===============
+# = Calibration =
+# ===============
+
+def sync_time():
+    with settings(warn_only=True):
+        sudo("/etc/init.d/ntp stop")
+        sudo("ntpdate pool.ntp.org")
+        sudo("/etc/init.d/ntp start")
+
+def setup_time_calibration():
+    sudo('apt-get -y install ntp')
+    put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
+    sudo('chown root.root %s/ntpdate.cron' % env.NEWSBLUR_PATH)
+    sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
+    sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        sudo('/etc/cron.hourly/ntpdate')
 
 # ==============
 # = Tasks - DB =

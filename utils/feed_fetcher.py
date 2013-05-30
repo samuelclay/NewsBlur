@@ -277,6 +277,7 @@ class ProcessFeed:
         self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
         if ret_values['new']:
             self.feed.trim_feed()
+            self.feed.expire_redis()
         self.feed.save_feed_history(200, "OK")
         
         if self.options['verbose']:
