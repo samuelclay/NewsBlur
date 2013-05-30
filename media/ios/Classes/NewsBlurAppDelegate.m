@@ -158,45 +158,6 @@
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    splashView = [[UIImageView alloc] init];
-    int rotate = 0;
-    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-        NSLog(@"UPSIDE DOWN");
-        rotate = -2;
-    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
-        rotate = -1;
-    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
-        rotate = 1;
-    }
-    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        UIInterfaceOrientationIsLandscape(orientation)) {
-        splashView.frame = self.view.frame;
-        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        splashView.frame = self.view.frame;
-        splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
-    } else if (IS_IPHONE_5) {
-        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
-        splashView.image = [UIImage imageNamed:@"Default-568h.png"];
-    } else {
-        splashView.frame = self.window.frame;
-        splashView.image = [UIImage imageNamed:@"Default.png"];
-    }
-    
-//    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    splashView.alpha = 1.0;
-    [window.rootViewController.view addSubview:splashView];
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:.6];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
-    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
-    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
-    [UIView commitAnimations];
-    
     [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
     
     [[UINavigationBar appearance]
@@ -223,8 +184,52 @@
                              UITextAttributeTextShadowOffset,
                              nil]];
     
+    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
 //    [self showFirstTimeUser];
 	return YES;
+}
+
+- (void)showSplashView {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    splashView = [[UIImageView alloc] init];
+    int rotate = 0;
+    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        NSLog(@"UPSIDE DOWN");
+        rotate = -2;
+    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
+        rotate = -1;
+    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+        rotate = 1;
+    }
+    //    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
+        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
+        NSLog(@"Window frame; %@", NSStringFromCGRect(self.view.frame));
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        splashView.frame = self.view.frame;
+        splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
+    } else if (IS_IPHONE_5) {
+        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
+        splashView.image = [UIImage imageNamed:@"Default-568h.png"];
+    } else {
+        splashView.frame = self.window.frame;
+        splashView.image = [UIImage imageNamed:@"Default.png"];
+    }
+    
+    //    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+    splashView.alpha = 1.0;
+    [window.rootViewController.view addSubview:splashView];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:.6];
+    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
+//    splashView.alpha = 0;
+    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
+    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
+    [UIView commitAnimations];
 }
 
 - (void)viewDidLoad {

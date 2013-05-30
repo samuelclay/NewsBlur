@@ -85,12 +85,10 @@
     
     popoverClass = [WEPopoverController class];
     
-    // adding HUD for progress bar
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
-    
+    // adding HUD for progress bar    
     CGFloat radius = 8;
     circularProgressView = [[THCircularProgressView alloc]
-                            initWithCenter:CGPointMake(self.traverseView.frame.size.width - 101,
+                            initWithCenter:CGPointMake(self.buttonNext.frame.origin.x + 2*radius,
                                                        self.traverseView.frame.size.height / 2)
                             radius:radius
                             lineWidth:radius / 4.0f
@@ -99,9 +97,12 @@
                             progressBackgroundMode:THProgressBackgroundModeCircumference
                             progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
                             percentage:20];
+    circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView addSubview:circularProgressView];
     UIView *tapIndicator = [[UIView alloc] initWithFrame:CGRectMake(circularProgressView.frame.origin.x - circularProgressView.frame.size.width / 2, circularProgressView.frame.origin.y - circularProgressView.frame.size.height / 2, circularProgressView.frame.size.width*2, circularProgressView.frame.size.height*2)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
     [tapIndicator addGestureRecognizer:tap];
+    tapIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
     self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
@@ -236,14 +237,12 @@
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        
-        
-        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
         
     } else if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)){
-        
-        NSLog(@"%f,%f",self.view.frame.size.width,self.view.frame.size.height);
+        NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
     }
+    
     [self refreshPages];
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
@@ -683,6 +682,14 @@
 }
 
 - (void)setTextButton {
+    if (currentPage.pageIndex >= 0) {
+        [buttonText setEnabled:YES];
+        [buttonText setAlpha:1];
+    } else {
+        [buttonText setEnabled:NO];
+        [buttonText setAlpha:.4];
+    }
+    
     if (currentPage.inTextView) {
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
