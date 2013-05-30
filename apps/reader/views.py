@@ -238,7 +238,7 @@ def load_feeds(request):
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
         if not sub.active: continue
-        if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
+        if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:
             scheduled_feeds.append(sub.feed.pk)
