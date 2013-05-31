@@ -270,14 +270,12 @@
 		FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
-		FF753CC117582DE000344EC9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF753CC017582DE000344EC9 /* CoreData.framework */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364B91755759A008F5C58 /* traverse_text.png */; };
 		FF8364BC1755759A008F5C58 /* traverse_text@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364BA1755759A008F5C58 /* traverse_text@2x.png */; };
 		FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364BD1756949E008F5C58 /* traverse_text_on.png */; };
 		FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364BE1756949E008F5C58 /* traverse_text_on@2x.png */; };
-		FF8364C31757C1F6008F5C58 /* Stories.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FF8364C11757C1F6008F5C58 /* Stories.xcdatamodeld */; };
 		FF8364C61757EC0B008F5C58 /* traverse_background_left.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364C41757EC0B008F5C58 /* traverse_background_left.png */; };
 		FF8364C71757EC0B008F5C58 /* traverse_background_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364C51757EC0B008F5C58 /* traverse_background_left@2x.png */; };
 		FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */; };
@@ -802,7 +800,6 @@
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
-		FF753CC017582DE000344EC9 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
@@ -811,7 +808,6 @@
 		FF8364BA1755759A008F5C58 /* traverse_text@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_text@2x.png"; sourceTree = "<group>"; };
 		FF8364BD1756949E008F5C58 /* traverse_text_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_text_on.png; sourceTree = "<group>"; };
 		FF8364BE1756949E008F5C58 /* traverse_text_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_text_on@2x.png"; sourceTree = "<group>"; };
-		FF8364C21757C1F6008F5C58 /* Stories.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Stories.xcdatamodel; sourceTree = "<group>"; };
 		FF8364C41757EC0B008F5C58 /* traverse_background_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_background_left.png; sourceTree = "<group>"; };
 		FF8364C51757EC0B008F5C58 /* traverse_background_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_background_left@2x.png"; sourceTree = "<group>"; };
 		FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nav_icn_activity_hover.png; sourceTree = "<group>"; };
@@ -1078,7 +1074,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF753CC117582DE000344EC9 /* CoreData.framework in Frameworks */,
 				FFDCA0C316E80952000D8E0C /* AdSupport.framework in Frameworks */,
 				FFDCA0C116E8094F000D8E0C /* Accounts.framework in Frameworks */,
 				FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */,
@@ -1182,7 +1177,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FF753CC017582DE000344EC9 /* CoreData.framework */,
 				FFDCA0C216E80952000D8E0C /* AdSupport.framework */,
 				FFDCA0C016E8094F000D8E0C /* Accounts.framework */,
 				FFDCA0BE16E80944000D8E0C /* Social.framework */,
@@ -1676,7 +1670,6 @@
 		43D8189F15B9404D00733444 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FF8364C11757C1F6008F5C58 /* Stories.xcdatamodeld */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -2507,7 +2500,6 @@
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
 				FFECD016172B0D4200D45A62 /* SafariService.m in Sources */,
 				FFECD01D172B10BD00D45A62 /* SafariActivityItem.m in Sources */,
-				FF8364C31757C1F6008F5C58 /* Stories.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2657,19 +2649,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		FF8364C11757C1F6008F5C58 /* Stories.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				FF8364C21757C1F6008F5C58 /* Stories.xcdatamodel */,
-			);
-			currentVersion = FF8364C21757C1F6008F5C58 /* Stories.xcdatamodel */;
-			path = Stories.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }

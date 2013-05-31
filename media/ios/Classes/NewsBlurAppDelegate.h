@@ -129,8 +129,6 @@
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
-    
-    NSManagedObjectContext *managedObjectContext;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -217,10 +215,6 @@
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
-
-@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
