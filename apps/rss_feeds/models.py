@@ -1799,10 +1799,11 @@ class MFetchHistory(mongo.Document):
     
     @classmethod
     def feed(cls, feed_id, timezone=None):
-        fetch_history, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        try:
+            fetch_history = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            fetch_history = cls.objects.create(**params)
         history = {}
 
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
@@ -1823,11 +1824,11 @@ class MFetchHistory(mongo.Document):
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
-        
-        fetch_history, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        try:
+            fetch_history = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            fetch_history = cls.objects.create(**params)
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
         elif fetch_type == 'page':
@@ -1875,10 +1876,12 @@ class MFetchExceptionHistory(mongo.Document):
         if not isinstance(exception, basestring):
             exception = unicode(exception)
         
-        fetch_exception, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+        
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        try:
+            fetch_exception = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            fetch_exception = cls.objects.create(**params)
         fetch_exception.date = date
         fetch_exception.code = code
         fetch_exception.message = message
