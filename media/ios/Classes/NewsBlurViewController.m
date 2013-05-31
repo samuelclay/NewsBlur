@@ -1471,6 +1471,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
+    [self.appDelegate fetchAllUnreadStories];
 }
 
 // called when the date shown needs to be updated, optional

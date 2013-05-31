@@ -37,6 +37,8 @@
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
 #import "ShareThis.h"
+#import "Reachability.h"
+#import <CoreData/CoreData.h>
 
 
 @implementation NewsBlurAppDelegate
@@ -131,6 +133,8 @@
 @synthesize categories;
 @synthesize categoryFeeds;
 
+@synthesize managedObjectContext, managedObjectModel, persistentStoreCoordinator;
+
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
 }
@@ -186,22 +190,23 @@
     
     [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
 //    [self showFirstTimeUser];
+    [managedObjectContext setPersistentStoreCoordinator:persistentStoreCoordinator];
 	return YES;
 }
 
 - (void)showSplashView {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
-    int rotate = 0;
-    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-        NSLog(@"UPSIDE DOWN");
-        rotate = -2;
-    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
-        rotate = -1;
-    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
-        rotate = 1;
-    }
-    //    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
+//    int rotate = 0;
+//    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+//        NSLog(@"UPSIDE DOWN");
+//        rotate = -2;
+//    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
+//        rotate = -1;
+//    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+//        rotate = 1;
+//    }
+//    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsLandscape(orientation)) {
         splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
@@ -230,6 +235,7 @@
     splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
     //    splashView.frame = CGRectMake(-60, -80, 440, 728);
     [UIView commitAnimations];
+    [self setupReachability];
 }
 
 - (void)viewDidLoad {
@@ -253,6 +259,24 @@
     return [ShareThis handleFacebookOpenUrl:url];
 }
 
+- (void)setupReachability {
+    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_URL];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged:)
+                                                 name:kReachabilityChangedNotification
+                                               object:nil];
+    reach.reachableBlock = ^(Reachability *reach) {
+        NSLog(@"Reachable: %@", reach);
+    };
+    reach.unreachableBlock = ^(Reachability *reach) {
+        NSLog(@"Un-Reachable: %@", reach);
+    };
+    [reach startNotifier];
+}
+
+- (void)reachabilityChanged:(id)something {
+    NSLog(@"Reachability changed: %@", something);
+}
 
 #pragma mark -
 #pragma mark Social Views
@@ -1965,7 +1989,137 @@
     [self informError:error];
 }
 
+#pragma mark -
+#pragma mark Storing Stories for Offline
+
+
+// Returns the managed object context for the application.
+// If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
+- (NSManagedObjectContext *)managedObjectContext
+{
+    if (managedObjectContext != nil) {
+        return managedObjectContext;
+    }
+    
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator != nil) {
+        managedObjectContext = [[NSManagedObjectContext alloc] init];
+        [managedObjectContext setPersistentStoreCoordinator:coordinator];
+    }
+    return managedObjectContext;
+}
+
+// Returns the managed object model for the application.
+// If the model doesn't already exist, it is created from the application's model.
+- (NSManagedObjectModel *)managedObjectModel
+{
+    if (managedObjectModel != nil) {
+        return managedObjectModel;
+    }
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Stories" withExtension:@"momd"];
+    managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    return managedObjectModel;
+}
+
+// Returns the persistent store coordinator for the application.
+// If the coordinator doesn't already exist, it is created and the application's store added to it.
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
+{
+    if (persistentStoreCoordinator != nil) {
+        return persistentStoreCoordinator;
+    }
+    
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Stories.sqlite"];
+    
+    NSError *error = nil;
+    persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        /*
+         Replace this implementation with code to handle the error appropriately.
+         
+         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+         
+         Typical reasons for an error here include:
+         * The persistent store is not accessible;
+         * The schema for the persistent store is incompatible with current managed object model.
+         Check the error message to determine what the actual problem was.
+         
+         
+         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
+         
+         If you encounter schema incompatibility errors during development, you can reduce their frequency by:
+         * Simply deleting the existing store:
+         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
+         
+         * Performing automatic lightweight migration by passing the following dictionary as the options parameter:
+         [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption, [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
+         
+         Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
+         
+         */
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    return persistentStoreCoordinator;
+}
+
+// Returns the URL to the application's Documents directory.
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+
+- (void)fetchAllUnreadStories {
+    [self fetchAllUnreadStories:1];
+}
+
+- (void)fetchAllUnreadStories:(int)page {
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/river_stories?read_filter=unread&order=newest&page=%d",
+                                       NEWSBLUR_URL, page]];
+    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+    __weak ASIHTTPRequest *request = _request;
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed fetch all unreads.");
+    }];
+    [request setCompletionBlock:^(void) {
+        [self storeAllUnreadStories:request];
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+}
+
+- (void)storeAllUnreadStories:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    NSManagedObjectContext* context = [self managedObjectContext];
+    
+    for (NSDictionary *story in [results objectForKey:@"stories"]) {
+        NSManagedObject *newStory;
+        newStory = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"Stories"
+                    inManagedObjectContext:context];
+        [newStory setValue:[story objectForKey:@"id"] forKey:@"id"];
+        [newStory setValue:[story objectForKey:@"story_title"] forKey:@"story_title"];
+        [newStory setValue:[story objectForKey:@"story_feed_id"] forKey:@"story_feed_id"];
+        [newStory setValue:[story objectForKey:@"story_hash"] forKey:@"story_hash"];
+        NSError *error;
+        [context save:&error];
+    }
+}
+
 @end
+
+#pragma mark -
+#pragma mark Unread Counts
 
 
 @implementation UnreadCounts

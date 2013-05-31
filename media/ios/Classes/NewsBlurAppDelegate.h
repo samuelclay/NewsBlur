@@ -129,6 +129,8 @@
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
+    
+    NSManagedObjectContext *managedObjectContext;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -216,11 +218,16 @@
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
 
+@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
+@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
+- (void)setupReachability;
 
 // social
 - (void)showUserProfileModal:(id)sender;
@@ -305,6 +312,11 @@
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+
+- (NSURL *)applicationDocumentsDirectory;
+- (void)fetchAllUnreadStories;
+- (void)fetchAllUnreadStories:(int)page;
+- (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
 
 @end
 
