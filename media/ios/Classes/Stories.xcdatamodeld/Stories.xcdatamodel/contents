@@ -3,12 +3,22 @@
     <entity name="Intelligence" syncable="YES"/>
     <entity name="Stories" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="story_date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="story_feed_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="story_hash" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="story_title" optional="YES" attributeType="String" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="story_hash"/>
+            </compoundIndex>
+            <compoundIndex>
+                <index value="story_feed_id"/>
+                <index value="story_date"/>
+            </compoundIndex>
+        </compoundIndexes>
     </entity>
     <elements>
-        <element name="Stories" positionX="160" positionY="192" width="128" height="103"/>
         <element name="Intelligence" positionX="160" positionY="192" width="128" height="45"/>
+        <element name="Stories" positionX="160" positionY="192" width="128" height="120"/>
     </elements>
 </model>
