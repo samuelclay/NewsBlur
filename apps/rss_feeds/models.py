@@ -1801,10 +1801,9 @@ class MFetchHistory(mongo.Document):
     @classmethod
     def feed(cls, feed_id, timezone=None, fetch_history=None):
         if not fetch_history:
-            try:
-                fetch_history = cls.objects.get(feed_id=feed_id)\
-                                           .read_preference(pymongo.ReadPreference.PRIMARY)
-            except cls.DoesNotExist:
+            fetch_history = cls.objects.filter(feed_id=feed_id).limit(1)\
+                                       .read_preference(pymongo.ReadPreference.PRIMARY)
+            if not fetch_history:
                 fetch_history = cls.objects.create(feed_id=feed_id)
         history = {}
 
@@ -1826,10 +1825,9 @@ class MFetchHistory(mongo.Document):
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
-        try:
-            fetch_history = cls.objects.get(feed_id=feed_id)\
-                                       .read_preference(pymongo.ReadPreference.PRIMARY)
-        except cls.DoesNotExist:
+        fetch_history = cls.objects.filter(feed_id=feed_id).limit(1)\
+                                   .read_preference(pymongo.ReadPreference.PRIMARY)
+        if not fetch_history:
             fetch_history = cls.objects.create(feed_id=feed_id)
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
