@@ -1800,12 +1800,12 @@ class MFetchHistory(mongo.Document):
     
     @classmethod
     def feed(cls, feed_id, timezone=None, fetch_history=None):
-        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
         if not fetch_history:
             try:
-                fetch_history = cls.objects.get(**params)
+                fetch_history = cls.objects.get(feed_id=feed_id)\
+                                           .read_preference(pymongo.ReadPreference.PRIMARY)
             except cls.DoesNotExist:
-                fetch_history = cls.objects.create(**params)
+                fetch_history = cls.objects.create(feed_id=feed_id)
         history = {}
 
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
@@ -1826,11 +1826,11 @@ class MFetchHistory(mongo.Document):
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
-        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
         try:
-            fetch_history = cls.objects.get(**params)
+            fetch_history = cls.objects.get(feed_id=feed_id)\
+                                       .read_preference(pymongo.ReadPreference.PRIMARY)
         except cls.DoesNotExist:
-            fetch_history = cls.objects.create(**params)
+            fetch_history = cls.objects.create(feed_id=feed_id)
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
         elif fetch_type == 'page':
