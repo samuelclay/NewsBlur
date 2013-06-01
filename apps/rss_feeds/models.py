@@ -1805,6 +1805,9 @@ class MFetchHistory(mongo.Document):
                                        .read_preference(pymongo.ReadPreference.PRIMARY)
             if not fetch_history:
                 fetch_history = cls.objects.create(feed_id=feed_id)
+            else:
+                fetch_history = fetch_history[0]
+
         history = {}
 
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
@@ -1829,6 +1832,8 @@ class MFetchHistory(mongo.Document):
                                    .read_preference(pymongo.ReadPreference.PRIMARY)
         if not fetch_history:
             fetch_history = cls.objects.create(feed_id=feed_id)
+        else:
+            fetch_history = fetch_history[0]
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
         elif fetch_type == 'page':
