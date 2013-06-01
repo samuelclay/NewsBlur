@@ -34,13 +34,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="38dp" >
+        android:layout_marginRight="5dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="3dp"
@@ -56,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
             android:padding="3dp"
