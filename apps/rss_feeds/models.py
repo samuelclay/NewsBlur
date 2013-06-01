@@ -1799,12 +1799,13 @@ class MFetchHistory(mongo.Document):
     }
     
     @classmethod
-    def feed(cls, feed_id, timezone=None):
+    def feed(cls, feed_id, timezone=None, fetch_history=None):
         params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
-        try:
-            fetch_history = cls.objects.get(**params)
-        except cls.DoesNotExist:
-            fetch_history = cls.objects.create(**params)
+        if not fetch_history:
+            try:
+                fetch_history = cls.objects.get(**params)
+            except cls.DoesNotExist:
+                fetch_history = cls.objects.create(**params)
         history = {}
 
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
@@ -1858,7 +1859,7 @@ class MFetchHistory(mongo.Document):
         if fetch_type == 'feed':
             RStats.add('feed_fetch')
         
-        return fetch_history
+        return cls.feed(feed_id, fetch_history=fetch_history)
 
 class MFetchExceptionHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
