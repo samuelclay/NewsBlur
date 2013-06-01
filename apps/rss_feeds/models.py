@@ -481,15 +481,15 @@ class Feed(models.Model):
         return bool(feed_address), feed
 
     def save_feed_history(self, status_code, message, exception=None):
-        MFetchHistory.add(feed_id=self.pk, 
-                          fetch_type='feed',
-                          code=int(status_code),
-                          message=message,
-                          exception=exception)
-        
+        fetch_history = MFetchHistory.add(feed_id=self.pk, 
+                                          fetch_type='feed',
+                                          code=int(status_code),
+                                          message=message,
+                                          exception=exception)
+            
         if status_code not in (200, 304):
             self.errors_since_good += 1
-            self.count_errors_in_history('feed', status_code)
+            self.count_errors_in_history('feed', status_code, fetch_history=fetch_history)
             self.set_next_scheduled_update()
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
@@ -498,23 +498,24 @@ class Feed(models.Model):
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        MFetchHistory.add(feed_id=self.pk, 
-                          fetch_type='page',
-                          code=int(status_code),
-                          message=message,
-                          exception=exception)
+        fetch_history = MFetchHistory.add(feed_id=self.pk, 
+                                          fetch_type='page',
+                                          code=int(status_code),
+                                          message=message,
+                                          exception=exception)
             
         if status_code not in (200, 304):
-            self.count_errors_in_history('page', status_code)
+            self.count_errors_in_history('page', status_code, fetch_history=fetch_history)
         elif self.has_page_exception:
             self.has_page_exception = False
             self.has_page = True
             self.active = True
             self.save()
         
-    def count_errors_in_history(self, exception_type='feed', status_code=None):
+    def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
         logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
-        fetch_history = MFetchHistory.feed(self.pk)
+        if not fetch_history:
+            fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[exception_type + '_fetch_history']
         non_errors = [h for h in fh if h['status_code'] and int(h['status_code'])     in (200, 304)]
         errors     = [h for h in fh if h['status_code'] and int(h['status_code']) not in (200, 304)]
@@ -1856,6 +1857,8 @@ class MFetchHistory(mongo.Document):
                                        message=message, exception=exception)
         if fetch_type == 'feed':
             RStats.add('feed_fetch')
+        
+        return fetch_history
 
 class MFetchExceptionHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
