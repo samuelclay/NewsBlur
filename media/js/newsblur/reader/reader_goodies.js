@@ -88,6 +88,17 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
             ]),
             $.make('fieldset', [
+                $.make('legend', 'Native Apps for NewsBlur')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://readkitapp.com'
+              }, 'Download ReadKit'),
+              $.make('div', { className: 'NB-goodies-readkit' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'ReadKit: User-created Mac App')
+            ]),
+            $.make('fieldset', [
                 $.make('legend', 'Browser Extensions for NewsBlur')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [

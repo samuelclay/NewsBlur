@@ -238,7 +238,7 @@ def load_feeds(request):
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
         if not sub.active: continue
-        if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
+        if not sub.feed.active and not sub.feed.has_feed_exception:
             scheduled_feeds.append(sub.feed.pk)
         elif sub.feed.active_subscribers <= 0:
             scheduled_feeds.append(sub.feed.pk)
@@ -610,9 +610,10 @@ def load_single_feed(request, feed_id):
     diff4 = checkpoint4-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
-        diff1, diff2, diff3, diff4)
-        if timediff > 1 else "")
+    time_breakdown = ""
+    if timediff > 1 or settings.DEBUG:
+        time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
+                          diff1, diff2, diff3, diff4)
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
     
@@ -873,7 +874,11 @@ def unread_story_hashes(request):
 @json.json_view
 def mark_all_as_read(request):
     code = 1
-    days = int(request.POST.get('days', 0))
+    try:
+        days = int(request.REQUEST.get('days', 0))
+    except ValueError:
+        return dict(code=-1, message="Days parameter must be an integer, not: %s" %
+                    request.REQUEST.get('days'))
     read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)

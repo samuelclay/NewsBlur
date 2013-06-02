@@ -165,6 +165,8 @@ class MSocialProfile(mongo.Document):
         if self.user_id not in self.following_user_ids:
             self.follow_user(self.user_id, force=True)
             self.count_follows()
+        
+        return self
             
     @property
     def blurblog_url(self):
@@ -1300,6 +1302,7 @@ class MSharedStory(mongo.Document):
                                    story_title=self.story_title, 
                                    comments=self.comments, story_feed_id=self.story_feed_id,
                                    story_id=self.story_guid, share_date=self.shared_date)
+        return self
         
     def delete(self, *args, **kwargs):
         MActivity.remove_shared_story(user_id=self.user_id, story_feed_id=self.story_feed_id,

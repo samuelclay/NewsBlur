@@ -8,7 +8,6 @@ from apps.profile.models import Profile
 from apps.statistics.rstats import RStats, round_time
 from utils import json_functions as json
 from utils import db_functions
-from utils import log as logging
 
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
@@ -265,18 +264,3 @@ class MAnalyticsFetcher(mongo.Document):
     @classmethod
     def calculate_stats(cls, stats):
         return cls.aggregate(**stats)
-
-    @classmethod
-    def clean(cls, days=1):
-        last_day = datetime.datetime.now() - datetime.timedelta(days=days)
-        
-        from utils.feed_functions import timelimit, TimeoutError
-        @timelimit(60)
-        def delete_old_history():
-            cls.objects(date__lte=last_day).delete()
-            cls.objects(date__lte=last_day).delete()
-        try:
-            delete_old_history()
-        except TimeoutError:
-            logging.debug("~SK~SB~BR~FWTimed out on deleting old fetch history. Shit.")
-        

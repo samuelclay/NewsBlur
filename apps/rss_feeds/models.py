@@ -228,7 +228,14 @@ class Feed(models.Model):
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
-    
+        
+    def expire_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
@@ -474,15 +481,15 @@ class Feed(models.Model):
         return bool(feed_address), feed
 
     def save_feed_history(self, status_code, message, exception=None):
-        MFetchHistory.add(feed_id=self.pk, 
-                          fetch_type='feed',
-                          code=int(status_code),
-                          message=message,
-                          exception=exception)
-        
+        fetch_history = MFetchHistory.add(feed_id=self.pk, 
+                                          fetch_type='feed',
+                                          code=int(status_code),
+                                          message=message,
+                                          exception=exception)
+            
         if status_code not in (200, 304):
             self.errors_since_good += 1
-            self.count_errors_in_history('feed', status_code)
+            self.count_errors_in_history('feed', status_code, fetch_history=fetch_history)
             self.set_next_scheduled_update()
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
@@ -491,23 +498,24 @@ class Feed(models.Model):
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        MFetchHistory.add(feed_id=self.pk, 
-                          fetch_type='page',
-                          code=int(status_code),
-                          message=message,
-                          exception=exception)
+        fetch_history = MFetchHistory.add(feed_id=self.pk, 
+                                          fetch_type='page',
+                                          code=int(status_code),
+                                          message=message,
+                                          exception=exception)
             
         if status_code not in (200, 304):
-            self.count_errors_in_history('page', status_code)
+            self.count_errors_in_history('page', status_code, fetch_history=fetch_history)
         elif self.has_page_exception:
             self.has_page_exception = False
             self.has_page = True
             self.active = True
             self.save()
         
-    def count_errors_in_history(self, exception_type='feed', status_code=None):
+    def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
         logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
-        fetch_history = MFetchHistory.feed(self.pk)
+        if not fetch_history:
+            fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[exception_type + '_fetch_history']
         non_errors = [h for h in fh if h['status_code'] and int(h['status_code'])     in (200, 304)]
         errors     = [h for h in fh if h['status_code'] and int(h['status_code']) not in (200, 304)]
@@ -1476,7 +1484,7 @@ class MFeedIcon(mongo.Document):
         if self.icon_url:
             self.icon_url = unicode(self.icon_url)
         try:    
-            super(MFeedIcon, self).save(*args, **kwargs)
+            return super(MFeedIcon, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
             # print "Error on Icon: %s" % e
             if hasattr(self, '_id'): self.delete()
@@ -1494,7 +1502,7 @@ class MFeedPage(mongo.Document):
     def save(self, *args, **kwargs):
         if self.page_data:
             self.page_data = zlib.compress(self.page_data)
-        super(MFeedPage, self).save(*args, **kwargs)
+        return super(MFeedPage, self).save(*args, **kwargs)
     
     @classmethod
     def get_data(cls, feed_id):
@@ -1545,8 +1553,7 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'types': False, 
-                     'drop_dups': True }],
+                     'types': False, }],
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -1583,6 +1590,8 @@ class MStory(mongo.Document):
         super(MStory, self).save(*args, **kwargs)
         
         self.sync_redis()
+        
+        return self
     
     def delete(self, *args, **kwargs):
         self.remove_from_redis()
@@ -1656,8 +1665,6 @@ class MStory(mongo.Document):
         if self.id and self.story_date > UNREAD_CUTOFF:
             r.sadd('F:%s' % self.story_feed_id, self.story_hash)
             r.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r.expire('F:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r.expire('zF:%s' % self.story_feed_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self, r=None):
         if not r:
@@ -1745,7 +1752,7 @@ class MStarredStory(mongo.Document):
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
         
-        super(MStarredStory, self).save(*args, **kwargs)
+        return super(MStarredStory, self).save(*args, **kwargs)
 
         # self.index_for_search()
         
@@ -1792,11 +1799,13 @@ class MFetchHistory(mongo.Document):
     }
     
     @classmethod
-    def feed(cls, feed_id, timezone=None):
-        fetch_history, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+    def feed(cls, feed_id, timezone=None, fetch_history=None):
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        if not fetch_history:
+            try:
+                fetch_history = cls.objects.get(**params)
+            except cls.DoesNotExist:
+                fetch_history = cls.objects.create(**params)
         history = {}
 
         for fetch_type in ['feed_fetch_history', 'page_fetch_history', 'push_history']:
@@ -1817,11 +1826,11 @@ class MFetchHistory(mongo.Document):
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
             date = datetime.datetime.now()
-        
-        fetch_history, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        try:
+            fetch_history = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            fetch_history = cls.objects.create(**params)
         if fetch_type == 'feed':
             history = fetch_history.feed_fetch_history or []
         elif fetch_type == 'page':
@@ -1849,6 +1858,8 @@ class MFetchHistory(mongo.Document):
                                        message=message, exception=exception)
         if fetch_type == 'feed':
             RStats.add('feed_fetch')
+        
+        return cls.feed(feed_id, fetch_history=fetch_history)
 
 class MFetchExceptionHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
@@ -1869,10 +1880,12 @@ class MFetchExceptionHistory(mongo.Document):
         if not isinstance(exception, basestring):
             exception = unicode(exception)
         
-        fetch_exception, _ = cls.objects.get_or_create(
-            feed_id=feed_id,
-            read_preference=pymongo.ReadPreference.PRIMARY
-        )
+        
+        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
+        try:
+            fetch_exception = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            fetch_exception = cls.objects.create(**params)
         fetch_exception.date = date
         fetch_exception.code = code
         fetch_exception.message = message
