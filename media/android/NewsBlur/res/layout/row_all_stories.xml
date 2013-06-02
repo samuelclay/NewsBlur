@@ -72,7 +72,12 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/folder_border_top" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/midgray" />
+        android:background="@color/folder_border_bottom" />
 
 </RelativeLayout>
