@@ -85,17 +85,17 @@ class RStats:
             prefixes[prefix].add(rest)
             ttl = ttls[k]
             if ttl < 60*60: # 1 hour
-                prefixes_ttls[prefix]['1'] += 1
+                prefixes_ttls[prefix]['1h'] += 1
             elif ttl < 60*60*12:
-                prefixes_ttls[prefix]['12'] += 1
+                prefixes_ttls[prefix]['12h'] += 1
             elif ttl < 60*60*24:
-                prefixes_ttls[prefix]['24'] += 1
+                prefixes_ttls[prefix]['1d'] += 1
             elif ttl < 60*60*168:
-                prefixes_ttls[prefix]['168'] += 1
+                prefixes_ttls[prefix]['1w'] += 1
             elif ttl < 60*60*336:
-                prefixes_ttls[prefix]['336'] += 1
+                prefixes_ttls[prefix]['2w'] += 1
             else:
-                prefixes_ttls[prefix]['1000'] += 1
+                prefixes_ttls[prefix]['2w+'] += 1
         
         keys_count = len(keys)
         print " ---> %s total keys" % keys_count
