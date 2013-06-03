@@ -1881,12 +1881,11 @@ class MFetchExceptionHistory(mongo.Document):
         if not isinstance(exception, basestring):
             exception = unicode(exception)
         
-        
-        params = dict(feed_id=feed_id, read_preference=pymongo.ReadPreference.PRIMARY)
         try:
-            fetch_exception = cls.objects.get(**params)
+            fetch_exception = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
+                                         .get(feed_id=feed_id)
         except cls.DoesNotExist:
-            fetch_exception = cls.objects.create(**params)
+            fetch_exception = cls.objects.create(feed_id=feed_id)
         fetch_exception.date = date
         fetch_exception.code = code
         fetch_exception.message = message
