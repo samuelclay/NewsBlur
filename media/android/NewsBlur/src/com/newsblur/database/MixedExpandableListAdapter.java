@@ -309,10 +309,17 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			allStoriesCountCursor.moveToFirst();
 			switch (currentState) {
 				case AppConstants.STATE_BEST:
-					v.findViewById(R.id.row_foldersumneu).setVisibility(View.INVISIBLE);
+					v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
+					v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 					break;
-				default:	
+				default:
+					v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
+                    if (TextUtils.equals("0", allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)))) {
+                        v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
+                    } else {
+                        v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
+                    }
 					((TextView) v.findViewById(R.id.row_foldersumneu)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 					break;

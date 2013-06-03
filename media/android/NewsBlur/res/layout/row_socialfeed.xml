@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/selector_feed_background"
-    android:paddingBottom="2dp"
-    android:paddingTop="2dp">
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_feed_background" >
 
     <LinearLayout
         android:id="@+id/row_foldersums"
@@ -21,8 +19,10 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
@@ -42,18 +42,20 @@
             android:shadowRadius="1"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/row_socialfeed_icon"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="19dp"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon" />
 
@@ -66,6 +68,8 @@
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_socialfeed_icon"
         android:textColor="@color/folder_text"
+        android:paddingBottom="7dp"
+    	android:paddingTop="7dp" 
         android:textSize="16dp" />
 
 </RelativeLayout>
