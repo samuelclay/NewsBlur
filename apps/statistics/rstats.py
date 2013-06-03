@@ -1,5 +1,7 @@
 import redis
 import datetime
+import re
+from collections import defaultdict
 from django.conf import settings
 
 
@@ -61,7 +63,27 @@ class RStats:
         values = pipe.execute()
         total = sum(int(v) for v in values if v)
         return total
-
+    
+    @classmethod
+    def sample(cls, sample=1000, pool=None):
+        if not pool:
+            pool = settings.REDIS_STORY_HASH_POOL
+        r = redis.Redis(connection_pool=pool)
+        
+        keys = set()
+        prefixes = defaultdict(set)
+        prefix_re = re.compile(r"(\w+):(.*)")
+        for k in range(sample):
+            key = r.randomkey()
+            keys.add(key)
+            prefix, rest = prefix_re.match(key).groups()
+            prefixes[prefix].add(rest)
+        
+        keys_count = len(keys)
+        print " ---> %s total keys" % keys_count
+        for prefix, rest in prefixes.items():
+            print " ---> %4s: (%.4s%%) %s keys" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest))
+        
 
 def round_time(dt=None, round_to=60):
    """Round a datetime object to any time laps in seconds
