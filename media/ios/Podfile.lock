@@ -1,0 +1,10 @@
+PODS:
+  - ARChromeActivity (1.0.0)
+
+DEPENDENCIES:
+  - ARChromeActivity
+
+SPEC CHECKSUMS:
+  ARChromeActivity: 8e5ee511e332018d01eb08582f007802af8a1334
+
+COCOAPODS: 0.20.2

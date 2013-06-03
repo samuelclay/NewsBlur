@@ -58,3 +58,7 @@ media/android/NewsBlur/local.properties
 media/android/NewsBlurTest/local.properties
 originals
 media/safari/NewsBlur.safariextz
+
+
+# iOS
+media/ios/Pods
