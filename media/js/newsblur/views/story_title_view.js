@@ -272,6 +272,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     // ==========
     
     select_story: function(e) {
+        if (NEWSBLUR.hotkeys.shift) return;
+        
         e.preventDefault();
         e.stopPropagation();
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;

@@ -515,6 +515,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ==========
     
     click_link_in_story: function(e) {
+        if (NEWSBLUR.hotkeys.shift) return;
+
         e.preventDefault();
         e.stopPropagation();
         if (e.which >= 2) return;
