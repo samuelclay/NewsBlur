@@ -1,0 +1,57 @@
+Contents
+------------
+* README.txt
+* mongommsinstall.bat
+* mongommstinstall.ps1
+* srvany.exe
+
+Prerequisites
+------------
+* Expects a MMS/PyMongo compatible python version to be installed
+* Expects pymongo to be installed
+* Powershell version 2.0 (for windows service installation)
+* Powershell script execution to be turned on
+
+Installation
+------------
+* The following instructions are to run MMS as a windows service
+* More information can be found at https://mms.10gen.com/help/install.html#installing-mms-on-windows
+
+Install Prerequisites
+---------------------
+* Install python 2.7.x using the Windows Installer. 64 bit installer is preferred. 
+e.g. http://www.python.org/ftp/python/2.7.2/python-2.7.2.amd64.msi
+* Install latest version of pymongo using the Windows Installer from pypi. Ensure 
+you pick the installer that corresponds to your python version and the type (32 bit or 64 bit).
+http://pypi.python.org/pypi/pymongo/
+
+Install Powershell 2.0
+----------------------
+* If you do not have powershell 2.0 installed you would need to install it from http://support.microsoft.com/kb/968929.
+
+Enable Powershell Script Execution
+----------------------------------
+* Open the Windows Powershell by right-clicking its icon in the Start bar and selecting Run as Administrator
+* Type `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned` and agree when prompted about changing the policy
+
+Specifying a Proxy Server
+-------------------------
+If the MMS agent needs a proxy server to connect outside, specify it in the HTTPS_PROXY environment variable
+ as http://proxyservername:port
+
+Sevice Installation
+-------------------
+* The script reads python path from windows registry if not specified on command line
+* If multiple python installations are present edit the bat file to specify the path of the python install to work
+* Run mongommsinstall.bat from an administrator command window
+* This will install the windows service and start it
+* If you stop the windows service, the agent will stop
+
+Uninstall
+---------
+- Stop the "MongoDB MMS" windows service
+- Run "sc delete mongomms"
+
+More Information
+----------------
+- MMS Help https://mms.10gen.com/help/

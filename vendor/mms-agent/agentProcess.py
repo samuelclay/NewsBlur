@@ -21,7 +21,7 @@ import os, sys, platform, time, threading, socket, traceback, random, hashlib, t
 
 socket.setdefaulttimeout( _settings.socket_timeout )
 
-_agentVersion = "1.5.6"
+_agentVersion = "1.5.7"
 
 _pymongoVersion = pymongo.version
 

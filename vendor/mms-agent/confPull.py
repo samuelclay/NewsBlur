@@ -8,7 +8,7 @@ import threading, time, urllib2, traceback
 
 import bson
 
-confPullAgentVersion = "1.5.6"
+confPullAgentVersion = "1.5.7"
 
 class ConfPullThread( threading.Thread ):
     """ The remote configuration pull thread object """

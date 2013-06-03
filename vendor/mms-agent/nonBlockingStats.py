@@ -8,7 +8,7 @@ import threading, time, pymongo, traceback, warnings, datetime
 
 warnings.simplefilter( 'ignore', DeprecationWarning )
 
-nonBlockingStatsAgentVersion = "1.5.6"
+nonBlockingStatsAgentVersion = "1.5.7"
 
 class NonBlockingMongoStatsThread( threading.Thread ):
     """ Pull the non-blocking data from the various hosts. """
@@ -166,13 +166,6 @@ class NonBlockingMongoStatsThread( threading.Thread ):
                 root['shardVersion'] = monitorConn.admin.command( { 'getShardVersion' : 'mdbfoo.foo' } )
             except Exception, e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'getShardVersion.mdbfoo.foo', e )
-
-        # Run the writeBacksQueued command
-        if 'msg' not in isMaster:
-            try:
-                root['writeBacksQueued'] = monitorConn.admin.command( 'writeBacksQueued' )
-            except Exception, e:
-                self.mmsAgent.handleOperationFailure( self.hostKey, 'writeBacksQueued', e )
 
         # Check to see if this is a mongod host
         try:
