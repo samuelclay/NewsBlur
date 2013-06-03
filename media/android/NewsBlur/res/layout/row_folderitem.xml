@@ -24,7 +24,8 @@
             android:id="@+id/row_item_sidebar"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/row_item_favicon_borderbar_2" />
 
@@ -32,7 +33,6 @@
             android:id="@+id/row_item_feedicon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginLeft="6dp"
             android:layout_marginTop="10dp"
             android:paddingBottom="4dp"
             android:paddingTop="2dp"
@@ -80,7 +80,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/row_item_title"
-            android:layout_marginLeft="8dp"
             android:paddingBottom="12dp"
             android:layout_toLeftOf="@id/row_item_date"
             android:layout_toRightOf="@id/row_item_sidebar"
