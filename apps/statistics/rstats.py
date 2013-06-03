@@ -70,19 +70,37 @@ class RStats:
             pool = settings.REDIS_STORY_HASH_POOL
         r = redis.Redis(connection_pool=pool)
         
+        p = r.pipeline()
         keys = set()
         prefixes = defaultdict(set)
+        prefixes_ttls = defaultdict(lambda: defaultdict(int))
         prefix_re = re.compile(r"(\w+):(.*)")
-        for k in range(sample):
-            key = r.randomkey()
-            keys.add(key)
+        [p.randomkey() for _ in range(sample)]
+        keys = set(p.execute())
+        p = r.pipeline()
+        [p.ttl(key) for key in keys]
+        ttls = p.execute()
+        for k, key in enumerate(keys):
             prefix, rest = prefix_re.match(key).groups()
             prefixes[prefix].add(rest)
+            ttl = ttls[k]
+            if ttl < 60*60: # 1 hour
+                prefixes_ttls[prefix]['1'] += 1
+            elif ttl < 60*60*12:
+                prefixes_ttls[prefix]['12'] += 1
+            elif ttl < 60*60*24:
+                prefixes_ttls[prefix]['24'] += 1
+            elif ttl < 60*60*168:
+                prefixes_ttls[prefix]['168'] += 1
+            elif ttl < 60*60*336:
+                prefixes_ttls[prefix]['336'] += 1
+            else:
+                prefixes_ttls[prefix]['1000'] += 1
         
         keys_count = len(keys)
         print " ---> %s total keys" % keys_count
         for prefix, rest in prefixes.items():
-            print " ---> %4s: (%.4s%%) %s keys" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest))
+            print " ---> %4s: (%.4s%%) %s keys (%s)" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest), dict(prefixes_ttls[prefix]))
         
 
 def round_time(dt=None, round_to=60):

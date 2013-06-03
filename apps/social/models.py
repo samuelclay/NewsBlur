@@ -890,7 +890,7 @@ class MSocialSubscription(mongo.Document):
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
 
-        r.expire(unread_ranked_stories_key, 24*60*60)
+        r.expire(unread_ranked_stories_key, 1*60*60)
 
         if not ignore_user_stories:
             r.delete(unread_stories_key)
@@ -939,8 +939,8 @@ class MSocialSubscription(mongo.Document):
         r.zinterstore(read_ranked_stories_keys, [ranked_stories_keys, "RS:%s" % user_id])
         story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
         read_story_hashes = range_func(read_ranked_stories_keys, offset, limit)
-        r.expire(ranked_stories_keys, 24*60*60)
-        r.expire(read_ranked_stories_keys, 24*60*60)
+        r.expire(ranked_stories_keys, 1*60*60)
+        r.expire(read_ranked_stories_keys, 1*60*60)
 
         if story_hashes:
             story_hashes, story_dates = zip(*story_hashes)

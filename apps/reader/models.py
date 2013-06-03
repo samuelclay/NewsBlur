@@ -141,7 +141,7 @@ class UserSubscription(models.Model):
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=500,
                                   withscores=withscores)[:limit]
-        r.expire(unread_ranked_stories_key, 24*60*60)
+        r.expire(unread_ranked_stories_key, 1*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
