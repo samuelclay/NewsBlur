@@ -11,13 +11,14 @@
 @class NewsBlurAppDelegate;
 
 @interface FeedsMenuViewController : UIViewController 
-                                    <UITableViewDelegate, 
-                                    UITableViewDataSource> {
+<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    UIAlertView *loginAsAlert;
 }
 
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
+@property (nonatomic) IBOutlet UIAlertView *loginAsAlert;
 
 @end

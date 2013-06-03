@@ -1187,7 +1187,7 @@
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }];
-    [request setTimeOutSeconds:10];
+    [request setTimeOutSeconds:30];
     [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
     [request startAsynchronous];
 }
