@@ -6,6 +6,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
+from fabric.state import connections
 from vendor import yaml
 from pprint import pprint
 import os
@@ -57,35 +58,46 @@ except:
 def do_roledefs(split=False):
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     droplets = doapi.show_active_droplets()
+    hostnames = {}
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
         if roledef not in env.roledefs:
             env.roledefs[roledef] = []
-        if split:
-            env.roledefs[roledef].append((droplet.name, droplet.ip_address))
-        elif droplet.ip_address not in env.roledefs[roledef]:
+        if roledef not in hostnames:
+            hostnames[roledef] = []
+        if droplet.ip_address not in hostnames[roledef]:
+            hostnames[roledef].append({'name': droplet.name, 'address': droplet.ip_address})
+        if droplet.ip_address not in env.roledefs[roledef]:
             env.roledefs[roledef].append(droplet.ip_address)
+
+    if split:
+        return hostnames
     return droplets
 
 def list_do():
     do(split=True)
     pprint(env.roledefs)
 
-def host(name):
-    droplets = do(split=True)
-    for droplet in droplets:
-        if name == droplet.name:
-            env.hosts = [droplet.ip_address]
-            break
+def host(*names):
+    env.hosts = []
+    hostnames = do(split=True)
+    for role in hostnames.keys():
+        for host in hostnames[role]:
+            if host['name'] in names:
+                env.hosts.append(host['address'])
+    print " ---> Using %s as hosts" % env.hosts
     
 # ================
 # = Environments =
 # ================
 
-def do(split=False):
+def server():
     env.NEWSBLUR_PATH = "/srv/newsblur"
     env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
+
+def do(split=False):
+    server()
     droplets = do_roledefs(split=split)
     return droplets
 
@@ -182,6 +194,7 @@ def setup_app(skip_common=False):
     pre_deploy()
     deploy()
     config_monit_app()
+    done()
 
 def setup_db(engine=None, skip_common=False):
     if not skip_common:
@@ -195,7 +208,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=False)
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif engine == "mongo":
+    elif engine.startswith("mongo"):
         setup_mongo()
     elif engine == "redis":
         setup_redis()
@@ -203,6 +216,7 @@ def setup_db(engine=None, skip_common=False):
         setup_redis(slave=True)
     setup_gunicorn(supervisor=False)
     setup_db_munin()
+    done()
 
     # if env.user == 'ubuntu':
     #     setup_db_mdadm()
@@ -217,6 +231,7 @@ def setup_task(queue=None, skip_common=False):
     setup_gunicorn(supervisor=False)
     update_gunicorn()
     config_monit_task()
+    done()
 
 # ==================
 # = Setup - Common =
@@ -225,16 +240,21 @@ def setup_task(queue=None, skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
 
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
-    run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
-    sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
+    # run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
+    # sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     with settings(warn_only=True):
         sudo('mkdir -p %s' % env.VENDOR_PATH)
         sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
 
+def done():
+    print "\n\n-----------------------------------------------------"
+    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % env.host_string
+    print "\n\n-----------------------------------------------------\n\n"
+    
 def change_shell():
     sudo('apt-get -y install zsh')
     with settings(warn_only=True):
@@ -429,7 +449,8 @@ def setup_ulimit():
     run('echo "fs.file-max = 100000" >> /etc/sysctl.conf', pty=False)
     sudo('chmod 644 /etc/sysctl.conf', pty=False)
     sudo('sysctl -p')
-    run('ulimit -n 100000')
+    sudo('ulimit -n 100000')
+    connections.connect(env.host_string)
 
     # run('touch /home/ubuntu/.bash_profile')
     # run('echo "ulimit -n $FILEMAX" >> /home/ubuntu/.bash_profile')
@@ -616,21 +637,27 @@ def setup_db_firewall():
         5432,   # PostgreSQL
         27017,  # MongoDB
         28017,  # MongoDB web
+        27019,  # MongoDB config
         6379,   # Redis
         # 11211,  # Memcached
         3060,   # Node original page server
         9200,   # Elasticsearch
     ]
+    sudo('ufw --force reset')
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
 
     # DigitalOcean
+    pprint(env)
     for ip in set(env.roledefs['app'] +
                   env.roledefs['db'] +
                   env.roledefs['dev'] +
                   env.roledefs['debug'] +
                   env.roledefs['task'] +
+                  env.roledefs['work'] +
+                  env.roledefs['push'] +
+                  env.roledefs['www'] +
                   env.roledefs['node']):
         sudo('ufw allow proto tcp from %s to any port %s' % (
             ip,
@@ -665,7 +692,7 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    # shmmax = 1140047872
+    # shmmax = 2300047872
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
@@ -699,10 +726,30 @@ def setup_mongo():
     sudo('apt-get -y install mongodb-10gen')
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
-    run('echo "ulimit -n 10000" > mongodb.defaults')
+    run('echo "ulimit -n 100000" > mongodb.defaults')
     sudo('mv mongodb.defaults /etc/default/mongodb')
     sudo('/etc/init.d/mongodb restart')
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
+
+def setup_mongo_configsvr():
+    sudo('mkdir -p /var/lib/mongodb_configsvr')
+    sudo('chown mongodb.mongodb /var/lib/mongodb_configsvr')
+    put('config/mongodb.configsvr.conf', '/etc/mongodb.configsvr.conf', use_sudo=True)
+    put('config/mongodb.configsvr-init', '/etc/init.d/mongodb-configsvr', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/mongodb-configsvr')
+    run('echo "ulimit -n 100000" > mongodb_configsvr.defaults')
+    sudo('mv mongodb_configsvr.defaults /etc/default/mongodb_configsvr')
+    sudo('update-rc.d -f mongodb-configsvr defaults')
+    sudo('/etc/init.d/mongodb-configsvr start')
+
+def setup_mongo_mongos():
+    put('config/mongodb.mongos.conf', '/etc/mongodb.mongos.conf', use_sudo=True)
+    put('config/mongodb.mongos-init', '/etc/init.d/mongodb-mongos', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/mongodb-mongos')
+    run('echo "ulimit -n 100000" > mongodb_mongos.defaults')
+    sudo('mv mongodb_mongos.defaults /etc/default/mongodb_mongos')
+    sudo('update-rc.d -f mongodb-mongos defaults')
+    sudo('/etc/init.d/mongodb-mongos restart')
 
 def setup_mongo_mms():
     pull()
