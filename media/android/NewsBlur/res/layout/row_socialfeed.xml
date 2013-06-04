@@ -55,7 +55,7 @@
         android:layout_height="23dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="19dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon" />
 
