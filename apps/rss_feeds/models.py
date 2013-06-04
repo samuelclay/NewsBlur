@@ -382,9 +382,7 @@ class Feed(models.Model):
         
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
-        
-        if not self.last_story_date:
-            self.calculate_last_story_date()
+        self.calculate_last_story_date()
         
         count_extra = False
         if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
