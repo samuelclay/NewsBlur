@@ -16,7 +16,6 @@ from bson.objectid import ObjectId
 from django.db import models
 from django.db import IntegrityError
 from django.conf import settings
-from django.db.models import Q as DQ
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
@@ -1044,26 +1043,28 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
 
     @classmethod
-    def trim_old_stories(cls, page=1, verbose=True):
-        limit = 1000
+    def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
-        old_feeds = Feed.objects.filter(DQ(last_story_date__isnull=True) |
-                                        DQ(last_story_date__lte=month_ago),
-                                        active_subscribers__lte=0,
-                                        )[page*limit:(page+1)*limit]
-        story_count = old_feeds.count()
-        logging.debug(" ---> Trimming %s/p%s old feeds..." % (story_count, page))
-        
-        if not story_count:
-            return False
-        
-        for feed in old_feeds:
-            months_ago = 6
-            if feed.last_story_date:
-                months_ago = int((now - feed.last_story_date).days / 30.0)
-            cutoff = max(1, 6 - months_ago)
-            MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+        feed_count = Feed.objects.latest('pk').pk
+        for feed_id in xrange(start, feed_count):
+            if feed_id % 1000 == 0:
+                print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
+            try:
+                feed = Feed.objects.get(pk=feed_id)
+            except Feed.DoesNotExist:
+                continue
+            if feed.active_subscribers > 0:
+                continue
+            if not feed.last_story_date or feed.last_story_date < month_ago:
+                months_ago = 6
+                if feed.last_story_date:
+                    months_ago = int((now - feed.last_story_date).days / 30.0)
+                cutoff = max(1, 6 - months_ago)
+                if dryrun:
+                    print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
+                else:
+                    MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
@@ -1254,14 +1255,14 @@ class Feed(models.Model):
             if story_title_difference > 0 and content_ratio > .98:
                 story_in_system = existing_story
                 if story_title_difference > 0 or content_ratio < 1.0:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                     story_has_changed = True
                     break
             
             # More restrictive content distance, still no story match
             if not story_in_system and content_ratio > .98:
-                if settings.DEBUG:
+                if settings.DEBUG and False:
                     logging.debug(" ---> Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                 story_in_system = existing_story
                 story_has_changed = True
@@ -1269,11 +1270,11 @@ class Feed(models.Model):
                 
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Content difference - %s/%s" % (story_content, existing_story_content))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Permalink difference - %s/%s" % (story_link, existing_story.story_permalink))
                     story_has_changed = True
                 # if story_pub_date != existing_story.story_date:
