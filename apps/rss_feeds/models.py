@@ -16,6 +16,7 @@ from bson.objectid import ObjectId
 from django.db import models
 from django.db import IntegrityError
 from django.conf import settings
+from django.db.models import Q as DQ
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
@@ -1047,20 +1048,22 @@ class Feed(models.Model):
         limit = 100
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
-        
-            
-        old_feeds = Feed.objects.filter(active_subscribers__lte=0,
-                                        last_story_date__lte=month_ago
+        old_feeds = Feed.objects.filter(DQ(last_story_date__isnull=True) |
+                                        DQ(last_story_date__lte=month_ago),
+                                        active_subscribers__lte=0,
                                         )[page*limit:(page+1)*limit]
+        story_count = old_feeds.count()
+        logging.debug(" ---> Trimming %s/p%s old feeds..." % (story_count, page))
         
-        logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
+        if not story_count:
+            return False
+        
         for feed in old_feeds:
-            months_ago = int((now - feed.last_story_date).days / 30.0)
+            months_ago = 6
+            if feed.last_story_date:
+                months_ago = int((now - feed.last_story_date).days / 30.0)
             cutoff = max(1, 6 - months_ago)
-            if not verbose:
-                MStory.trim_feed(feed_id=feed['pk'], cutoff=cutoff, verbose=verbose)
-            else:
-                MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+            MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
