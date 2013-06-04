@@ -1055,7 +1055,7 @@ class Feed(models.Model):
         
         logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
         for feed in old_feeds:
-            months_ago = int((feed.last_story_date - now).days / 30.0)
+            months_ago = int((now - feed.last_story_date).days / 30.0)
             cutoff = max(1, 6 - months_ago)
             if not verbose:
                 MStory.trim_feed(feed_id=feed['pk'], cutoff=cutoff, verbose=verbose)
