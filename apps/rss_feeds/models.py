@@ -1045,22 +1045,22 @@ class Feed(models.Model):
     @classmethod
     def trim_old_stories(cls, page=1, verbose=True):
         limit = 100
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        now = datetime.datetime.now()
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
         
             
         old_feeds = Feed.objects.filter(active_subscribers__lte=0,
                                         last_story_date__lte=month_ago
-                                        )
-        if not verbose:
-            old_feeds = old_feeds.values('pk')
-        old_feeds = old_feeds[page*limit:(page+1)*limit]
+                                        )[page*limit:(page+1)*limit]
         
         logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
         for feed in old_feeds:
+            months_ago = int((feed.last_story_date - now).days / 30.0)
+            cutoff = max(1, 6 - months_ago)
             if not verbose:
-                MStory.trim_feed(feed_id=feed['pk'], cutoff=5, verbose=verbose)
+                MStory.trim_feed(feed_id=feed['pk'], cutoff=cutoff, verbose=verbose)
             else:
-                MStory.trim_feed(feed=feed, cutoff=5, verbose=verbose)
+                MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
