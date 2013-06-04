@@ -1046,11 +1046,12 @@ class Feed(models.Model):
     def trim_old_stories(cls, page=1, verbose=True):
         limit = 100
         month_ago = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
-        old_feeds = cls.objects.filter(active_subscribers__lte=0,
-                                       last_story_date__lte=month_ago)[page*limit:(page+1)*limit]
+        old_feeds = Feed.objects.filter(active_subscribers__lte=0,
+                                        last_story_date__lte=month_ago
+                                        ).values('pk')[page*limit:(page+1)*limit]
         logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
         for feed in old_feeds:
-            feed.trim_feed(verbose=verbose, cutoff=10)
+            MStory.trim_feed(feed['pk'], cutoff=5, verbose=verbose)
 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
@@ -1070,29 +1071,7 @@ class Feed(models.Model):
             elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
                 cutoff = 450
             
-        stories = MStory.objects(
-            story_feed_id=self.pk,
-        ).order_by('-story_date')
-        
-        if stories.count() > cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
-                          (unicode(self)[:30], stories.count(), cutoff))
-            try:
-                story_trim_date = stories[cutoff].story_date
-            except IndexError, e:
-                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
-                return
-                
-            extra_stories = MStory.objects(story_feed_id=self.pk, 
-                                           story_date__lte=story_trim_date)
-            extra_stories_count = extra_stories.count()
-            for story in extra_stories:
-                story.delete()
-            if verbose:
-                existing_story_count = MStory.objects(story_feed_id=self.pk).count()
-                logging.debug("   ---> Deleted %s stories, %s left." % (
-                                extra_stories_count,
-                                existing_story_count))
+        MStory.trim_feed(feed_id=self.pk, cutoff=cutoff, verbose=verbose)
 
     # @staticmethod
     # def clean_invalid_ids():
@@ -1610,6 +1589,35 @@ class MStory(mongo.Document):
         
         super(MStory, self).delete(*args, **kwargs)
     
+    @classmethod
+    def trim_feed(cls, feed_id, cutoff, verbose=True):
+        if not feed_id:
+            return
+        
+        stories = cls.objects(
+            story_feed_id=feed_id,
+        ).order_by('-story_date')
+        
+        if stories.count() > cutoff:
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+                          (feed_id, stories.count(), cutoff))
+            try:
+                story_trim_date = stories[cutoff].story_date
+            except IndexError, e:
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (feed_id, e))
+                return
+                
+            extra_stories = MStory.objects(story_feed_id=feed_id, 
+                                           story_date__lte=story_trim_date)
+            extra_stories_count = extra_stories.count()
+            for story in extra_stories:
+                story.delete()
+            if verbose:
+                existing_story_count = MStory.objects(story_feed_id=feed_id).count()
+                logging.debug("   ---> Deleted %s stories, %s left." % (
+                                extra_stories_count,
+                                existing_story_count))
+        
     @classmethod
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
