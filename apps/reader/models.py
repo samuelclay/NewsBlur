@@ -534,7 +534,7 @@ class RUserStory:
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
-        story_hash = cls.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
+        story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
         
         if not story_hash: return
         
