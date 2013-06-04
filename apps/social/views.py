@@ -598,8 +598,7 @@ def mark_story_as_unshared(request):
     original_story_found = True
     
     story, original_story_found = MStory.find_story(story_feed_id=feed_id, 
-                                                    story_id=story_id,
-                                                    original_only=True)
+                                                    story_id=story_id)
     
     shared_story = MSharedStory.objects(user_id=request.user.pk, 
                                         story_feed_id=feed_id, 
