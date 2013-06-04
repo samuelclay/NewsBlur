@@ -84,6 +84,7 @@ def opml_export(request):
 
 
 def reader_authorize(request): 
+    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
     reader_importer = GoogleReaderImporter(request.user)
     if reader_importer.test():
         logging.user(request, "~BB~FW~SBSkipping Google Reader import, already tokened")
@@ -119,7 +120,6 @@ def reader_authorize(request):
         OAuthToken.objects.filter(user=request.user).delete()
         auth_token_dict['user'] = request.user
     else:
-        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
         OAuthToken.objects.filter(remote_ip=ip).delete()
     auth_token_dict['uuid'] = str(uuid.uuid4())

@@ -299,7 +299,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "2.0"
+    iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
