@@ -6,12 +6,12 @@
 
     <ImageView
         android:id="@+id/row_everything_icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ak_icon_blurblogs" />
 

@@ -10,7 +10,7 @@
         android:layout_height="23dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/g_icn_folder_rss" />
@@ -69,7 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:paddingLeft="49dp"
+        android:layout_toRightOf="@id/row_folder_icon"
         android:layout_alignRight="@id/row_foldersums"
         android:textColor="@color/folder_text"
         android:paddingBottom="10dp"
