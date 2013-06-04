@@ -1046,12 +1046,21 @@ class Feed(models.Model):
     def trim_old_stories(cls, page=1, verbose=True):
         limit = 100
         month_ago = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        
+            
         old_feeds = Feed.objects.filter(active_subscribers__lte=0,
                                         last_story_date__lte=month_ago
-                                        ).values('pk')[page*limit:(page+1)*limit]
+                                        )
+        if not verbose:
+            old_feeds = old_feeds.values('pk')
+        old_feeds = old_feeds[page*limit:(page+1)*limit]
+        
         logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
         for feed in old_feeds:
-            MStory.trim_feed(feed['pk'], cutoff=5, verbose=verbose)
+            if not verbose:
+                MStory.trim_feed(feed_id=feed['pk'], cutoff=5, verbose=verbose)
+            else:
+                MStory.trim_feed(feed=feed, cutoff=5, verbose=verbose)
 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
@@ -1071,7 +1080,7 @@ class Feed(models.Model):
             elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
                 cutoff = 450
             
-        MStory.trim_feed(feed_id=self.pk, cutoff=cutoff, verbose=verbose)
+        MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
 
     # @staticmethod
     # def clean_invalid_ids():
@@ -1590,9 +1599,14 @@ class MStory(mongo.Document):
         super(MStory, self).delete(*args, **kwargs)
     
     @classmethod
-    def trim_feed(cls, feed_id, cutoff, verbose=True):
-        if not feed_id:
+    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+        if not feed_id and not feed:
             return
+        
+        if not feed_id:
+            feed_id = feed.pk
+        if not feed:
+            feed = feed_id
         
         stories = cls.objects(
             story_feed_id=feed_id,
@@ -1600,11 +1614,11 @@ class MStory(mongo.Document):
         
         if stories.count() > cutoff:
             logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
-                          (feed_id, stories.count(), cutoff))
+                          (unicode(feed)[:30], stories.count(), cutoff))
             try:
                 story_trim_date = stories[cutoff].story_date
             except IndexError, e:
-                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (feed_id, e))
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
                 return
                 
             extra_stories = MStory.objects(story_feed_id=feed_id, 
