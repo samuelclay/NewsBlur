@@ -68,20 +68,28 @@ class RStats:
     def sample(cls, sample=1000, pool=None):
         if not pool:
             pool = settings.REDIS_STORY_HASH_POOL
-        r = redis.Redis(connection_pool=pool)
-        
-        p = r.pipeline()
-        keys = set()
-        prefixes = defaultdict(set)
+
+        r             = redis.Redis(connection_pool=pool)
+        keys          = set()
+        errors        = set()
+        prefixes      = defaultdict(set)
         prefixes_ttls = defaultdict(lambda: defaultdict(int))
-        prefix_re = re.compile(r"(\w+):(.*)")
+        prefix_re     = re.compile(r"(\w+):(.*)")
+
+        p             = r.pipeline()
         [p.randomkey() for _ in range(sample)]
-        keys = set(p.execute())
-        p = r.pipeline()
+        keys          = set(p.execute())
+        p             = r.pipeline()
+
         [p.ttl(key) for key in keys]
-        ttls = p.execute()
+        ttls          = p.execute()
+        
         for k, key in enumerate(keys):
-            prefix, rest = prefix_re.match(key).groups()
+            match = prefix_re.match(key)
+            if not match:
+                errors.add(key)
+                continue
+            prefix, rest = match.groups()
             prefixes[prefix].add(rest)
             ttl = ttls[k]
             if ttl < 60*60: # 1 hour
@@ -101,7 +109,7 @@ class RStats:
         print " ---> %s total keys" % keys_count
         for prefix, rest in prefixes.items():
             print " ---> %4s: (%.4s%%) %s keys (%s)" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest), dict(prefixes_ttls[prefix]))
-        
+        print " ---> %s errors: %s" % (len(errors), errors)
 
 def round_time(dt=None, round_to=60):
    """Round a datetime object to any time laps in seconds

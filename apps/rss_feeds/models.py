@@ -235,7 +235,7 @@ class Feed(models.Model):
 
         r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
         r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-
+    
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
@@ -1041,33 +1041,44 @@ class Feed(models.Model):
 
         if len(feed_authors) > 1:
             self.save_popular_authors(feed_authors=feed_authors[:-1])
-            
-    def trim_feed(self, verbose=False):
-        trim_cutoff = 500
-        if self.active_subscribers <= 0:
-            trim_cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
-            trim_cutoff = 100
-        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
-            trim_cutoff = 200
-        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
-            trim_cutoff = 300
-        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
-            trim_cutoff = 350
-        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
-            trim_cutoff = 400
-        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
-            trim_cutoff = 450
+
+    @classmethod
+    def trim_old_stories(cls, page=1, verbose=True):
+        limit = 100
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        old_feeds = cls.objects.filter(active_subscribers__lte=0,
+                                       last_story_date__lte=month_ago)[page*limit:(page+1)*limit]
+        logging.debug(" ---> Trimming %s/p%s old feeds..." % (old_feeds.count(), page))
+        for feed in old_feeds:
+            feed.trim_feed(verbose=verbose, cutoff=10)
+
+    def trim_feed(self, verbose=False, cutoff=None):
+        if not cutoff:
+            cutoff = 500
+            if self.active_subscribers <= 0:
+                cutoff = 25
+            elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+                cutoff = 100
+            elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
+                cutoff = 200
+            elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
+                cutoff = 300
+            elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
+                cutoff = 350
+            elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
+                cutoff = 400
+            elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
+                cutoff = 450
             
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
         
-        if stories.count() > trim_cutoff:
+        if stories.count() > cutoff:
             logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
-                          (unicode(self)[:30], stories.count(), trim_cutoff))
+                          (unicode(self)[:30], stories.count(), cutoff))
             try:
-                story_trim_date = stories[trim_cutoff].story_date
+                story_trim_date = stories[cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
@@ -1079,8 +1090,9 @@ class Feed(models.Model):
                 story.delete()
             if verbose:
                 existing_story_count = MStory.objects(story_feed_id=self.pk).count()
-                print "Deleted %s stories, %s left." % (extra_stories_count,
-                                                        existing_story_count)
+                logging.debug("   ---> Deleted %s stories, %s left." % (
+                                extra_stories_count,
+                                existing_story_count))
 
     # @staticmethod
     # def clean_invalid_ids():
