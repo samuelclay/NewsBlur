@@ -982,7 +982,7 @@ class Feed(models.Model):
         existing_story.remove_from_redis()
         
         old_hash = existing_story.story_hash
-        new_hash = RUserStory.story_hash(new_story_guid, self.pk)
+        new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
         RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
@@ -1562,6 +1562,9 @@ class MStory(mongo.Document):
         'cascade': False,
     }
     
+    RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
+    RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
+
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
@@ -1638,22 +1641,21 @@ class MStory(mongo.Document):
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
         original_found = True
-        
+        story_hash = cls.ensure_story_hash(story_id, story_feed_id)
+
         if isinstance(story_id, ObjectId):
             story = cls.objects(id=story_id).limit(1).first()
         else:
-            guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
-            story_hash = "%s:%s" % (story_feed_id, guid_hash)
             story = cls.objects(story_hash=story_hash).limit(1).first()
         
         if not story:
             original_found = False
         if not story and not original_only:
             story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
-                                                story_guid=story_id).limit(1).first()
+                                                story_hash=story_hash).limit(1).first()
         if not story and not original_only:
             story = MStarredStory.objects.filter(story_feed_id=story_feed_id, 
-                                                 story_guid=story_id).limit(1).first()
+                                                 story_hash=story_hash).limit(1).first()
         
         return story, original_found
     
@@ -1692,7 +1694,40 @@ class MStory(mongo.Document):
             stories = stories[0]
         
         return stories
+    
+    @classmethod
+    def ensure_story_hash(cls, story_id, story_feed_id):
+        if not cls.RE_STORY_HASH.match(story_id):
+            story_id = "%s:%s" % (story_feed_id, hashlib.sha1(story_id).hexdigest()[:6])
         
+        return story_id
+    
+    @classmethod
+    def split_story_hash(cls, story_hash):
+        matches = cls.RE_STORY_HASH.match(story_hash)
+        if matches:
+            groups = matches.groups()
+            return groups[0], groups[1]
+        return None, None
+    
+    @classmethod
+    def split_rs_key(cls, rs_key):
+        matches = cls.RE_RS_KEY.match(rs_key)
+        if matches:
+            groups = matches.groups()
+            return groups[0], groups[1]
+        return None, None
+    
+    @classmethod
+    def story_hashes(cls, story_ids):
+        story_hashes = []
+        for story_id in story_ids:
+            story_hash = cls.ensure_story_hash(story_id)
+            if not story_hash: continue
+            story_hashes.append(story_hash)
+        
+        return story_hashes
+    
     def sync_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

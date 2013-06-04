@@ -968,7 +968,7 @@ class MSocialSubscription(mongo.Document):
         
         for story_hash in set(story_hashes):
             if not feed_id:
-                feed_id, _ = RUserStory.split_story_hash(story_hash)
+                feed_id, _ = MStory.split_story_hash(story_hash)
             RUserStory.mark_read(self.user_id, feed_id, story_hash)
             
             # Find other social feeds with this story to update their counts
