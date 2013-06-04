@@ -1045,7 +1045,7 @@ class Feed(models.Model):
 
     @classmethod
     def trim_old_stories(cls, page=1, verbose=True):
-        limit = 100
+        limit = 1000
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
         old_feeds = Feed.objects.filter(DQ(last_story_date__isnull=True) |
