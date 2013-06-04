@@ -272,6 +272,32 @@ public class APIManager {
 		}
 	}
 
+	public StoriesResponse getStarredStories(String pageNumber) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		if (!TextUtils.isEmpty(pageNumber)) {
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+		}
+		final APIResponse response = client.get(APIConstants.URL_STARRED_STORIES, values);
+
+		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			if (TextUtils.equals(pageNumber,"1")) {
+				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
+			}
+			for (Story story : storiesResponse.stories) {
+				contentResolver.insert(FeedProvider.STARRED_STORIES_URI, story.getValues());
+				insertComments(story);
+			}
+			for (UserProfile user : storiesResponse.users) {
+				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
+			}
+			return storiesResponse;
+		} else {
+			return null;
+		}
+	}
+
 	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();

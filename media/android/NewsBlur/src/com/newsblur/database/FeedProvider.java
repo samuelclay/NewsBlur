@@ -36,6 +36,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
+	public static final Uri STARRED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
