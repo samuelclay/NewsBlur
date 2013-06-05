@@ -76,7 +76,7 @@ def pre_process_story(entry):
     if not publish_date and entry.get('published'):
         try:
             publish_date = dateutil.parser.parse(entry.get('published')).replace(tzinfo=None)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
     
     if publish_date:
@@ -237,7 +237,7 @@ def strip_comments__lxml(html_string=""):
         clean_html = cleaner.clean_html(html)
 
         return lxml.etree.tostring(clean_html)
-    except XMLSyntaxError:
+    except (XMLSyntaxError, ParserError):
         return html_string
         
 def linkify(*args, **kwargs):

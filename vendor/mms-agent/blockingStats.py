@@ -8,7 +8,7 @@ import threading, time, datetime, pymongo, traceback, socket, warnings
 
 warnings.simplefilter( 'ignore', DeprecationWarning )
 
-blockingStatsAgentVersion = "1.5.6"
+blockingStatsAgentVersion = "1.5.7"
 
 class BlockingMongoStatsThread( threading.Thread ):
     """ Pull the blocking data from the various hosts. """

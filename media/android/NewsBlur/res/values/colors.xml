@@ -11,6 +11,8 @@
 	<color name="folder_background_selected_end">#fdfcca</color>
 	<color name="folder_background_selected_start">#fbec8c</color>
     <color name="folder_text">#4C4C4C</color>
+    <color name="folder_border_top">#FDFDFD</color>
+    <color name="folder_border_bottom">#B7BBAA</color>
     <color name="feed_background">#F7F8F5</color>
     
     <color name="story_title_unread">#606060</color>

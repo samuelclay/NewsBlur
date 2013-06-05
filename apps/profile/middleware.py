@@ -14,14 +14,15 @@ class LastSeenMiddleware(object):
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
+            ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
             # SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
-                    request.user.profile.last_seen_on, request.META['REMOTE_ADDR']))
+                    request.user.profile.last_seen_on, ip))
             # if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
                 # request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
-            request.user.profile.last_seen_ip = request.META['REMOTE_ADDR']
+            request.user.profile.last_seen_ip = ip
             request.user.profile.save()
         
         return response

@@ -299,7 +299,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "2.0"
+    iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -874,7 +874,11 @@ def unread_story_hashes(request):
 @json.json_view
 def mark_all_as_read(request):
     code = 1
-    days = int(request.POST.get('days', 0))
+    try:
+        days = int(request.REQUEST.get('days', 0))
+    except ValueError:
+        return dict(code=-1, message="Days parameter must be an integer, not: %s" %
+                    request.REQUEST.get('days'))
     read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)

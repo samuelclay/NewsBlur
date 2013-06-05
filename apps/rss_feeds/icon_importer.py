@@ -53,13 +53,15 @@ class IconImporter(object):
             image     = self.normalize_image(image)
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
-
-            if (self.force or 
-                self.feed_icon.color != color or 
-                self.feed_icon.data != image_str or 
-                self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found or
-                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon)):
+            if len(image_str) > 500000:
+                image = None
+            if (image and 
+                (self.force or 
+                 self.feed_icon.color != color or 
+                 self.feed_icon.data != image_str or 
+                 self.feed_icon.icon_url != icon_url or
+                 self.feed_icon.not_found or
+                 (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
                 self.feed_icon.data      = image_str
                 self.feed_icon.icon_url  = icon_url
                 self.feed_icon.color     = color
@@ -69,7 +71,8 @@ class IconImporter(object):
                     self.save_to_s3(image_str)
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
-        else:
+
+        if not image:
             self.feed_icon.not_found = True
             self.feed.favicon_not_found = True
             

@@ -18,6 +18,7 @@
 @synthesize appDelegate;
 @synthesize menuOptions;
 @synthesize menuTableView;
+@synthesize loginAsAlert;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -33,9 +34,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    self.menuOptions = [[NSArray alloc]
-                        initWithObjects:[@"Find Friends" uppercaseString],
-                                        [@"Logout" uppercaseString], nil];
+    if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
+        self.menuOptions = [[NSArray alloc]
+                            initWithObjects:[@"Find Friends" uppercaseString],
+                            [@"Logout" uppercaseString],
+                            [@"Login as..." uppercaseString],
+                            nil];
+    } else {
+        self.menuOptions = [[NSArray alloc]
+                            initWithObjects:[@"Find Friends" uppercaseString],
+                                            [@"Logout" uppercaseString], nil];
+    }
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
@@ -99,6 +108,8 @@
         [appDelegate showFindFriends];
     } else if (indexPath.row == 1) {
         [appDelegate confirmLogout];
+    } else if (indexPath.row == 2) {
+        [self showLoginAsDialog];
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -109,6 +120,51 @@
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
+}
+
+#pragma mark -
+#pragma mark Menu Options
+
+- (void)showLoginAsDialog {
+    loginAsAlert = [[UIAlertView alloc] initWithTitle:@"Login as..." message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Login", nil];
+    loginAsAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    UITextField * alertTextField = [loginAsAlert textFieldAtIndex:0];
+    alertTextField.keyboardType = UIKeyboardTypeAlphabet;
+    alertTextField.placeholder = @"Username";
+    [loginAsAlert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    UITextField * alertTextField = [loginAsAlert textFieldAtIndex:0];
+    if ([alertTextField.text length] <= 0 || buttonIndex == 0){
+        return;
+    }
+    if (buttonIndex == 1) {
+        NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/login_as?user=%@",
+                          NEWSBLUR_URL, alertTextField.text];
+        NSURL *url = [NSURL URLWithString:urlS];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }];
+        [request setCompletionBlock:^(void) {
+            NSLog(@"Login as %@ successful", alertTextField.text);
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [appDelegate reloadFeedsView:YES];
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+        
+        [ASIHTTPRequest setSessionCookies:nil];
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.feedsViewController.view animated:YES];
+        HUD.labelText = [NSString stringWithFormat:@"Login: %@", alertTextField.text];
+    }
 }
 
 @end

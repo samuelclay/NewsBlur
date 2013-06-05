@@ -7,7 +7,7 @@ This is a label on a mattress. Do not modify this file!
 # Python
 import socket, threading, time
 
-muninAgentVersion = "1.5.6"
+muninAgentVersion = "1.5.7"
 
 def containsStr( val, query ):
     """ Returns true if the value is contained in the string """
