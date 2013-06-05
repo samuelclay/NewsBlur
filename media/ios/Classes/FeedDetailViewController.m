@@ -1172,7 +1172,7 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] forKey:@"in_folder"];
@@ -1201,7 +1201,7 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] 
                    forKey:@"folder_to_delete"];
