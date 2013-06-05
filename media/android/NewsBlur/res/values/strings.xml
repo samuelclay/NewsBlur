@@ -35,6 +35,8 @@
 	
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
+	<string name="saved_stories_row_title">SAVED STORIES</string>
+	<string name="saved_stories_title">Saved Stories</string>
 	
 	<string name="now">now</string>
 	
