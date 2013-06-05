@@ -1172,13 +1172,11 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] forKey:@"in_folder"];
-    [request setFailedBlock:^(void) {
-        [self informError:[request error]];
-    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
     [request setCompletionBlock:^(void) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController 
@@ -1201,15 +1199,13 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] 
                    forKey:@"folder_to_delete"];
     [request addPostValue:[appDelegate extractFolderName:[appDelegate extractParentFolderName:appDelegate.activeFolder]] 
                    forKey:@"in_folder"];
-    [request setFailedBlock:^(void) {
-        [self informError:[request error]];
-    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
     [request setCompletionBlock:^(void) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController 
@@ -1271,7 +1267,7 @@
                            NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
-    __block ASIHTTPRequest *request = [self requestWithURL:urlString];
+    ASIHTTPRequest *request = [self requestWithURL:urlString];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
