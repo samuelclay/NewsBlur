@@ -138,14 +138,15 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 
-		// Only create a context menu for child items
 		switch(type) {
-		// Group (folder) item
-		case 0:
-			inflater.inflate(R.menu.context_folder, menu);
+		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
+            int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+            if (! folderAdapter.isRowSavedStories(groupPosition) ) {
+			    inflater.inflate(R.menu.context_folder, menu);
+            }
 			break;
-			// Child (feed) item
-		case 1:
+
+		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
 			inflater.inflate(R.menu.context_feed, menu);
 			break;
 		}

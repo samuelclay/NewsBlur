@@ -19,7 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
-import com.newsblur.activity.AllStoriesReading;
+import com.newsblur.activity.SavedStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
@@ -63,7 +63,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, true);
 
 		itemList.setOnScrollListener(this);
 
@@ -115,7 +115,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent i = new Intent(getActivity(), AllStoriesReading.class);
+		Intent i = new Intent(getActivity(), SavedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		startActivityForResult(i, READING_RETURNED );
 	}

@@ -21,8 +21,9 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 	private Cursor cursor;
 	private ImageLoader imageLoader;
 	private int storyTitleUnread, storyAuthorUnread, storyTitleRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
+    private boolean ignoreReadStatus;
 
-	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, boolean ignoreReadStatus) {
 		super(context, layout, c, from, to, flags);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
@@ -35,7 +36,13 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 		storyDateRead = context.getResources().getColor(R.color.story_date_read);
 		storyFeedUnread = context.getResources().getColor(R.color.story_feed_unread);
 		storyFeedRead = context.getResources().getColor(R.color.story_feed_read);
+
+        this.ignoreReadStatus = ignoreReadStatus;
 	}
+
+    public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+        this(context, layout, c, from, to, flags, false);
+    }
 
 	@Override
 	public int getCount() {
@@ -69,7 +76,7 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
 		
-		if (! Story.fromCursor(cursor).read) {
+		if (this.ignoreReadStatus || (! Story.fromCursor(cursor).read)) {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);

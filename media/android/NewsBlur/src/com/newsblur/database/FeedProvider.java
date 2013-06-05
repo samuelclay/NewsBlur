@@ -305,7 +305,7 @@ public class FeedProvider extends ContentProvider {
             mdb = db;
         }
         public Cursor rawQuery(String sql, String[] selectionArgs) {
-            Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
+            //Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
             return mdb.rawQuery(sql, selectionArgs);
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {

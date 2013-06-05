@@ -37,7 +37,7 @@
         android:layout_marginRight="5dp"
         android:background="@drawable/saved_count_rect"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="3dp"
         android:shadowColor="@color/saved_drop_shadow"
         android:shadowDy="1"
         android:shadowRadius="1"
