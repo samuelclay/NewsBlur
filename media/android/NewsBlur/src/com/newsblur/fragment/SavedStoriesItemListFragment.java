@@ -67,7 +67,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 
 		itemList.setOnScrollListener(this);
 
-		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+		adapter.setViewBinder(new SocialItemViewBinder(getActivity(), true));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 
