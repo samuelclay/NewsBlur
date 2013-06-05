@@ -567,7 +567,7 @@ class RUserStory:
         story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
 
         for story_hash in story_hashes:
-            _, hash_story = cls.split_story_hash(story_hash)
+            _, hash_story = MStory.split_story_hash(story_hash)
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
             p.sadd("RS:%s:%s" % (user_id, new_feed_id), new_story_hash)
         
