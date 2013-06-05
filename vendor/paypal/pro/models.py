@@ -56,7 +56,7 @@ class PayPalNVP(models.Model):
     
     def init(self, request, paypal_request, paypal_response):
         """Initialize a PayPalNVP instance from a HttpRequest."""
-        self.ipaddress = request.META.get('REMOTE_ADDR', '')
+        self.ipaddress = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
         if hasattr(request, "user") and request.user.is_authenticated():
             self.user = request.user
 

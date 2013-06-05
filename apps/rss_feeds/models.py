@@ -235,7 +235,7 @@ class Feed(models.Model):
 
         r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
         r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-
+    
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
@@ -382,9 +382,7 @@ class Feed(models.Model):
         
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
-        
-        if not self.last_story_date:
-            self.calculate_last_story_date()
+        self.calculate_last_story_date()
         
         count_extra = False
         if random.random() > .99 or not self.data.popular_tags or not self.data.popular_authors:
@@ -984,7 +982,7 @@ class Feed(models.Model):
         existing_story.remove_from_redis()
         
         old_hash = existing_story.story_hash
-        new_hash = RUserStory.story_hash(new_story_guid, self.pk)
+        new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
         RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
@@ -1041,46 +1039,50 @@ class Feed(models.Model):
 
         if len(feed_authors) > 1:
             self.save_popular_authors(feed_authors=feed_authors[:-1])
-            
-    def trim_feed(self, verbose=False):
-        trim_cutoff = 500
-        if self.active_subscribers <= 0:
-            trim_cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
-            trim_cutoff = 100
-        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
-            trim_cutoff = 200
-        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
-            trim_cutoff = 300
-        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
-            trim_cutoff = 350
-        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
-            trim_cutoff = 400
-        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
-            trim_cutoff = 450
-            
-        stories = MStory.objects(
-            story_feed_id=self.pk,
-        ).order_by('-story_date')
-        
-        if stories.count() > trim_cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
-                          (unicode(self)[:30], stories.count(), trim_cutoff))
+
+    @classmethod
+    def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
+        now = datetime.datetime.now()
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        feed_count = Feed.objects.latest('pk').pk
+        for feed_id in xrange(start, feed_count):
+            if feed_id % 1000 == 0:
+                print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
             try:
-                story_trim_date = stories[trim_cutoff].story_date
-            except IndexError, e:
-                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
-                return
-                
-            extra_stories = MStory.objects(story_feed_id=self.pk, 
-                                           story_date__lte=story_trim_date)
-            extra_stories_count = extra_stories.count()
-            for story in extra_stories:
-                story.delete()
-            if verbose:
-                existing_story_count = MStory.objects(story_feed_id=self.pk).count()
-                print "Deleted %s stories, %s left." % (extra_stories_count,
-                                                        existing_story_count)
+                feed = Feed.objects.get(pk=feed_id)
+            except Feed.DoesNotExist:
+                continue
+            if feed.active_subscribers > 0:
+                continue
+            if not feed.last_story_date or feed.last_story_date < month_ago:
+                months_ago = 6
+                if feed.last_story_date:
+                    months_ago = int((now - feed.last_story_date).days / 30.0)
+                cutoff = max(1, 6 - months_ago)
+                if dryrun:
+                    print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
+                else:
+                    MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+
+    def trim_feed(self, verbose=False, cutoff=None):
+        if not cutoff:
+            cutoff = 500
+            if self.active_subscribers <= 0:
+                cutoff = 25
+            elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+                cutoff = 100
+            elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
+                cutoff = 200
+            elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
+                cutoff = 300
+            elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
+                cutoff = 350
+            elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
+                cutoff = 400
+            elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
+                cutoff = 450
+            
+        MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
 
     # @staticmethod
     # def clean_invalid_ids():
@@ -1251,14 +1253,14 @@ class Feed(models.Model):
             if story_title_difference > 0 and content_ratio > .98:
                 story_in_system = existing_story
                 if story_title_difference > 0 or content_ratio < 1.0:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                     story_has_changed = True
                     break
             
             # More restrictive content distance, still no story match
             if not story_in_system and content_ratio > .98:
-                if settings.DEBUG:
+                if settings.DEBUG and False:
                     logging.debug(" ---> Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                 story_in_system = existing_story
                 story_has_changed = True
@@ -1266,11 +1268,11 @@ class Feed(models.Model):
                 
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Content difference - %s/%s" % (story_content, existing_story_content))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
-                    if settings.DEBUG:
+                    if settings.DEBUG and False:
                         logging.debug(" ---> Permalink difference - %s/%s" % (story_link, existing_story.story_permalink))
                     story_has_changed = True
                 # if story_pub_date != existing_story.story_date:
@@ -1560,6 +1562,9 @@ class MStory(mongo.Document):
         'cascade': False,
     }
     
+    RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
+    RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
+
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
@@ -1599,25 +1604,58 @@ class MStory(mongo.Document):
         super(MStory, self).delete(*args, **kwargs)
     
     @classmethod
+    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+        if not feed_id and not feed:
+            return
+        
+        if not feed_id:
+            feed_id = feed.pk
+        if not feed:
+            feed = feed_id
+        
+        stories = cls.objects(
+            story_feed_id=feed_id,
+        ).order_by('-story_date')
+        
+        if stories.count() > cutoff:
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+                          (unicode(feed)[:30], stories.count(), cutoff))
+            try:
+                story_trim_date = stories[cutoff].story_date
+            except IndexError, e:
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
+                return
+                
+            extra_stories = MStory.objects(story_feed_id=feed_id, 
+                                           story_date__lte=story_trim_date)
+            extra_stories_count = extra_stories.count()
+            for story in extra_stories:
+                story.delete()
+            if verbose:
+                existing_story_count = MStory.objects(story_feed_id=feed_id).count()
+                logging.debug("   ---> Deleted %s stories, %s left." % (
+                                extra_stories_count,
+                                existing_story_count))
+        
+    @classmethod
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
         original_found = True
-        
+        story_hash = cls.ensure_story_hash(story_id, story_feed_id)
+
         if isinstance(story_id, ObjectId):
             story = cls.objects(id=story_id).limit(1).first()
         else:
-            guid_hash = hashlib.sha1(story_id).hexdigest()[:6]
-            story_hash = "%s:%s" % (story_feed_id, guid_hash)
             story = cls.objects(story_hash=story_hash).limit(1).first()
         
         if not story:
             original_found = False
         if not story and not original_only:
             story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
-                                                story_guid=story_id).limit(1).first()
+                                                story_hash=story_hash).limit(1).first()
         if not story and not original_only:
             story = MStarredStory.objects.filter(story_feed_id=story_feed_id, 
-                                                 story_guid=story_id).limit(1).first()
+                                                 story_hash=story_hash).limit(1).first()
         
         return story, original_found
     
@@ -1656,7 +1694,40 @@ class MStory(mongo.Document):
             stories = stories[0]
         
         return stories
+    
+    @classmethod
+    def ensure_story_hash(cls, story_id, story_feed_id):
+        if not cls.RE_STORY_HASH.match(story_id):
+            story_id = "%s:%s" % (story_feed_id, hashlib.sha1(story_id).hexdigest()[:6])
         
+        return story_id
+    
+    @classmethod
+    def split_story_hash(cls, story_hash):
+        matches = cls.RE_STORY_HASH.match(story_hash)
+        if matches:
+            groups = matches.groups()
+            return groups[0], groups[1]
+        return None, None
+    
+    @classmethod
+    def split_rs_key(cls, rs_key):
+        matches = cls.RE_RS_KEY.match(rs_key)
+        if matches:
+            groups = matches.groups()
+            return groups[0], groups[1]
+        return None, None
+    
+    @classmethod
+    def story_hashes(cls, story_ids):
+        story_hashes = []
+        for story_id in story_ids:
+            story_hash = cls.ensure_story_hash(story_id)
+            if not story_hash: continue
+            story_hashes.append(story_hash)
+        
+        return story_hashes
+    
     def sync_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

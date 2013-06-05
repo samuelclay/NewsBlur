@@ -192,16 +192,16 @@
 - (void)showSplashView {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
-    int rotate = 0;
-    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-        NSLog(@"UPSIDE DOWN");
-        rotate = -2;
-    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
-        rotate = -1;
-    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
-        rotate = 1;
-    }
-    //    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
+//    int rotate = 0;
+//    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+//        NSLog(@"UPSIDE DOWN");
+//        rotate = -2;
+//    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
+//        rotate = -1;
+//    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+//        rotate = 1;
+//    }
+//    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsLandscape(orientation)) {
         splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);

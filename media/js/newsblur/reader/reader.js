@@ -5254,6 +5254,8 @@
                 if (self.model.get_feed(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
                 } else {
+                    var comment_user_matches = feed_id.match(/social:(\d+)/, '$1');
+                    if (comment_user_matches) user_id = parseInt(comment_user_matches[1], 10);
                     var socialsub = self.model.add_social_feed({
                         id: feed_id, 
                         user_id: user_id, 

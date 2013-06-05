@@ -1,8 +1,6 @@
 import datetime
 import time
 import redis
-import hashlib
-import re
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
@@ -141,7 +139,7 @@ class UserSubscription(models.Model):
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=500,
                                   withscores=withscores)[:limit]
-        r.expire(unread_ranked_stories_key, 24*60*60)
+        r.expire(unread_ranked_stories_key, 1*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
@@ -531,52 +529,12 @@ class UserSubscription(models.Model):
 
 class RUserStory:
     
-    RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
-    RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
-    
-    @classmethod
-    def story_hash(cls, story_id, story_feed_id):
-        if not cls.RE_STORY_HASH.match(story_id):
-            story, _ = MStory.find_story(story_feed_id=story_feed_id, story_id=story_id)
-            if story:
-                story_id = story.story_hash
-            else:
-                story_id = "%s:%s" % (story_feed_id, hashlib.sha1(story_id).hexdigest()[:6])
-        
-        return story_id
-    
-    @classmethod
-    def split_story_hash(cls, story_hash):
-        matches = cls.RE_STORY_HASH.match(story_hash)
-        if matches:
-            groups = matches.groups()
-            return groups[0], groups[1]
-        return None, None
-    
-    @classmethod
-    def split_rs_key(cls, rs_key):
-        matches = cls.RE_RS_KEY.match(rs_key)
-        if matches:
-            groups = matches.groups()
-            return groups[0], groups[1]
-        return None, None
-    
-    @classmethod
-    def story_hashes(cls, story_ids):
-        story_hashes = []
-        for story_id in story_ids:
-            story_hash = cls.story_hash(story_id)
-            if not story_hash: continue
-            story_hashes.append(story_hash)
-        
-        return story_hashes
-    
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
-        story_hash = cls.story_hash(story_hash, story_feed_id=story_feed_id)
+        story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
         
         if not story_hash: return
         
@@ -609,7 +567,7 @@ class RUserStory:
         story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
 
         for story_hash in story_hashes:
-            _, hash_story = cls.split_story_hash(story_hash)
+            _, hash_story = MStory.split_story_hash(story_hash)
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
             p.sadd("RS:%s:%s" % (user_id, new_feed_id), new_story_hash)
         

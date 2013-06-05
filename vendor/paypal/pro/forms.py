@@ -22,10 +22,11 @@ class PaymentForm(forms.Form):
         """Process a PayPal direct payment."""
         from vendor.paypal.pro.helpers import PayPalWPP
         wpp = PayPalWPP(request) 
+        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
         params = self.cleaned_data
         params['creditcardtype'] = self.fields['acct'].card_type
         params['expdate'] = self.cleaned_data['expdate'].strftime("%m%Y")
-        params['ipaddress'] = request.META.get("REMOTE_ADDR", "")
+        params['ipaddress'] = ip
         params.update(item)
  
         # Create single payment:

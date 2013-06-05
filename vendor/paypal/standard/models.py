@@ -245,7 +245,7 @@ class PayPalStandardBase(models.Model):
     def initialize(self, request):
         """Store the data we'll need to make the postback from the request object."""
         self.query = getattr(request, request.method).urlencode()
-        self.ipaddress = request.META.get('REMOTE_ADDR', '')
+        self.ipaddress = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
 
     def send_signals(self):
         """After a transaction is completed use this to send success/fail signals"""
