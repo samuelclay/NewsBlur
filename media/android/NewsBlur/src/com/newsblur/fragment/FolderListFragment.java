@@ -33,6 +33,7 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -68,12 +69,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
 		Cursor sharedCountCursor = resolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(AppConstants.STATE_SOME), null, null);
+		Cursor savedCountCursor = resolver.query(FeedProvider.STARRED_STORIES_COUNT_URI, null, null, null, null);
 
 		ImageLoader imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		groupViewBinder = new FolderTreeViewBinder(imageLoader);
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
 
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, savedCountCursor);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 
 	}
@@ -136,14 +138,15 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 
-		// Only create a context menu for child items
 		switch(type) {
-		// Group (folder) item
-		case 0:
-			inflater.inflate(R.menu.context_folder, menu);
+		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
+            int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+            if (! folderAdapter.isRowSavedStories(groupPosition) ) {
+			    inflater.inflate(R.menu.context_folder, menu);
+            }
 			break;
-			// Child (feed) item
-		case 1:
+
+		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
 			inflater.inflate(R.menu.context_feed, menu);
 			break;
 		}
@@ -280,6 +283,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 			startActivityForResult(i, FEEDCHECK);
 			return true;
+        } else if (folderAdapter.isRowSavedStories(groupPosition)) {
+            Intent i = new Intent(getActivity(), SavedStoriesItemsList.class);
+            startActivity(i);
+            return true;
         } else {
 			String groupName = folderAdapter.getGroupName(groupPosition);
 			if (list.isGroupExpanded(groupPosition)) {
