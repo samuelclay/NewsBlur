@@ -38,10 +38,11 @@
 #import "AuthorizeServicesViewController.h"
 #import "ShareThis.h"
 #import "Reachability.h"
-
+#import "FMDatabase.h"
 
 @implementation NewsBlurAppDelegate
 
+#define CURRENT_DB_VERSION 6
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -129,6 +130,7 @@
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
 
+@synthesize database;
 @synthesize categories;
 @synthesize categoryFeeds;
 
@@ -186,6 +188,7 @@
                              nil]];
     
     [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
+    [self setupDatabase];
 //    [self showFirstTimeUser];
 
 	return YES;
@@ -1988,6 +1991,42 @@
 
 #pragma mark -
 #pragma mark Storing Stories for Offline
+
+- (int)databaseSchemaVersion {
+    FMResultSet *resultSet = [[self database] executeQuery:@"PRAGMA user_version"];
+    int version = 0;
+    if ([resultSet next]) {
+        version = [resultSet intForColumnIndex:0];
+    }
+    return version;
+}
+
+- (void)setupDatabase {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *docsPath = [paths objectAtIndex:0];
+    NSString *path = [docsPath stringByAppendingPathComponent:@"newsblur.sqlite"];
+    
+    database = [FMDatabase databaseWithPath:path];
+    [database open];
+    [database setLogsErrors:YES];
+    
+    if ([self databaseSchemaVersion] < CURRENT_DB_VERSION) {
+        // FMDB cannot execute this query because FMDB tries to use prepared statements
+        [database executeQuery:@"drop table if exists `stories`"];
+        NSLog(@"Dropped db: %@", [database lastErrorMessage]);
+        sqlite3_exec([self database].sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
+    }
+    NSString *createTable = [NSString stringWithFormat:@"create table if not exists stories "
+                             "("
+                             " story_feed_id number,"
+                             " story_hash varchar(24),"
+                             " story_timestamp number,"
+                             " story_json text"
+//                             " UNIQUE(story_hash) ON CONFLICT REPLACE"
+                             ")"];
+    [database executeUpdate:createTable];
+    NSLog(@"Create db %d: %@", [database lastErrorCode], [database lastErrorMessage]);
+}
 
 // Returns the URL to the application's Documents directory.
 - (NSURL *)applicationDocumentsDirectory

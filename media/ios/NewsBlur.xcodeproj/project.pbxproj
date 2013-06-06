@@ -243,6 +243,7 @@
 		FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */; };
 		FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E716DEF9960013E84B /* back_button_selected_background.png */; };
 		FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */; };
+		FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */; };
 		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
@@ -274,7 +275,6 @@
 		FF753CCF175858FC00344EC9 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC6175858FC00344EC9 /* FMDatabaseAdditions.m */; };
 		FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC8175858FC00344EC9 /* FMDatabasePool.m */; };
 		FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCA175858FC00344EC9 /* FMDatabaseQueue.m */; };
-		FF753CD2175858FC00344EC9 /* fmdb.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCB175858FC00344EC9 /* fmdb.m */; };
 		FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CCD175858FC00344EC9 /* FMResultSet.m */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -776,6 +776,7 @@
 		FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_landscape_selected_background@2x.png"; sourceTree = "<group>"; };
 		FF4151E716DEF9960013E84B /* back_button_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_selected_background.png; sourceTree = "<group>"; };
 		FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_selected_background@2x.png"; sourceTree = "<group>"; };
+		FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
@@ -1091,6 +1092,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
 				FFDCA0C316E80952000D8E0C /* AdSupport.framework in Frameworks */,
 				FFDCA0C116E8094F000D8E0C /* Accounts.framework in Frameworks */,
 				FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */,
@@ -1195,6 +1197,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */,
 				FFDCA0C216E80952000D8E0C /* AdSupport.framework */,
 				FFDCA0C016E8094F000D8E0C /* Accounts.framework */,
 				FFDCA0BE16E80944000D8E0C /* Social.framework */,
@@ -2541,7 +2544,6 @@
 				FF753CCF175858FC00344EC9 /* FMDatabaseAdditions.m in Sources */,
 				FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */,
 				FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */,
-				FF753CD2175858FC00344EC9 /* fmdb.m in Sources */,
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

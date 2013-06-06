@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
+#import "FMDatabase.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -126,6 +127,7 @@
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
     
+    FMDatabase *database;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -215,6 +217,7 @@
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
+@property (readwrite) FMDatabase *database;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
@@ -307,6 +310,7 @@
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 
+- (void)setupDatabase;
 - (NSURL *)applicationDocumentsDirectory;
 - (void)fetchAllUnreadStories;
 - (void)fetchAllUnreadStories:(int)page;

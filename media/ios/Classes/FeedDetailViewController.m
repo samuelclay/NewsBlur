@@ -296,6 +296,11 @@
     
     if (!appDelegate.activeFeed) return;
     
+    FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ?", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSLog(@"Cursor: %d - %@", [appDelegate.database lastErrorCode], [appDelegate.database lastErrorMessage]);
+    while ([cursor next]) {
+        NSLog(@"Stories: %@", [cursor resultDictionary]);
+    }
     if (callback || (!self.pageFetching && !self.pageFinished)) {
     
         self.feedPage = page;
@@ -536,9 +541,23 @@
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];
     [appDelegate.storyPageControl advanceToNextUnread];
+    
+    [appDelegate.database beginTransaction];
+    for (NSDictionary *story in confirmedNewStories) {
+        [appDelegate.database executeUpdate:@"INSERT into stories"
+         "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+         "(?, ?, ?, ?)",
+         [story objectForKey:@"story_feed_id"],
+         [story objectForKey:@"story_hash"],
+         [story objectForKey:@"story_timestamp"],
+         [story JSONRepresentation]
+        ];
+    }
+    [appDelegate.database commit];
+    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
 }
 
-#pragma mark - 
+#pragma mark -
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {

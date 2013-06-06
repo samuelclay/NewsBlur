@@ -665,16 +665,12 @@
             
         while (idx < queryCount) {
             
-            if (arrayArgs && idx < [arrayArgs count]) {
+            if (arrayArgs) {
                 obj = [arrayArgs objectAtIndex:(NSUInteger)idx];
             }
-            else if (args) {
+            else {
                 obj = va_arg(args, id);
             }
-			else {
-				//We ran out of arguments
-				break;
-			}
             
             if (_traceExecution) {
                 if ([obj isKindOfClass:[NSData class]]) {
@@ -859,16 +855,12 @@
         
         while (idx < queryCount) {
             
-            if (arrayArgs && idx < [arrayArgs count]) {
+            if (arrayArgs) {
                 obj = [arrayArgs objectAtIndex:(NSUInteger)idx];
             }
-            else if (args) {
+            else {
                 obj = va_arg(args, id);
             }
-			else {
-				//We ran out of arguments
-				break;
-			}
             
             if (_traceExecution) {
                 if ([obj isKindOfClass:[NSData class]]) {
