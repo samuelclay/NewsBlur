@@ -19,10 +19,16 @@ import com.newsblur.util.ImageLoader;
 public class SocialItemViewBinder implements ViewBinder {
 
 	private ImageLoader imageLoader;
+    private boolean ignoreIntel;
 
-	public SocialItemViewBinder(final Context context) {
+	public SocialItemViewBinder(final Context context, boolean ignoreIntel) {
 		this.imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
+        this.ignoreIntel = ignoreIntel;
 	}
+
+    public SocialItemViewBinder(final Context context) {
+        this(context, false);
+    }
 	
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -33,23 +39,27 @@ public class SocialItemViewBinder implements ViewBinder {
 			imageLoader.displayImage(faviconUrl, ((ImageView) view), false);
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
-			int authors = cursor.getInt(columnIndex);
-			int tags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
-			int feed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
-			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-			
-			int score = Story.getIntelligenceTotal(title, authors, tags, feed);
-			
-			Drawable icon;
-            if (score > 0) {
-                icon = view.getResources().getDrawable(R.drawable.g_icn_focus);
-			} else if (score == 0) {
-                icon = view.getResources().getDrawable(R.drawable.g_icn_unread);
-			} else {
-                icon = view.getResources().getDrawable(R.drawable.g_icn_hidden);
-			}
-            icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
-            view.setBackgroundDrawable(icon);
+            if (! this.ignoreIntel) {
+                int authors = cursor.getInt(columnIndex);
+                int tags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
+                int feed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
+                int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
+                
+                int score = Story.getIntelligenceTotal(title, authors, tags, feed);
+
+                Drawable icon;
+                if (score > 0) {
+                    icon = view.getResources().getDrawable(R.drawable.g_icn_focus);
+                } else if (score == 0) {
+                    icon = view.getResources().getDrawable(R.drawable.g_icn_unread);
+                } else {
+                    icon = view.getResources().getDrawable(R.drawable.g_icn_hidden);
+                }
+                icon.mutate().setAlpha(hasBeenRead == 0 ? 255 : 127);
+                view.setBackgroundDrawable(icon);
+            } else {
+                view.setBackgroundDrawable(null);
+            }
 
 			((TextView) view).setText("");
 			return true;
