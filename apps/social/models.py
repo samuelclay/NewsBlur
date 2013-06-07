@@ -1412,10 +1412,10 @@ class MSharedStory(mongo.Document):
         
     @classmethod
     def collect_popular_stories(cls, cutoff=None, days=None):
-        if not days: days = 1
+        if not days: days = 3
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
-        cutoff = cutoff or 10
+        cutoff = cutoff or 8
         today = datetime.datetime.now() - datetime.timedelta(days=days)
         
         map_f = """
