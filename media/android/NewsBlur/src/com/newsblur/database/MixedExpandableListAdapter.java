@@ -32,7 +32,7 @@ import com.newsblur.util.AppConstants;
 
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
-    private enum GroupType { ALL_SHARED_STORIES, ALL_STORIES, FOLDER }
+    private enum GroupType { ALL_SHARED_STORIES, ALL_STORIES, FOLDER, SAVED_STORIES }
     private enum ChildType { BLOG, FEED }
 
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
@@ -49,13 +49,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private ViewBinder blogViewBinder;
 
 	public int currentState = AppConstants.STATE_SOME;
-	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
+	private Cursor allStoriesCountCursor, sharedStoriesCountCursor, savedStoriesCountCursor;
 
-	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor) {
+	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final Cursor savedStoriesCountCursor) {
 
 		this.context = context;
 		this.allStoriesCountCursor = countCursor;
 		this.sharedStoriesCountCursor = sharedCountCursor;
+        this.savedStoriesCountCursor = savedStoriesCountCursor;
 
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		contentResolver = context.getContentResolver();
@@ -128,6 +129,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return GroupType.ALL_SHARED_STORIES.ordinal();
 		} else if (isFolderRoot(groupPosition)) {
             return GroupType.ALL_STORIES.ordinal();
+        } else if (isRowSavedStories(groupPosition)) {
+            return GroupType.SAVED_STORIES.ordinal();
         } else {
 			return GroupType.FOLDER.ordinal();
 		}
@@ -157,7 +160,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		if (groupPosition == 0) {
 			blogCursorHelper.moveTo(childPosition);
 			return blogCursorHelper.getCursor();
-		} else {
+        } else {
 			groupPosition = groupPosition - 1;
 			return getChildrenCursorHelper(groupPosition).moveTo(childPosition);
 		}
@@ -205,6 +208,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int getChildrenCount(int groupPosition) {
 		if (groupPosition == 0) {
 			return blogCursorHelper.getCount();
+        } else if (isRowSavedStories(groupPosition)) {
+            return 0; // this row never has children
 		} else {
 			groupPosition = groupPosition - 1;
 			MyCursorHelper helper = getChildrenCursorHelper(groupPosition);
@@ -223,8 +228,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public int getGroupCount() {
-        // in addition to the real folders returned by the /reader/feeds API, there is a virtual folder for social feeds
-		return (folderCursorHelper.getCount() + 1);
+        // in addition to the real folders returned by the /reader/feeds API, there are virtual folders
+        // for social feeds and saved stories
+		return (folderCursorHelper.getCount() + 2);
 	}
 
 	@Override
@@ -232,15 +238,22 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		if (groupPosition == 0) {
             // the social folder doesn't have an ID, so just give it a really huge one
             return Long.MAX_VALUE;
+        } else if (isRowSavedStories(groupPosition)) {
+            // neither does the saved stories row, give it another
+            return (Long.MAX_VALUE-1);
         } else {
 			return folderCursorHelper.getId(groupPosition-1);
 		}
 	}
 	
 	public String getGroupName(int groupPosition) {
+        // these "names" aren't actually what is used to render the row, but are used
+        // internally for tracking row identity to save preferences
 		if (groupPosition == 0) {
 			return "[ALL_SHARED_STORIES]";
-		} else {
+		} else if (isRowSavedStories(groupPosition)) {
+            return "[SAVED_STORIES]";
+        } else {
 			Cursor cursor = folderCursorHelper.getCursor();
 			cursor.moveToPosition(groupPosition-1);
 			return cursor.getString(cursor.getColumnIndex("folder_name"));
@@ -254,6 +267,15 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
      */
     public boolean isFolderRoot(int groupPosition) {
         return ( getGroupName(groupPosition).equals(AppConstants.ROOT_FOLDER) );
+    }
+
+    /**
+     * Determines if the row at the specified position is the special "saved" folder. This
+     * row doesn't actually correspond to a row in the DB, much like the social row, but
+     * it is located at the bottom of the set rather than the top.
+     */
+    public boolean isRowSavedStories(int groupPosition) {
+        return ( groupPosition > folderCursorHelper.getCursor().getCount() );
     }
 
 	public void setGroupCursor(Cursor cursor) {
@@ -324,6 +346,19 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 					break;
 			}
+        } else if (isRowSavedStories(groupPosition)) {
+            if (convertView != null) {
+                // row never changes, re-use it it exists
+                v = convertView;
+            } else {
+                v = inflater.inflate(R.layout.row_saved_stories, null, false);
+            }
+            savedStoriesCountCursor.moveToFirst();
+            String savedStoriesCount = "0";
+            if (savedStoriesCountCursor.getCount() > 0) {
+                savedStoriesCount = savedStoriesCountCursor.getString(savedStoriesCountCursor.getColumnIndex(DatabaseConstants.STARRED_STORY_COUNT_COUNT));
+            }
+            ((TextView) v.findViewById(R.id.row_foldersum)).setText(savedStoriesCount);
 		} else {
 			cursor = folderCursorHelper.moveTo(groupPosition - 1);
 			if (convertView == null) {
@@ -333,10 +368,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				v = convertView;
 			}
 			bindGroupView(v, context, cursor, isExpanded);
-		}
-
-		if (cursor == null) {
-			throw new IllegalStateException("this should only be called when the cursor is valid");
 		}
 
 		return v;
@@ -444,6 +475,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		blogCursorHelper.getCursor().requery();
 		allStoriesCountCursor.requery();
 		sharedStoriesCountCursor.requery();
+        savedStoriesCountCursor.requery();
 		// no, SparseArrays really aren't Interable!
         for (int i = 0; i < mChildrenCursorHelpers.size(); i++) {
 			mChildrenCursorHelpers.valueAt(i).deactivate();

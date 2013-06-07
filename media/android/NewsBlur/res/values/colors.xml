@@ -43,6 +43,9 @@
     
     <color name="neutral">#B3B6AD</color>
     <color name="neutral_drop_shadow">#93968D</color>
+
+    <color name="saved">#11448B</color>
+    <color name="saved_drop_shadow">#0E366f</color>
     
     <color name="linkblue">#405BA8</color>
     

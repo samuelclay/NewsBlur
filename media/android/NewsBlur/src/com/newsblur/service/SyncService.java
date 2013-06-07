@@ -65,9 +65,9 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
 	public static final int EXTRA_TASK_MARK_MULTIPLE_STORIES_READ = 37;
-	public static final int EXTRA_TASK_ALL_STORIES = 38;
 	public static final int EXTRA_TASK_DELETE_FEED = 39;
 	public static final int EXTRA_TASK_MULTISOCIALFEED_UPDATE = 40;
+    public static final int EXTRA_TASK_STARRED_STORIES_UPDATE = 42;
 
 	public APIClient apiClient;
 	private APIManager apiManager;
@@ -174,6 +174,15 @@ public class SyncService extends IntentService {
 					Log.e(this.getClass().getName(), "No socialfeed ids to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
+				break;
+
+			case EXTRA_TASK_STARRED_STORIES_UPDATE:
+                StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+                if (starredStories != null && starredStories.stories.length != 0) {
+                    receiver.send(STATUS_FINISHED, Bundle.EMPTY);
+                } else {
+                    receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+                }
 				break;
 
 			case EXTRA_TASK_DELETE_FEED:

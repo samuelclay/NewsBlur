@@ -81,6 +81,9 @@
         
         <activity
             android:name=".activity.AllStoriesItemsList" />
+
+        <activity
+            android:name=".activity.SavedStoriesItemsList" />
          
         <activity
             android:name=".activity.AllSharedStoriesItemsList" />
@@ -96,6 +99,9 @@
         
         <activity
             android:name=".activity.AllStoriesReading"/>
+
+        <activity
+            android:name=".activity.SavedStoriesReading"/>
         
         <activity
             android:name=".activity.AllSharedStoriesReading"/>

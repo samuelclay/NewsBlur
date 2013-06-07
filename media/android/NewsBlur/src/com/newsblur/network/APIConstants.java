@@ -27,6 +27,7 @@ public class APIConstants {
 	public static final String URL_MARK_SOCIALSTORY_AS_READ = "http://newsblur.com/reader/mark_social_stories_as_read/";
 	public static final String URL_SHARE_STORY = "http://newsblur.com/social/share_story";
     public static final String URL_MARK_STORY_AS_STARRED = "http://newsblur.com/reader/mark_story_as_starred/";
+    public static final String URL_STARRED_STORIES = "http://newsblur.com/reader/starred_stories";
 	
 	public static final String URL_FEED_AUTOCOMPLETE = "http://newsblur.com/rss_feeds/feed_autocomplete";
 	

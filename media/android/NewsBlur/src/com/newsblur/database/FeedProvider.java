@@ -36,6 +36,8 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
+	public static final Uri STARRED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories/");
+	public static final Uri STARRED_STORIES_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/starred_stories_count/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
@@ -69,7 +71,8 @@ public class FeedProvider extends ContentProvider {
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
 	private static final int USERS = 21;
-	
+	private static final int STARRED_STORIES = 22;
+	private static final int STARRED_STORIES_COUNT = 23;
 	
 	private BlurDatabase databaseHelper;
 
@@ -101,6 +104,8 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/offline_updates/", OFFLINE_UPDATES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
+        uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories/", STARRED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/starred_stories_count/", STARRED_STORIES_COUNT);
 	}
 
 	@Override
@@ -146,6 +151,9 @@ public class FeedProvider extends ContentProvider {
 			case CLASSIFIERS_FOR_FEED:
 				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
 				
+            case STARRED_STORIES:
+                return db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);
+
 			default:
 				return 0;
 		}
@@ -265,7 +273,15 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a story	
 		case OFFLINE_UPDATES:
 			db.insertWithOnConflict(DatabaseConstants.UPDATE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			break;		
+			break;
+
+        case STARRED_STORIES:
+            db.insertWithOnConflict(DatabaseConstants.STARRED_STORIES_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            break;
+
+        case STARRED_STORIES_COUNT:
+            db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            break;
 
 		case UriMatcher.NO_MATCH:
 			Log.e(this.getClass().getName(), "No match found for URI: " + uri.toString());
@@ -318,6 +334,18 @@ public class FeedProvider extends ContentProvider {
 		
 		case USERS:
 			return db.query(DatabaseConstants.USER_TABLE, projection, selection, selectionArgs, null, null, null);	
+
+        case STARRED_STORIES:
+			String savedStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STARRED_STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE +  
+			" FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.STARRED_STORIES_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID; 
+			return db.rawQuery(savedStoriesQuery, null);
+
+        case STARRED_STORIES_COUNT:
+            return db.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, projection, selection, selectionArgs, null, null, null);
 			
 			// Query for classifiers for a given feed
 		case CLASSIFIERS_FOR_FEED:
