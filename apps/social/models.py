@@ -1411,17 +1411,15 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls, cutoff=None, days=None):
-        if not days: days = 3
+    def collect_popular_stories(cls, cutoff=8, days=6):
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
-        cutoff = cutoff or 8
         today = datetime.datetime.now() - datetime.timedelta(days=days)
-        
+
         map_f = """
             function() {
-                emit(this.story_guid, {
-                    'guid': this.story_guid, 
+                emit(this.story_hash, {
+                    'story_hash': this.story_hash, 
                     'feed_id': this.story_feed_id, 
                     'title': this.story_title,
                     'count': 1
@@ -1430,11 +1428,11 @@ class MSharedStory(mongo.Document):
         """
         reduce_f = """
             function(key, values) {
-                var r = {'guid': key, 'count': 0};
+                var r = {'story_hash': key, 'count': 0};
                 for (var i=0; i < values.length; i++) {
                     r.feed_id = values[i].feed_id;
                     r.title = values[i].title;
-                    r.count += 1;
+                    r.count += values[i].count;
                 }
                 return r;
             }
@@ -1444,7 +1442,7 @@ class MSharedStory(mongo.Document):
                 if (value.count >= %(cutoff)s) {
                     var english_title = value.title.replace(/[^\\062-\\177]/g, "");
                     if (english_title.length < 5) return;
-                    
+            
                     return value;
                 }
             }
@@ -1463,8 +1461,8 @@ class MSharedStory(mongo.Document):
         shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days)
         shared = 0
         
-        for guid, story_info in shared_stories_today.items():
-            story, _ = MStory.find_story(story_info['feed_id'], story_info['guid'])
+        for story_hash, story_info in shared_stories_today.items():
+            story, _ = MStory.find_story(story_info['feed_id'], story_info['story_hash'])
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue
