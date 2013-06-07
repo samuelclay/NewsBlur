@@ -26,6 +26,7 @@
 #import "UIBarButtonItem+Image.h"
 #import "TransparentToolbar.h"
 #import "FeedDetailMenuViewController.h"
+#import "NBNotifier.h"
 
 
 #define kTableViewRowHeight 61;
@@ -555,6 +556,11 @@
     }
     [appDelegate.database commit];
     NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
+
+    if (self.feedPage == 1) {
+        NBNotifier *notifier = [[NBNotifier alloc] initWithFrame:self.view.frame];
+        [self.view addSubview:notifier];
+    }
 }
 
 #pragma mark -

@@ -252,6 +252,7 @@
 		FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A86162B834E008DBE3E /* bin_closed.png */; };
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
+		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
 		FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */; };
@@ -786,6 +787,8 @@
 		FF5F3A86162B834E008DBE3E /* bin_closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bin_closed.png; sourceTree = "<group>"; };
 		FF5F3A88162B8377008DBE3E /* arrow_branch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_branch.png; sourceTree = "<group>"; };
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
+		FF6618C6176184560039913B /* NBNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNotifier.h; sourceTree = "<group>"; };
+		FF6618C7176184560039913B /* NBNotifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNotifier.m; sourceTree = "<group>"; };
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
 		FF67D3B1168924C40057A7DA /* TrainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerViewController.m; sourceTree = "<group>"; };
 		FF67D3B6168977690057A7DA /* TrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrainerViewController.xib; sourceTree = "<group>"; };
@@ -1758,6 +1761,8 @@
 				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 				FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */,
 				FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */,
+				FF6618C6176184560039913B /* NBNotifier.h */,
+				FF6618C7176184560039913B /* NBNotifier.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2545,6 +2550,7 @@
 				FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */,
 				FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */,
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
+				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

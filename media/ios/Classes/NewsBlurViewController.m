@@ -853,7 +853,7 @@ static const CGFloat kFolderTitleHeight = 28;
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
-        cell.appDelegate = appDelegate;
+//        cell.appDelegate = appDelegate;
     }
     
     if (![self isFeedVisible:feedId]) {
