@@ -1411,7 +1411,11 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls, cutoff=8, days=6, shared_feed_ids=None):
+    def collect_popular_stories(cls, cutoff=None, days=None, shared_feed_ids=None):
+        if not days:
+            days = 3
+        if not cutoff:
+            cutoff = 7
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
@@ -1461,8 +1465,9 @@ class MSharedStory(mongo.Document):
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
         week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
-        shared_feed_ids = [s.story_feed_id for s in MSharedStory.objects(user_id=popular_profile.user_id,
-                                                    shared_date__gte=week_ago).only('story_feed_id')]
+        shared_feed_ids = [str(s.story_feed_id) 
+                           for s in MSharedStory.objects(user_id=popular_profile.user_id,
+                                                         shared_date__gte=week_ago).only('story_feed_id')]
         shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days, 
                                                                    shared_feed_ids=shared_feed_ids)
         shared = 0
