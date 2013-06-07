@@ -1411,11 +1411,13 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls, cutoff=8, days=6):
+    def collect_popular_stories(cls, cutoff=8, days=6, shared_feed_ids=None):
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
-
+        if not shared_feed_ids:
+            shared_feed_ids = []
+        
         map_f = """
             function() {
                 emit(this.story_hash, {
@@ -1439,14 +1441,14 @@ class MSharedStory(mongo.Document):
         """
         finalize_f = """
             function(key, value) {
-                if (value.count >= %(cutoff)s) {
+                if (value.count >= %(cutoff)s && [%(shared_feed_ids)s].indexOf(value.feed_id) == -1) {
                     var english_title = value.title.replace(/[^\\062-\\177]/g, "");
                     if (english_title.length < 5) return;
             
                     return value;
                 }
             }
-        """ % {'cutoff': cutoff}
+        """ % {'cutoff': cutoff, 'shared_feed_ids': ', '.join(shared_feed_ids)}
         res = cls.objects(shared_date__gte=today).map_reduce(map_f, reduce_f, 
                                                              finalize_f=finalize_f, 
                                                              output='inline')
@@ -1458,7 +1460,11 @@ class MSharedStory(mongo.Document):
         publish_new_stories = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
-        shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days)
+        week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
+        shared_feed_ids = [s.story_feed_id for s in MSharedStory.objects(user_id=popular_profile.user_id,
+                                                    shared_date__gte=week_ago).only('story_feed_id')]
+        shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days, 
+                                                                   shared_feed_ids=shared_feed_ids)
         shared = 0
         
         for story_hash, story_info in shared_stories_today.items():
