@@ -41,7 +41,7 @@ class TextImporter:
             ))
         else:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: was ~SB%s bytes" % (
-                len(zlib.decompress(self.story.story_content_z))
+                self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
             ))
         
         return content
