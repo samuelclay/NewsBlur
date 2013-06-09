@@ -14,24 +14,27 @@ IGNORE_HOSTS = [
     'push',
 ]
 
-def main(role="app", role2="dev", command=None, path=None):
+def main(role="app", role2="app", command=None, path=None):
     streams = list()
     if not path:
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
 
-    fabfile.do(split=True)
-    hosts = fabfile.env.roledefs
-
-    for hostname in set(hosts[role] + hosts[role2]):
-        if ':' in hostname:
+    hosts = fabfile.do(split=True)
+    found = set()
+    for hostname in (hosts[role] + hosts[role2]):
+        if isinstance(hostname, dict):
+            address = hostname['address']
+            hostname = hostname['name']
+        elif ':' in hostname:
             hostname, address = hostname.split(':', 1)
         elif isinstance(hostname, tuple):
             hostname, address = hostname[0], hostname[1]
         else:
             address = hostname
         if any(h in hostname for h in IGNORE_HOSTS): continue
+        if hostname in found: continue
         if 'ec2' in hostname:
             s = subprocess.Popen(["ssh", "-i", os.path.expanduser("~/.ec2/sclay.pem"), 
                                   address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
@@ -39,6 +42,7 @@ def main(role="app", role2="dev", command=None, path=None):
             s = subprocess.Popen(["ssh", address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         s.name = hostname
         streams.append(s)
+        found.add(hostname)
 
     try:
         while True:
