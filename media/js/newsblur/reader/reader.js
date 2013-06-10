@@ -5492,6 +5492,15 @@
             });
             $document.bind('keydown', 'x', function(e) {
                 e.preventDefault();
+                var story = NEWSBLUR.reader.active_story;
+                if (story && story.get('selected')) {
+                    NEWSBLUR.reader.active_story.story_title_view.collapse_story();
+                } else if (story && !story.get('selected')) {
+                    NEWSBLUR.reader.active_story.set('selected', true);
+                }
+            });
+            $document.bind('keydown', 'shift+x', function(e) {
+                e.preventDefault();
                 NEWSBLUR.reader.active_story.story_view.expand_story();
             });
             $document.bind('keydown', 'm', function(e) {
