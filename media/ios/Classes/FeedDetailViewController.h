@@ -13,6 +13,7 @@
 #import "Utilities.h"
 #import "WEPopoverController.h"
 #import "TransparentToolbar.h"
+#import "NBNotifier.h"
 
 @class NewsBlurAppDelegate;
 @class FeedDetailTableCell;
@@ -34,6 +35,7 @@
     UIBarButtonItem * feedMarkReadButton;
     WEPopoverController *popoverController;
     Class popoverClass;
+    NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -47,6 +49,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
+@property (nonatomic, retain) NBNotifier *notifier;
 
 @property (nonatomic) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;

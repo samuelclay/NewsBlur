@@ -57,6 +57,7 @@
 @synthesize pageFinished;
 @synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
+@synthesize notifier;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -96,7 +97,9 @@
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 
     titleImageBarButton = [UIBarButtonItem alloc];
-
+    
+    notifier = [[NBNotifier alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:notifier];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -300,7 +303,7 @@
     FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ?", [appDelegate.activeFeed objectForKey:@"id"]];
     NSLog(@"Cursor: %d - %@", [appDelegate.database lastErrorCode], [appDelegate.database lastErrorMessage]);
     while ([cursor next]) {
-        NSLog(@"Stories: %@", [cursor resultDictionary]);
+//        NSLog(@"Stories: %@", [cursor resultDictionary]);
     }
     if (callback || (!self.pageFetching && !self.pageFinished)) {
     
@@ -310,6 +313,8 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+            [self.notifier drawInView:self.view withText:@"Loading..." style:NBLoadingStyle];
+            [self.notifier setNeedsDisplay];
         }
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@/?page=%d", 
@@ -350,7 +355,7 @@
                 callback();
             }
         }];
-        [request setTimeOutSeconds:10];
+        [request setTimeOutSeconds:30];
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
     }
@@ -369,6 +374,9 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+            [self.notifier drawInView:self.view withText:@"Loading..." style:NBLoadingStyle];
+            [self.notifier setNeedsDisplay];
+
         }
         
         NSString *theFeedDetailURL;
@@ -557,10 +565,7 @@
     [appDelegate.database commit];
     NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
 
-    if (self.feedPage == 1) {
-        NBNotifier *notifier = [[NBNotifier alloc] initWithFrame:self.view.frame];
-        [self.view addSubview:notifier];
-    }
+    [self.notifier hideWithAnimation:NO];
 }
 
 #pragma mark -
@@ -581,7 +586,7 @@
     if (existingStoriesCount > 0 && newVisibleStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
         for (int i=0; i < newVisibleStoriesCount; i++) {
-            [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i) 
+            [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i)
                                                      inSection:0]];
         }
         
@@ -681,19 +686,11 @@
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
-    } else {
-        cell.textLabel.text = @"Loading...";
-        
-        UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] 
-                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        UIImage *spacer = [UIImage imageNamed:@"spacer"];
-        UIGraphicsBeginImageContext(spinner.frame.size);        
-        [spacer drawInRect:CGRectMake(0,0,spinner.frame.size.width,spinner.frame.size.height)];
-        UIImage* resizedSpacer = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        cell.imageView.image = resizedSpacer;
-        [cell.imageView addSubview:spinner];
-        [spinner startAnimating];
+    } else if (self.feedPage > 1) {
+        NBNotifier *loadingNotifier = [[NBNotifier alloc] drawInView:self.view
+                                                            withText:@"LOADING..."
+                                                               style:NBLoadingStyle];
+        [cell addSubview:loadingNotifier];
     }
     
     return cell;
@@ -845,10 +842,12 @@
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+
+    if (!self.pageFinished && self.feedPage > 1 && indexPath.row == [[appDelegate activeFeedStoryLocations] count]) {
+        return 20;
+    } else if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         int height = kTableViewRiverRowHeight;
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
             && !appDelegate.masterContainerViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {
@@ -857,7 +856,6 @@
         return height;
     } else {
         int height = kTableViewRowHeight;
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
             && !appDelegate.masterContainerViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {

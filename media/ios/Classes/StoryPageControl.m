@@ -68,9 +68,9 @@
 	nextPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
     previousPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
     
-//    currentPage.appDelegate = appDelegate;
-//    nextPage.appDelegate = appDelegate;
-//    previousPage.appDelegate = appDelegate;
+    currentPage.appDelegate = appDelegate;
+    nextPage.appDelegate = appDelegate;
+    previousPage.appDelegate = appDelegate;
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;

@@ -17,7 +17,10 @@ typedef enum {
 } NBNotifierStyle;
 
 @property (assign, nonatomic) NSString *_text;
-@property (assign, nonatomic) NBNotifierStyle *_style;
+@property (assign, nonatomic) NBNotifierStyle _style;
 @property (assign, nonatomic) UIView *_view;
+
+- (id)drawInView:(UIView *)view withText:(NSString *)text style:(NBNotifierStyle)style;
+- (void)hideWithAnimation:(BOOL)animate;
 
 @end
