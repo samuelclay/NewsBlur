@@ -92,7 +92,7 @@ class ForgotPasswordReturnForm(forms.Form):
                                required=False)
 
 class AccountSettingsForm(forms.Form):
-    username = forms.RegexField(regex=r'^\w+$',
+    username = forms.RegexField(regex=r'^[a-zA-Z0-9_]+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
                                 label='username',
