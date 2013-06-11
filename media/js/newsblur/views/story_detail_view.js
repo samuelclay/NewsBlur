@@ -9,6 +9,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     STORY_CONTENT_MAX_HEIGHT: 460, // ALSO CHANGE IN reader.css: .NB-story-content-wrapper-height-truncated
         
     events: {
+        "click"                                 : "mark_read",
         "click .NB-feed-story-content a"        : "click_link_in_story",
         "click .NB-feed-story-share-container a": "click_link_in_story",
         "click .NB-feed-story-comments a"       : "click_link_in_story",
@@ -449,6 +450,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // ===========
     // = Actions =
     // ===========
+    
+    mark_read: function() {
+        this.model.mark_read();
+    },
     
     preserve_classifier_color: function(classifier_type, value, score) {
         var $tag;
