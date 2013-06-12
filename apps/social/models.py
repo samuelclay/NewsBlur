@@ -2128,7 +2128,10 @@ class MSocialServices(mongo.Document):
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
-        self.follow_twitter_friends()
+        following = self.follow_twitter_friends()
+        
+        if not following:
+            logging.user(user, "~BG~FMTwitter import finished.")
         
     def follow_twitter_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
