@@ -79,7 +79,8 @@
               FILL_OUT_PAGES: 100,
               FIND_NEXT_UNREAD_STORY_TRIES: 100,
               RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
-              MIN_FEED_LIST_SIZE: 206
+              MIN_FEED_LIST_SIZE: 206,
+              MIN_STORY_LIST_SIZE: 68
             };
     
             // ==================
@@ -330,6 +331,7 @@
                     togglerLength_open:     0
                 };
                 contentLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
+                contentLayoutOptions[story_anchor+'__minSize'] = this.constants.MIN_STORY_LIST_SIZE;
                 contentLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
                 contentLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
                 contentLayoutOptions[story_anchor+'__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
