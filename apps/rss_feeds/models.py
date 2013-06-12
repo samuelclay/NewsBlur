@@ -381,6 +381,7 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         if not empty:
             tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+            logging.debug(" ---> ~FRDraining %s feeds..." % tasked_feeds)
             r.sadd('queued_feeds', *tasked_feeds)
         r.zremrangebyrank('tasked_feeds', 0, -1)
         

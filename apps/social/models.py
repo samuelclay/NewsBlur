@@ -1749,12 +1749,14 @@ class MSharedStory(mongo.Document):
         return message
         
     def post_to_service(self, service):
+        user = User.objects.get(pk=self.user_id)
+        
         if service in self.posted_to_services:
+            logging.user(user, "~BM~FRAlready posted to %s." % (service))
             return
 
         posted = False
         social_service = MSocialServices.objects.get(user_id=self.user_id)
-        user = User.objects.get(pk=self.user_id)
         
         message = self.generate_post_to_service_message()
         logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
