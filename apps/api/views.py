@@ -99,7 +99,7 @@ def add_site_load_script(request, token):
         'token': token,
         'folders': (usf and usf.folders) or [],
         'user': profile and profile.user or {},
-        'user_profile': user_profile and json.encode(user_profile.to_json()) or {},
+        'user_profile': user_profile and json.encode(user_profile.canonical()) or {},
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,

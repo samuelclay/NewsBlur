@@ -272,6 +272,10 @@ class Feed(models.Model):
         
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids):
+        if settings.DEBUG:
+            logging.info(" ---> ~SN~FMSkipping the scheduling immediate fetch of ~SB%s~SN feeds (in DEBUG)..." % 
+                        len(feed_ids))
+            return
         logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(feed_ids))
         
@@ -377,6 +381,7 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         if not empty:
             tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+            logging.debug(" ---> ~FRDraining %s feeds..." % len(tasked_feeds))
             r.sadd('queued_feeds', *tasked_feeds)
         r.zremrangebyrank('tasked_feeds', 0, -1)
         
@@ -1973,7 +1978,7 @@ class DuplicateFeed(models.Model):
     def __unicode__(self):
         return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)
         
-    def to_json(self):
+    def canonical(self):
         return {
             'duplicate_address': self.duplicate_address,
             'duplicate_link': self.duplicate_link,

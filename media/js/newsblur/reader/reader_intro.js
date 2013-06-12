@@ -197,6 +197,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             this.autofollow = data.autofollow;
             this.make_find_friends_and_services();
             callback && callback();
+        }, this), _.bind(function(data) {
+            console.log(['Friends fetch error', data]);
         }, this));
     },
     
