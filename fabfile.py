@@ -99,6 +99,10 @@ def server():
 def do(split=False):
     server()
     droplets = do_roledefs(split=split)
+    if split:
+        for roledef, hosts in env.roledefs.items():
+            if roledef not in droplets:
+                droplets[roledef] = hosts
     return droplets
 
 def app():
@@ -649,7 +653,6 @@ def setup_db_firewall():
     sudo('ufw allow 80')
 
     # DigitalOcean
-    pprint(env)
     for ip in set(env.roledefs['app'] +
                   env.roledefs['db'] +
                   env.roledefs['dev'] +

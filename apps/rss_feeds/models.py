@@ -272,6 +272,10 @@ class Feed(models.Model):
         
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids):
+        if settings.DEBUG:
+            logging.info(" ---> ~SN~FMSkipping the scheduling immediate fetch of ~SB%s~SN feeds (in DEBUG)..." % 
+                        len(feed_ids))
+            return
         logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(feed_ids))
         
@@ -1973,7 +1977,7 @@ class DuplicateFeed(models.Model):
     def __unicode__(self):
         return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)
         
-    def to_json(self):
+    def canonical(self):
         return {
             'duplicate_address': self.duplicate_address,
             'duplicate_link': self.duplicate_link,

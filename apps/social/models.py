@@ -215,9 +215,9 @@ class MSocialProfile(mongo.Document):
             profile_user_ids.extend(suggested_user_ids)
         
         # Sort by shared story count
-        profiles = MSocialProfile.profiles(profile_user_ids).order_by('-shared_stories_count')
-        
-        return profiles[:RECOMMENDATIONS_LIMIT]
+        profiles = MSocialProfile.profiles(profile_user_ids).order_by('-shared_stories_count')[:RECOMMENDATIONS_LIMIT]
+
+        return profiles
     
     @property
     def username_slug(self):
@@ -252,7 +252,7 @@ class MSocialProfile(mongo.Document):
     @classmethod
     def profile(cls, user_id, include_follows=True):
         profile = cls.get_user(user_id)
-        return profile.to_json(include_follows=True)
+        return profile.canonical(include_follows=True)
         
     @classmethod
     def profiles(cls, user_ids):
@@ -284,7 +284,7 @@ class MSocialProfile(mongo.Document):
         return self.blurblog_title if self.blurblog_title else self.username + "'s blurblog"
         
     def feed(self):
-        params = self.to_json(compact=True)
+        params = self.canonical(compact=True)
         params.update({
             'feed_title': self.title,
             'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username_slug}),
@@ -293,7 +293,7 @@ class MSocialProfile(mongo.Document):
         return params
         
     def page(self):
-        params = self.to_json(include_follows=True)
+        params = self.canonical(include_follows=True)
         params.update({
             'feed_title': self.title,
             'custom_css': self.custom_css,
@@ -326,8 +326,8 @@ class MSocialProfile(mongo.Document):
         domain = Site.objects.get_current().domain
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None,
-                include_settings=False, include_following_user=None):
+    def canonical(self, compact=False, include_follows=False, common_follows_with_user=None,
+                  include_settings=False, include_following_user=None):
         domain = Site.objects.get_current().domain
         params = {
             'id': 'social:%s' % self.user_id,
@@ -801,7 +801,7 @@ class MSocialSubscription(mongo.Document):
                     social_sub.calculate_feed_scores()
                     
                 # Combine subscription read counts with feed/user info
-                feed = dict(social_sub.to_json().items() + social_profiles[user_id].items())
+                feed = dict(social_sub.canonical().items() + social_profiles[user_id].items())
                 social_feeds.append(feed)
 
         return social_feeds
@@ -841,7 +841,7 @@ class MSocialSubscription(mongo.Document):
 
         return feeds
         
-    def to_json(self):
+    def canonical(self):
         return {
             'user_id': self.user_id,
             'subscription_user_id': self.subscription_user_id,
@@ -1185,7 +1185,7 @@ class MCommentReply(mongo.EmbeddedDocument):
     email_sent    = mongo.BooleanField(default=False)
     liking_users  = mongo.ListField(mongo.IntField())
     
-    def to_json(self):
+    def canonical(self):
         reply = {
             'reply_id': self.reply_id,
             'user_id': self.user_id,
@@ -1260,7 +1260,7 @@ class MSharedStory(mongo.Document):
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
     
-    def to_json(self):
+    def canonical(self):
         return {
             "user_id": self.user_id,
             "shared_date": self.shared_date,
@@ -1587,7 +1587,7 @@ class MSharedStory(mongo.Document):
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
             'date': self.shared_date,
-            'replies': [reply.to_json() for reply in self.replies],
+            'replies': [reply.canonical() for reply in self.replies],
             'liking_users': self.liking_users,
             'source_user_id': self.source_user_id,
         }
@@ -1602,7 +1602,7 @@ class MSharedStory(mongo.Document):
         if comment['source_user_id']:
             profile_user_ids.add(comment['source_user_id'])
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-        profiles = [profile.to_json(compact=True) for profile in profiles]
+        profiles = [profile.canonical(compact=True) for profile in profiles]
 
         return comment, profiles
         
@@ -1670,7 +1670,7 @@ class MSharedStory(mongo.Document):
                     profile_user_ids.add(story['source_user_id'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-        profiles = [profile.to_json(compact=True) for profile in profiles]
+        profiles = [profile.canonical(compact=True) for profile in profiles]
         
         # Toss public comments by private profiles
         profiles_dict = dict((profile['user_id'], profile) for profile in profiles)
@@ -1811,7 +1811,7 @@ class MSharedStory(mongo.Document):
         if self.source_user_id:
             profile_user_ids.add(self.source_user_id)
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-        profiles = [profile.to_json(compact=True) for profile in profiles]
+        profiles = [profile.canonical(compact=True) for profile in profiles]
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
         
         for user_id in notify_user_ids:
@@ -1883,7 +1883,7 @@ class MSharedStory(mongo.Document):
         if self.source_user_id:
             profile_user_ids.add(self.source_user_id)
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-        profiles = [profile.to_json(compact=True) for profile in profiles]
+        profiles = [profile.canonical(compact=True) for profile in profiles]
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
         
         mute_url = "http://%s%s" % (
@@ -2005,7 +2005,7 @@ class MSocialServices(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         return "%s (Twitter: %s, FB: %s, ADN: %s)" % (user.username, self.twitter_uid, self.facebook_uid, self.appdotnet_uid)
         
-    def to_json(self):
+    def canonical(self):
         user = User.objects.get(pk=self.user_id)
         return {
             'twitter': {
@@ -2052,7 +2052,7 @@ class MSocialServices(mongo.Document):
     @classmethod
     def profile(cls, user_id):
         profile = cls.get_user(user_id=user_id)
-        return profile.to_json()
+        return profile.canonical()
     
     def save_uploaded_photo(self, photo):
         photo_body = photo.read()
@@ -2096,20 +2096,26 @@ class MSocialServices(mongo.Document):
             self.syncing_twitter = False
             self.save()
             return
+        
+        twitter_user = api.me()
+        self.twitter_picture_url = twitter_user.profile_image_url
+        self.twitter_username = twitter_user.screen_name
+        self.twitter_refreshed_date = datetime.datetime.utcnow()
+        self.syncing_twitter = False
+        self.save()
+        
+        try:
+            friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
+        except tweepy.TweepError, e:
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: %s" % e)
+            return
             
-        friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
             logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
             self.syncing_twitter = False
             self.save()
             return
-        
-        twitter_user = api.me()
-        self.twitter_picture_url = twitter_user.profile_image_url
-        self.twitter_username = twitter_user.screen_name
         self.twitter_friend_ids = friend_ids
-        self.twitter_refreshed_date = datetime.datetime.utcnow()
-        self.syncing_twitter = False
         self.save()
         
         profile = MSocialProfile.get_user(self.user_id)
@@ -2406,7 +2412,7 @@ class MInteraction(mongo.Document):
         return "<%s> %s on %s: %s - %s" % (user.username, with_user and with_user.username, self.date, 
                                            self.category, self.content and self.content[:20])
     
-    def to_json(self):
+    def canonical(self):
         return {
             'date': self.date,
             'category': self.category,
@@ -2449,7 +2455,7 @@ class MInteraction(mongo.Document):
         
         interactions = []
         for interaction_db in interactions_db:
-            interaction = interaction_db.to_json()
+            interaction = interaction_db.canonical()
             social_profile = social_profiles.get(interaction_db.with_user_id)
             if social_profile:
                 interaction['photo_url'] = social_profile.profile_photo_url
@@ -2637,7 +2643,7 @@ class MActivity(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
     
-    def to_json(self):
+    def canonical(self):
         return {
             'date': self.date,
             'category': self.category,
@@ -2671,7 +2677,7 @@ class MActivity(mongo.Document):
         social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
         activities = []
         for activity_db in activities_db:
-            activity = activity_db.to_json()
+            activity = activity_db.canonical()
             activity['date'] = activity_db.date
             activity['time_since'] = relative_timesince(activity_db.date)
             social_profile = social_profiles.get(activity_db.with_user_id)

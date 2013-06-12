@@ -325,6 +325,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     post_connect: function(data) {
+        data = data || {};
         console.log(["post_connect", data, this, this.connect_window_timer]);
         clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();

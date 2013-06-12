@@ -46,7 +46,6 @@ def create_streams_for_roles(role, role2, command=None, path=None):
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
-
     for hostname in (hosts[role] + hosts[role2]):
         if isinstance(hostname, dict):
             address = hostname['address']
