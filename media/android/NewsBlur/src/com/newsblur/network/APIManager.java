@@ -16,6 +16,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
@@ -638,13 +639,17 @@ public class APIManager {
 			final FeedRefreshResponse feedCountUpdate = gson.fromJson(response.responseString, FeedRefreshResponse.class);
 			for (String feedId : feedCountUpdate.feedCounts.keySet()) {
 				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-				contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
+                if (feedCountUpdate.feedCounts.get(feedId) != null) {
+				    contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
+                }
 			}
 
 			for (String socialfeedId : feedCountUpdate.socialfeedCounts.keySet()) {
 				String userId = socialfeedId.split(":")[1];
 				Uri feedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-				contentResolver.update(feedUri, feedCountUpdate.socialfeedCounts.get(socialfeedId).getValues(), null, null);
+                if (feedCountUpdate.socialfeedCounts.get(socialfeedId) != null) {
+				    contentResolver.update(feedUri, feedCountUpdate.socialfeedCounts.get(socialfeedId).getValues(), null, null);
+                }
 			}
 		}
 	}
