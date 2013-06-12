@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NBNotifier : UIView
+@interface NBNotifier : UIView {
+    
+    @protected
+    UILabel *_txtLabel;
+}
 
 typedef enum {
     NBOfflineStyle = 1,
@@ -16,11 +20,26 @@ typedef enum {
     NBSyncingStyle = 3
 } NBNotifierStyle;
 
-@property (assign, nonatomic) NSString *_text;
-@property (assign, nonatomic) NBNotifierStyle _style;
-@property (assign, nonatomic) UIView *_view;
+@property (nonatomic, strong) NSString *_text;
+@property (nonatomic) NBNotifierStyle style;
+@property (nonatomic, strong) UIView *_view;
+@property (nonatomic, strong) UIView *accessoryView;
+@property (nonatomic, strong) NSString *title;
 
-- (id)drawInView:(UIView *)view withText:(NSString *)text style:(NBNotifierStyle)style;
-- (void)hideWithAnimation:(BOOL)animate;
+- (id)initWithTitle:(NSString *)title;
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view;
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style;
+
+- (void)setAccessoryView:(UIView *)view animated:(BOOL)animated;
+
+- (void)setTitle:(id)title animated:(BOOL)animated;
+
+- (void)show;
+- (void)showIn:(float)time;
+- (void)showFor:(float)time;
+
+- (void)hide;
+- (void)hideAfter:(float)seconds;
+- (void)hideIn:(float)seconds;
 
 @end

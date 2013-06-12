@@ -98,8 +98,6 @@
 
     titleImageBarButton = [UIBarButtonItem alloc];
     
-    notifier = [[NBNotifier alloc] initWithFrame:self.view.frame];
-    [self.view addSubview:notifier];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -124,7 +122,9 @@
     self.finishedAnimatingIn = NO;
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
+    
+    [notifier hideIn:0];
+    
     // set center title
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
     self.navigationItem.titleView = titleLabel;
@@ -313,8 +313,13 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-            [self.notifier drawInView:self.view withText:@"Loading..." style:NBLoadingStyle];
-            [self.notifier setNeedsDisplay];
+
+            UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+            [activityIndicator startAnimating];
+            
+            self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:appDelegate.feedDetailViewController.view];
+            self.notifier.accessoryView = activityIndicator;
+            [self.notifier show];
         }
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@/?page=%d", 
@@ -374,8 +379,7 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-            [self.notifier drawInView:self.view withText:@"Loading..." style:NBLoadingStyle];
-            [self.notifier setNeedsDisplay];
+//            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
         }
         
@@ -565,7 +569,7 @@
     [appDelegate.database commit];
     NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
 
-    [self.notifier hideWithAnimation:NO];
+    [self.notifier hide];
 }
 
 #pragma mark -
@@ -687,10 +691,8 @@
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
     } else if (self.feedPage > 1) {
-        NBNotifier *loadingNotifier = [[NBNotifier alloc] drawInView:self.view
-                                                            withText:@"LOADING..."
-                                                               style:NBLoadingStyle];
-        [cell addSubview:loadingNotifier];
+        NBNotifier *loadingNotifier = [[NBNotifier alloc] initWithTitle:@"Loading a page..." inView:cell];
+        [loadingNotifier showIn:0];
     }
     
     return cell;
@@ -845,7 +847,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 
     if (!self.pageFinished && self.feedPage > 1 && indexPath.row == [[appDelegate activeFeedStoryLocations] count]) {
-        return 20;
+        return 40;
     } else if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         int height = kTableViewRiverRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
