@@ -1142,9 +1142,15 @@ def kill_celery():
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
+    local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+
 
 def transfer_assets():
-    put('static.tgz', '%s/static/' % env.NEWSBLUR_PATH)
+    # filename = "deploy_%s.tgz" % env.commit # Easy rollback? Eh, can just upload it again.
+    # run('PYTHONPATH=/srv/newsblur python s3.py get deploy_%s.tgz' % filename)
+    run('PYTHONPATH=/srv/newsblur python utils/backups/s3.py get static.tgz')
+    # run('mv %s static/static.tgz' % filename)
+    run('mv static.tgz static/static.tgz')
     run('tar -xzf static/static.tgz')
     run('rm -f static/static.tgz')
 
@@ -1204,7 +1210,7 @@ def restore_postgres(port=5433):
 
 def restore_mongo():
     backup_date = '2012-07-24-09-00'
-    run('PYTHONPATH=/home/%s/newsblur python s3.py get backup_mongo_%s.tgz' % (env.user, backup_date))
+    run('PYTHONPATH=/srv/newsblur python s3.py get backup_mongo_%s.tgz' % (backup_date))
     run('tar -xf backup_mongo_%s.tgz' % backup_date)
     run('mongorestore backup_mongo_%s' % backup_date)
 
