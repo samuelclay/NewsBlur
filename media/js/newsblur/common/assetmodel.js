@@ -1281,14 +1281,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
       });
     },
     
-    fetch_friends: function(callback) {
+    fetch_friends: function(callback, error_callback) {
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
             this.social_services = data.services;
             this.follower_profiles.reset(data.follower_profiles);
             this.following_profiles.reset(data.following_profiles);
             callback(data);
-        }, this), null, {
+        }, this), error_callback, {
             request_type: 'GET'
         });
     },

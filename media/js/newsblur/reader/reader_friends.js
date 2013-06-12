@@ -85,6 +85,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.make_following_tab();
             callback && callback();
             _.defer(_.bind(this.resize, this));
+        }, this), _.bind(function(data) {
+            console.log(['Friends fetch error', data]);
+            this.make_find_friends_and_services();
+            this.make_profile_section();
+            this.make_followers_tab();
+            this.make_following_tab();
+            callback && callback();
+            _.defer(_.bind(this.resize, this));            
         }, this));
     },
     
@@ -97,6 +105,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 clearTimeout(this.sync_interval);
                 this.make_find_friends_and_services();
             // }
+        }, this), _.bind(function(data) {
+            console.log(['Friends fetch error', data]);
+            clearTimeout(this.sync_interval);
+            this.make_find_friends_and_services();
         }, this));
     },
     

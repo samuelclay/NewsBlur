@@ -2104,20 +2104,6 @@ class MSocialServices(mongo.Document):
         self.syncing_twitter = False
         self.save()
         
-        try:
-            friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
-        except tweepy.TweepError, e:
-            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: %s" % e)
-            return
-            
-        if not friend_ids:
-            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
-            self.syncing_twitter = False
-            self.save()
-            return
-        self.twitter_friend_ids = friend_ids
-        self.save()
-        
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or twitter_user.location
         profile.bio = profile.bio or twitter_user.description
@@ -2127,6 +2113,16 @@ class MSocialServices(mongo.Document):
         
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
+
+        try:
+            friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
+        except tweepy.TweepError, e:
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: %s" % e)
+            return
+        if not friend_ids:
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
+        self.twitter_friend_ids = friend_ids
+        self.save()
         
         following = self.follow_twitter_friends()
         
