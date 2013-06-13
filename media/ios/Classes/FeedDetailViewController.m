@@ -27,7 +27,7 @@
 #import "TransparentToolbar.h"
 #import "FeedDetailMenuViewController.h"
 #import "NBNotifier.h"
-
+#import "NBLoadingCell.h"
 
 #define kTableViewRowHeight 61;
 #define kTableViewRiverRowHeight 81;
@@ -664,15 +664,15 @@
 }
 
 - (UITableViewCell *)makeLoadingCell {
-    UITableViewCell *cell = [[UITableViewCell alloc] 
-                              initWithStyle:UITableViewCellStyleSubtitle 
-                              reuseIdentifier:@"NoReuse"];
-    
+    int height = 40;
+    UITableViewCell *cell = [[UITableViewCell alloc]
+                             initWithStyle:UITableViewCellStyleSubtitle
+                             reuseIdentifier:@"NoReuse"];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
-        int height = 40;
         
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -684,9 +684,10 @@
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
-    } else if (self.feedPage > 1) {
-        NBNotifier *loadingNotifier = [[NBNotifier alloc] initWithTitle:@"Loading a page..." inView:cell style:NBSyncingStyle];
-        [loadingNotifier showIn:0];
+        return cell;
+    } else {//if ([appDelegate.activeFeedStoryLocations count]) {
+        NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
+        return loadingCell;
     }
     
     return cell;
@@ -838,9 +839,22 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell class] == [NBLoadingCell class]) {
+        [(NBLoadingCell *)cell endAnimation];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell class] == [NBLoadingCell class]) {
+        [(NBLoadingCell *)cell animate];
+    }
+}
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (self.feedPage > 1 && indexPath.row == [[appDelegate activeFeedStoryLocations] count]) {
+    int storyCount = [[appDelegate activeFeedStoryLocations] count];
+    
+    if (storyCount && indexPath.row == storyCount) {
         return 40;
     } else if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         int height = kTableViewRiverRowHeight;
