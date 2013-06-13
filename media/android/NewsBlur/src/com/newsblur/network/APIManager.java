@@ -480,7 +480,8 @@ public class APIManager {
 		final ContentValues params = new ContentValues();
 		params.put( APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false") );
 		final APIResponse response = client.get(APIConstants.URL_FEEDS, params);
-		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson); 
+
+		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson);
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 
@@ -490,63 +491,48 @@ public class APIManager {
                 PrefsUtils.logout(context);
                 return false;
             }
-			
-			HashMap<String, Feed> existingFeeds = getExistingFeeds();
-			
+
+            // this actually cleans out the feed, folder, and story tables
+            contentResolver.delete(FeedProvider.FEEDS_URI, null, null);
+
+            // populate the feeds table
 			List<ContentValues> feedValues = new ArrayList<ContentValues>();
 			for (String newFeedId : feedUpdate.feeds.keySet()) {
-				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
-					feedValues.add(feedUpdate.feeds.get(newFeedId).getValues());
-				}
+                feedValues.add(feedUpdate.feeds.get(newFeedId).getValues());
 			}
-			if(feedValues.size() > 0) {
-				contentResolver.bulkInsert(FeedProvider.FEEDS_URI, feedValues.toArray(new ContentValues[feedValues.size()]));
-			}
+            bulkInsertList(FeedProvider.FEEDS_URI, feedValues);
 			
-			for (String olderFeedId : existingFeeds.keySet()) {
-				if (feedUpdate.feeds.get(olderFeedId) == null) {
-					Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(olderFeedId).build();
-					contentResolver.delete(feedUri, null, null);
-				}
-			}
-			
-			List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
+			// populate the social feeds table
+            List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				socialFeedValues.add(feed.getValues());
 			}
-			if(socialFeedValues.size() > 0) {
-				contentResolver.bulkInsert(FeedProvider.SOCIAL_FEEDS_URI, socialFeedValues.toArray(new ContentValues[socialFeedValues.size()]));
-			}
+            bulkInsertList(FeedProvider.SOCIAL_FEEDS_URI, socialFeedValues);
 			
-			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
-			folderCursor.moveToFirst();
-			HashSet<String> existingFolders = new HashSet<String>();
-			while (!folderCursor.isAfterLast()) {
-				existingFolders.add(Folder.fromCursor(folderCursor).getName());
-				folderCursor.moveToNext();
-			}
-			folderCursor.close();
-			
+            // populate the folder and folder-feed-mapping tables
+            List<ContentValues> folderValues = new ArrayList<ContentValues>();
+            List<ContentValues> ffmValues = new ArrayList<ContentValues>();
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 				if (!TextUtils.isEmpty(entry.getKey())) {
 					String folderName = entry.getKey().trim();
-					if (!existingFolders.contains(folderName) && !TextUtils.isEmpty(folderName)) {
-						final ContentValues folderValues = new ContentValues();
-						folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-						contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+					if (!TextUtils.isEmpty(folderName)) {
+						final ContentValues values = new ContentValues();
+						values.put(DatabaseConstants.FOLDER_NAME, folderName);
+						folderValues.add(values);
 					}
 	
 					for (Long feedId : entry.getValue()) {
-						if (!existingFeeds.containsKey(Long.toString(feedId))) {
-							ContentValues values = new ContentValues(); 
-							values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-							values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-							contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
-						}
+                        ContentValues values = new ContentValues(); 
+                        values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+                        values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+                        ffmValues.add(values);
 					}
 				}
 			}
+            bulkInsertList(FeedProvider.FOLDERS_URI, folderValues);
+            bulkInsertList(FeedProvider.FEED_FOLDER_MAP_URI, ffmValues);
 
+            // populate the starred stories count table
             int starredStoriesCount = feedUpdate.starredCount;
             ContentValues values = new ContentValues();
             values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, starredStoriesCount);
@@ -754,4 +740,15 @@ public class APIManager {
 		}
 		return isServerMessage;
 	}
+    
+    /**
+     * Convenience method to call contentResolver.bulkInsert using a list rather than an array.
+     */
+    private int bulkInsertList(Uri uri, List<ContentValues> list) {
+        if (list.size() > 0) {
+            return contentResolver.bulkInsert(uri, list.toArray(new ContentValues[list.size()]));
+        }
+        return 0;
+    }
+
 }
