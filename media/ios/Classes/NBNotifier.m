@@ -288,7 +288,7 @@
     if (self.style == NBLoadingStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
     } else if (self.style == NBOfflineStyle) {
-        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:200.0f green:40.0f blue:40.0f alpha:0.6f].CGColor);
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.4 green:0.15 blue:0.1 alpha:0.6f].CGColor);
     } else if (self.style == NBSyncingStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.3f].CGColor);
     }

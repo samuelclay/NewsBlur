@@ -34,6 +34,7 @@
 }
 
 - (void)animate {
+    if (!self.window || !self.superview.window) return;
     NSLog(@"Animate");
     if (!animating) return;
     [UIView animateWithDuration:.650f delay:0.2f options:nil animations:^{

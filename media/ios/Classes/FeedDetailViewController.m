@@ -197,11 +197,8 @@
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
     
-    if (!self.notifier || !self.notifier.view) {
-        NSLog(@"Frame of self.view: %@", NSStringFromCGRect(self.view.frame));
-        self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
-    }
-    [self.notifier hideIn:0];
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
+//    [self.notifier hideIn:0];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -569,7 +566,7 @@
     [appDelegate.database commit];
 //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
 
-//    [self.notifier hide];
+    [self.notifier hide];
 }
 
 #pragma mark -
