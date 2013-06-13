@@ -578,6 +578,7 @@ public class FeedProvider extends ContentProvider {
             if (rows == 0 ) {
                 db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             }
+            return 1;
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
