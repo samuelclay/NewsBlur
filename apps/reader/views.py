@@ -1514,9 +1514,9 @@ def send_story_email(request):
             "feed": feed,
             "share_user_profile": share_user_profile,
         }
-        text    = render_to_string('mail/email_story_text.xhtml', params)
-        html    = render_to_string('mail/email_story_html.xhtml', params)
-        subject = '%s is sharing a story with you: "%s"' % (from_name, story['story_title'])
+        text    = render_to_string('mail/email_story.txt', params)
+        html    = render_to_string('mail/email_story.xhtml', params)
+        subject = '%s shares "%s"' % (from_name, story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]
