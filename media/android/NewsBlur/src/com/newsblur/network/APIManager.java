@@ -550,7 +550,7 @@ public class APIManager {
             int starredStoriesCount = feedUpdate.starredCount;
             ContentValues values = new ContentValues();
             values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, starredStoriesCount);
-            contentResolver.insert(FeedProvider.STARRED_STORIES_COUNT_URI, values);
+            contentResolver.update(FeedProvider.STARRED_STORIES_COUNT_URI, values, null, null);
 
 		}
 		return true;

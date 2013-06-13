@@ -573,6 +573,11 @@ public class FeedProvider extends ContentProvider {
 		case SOCIALFEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
 			return 0;	
+        case STARRED_STORIES_COUNT:
+            int rows = db.update(DatabaseConstants.STARRED_STORY_COUNT_TABLE, values, null, null);
+            if (rows == 0 ) {
+                db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            }
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
