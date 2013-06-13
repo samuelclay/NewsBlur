@@ -97,7 +97,6 @@
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 
     titleImageBarButton = [UIBarButtonItem alloc];
-    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -122,8 +121,6 @@
     self.finishedAnimatingIn = NO;
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    
-    [notifier hideIn:0];
     
     // set center title
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
@@ -199,6 +196,12 @@
         }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
+    
+    if (!self.notifier || !self.notifier.view) {
+        NSLog(@"Frame of self.view: %@", NSStringFromCGRect(self.view.frame));
+        self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
+    }
+    [self.notifier hideIn:0];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -301,7 +304,7 @@
     if (!appDelegate.activeFeed) return;
     
     FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ?", [appDelegate.activeFeed objectForKey:@"id"]];
-    NSLog(@"Cursor: %d - %@", [appDelegate.database lastErrorCode], [appDelegate.database lastErrorMessage]);
+//    NSLog(@"Cursor: %d - %@", [appDelegate.database lastErrorCode], [appDelegate.database lastErrorMessage]);
     while ([cursor next]) {
 //        NSLog(@"Stories: %@", [cursor resultDictionary]);
     }
@@ -314,11 +317,8 @@
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 
-            UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-            [activityIndicator startAnimating];
-            
-            self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:appDelegate.feedDetailViewController.view];
-            self.notifier.accessoryView = activityIndicator;
+            [self.notifier setTitle:@"Fetching stories..."];
+            [self.notifier setStyle:NBLoadingStyle];
             [self.notifier show];
         }
         if (appDelegate.isSocialView) {
@@ -567,9 +567,9 @@
         ];
     }
     [appDelegate.database commit];
-    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
+//    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
 
-    [self.notifier hide];
+//    [self.notifier hide];
 }
 
 #pragma mark -
@@ -672,13 +672,7 @@
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
-        int height = 0;
-        
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
-            height = kTableViewRiverRowHeight;
-        } else {
-            height = kTableViewRowHeight;
-        }
+        int height = 40;
         
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -691,7 +685,7 @@
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
     } else if (self.feedPage > 1) {
-        NBNotifier *loadingNotifier = [[NBNotifier alloc] initWithTitle:@"Loading a page..." inView:cell];
+        NBNotifier *loadingNotifier = [[NBNotifier alloc] initWithTitle:@"Loading a page..." inView:cell style:NBSyncingStyle];
         [loadingNotifier showIn:0];
     }
     
@@ -845,8 +839,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-
-    if (!self.pageFinished && self.feedPage > 1 && indexPath.row == [[appDelegate activeFeedStoryLocations] count]) {
+    
+    if (self.feedPage > 1 && indexPath.row == [[appDelegate activeFeedStoryLocations] count]) {
         return 40;
     } else if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         int height = kTableViewRiverRowHeight;

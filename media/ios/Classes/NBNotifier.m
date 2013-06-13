@@ -32,7 +32,7 @@
 
 @implementation NBNotifier
 
-@synthesize accessoryView, title = _title, style = _style;
+@synthesize accessoryView, title = _title, style = _style, view = _view;
 
 + (void)initialize {
     if (self == [NBNotifier class]) {
@@ -65,7 +65,7 @@
         
         self.style = style;
         
-        _txtLabel = [[UILabel alloc]initWithFrame:CGRectMake(8, 12, self.frame.size.width - 0, 20)];
+        _txtLabel = [[UILabel alloc]initWithFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
         [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
         [_txtLabel setBackgroundColor:[UIColor clearColor]];
         
@@ -80,11 +80,9 @@
         
         [self addSubview:_txtLabel];
         
-        self.title= title;
+        self.title = title;        
         
-        
-        
-        [view addSubview:self];
+        self.view = view;
     }
     
     return self;
@@ -96,19 +94,42 @@
     [[self viewWithTag:1]removeFromSuperview];
     
     __accessoryView.tag = 1;
-    [__accessoryView setFrame:CGRectMake(12, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+1, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
+    [__accessoryView setFrame:CGRectMake((32 - __accessoryView.frame.size.width) / 2, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+1, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
     
     [self addSubview:__accessoryView];
-    
-    if (__accessoryView)
-        [_txtLabel setFrame:CGRectMake(38, 12, self.frame.size.width - 38, 20)];
-    else
-        [_txtLabel setFrame:CGRectMake(8, 12, self.frame.size.width - 8, 20)];
+    NSLog(@"Accessory view: %@", __accessoryView);
+    [_txtLabel setFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
 }
 
 - (void)setTitle:(NSString *)title{
     
     [_txtLabel setText:title];
+}
+
+- (void)setStyle:(NBNotifierStyle)style {
+    _style = style;
+    
+    if (style == NBLoadingStyle) {
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        [activityIndicator startAnimating];
+        
+        self.accessoryView = activityIndicator;
+    } else if (style == NBOfflineStyle) {
+        UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
+        self.accessoryView = [[UIImageView alloc] initWithImage:offlineImage];
+    } else if (style == NBSyncingStyle) {
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        [activityIndicator startAnimating];
+        
+        self.accessoryView = activityIndicator;        
+    }
+}
+
+- (void)setView:(UIView *)view {
+    _view = view;
+    self.frame = CGRectMake(0, view.bounds.size.height, view.bounds.size.width, 40);
+    
+    [view addSubview:self];
 }
 
 - (void)show {
@@ -121,7 +142,7 @@
     [UIView setAnimationDuration:time];
     
     CGRect move = self.frame;
-    move.origin.y -=40.f;
+    move.origin.y = self.view.frame.size.height - 40.f;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -134,7 +155,7 @@
     [UIView setAnimationDuration:0.3f];
     
     CGRect move = self.frame;
-    move.origin.y -=40.f;
+    move.origin.y = self.view.frame.size.height - 40.f;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -173,12 +194,11 @@
     
     
     CGRect move = self.frame;
-    move.origin.y +=40.f;
+    move.origin.y = self.view.frame.size.height;
     self.frame = move;
     
     [UIView commitAnimations];
 }
-
 
 - (void)setAccessoryView:(UIView *)view animated:(BOOL)animated{
     
@@ -221,11 +241,7 @@
                          }];
     }
     
-    if (view)
-        [_txtLabel setFrame:CGRectMake(38, 12, self.frame.size.width - 38, 20)];
-    else
-        [_txtLabel setFrame:CGRectMake(8, 12, self.frame.size.width - 8, 20)];
-    
+    [_txtLabel setFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
     
     
 }
@@ -267,9 +283,15 @@
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     
     //Background color
-    CGRect rectangle = CGRectMake(0,4,320,36);
+    CGRect rectangle = CGRectMake(0,4,rect.size.width,36);
     CGContextAddRect(context, rectangle);
-    CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
+    if (self.style == NBLoadingStyle) {
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
+    } else if (self.style == NBOfflineStyle) {
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:200.0f green:40.0f blue:40.0f alpha:0.6f].CGColor);
+    } else if (self.style == NBSyncingStyle) {
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.3f].CGColor);
+    }
     CGContextFillRect(context, rectangle);
     
     //First whiteColor
@@ -279,7 +301,7 @@
     CGContextSetStrokeColorWithColor(context, Whitecolor);
     
     CGContextMoveToPoint(context, 0, 4.5);
-    CGContextAddLineToPoint(context, 320, 4.5);
+    CGContextAddLineToPoint(context, rect.size.width, 4.5);
     
     CGContextStrokePath(context);
     CGColorRelease(Whitecolor);
@@ -291,15 +313,15 @@
     CGContextSetStrokeColorWithColor(context, Blackcolor);
     
     CGContextMoveToPoint(context, 0, 3.5);
-    CGContextAddLineToPoint(context, 320, 3.5);
+    CGContextAddLineToPoint(context, rect.size.width, 3.5);
     
     CGContextStrokePath(context);
     CGColorRelease(Blackcolor);
     
     //Draw Shadow
     
-    CGRect imageBounds = CGRectMake(0.0f, 0.0f, [UIScreen mainScreen].bounds.size.width, 3.f);
-	CGRect bounds = CGRectMake(0, 0, 320, 3);
+    CGRect imageBounds = CGRectMake(0.0f, 0.0f, rect.size.width, 3.f);
+	CGRect bounds = CGRectMake(0, 0, rect.size.width, 3);
 	CGFloat alignStroke;
 	CGFloat resolution;
 	CGMutablePathRef path;
@@ -324,7 +346,7 @@
 	
 	alignStroke = 0.0f;
 	path = CGPathCreateMutable();
-	drawRect = CGRectMake(0.0f, 0.0f, [UIScreen mainScreen].bounds.size.width, 3.0f);
+	drawRect = CGRectMake(0.0f, 0.0f, rect.size.width, 3.0f);
 	drawRect.origin.x = (roundf(resolution * drawRect.origin.x + alignStroke) - alignStroke) / resolution;
 	drawRect.origin.y = (roundf(resolution * drawRect.origin.y + alignStroke) - alignStroke) / resolution;
 	drawRect.size.width = roundf(resolution * drawRect.size.width) / resolution;

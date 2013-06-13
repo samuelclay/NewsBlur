@@ -22,7 +22,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSString *_text;
 @property (nonatomic) NBNotifierStyle style;
-@property (nonatomic, strong) UIView *_view;
+@property (nonatomic, strong) UIView *view;
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSString *title;
 
