@@ -42,7 +42,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 6
+#define CURRENT_DB_VERSION 7
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -2021,8 +2021,8 @@
                              " story_feed_id number,"
                              " story_hash varchar(24),"
                              " story_timestamp number,"
-                             " story_json text"
-//                             " UNIQUE(story_hash) ON CONFLICT REPLACE"
+                             " story_json text,"
+                             " UNIQUE(story_hash) ON CONFLICT REPLACE"
                              ")"];
     [database executeUpdate:createTable];
     NSLog(@"Create db %d: %@", [database lastErrorCode], [database lastErrorMessage]);

@@ -25,6 +25,7 @@ typedef enum {
 @property (nonatomic, strong) UIView *view;
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, assign) BOOL showing;
 
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view;

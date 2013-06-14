@@ -628,7 +628,7 @@
 
 - (void)requestFailed:(id)request {
     NSString *error;
-    if ([request class] == [ASIHTTPRequest class]) {
+    if ([request class] == [ASIHTTPRequest class] || [request class] == [ASIFormDataRequest class]) {
         NSLog(@"Error in story detail: %@", [request error]);
         if ([request error]) {
             error = [NSString stringWithFormat:@"%@", [request error]];

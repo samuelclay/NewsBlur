@@ -33,6 +33,7 @@
 @implementation NBNotifier
 
 @synthesize accessoryView, title = _title, style = _style, view = _view;
+@synthesize showing;
 
 + (void)initialize {
     if (self == [NBNotifier class]) {
@@ -45,6 +46,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        showing = NO;
     }
     return self;
 }
@@ -101,9 +103,10 @@
     [_txtLabel setFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
 }
 
-- (void)setTitle:(NSString *)title{
-    
+- (void)setTitle:(NSString *)title {
     [_txtLabel setText:title];
+    
+    [self setNeedsLayout];
 }
 
 - (void)setStyle:(NBNotifierStyle)style {
@@ -112,7 +115,6 @@
     if (style == NBLoadingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [activityIndicator startAnimating];
-        
         self.accessoryView = activityIndicator;
     } else if (style == NBOfflineStyle) {
         UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
@@ -120,9 +122,10 @@
     } else if (style == NBSyncingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [activityIndicator startAnimating];
-        
         self.accessoryView = activityIndicator;        
     }
+    
+    [self setNeedsLayout];
 }
 
 - (void)setView:(UIView *)view {
@@ -137,6 +140,7 @@
 }
 
 - (void)showIn:(float)time {
+    showing = YES;
     
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:time];
@@ -150,7 +154,7 @@
 }
 
 - (void)showFor:(float)time{
-    
+    showing = YES;
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3f];
     
@@ -165,12 +169,14 @@
 
 - (void)hideAfter:(float)seconds{
     
+    if (!showing) return;
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3f];
         [UIView setAnimationDelegate: self]; //or some other object that has necessary method
-        [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
+//        [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
         
         
         CGRect move = self.frame;
@@ -179,7 +185,7 @@
         
         [UIView commitAnimations];
     });
-    
+    showing = NO;
 }
 
 - (void)hide {
@@ -187,10 +193,12 @@
 }
 - (void)hideIn:(float)seconds {
     
+    if (!showing) return;
+    
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:seconds];
     [UIView setAnimationDelegate: self]; //or some other object that has necessary method
-    [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
+//    [UIView setAnimationDidStopSelector: @selector(removeFromSuperview)];
     
     
     CGRect move = self.frame;
@@ -198,6 +206,8 @@
     self.frame = move;
     
     [UIView commitAnimations];
+    
+    showing = NO;
 }
 
 - (void)setAccessoryView:(UIView *)view animated:(BOOL)animated{

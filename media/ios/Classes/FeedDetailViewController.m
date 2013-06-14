@@ -49,7 +49,6 @@
 @synthesize separatorBarButton;
 @synthesize titleImageBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
-@synthesize stories;
 @synthesize rightToolbar;
 @synthesize appDelegate;
 @synthesize feedPage;
@@ -97,6 +96,8 @@
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 
     titleImageBarButton = [UIBarButtonItem alloc];
+
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -196,9 +197,6 @@
         }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
-    
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
-//    [self.notifier hideIn:0];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -261,7 +259,8 @@
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
-    
+    [self.notifier hideIn:0];
+    [self beginOfflineTimer];
 }
 
 - (void)reloadPage {
@@ -283,6 +282,14 @@
     }
 }
 
+- (void)beginOfflineTimer {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
+        if (!appDelegate.storyLocationsCount) {
+            [self loadOfflineStories];
+        }
+    });
+}
+
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
@@ -300,11 +307,6 @@
     
     if (!appDelegate.activeFeed) return;
     
-    FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ?", [appDelegate.activeFeed objectForKey:@"id"]];
-//    NSLog(@"Cursor: %d - %@", [appDelegate.database lastErrorCode], [appDelegate.database lastErrorMessage]);
-    while ([cursor next]) {
-//        NSLog(@"Stories: %@", [cursor resultDictionary]);
-    }
     if (callback || (!self.pageFetching && !self.pageFinished)) {
     
         self.feedPage = page;
@@ -313,10 +315,6 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-
-            [self.notifier setTitle:@"Fetching stories..."];
-            [self.notifier setStyle:NBLoadingStyle];
-            [self.notifier show];
         }
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@/?page=%d", 
@@ -348,7 +346,9 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
-            [self informError:[request error]];
+            [self loadOfflineStories];
+            [self showOfflineNotifier];
+//            [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
             if (!appDelegate.activeFeed) return;
@@ -361,6 +361,42 @@
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
     }
+}
+
+- (void)loadOfflineStories {
+    FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ? ORDER BY story_timestamp DESC", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSMutableArray *offlineStories = [NSMutableArray array];
+    
+    while ([cursor next]) {
+        NSDictionary *story = [cursor resultDictionary];
+        [offlineStories addObject:[NSJSONSerialization
+                                   JSONObjectWithData:[[story objectForKey:@"story_json"]
+                                                       dataUsingEncoding:NSUTF8StringEncoding]
+                                   options:nil error:nil]];
+    }
+    
+    if ([offlineStories count]) {
+        [self renderStories:offlineStories];
+        [self showLoadingNotifier];
+    } else {
+        [self showLoadingNotifier];
+    }
+    
+
+}
+
+- (void)showOfflineNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBOfflineStyle;
+    self.notifier.title = @"Offline";
+    [self.notifier show];
+}
+
+- (void)showLoadingNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBLoadingStyle;
+    self.notifier.title = @"Fetching all stories...";
+    [self.notifier show];
 }
 
 #pragma mark -
@@ -444,14 +480,8 @@
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] >= 500) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
-                       dispatch_get_current_queue(), ^{
-            [appDelegate.navigationController 
-             popToViewController:[appDelegate.navigationController.viewControllers 
-                                  objectAtIndex:0]  
-             animated:YES];
-        });
-        [self informError:@"The server barfed!"];
+        [self loadOfflineStories];
+        [self showOfflineNotifier];
         
         return;
     }
@@ -494,7 +524,9 @@
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
-    if ([appDelegate.activeFeedStories count]) {
+    if (self.feedPage == 1) {
+        confirmedNewStories = [newStories copy];
+    } else {
         NSMutableSet *storyIds = [NSMutableSet set];
         for (id story in appDelegate.activeFeedStories) {
             [storyIds addObject:[story objectForKey:@"id"]];
@@ -504,8 +536,6 @@
                 [confirmedNewStories addObject:story];
             }
         }
-    } else {
-        confirmedNewStories = [newStories copy];
     }
     
     // Adding new user profiles to appDelegate.activeFeedUserProfiles
@@ -573,32 +603,21 @@
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
-    NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
+    NSInteger existingStoriesCount = appDelegate.storyLocationsCount;
     NSInteger newStoriesCount = [newStories count];
     
-    if (self.feedPage == 1) {
-        [appDelegate setStories:newStories];
-    } else if (newStoriesCount > 0) {        
-        [appDelegate addStories:newStories];
-    }
-    
-    NSInteger newVisibleStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
-    
-    if (existingStoriesCount > 0 && newVisibleStoriesCount > 0) {
-        NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
-        for (int i=0; i < newVisibleStoriesCount; i++) {
-            [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i)
-                                                     inSection:0]];
+    if (newStoriesCount > 0) {
+        if (self.feedPage == 1) {
+            [appDelegate setStories:newStories];
+        } else {
+            [appDelegate addStories:newStories];
         }
+    }
         
-        [self.storyTitlesTable reloadData];
-
-    } else if (newVisibleStoriesCount > 0) {
-        [self.storyTitlesTable reloadData];
-        
-    } else if (newStoriesCount == 0 || 
-               (self.feedPage > 25 &&
-                existingStoriesCount >= [appDelegate unreadCount])) {
+    [self.storyTitlesTable reloadData];
+    if (newStoriesCount == 0 ||
+        (self.feedPage > 25 &&
+         existingStoriesCount >= [appDelegate unreadCount])) {
         self.pageFinished = YES;
         [self.storyTitlesTable reloadData];
     }
@@ -682,7 +701,7 @@
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
         return cell;
-    } else {//if ([appDelegate.activeFeedStoryLocations count]) {
+    } else {//if ([appDelegate.storyLocationsCount]) {
         NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
         return loadingCell;
     }
@@ -694,7 +713,7 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
-    int storyCount = [[appDelegate activeFeedStoryLocations] count];
+    int storyCount = appDelegate.storyLocationsCount;
 
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
@@ -719,7 +738,7 @@
                                           reuseIdentifier:nil];
     }
         
-    if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
+    if (indexPath.row >= appDelegate.storyLocationsCount) {
         return [self makeLoadingCell];
     }
         
@@ -829,7 +848,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
+    if (indexPath.row < appDelegate.storyLocationsCount) {
         // mark the cell as read
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
         [self loadStory:cell atRow:indexPath.row];
@@ -849,7 +868,7 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    int storyCount = [[appDelegate activeFeedStoryLocations] count];
+    int storyCount = appDelegate.storyLocationsCount;
     
     if (storyCount && indexPath.row == storyCount) {
         return 40;
@@ -906,7 +925,7 @@
         [appDelegate calculateStoryLocations];
     }
     
-    for (int i=0; i < [[appDelegate activeFeedStoryLocations] count]; i++) {
+    for (int i=0; i < appDelegate.storyLocationsCount; i++) {
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
