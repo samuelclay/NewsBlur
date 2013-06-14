@@ -75,8 +75,9 @@ def do_roledefs(split=False):
     return droplets
 
 def list_do():
-    do(split=True)
-    pprint(env.roledefs)
+    droplets = do(split=True)
+    pprint(droplets)
+    
 
 def host(*names):
     env.hosts = []
@@ -906,7 +907,7 @@ def copy_task_settings():
 
 def setup_do(name, size=2):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 12.10 x64 Server"
+    IMAGE_NAME = "Ubuntu 13.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
