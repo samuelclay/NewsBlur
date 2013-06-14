@@ -19,7 +19,7 @@ httplib2==0.8
 iconv==1.0
 kombu==2.5.7
 lxml==3.1.0
-mongoengine==0.7.9
+mongoengine==0.8.2
 nltk==2.0.4
 oauth2==1.5.211
 PIL==1.1.7
