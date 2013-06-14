@@ -8,7 +8,6 @@ import sys
 from requests.exceptions import ConnectionError
 
 sys.path.insert(0, '/srv/newsblur')
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import fabfile
 
