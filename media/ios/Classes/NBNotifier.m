@@ -106,7 +106,7 @@
 - (void)setTitle:(NSString *)title {
     [_txtLabel setText:title];
     
-    [self setNeedsLayout];
+    [self setNeedsDisplay];
 }
 
 - (void)setStyle:(NBNotifierStyle)style {
@@ -125,7 +125,7 @@
         self.accessoryView = activityIndicator;        
     }
     
-    [self setNeedsLayout];
+    [self setNeedsDisplay];
 }
 
 - (void)setView:(UIView *)view {

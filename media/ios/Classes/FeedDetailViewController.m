@@ -284,7 +284,7 @@
 
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
-        if (!appDelegate.storyLocationsCount) {
+        if (!appDelegate.storyLocationsCount && self.feedPage == 1) {
             [self loadOfflineStories];
         }
     });
@@ -346,9 +346,12 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
-            [self loadOfflineStories];
-            [self showOfflineNotifier];
-//            [self informError:[request error]];
+            if (self.feedPage == 1) {
+                [self loadOfflineStories];
+                [self showOfflineNotifier];
+            } else {
+                [self informError:[request error]];
+            }
         }];
         [request setCompletionBlock:^(void) {
             if (!appDelegate.activeFeed) return;
@@ -382,7 +385,7 @@
         [self showLoadingNotifier];
     }
     
-
+    self.pageFinished = YES;
 }
 
 - (void)showOfflineNotifier {
@@ -395,7 +398,7 @@
 - (void)showLoadingNotifier {
     [self.notifier hide];
     self.notifier.style = NBLoadingStyle;
-    self.notifier.title = @"Fetching all stories...";
+    self.notifier.title = @"Fetching recent stories...";
     [self.notifier show];
 }
 
@@ -480,8 +483,14 @@
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] >= 500) {
-        [self loadOfflineStories];
-        [self showOfflineNotifier];
+        if (self.feedPage == 1) {
+            [self loadOfflineStories];
+            [self showOfflineNotifier];
+        } else {
+            [self informError:@"The server barfed."]; 
+            self.pageFinished = YES;
+            [self.storyTitlesTable reloadData];
+        }
         
         return;
     }
@@ -577,6 +586,7 @@
 //        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
     
+    self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];

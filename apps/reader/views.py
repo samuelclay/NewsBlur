@@ -632,7 +632,7 @@ def load_single_feed(request, feed_id):
     
     if page == 1:                       
         import random
-        time.sleep(random.randint(0, 10))
+        time.sleep(random.randint(0, 6))
 
     return data
 
