@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
-#import "FMDatabase.h"
+#import "FMDatabaseQueue.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -127,7 +127,7 @@
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
     
-    FMDatabase *database;
+    FMDatabaseQueue *database;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -217,7 +217,7 @@
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
-@property (readwrite) FMDatabase *database;
+@property (readwrite) FMDatabaseQueue *database;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
@@ -310,8 +310,12 @@
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 
-- (void)setupDatabase;
+- (int)databaseSchemaVersion:(FMDatabase *)db;
+- (void)createDatabaseConnection;
+- (void)setupDatabase:(FMDatabase *)db;
 - (NSURL *)applicationDocumentsDirectory;
+- (void)fetchUnreadHashes;
+- (void)storeUnreadHashes:(ASIHTTPRequest *)request;
 - (void)fetchAllUnreadStories;
 - (void)fetchAllUnreadStories:(int)page;
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;

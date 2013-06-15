@@ -39,6 +39,7 @@
 #import "ShareThis.h"
 #import "Reachability.h"
 #import "FMDatabase.h"
+#import "FMDatabaseQueue.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -188,7 +189,7 @@
                              nil]];
     
     [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
-    [self setupDatabase];
+    [self createDatabaseConnection];
 //    [self showFirstTimeUser];
 
 	return YES;
@@ -1992,40 +1993,63 @@
 #pragma mark -
 #pragma mark Storing Stories for Offline
 
-- (int)databaseSchemaVersion {
-    FMResultSet *resultSet = [[self database] executeQuery:@"PRAGMA user_version"];
+- (int)databaseSchemaVersion:(FMDatabase *)db {
     int version = 0;
+    FMResultSet *resultSet = [db executeQuery:@"PRAGMA user_version"];
     if ([resultSet next]) {
         version = [resultSet intForColumnIndex:0];
     }
     return version;
 }
 
-- (void)setupDatabase {
+- (void)createDatabaseConnection {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *docsPath = [paths objectAtIndex:0];
-    NSString *path = [docsPath stringByAppendingPathComponent:@"newsblur.sqlite"];
+    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_URL];
+    NSString *path = [docsPath stringByAppendingPathComponent:dbName];
     
-    database = [FMDatabase databaseWithPath:path];
-    [database open];
-    [database setLogsErrors:YES];
-    
-    if ([self databaseSchemaVersion] < CURRENT_DB_VERSION) {
+    database = [FMDatabaseQueue databaseQueueWithPath:path];
+    [database inDatabase:^(FMDatabase *db) {
+        [self setupDatabase:db];
+    }];
+}
+
+- (void)setupDatabase:(FMDatabase *)db {
+    if ([self databaseSchemaVersion:db] < CURRENT_DB_VERSION) {
         // FMDB cannot execute this query because FMDB tries to use prepared statements
-        [database executeQuery:@"drop table if exists `stories`"];
-        NSLog(@"Dropped db: %@", [database lastErrorMessage]);
-        sqlite3_exec([self database].sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
+        [db executeQuery:@"drop table if exists `stories`"];
+        [db executeQuery:@"drop table if exists `unread_hashes`"];
+        //        [db executeQuery:@"drop table if exists `queued_read_hashes`"];
+        NSLog(@"Dropped db: %@", [db lastErrorMessage]);
+        sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
-    NSString *createTable = [NSString stringWithFormat:@"create table if not exists stories "
-                             "("
-                             " story_feed_id number,"
-                             " story_hash varchar(24),"
-                             " story_timestamp number,"
-                             " story_json text,"
-                             " UNIQUE(story_hash) ON CONFLICT REPLACE"
-                             ")"];
-    [database executeUpdate:createTable];
-    NSLog(@"Create db %d: %@", [database lastErrorCode], [database lastErrorMessage]);
+    NSString *createStoryTable = [NSString stringWithFormat:@"create table if not exists stories "
+                                  "("
+                                  " story_feed_id number,"
+                                  " story_hash varchar(24),"
+                                  " story_timestamp number,"
+                                  " story_json text,"
+                                  " UNIQUE(story_hash) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createStoryTable];
+    
+    NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
+                                       "("
+                                       " story_feed_id number,"
+                                       " story_hash varchar(24),"
+                                       " UNIQUE(story_hash) ON CONFLICT IGNORE"
+                                       ")"];
+    [db executeUpdate:createUnreadHashTable];
+    
+    NSString *createReadTable = [NSString stringWithFormat:@"create table if not exists queued_read_hashes "
+                                 "("
+                                 " story_feed_id number,"
+                                 " story_hash varchar(24),"
+                                 " UNIQUE(story_hash) ON CONFLICT IGNORE"
+                                 ")"];
+    [db executeUpdate:createReadTable];
+    
+    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
 // Returns the URL to the application's Documents directory.
@@ -2034,8 +2058,57 @@
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
+- (void)fetchUnreadHashes {
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/unread_story_hashes",
+                                       NEWSBLUR_URL]];
+    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+    __weak ASIHTTPRequest *request = _request;
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"Failed fetch all story hashes.");
+    }];
+    [request setCompletionBlock:^(void) {
+        [self storeUnreadHashes:request];
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+}
+
+- (void)storeUnreadHashes:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:@"DROP TABLE unread_hashes"];
+            [self setupDatabase:db];
+            NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
+            for (NSString *feed in [hashes allKeys]) {
+                NSArray *story_hashes = [hashes objectForKey:feed];
+                for (NSString *story_hash in story_hashes) {
+                    [db executeUpdate:@"INSERT into unread_hashes"
+                     "(story_feed_id, story_hash) VALUES "
+                     "(?, ?)",
+                     feed,
+                     story_hash
+                     ];
+                }
+            }
+        }];
+    });
+}
+
+
 
 - (void)fetchAllUnreadStories {
+    
     [self fetchAllUnreadStories:1];
 }
 

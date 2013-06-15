@@ -28,6 +28,7 @@
 #import "FeedDetailMenuViewController.h"
 #import "NBNotifier.h"
 #import "NBLoadingCell.h"
+#import "FMDatabase.h"
 
 #define kTableViewRowHeight 61;
 #define kTableViewRiverRowHeight 81;
@@ -367,23 +368,25 @@
 }
 
 - (void)loadOfflineStories {
-    FMResultSet *cursor = [appDelegate.database executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ? ORDER BY story_timestamp DESC", [appDelegate.activeFeed objectForKey:@"id"]];
-    NSMutableArray *offlineStories = [NSMutableArray array];
-    
-    while ([cursor next]) {
-        NSDictionary *story = [cursor resultDictionary];
-        [offlineStories addObject:[NSJSONSerialization
-                                   JSONObjectWithData:[[story objectForKey:@"story_json"]
-                                                       dataUsingEncoding:NSUTF8StringEncoding]
-                                   options:nil error:nil]];
-    }
-    
-    if ([offlineStories count]) {
-        [self renderStories:offlineStories];
-        [self showLoadingNotifier];
-    } else {
-        [self showLoadingNotifier];
-    }
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
+        FMResultSet *cursor = [db executeQuery:@"SELECT * FROM stories WHERE story_feed_id = ? ORDER BY story_timestamp DESC", [appDelegate.activeFeed objectForKey:@"id"]];
+        NSMutableArray *offlineStories = [NSMutableArray array];
+        
+        while ([cursor next]) {
+            NSDictionary *story = [cursor resultDictionary];
+            [offlineStories addObject:[NSJSONSerialization
+                                       JSONObjectWithData:[[story objectForKey:@"story_json"]
+                                                           dataUsingEncoding:NSUTF8StringEncoding]
+                                       options:nil error:nil]];
+        }
+        
+        if ([offlineStories count]) {
+            [self renderStories:offlineStories];
+            [self showLoadingNotifier];
+        } else {
+            [self showLoadingNotifier];
+        }        
+    }];
     
     self.pageFinished = YES;
 }
@@ -591,20 +594,19 @@
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];
     [appDelegate.storyPageControl advanceToNextUnread];
-    
-    [appDelegate.database beginTransaction];
-    for (NSDictionary *story in confirmedNewStories) {
-        [appDelegate.database executeUpdate:@"INSERT into stories"
-         "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-         "(?, ?, ?, ?)",
-         [story objectForKey:@"story_feed_id"],
-         [story objectForKey:@"story_hash"],
-         [story objectForKey:@"story_timestamp"],
-         [story JSONRepresentation]
-        ];
-    }
-    [appDelegate.database commit];
-//    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [appDelegate.database lastErrorMessage]);
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        for (NSDictionary *story in confirmedNewStories) {
+            [db executeUpdate:@"INSERT into stories"
+             "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+             "(?, ?, ?, ?)",
+             [story objectForKey:@"story_feed_id"],
+             [story objectForKey:@"story_hash"],
+             [story objectForKey:@"story_timestamp"],
+             [story JSONRepresentation]
+             ];
+        }
+        //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [db lastErrorMessage]);
+    }];
 
     [self.notifier hide];
 }
