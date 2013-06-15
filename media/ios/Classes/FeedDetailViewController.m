@@ -369,14 +369,31 @@
 
 - (void)loadOfflineStories {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSArray *feedIds;
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
         } else {
             feedIds = @[[appDelegate.activeFeed objectForKey:@"id"]];
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories WHERE story_feed_id IN (%@) ORDER BY story_timestamp DESC",
-                         [feedIds componentsJoinedByString:@","]];
+        
+        NSString *order;
+        if ([[userPreferences stringForKey:[appDelegate orderKey]] isEqualToString:@"oldest"]) {
+            order = @"ASC";
+        } else {
+            order = @"DESC";
+        }
+        NSString *readFilter;
+        if ([[userPreferences stringForKey:[appDelegate readFilterKey]] isEqualToString:@"unread"]) {
+            readFilter = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
+        } else {
+            readFilter = @"";
+        }
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@",
+                         readFilter,
+                         [feedIds componentsJoinedByString:@","],
+                         order];
+        NSLog(@"Sql: %@", sql);
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
