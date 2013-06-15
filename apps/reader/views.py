@@ -840,7 +840,11 @@ def load_river_stories__redis(request):
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), order, read_filter))
-    
+    if page == 1:                       
+        import random
+        time.sleep(random.randint(0, 6))
+
+
     return dict(stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
