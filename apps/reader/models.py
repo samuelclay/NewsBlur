@@ -129,7 +129,7 @@ class UserSubscription(models.Model):
             else:
                 max_score = 0
 
-        if settings.DEBUG:
+        if settings.DEBUG and False:
             debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
             print " ---> Unread all stories (%s - %s) %s stories: %s" % (
                 min_score,
