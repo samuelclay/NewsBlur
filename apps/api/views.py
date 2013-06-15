@@ -30,7 +30,7 @@ def login(request):
             errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.user(request, "~FG~BB~SKAPI Login~FW")
+            logging.user(request, "~FG~BB~SKAPI Login~FW: %s" % request.environ.get('HTTP_USER_AGENT', ''))
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
