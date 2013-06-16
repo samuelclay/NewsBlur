@@ -84,7 +84,7 @@ def host(*names):
     hostnames = do(split=True)
     for role in hostnames.keys():
         for host in hostnames[role]:
-            if host['name'] in names:
+            if isinstance(host, dict) and host['name'] in names:
                 env.hosts.append(host['address'])
     print " ---> Using %s as hosts" % env.hosts
     
@@ -796,7 +796,9 @@ def setup_munin():
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_html')
     with settings(warn_only=True):
-        sudo('chown nginx.www-data munin-cgi*')
+        sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/munin/cgi/munin-cgi*')
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph stop')
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
@@ -806,7 +808,9 @@ def setup_munin():
         sudo('update-rc.d spawn_fcgi_munin_html defaults')
     sudo('/etc/init.d/munin-node restart')
     with settings(warn_only=True):
-        sudo('chown nginx.www-data munin-cgi*')
+        sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/munin/cgi/munin-cgi*')
         sudo('chmod a+rw /var/log/munin/*')
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
