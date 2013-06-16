@@ -114,6 +114,7 @@
 @synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
 @synthesize savedStoriesCount;
+@synthesize totalUnfetchedStoryCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -244,6 +245,7 @@
 - (void)viewDidLoad {
     self.visibleUnreadCount = 0;
     self.savedStoriesCount = 0;
+    self.totalUnfetchedStoryCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
@@ -520,7 +522,7 @@
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
-    [self flushQueuedReadStories:NO];
+    [self flushQueuedReadStories:NO withCallback:nil];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -2114,19 +2116,39 @@
                 }
             }
         }];
+        [self fetchAllUnreadStories];
     });
 }
 
-
-
-- (void)fetchAllUnreadStories {
+- (NSArray *)unfetchedStoryHashes {
+    NSMutableArray *hashes = [NSMutableArray array];
     
-    [self fetchAllUnreadStories:1];
+    [self.database inDatabase:^(FMDatabase *db) {
+        if (self.totalUnfetchedStoryCount == 0) {
+            FMResultSet *cursor = [db executeQuery:@"SELECT COUNT(1) FROM unread_hashes u LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) WHERE s.story_hash IS NULL"];
+            while ([cursor next]) {
+                self.totalUnfetchedStoryCount = [cursor objectForColumnIndex:0];
+            }
+        }
+
+        FMResultSet *cursor = [db executeQuery:@"SELECT u.story_hash FROM unread_hashes u LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) WHERE s.story_hash IS NULL ORDER BY s.story_timestamp LIMIT 100"];
+        while ([cursor next]) {
+            [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
+        }
+    }];
+    
+    return hashes;
 }
 
-- (void)fetchAllUnreadStories:(int)page {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/river_stories?read_filter=unread&order=newest&page=%d",
-                                       NEWSBLUR_URL, page]];
+- (void)fetchAllUnreadStories {
+    NSArray *hashes = [self unfetchedStoryHashes];
+    if ([hashes count] == 0) {
+        NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
+        return;
+    }
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/river_stories?page=0&h=%@",
+                                       NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
     [request setResponseEncoding:NSUTF8StringEncoding];
@@ -2149,14 +2171,28 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions
                              error:&error];
-
+    __block BOOL anySuccess = NO;
     
-    for (NSDictionary *story in [results objectForKey:@"stories"]) {
-        
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        for (NSDictionary *story in [results objectForKey:@"stories"]) {
+            BOOL inserted = [db executeUpdate:@"INSERT into stories"
+             "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+             "(?, ?, ?, ?)",
+             [story objectForKey:@"story_feed_id"],
+             [story objectForKey:@"story_hash"],
+             [story objectForKey:@"story_timestamp"],
+             [story JSONRepresentation]
+             ];
+            if (inserted) anySuccess = YES;
+        }
+    }];
+    
+    if (anySuccess) {
+        [self fetchAllUnreadStories];
     }
 }
 
-- (void)flushQueuedReadStories:(BOOL)forceCheck {
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (hasQueuedReadStories || forceCheck) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
@@ -2174,14 +2210,18 @@
                 
                 if ([[hashes allKeys] count]) {
                     hasQueuedReadStories = NO;
-                    [self syncQueuedReadStories:db withStories:hashes];
+                    [self syncQueuedReadStories:db withStories:hashes withCallback:callback];
+                } else {
+                    if (callback) callback();
                 }
             }];
         });
+    } else {
+        if (callback) callback();
     }
 }
 
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes {
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -2197,10 +2237,12 @@
         NSLog(@"Completed clearing %@ hashes", completedHashesStr);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
         ;
+        if (callback) callback();
     }];
     [request setFailedBlock:^{
         NSLog(@"Failed mark read queued.");
         hasQueuedReadStories = YES;
+        if (callback) callback();
     }];
     [request startAsynchronous];
 }

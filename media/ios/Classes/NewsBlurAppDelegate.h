@@ -112,6 +112,7 @@
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
     int savedStoriesCount;
+    int totalUnfetchedStoryCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -200,6 +201,7 @@
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;
+@property (readwrite) int totalUnfetchedStoryCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -321,8 +323,8 @@
 - (void)fetchAllUnreadStories;
 - (void)fetchAllUnreadStories:(int)page;
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
-- (void)flushQueuedReadStories:(BOOL)forceCheck;
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes;
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 
 @end
 

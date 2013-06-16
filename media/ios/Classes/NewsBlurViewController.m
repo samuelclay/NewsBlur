@@ -679,10 +679,15 @@ static const CGFloat kFolderTitleHeight = 28;
         [upgradeConfirm setTag:2];
     }
 
-    if (!self.inPullToRefresh_) {
-        [self refreshFeedList];
-    } else {
+    if (self.inPullToRefresh_) {
         self.inPullToRefresh_ = NO;
+        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+            [self.appDelegate fetchUnreadHashes];
+        }];
+    } else {
+        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+            [self refreshFeedList];
+        }];
     }
     
     // start up the first time user experience
@@ -1471,7 +1476,6 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
-    [self.appDelegate flushQueuedReadStories:YES];
     [self.appDelegate fetchUnreadHashes];
 }
 
