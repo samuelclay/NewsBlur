@@ -149,7 +149,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'dev', 'db', 'task', 'debug']
+    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push']
 
 # =============
 # = Bootstrap =
