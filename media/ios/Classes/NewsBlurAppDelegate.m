@@ -40,6 +40,7 @@
 #import "Reachability.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
+#import "JSON.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -1389,6 +1390,15 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
+    
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *storyHash = [newStory objectForKey:@"story_hash"];
+        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+         [newStory JSONRepresentation],
+         storyHash];
+        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
+         storyHash];
+    }];
     
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {

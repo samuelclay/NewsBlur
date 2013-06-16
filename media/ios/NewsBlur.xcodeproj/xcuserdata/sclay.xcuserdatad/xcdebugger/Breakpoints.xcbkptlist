@@ -21,11 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/NewsBlurAppDelegate.m"
-         timestampString = "392954154.577765"
+         timestampString = "393035025.753053"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "713"
-         endingLineNumber = "713"
+         startingLineNumber = "714"
+         endingLineNumber = "714"
          landmarkName = "@implementation NewsBlurAppDelegate"
          landmarkType = "3">
       </FileBreakpoint>
