@@ -88,6 +88,7 @@
     BOOL inFeedDetail;
     BOOL inStoryDetail;
     BOOL inFindingStoryMode;
+    BOOL hashQueuedReadStories;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSMutableDictionary * activeClassifiers;
@@ -173,6 +174,7 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
+@property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
@@ -319,6 +321,8 @@
 - (void)fetchAllUnreadStories;
 - (void)fetchAllUnreadStories:(int)page;
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
+- (void)flushQueuedReadStories:(BOOL)forceCheck;
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes;
 
 @end
 

@@ -90,6 +90,7 @@
 @synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
+@synthesize hasQueuedReadStories;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
@@ -519,6 +520,7 @@
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    [self flushQueuedReadStories:NO];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -2152,6 +2154,55 @@
     for (NSDictionary *story in [results objectForKey:@"stories"]) {
         
     }
+}
+
+- (void)flushQueuedReadStories:(BOOL)forceCheck {
+    if (hasQueuedReadStories || forceCheck) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
+            [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+                NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
+                FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
+                while ([stories next]) {
+                    NSString *storyFeedId = [NSString stringWithFormat:@"%@", [stories objectForColumnName:@"story_feed_id"]];
+                    NSString *storyHash = [stories objectForColumnName:@"story_hash"];
+                    if (![hashes objectForKey:storyFeedId]) {
+                        [hashes setObject:[NSMutableArray array] forKey:storyFeedId];
+                    }
+                    [[hashes objectForKey:storyFeedId] addObject:storyHash];
+                }
+                
+                if ([[hashes allKeys] count]) {
+                    hasQueuedReadStories = NO;
+                    [self syncQueuedReadStories:db withStories:hashes];
+                }
+            }];
+        });
+    }
+}
+
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableArray *completedHashes = [NSMutableArray array];
+    for (NSArray *storyHashes in [hashes allValues]) {
+        [completedHashes addObjectsFromArray:storyHashes];
+    }
+    NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
+    [request setDelegate:self];
+    [request setCompletionBlock:^{
+        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
+        ;
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed mark read queued.");
+        hasQueuedReadStories = YES;
+    }];
+    [request startAsynchronous];
 }
 
 @end

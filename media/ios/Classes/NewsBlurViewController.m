@@ -411,7 +411,7 @@ static const CGFloat kFolderTitleHeight = 28;
     
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
-                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
+                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=true",
                       NEWSBLUR_URL]];
     } else {
         urlFeedList = [NSURL URLWithString:
@@ -1471,6 +1471,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
+    [self.appDelegate flushQueuedReadStories:YES];
     [self.appDelegate fetchUnreadHashes];
 }
 
