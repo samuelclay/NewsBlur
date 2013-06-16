@@ -286,7 +286,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
 
         if (NEWSBLUR.hotkeys.command) {
-            this.model.open_story_in_new_tab();
+            this.model.open_story_in_new_tab(true);
         }
     },
     

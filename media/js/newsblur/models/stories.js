@@ -56,7 +56,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     open_story_in_new_tab: function(background) {
         this.mark_read({skip_delay: true});
 
-        if (background || true) {
+        if (background && !$.browser.mozilla) {
             var anchor, event;
 
             anchor = document.createElement("a");
