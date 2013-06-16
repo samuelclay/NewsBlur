@@ -5558,6 +5558,20 @@
                 var story = self.model.get_story(story_id);
                 story.open_story_in_new_tab();
             });
+            $document.bind('keypress', 'v', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                var story = self.model.get_story(story_id);
+                story.open_story_in_new_tab();
+            });
+            $document.bind('keypress', 'shift+v', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                var story = self.model.get_story(story_id);
+                story.open_story_in_new_tab(true);
+            });
             $document.bind('keypress', 'e', function(e) {
                 e.preventDefault();
                 var story = self.active_story;
