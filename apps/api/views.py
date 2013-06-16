@@ -27,7 +27,7 @@ def login(request):
 
     if not user_agent:
         errors = dict(user_agent="You must set a user agent to login.")
-        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s" % user_agent)
+        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login (%s)~SN~FW: %s" % (request.REQUEST.get('username', ''), user_agent))
     elif request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.errors:
