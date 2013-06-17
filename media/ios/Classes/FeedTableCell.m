@@ -120,15 +120,15 @@ static UIFont *textFont = nil;
             [feedTitle 
              drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
              withFont:font
-             lineBreakMode:UILineBreakModeTailTruncation 
-             alignment:UITextAlignmentLeft]; 
+             lineBreakMode:NSLineBreakByTruncatingTail
+             alignment:NSTextAlignmentLeft];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
             [feedTitle 
              drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
              withFont:font
-             lineBreakMode:UILineBreakModeTailTruncation 
-             alignment:UITextAlignmentLeft];
+             lineBreakMode:NSLineBreakByTruncatingTail 
+             alignment:NSTextAlignmentLeft];
         }
 
     } else {
@@ -137,15 +137,15 @@ static UIFont *textFont = nil;
             [feedTitle 
              drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
-             lineBreakMode:UILineBreakModeTailTruncation 
-             alignment:UITextAlignmentLeft];
+             lineBreakMode:NSLineBreakByTruncatingTail 
+             alignment:NSTextAlignmentLeft];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle 
              drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
-             lineBreakMode:UILineBreakModeTailTruncation 
-             alignment:UITextAlignmentLeft];
+             lineBreakMode:NSLineBreakByTruncatingTail 
+             alignment:NSTextAlignmentLeft];
         }
     }
     

@@ -175,7 +175,7 @@
         bio.text = [profile objectForKey:@"bio"];
         bio.textColor = UIColorFromRGB(0x333333);
         bio.font = [UIFont fontWithName:@"Helvetica" size:12];
-        bio.lineBreakMode = UILineBreakModeTailTruncation;
+        bio.lineBreakMode = NSLineBreakByTruncatingTail;
         bio.numberOfLines = 5;
         bio.backgroundColor = [UIColor clearColor];
         
@@ -236,7 +236,7 @@
         NSString *sharedStr = [NSString stringWithFormat:@"%i",
                                [[profile objectForKey:@"shared_stories_count"] intValue]];
         shared.text = sharedStr;
-        shared.textAlignment = UITextAlignmentCenter;
+        shared.textAlignment = NSTextAlignmentCenter;
         shared.font = [UIFont boldSystemFontOfSize:20];
         shared.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:shared];
@@ -245,7 +245,7 @@
         NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stor%@",
                                     [[profile objectForKey:@"shared_stories_count"] intValue] == 1 ? @"y" : @"ies"];
         sharedLabel.text = sharedLabelStr;
-        sharedLabel.textAlignment = UITextAlignmentCenter;
+        sharedLabel.textAlignment = NSTextAlignmentCenter;
         sharedLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
         sharedLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:sharedLabel];
@@ -256,7 +256,7 @@
         NSString *followingStr = [NSString stringWithFormat:@"%i",
                                   [[profile objectForKey:@"following_count"] intValue]];
         following.text = followingStr;
-        following.textAlignment = UITextAlignmentCenter;
+        following.textAlignment = NSTextAlignmentCenter;
         following.font = [UIFont boldSystemFontOfSize:20];
         following.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:following];
@@ -264,7 +264,7 @@
         UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight + 30, (width/3), 20)];
         NSString *followingLabelStr = [NSString stringWithFormat:@"Following"];
         followingLabel.text = followingLabelStr;
-        followingLabel.textAlignment = UITextAlignmentCenter;
+        followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
         followingLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followingLabel];
@@ -275,7 +275,7 @@
         NSString *followersStr = [NSString stringWithFormat:@"%i", 
                                   [[profile objectForKey:@"follower_count"] intValue]];
         followers.text = followersStr;
-        followers.textAlignment = UITextAlignmentCenter;
+        followers.textAlignment = NSTextAlignmentCenter;
         followers.font = [UIFont boldSystemFontOfSize:20];
         followers.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followers];
@@ -284,7 +284,7 @@
         NSString *followersLabelStr = [NSString stringWithFormat:@"Follower%@", 
                                        [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
         followersLabel.text = followersLabelStr;
-        followersLabel.textAlignment = UITextAlignmentCenter;
+        followersLabel.textAlignment = NSTextAlignmentCenter;
         followersLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
         followersLabel.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:followersLabel];

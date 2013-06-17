@@ -1060,7 +1060,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.activeStoryId &&
         ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
-                       dispatch_get_current_queue(), ^{
+                       dispatch_get_main_queue(), ^{
             [self checkTryFeedStory];
         });
     }
@@ -1294,7 +1294,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     // HACK to make the scroll event happen after the replace innerHTML event above happens.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
-                   dispatch_get_current_queue(), ^{
+                   dispatch_get_main_queue(), ^{
         if (!replyId) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@",
                                        [appDelegate.dictSocialProfile objectForKey:@"user_id"]];

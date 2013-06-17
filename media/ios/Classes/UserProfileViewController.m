@@ -85,7 +85,7 @@
 }
 
 - (void)doCancelButton {
-    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:NO];
+    [appDelegate.modalNavigationController dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)getUserProfile {

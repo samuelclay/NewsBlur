@@ -195,7 +195,7 @@
     
     if (!showing) return;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3f];

@@ -81,7 +81,7 @@
 }
 
 - (void)doCancelButton {
-    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UISearchBar delegate methods
@@ -330,7 +330,7 @@ viewForHeaderInSection:(NSInteger)section {
                 } else {
                     msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
                 }
-                msg.textAlignment = UITextAlignmentCenter;
+                msg.textAlignment = NSTextAlignmentCenter;
             }
 
         }
@@ -356,7 +356,7 @@ viewForHeaderInSection:(NSInteger)section {
 //                } else {
 //                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
 //                }
-//                msg.textAlignment = UITextAlignmentCenter;
+//                msg.textAlignment = NSTextAlignmentCenter;
 //            }
 //        } else {
 //            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
@@ -401,7 +401,7 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideUserProfileModal {
-    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 
 }
 

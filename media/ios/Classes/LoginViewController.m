@@ -267,7 +267,7 @@
     if (code == -1) {
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"email"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];   
+            [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];
         } else if ([errors valueForKey:@"username"]) {
             [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];
         } else if ([errors valueForKey:@"__all__"]) {
@@ -280,7 +280,7 @@
         [self.signUpPasswordInput setText:@""];
 //        [appDelegate showFirstTimeUser];
         [appDelegate reloadFeedsView:YES];
-        [self dismissModalViewControllerAnimated:NO];
+        [self dismissViewControllerAnimated:NO completion:nil];
     }
     
 }

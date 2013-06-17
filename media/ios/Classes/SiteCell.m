@@ -63,8 +63,8 @@ static UIFont *indicatorFont = nil;
     [self.siteTitle 
      drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21) 
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentLeft];
+     lineBreakMode:NSLineBreakByTruncatingTail 
+     alignment:NSTextAlignmentLeft];
     
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder

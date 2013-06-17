@@ -88,8 +88,8 @@ static UIFont *indicatorFont = nil;
         [self.siteTitle 
          drawInRect:CGRectMake(leftMargin + 20, 7, rect.size.width - 20, 21)
          withFont:font
-         lineBreakMode:UILineBreakModeTailTruncation 
-         alignment:UITextAlignmentLeft];
+         lineBreakMode:NSLineBreakByTruncatingTail 
+         alignment:NSTextAlignmentLeft];
         
         if (self.isRead) {
             font = [UIFont fontWithName:@"Helvetica" size:12];
@@ -107,7 +107,7 @@ static UIFont *indicatorFont = nil;
     
     // story title 
 
-    CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width, 30.0) lineBreakMode:UILineBreakModeTailTruncation];
+    CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width, 30.0) lineBreakMode:NSLineBreakByTruncatingTail];
     
     int storyTitleY = 7 + adjustForSocial + ((30 - theSize.height)/2);
     if (self.isShort){
@@ -117,8 +117,8 @@ static UIFont *indicatorFont = nil;
     [self.storyTitle
      drawInRect:CGRectMake(leftMargin, storyTitleY, rect.size.width, theSize.height) 
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentLeft];
+     lineBreakMode:NSLineBreakByTruncatingTail 
+     alignment:NSTextAlignmentLeft];
 
     int storyAuthorDateY = 41 + adjustForSocial;
     if (self.isShort){
@@ -142,8 +142,8 @@ static UIFont *indicatorFont = nil;
     [self.storyAuthor
      drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width) / 2 - 10, 15.0)
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation
-     alignment:UITextAlignmentLeft];
+     lineBreakMode:NSLineBreakByTruncatingTail
+     alignment:NSTextAlignmentLeft];
 
     // story date
     if (self.isRead) {
@@ -162,8 +162,8 @@ static UIFont *indicatorFont = nil;
     [self.storyDate 
          drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0) 
          withFont:font
-         lineBreakMode:UILineBreakModeTailTruncation 
-         alignment:UITextAlignmentRight];
+         lineBreakMode:NSLineBreakByTruncatingTail 
+         alignment:NSTextAlignmentRight];
     
     // feed bar
     

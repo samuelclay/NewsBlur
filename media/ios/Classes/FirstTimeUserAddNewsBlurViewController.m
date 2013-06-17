@@ -66,7 +66,7 @@
 
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.ftuxNavigationController dismissViewControllerAnimated:YES completion:nil];
         [appDelegate.feedsViewController fetchFeedList:NO];
 }
 

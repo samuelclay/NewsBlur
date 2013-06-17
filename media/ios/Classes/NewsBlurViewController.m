@@ -996,7 +996,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (IBAction)sectionUntapped:(UIButton *)button {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
-                   dispatch_get_current_queue(), ^{
+                   dispatch_get_main_queue(), ^{
         button.backgroundColor = [UIColor clearColor];
    });
 }
