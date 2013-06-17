@@ -1249,7 +1249,7 @@ class Feed(models.Model):
             
             if (seq
                 and story_content
-                and len(story_content) > 100
+                and len(story_content) > 500
                 and existing_story_content
                 and seq.real_quick_ratio() > .9 
                 and seq.quick_ratio() > .95):
