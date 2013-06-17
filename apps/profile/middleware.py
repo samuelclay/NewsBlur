@@ -19,6 +19,10 @@ class LastSeenMiddleware(object):
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
+            elif settings.DEBUG:
+                logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
+                    request.user.profile.last_seen_on, ip))
+
             # if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
                 # request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()

@@ -8,7 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
-from mongoengine.queryset import QuerySet as MongoQuerySet
+from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
 from bson.objectid import ObjectId
 import sys
 import datetime
@@ -37,10 +37,8 @@ def json_encode(data, *args, **kwargs):
         # Opps, we used to check if it is of type list, but that fails 
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
-        if hasattr(data, 'to_json'):
-            ret = _any(data.to_json())
-        elif hasattr(data, 'canonical'):
-            ret = data.canonical()
+        if hasattr(data, 'canonical'):
+            ret = _any(data.canonical())
         elif isinstance(data, list):
             ret = _list(data)
         elif isinstance(data, set):
@@ -69,6 +67,8 @@ def json_encode(data, *args, **kwargs):
             ret = force_unicode(data)
         elif isinstance(data, datetime.datetime) or isinstance(data, datetime.date):
             ret = str(data)
+        elif hasattr(data, 'to_json'):
+            ret = data.to_json()
         else:
             ret = data
         return ret

@@ -6,6 +6,8 @@ import httplib
 import urllib
 import time
 import re
+from StringIO import StringIO
+import gzip
 
 from tweepy.error import TweepError
 from tweepy.utils import convert_to_utf8_str
@@ -63,7 +65,7 @@ def bind_api(**config):
             # Manually set Host header to fix an issue in python 2.5
             # or older where Host is set including the 443 port.
             # This causes Twitter to issue 301 redirect.
-            # See Issue http://github.com/joshthecoder/tweepy/issues/#issue/12
+            # See Issue https://github.com/tweepy/tweepy/issues/12
             self.headers['Host'] = self.host
 
         def build_parameters(self, args, kargs):
@@ -128,11 +130,10 @@ def bind_api(**config):
             retries_performed = 0
             while retries_performed < self.retry_count + 1:
                 # Open connection
-                # FIXME: add timeout
                 if self.api.secure:
-                    conn = httplib.HTTPSConnection(self.host)
+                    conn = httplib.HTTPSConnection(self.host, timeout=self.api.timeout)
                 else:
-                    conn = httplib.HTTPConnection(self.host)
+                    conn = httplib.HTTPConnection(self.host, timeout=self.api.timeout)
 
                 # Apply authentication
                 if self.api.auth:
@@ -140,6 +141,10 @@ def bind_api(**config):
                             self.scheme + self.host + url,
                             self.method, self.headers, self.parameters
                     )
+
+                # Request compression if configured
+                if self.api.compression:
+                    self.headers['Accept-encoding'] = 'gzip'
 
                 # Execute request
                 try:
@@ -168,7 +173,14 @@ def bind_api(**config):
                 raise TweepError(error_msg, resp)
 
             # Parse the response payload
-            result = self.api.parser.parse(self, resp.read())
+            body = resp.read()
+            if resp.getheader('Content-Encoding', '') == 'gzip':
+                try:
+                    zipper = gzip.GzipFile(fileobj=StringIO(body))
+                    body = zipper.read()
+                except Exception, e:
+                    raise TweepError('Failed to decompress data: %s' % e)
+            result = self.api.parser.parse(self, body)
 
             conn.close()
 
@@ -188,6 +200,9 @@ def bind_api(**config):
     # Set pagination mode
     if 'cursor' in APIMethod.allowed_param:
         _call.pagination_mode = 'cursor'
+    elif 'max_id' in APIMethod.allowed_param and \
+         'since_id' in APIMethod.allowed_param:
+        _call.pagination_mode = 'id'
     elif 'page' in APIMethod.allowed_param:
         _call.pagination_mode = 'page'
 

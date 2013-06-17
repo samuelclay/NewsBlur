@@ -313,12 +313,25 @@ def load_feeds_flat(request):
         folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    scheduled_feeds = []
 
     for sub in user_subs:
         if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
+        if not sub.feed.active and not sub.feed.has_feed_exception:
+            scheduled_feeds.append(sub.feed.pk)
+        elif sub.feed.active_subscribers <= 0:
+            scheduled_feeds.append(sub.feed.pk)
+        elif sub.feed.next_scheduled_update < day_ago:
+            scheduled_feeds.append(sub.feed.pk)
     
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
+        logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
     if folders:
         folders = json.decode(folders.folders)
     
@@ -1511,9 +1524,9 @@ def send_story_email(request):
             "feed": feed,
             "share_user_profile": share_user_profile,
         }
-        text    = render_to_string('mail/email_story_text.xhtml', params)
-        html    = render_to_string('mail/email_story_html.xhtml', params)
-        subject = '%s is sharing a story with you: "%s"' % (from_name, story['story_title'])
+        text    = render_to_string('mail/email_story.txt', params)
+        html    = render_to_string('mail/email_story.xhtml', params)
+        subject = '%s shares "%s"' % (from_name, story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]

@@ -79,7 +79,8 @@
               FILL_OUT_PAGES: 100,
               FIND_NEXT_UNREAD_STORY_TRIES: 100,
               RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
-              MIN_FEED_LIST_SIZE: 206
+              MIN_FEED_LIST_SIZE: 206,
+              MIN_STORY_LIST_SIZE: 68
             };
     
             // ==================
@@ -330,6 +331,7 @@
                     togglerLength_open:     0
                 };
                 contentLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
+                contentLayoutOptions[story_anchor+'__minSize'] = this.constants.MIN_STORY_LIST_SIZE;
                 contentLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
                 contentLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
                 contentLayoutOptions[story_anchor+'__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
@@ -4929,7 +4931,7 @@
                 if (!self.flags['showing_confirm_input_on_manage_menu']) {
                     var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
                     var story = self.model.get_story(story_id);
-                    story.open_story_in_new_tab();
+                    story.open_story_in_new_tab(true);
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
@@ -5550,6 +5552,20 @@
                 self.open_feed_intelligence_modal(1);
             });
             $document.bind('keypress', 'o', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                var story = self.model.get_story(story_id);
+                story.open_story_in_new_tab(true);
+            });
+            $document.bind('keypress', 'v', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                var story = self.model.get_story(story_id);
+                story.open_story_in_new_tab(true);
+            });
+            $document.bind('keypress', 'shift+v', function(e) {
                 e.preventDefault();
                 var story_id = self.active_story;
                 if (!story_id) return;

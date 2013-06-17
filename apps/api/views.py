@@ -23,14 +23,18 @@ from utils.feed_functions import relative_timesince
 def login(request):
     code = -1
     errors = None
-    
-    if request.method == "POST":
+    user_agent = request.environ.get('HTTP_USER_AGENT', '')
+
+    if not user_agent or user_agent.lower() in ['nativehost']:
+        errors = dict(user_agent="You must set a user agent to login.")
+        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s" % (user_agent))
+    elif request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.errors:
             errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.user(request, "~FG~BB~SKAPI Login~FW")
+            logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
@@ -99,7 +103,7 @@ def add_site_load_script(request, token):
         'token': token,
         'folders': (usf and usf.folders) or [],
         'user': profile and profile.user or {},
-        'user_profile': user_profile and json.encode(user_profile.to_json()) or {},
+        'user_profile': user_profile and json.encode(user_profile.canonical()) or {},
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,

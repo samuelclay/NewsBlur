@@ -42,7 +42,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
@@ -74,7 +74,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
-        
+        $(".NB-modal-feed-subscribers").removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
         setTimeout(function() {
             self.make_charts(data);  
         }, this.first_load ? 200 : 50);

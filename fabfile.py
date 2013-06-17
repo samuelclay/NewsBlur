@@ -75,15 +75,16 @@ def do_roledefs(split=False):
     return droplets
 
 def list_do():
-    do(split=True)
-    pprint(env.roledefs)
+    droplets = do(split=True)
+    pprint(droplets)
+    
 
 def host(*names):
     env.hosts = []
     hostnames = do(split=True)
     for role in hostnames.keys():
         for host in hostnames[role]:
-            if host['name'] in names:
+            if isinstance(host, dict) and host['name'] in names:
                 env.hosts.append(host['address'])
     print " ---> Using %s as hosts" % env.hosts
     
@@ -99,6 +100,10 @@ def server():
 def do(split=False):
     server()
     droplets = do_roledefs(split=split)
+    if split:
+        for roledef, hosts in env.roledefs.items():
+            if roledef not in droplets:
+                droplets[roledef] = hosts
     return droplets
 
 def app():
@@ -144,7 +149,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'dev', 'db', 'task', 'debug']
+    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push']
 
 # =============
 # = Bootstrap =
@@ -649,7 +654,6 @@ def setup_db_firewall():
     sudo('ufw allow 80')
 
     # DigitalOcean
-    pprint(env)
     for ip in set(env.roledefs['app'] +
                   env.roledefs['db'] +
                   env.roledefs['dev'] +
@@ -792,7 +796,9 @@ def setup_munin():
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_html')
     with settings(warn_only=True):
-        sudo('chown nginx.www-data munin-cgi*')
+        sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/munin/cgi/munin-cgi*')
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph stop')
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
@@ -802,7 +808,9 @@ def setup_munin():
         sudo('update-rc.d spawn_fcgi_munin_html defaults')
     sudo('/etc/init.d/munin-node restart')
     with settings(warn_only=True):
-        sudo('chown nginx.www-data munin-cgi*')
+        sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
+        sudo('chown nginx.www-data /usr/lib/munin/cgi/munin-cgi*')
         sudo('chmod a+rw /var/log/munin/*')
     with settings(warn_only=True):
         sudo('/etc/init.d/spawn_fcgi_munin_graph start')
@@ -903,7 +911,7 @@ def copy_task_settings():
 
 def setup_do(name, size=2):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 12.10 x64 Server"
+    IMAGE_NAME = "Ubuntu 13.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
@@ -1142,9 +1150,15 @@ def kill_celery():
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
+    local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+
 
 def transfer_assets():
-    put('static.tgz', '%s/static/' % env.NEWSBLUR_PATH)
+    # filename = "deploy_%s.tgz" % env.commit # Easy rollback? Eh, can just upload it again.
+    # run('PYTHONPATH=/srv/newsblur python s3.py get deploy_%s.tgz' % filename)
+    run('PYTHONPATH=/srv/newsblur python utils/backups/s3.py get static.tgz')
+    # run('mv %s static/static.tgz' % filename)
+    run('mv static.tgz static/static.tgz')
     run('tar -xzf static/static.tgz')
     run('rm -f static/static.tgz')
 
@@ -1204,7 +1218,7 @@ def restore_postgres(port=5433):
 
 def restore_mongo():
     backup_date = '2012-07-24-09-00'
-    run('PYTHONPATH=/home/%s/newsblur python s3.py get backup_mongo_%s.tgz' % (env.user, backup_date))
+    run('PYTHONPATH=/srv/newsblur python s3.py get backup_mongo_%s.tgz' % (backup_date))
     run('tar -xf backup_mongo_%s.tgz' % backup_date)
     run('mongorestore backup_mongo_%s' % backup_date)
 

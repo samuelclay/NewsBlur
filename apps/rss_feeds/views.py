@@ -161,12 +161,13 @@ def load_feed_statistics(request, feed_id):
     
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
+    stats['num_subscribers'] = feed.num_subscribers
     stats['stories_last_month'] = feed.stories_last_month
     stats['last_load_time'] = feed.last_load_time
     stats['premium_subscribers'] = feed.premium_subscribers
     stats['active_subscribers'] = feed.active_subscribers
     stats['active_premium_subscribers'] = feed.active_premium_subscribers
-    
+
     # Classifier counts
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     

@@ -56,7 +56,7 @@ class Profile(models.Model):
     def __unicode__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
-    def to_json(self):
+    def canonical(self):
         return {
             'is_premium': self.is_premium,
             'preferences': json.decode(self.preferences),
@@ -752,7 +752,7 @@ class PaymentHistory(models.Model):
     class Meta:
         ordering = ['-payment_date']
         
-    def to_json(self):
+    def canonical(self):
         return {
             'payment_date': self.payment_date.strftime('%Y-%m-%d'),
             'payment_amount': self.payment_amount,
