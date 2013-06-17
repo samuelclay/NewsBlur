@@ -63,6 +63,10 @@
     [readFilterSegmentedControl setSelectedSegmentIndex:0];
     if ([[userPreferences stringForKey:readFilterKey] isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
+    } else if ([[userPreferences stringForKey:readFilterKey] isEqualToString:@"all"]) {
+        [readFilterSegmentedControl setSelectedSegmentIndex:0];
+    } else if (appDelegate.isRiverView) {
+        [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
 }
 
