@@ -172,7 +172,7 @@ def setup_common():
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
-    setup_mongoengine()
+    setup_mongoengine_repo()
     setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
@@ -340,7 +340,8 @@ def setup_python():
 
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
-
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
+    
     if env.user == 'ubuntu':
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
@@ -399,7 +400,7 @@ def config_monit_db():
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
-def setup_mongoengine():
+def setup_mongoengine_repo():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('rm -fr mongoengine')
         run('git clone https://github.com/MongoEngine/mongoengine.git')
@@ -407,6 +408,8 @@ def setup_mongoengine():
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
         sudo('ln -sfn %s /usr/local/lib/python2.7/dist-packages/mongoengine' %
              os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')), settings(warn_only=True):
+        run('git co v0.8.2')
 
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
