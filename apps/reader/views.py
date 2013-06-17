@@ -643,9 +643,9 @@ def load_single_feed(request, feed_id):
     if not usersub:
         data.update(feed.canonical())
     
-    if page <= 1:                       
-        import random
-        time.sleep(random.randint(0, 6))
+    # if page <= 1:
+    #     import random
+    #     time.sleep(random.randint(0, 6))
 
     return data
 
@@ -858,10 +858,9 @@ def load_river_stories__redis(request):
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), order, read_filter))
-    if page <= 1:
-        import random
-        time.sleep(random.randint(0, 6))
-
+    # if page <= 1:
+    #     import random
+    #     time.sleep(random.randint(0, 6))
 
     return dict(stories=stories,
                 classifiers=classifiers, 
@@ -929,7 +928,7 @@ def mark_all_as_read(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(get_argument_or_404(request, 'feed_id'))
-    raise Http404
+    
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
     except Feed.DoesNotExist:
