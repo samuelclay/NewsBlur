@@ -889,7 +889,10 @@ class MSocialSubscription(mongo.Document):
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
-
+        
+        if withscores:
+            story_ids = [(s[0], int(s[1])) for s in story_ids]
+        
         r.expire(unread_ranked_stories_key, 1*60*60)
 
         if not ignore_user_stories:

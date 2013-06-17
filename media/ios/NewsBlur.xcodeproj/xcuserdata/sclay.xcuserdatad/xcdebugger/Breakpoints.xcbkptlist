@@ -26,8 +26,8 @@
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "1010"
          endingLineNumber = "1010"
-         landmarkName = "-doNextUnreadStory"
-         landmarkType = "5">
+         landmarkName = "@implementation StoryPageControl"
+         landmarkType = "3">
       </FileBreakpoint>
    </FileBreakpoints>
    <SymbolicBreakpoints>

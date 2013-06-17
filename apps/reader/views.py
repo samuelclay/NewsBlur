@@ -643,7 +643,7 @@ def load_single_feed(request, feed_id):
     if not usersub:
         data.update(feed.canonical())
     
-    if page == 1:                       
+    if page <= 1:                       
         import random
         time.sleep(random.randint(0, 6))
 
@@ -858,7 +858,7 @@ def load_river_stories__redis(request):
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), order, read_filter))
-    if page == 1:
+    if page <= 1:
         import random
         time.sleep(random.randint(0, 6))
 
@@ -873,6 +873,7 @@ def load_river_stories__redis(request):
 def unread_story_hashes(request):
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
     
     if not feed_ids:
         usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
@@ -888,6 +889,7 @@ def unread_story_hashes(request):
         if not us.unread_count_neutral and not us.unread_count_positive:
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                           withscores=include_timestamps,
                                                            hashes_only=True)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 

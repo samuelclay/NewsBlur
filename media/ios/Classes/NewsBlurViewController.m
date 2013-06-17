@@ -22,6 +22,7 @@
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
+#import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
@@ -66,6 +67,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize addBarButton;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
+@synthesize notifier;
 
 #pragma mark -
 #pragma mark Globals
@@ -228,6 +230,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [self layoutForInterfaceOrientation:orientation];
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
+    
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.feedTitlesTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -1602,5 +1606,39 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.titleView = userInfoView;
 }
 
+- (void)showSyncingNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Syncing stories...";
+    [self.notifier show];
+}
+
+- (void)showSyncingNotifier:(float)progress hoursBack:(int)hours {
+//    [self.notifier hide];
+    self.notifier.style = NBSyncingProgressStyle;
+    if (hours < 2) {
+        self.notifier.title = @"Storing last hour";
+    } else if (hours < 24) {
+        self.notifier.title = [NSString stringWithFormat:@"Storing %d hours", hours];
+    } else if (hours < 48) {
+        self.notifier.title = @"Storing yesterday";
+    } else {
+        self.notifier.title = [NSString stringWithFormat:@"Storing %d days ago", (int)round(hours / 24.f)];
+    }
+    [self.notifier setProgress:progress];
+    [self.notifier setNeedsDisplay];
+    [self.notifier show];
+}
+
+- (void)showOfflineNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBOfflineStyle;
+    self.notifier.title = @"Offline";
+    [self.notifier show];
+}
+
+- (void)hideNotifier {
+    [self.notifier hide];
+}
 
 @end

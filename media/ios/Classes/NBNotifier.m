@@ -29,11 +29,13 @@
 #include <QuartzCore/QuartzCore.h>
 
 #define _displaytime 4.f
+#define NOTIFIER_HEIGHT 32
 
 @implementation NBNotifier
 
 @synthesize accessoryView, title = _title, style = _style, view = _view;
 @synthesize showing;
+@synthesize progressBar;
 
 + (void)initialize {
     if (self == [NBNotifier class]) {
@@ -61,7 +63,7 @@
 
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style {
     
-    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height, view.bounds.size.width, 40)]){
+    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height, view.bounds.size.width, NOTIFIER_HEIGHT)]){
         
         self.backgroundColor = [UIColor clearColor];
         
@@ -85,6 +87,11 @@
         self.title = title;        
         
         self.view = view;
+        
+        self.progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(self.frame.size.width - 60 - 12, 14, 60, 6)];
+        self.progressBar.progressTintColor = UIColorFromRGB(0xA0B0A6);
+        self.progressBar.hidden = YES;
+        [self addSubview:self.progressBar];
     }
     
     return self;
@@ -95,12 +102,24 @@
     
     [[self viewWithTag:1]removeFromSuperview];
     
+    int offset = 0;
+    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
+        offset = 1;
+    }
     __accessoryView.tag = 1;
-    [__accessoryView setFrame:CGRectMake((32 - __accessoryView.frame.size.width) / 2, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+1, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
+    [__accessoryView setFrame:CGRectMake((32 - __accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+2, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
     
     [self addSubview:__accessoryView];
     NSLog(@"Accessory view: %@", __accessoryView);
-    [_txtLabel setFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
+    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
+        [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+    } else {
+        [_txtLabel setFrame:CGRectMake(30, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+    }
+}
+
+- (void)setProgress:(float)value {
+    [self.progressBar setProgress:value animated:YES];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -111,7 +130,8 @@
 
 - (void)setStyle:(NBNotifierStyle)style {
     _style = style;
-    
+    self.progressBar.hidden = YES;
+
     if (style == NBLoadingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [activityIndicator startAnimating];
@@ -119,6 +139,10 @@
     } else if (style == NBOfflineStyle) {
         UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
         self.accessoryView = [[UIImageView alloc] initWithImage:offlineImage];
+    } else if (style == NBSyncingProgressStyle) {
+        UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
+        self.accessoryView = [[UIImageView alloc] initWithImage:offlineImage];
+        self.progressBar.hidden = NO;
     } else if (style == NBSyncingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [activityIndicator startAnimating];
@@ -130,7 +154,7 @@
 
 - (void)setView:(UIView *)view {
     _view = view;
-    self.frame = CGRectMake(0, view.bounds.size.height, view.bounds.size.width, 40);
+    self.frame = CGRectMake(0, view.bounds.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
     
     [view addSubview:self];
 }
@@ -146,7 +170,7 @@
     [UIView setAnimationDuration:time];
     
     CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - 40.f;
+    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -159,7 +183,7 @@
     [UIView setAnimationDuration:0.3f];
     
     CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - 40.f;
+    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -180,7 +204,7 @@
         
         
         CGRect move = self.frame;
-        move.origin.y +=40.f;
+        move.origin.y += NOTIFIER_HEIGHT;
         self.frame = move;
         
         [UIView commitAnimations];
@@ -251,7 +275,11 @@
                          }];
     }
     
-    [_txtLabel setFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
+    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
+        [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+    } else {
+        [_txtLabel setFrame:CGRectMake(30, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+    }
     
     
 }
@@ -293,14 +321,16 @@
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     
     //Background color
-    CGRect rectangle = CGRectMake(0,4,rect.size.width,36);
+    CGRect rectangle = CGRectMake(0,4,rect.size.width,NOTIFIER_HEIGHT - 4);
     CGContextAddRect(context, rectangle);
     if (self.style == NBLoadingStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
     } else if (self.style == NBOfflineStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.4 green:0.15 blue:0.1 alpha:0.6f].CGColor);
     } else if (self.style == NBSyncingStyle) {
-        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.3f].CGColor);
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
+    } else if (self.style == NBSyncingProgressStyle) {
+        CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.4f].CGColor);
     }
     CGContextFillRect(context, rectangle);
     

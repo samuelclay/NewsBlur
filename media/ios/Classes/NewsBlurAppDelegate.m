@@ -40,11 +40,12 @@
 #import "Reachability.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
+#import "FMDatabaseAdditions.h"
 #import "JSON.h"
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 7
+#define CURRENT_DB_VERSION 8
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -115,6 +116,8 @@
 @synthesize visibleUnreadCount;
 @synthesize savedStoriesCount;
 @synthesize totalUnfetchedStoryCount;
+@synthesize remainingUnfetchedStoryCount;
+@synthesize latestFetchedStoryDate;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -246,6 +249,8 @@
     self.visibleUnreadCount = 0;
     self.savedStoriesCount = 0;
     self.totalUnfetchedStoryCount = 0;
+    self.remainingUnfetchedStoryCount = 0;
+    self.latestFetchedStoryDate = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
@@ -2051,6 +2056,7 @@
                                        "("
                                        " story_feed_id number,"
                                        " story_hash varchar(24),"
+                                       " story_timestamp number,"
                                        " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                        ")"];
     [db executeUpdate:createUnreadHashTable];
@@ -2074,7 +2080,7 @@
 
 - (void)fetchUnreadHashes {
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/unread_story_hashes",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/unread_story_hashes?include_timestamps=true",
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
@@ -2088,6 +2094,10 @@
     }];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.feedsViewController showSyncingNotifier];
+    });
 }
 
 - (void)storeUnreadHashes:(ASIHTTPRequest *)request {
@@ -2106,16 +2116,21 @@
             NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
             for (NSString *feed in [hashes allKeys]) {
                 NSArray *story_hashes = [hashes objectForKey:feed];
-                for (NSString *story_hash in story_hashes) {
+                for (NSArray *story_hash_tuple in story_hashes) {
                     [db executeUpdate:@"INSERT into unread_hashes"
-                     "(story_feed_id, story_hash) VALUES "
-                     "(?, ?)",
+                     "(story_feed_id, story_hash, story_timestamp) VALUES "
+                     "(?, ?, ?)",
                      feed,
-                     story_hash
+                     [story_hash_tuple objectAtIndex:0],
+                     [story_hash_tuple objectAtIndex:1]
                      ];
                 }
             }
         }];
+        
+        self.totalUnfetchedStoryCount = 0;
+        self.remainingUnfetchedStoryCount = 0;
+        self.latestFetchedStoryDate = 0;
         [self fetchAllUnreadStories];
     });
 }
@@ -2124,17 +2139,36 @@
     NSMutableArray *hashes = [NSMutableArray array];
     
     [self.database inDatabase:^(FMDatabase *db) {
+        NSString *commonQuery = @"FROM unread_hashes u "
+                                 "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
+                                 "WHERE s.story_hash IS NULL";
+        int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
         if (self.totalUnfetchedStoryCount == 0) {
-            FMResultSet *cursor = [db executeQuery:@"SELECT COUNT(1) FROM unread_hashes u LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) WHERE s.story_hash IS NULL"];
-            while ([cursor next]) {
-                self.totalUnfetchedStoryCount = [cursor objectForColumnIndex:0];
-            }
+            self.totalUnfetchedStoryCount = count;
+            self.remainingUnfetchedStoryCount = self.totalUnfetchedStoryCount;
+        } else {
+            self.remainingUnfetchedStoryCount = count;
         }
-
-        FMResultSet *cursor = [db executeQuery:@"SELECT u.story_hash FROM unread_hashes u LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) WHERE s.story_hash IS NULL ORDER BY s.story_timestamp LIMIT 100"];
+        
+        int limit = 100;
+        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT u.story_hash %@ ORDER BY u.story_timestamp DESC LIMIT %d", commonQuery, limit]];
+        
         while ([cursor next]) {
             [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
         }
+        int start = (int)[[NSDate date] timeIntervalSince1970];
+        int end = self.latestFetchedStoryDate;
+        int seconds = start - (end ? end : start);
+        __block int hours = (int)round(seconds / 60.f / 60.f);
+        
+        __block float progress = 0.f;
+        if (self.totalUnfetchedStoryCount) {
+            progress = 1.f - ((float)self.remainingUnfetchedStoryCount /
+                              (float)self.totalUnfetchedStoryCount);
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController showSyncingNotifier:progress hoursBack:hours];
+        });
     }];
     
     return hashes;
@@ -2142,8 +2176,12 @@
 
 - (void)fetchAllUnreadStories {
     NSArray *hashes = [self unfetchedStoryHashes];
+    
     if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
         return;
     }
     
@@ -2183,12 +2221,20 @@
              [story objectForKey:@"story_timestamp"],
              [story JSONRepresentation]
              ];
-            if (inserted) anySuccess = YES;
+            if (!anySuccess && inserted) anySuccess = YES;
+        }
+        if (anySuccess) {
+            self.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
+                                            objectForKey:@"story_timestamp"] intValue];
         }
     }];
     
     if (anySuccess) {
         [self fetchAllUnreadStories];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
     }
 }
 

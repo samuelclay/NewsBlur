@@ -142,7 +142,10 @@ class UserSubscription(models.Model):
         r.expire(unread_ranked_stories_key, 1*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
-        
+
+        if withscores:
+            story_ids = [(s[0], int(s[1])) for s in story_ids]
+
         if withscores or hashes_only:
             return story_ids
         elif story_ids:

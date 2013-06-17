@@ -113,6 +113,8 @@
     int visibleUnreadCount;
     int savedStoriesCount;
     int totalUnfetchedStoryCount;
+    int remainingUnfetchedStoryCount;
+    int latestFetchedStoryDate;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -202,6 +204,8 @@
 @property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;
 @property (readwrite) int totalUnfetchedStoryCount;
+@property (readwrite) int remainingUnfetchedStoryCount;
+@property (readwrite) int latestFetchedStoryDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
