@@ -148,9 +148,7 @@ const int COUNT_HEIGHT = 15;
         [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
         [neutralBackgroundColor set];
-        [UIView drawRoundRectangleInRect:rr withRadius:4];
-        //        [UIView drawLinearGradientInRect:rr colors:ntColors];
-        
+        [UIView drawRoundRectangleInRect:rr withRadius:4];        
         
         NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
         CGSize size = [ntStr sizeWithFont:indicatorFont];

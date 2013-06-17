@@ -92,19 +92,19 @@
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)requestFailedMarkStoryRead:(ASIHTTPRequest *)request;
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
 - (void)markStoryAsRead;
-- (void)finishMarkAsRead:(ASIHTTPRequest *)request;
+- (void)finishMarkAsRead:(ASIFormDataRequest *)request;
 - (void)openSendToDialog;
 - (void)markStoryAsUnread;
-- (void)finishMarkAsUnread:(ASIHTTPRequest *)request;
+- (void)finishMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)markStoryAsSaved;
-- (void)finishMarkAsSaved:(ASIHTTPRequest *)request;
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)markStoryAsUnsaved;
-- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request;
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;

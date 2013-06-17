@@ -26,6 +26,7 @@
 #import "UIBarButtonItem+Image.h"
 #import "ShareThis.h"
 #import "THCircularProgressView.h"
+#import "FMDatabase.h"
 
 @implementation StoryPageControl
 
@@ -628,7 +629,7 @@
 
 - (void)requestFailed:(id)request {
     NSString *error;
-    if ([request class] == [ASIHTTPRequest class]) {
+    if ([request class] == [ASIHTTPRequest class] || [request class] == [ASIFormDataRequest class]) {
         NSLog(@"Error in story detail: %@", [request error]);
         if ([request error]) {
             error = [NSString stringWithFormat:@"%@", [request error]];
@@ -641,8 +642,18 @@
     [self informError:error];
 }
 
-- (void)requestFailedMarkStoryRead:(ASIHTTPRequest *)request {
-    [self informError:@"Failed to mark story as read"];
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    //    [self informError:@"Failed to mark story as read"];
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
+        [db executeUpdate:@"INSERT INTO queued_read_hashes "
+                           "(story_feed_id, story_hash) VALUES "
+                           "(?, ?)", storyFeedId, storyHash];
+    }];
+    
+    appDelegate.hasQueuedReadStories = YES;
 }
 
 
@@ -758,11 +769,15 @@
             [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"];
         } else {
             [request setPostValue:[appDelegate.activeStory
-                                   objectForKey:@"id"]
+                                   objectForKey:@"story_hash"]
                            forKey:@"story_id"];
             [request setPostValue:[appDelegate.activeStory
                                    objectForKey:@"story_feed_id"]
                            forKey:@"feed_id"];
+            [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
+                                                     objectForKey:@"story_feed_id"],
+                                    @"story_hash":[appDelegate.activeStory
+                                                   objectForKey:@"story_hash"]}];
         }
         
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
@@ -773,7 +788,7 @@
 }
 
 
-- (void)finishMarkAsRead:(ASIHTTPRequest *)request {
+- (void)finishMarkAsRead:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailedMarkStoryRead:request];
     }
@@ -803,7 +818,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"id"]
+                           objectForKey:@"story_hash"]
                    forKey:@"story_id"];
     [request setPostValue:[appDelegate.activeStory
                            objectForKey:@"story_feed_id"]
@@ -815,7 +830,7 @@
     [request startAsynchronous];
 }
 
-- (void)finishMarkAsSaved:(ASIHTTPRequest *)request {
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
     }
@@ -833,7 +848,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"id"]
+                           objectForKey:@"story_hash"]
                    forKey:@"story_id"];
     [request setPostValue:[appDelegate.activeStory
                            objectForKey:@"story_feed_id"]
@@ -845,7 +860,7 @@
     [request startAsynchronous];
 }
 
-- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request {
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
     }
@@ -865,7 +880,7 @@
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         
         [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"id"]
+                               objectForKey:@"story_hash"]
                        forKey:@"story_id"];
         [request setPostValue:[appDelegate.activeStory
                                objectForKey:@"story_feed_id"]
@@ -878,7 +893,7 @@
     }
 }
 
-- (void)finishMarkAsUnread:(ASIHTTPRequest *)request {
+- (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
         return [self requestFailed:request];
     }

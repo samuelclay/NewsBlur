@@ -8,7 +8,7 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/StoryPageControl.m"
-         timestampString = "391551438.486843"
+         timestampString = "393035984.441484"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "302"
@@ -20,19 +20,19 @@
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Classes/NewsBlurAppDelegate.m"
-         timestampString = "388367641.684266"
+         filePath = "Classes/StoryPageControl.m"
+         timestampString = "393041779.344441"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "682"
-         endingLineNumber = "682"
-         landmarkName = "-loadRiverFeedDetailView"
-         landmarkType = "5">
+         startingLineNumber = "1010"
+         endingLineNumber = "1010"
+         landmarkName = "@implementation StoryPageControl"
+         landmarkType = "3">
       </FileBreakpoint>
    </FileBreakpoints>
    <SymbolicBreakpoints>
       <SymbolicBreakpoint
-         shouldBeEnabled = "No"
+         shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          symbolName = "objc_exception_throw"

@@ -13,6 +13,7 @@
 #import "Utilities.h"
 #import "WEPopoverController.h"
 #import "TransparentToolbar.h"
+#import "NBNotifier.h"
 
 @class NewsBlurAppDelegate;
 @class FeedDetailTableCell;
@@ -24,7 +25,6 @@
  WEPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    NSArray * stories;
     int feedPage;
     BOOL pageFetching;
     BOOL pageFinished;
@@ -34,6 +34,7 @@
     UIBarButtonItem * feedMarkReadButton;
     WEPopoverController *popoverController;
     Class popoverClass;
+    NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -47,8 +48,8 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
+@property (nonatomic, retain) NBNotifier *notifier;
 
-@property (nonatomic) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -58,6 +59,7 @@
 - (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)loadOfflineStories;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)testForTryFeed;
