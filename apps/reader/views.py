@@ -643,6 +643,10 @@ def load_single_feed(request, feed_id):
     if not usersub:
         data.update(feed.canonical())
     
+    # if page <= 1:
+    #     import random
+    #     time.sleep(random.randint(0, 6))
+
     return data
 
 def load_feed_page(request, feed_id):
@@ -766,24 +770,29 @@ def load_river_stories__redis(request):
     start             = time.time()
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    story_hashes      = request.REQUEST.getlist('h')[:100]
     original_feed_ids = list(feed_ids)
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
-    if not feed_ids:
+    if not feed_ids and not story_hashes:
         usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
         feed_ids = [sub.feed_id for sub in usersubs]
     
     offset = (page-1) * limit
     limit = page * limit - 1
-    
-    story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
-                                                                           offset=offset, limit=limit,
-                                                                           order=order,
-                                                                           read_filter=read_filter)
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+    
+    if story_hashes:
+        unread_feed_story_hashes = []
+        read_filter = 'unread'
+    else:
+        story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
+                                                                               offset=offset, limit=limit,
+                                                                               order=order,
+                                                                               read_filter=read_filter)
     mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
@@ -849,7 +858,10 @@ def load_river_stories__redis(request):
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), order, read_filter))
-    
+    # if page <= 1:
+    #     import random
+    #     time.sleep(random.randint(0, 6))
+
     return dict(stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
@@ -860,6 +872,7 @@ def load_river_stories__redis(request):
 def unread_story_hashes(request):
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
     
     if not feed_ids:
         usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
@@ -875,6 +888,7 @@ def unread_story_hashes(request):
         if not us.unread_count_neutral and not us.unread_count_positive:
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                           withscores=include_timestamps,
                                                            hashes_only=True)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
@@ -956,7 +970,7 @@ def mark_feed_stories_as_read(request):
         feed_id = int(feed_id)
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-            data = usersub.mark_story_ids_as_read(story_ids)
+            data = usersub.mark_story_ids_as_read(story_ids, request=request)
         except UserSubscription.DoesNotExist:
             return dict(code=-1, error="You are not subscribed to this feed_id: %d" % feed_id)
         except Feed.DoesNotExist:
@@ -965,7 +979,7 @@ def mark_feed_stories_as_read(request):
                 if not duplicate_feed: raise Feed.DoesNotExist
                 usersub = UserSubscription.objects.get(user=request.user, 
                                                        feed=duplicate_feed[0].feed)
-                data = usersub.mark_story_ids_as_read(story_ids)
+                data = usersub.mark_story_ids_as_read(story_ids, request=request)
             except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1, error="No feed exists for feed_id: %d" % feed_id)
 

@@ -22,6 +22,7 @@
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
+#import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
@@ -66,6 +67,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize addBarButton;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
+@synthesize notifier;
 
 #pragma mark -
 #pragma mark Globals
@@ -228,6 +230,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [self layoutForInterfaceOrientation:orientation];
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
+    
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.feedTitlesTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -411,7 +415,7 @@ static const CGFloat kFolderTitleHeight = 28;
     
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
-                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
+                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=true",
                       NEWSBLUR_URL]];
     } else {
         urlFeedList = [NSURL URLWithString:
@@ -679,10 +683,15 @@ static const CGFloat kFolderTitleHeight = 28;
         [upgradeConfirm setTag:2];
     }
 
-    if (!self.inPullToRefresh_) {
-        [self refreshFeedList];
-    } else {
+    if (self.inPullToRefresh_) {
         self.inPullToRefresh_ = NO;
+        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+            [self.appDelegate fetchUnreadHashes];
+        }];
+    } else {
+        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+            [self refreshFeedList];
+        }];
     }
     
     // start up the first time user experience
@@ -853,7 +862,7 @@ static const CGFloat kFolderTitleHeight = 28;
         cell = [[FeedTableCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
-        cell.appDelegate = appDelegate;
+//        cell.appDelegate = appDelegate;
     }
     
     if (![self isFeedVisible:feedId]) {
@@ -1471,6 +1480,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
+    [self.appDelegate fetchUnreadHashes];
 }
 
 // called when the date shown needs to be updated, optional
@@ -1596,5 +1606,39 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.titleView = userInfoView;
 }
 
+- (void)showSyncingNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Syncing stories...";
+    [self.notifier show];
+}
+
+- (void)showSyncingNotifier:(float)progress hoursBack:(int)hours {
+//    [self.notifier hide];
+    self.notifier.style = NBSyncingProgressStyle;
+    if (hours < 2) {
+        self.notifier.title = @"Storing last hour";
+    } else if (hours < 24) {
+        self.notifier.title = [NSString stringWithFormat:@"Storing %d hours", hours];
+    } else if (hours < 48) {
+        self.notifier.title = @"Storing yesterday";
+    } else {
+        self.notifier.title = [NSString stringWithFormat:@"Storing %d days ago", (int)round(hours / 24.f)];
+    }
+    [self.notifier setProgress:progress];
+    [self.notifier setNeedsDisplay];
+    [self.notifier show];
+}
+
+- (void)showOfflineNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBOfflineStyle;
+    self.notifier.title = @"Offline";
+    [self.notifier show];
+}
+
+- (void)hideNotifier {
+    [self.notifier hide];
+}
 
 @end

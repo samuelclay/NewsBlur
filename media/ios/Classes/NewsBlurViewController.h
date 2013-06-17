@@ -13,6 +13,7 @@
 #import "PullToRefreshView.h"
 #import "BaseViewController.h"
 #import "WEPopoverController.h"
+#import "NBNotifier.h"
 
 @class NewsBlurAppDelegate;
 
@@ -44,6 +45,7 @@ UIPopoverControllerDelegate> {
     UISegmentedControl * intelligenceControl;
     WEPopoverController *popoverController;
 	Class popoverClass;
+    NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -67,6 +69,7 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
+@property (nonatomic, retain) NBNotifier *notifier;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
@@ -105,5 +108,9 @@ UIPopoverControllerDelegate> {
 - (void)refreshHeaderCounts;
 - (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
 
+- (void)showSyncingNotifier;
+- (void)showSyncingNotifier:(float)progress hoursBack:(int)days;
+- (void)showOfflineNotifier;
+- (void)hideNotifier;
 
 @end

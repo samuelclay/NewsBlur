@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
+#import "FMDatabaseQueue.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -87,6 +88,7 @@
     BOOL inFeedDetail;
     BOOL inStoryDetail;
     BOOL inFindingStoryMode;
+    BOOL hashQueuedReadStories;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSMutableDictionary * activeClassifiers;
@@ -110,6 +112,9 @@
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
     int savedStoriesCount;
+    int totalUnfetchedStoryCount;
+    int remainingUnfetchedStoryCount;
+    int latestFetchedStoryDate;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -126,6 +131,7 @@
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
     
+    FMDatabaseQueue *database;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -171,6 +177,7 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
+@property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
@@ -196,6 +203,9 @@
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;
+@property (readwrite) int totalUnfetchedStoryCount;
+@property (readwrite) int remainingUnfetchedStoryCount;
+@property (readwrite) int latestFetchedStoryDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -215,12 +225,14 @@
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
+@property (readwrite) FMDatabaseQueue *database;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
+- (void)setupReachability;
 
 // social
 - (void)showUserProfileModal:(id)sender;
@@ -305,6 +317,18 @@
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+
+- (int)databaseSchemaVersion:(FMDatabase *)db;
+- (void)createDatabaseConnection;
+- (void)setupDatabase:(FMDatabase *)db;
+- (NSURL *)applicationDocumentsDirectory;
+- (void)fetchUnreadHashes;
+- (void)storeUnreadHashes:(ASIHTTPRequest *)request;
+- (void)fetchAllUnreadStories;
+- (void)fetchAllUnreadStories:(int)page;
+- (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 
 @end
 

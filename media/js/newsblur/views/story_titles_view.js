@@ -105,7 +105,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.feed_stories_loading = setInterval(function() {
             $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
                     .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        }, 1500);
+        }, 1700);
         
         if (options.show_loading) {
             this.pre_load_page_scroll_position = $('#story_titles').scrollTop();
