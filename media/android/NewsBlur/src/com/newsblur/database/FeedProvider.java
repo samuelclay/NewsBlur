@@ -121,6 +121,7 @@ public class FeedProvider extends ContentProvider {
 				
 			case ALL_FEEDS:	
 				db.delete(DatabaseConstants.FEED_TABLE, null, null);
+				db.delete(DatabaseConstants.FOLDER_TABLE, null, null);
 				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
 				db.delete(DatabaseConstants.STORY_TABLE, null, null);
 				return 1;
@@ -173,7 +174,31 @@ public class FeedProvider extends ContentProvider {
 				db.beginTransaction();
 				try {
 					for(ContentValues values: valuesArray) {
+						db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+						count++;
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				break;
+			case FEED_FOLDER_MAP:
+				db.beginTransaction();
+				try {
+					for(ContentValues values: valuesArray) {
 						db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+						count++;
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				break;
+			case ALL_FEEDS:
+				db.beginTransaction();
+				try {
+					for(ContentValues values: valuesArray) {
+						db.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 						count++;
 					}
 					db.setTransactionSuccessful();
@@ -573,6 +598,12 @@ public class FeedProvider extends ContentProvider {
 		case SOCIALFEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
 			return 0;	
+        case STARRED_STORIES_COUNT:
+            int rows = db.update(DatabaseConstants.STARRED_STORY_COUNT_TABLE, values, null, null);
+            if (rows == 0 ) {
+                db.insertWithOnConflict(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            }
+            return 1;
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
