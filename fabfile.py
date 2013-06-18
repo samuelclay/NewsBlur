@@ -768,7 +768,7 @@ def setup_mongo_mms():
 
 
 def setup_redis(slave=False):
-    redis_version = '2.6.12'
+    redis_version = '2.6.13'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -782,9 +782,11 @@ def setup_redis(slave=False):
         put('config/redis_slave.conf', '/etc/redis_server.conf', use_sudo=True)
     else:
         put('config/redis_master.conf', '/etc/redis_server.conf', use_sudo=True)
-    sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
-    run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
-    sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
+    # sudo('chmod 666 /proc/sys/vm/overcommit_memory', pty=False)
+    # run('echo "1" > /proc/sys/vm/overcommit_memory', pty=False)
+    # sudo('chmod 644 /proc/sys/vm/overcommit_memory', pty=False)
+    sudo("su root -c \"echo \\\"1\\\" > /proc/sys/vm/overcommit_memory\"")
+    sudo("sysctl vm.overcommit_memory=1")
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')

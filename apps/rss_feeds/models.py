@@ -1863,8 +1863,18 @@ class MStarredStory(mongo.Document):
         return original_text
         
 
-class RFetchHistory(mongo.Document):
+class MFetchHistory(mongo.Document):
+    feed_id = mongo.IntField(unique=True)
+    feed_fetch_history = mongo.DynamicField()
+    page_fetch_history = mongo.DynamicField()
+    push_history = mongo.DynamicField()
     
+    meta = {
+        'db_alias': 'nbanalytics',
+        'collection': 'fetch_history',
+        'allow_inheritance': False,
+    }
+
     @classmethod
     def feed(cls, feed_id, timezone=None, fetch_history=None):
         if not fetch_history:
@@ -1891,7 +1901,6 @@ class RFetchHistory(mongo.Document):
     
     @classmethod
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
-        r = redis.Redis(connection_pool=settings.REDIS_FEED_HISTORY_POOL)
         if not date:
             date = datetime.datetime.now()
         try:

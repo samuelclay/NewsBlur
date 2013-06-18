@@ -546,10 +546,9 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 #     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 
-
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db02:27017',
+    'host': 'db30:27017',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
@@ -569,7 +568,6 @@ REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
-REDIS_FEED_HISTORY_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
 
 # ==========
 # = Assets =
