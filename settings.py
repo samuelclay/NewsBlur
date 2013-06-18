@@ -427,6 +427,10 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db12',
 }
+REDIS2 = {
+    'host': 'db13',
+}
+CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -520,7 +524,7 @@ else:
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/4" % REDIS['host']
+BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
 CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
@@ -563,6 +567,13 @@ REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 # REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+
+REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
+REDIS_FEED_HISTORY_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
+
+# ==========
+# = Assets =
+# ==========
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
