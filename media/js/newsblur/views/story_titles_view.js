@@ -71,7 +71,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     fill_out: function(options) {
         this.snap_back_scroll_position();
         
-        if (NEWSBLUR.assets.flags['no_more_stories'] || !NEWSBLUR.assets.stories.length) {
+        if (NEWSBLUR.assets.flags['no_more_stories'] || 
+            !NEWSBLUR.assets.stories.length ||
+            NEWSBLUR.reader.flags.story_titles_closed) {
             return;
         }
         
