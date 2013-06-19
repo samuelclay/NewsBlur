@@ -1645,7 +1645,7 @@ class MStory(mongo.Document):
     @classmethod
     def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
-        original_found = True
+        original_found = False
         story_hash = cls.ensure_story_hash(story_id, story_feed_id)
 
         if isinstance(story_id, ObjectId):
@@ -1653,8 +1653,8 @@ class MStory(mongo.Document):
         else:
             story = cls.objects(story_hash=story_hash).limit(1).first()
         
-        if not story:
-            original_found = False
+        if story:
+            original_found = True
         if not story and not original_only:
             story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
                                                 story_hash=story_hash).limit(1).first()
