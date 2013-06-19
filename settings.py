@@ -427,6 +427,10 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db12',
 }
+REDIS2 = {
+    'host': 'db13',
+}
+CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -520,7 +524,7 @@ else:
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/4" % REDIS['host']
+BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
 CELERY_RESULT_BACKEND = BROKER_URL
 
 # =========
@@ -542,10 +546,9 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 #     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 
-
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db02:27017',
+    'host': 'db30:27017',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
@@ -563,6 +566,12 @@ REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 # REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+
+REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
+
+# ==========
+# = Assets =
+# ==========
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 

@@ -513,7 +513,7 @@ class Dispatcher:
     
     def publish_to_subscribers(self, feed):
         try:
-            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             listeners_count = r.publish(str(feed.pk), 'story:new')
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))

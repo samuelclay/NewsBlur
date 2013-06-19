@@ -1409,7 +1409,7 @@ class Feed(models.Model):
         self.save()
     
     def queue_pushed_feed_xml(self, xml):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
         queue_size = r.llen("push_feeds")
         
         if queue_size > 1000:
@@ -1870,10 +1870,11 @@ class MFetchHistory(mongo.Document):
     push_history = mongo.DynamicField()
     
     meta = {
+        'db_alias': 'nbanalytics',
         'collection': 'fetch_history',
         'allow_inheritance': False,
     }
-    
+
     @classmethod
     def feed(cls, feed_id, timezone=None, fetch_history=None):
         if not fetch_history:

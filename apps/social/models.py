@@ -1575,7 +1575,7 @@ class MSharedStory(mongo.Document):
 
     def publish_update_to_subscribers(self):
         try:
-            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             feed_id = "social:%s" % self.user_id
             listeners_count = r.publish(feed_id, 'story:new')
             if listeners_count:

@@ -950,7 +950,7 @@ def mark_story_as_read(request):
     else:
         data = dict(code=-1, errors=["User is not subscribed to this feed."])
 
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     return data
@@ -958,7 +958,7 @@ def mark_story_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
     feeds_stories = json.decode(feeds_stories)
     data = {
@@ -993,7 +993,7 @@ def mark_social_stories_as_read(request):
     code = 1
     errors = []
     data = {}
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
@@ -1082,7 +1082,7 @@ def mark_story_as_unread(request):
     RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id,
                            story_hash=story.story_hash)
     
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
@@ -1092,7 +1092,7 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
     multiple = len(feed_ids) > 1
     code = 1
