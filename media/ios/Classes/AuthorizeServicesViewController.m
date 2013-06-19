@@ -53,7 +53,7 @@
     } else if ([type isEqualToString:@"appdotnet"]) {
         self.navigationItem.title = @"App.net";
     }
-    NSString *urlAddress = [NSString stringWithFormat:@"http://%@%@", NEWSBLUR_URL, url];
+    NSString *urlAddress = [NSString stringWithFormat:@"%@%@", NEWSBLUR_URL, url];
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
     [self.webView loadRequest:requestObj];
@@ -83,7 +83,7 @@
     NSString *URLString = [[request URL] absoluteString];
     NSLog(@"URL STRING IS %@", URLString);
     
-    if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/", NEWSBLUR_URL]]) {
+    if ([URLString isEqualToString:[NSString stringWithFormat:@"%@/", NEWSBLUR_URL]]) {
         NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
         
         if (self.fromStory) {
@@ -121,7 +121,7 @@
     }
     
 //    // for failed google reader authorization
-//    if ([URLString hasPrefix:[NSString stringWithFormat:@"http://%@/import/callback", NEWSBLUR_URL]]) {
+//    if ([URLString hasPrefix:[NSString stringWithFormat:@"%@/import/callback", NEWSBLUR_URL]]) {
 //        [self.navigationController popViewControllerAnimated:YES];
 //        [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
 //        return NO;

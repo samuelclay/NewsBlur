@@ -140,7 +140,7 @@
         return;
     }
     if (buttonIndex == 1) {
-        NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/login_as?user=%@",
+        NSString *urlS = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           NEWSBLUR_URL, alertTextField.text];
         NSURL *url = [NSURL URLWithString:urlS];
         

@@ -98,7 +98,7 @@
     HUD.labelText = @"Profiling...";
     [self.profileBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@
-                           "http://%@/social/profile?user_id=%@"
+                           "%@/social/profile?user_id=%@"
                            "&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                            NEWSBLUR_URL,
                            appDelegate.activeUserProfileId];

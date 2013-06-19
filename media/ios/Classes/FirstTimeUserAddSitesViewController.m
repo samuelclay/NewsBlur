@@ -118,7 +118,7 @@
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddFriendsViewController animated:YES];
     
     if (self.selectedCategories_.count) {
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/categories/subscribe",
+        NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -167,7 +167,7 @@
     self.instructionLabel.text = @"This might take a minute.\nFeel free to continue...";
     [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/import/import_from_google_reader/",
+    NSString *urlString = [NSString stringWithFormat:@"%@/import/import_from_google_reader/",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -267,7 +267,7 @@
 #pragma mark Add Site
 
 - (void)addSite:(NSString *)siteUrl {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];

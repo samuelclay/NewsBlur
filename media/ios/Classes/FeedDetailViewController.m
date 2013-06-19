@@ -318,12 +318,12 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
         if (appDelegate.isSocialView) {
-            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@/?page=%d", 
+            theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"user_id"],
                                 self.feedPage];
         } else {
-            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@/?page=%d", 
+            theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"id"],
                                 self.feedPage];
@@ -452,24 +452,24 @@
         if (appDelegate.isSocialRiverView) {
             if ([appDelegate.activeFolder isEqualToString:@"river_global"]) {
                 theFeedDetailURL = [NSString stringWithFormat:
-                                    @"http://%@/social/river_stories/?global_feed=true&page=%d",
+                                    @"%@/social/river_stories/?global_feed=true&page=%d",
                                     NEWSBLUR_URL,
                                     self.feedPage];
                 
             } else {
                 theFeedDetailURL = [NSString stringWithFormat:
-                                    @"http://%@/social/river_stories/?page=%d", 
+                                    @"%@/social/river_stories/?page=%d", 
                                     NEWSBLUR_URL,
                                     self.feedPage];
             }
         } else if ([appDelegate.activeFolder isEqual:@"saved_stories"]) {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/reader/starred_stories/?page=%d",
+                                @"%@/reader/starred_stories/?page=%d",
                                 NEWSBLUR_URL,
                                 self.feedPage];
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/reader/river_stories/?feeds=%@&page=%d", 
+                                @"%@/reader/river_stories/?feeds=%@&page=%d", 
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
                                 self.feedPage];
@@ -1019,7 +1019,7 @@
     if (appDelegate.isRiverView && includeHidden &&
         [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1029,7 +1029,7 @@
         [appDelegate markActiveFolderAllRead];
     } else if (appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1042,7 +1042,7 @@
         [appDelegate markActiveFolderAllRead];
     } else if (!appDelegate.isRiverView && includeHidden) {
         // Mark feed as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1055,7 +1055,7 @@
     } else {
         // Mark visible stories as read
         NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1254,7 +1254,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Deleting...";
     
-    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_feed", 
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_feed", 
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
@@ -1281,7 +1281,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Deleting...";
     
-    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_folder", 
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/delete_folder", 
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
@@ -1349,7 +1349,7 @@
 
 - (void)instafetchFeed {
     NSString *urlString = [NSString
-                           stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
+                           stringWithFormat:@"%@/reader/refresh_feed/%@", 
                            NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];
     [self cancelRequests];
@@ -1400,7 +1400,7 @@
     
     NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@", 
                                [[keys valueForKey:@"description"] componentsJoinedByString:@"&feed_ids="]];        
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons%@",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
                            NEWSBLUR_URL,
                            feedIdsQuery];
     NSURL *url = [NSURL URLWithString:urlString];

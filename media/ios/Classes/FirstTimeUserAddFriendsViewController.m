@@ -113,7 +113,7 @@
 #pragma mark Check Social
 
 - (void)connectToSocial {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/load_user_friends",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -196,7 +196,7 @@
     UISwitch *button = (UISwitch *)sender;
     
     NSURL *preferenceURL = [NSURL URLWithString:
-                          [NSString stringWithFormat:@"http://%@/profile/set_preference",
+                          [NSString stringWithFormat:@"%@/profile/set_preference",
                            NEWSBLUR_URL]];
     
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:preferenceURL];
