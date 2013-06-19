@@ -112,7 +112,7 @@
 }
 
 - (IBAction)doCancelButton {
-    [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
+    [appDelegate.moveSiteViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)doMoveButton {
@@ -167,7 +167,7 @@
         [self.errorLabel setHidden:NO];
     } else {
         appDelegate.activeFolder = [toFolderInput text];
-        [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate.moveSiteViewController dismissViewControllerAnimated:YES completion:nil];
         [appDelegate reloadFeedsView:NO];
     }
 }
@@ -212,7 +212,7 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate.moveSiteViewController dismissViewControllerAnimated:YES completion:nil];
         [appDelegate reloadFeedsView:NO];
     }
     

@@ -325,7 +325,6 @@
 - (void)fetchUnreadHashes;
 - (void)storeUnreadHashes:(ASIHTTPRequest *)request;
 - (void)fetchAllUnreadStories;
-- (void)fetchAllUnreadStories:(int)page;
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;

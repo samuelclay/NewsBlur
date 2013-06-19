@@ -53,7 +53,7 @@ BOOL CTRunContainsCharactersFromStringRange(CTRunRef run, NSRange range);
 
 CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment alignment) {
 	switch (alignment) {
-		case UITextAlignmentLeft: return kCTLeftTextAlignment;
+		case NSTextAlignmentLeft: return kCTLeftTextAlignment;
 		case UITextAlignmentCenter: return kCTCenterTextAlignment;
 		case UITextAlignmentRight: return kCTRightTextAlignment;
 		case UITextAlignmentJustify: return kCTJustifiedTextAlignment; /* special OOB value if we decide to use it even if it's not really standard... */
@@ -67,7 +67,7 @@ CTLineBreakMode CTLineBreakModeFromUILineBreakMode(UILineBreakMode lineBreakMode
 		case UILineBreakModeCharacterWrap: return kCTLineBreakByCharWrapping;
 		case UILineBreakModeClip: return kCTLineBreakByClipping;
 		case UILineBreakModeHeadTruncation: return kCTLineBreakByTruncatingHead;
-		case UILineBreakModeTailTruncation: return kCTLineBreakByTruncatingTail;
+		case NSLineBreakByTruncatingTail: return kCTLineBreakByTruncatingTail;
 		case UILineBreakModeMiddleTruncation: return kCTLineBreakByTruncatingMiddle;
 		default: return 0;
 	}
@@ -629,7 +629,7 @@ BOOL CTRunContainsCharactersFromStringRange(CTRunRef run, NSRange range) {
 -(void)warnAboutKnownIssues_CheckLineBreakMode {
 	BOOL truncationMode = (self.lineBreakMode == UILineBreakModeHeadTruncation)
 	|| (self.lineBreakMode == UILineBreakModeMiddleTruncation)
-	|| (self.lineBreakMode == UILineBreakModeTailTruncation);
+	|| (self.lineBreakMode == NSLineBreakByTruncatingTail);
 	if (truncationMode) {
 		NSLog(@"[OHAttributedLabel] Warning: \"UILineBreakMode...Truncation\" lineBreakModes not yet fully supported by CoreText and OHAttributedLabel");
 		NSLog(@"                    (truncation will appear on each paragraph instead of the whole text)");

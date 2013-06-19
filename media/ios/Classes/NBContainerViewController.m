@@ -291,7 +291,7 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .001 * NSEC_PER_SEC),
-                   dispatch_get_current_queue(), ^{
+                   dispatch_get_main_queue(), ^{
         popoverController = [[UIPopoverController alloc]
                              initWithContentViewController:appDelegate.trainerViewController];
         popoverController.delegate = self;
@@ -316,7 +316,7 @@
         [popoverController dismissPopoverAnimated:YES];
     }
     popoverController = nil;
-    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 

@@ -366,6 +366,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_bottom.png' }),
                                     'Bottom'
                                 ])
+                            ]),
+                            $.make('div', {style: 'margin-top: 12px; overflow: hidden; clear: both;'}, [
+                                $.make('input', { id: 'NB-preference-story-pane-hidden', type: 'checkbox', name: 'story_pane_hidden' }),
+                                $.make('label', { 'for': 'NB-preference-story-pane-hidden' }, [
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_hidden.png' }),
+                                    'Hide the pane entirely (use shift+t to show)'
+                                ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -745,6 +752,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=story_pane_hidden]', $modal).each(function() {
+            if (NEWSBLUR.Preferences.story_pane_hidden) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
          $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
                 $(this).attr('checked', true);
@@ -973,7 +986,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
               NEWSBLUR.app.feed_list.make_feeds();
               NEWSBLUR.app.feed_list.make_social_feeds();
             }
-            if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
+            if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor'] ||
+                self.original_preferences['story_pane_hidden'] != form['story_pane_hidden']) {
               NEWSBLUR.reader.apply_resizable_layout(true);
             }
             if (self.original_preferences['ssl'] != form['ssl']) {

@@ -69,8 +69,8 @@ static UIFont *indicatorFont = nil;
     [self.siteTitle 
      drawInRect:CGRectMake(leftMargin, 6, rect.size.width - rightMargin, 21) 
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentLeft];
+     lineBreakMode:NSLineBreakByTruncatingTail 
+     alignment:NSTextAlignmentLeft];
     
     textColor = UIColorFromRGB(0x333333);
     font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
@@ -96,8 +96,8 @@ static UIFont *indicatorFont = nil;
     [self.siteSubscribers 
      drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentRight];
+     lineBreakMode:NSLineBreakByTruncatingTail 
+     alignment:NSTextAlignmentRight];
     
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));

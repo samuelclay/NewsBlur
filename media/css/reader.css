@@ -7981,6 +7981,9 @@ form.opml_import_form input {
   float: left;
   cursor: pointer;
 }
+.NB-modal-preferences .NB-preference .NB-preference-options div {
+    overflow: hidden;
+}
 .NB-modal-preferences .NB-preference .NB-preference-error {
   color: #83210A;
   font-size: 11px;

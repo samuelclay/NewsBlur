@@ -414,7 +414,7 @@
 
 - (IBAction)doCloseDialog:(id)sender {
     [appDelegate.masterContainerViewController hidePopover];
-    [appDelegate.trainerViewController dismissModalViewControllerAnimated:YES];
+    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)changeTitle:(id)sender score:(int)score {

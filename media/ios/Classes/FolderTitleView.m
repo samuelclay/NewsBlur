@@ -118,8 +118,8 @@
     [folderTitle
      drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation
-     alignment:UITextAlignmentLeft];
+     lineBreakMode:NSLineBreakByTruncatingTail
+     alignment:NSTextAlignmentLeft];
         
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);

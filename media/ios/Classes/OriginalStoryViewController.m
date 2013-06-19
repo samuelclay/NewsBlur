@@ -85,7 +85,7 @@
     label.textColor = UIColorFromRGB(0x404040);
     label.shadowColor = UIColorFromRGB(0xFAFAFA);
     label.shadowOffset = CGSizeMake(0.0f, -1.0f);
-    label.textAlignment = UITextAlignmentCenter;
+    label.textAlignment = NSTextAlignmentCenter;
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [navBar addSubview:label];
     self.pageTitle = label;
@@ -292,7 +292,7 @@
 
 - (IBAction)doCloseOriginalStoryViewController {
 //    NSLog(@"Close Original Story: %@", appDelegate);
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)doOpenActionSheet {

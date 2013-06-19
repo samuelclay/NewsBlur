@@ -312,7 +312,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserProfilePopover:sender];
     } else {
-        [self.navigationController presentModalViewController:navController animated:YES];
+        [self.navigationController presentViewController:navController animated:YES completion:nil];
     }
 
 }
@@ -344,7 +344,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController hidePopover];
     } else {
-        [self.navigationController dismissModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -357,9 +357,9 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentModalViewController:modalNavigationController animated:YES];
+        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
-        [navigationController presentModalViewController:modalNavigationController animated:YES];
+        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
     [self.friendsListViewController loadSuggestedFriendsList];
 }
@@ -379,7 +379,7 @@
             self.shareNavigationController = shareNav;
         }
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-        [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
+        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:nil];
     }
 
     [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
@@ -394,7 +394,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
     } else {
-        [self.navigationController dismissModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
     }
 }
@@ -425,10 +425,10 @@
     [userPreferences synchronize];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentModalViewController:loginViewController animated:NO];
+        [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
-        [feedsMenuViewController dismissModalViewControllerAnimated:NO];
-        [self.navigationController presentModalViewController:loginViewController animated:NO];
+        [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
+        [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
     }
 }
 
@@ -441,7 +441,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [self.masterContainerViewController presentModalViewController:self.ftuxNavigationController animated:YES];
+        [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
         
         self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after 
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -452,7 +452,7 @@
         }
             
     } else {
-        [self.navigationController presentModalViewController:self.ftuxNavigationController animated:YES];
+        [self.navigationController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
     }
 }
 
@@ -461,9 +461,9 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        [navController presentModalViewController:moveSiteViewController animated:YES];
+        [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     } else {
-        [navController presentModalViewController:moveSiteViewController animated:YES];
+        [navController presentViewController:moveSiteViewController animated:YES completion:nil];
     }
 }
 
@@ -474,14 +474,14 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-//        [navController presentModalViewController:trainerViewController animated:YES];        
+//        [navController presentViewController:trainerViewController animated:YES completion:nil];
         [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsBarButton];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        [navController presentModalViewController:self.trainNavigationController animated:YES];
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
 
@@ -496,13 +496,13 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        [navController presentModalViewController:self.trainNavigationController animated:YES];
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
-    [loginViewController dismissModalViewControllerAnimated:NO];
+    [loginViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)loadFeedDetailView {
@@ -537,7 +537,7 @@
              showFindingStory:(BOOL)showHUD {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.navigationController dismissModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         if (self.feedsViewController.popoverController) {
             [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
         }
@@ -631,8 +631,8 @@
                                               initWithRootViewController:serviceVC];
         self.modalNavigationController = connectNav;
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [self.masterContainerViewController presentModalViewController:modalNavigationController
-                                                              animated:YES];
+        [self.masterContainerViewController presentViewController:modalNavigationController
+                                                              animated:YES completion:nil];
     } else {
         [self.shareNavigationController pushViewController:serviceVC animated:YES];
     }
@@ -891,15 +891,15 @@
 - (void)showOriginalStory:(NSURL *)url {
     self.activeOriginalStoryURL = url;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentModalViewController:originalStoryViewController animated:YES];
+        [self.masterContainerViewController presentViewController:originalStoryViewController animated:YES completion:nil];
     } else {
-        [self.navigationController presentModalViewController:originalStoryViewController animated:YES];
+        [self.navigationController presentViewController:originalStoryViewController animated:YES completion:nil];
     }
 }
 
 - (void)closeOriginalStory {
-    if (![[self modalViewController] isBeingDismissed]) {
-        [originalStoryViewController dismissModalViewControllerAnimated:YES];
+    if (![self.presentedViewController isBeingDismissed]) {
+        [originalStoryViewController dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -1721,8 +1721,8 @@
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = [feed objectForKey:@"feed_title"];
         titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.textAlignment = UITextAlignmentLeft;
-        titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.textAlignment = NSTextAlignmentLeft;
+        titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         titleLabel.numberOfLines = 1;
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
@@ -1780,10 +1780,10 @@
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     }
     titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textAlignment = UITextAlignmentLeft;
+    titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
     titleLabel.textColor = UIColorFromRGB(0x404040);
-    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     titleLabel.numberOfLines = 1;
     titleLabel.shadowColor = UIColorFromRGB(0xF5F5F5);
     titleLabel.shadowOffset = CGSizeMake(0, -1);
