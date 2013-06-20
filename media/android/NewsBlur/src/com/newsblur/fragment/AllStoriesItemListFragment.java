@@ -8,7 +8,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,16 +24,17 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
+import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class AllStoriesItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
 	public int currentState;
 	private boolean doRequest = true;
 	private ContentResolver contentResolver;
-	private SimpleCursorAdapter adapter;
+	private MultipleFeedItemsAdapter adapter;
 	private boolean requestedPage;
 	private int currentPage = 0;
 	
@@ -75,6 +75,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
+		itemList.setOnCreateContextMenuListener(this);
 
 		return v;
 	}
@@ -99,10 +100,15 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = DatabaseConstants.getStorySelectionFromState(state);
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
-		adapter.swapCursor(cursor);
+		refreshStories();
 	}
+	
+	@Override
+    protected void refreshStories() {
+	    final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
+        Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
+        adapter.swapCursor(cursor);
+    }
 
 	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder) {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
@@ -143,5 +149,10 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	@Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;
+    }
+
+    @Override
+    protected StoryItemsAdapter getAdapter() {
+        return adapter;
     }
 }
