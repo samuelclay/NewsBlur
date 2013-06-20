@@ -270,7 +270,7 @@
 }
 
 - (void)setupReachability {
-    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_URL];
+    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
@@ -639,7 +639,7 @@
 }
 
 - (void)refreshUserProfile:(void(^)())callback {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/social/load_user_profile",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/social/load_user_profile",
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
@@ -672,7 +672,7 @@
             return;
         } else {
             NSLog(@"Logging out...");
-            NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
+            NSString *urlS = [NSString stringWithFormat:@"%@/reader/logout?api=1",
                               NEWSBLUR_URL];
             NSURL *url = [NSURL URLWithString:urlS];
             
@@ -1851,7 +1851,7 @@
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1894,7 +1894,7 @@
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1941,7 +1941,7 @@
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -1983,7 +1983,7 @@
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -2024,7 +2024,7 @@
 - (void)createDatabaseConnection {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *docsPath = [paths objectAtIndex:0];
-    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_URL];
+    NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
     NSString *path = [docsPath stringByAppendingPathComponent:dbName];
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
@@ -2080,7 +2080,7 @@
 
 - (void)fetchUnreadHashes {
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/unread_story_hashes?include_timestamps=true",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
@@ -2185,7 +2185,7 @@
         return;
     }
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/reader/river_stories?page=0&h=%@",
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
                                        NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
     __weak ASIHTTPRequest *request = _request;
@@ -2268,7 +2268,7 @@
 }
 
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableArray *completedHashes = [NSMutableArray array];

@@ -131,7 +131,7 @@
     [self.movingLabel setText:@"Moving site..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/move_feed_to_folder",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_feed_to_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -180,7 +180,7 @@
     [self.movingLabel setText:@"Moving Folder..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/move_folder_to_folder",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/move_folder_to_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];

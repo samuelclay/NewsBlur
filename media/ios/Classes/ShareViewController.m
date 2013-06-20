@@ -304,7 +304,7 @@
 
 - (IBAction)doShareThisStory:(id)sender {
     [appDelegate.storyPageControl showShareHUD:@"Sharing"];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            NEWSBLUR_URL];
 
     NSURL *url = [NSURL URLWithString:urlString];
@@ -378,7 +378,7 @@
     }
     
 //    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/save_comment_reply",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/save_comment_reply",
                            NEWSBLUR_URL];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];

@@ -180,7 +180,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Authenticating";
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/login",
+    NSString *urlString = [NSString stringWithFormat:@"https://%@/api/login",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
@@ -230,7 +230,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Registering...";
     [self.errorLabel setHidden:YES];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/signup",
+    NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
