@@ -12,6 +12,7 @@ import pymongo
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
+from BeautifulSoup import BeautifulSoup
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -902,6 +903,7 @@ class Feed(models.Model):
                        story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
+                s.extract_image_url()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -962,6 +964,7 @@ class Feed(models.Model):
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
                 # existing_story.story_date = story.get('published') # No, don't
+                existing_story.extract_image_url()
                 
                 try:
                     existing_story.save()
@@ -1143,6 +1146,7 @@ class Feed(models.Model):
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
+        story['image_url']        = story_db.image_url
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
         story['comment_user_ids'] = story_db.comment_user_ids if hasattr(story_db, 'comment_user_ids') else []
@@ -1159,7 +1163,6 @@ class Feed(models.Model):
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
-            from BeautifulSoup import BeautifulSoup
             soup = BeautifulSoup(story['story_content'])
             text = ''.join(soup.findAll(text=True))
             text = re.sub(r'\n+', '\n\n', text)
@@ -1549,6 +1552,7 @@ class MStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
+    image_url                = mongo.URLField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     comment_count            = mongo.IntField()
     comment_user_ids         = mongo.ListField(mongo.IntField())
@@ -1777,7 +1781,17 @@ class MStory(mongo.Document):
         self.share_count = shares.count()
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
-        
+    
+    def extract_image_url(self, force=False):
+        if self.image_url and not force:
+            return self.image_url
+            
+        soup = BeautifulSoup(self.story_content or zlib.decompress(self.story_content_z))
+        image = soup.find('img')
+        if image:
+            self.image_url = image.get('src')
+            return self.image_url
+
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
         
