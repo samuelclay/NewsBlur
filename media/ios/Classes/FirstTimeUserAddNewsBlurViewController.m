@@ -105,7 +105,7 @@
 #pragma mark Add Site
 
 - (void)addPopular {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow/",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/follow/",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -118,7 +118,7 @@
 }
 
 - (void)addSite:(NSString *)siteUrl {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url/",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url/",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];

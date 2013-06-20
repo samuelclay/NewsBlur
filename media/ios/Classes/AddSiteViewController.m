@@ -199,7 +199,7 @@
     }
     
     [self.siteActivityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@&v=2",
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/feed_autocomplete?term=%@&v=2",
                            NEWSBLUR_URL, [phrase stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -259,7 +259,7 @@
     [self.addingLabel setText:@"Adding site..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/add_url",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];

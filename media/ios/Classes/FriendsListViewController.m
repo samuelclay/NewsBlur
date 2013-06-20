@@ -110,7 +110,7 @@
 }
 
 - (void)loadFriendsList:(NSString *)query {    
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/find_friends?query=%@&limit=10",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/find_friends?query=%@&limit=10",
                            NEWSBLUR_URL,
                            query];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -123,7 +123,7 @@
 }
 
 - (void)loadSuggestedFriendsList {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/load_user_friends",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     
