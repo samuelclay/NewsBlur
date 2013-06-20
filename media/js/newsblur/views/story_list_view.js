@@ -10,6 +10,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('add', this.reset_story_positions, this);
         this.collection.bind('no_more_stories', this.show_no_more_stories, this);
         this.collection.bind('change:selected', this.show_only_selected_story, this);
+        this.collection.bind('change:selected', this.check_feed_view_scrolled_to_bottom, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
         this.$el.scroll(_.bind(this.handle_scroll_feed_view, this));
         this.reset_flags();
@@ -308,6 +309,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     check_feed_view_scrolled_to_bottom: function() {
         if (!NEWSBLUR.assets.flags['no_more_stories']) {
             var last_story = NEWSBLUR.assets.stories.last();
+            if (last_story.get('selected')) {
+                NEWSBLUR.reader.load_page_of_feed_stories();
+                return;
+            }
+            
             var $last_story = last_story.story_view.$el;
             var container_offset = this.$el.position().top;
             var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;
