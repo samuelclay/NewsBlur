@@ -1786,7 +1786,9 @@ class MStory(mongo.Document):
         if self.image_url and not force:
             return self.image_url
         
-        story_content = self.story_content or zlib.decompress(self.story_content_z)
+        story_content = self.story_content
+        if not story_content and self.story_content_z:
+            story_content = zlib.decompress(self.story_content_z)
         if not story_content:
             return
         
