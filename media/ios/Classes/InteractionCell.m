@@ -7,8 +7,8 @@
 //
 
 #import "InteractionCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
+#import <CoreText/CoreText.h>
 
 @implementation InteractionCell
 
@@ -31,9 +31,9 @@
         self.avatarView = avatar;
         [self.contentView addSubview:avatar];
         
-        OHAttributedLabel *interaction = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *interaction = [[UILabel alloc] initWithFrame:CGRectZero];
         interaction.backgroundColor = [UIColor whiteColor];
-        interaction.automaticallyAddLinksForType = NO;
+//        interaction.automaticallyAddLinksForType = NO;
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
         
@@ -111,31 +111,33 @@
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
-    NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txtWithTime];
+    NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    // for those calls we don't specify a range so it affects the whole string
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:10]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
-        [attrStr setTextColor:UIColorFromRGB(0xffffff)];        
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
-        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
 
     }
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
+        [attrStr setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:14]} range:[txtWithTime rangeOfString:username]];
     }
-    
-    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:title]];
-    [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txtWithTime rangeOfString:comment]]; 
-        
-    [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
-    
-    self.interactionLabel.attributedText = attrStr; 
-    
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
+
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:10]} range:[txtWithTime rangeOfString:time]];
+    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    style.alignment = NSTextAlignmentLeft;
+    style.lineHeightMultiple = 1.2f;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+
+    self.interactionLabel.attributedText = attrStr;
+    self.interactionLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
     [self.interactionLabel sizeToFit];
     
     int height = self.interactionLabel.frame.size.height;

@@ -7,7 +7,6 @@
 //
 
 #import "SmallActivityCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -24,9 +23,8 @@
         self.faviconView = favicon;
         [self.contentView addSubview:favicon];
         
-        OHAttributedLabel *activity = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
         activity.backgroundColor = [UIColor whiteColor];
-        activity.automaticallyAddLinksForType = NO;
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
         

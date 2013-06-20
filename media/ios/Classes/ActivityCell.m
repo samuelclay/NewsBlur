@@ -7,7 +7,6 @@
 //
 
 #import "ActivityCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
 
 @implementation ActivityCell
@@ -31,9 +30,8 @@
         self.faviconView = favicon;
         [self.contentView addSubview:favicon];
         
-        OHAttributedLabel *activity = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
         activity.backgroundColor = [UIColor whiteColor];
-        activity.automaticallyAddLinksForType = NO;
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
         
@@ -140,29 +138,31 @@
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
-    NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txtWithTime];
+    NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    // for those calls we don't specify a range so it affects the whole string
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
-    [attrStr setTextColor:UIColorFromRGB(0x333333)];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:14]} range:NSMakeRange(0, [txtWithTime length])];
+    if (self.highlighted) {
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
+    } else {
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
+    }
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
+        [attrStr setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:14]} range:[txtWithTime rangeOfString:username]];
     }
-    
-    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:title]];
-    
-    if(withUserUsername.length) {
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:withUserUsername]];
-        [attrStr setTextBold:YES range:[txtWithTime rangeOfString:withUserUsername]]; 
+    if (withUserUsername.length) {
+        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:withUserUsername]];
+        [attrStr setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:14]} range:[txtWithTime rangeOfString:withUserUsername]];
     }
-    
-    [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txtWithTime rangeOfString:comment]];
-    
-    [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
+
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
+    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:10]} range:[txtWithTime rangeOfString:time]];
+    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
     
     self.activityLabel.attributedText = attrStr;
     

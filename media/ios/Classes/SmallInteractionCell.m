@@ -7,7 +7,6 @@
 //
 
 #import "SmallInteractionCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -24,9 +23,8 @@
         self.avatarView = favicon;
         [self.contentView addSubview:favicon];
         
-        OHAttributedLabel *interaction = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *interaction = [[UILabel alloc] initWithFrame:CGRectZero];
         interaction.backgroundColor = [UIColor whiteColor];
-        interaction.automaticallyAddLinksForType = NO;
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
         
