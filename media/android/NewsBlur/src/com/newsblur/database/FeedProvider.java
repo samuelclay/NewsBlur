@@ -583,6 +583,8 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		
 		switch (uriMatcher.match(uri)) {
+        case ALL_FEEDS:
+            return db.update(DatabaseConstants.FEED_TABLE, values, null, null);
 		case INDIVIDUAL_FEED:
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
 		case INDIVIDUAL_SOCIAL_FEED:
