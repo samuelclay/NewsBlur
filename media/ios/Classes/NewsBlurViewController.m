@@ -419,11 +419,11 @@ static const CGFloat kFolderTitleHeight = 28;
     
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
-                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=true",
+                      [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
                       NEWSBLUR_URL]];
     } else {
         urlFeedList = [NSURL URLWithString:
-                       [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=false",
+                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
                         NEWSBLUR_URL]];
     }
     
@@ -1303,7 +1303,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 
 - (void)loadFavicons {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons",
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
@@ -1392,10 +1392,10 @@ heightForHeaderInSection:(NSInteger)section {
     // refresh the feed
     NSString *urlString;
     if (feedId) {
-        urlString = [NSString stringWithFormat:@"http://%@/reader/feed_unread_count?feed_id=%@",
+        urlString = [NSString stringWithFormat:@"%@/reader/feed_unread_count?feed_id=%@",
                      NEWSBLUR_URL, feedId];
     } else {
-        urlString = [NSString stringWithFormat:@"http://%@/reader/refresh_feeds",
+        urlString = [NSString stringWithFormat:@"%@/reader/refresh_feeds",
                      NEWSBLUR_URL];
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];

@@ -203,7 +203,7 @@
     NSURL* url = [NSURL URLWithString:urlString];
 
     if (!url.scheme) {
-        NSString* modifiedURLString = [NSString stringWithFormat:@"http://%@", urlString];
+        NSString* modifiedURLString = [NSString stringWithFormat:@"%@", urlString];
         url = [NSURL URLWithString:modifiedURLString];
     }
     if ([self.webView isLoading]) {

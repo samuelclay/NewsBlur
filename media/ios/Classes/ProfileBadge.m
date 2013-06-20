@@ -306,10 +306,10 @@
     [self.activityIndicator startAnimating];
     
     if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
-        urlString = [NSString stringWithFormat:@"http://%@/social/follow",
+        urlString = [NSString stringWithFormat:@"%@/social/follow",
                                NEWSBLUR_URL];
     } else {
-        urlString = [NSString stringWithFormat:@"http://%@/social/unfollow",
+        urlString = [NSString stringWithFormat:@"%@/social/unfollow",
                                NEWSBLUR_URL];
     }
     

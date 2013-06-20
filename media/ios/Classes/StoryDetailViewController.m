@@ -1123,10 +1123,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl showShareHUD:@"Favoriting"];
     NSString *urlString;
     if (likeComment) {
-        urlString = [NSString stringWithFormat:@"http://%@/social/like_comment",
+        urlString = [NSString stringWithFormat:@"%@/social/like_comment",
                                NEWSBLUR_URL];
     } else {
-        urlString = [NSString stringWithFormat:@"http://%@/social/remove_like_comment",
+        urlString = [NSString stringWithFormat:@"%@/social/remove_like_comment",
                                NEWSBLUR_URL];
     }
     
@@ -1248,7 +1248,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)subscribeToBlurblog {
     [appDelegate.storyPageControl showShareHUD:@"Following"];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
+    NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      NEWSBLUR_URL];
     
     NSURL *url = [NSURL URLWithString:urlString];
@@ -1409,7 +1409,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"Fetching text...";
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/original_text",
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            NEWSBLUR_URL];
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
     [request addPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"];

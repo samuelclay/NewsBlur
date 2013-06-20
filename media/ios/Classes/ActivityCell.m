@@ -105,7 +105,7 @@
             feedId = [activity objectForKey:@"story_feed_id"];
         }
         if (feedId && [feedId class] != [NSNull class]) {
-            NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i",
+            NSString *faviconUrl = [NSString stringWithFormat:@"%@/rss_feeds/icon/%i",
                                     NEWSBLUR_URL,
                                     [feedId intValue]];
             [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl]

@@ -28,7 +28,6 @@ import com.newsblur.util.StoryOrder;
 
 public class AllStoriesItemsList extends ItemsList {
 
-	private ArrayList<String> feedIds;
 	private APIManager apiManager;
 	private ContentResolver resolver;
 
@@ -38,15 +37,9 @@ public class AllStoriesItemsList extends ItemsList {
 
 		setTitle(getResources().getString(R.string.all_stories));
 
-		feedIds = new ArrayList<String>();
 		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 		
-		Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-
-		while (cursor.moveToNext()) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-		}
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
@@ -78,10 +71,7 @@ public class AllStoriesItemsList extends ItemsList {
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTIFEED_UPDATE);
-
-			String[] feeds = new String[feedIds.size()];
-			feedIds.toArray(feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
+            intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // the API will return all feeds if no IDs are passed
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
 			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
@@ -107,9 +97,7 @@ public class AllStoriesItemsList extends ItemsList {
 					values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
 					values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
 					values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-					for (String feedId : feedIds) {
-						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
-					}
+                    resolver.update(FeedProvider.FEEDS_URI, values, null, null);
 					setResult(RESULT_OK); 
 					Toast.makeText(AllStoriesItemsList.this, R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
 					finish();
