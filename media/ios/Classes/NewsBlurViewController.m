@@ -231,7 +231,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.feedTitlesTable];
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+    [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -294,9 +295,10 @@ static const CGFloat kFolderTitleHeight = 28;
         [self redrawUnreadCounts];
         [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                                           animated:NO 
-                                    scrollPosition:UITableViewScrollPositionNone]; 
+                                    scrollPosition:UITableViewScrollPositionNone];
+        [self.notifier setNeedsLayout];
     }
-
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -349,6 +351,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self.feedTitlesTable reloadData];
+    [self.notifier setNeedsLayout];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -376,7 +379,8 @@ static const CGFloat kFolderTitleHeight = 28;
         self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
     }
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
-
+    self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
+    
     int height = 16;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
@@ -444,23 +448,28 @@ static const CGFloat kFolderTitleHeight = 28;
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
+    
+    [self loadOfflineFeeds];
+    [self showOfflineNotifier];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] == 404 ||
-               [request responseStatusCode] == 429 ||
-               [request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] >= 400) {
         [pull finishedLoading];
         if ([request responseStatusCode] == 429) {
-            return [self informError:@"Slow down. You're rate-limited."];
-        }
-        if ([request responseStatusCode] == 503) {
+            [self informError:@"Slow down. You're rate-limited."];
+        } else if ([request responseStatusCode] == 503) {
             [pull finishedLoading];
-            return [self informError:@"In maintenance mode"];
+            [self informError:@"In maintenance mode"];
+        } else {
+            [self informError:@"The server barfed!"];
         }
-        return [self informError:@"The server barfed!"];
+        
+        [self loadOfflineFeeds];
+        [self showOfflineNotifier];
+        return;
     }
     
     appDelegate.hasNoSites = NO;
@@ -704,6 +713,11 @@ static const CGFloat kFolderTitleHeight = 28;
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
+}
+
+
+- (void)loadOfflineFeeds {
+    
 }
 
 - (void)showUserProfile {
@@ -1610,6 +1624,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
+    [self.notifier setProgress:0];
     [self.notifier show];
 }
 
