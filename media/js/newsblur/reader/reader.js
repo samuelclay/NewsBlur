@@ -4081,7 +4081,9 @@
         
         show_mouse_indicator: function() {
             var self = this;
-            
+
+            if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+
             if (this.flags['mouse_indicator_hidden']) {
                 this.flags['mouse_indicator_hidden'] = false;
                 this.$s.$mouse_indicator.animate({'opacity': 1, 'left': 0}, {

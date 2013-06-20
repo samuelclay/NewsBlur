@@ -1228,6 +1228,7 @@ class MSharedStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
     story_guid_hash          = mongo.StringField(max_length=6)
+    image_url                = mongo.StringField(max_length=1024)
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())

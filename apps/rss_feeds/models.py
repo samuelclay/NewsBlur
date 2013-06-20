@@ -1795,7 +1795,10 @@ class MStory(mongo.Document):
         soup = BeautifulSoup(story_content)
         image = soup.find('img')
         if image:
-            self.image_url = image.get('src')
+            image_url = image.get('src')
+            if image_url and len(image_url) >= 1024:
+                return
+            self.image_url = image_url
             return self.image_url
 
     def fetch_original_text(self, force=False, request=None):
@@ -1830,6 +1833,7 @@ class MStarredStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    image_url                = mongo.StringField(max_length=1024)
 
     meta = {
         'collection': 'starred_stories',

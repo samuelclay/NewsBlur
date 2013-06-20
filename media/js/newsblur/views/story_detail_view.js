@@ -80,6 +80,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
+
         this.setup_classes();
         this.toggle_classes();
         this.toggle_read_status();
@@ -305,7 +306,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
         this.toggle_intelligence();
         this.render_intelligence();
-
+        
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             this.$('.NB-story-sentiment').tipsy({
                 delayIn: 375,
@@ -362,7 +363,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     truncate_story_height: function() {
         if (this._truncated) return;
-        
+        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+
         // console.log(["Checking truncate", this.$el, this.images_to_load, this.truncate_delay / 1000 + " sec delay"]);
         var $expander = this.$(".NB-story-content-expander");
         var $expander_cutoff = this.$(".NB-story-cutoff");

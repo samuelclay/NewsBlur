@@ -458,6 +458,26 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+.NB-story-list-empty {
+  background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
+  background-size: 64px;
+  color: rgba(0, 0, 0, .4);
+  opacity: .4;
+  font-size: 16px;
+  padding: 78px 24px 0;
+  position: absolute;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+  top: 40%;
+  width: 100%;
+  z-index: 10;
+  cursor: default;
+  line-height: 20px;
+  font-weight: bold;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 
 .NB-feedlists ::-moz-selection {
   background: transparent;
