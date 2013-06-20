@@ -1552,7 +1552,7 @@ class MStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
-    image_url                = mongo.URLField()
+    image_url                = mongo.StringField(max_length=1024)
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     comment_count            = mongo.IntField()
     comment_user_ids         = mongo.ListField(mongo.IntField())
@@ -1785,8 +1785,12 @@ class MStory(mongo.Document):
     def extract_image_url(self, force=False):
         if self.image_url and not force:
             return self.image_url
-            
-        soup = BeautifulSoup(self.story_content or zlib.decompress(self.story_content_z))
+        
+        story_content = self.story_content or zlib.decompress(self.story_content_z)
+        if not story_content:
+            return
+        
+        soup = BeautifulSoup(story_content)
         image = soup.find('img')
         if image:
             self.image_url = image.get('src')
