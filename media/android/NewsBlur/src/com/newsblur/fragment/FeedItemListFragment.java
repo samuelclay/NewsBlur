@@ -1,7 +1,5 @@
 package com.newsblur.fragment;
 
-import java.util.ArrayList;
-
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,13 +9,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -32,14 +25,13 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Story;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener, OnCreateContextMenuListener {
+public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
 	private static final String TAG = "itemListFragment";
 	public static final String FRAGMENT_TAG = "itemListFragment";
@@ -159,7 +151,8 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		refreshStories();
 	}
 
-	private void refreshStories() {
+	@Override
+	protected void refreshStories() {
 		final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
 		adapter.swapCursor(cursor);
@@ -177,43 +170,14 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-		if (item.getItemId() == R.id.menu_mark_story_as_read) {
-			final Story story = adapter.getStory(menuInfo.position);
-			if(! story.read) {
-				ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
-				storiesToMarkAsRead.add(story);
-				FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
-                refreshStories();
-			}
-		} else if (item.getItemId() == R.id.menu_mark_previous_stories_as_read) {
-			final ArrayList<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-			ArrayList<Story> storiesToMarkAsRead = new ArrayList<Story>();
-			for(Story story: previousStories) {
-				if(! story.read) {
-					storiesToMarkAsRead.add(story);
-				}
-			}
-			FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
-            refreshStories();
-		}
-		return super.onContextItemSelected(item);
-	}
-
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		MenuInflater inflater = getActivity().getMenuInflater();
-		
-		inflater.inflate(R.menu.context_story, menu);
-	}
-
     @Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;
+    }
+
+    @Override
+    protected StoryItemsAdapter getAdapter() {
+        return adapter;
     }
 
 }
