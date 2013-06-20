@@ -590,9 +590,9 @@ def load_single_feed(request, feed_id):
                 story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
             if story['story_hash'] in starred_stories:
                 story['starred'] = True
-                starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
-                                                      user.profile.timezone)
-                story['starred_date'] = format_story_link_date__long(starred_date, now)
+                starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
+            	story['short_parsed_starred_date'] = format_story_link_date__short(starred_date, now)
+        		story['long_parsed_starred_date'] = format_story_link_date__long(starred_date, now)
             if story['story_hash'] in shared_stories:
                 story['shared'] = True
                 shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
@@ -743,7 +743,8 @@ def load_starred_stories(request):
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
-        story['starred_date']      = format_story_link_date__long(starred_date, now)
+        story['short_parsed_starred_date'] = format_story_link_date__short(starred_date, now)
+        story['long_parsed_starred_date'] = format_story_link_date__long(starred_date, now)
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -842,9 +843,9 @@ def load_river_stories__redis(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
-                                                  user.profile.timezone)
-            story['starred_date'] = format_story_link_date__long(starred_date, now)
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
+        	story['short_parsed_starred_date'] = format_story_link_date__short(starred_date, now)
+        	story['long_parsed_starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
             'author': apply_classifier_authors(classifier_authors, story),
