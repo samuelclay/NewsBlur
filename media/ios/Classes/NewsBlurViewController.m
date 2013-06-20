@@ -448,23 +448,28 @@ static const CGFloat kFolderTitleHeight = 28;
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
+    
+    [self loadOfflineFeeds];
+    [self showOfflineNotifier];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] == 404 ||
-               [request responseStatusCode] == 429 ||
-               [request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] >= 400) {
         [pull finishedLoading];
         if ([request responseStatusCode] == 429) {
-            return [self informError:@"Slow down. You're rate-limited."];
-        }
-        if ([request responseStatusCode] == 503) {
+            [self informError:@"Slow down. You're rate-limited."];
+        } else if ([request responseStatusCode] == 503) {
             [pull finishedLoading];
-            return [self informError:@"In maintenance mode"];
+            [self informError:@"In maintenance mode"];
+        } else {
+            [self informError:@"The server barfed!"];
         }
-        return [self informError:@"The server barfed!"];
+        
+        [self loadOfflineFeeds];
+        [self showOfflineNotifier];
+        return;
     }
     
     appDelegate.hasNoSites = NO;
@@ -708,6 +713,11 @@ static const CGFloat kFolderTitleHeight = 28;
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
+}
+
+
+- (void)loadOfflineFeeds {
+    
 }
 
 - (void)showUserProfile {
@@ -1643,7 +1653,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideNotifier {
-//    [self.notifier hide];
+    [self.notifier hide];
 }
 
 @end
