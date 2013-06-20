@@ -10,7 +10,9 @@ from django.template import Template, Context
 
 class LastSeenMiddleware(object):
     def process_response(self, request, response):
-        if ((request.path in ('/', '/reader/refresh_feeds', '/reader/load_feeds'))
+        if ((request.path == '/' or
+             request.path.startswith('/reader/refresh_feeds') or
+             request.path.startswith('/reader/load_feeds'))
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
