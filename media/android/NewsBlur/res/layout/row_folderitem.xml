@@ -34,10 +34,6 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginTop="10dp"
-            android:paddingBottom="4dp"
-            android:paddingTop="2dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
             android:layout_toRightOf="@id/row_item_sidebar" />
 
         <TextView
@@ -50,7 +46,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="@color/darkgray"
-            android:textSize="11dp" />
+            android:textSize="14dp" />
 
         <TextView
             android:id="@+id/row_item_title"
