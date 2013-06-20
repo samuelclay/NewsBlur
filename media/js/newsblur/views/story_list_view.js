@@ -327,27 +327,28 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
 
     check_feed_view_scrolled_to_bottom: function() {
-        if (!NEWSBLUR.assets.flags['no_more_stories']) {
-            if (!NEWSBLUR.assets.stories.size()) return;
-            var last_story = _.last(NEWSBLUR.assets.stories.visible());
-            if (!last_story || last_story.get('selected')) {
-                NEWSBLUR.reader.load_page_of_feed_stories();
-                return;
-            }
-            if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
-            
-            var $last_story = last_story.story_view.$el;
-            var container_offset = this.$el.position().top;
-            var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;
-            var visible_height = this.$el.height();
-            var scroll_y = this.$el.scrollTop();
-            
-            // Fudge factor is simply because it looks better at 64 pixels off.
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
+        if (NEWSBLUR.assets.flags['no_more_stories']) return;
+        if (!NEWSBLUR.assets.stories.size()) return;
+        
+        var last_story = _.last(NEWSBLUR.assets.stories.visible());
+        if (!last_story || last_story.get('selected')) {
+            NEWSBLUR.reader.load_page_of_feed_stories();
+            return;
+        }
+        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        
+        var $last_story = last_story.story_view.$el;
+        var container_offset = this.$el.position().top;
+        var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;
+        var visible_height = this.$el.height();
+        var scroll_y = this.$el.scrollTop();
+        
+        // Fudge factor is simply because it looks better at 64 pixels off.
+        // NEWSBLUR.log(['check_feed_view_scrolled_to_bottom', full_height, container_offset, visible_height, scroll_y, NEWSBLUR.reader.flags['opening_feed']]);
+        if ((visible_height + 64) >= full_height) {
             // NEWSBLUR.log(['check_feed_view_scrolled_to_bottom', full_height, container_offset, visible_height, scroll_y, NEWSBLUR.reader.flags['opening_feed']]);
-            if ((visible_height + 64) >= full_height) {
-                // NEWSBLUR.log(['check_feed_view_scrolled_to_bottom', full_height, container_offset, visible_height, scroll_y, NEWSBLUR.reader.flags['opening_feed']]);
-                NEWSBLUR.reader.load_page_of_feed_stories();
-            }
+            NEWSBLUR.reader.load_page_of_feed_stories();
         }
     },
     
