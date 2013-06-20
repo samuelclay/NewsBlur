@@ -26,6 +26,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *_text;
 @property (nonatomic) NBNotifierStyle style;
 @property (nonatomic, strong) UIView *view;
+@property (nonatomic) CGPoint offset;
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) BOOL showing;
@@ -33,8 +34,11 @@ typedef enum {
 
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view;
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view withOffset:(CGPoint)offset;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style;
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withhOffset:(CGPoint)offset;
 
+- (void) didChangedOrientation:(NSNotification *)sender;
 - (void)setAccessoryView:(UIView *)view animated:(BOOL)animated;
 - (void)setProgress:(float)value;
 - (void)setTitle:(id)title animated:(BOOL)animated;

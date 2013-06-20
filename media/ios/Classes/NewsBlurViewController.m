@@ -231,7 +231,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.feedTitlesTable];
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+    [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -294,9 +295,10 @@ static const CGFloat kFolderTitleHeight = 28;
         [self redrawUnreadCounts];
         [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                                           animated:NO 
-                                    scrollPosition:UITableViewScrollPositionNone]; 
+                                    scrollPosition:UITableViewScrollPositionNone];
+        [self.notifier setNeedsLayout];
     }
-
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -349,6 +351,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self.feedTitlesTable reloadData];
+    [self.notifier setNeedsLayout];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -376,7 +379,8 @@ static const CGFloat kFolderTitleHeight = 28;
         self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
     }
     self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
-
+    self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
+    
     int height = 16;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
@@ -1610,6 +1614,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
+    [self.notifier setProgress:0];
     [self.notifier show];
 }
 
@@ -1638,7 +1643,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideNotifier {
-    [self.notifier hide];
+//    [self.notifier hide];
 }
 
 @end

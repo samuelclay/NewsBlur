@@ -36,6 +36,7 @@
 @synthesize accessoryView, title = _title, style = _style, view = _view;
 @synthesize showing;
 @synthesize progressBar;
+@synthesize offset = _offset;
 
 + (void)initialize {
     if (self == [NBNotifier class]) {
@@ -58,16 +59,25 @@
 }
 
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view {
-    return [self initWithTitle:title inView:view style:NBLoadingStyle];
+    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:CGPointZero];
+}
+
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view withOffset:(CGPoint)offset {
+    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:offset];
 }
 
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style {
+    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:CGPointZero];
+}
+
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withOffset:(CGPoint)offset{
     
-    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height, view.bounds.size.width, NOTIFIER_HEIGHT)]){
+    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height - offset.y, view.bounds.size.width, NOTIFIER_HEIGHT)]){
         
         self.backgroundColor = [UIColor clearColor];
         
         self.style = style;
+        self.offset = offset;
         
         _txtLabel = [[UILabel alloc]initWithFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
         [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
@@ -92,9 +102,22 @@
         self.progressBar.progressTintColor = UIColorFromRGB(0xA0B0A6);
         self.progressBar.hidden = YES;
         [self addSubview:self.progressBar];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangedOrientation:) name:UIDeviceOrientationDidChangeNotification object:nil];
     }
     
     return self;
+}
+
+- (void) setNeedsLayout {
+    [super setNeedsLayout];
+    [self didChangedOrientation:nil];
+}
+
+- (void) didChangedOrientation:(NSNotification *)sender {
+//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    [self setView:self.view];
+    self.progressBar.frame = CGRectMake(self.frame.size.width - 60 - 12, 14, 60, 6);
 }
 
 
@@ -119,7 +142,7 @@
 }
 
 - (void)setProgress:(float)value {
-    [self.progressBar setProgress:value animated:YES];
+    [self.progressBar setProgress:value animated:(self.style == NBSyncingProgressStyle)];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -154,9 +177,12 @@
 
 - (void)setView:(UIView *)view {
     _view = view;
-    self.frame = CGRectMake(0, view.bounds.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
-    
-    [view addSubview:self];
+    NSLog(@"Notifier view: %@ / %@", NSStringFromCGRect(view.bounds), NSStringFromCGPoint(self.offset));
+    if (self.showing) {
+        self.frame = CGRectMake(0, view.bounds.size.height - self.offset.y - self.frame.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
+    } else {
+        self.frame = CGRectMake(0, view.bounds.size.height - self.offset.y, view.bounds.size.width, NOTIFIER_HEIGHT);
+    }
 }
 
 - (void)show {
@@ -170,7 +196,7 @@
     [UIView setAnimationDuration:time];
     
     CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT;
+    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -183,7 +209,7 @@
     [UIView setAnimationDuration:0.3f];
     
     CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT;
+    move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
     self.frame = move;
     
     [UIView commitAnimations];
@@ -226,7 +252,7 @@
     
     
     CGRect move = self.frame;
-    move.origin.y = self.view.frame.size.height;
+    move.origin.y = self.view.frame.size.height - self.offset.y;
     self.frame = move;
     
     [UIView commitAnimations];

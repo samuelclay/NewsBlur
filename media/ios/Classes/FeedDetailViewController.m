@@ -99,6 +99,7 @@
     titleImageBarButton = [UIBarButtonItem alloc];
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
+    [self.view addSubview:self.notifier];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -198,6 +199,8 @@
         }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
+    
+    [self.notifier setNeedsLayout];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
