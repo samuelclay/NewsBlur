@@ -3,6 +3,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     el: '.NB-feed-stories',
     
     initialize: function() {
+        _.bindAll(this, 'check_feed_view_scrolled_to_bottom');
         this.collection.bind('reset', this.reset_flags, this);
         this.collection.bind('reset', this.render, this);
         this.collection.bind('reset', this.reset_story_positions, this);
@@ -55,8 +56,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
         _.invoke(stories, 'watch_images_for_story_height');
         this.show_correct_feed_in_feed_title_floater();
-
         this.stories = stories;
+        _.defer(this.check_feed_view_scrolled_to_bottom);
     },
     
     add: function(options) {
@@ -77,6 +78,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             _.invoke(stories, 'watch_images_for_story_height');
             
             this.stories = this.stories.concat(stories);
+            _.defer(this.check_feed_view_scrolled_to_bottom);
         } else {
             this.show_no_more_stories();
         }
@@ -326,8 +328,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     check_feed_view_scrolled_to_bottom: function() {
         if (!NEWSBLUR.assets.flags['no_more_stories']) {
-            var last_story = NEWSBLUR.assets.stories.last();
-            if (last_story.get('selected')) {
+            if (!NEWSBLUR.assets.stories.size()) return;
+            var last_story = _.last(NEWSBLUR.assets.stories.visible());
+            if (!last_story || last_story.get('selected')) {
                 NEWSBLUR.reader.load_page_of_feed_stories();
                 return;
             }
@@ -338,10 +341,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var full_height = ($last_story.length && $last_story.offset().top) + $last_story.height() - container_offset;
             var visible_height = this.$el.height();
             var scroll_y = this.$el.scrollTop();
-        
+            
             // Fudge factor is simply because it looks better at 64 pixels off.
+            // NEWSBLUR.log(['check_feed_view_scrolled_to_bottom', full_height, container_offset, visible_height, scroll_y, NEWSBLUR.reader.flags['opening_feed']]);
             if ((visible_height + 64) >= full_height) {
-                // NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
+                // NEWSBLUR.log(['check_feed_view_scrolled_to_bottom', full_height, container_offset, visible_height, scroll_y, NEWSBLUR.reader.flags['opening_feed']]);
                 NEWSBLUR.reader.load_page_of_feed_stories();
             }
         }

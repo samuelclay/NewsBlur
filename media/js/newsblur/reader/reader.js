@@ -2170,32 +2170,32 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
 
-            if (!this.flags['opening_feed']) {
-                this.flags['opening_feed'] = true;
-                this.counts['page'] += 1;
-                NEWSBLUR.app.story_titles.show_loading(options);
-                
-                if (this.active_feed == 'starred') {
-                    this.model.fetch_starred_stories(this.counts['page'], _.bind(this.post_open_starred_stories, this),
-                                                     NEWSBLUR.app.taskbar_info.show_stories_error, false);
-                } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
-                    this.model.fetch_river_blurblogs_stories(this.active_feed,
-                                                             this.counts['page'],
-                                                             {'global': this.flags.global_blurblogs},
-                                                             _.bind(this.post_open_river_blurblogs_stories, this),
-                                                             NEWSBLUR.app.taskbar_info.show_stories_error, false);
-                } else if (this.flags['social_view']) {
-                    this.model.fetch_social_stories(this.active_feed,
-                                                    this.counts['page'], _.bind(this.post_open_social_stories, this),
-                                                    NEWSBLUR.app.taskbar_info.show_stories_error, false);
-                } else if (this.flags['river_view']) {
-                    this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
-                                                   this.counts['page'], _.bind(this.post_open_river_stories, this),
-                                                   NEWSBLUR.app.taskbar_info.show_stories_error, false);
-                } else {
-                    this.model.load_feed(feed_id, this.counts['page'], false, 
-                                         $.rescope(this.post_open_feed, this), NEWSBLUR.app.taskbar_info.show_stories_error);                                 
-                }
+            if (this.flags['opening_feed']) return;
+
+            this.flags['opening_feed'] = true;
+            this.counts['page'] += 1;
+            NEWSBLUR.app.story_titles.show_loading(options);
+            
+            if (this.active_feed == 'starred') {
+                this.model.fetch_starred_stories(this.counts['page'], _.bind(this.post_open_starred_stories, this),
+                                                 NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
+                this.model.fetch_river_blurblogs_stories(this.active_feed,
+                                                         this.counts['page'],
+                                                         {'global': this.flags.global_blurblogs},
+                                                         _.bind(this.post_open_river_blurblogs_stories, this),
+                                                         NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else if (this.flags['social_view']) {
+                this.model.fetch_social_stories(this.active_feed,
+                                                this.counts['page'], _.bind(this.post_open_social_stories, this),
+                                                NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else if (this.flags['river_view']) {
+                this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
+                                               this.counts['page'], _.bind(this.post_open_river_stories, this),
+                                               NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else {
+                this.model.load_feed(feed_id, this.counts['page'], false, 
+                                     $.rescope(this.post_open_feed, this), NEWSBLUR.app.taskbar_info.show_stories_error);                                 
             }
         },
         
