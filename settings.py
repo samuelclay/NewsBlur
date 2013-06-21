@@ -36,6 +36,9 @@ from mongoengine import connect
 from boto.s3.connection import S3Connection
 from utils import jammit
 
+import PIL.Image
+sys.modules['Image'] = PIL.Image
+
 # ===================
 # = Server Settings =
 # ===================
