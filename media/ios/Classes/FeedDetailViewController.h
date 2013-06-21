@@ -29,6 +29,7 @@
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
+    BOOL isOffline;
                
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
@@ -54,6 +55,7 @@
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
+@property (nonatomic, readwrite) BOOL isOffline;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;

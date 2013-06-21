@@ -28,7 +28,8 @@ UIPopoverControllerDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
-
+    
+    BOOL isOffline;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -61,6 +62,7 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
+@property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic) PullToRefreshView *pull;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;

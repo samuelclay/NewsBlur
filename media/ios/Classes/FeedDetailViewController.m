@@ -58,6 +58,7 @@
 @synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
+@synthesize isOffline;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -351,11 +352,13 @@
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
             if (self.feedPage == 1) {
+                self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
             } else {
                 [self informError:[request error]];
             }
+            [self.storyTitlesTable reloadData];
         }];
         [request setCompletionBlock:^(void) {
             if (!appDelegate.activeFeed) return;
@@ -376,8 +379,10 @@
         NSArray *feedIds;
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
-        } else {
+        } else if (appDelegate.activeFeed) {
             feedIds = @[[appDelegate.activeFeed objectForKey:@"id"]];
+        } else {
+            return;
         }
         
         NSString *order;
@@ -396,7 +401,6 @@
                          readFilter,
                          [feedIds componentsJoinedByString:@","],
                          order];
-        NSLog(@"Sql: %@", sql);
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
@@ -411,7 +415,7 @@
         if ([offlineStories count]) {
             [self renderStories:offlineStories];
             [self showLoadingNotifier];
-        } else {
+        } else if (!self.isOffline) {
             [self showLoadingNotifier];
         }        
     }];
@@ -496,7 +500,15 @@
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self informError:[request error]];
+            self.pageFinished = YES;
+            if (self.feedPage == 1) {
+                self.isOffline = YES;
+                [self loadOfflineStories];
+                [self showOfflineNotifier];
+            } else {
+                [self informError:[request error]];
+                [self.storyTitlesTable reloadData];
+            }
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -514,18 +526,20 @@
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] >= 500) {
+        self.pageFinished = YES;
         if (self.feedPage == 1) {
+            self.isOffline = YES;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         } else {
-            [self informError:@"The server barfed."]; 
-            self.pageFinished = YES;
-            [self.storyTitlesTable reloadData];
+            [self informError:@"The server barfed."];
         }
+        [self.storyTitlesTable reloadData];
         
         return;
     }
-        
+    
+    self.isOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;

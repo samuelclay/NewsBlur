@@ -71,6 +71,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
 @synthesize notifier;
+@synthesize isOffline;
 
 #pragma mark -
 #pragma mark Globals
@@ -476,6 +477,7 @@ static const CGFloat kFolderTitleHeight = 28;
     }
     
     appDelegate.hasNoSites = NO;
+    self.isOffline = NO;
     NSString *responseString = [request responseString];   
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -716,25 +718,27 @@ static const CGFloat kFolderTitleHeight = 28;
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
     }
+    
+    if (!self.isOffline) {
+        if (self.inPullToRefresh_) {
+            self.inPullToRefresh_ = NO;
+            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+                [self.appDelegate fetchUnreadHashes];
+            }];
+        } else {
+            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+                [self refreshFeedList];
+            }];
+        }
 
-    if (self.inPullToRefresh_) {
-        self.inPullToRefresh_ = NO;
-        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-            [self.appDelegate fetchUnreadHashes];
-        }];
-    } else {
-        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-            [self refreshFeedList];
-        }];
+        // start up the first time user experience
+        if ([[results objectForKey:@"social_feeds"] count] == 0 &&
+            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [appDelegate showFirstTimeUser];
+            return;
+        }
     }
     
-    // start up the first time user experience
-    if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-        [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
-        [appDelegate showFirstTimeUser];
-        return;
-    }
-
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
@@ -743,7 +747,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (void)loadOfflineFeeds {
     __block __typeof__(self) _self = self;
-
+    self.isOffline = YES;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [appDelegate.database inDatabase:^(FMDatabase *db) {
