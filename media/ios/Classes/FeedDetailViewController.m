@@ -377,6 +377,9 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSArray *feedIds;
+        NSString *readFilterPref = [userPreferences stringForKey:[appDelegate readFilterKey]];
+        NSString *orderPref = [userPreferences stringForKey:[appDelegate readFilterKey]];
+        
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
         } else if (appDelegate.activeFeed) {
@@ -386,13 +389,13 @@
         }
         
         NSString *order;
-        if ([[userPreferences stringForKey:[appDelegate orderKey]] isEqualToString:@"oldest"]) {
+        if ([orderPref isEqualToString:@"oldest"]) {
             order = @"ASC";
         } else {
             order = @"DESC";
         }
         NSString *readFilter;
-        if ([[userPreferences stringForKey:[appDelegate readFilterKey]] isEqualToString:@"unread"]) {
+        if ([readFilterPref isEqualToString:@"unread"]) {
             readFilter = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
         } else {
             readFilter = @"";
@@ -410,6 +413,19 @@
                                        JSONObjectWithData:[[story objectForKey:@"story_json"]
                                                            dataUsingEncoding:NSUTF8StringEncoding]
                                        options:nil error:nil]];
+        }
+        
+        if (![readFilter isEqualToString:@"unread"]) {
+            NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
+                             [feedIds componentsJoinedByString:@","]];
+            FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
+            NSMutableDictionary *unreadStoryHashes = [NSMutableDictionary dictionary];
+            
+            while ([unreadHashCursor next]) {
+                [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
+            }
+            
+            self.unreadStoryHashes = unreadStoryHashes;
         }
         
         if ([offlineStories count]) {
@@ -858,7 +874,12 @@
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
-    cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+    if (self.isOffline) {
+        BOOL read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        cell.isRead = read || ([[story objectForKey:@"read_status"] intValue] == 1);
+    } else {
+        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad

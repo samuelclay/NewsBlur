@@ -100,7 +100,7 @@ class UserSubscription(models.Model):
         else:
             r.delete(unread_ranked_stories_key)
             if not r.exists(stories_key):
-                print " ---> No stories on feed: %s" % self
+                # print " ---> No stories on feed: %s" % self
                 return []
             elif read_filter != 'unread' or not r.exists(read_stories_key):
                 ignore_user_stories = True
