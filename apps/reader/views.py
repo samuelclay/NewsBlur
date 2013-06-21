@@ -475,13 +475,16 @@ def feed_unread_count(request):
     if social_feed_ids:
         social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
     
-    if True or settings.DEBUG:
-        if len(feed_ids):
+    if settings.DEBUG:
+        if len(feed_ids) == 1:
             feed_title = Feed.get_by_id(feed_ids[0]).feed_title
         elif len(social_feed_ids) == 1:
             feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
         else:
             feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
+        logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    else:
+        feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
         logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
