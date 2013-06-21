@@ -363,7 +363,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     truncate_story_height: function() {
         if (this._truncated) return;
-        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        // if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
 
         // console.log(["Checking truncate", this.$el, this.images_to_load, this.truncate_delay / 1000 + " sec delay"]);
         var $expander = this.$(".NB-story-content-expander");
