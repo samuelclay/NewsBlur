@@ -22,10 +22,13 @@
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
+#import "JSON.h"
 #import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
+#import "FMDatabase.h"
+#import "FMDatabaseAdditions.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -478,8 +481,28 @@ static const CGFloat kFolderTitleHeight = 28;
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
                              JSONObjectWithData:responseData
-                             options:kNilOptions 
+                             options:kNilOptions
                              error:&error];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:@"DELETE FROM feeds WHERE username = ?", appDelegate.activeUsername];
+            [db executeUpdate:@"INSERT into feeds"
+             "(username, download_date, feeds_json) VALUES "
+             "(?, ?, ?)",
+             appDelegate.activeUsername,
+             [NSDate date],
+             [results JSONRepresentation]
+             ];
+        }];
+    });
+
+    [self finishLoadingFeedListWithDict:results];
+}
+
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
 //    NSLog(@"results are %@", results);
@@ -489,6 +512,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
+    [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
+    [userPreferences synchronize];
 
 //    // set title only if on currestont controller
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
@@ -717,7 +742,35 @@ static const CGFloat kFolderTitleHeight = 28;
 
 
 - (void)loadOfflineFeeds {
-    
+    __block __typeof__(self) _self = self;
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            NSDictionary *results;
+            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+            if (!appDelegate.activeUsername) {
+                appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
+                if (!appDelegate.activeUsername) return;
+            }
+            
+            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM feeds WHERE username = ? LIMIT 1",
+                                   appDelegate.activeUsername];
+            
+            while ([cursor next]) {
+                NSDictionary *feedsCache = [cursor resultDictionary];
+                results = [NSJSONSerialization
+                           JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
+                                               dataUsingEncoding:NSUTF8StringEncoding]
+                           options:nil error:nil];
+                break;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_self finishLoadingFeedListWithDict:results];
+            });
+        }];
+    });
 }
 
 - (void)showUserProfile {

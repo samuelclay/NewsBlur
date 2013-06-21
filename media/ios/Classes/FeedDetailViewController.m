@@ -622,19 +622,23 @@
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];
     [appDelegate.storyPageControl advanceToNextUnread];
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        for (NSDictionary *story in confirmedNewStories) {
-            [db executeUpdate:@"INSERT into stories"
-             "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-             "(?, ?, ?, ?)",
-             [story objectForKey:@"story_feed_id"],
-             [story objectForKey:@"story_hash"],
-             [story objectForKey:@"story_timestamp"],
-             [story JSONRepresentation]
-             ];
-        }
-        //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [db lastErrorMessage]);
-    }];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *story in confirmedNewStories) {
+                [db executeUpdate:@"INSERT into stories"
+                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+                 "(?, ?, ?, ?)",
+                 [story objectForKey:@"story_feed_id"],
+                 [story objectForKey:@"story_hash"],
+                 [story objectForKey:@"story_timestamp"],
+                 [story JSONRepresentation]
+                 ];
+            }
+            //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [db lastErrorMessage]);
+        }];
+    });
 
     [self.notifier hide];
 }

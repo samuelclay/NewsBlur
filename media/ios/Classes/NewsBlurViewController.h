@@ -76,6 +76,7 @@ UIPopoverControllerDelegate> {
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 - (void)didSelectSectionHeader:(UIButton *)button;

@@ -45,7 +45,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 8
+#define CURRENT_DB_VERSION 9
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -2042,6 +2042,15 @@
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
+    NSString *createFeedsTable = [NSString stringWithFormat:@"create table if not exists feeds "
+                                  "("
+                                  " username varchar(36),"
+                                  " download_date date,"
+                                  " feeds_json text,"
+                                  " UNIQUE(username) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createFeedsTable];
+    
     NSString *createStoryTable = [NSString stringWithFormat:@"create table if not exists stories "
                                   "("
                                   " story_feed_id number,"
@@ -2108,11 +2117,13 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions
                              error:&error];
+    __block __typeof__(self) _self = self;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             [db executeUpdate:@"DROP TABLE unread_hashes"];
-            [self setupDatabase:db];
+            [_self setupDatabase:db];
             NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
             for (NSString *feed in [hashes allKeys]) {
                 NSArray *story_hashes = [hashes objectForKey:feed];
@@ -2128,10 +2139,10 @@
             }
         }];
         
-        self.totalUnfetchedStoryCount = 0;
-        self.remainingUnfetchedStoryCount = 0;
-        self.latestFetchedStoryDate = 0;
-        [self fetchAllUnreadStories];
+        _self.totalUnfetchedStoryCount = 0;
+        _self.remainingUnfetchedStoryCount = 0;
+        _self.latestFetchedStoryDate = 0;
+        [_self fetchAllUnreadStories];
     });
 }
 
@@ -2210,32 +2221,36 @@
                              options:kNilOptions
                              error:&error];
     __block BOOL anySuccess = NO;
+    __block __typeof__(self) _self = self;
     
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        for (NSDictionary *story in [results objectForKey:@"stories"]) {
-            BOOL inserted = [db executeUpdate:@"INSERT into stories"
-             "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-             "(?, ?, ?, ?)",
-             [story objectForKey:@"story_feed_id"],
-             [story objectForKey:@"story_hash"],
-             [story objectForKey:@"story_timestamp"],
-             [story JSONRepresentation]
-             ];
-            if (!anySuccess && inserted) anySuccess = YES;
-        }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *story in [results objectForKey:@"stories"]) {
+                BOOL inserted = [db executeUpdate:@"INSERT into stories"
+                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+                 "(?, ?, ?, ?)",
+                 [story objectForKey:@"story_feed_id"],
+                 [story objectForKey:@"story_hash"],
+                 [story objectForKey:@"story_timestamp"],
+                 [story JSONRepresentation]
+                 ];
+                if (!anySuccess && inserted) anySuccess = YES;
+            }
+            if (anySuccess) {
+                _self.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
+                                                 objectForKey:@"story_timestamp"] intValue];
+            }
+        }];
+        
         if (anySuccess) {
-            self.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
-                                            objectForKey:@"story_timestamp"] intValue];
+            [_self fetchAllUnreadStories];
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_self.feedsViewController hideNotifier];
+            });
         }
-    }];
-    
-    if (anySuccess) {
-        [self fetchAllUnreadStories];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController hideNotifier];
-        });
-    }
+    });
 }
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {

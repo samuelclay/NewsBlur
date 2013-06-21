@@ -133,7 +133,6 @@
     [__accessoryView setFrame:CGRectMake((32 - __accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -__accessoryView.frame.size.height)/2)+2, __accessoryView.frame.size.width, __accessoryView.frame.size.height)];
     
     [self addSubview:__accessoryView];
-    NSLog(@"Accessory view: %@", __accessoryView);
     if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
         [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
     } else {
@@ -177,7 +176,7 @@
 
 - (void)setView:(UIView *)view {
     _view = view;
-    NSLog(@"Notifier view: %@ / %@", NSStringFromCGRect(view.bounds), NSStringFromCGPoint(self.offset));
+
     if (self.showing) {
         self.frame = CGRectMake(0, view.bounds.size.height - self.offset.y - self.frame.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
     } else {
