@@ -353,7 +353,10 @@ class UserSubscription(models.Model):
         if self.user.profile.last_seen_on < UNREAD_CUTOFF and not force:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
-            return
+            return self
+        ong = self.unread_count_negative
+        ont = self.unread_count_neutral
+        ops = self.unread_count_positive
         
         # if not self.feed.fetched_once:
         #     if not silent:
@@ -427,8 +430,7 @@ class UserSubscription(models.Model):
                     feed_scores['neutral'] += 1
                 
         
-        # if not silent:
-        #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
+        logging.user(self.user, '~FBUnread count (~SB%s~SN): ~SN(~FC%s~FB/~FC%s~FB/~FC%s~FB) ~SBto~SN (~FC%s~FB/~FC%s~FB/~FC%s~FB)' % (self.feed_id, ong, ont, ops, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
 
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
