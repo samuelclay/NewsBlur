@@ -475,14 +475,16 @@ def feed_unread_count(request):
     if social_feed_ids:
         social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
     
-    if True or settings.DEBUG:
-        if len(feed_ids):
+    if len(feed_ids) == 1:
+        if settings.DEBUG:
             feed_title = Feed.get_by_id(feed_ids[0]).feed_title
-        elif len(social_feed_ids) == 1:
-            feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
         else:
-            feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
-        logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+            feed_title = feed_ids[0]
+    elif len(social_feed_ids) == 1:
+        feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
+    else:
+        feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
+    logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
@@ -1096,6 +1098,7 @@ def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     multiple = len(feed_ids) > 1
     code = 1
+    errors = []
     
     for feed_id in feed_ids:
         if 'social:' in feed_id:
@@ -1110,23 +1113,29 @@ def mark_feed_as_read(request):
                 sub = UserSubscription.objects.get(feed=feed, user=request.user)
                 if not multiple:
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
-            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist), e:
+                errors.append("User not subscribed: %s" % e)
+                continue
+            except (ValueError), e:
+                errors.append("Invalid feed_id: %s" % e)
                 continue
 
         if not sub:
+            errors.append("User not subscribed: %s" % feed_id)
             continue
         
         try:
             marked_read = sub.mark_feed_read()
             if marked_read:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
-        except IntegrityError:
+        except IntegrityError, e:
+            errors.append("Could not mark feed as read: %s" % e)
             code = -1
             
     if multiple:
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
         
-    return dict(code=code)
+    return dict(code=code, errors=errors)
 
 def _parse_user_info(user):
     return {

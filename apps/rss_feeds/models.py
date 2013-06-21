@@ -1071,25 +1071,30 @@ class Feed(models.Model):
                     print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
                 else:
                     MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+    
+    @property
+    def story_cutoff(self):
+        cutoff = 500
+        if self.active_subscribers <= 0:
+            cutoff = 25
+        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+            cutoff = 100
+        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
+            cutoff = 200
+        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
+            cutoff = 300
+        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
+            cutoff = 350
+        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
+            cutoff = 400
+        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
+            cutoff = 450
 
+        return cutoff
+                
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
-            cutoff = 500
-            if self.active_subscribers <= 0:
-                cutoff = 25
-            elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
-                cutoff = 100
-            elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
-                cutoff = 200
-            elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
-                cutoff = 300
-            elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
-                cutoff = 350
-            elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
-                cutoff = 400
-            elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
-                cutoff = 450
-            
+            cutoff = self.story_cutoff
         MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
 
     # @staticmethod
