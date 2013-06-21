@@ -140,6 +140,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     
     show_only_selected_story: function() {
         if (!NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
         
         this.collection.any(_.bind(function(story) {
             if (story && story.story_view && story.get('selected')) {
