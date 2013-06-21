@@ -349,7 +349,8 @@ class UserSubscription(models.Model):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        
+        oldest_unread_story_date = now
+
         if self.user.profile.last_seen_on < UNREAD_CUTOFF and not force:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
@@ -374,63 +375,73 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
         
-        if not stories:
-            stories = cache.get('S:%s' % self.feed_id)
+        if self.is_trained:
+            if not stories:
+                stories = cache.get('S:%s' % self.feed_id)
             
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
+            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
         
-        if not stories:
-            stories_db = MStory.objects(story_hash__in=unread_story_hashes)
-            stories = Feed.format_stories(stories_db, self.feed_id)
+            if not stories:
+                stories_db = MStory.objects(story_hash__in=unread_story_hashes)
+                stories = Feed.format_stories(stories_db, self.feed_id)
         
-        oldest_unread_story_date = now
-        unread_stories = []
-        for story in stories:
-            if story['story_date'] < date_delta:
-                continue
-            if story['story_hash'] in unread_story_hashes:
-                unread_stories.append(story)
-                if story['story_date'] < oldest_unread_story_date:
-                    oldest_unread_story_date = story['story_date']
+            unread_stories = []
+            for story in stories:
+                if story['story_date'] < date_delta:
+                    continue
+                if story['story_hash'] in unread_story_hashes:
+                    unread_stories.append(story)
+                    if story['story_date'] < oldest_unread_story_date:
+                        oldest_unread_story_date = story['story_date']
 
-        # if not silent:
-        #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
+            # if not silent:
+            #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
-        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0))
-        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
-        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
-        classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
-
-        # if not silent:
-        #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
+            classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0))
+            classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
             
-        scores = {
-            'feed': apply_classifier_feeds(classifier_feeds, self.feed),
-        }
+            if (not len(classifier_feeds) and 
+                not len(classifier_authors) and 
+                not len(classifier_titles) and 
+                not len(classifier_tags)):
+                self.is_trained = False
+            
+            # if not silent:
+            #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
+            
+            scores = {
+                'feed': apply_classifier_feeds(classifier_feeds, self.feed),
+            }
         
-        for story in unread_stories:
-            scores.update({
-                'author' : apply_classifier_authors(classifier_authors, story),
-                'tags'   : apply_classifier_tags(classifier_tags, story),
-                'title'  : apply_classifier_titles(classifier_titles, story),
-            })
+            for story in unread_stories:
+                scores.update({
+                    'author' : apply_classifier_authors(classifier_authors, story),
+                    'tags'   : apply_classifier_tags(classifier_tags, story),
+                    'title'  : apply_classifier_titles(classifier_titles, story),
+                })
             
-            max_score = max(scores['author'], scores['tags'], scores['title'])
-            min_score = min(scores['author'], scores['tags'], scores['title'])
-            if max_score > 0:
-                feed_scores['positive'] += 1
-            elif min_score < 0:
-                feed_scores['negative'] += 1
-            else:
-                if scores['feed'] > 0:
+                max_score = max(scores['author'], scores['tags'], scores['title'])
+                min_score = min(scores['author'], scores['tags'], scores['title'])
+                if max_score > 0:
                     feed_scores['positive'] += 1
-                elif scores['feed'] < 0:
+                elif min_score < 0:
                     feed_scores['negative'] += 1
                 else:
-                    feed_scores['neutral'] += 1
-                
+                    if scores['feed'] > 0:
+                        feed_scores['positive'] += 1
+                    elif scores['feed'] < 0:
+                        feed_scores['negative'] += 1
+                    else:
+                        feed_scores['neutral'] += 1
+        else:
+            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True, withscores=True)
+            feed_scores['neutral'] = len(unread_story_hashes)
+            if feed_scores['neutral']:
+                oldest_unread_story_date = datetime.datetime.fromtimestamp(unread_story_hashes[-1][1])
         
-        logging.user(self.user, '~FBUnread count (~SB%s~SN): ~SN(~FC%s~FB/~FC%s~FB/~FC%s~FB) ~SBto~SN (~FC%s~FB/~FC%s~FB/~FC%s~FB)' % (self.feed_id, ong, ont, ops, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+        logging.user(self.user, '~FBUnread count (~SB%s~SN%s): ~SN(~FC%s~FB/~FC%s~FB/~FC%s~FB) ~SBto~SN (~FC%s~FB/~FC%s~FB/~FC%s~FB)' % (self.feed_id, '/~FMtrained~FB' if self.is_trained else '', ong, ont, ops, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
 
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
