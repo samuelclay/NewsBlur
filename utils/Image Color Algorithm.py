@@ -1,4 +1,4 @@
-import Image
+from PIL import Image
 import scipy
 import scipy.cluster
 from pprint import pprint
