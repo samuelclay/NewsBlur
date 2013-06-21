@@ -17,7 +17,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 
-public class FeedItemsAdapter extends SimpleCursorAdapter {
+public class FeedItemsAdapter extends SimpleCursorAdapter implements StoryItemsAdapter {
 
 	private Cursor cursor;
 	private final Feed feed;
@@ -84,13 +84,15 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 		return v;
 	}
 	
+	@Override
 	public Story getStory(int position) {
 		cursor.moveToPosition(position);
 		return Story.fromCursor(cursor);
 	}
 	
-	public ArrayList<Story> getPreviousStories(int position) {
-		ArrayList<Story> stories = new ArrayList<Story>();
+	@Override
+	public List<Story> getPreviousStories(int position) {
+		List<Story> stories = new ArrayList<Story>();
 		cursor.moveToPosition(0);
 		for(int i=0;i<=position && position < cursor.getCount();i++) {
 			Story story = Story.fromCursor(cursor);
