@@ -333,16 +333,12 @@
                                 self.feedPage];
         }
         
-        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate orderKey]]];
-        }
-        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
-        }
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeOrder]];
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeReadFilter]];
         
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -377,8 +373,6 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSArray *feedIds;
-        NSString *readFilterPref = [userPreferences stringForKey:[appDelegate readFilterKey]];
-        NSString *orderPref = [userPreferences stringForKey:[appDelegate readFilterKey]];
         
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
@@ -388,22 +382,22 @@
             return;
         }
         
-        NSString *order;
-        if ([orderPref isEqualToString:@"oldest"]) {
-            order = @"ASC";
+        NSString *orderSql;
+        if ([appDelegate.activeOrder isEqualToString:@"oldest"]) {
+            orderSql = @"ASC";
         } else {
-            order = @"DESC";
+            orderSql = @"DESC";
         }
-        NSString *readFilter;
-        if ([readFilterPref isEqualToString:@"unread"]) {
-            readFilter = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
+        NSString *readFilterSql;
+        if ([appDelegate.activeReadFilter isEqualToString:@"unread"]) {
+            readFilterSql = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
         } else {
-            readFilter = @"";
+            readFilterSql = @"";
         }
         NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT 500",
-                         readFilter,
+                         readFilterSql,
                          [feedIds componentsJoinedByString:@","],
-                         order];
+                         orderSql];
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
@@ -415,7 +409,7 @@
                                        options:nil error:nil]];
         }
         
-        if (![readFilter isEqualToString:@"unread"]) {
+        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
             NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
                              [feedIds componentsJoinedByString:@","]];
             FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
@@ -499,16 +493,12 @@
         }
         
         
-        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate orderKey]]];
-        }
-        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
-        }
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeOrder]];
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeReadFilter]];
 
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];

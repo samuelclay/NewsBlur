@@ -283,6 +283,8 @@
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 - (int)locationOfStoryId:(id)storyId;
+- (NSString *)activeOrder;
+- (NSString *)activeReadFilter;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;

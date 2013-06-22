@@ -1039,6 +1039,44 @@
     }
 }
 
+- (NSString *)activeOrder {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
+    NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
+    
+    if (orderPref) {
+        return orderPref;
+    } else if (orderPrefDefault) {
+        return orderPrefDefault;
+    } else {
+        return @"newest";
+    }
+}
+
+- (NSString *)activeReadFilter {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *readFilterFeedPrefDefault = [userPreferences stringForKey:@"default_feed_read_filter"];
+    NSString *readFilterFolderPrefDefault = [userPreferences stringForKey:@"default_folder_read_filter"];
+    NSString *readFilterPref = [userPreferences stringForKey:[self readFilterKey]];
+    
+    if (readFilterPref) {
+        return readFilterPref;
+    } else if (self.isRiverView || self.isSocialRiverView) {
+        if (readFilterFolderPrefDefault) {
+            return readFilterFolderPrefDefault;
+        } else {
+            return @"unread";
+        }
+    } else {
+        if (readFilterFeedPrefDefault) {
+            return readFilterFeedPrefDefault;
+        } else {
+            return @"all";
+        }
+    }
+}
+
+
 - (int)unreadCount {
     if (self.isRiverView || self.isSocialRiverView) {
         return [self unreadCountForFolder:nil];

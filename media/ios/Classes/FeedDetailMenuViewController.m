@@ -51,21 +51,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.menuTableView reloadData];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *orderKey = [appDelegate orderKey];
-    NSString *readFilterKey = [appDelegate readFilterKey];
-    
     [orderSegmentedControl setSelectedSegmentIndex:0];
-    if ([[userPreferences stringForKey:orderKey] isEqualToString:@"oldest"]) {
+    if ([appDelegate.activeOrder isEqualToString:@"oldest"]) {
         [orderSegmentedControl setSelectedSegmentIndex:1];
     }
     
     [readFilterSegmentedControl setSelectedSegmentIndex:0];
-    if ([[userPreferences stringForKey:readFilterKey] isEqualToString:@"unread"]) {
-        [readFilterSegmentedControl setSelectedSegmentIndex:1];
-    } else if ([[userPreferences stringForKey:readFilterKey] isEqualToString:@"all"]) {
-        [readFilterSegmentedControl setSelectedSegmentIndex:0];
-    } else if (appDelegate.isRiverView) {
+    if ([appDelegate.activeReadFilter isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
 }

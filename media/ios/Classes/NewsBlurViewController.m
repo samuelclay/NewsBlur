@@ -92,16 +92,20 @@ static const CGFloat kFolderTitleHeight = 28;
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
     
+    imageCache = [[NSCache alloc] init];
+    [imageCache setDelegate:self];
+    
     [[NSNotificationCenter defaultCenter] 
      addObserver:self
      selector:@selector(returnToApp)
      name:UIApplicationWillEnterForegroundNotification
      object:nil];
-
-    imageCache = [[NSCache alloc] init];
-    [imageCache setDelegate:self];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingDidChange:) name:kIASKAppSettingChanged object:nil];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(settingDidChange:)
+     name:kIASKAppSettingChanged
+     object:nil];
     
     [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
     [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
