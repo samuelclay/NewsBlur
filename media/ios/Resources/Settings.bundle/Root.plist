@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Story list</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story order</string>
+			<key>Titles</key>
+			<array>
+				<string>Newest first</string>
+				<string>Oldest first</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>newest</string>
+			<key>Values</key>
+			<array>
+				<string>newest</string>
+				<string>oldest</string>
+			</array>
+			<key>Key</key>
+			<string>default_order</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Show stories</string>
+			<key>Titles</key>
+			<array>
+				<string>All stories</string>
+				<string>Unread only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>all</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>unread</string>
+			</array>
+			<key>Key</key>
+			<string>default_read_filter</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Offline stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download stories</string>
+			<key>Key</key>
+			<string>offline_allowed</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download images</string>
+			<key>Key</key>
+			<string>offline_image_download</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Download using</string>
+			<key>Titles</key>
+			<array>
+				<string>Wifi + Cellular</string>
+				<string>Wifi only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>cellular</string>
+			<key>Values</key>
+			<array>
+				<string>cellular</string>
+				<string>wifi</string>
+			</array>
+			<key>Key</key>
+			<string>offline_download_connection</string>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+</dict>
+</plist>

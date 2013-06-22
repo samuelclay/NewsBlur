@@ -14,6 +14,7 @@
 #import "BaseViewController.h"
 #import "WEPopoverController.h"
 #import "NBNotifier.h"
+#import "IASKAppSettingsViewController.h"
 
 @class NewsBlurAppDelegate;
 
@@ -22,7 +23,8 @@
 UIAlertViewDelegate, PullToRefreshViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
 WEPopoverControllerDelegate,
-UIPopoverControllerDelegate> {
+UIPopoverControllerDelegate,
+IASKSettingsDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
@@ -111,6 +113,9 @@ UIPopoverControllerDelegate> {
 - (void)resetToolbar;
 - (void)refreshHeaderCounts;
 - (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
+- (void)settingDidChange:(NSNotification*)notification;
 
 - (void)showSyncingNotifier;
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)days;

@@ -400,7 +400,7 @@
         } else {
             readFilter = @"";
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@",
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT 500",
                          readFilter,
                          [feedIds componentsJoinedByString:@","],
                          order];

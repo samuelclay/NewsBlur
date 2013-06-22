@@ -40,6 +40,7 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
+@class IASKAppSettingsViewController;
 @class UnreadCounts;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
@@ -75,7 +76,8 @@
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
     UserProfileViewController *userProfileViewController;
-
+    IASKAppSettingsViewController *preferencesViewController;
+    
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -162,6 +164,7 @@
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
+@property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
@@ -239,6 +242,7 @@
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
+- (void)showPreferences;
 
 - (void)showMoveSite;
 - (void)openTrainSite;

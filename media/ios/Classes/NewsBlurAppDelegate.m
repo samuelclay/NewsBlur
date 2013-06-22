@@ -42,6 +42,7 @@
 #import "FMDatabaseQueue.h"
 #import "FMDatabaseAdditions.h"
 #import "JSON.h"
+#import "IASKAppSettingsViewController.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -74,6 +75,7 @@
 @synthesize trainerViewController;
 @synthesize originalStoryViewController;
 @synthesize userProfileViewController;
+@synthesize preferencesViewController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
@@ -348,11 +350,34 @@
     }
 }
 
+- (void)showPreferences {
+    if (!preferencesViewController) {
+        preferencesViewController = [[IASKAppSettingsViewController alloc] init];
+    }
+
+    preferencesViewController.delegate = self.feedsViewController;
+    preferencesViewController.showDoneButton = YES;
+    preferencesViewController.showCreditsFooter = NO;
+    preferencesViewController.title = @"Preferences";
+    BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+    preferencesViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"offline_image_download", @"offline_download_connection", nil];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
+    self.modalNavigationController = navController;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    } else {
+        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
+    }
+}
+
 - (void)showFindFriends {
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
     UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
     
-    self.friendsListViewController = friendsBVC;    
+    self.friendsListViewController = friendsBVC;
     self.modalNavigationController = friendsNav;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

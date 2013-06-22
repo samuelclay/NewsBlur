@@ -29,6 +29,8 @@
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
+#import "IASKAppSettingsViewController.h"
+#import "IASKSettingsReader.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -95,9 +97,11 @@ static const CGFloat kFolderTitleHeight = 28;
      selector:@selector(returnToApp)
      name:UIApplicationWillEnterForegroundNotification
      object:nil];
-    
+
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(settingDidChange:) name:kIASKAppSettingChanged object:nil];
     
     [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
     [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
@@ -829,7 +833,7 @@ static const CGFloat kFolderTitleHeight = 28;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 114)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
@@ -871,6 +875,23 @@ static const CGFloat kFolderTitleHeight = 28;
             [[UIApplication sharedApplication] openURL:url];
         }
     }
+}
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
+	
+	// your code here to reconfigure the app for changed settings
+}
+
+- (void)settingDidChange:(NSNotification*)notification {
+	if ([notification.object isEqual:@"offline_allowed"]) {
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"offline_allowed"] intValue];
+		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"offline_image_download", @"offline_download_connection", nil] animated:YES];
+	}
 }
 
 #pragma mark -
