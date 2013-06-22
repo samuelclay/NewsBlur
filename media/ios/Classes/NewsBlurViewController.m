@@ -1728,6 +1728,23 @@ heightForHeaderInSection:(NSInteger)section {
     [self.notifier show];
 }
 
+- (void)showCachingNotifier:(float)progress hoursBack:(int)hours {
+    //    [self.notifier hide];
+    self.notifier.style = NBSyncingProgressStyle;
+    if (hours < 2) {
+        self.notifier.title = @"Images from last hour";
+    } else if (hours < 24) {
+        self.notifier.title = [NSString stringWithFormat:@"Images from %d hours", hours];
+    } else if (hours < 48) {
+        self.notifier.title = @"Images from yesterday";
+    } else {
+        self.notifier.title = [NSString stringWithFormat:@"Images from %d days ago", (int)round(hours / 24.f)];
+    }
+    [self.notifier setProgress:progress];
+    [self.notifier setNeedsDisplay];
+    [self.notifier show];
+}
+
 - (void)showOfflineNotifier {
     [self.notifier hide];
     self.notifier.style = NBOfflineStyle;

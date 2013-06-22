@@ -119,6 +119,7 @@ IASKSettingsDelegate> {
 
 - (void)showSyncingNotifier;
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)days;
+- (void)showCachingNotifier:(float)progress hoursBack:(int)hours;
 - (void)showOfflineNotifier;
 - (void)hideNotifier;
 

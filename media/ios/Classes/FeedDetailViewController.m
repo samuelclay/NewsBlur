@@ -308,7 +308,6 @@
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (!appDelegate.activeFeed) return;
     
@@ -371,7 +370,6 @@
 
 - (void)loadOfflineStories {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
-        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSArray *feedIds;
         
         if (appDelegate.isRiverView) {
@@ -450,9 +448,7 @@
 #pragma mark -
 #pragma mark River of News
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -648,11 +644,12 @@
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
-                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-                 "(?, ?, ?, ?)",
+                 "(story_feed_id, story_hash, story_timestamp, image_url, story_json) VALUES "
+                 "(?, ?, ?, ?, ?)",
                  [story objectForKey:@"story_feed_id"],
                  [story objectForKey:@"story_hash"],
                  [story objectForKey:@"story_timestamp"],
+                 [story objectForKey:@"image_url"],
                  [story JSONRepresentation]
                  ];
             }

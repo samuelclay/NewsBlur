@@ -46,7 +46,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 9
+#define CURRENT_DB_VERSION 13
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -120,6 +120,8 @@
 @synthesize totalUnfetchedStoryCount;
 @synthesize remainingUnfetchedStoryCount;
 @synthesize latestFetchedStoryDate;
+@synthesize totalUncachedImagesCount;
+@synthesize remainingUncachedImagesCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -253,6 +255,8 @@
     self.totalUnfetchedStoryCount = 0;
     self.remainingUnfetchedStoryCount = 0;
     self.latestFetchedStoryDate = 0;
+    self.totalUncachedImagesCount = 0;
+    self.remainingUncachedImagesCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
@@ -2099,18 +2103,31 @@
 - (void)setupDatabase:(FMDatabase *)db {
     if ([self databaseSchemaVersion:db] < CURRENT_DB_VERSION) {
         // FMDB cannot execute this query because FMDB tries to use prepared statements
-        [db executeQuery:@"drop table if exists `stories`"];
-        [db executeQuery:@"drop table if exists `unread_hashes`"];
-        //        [db executeQuery:@"drop table if exists `queued_read_hashes`"];
+        [db closeOpenResultSets];
+        [db executeUpdate:@"drop table if exists `stories`"];
+        [db executeUpdate:@"drop table if exists `unread_hashes`"];
+        [db executeUpdate:@"drop table if exists `accounts`"];
+        [db executeUpdate:@"drop table if exists `feeds`"];
+        //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"];
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
-    NSString *createFeedsTable = [NSString stringWithFormat:@"create table if not exists feeds "
+    NSString *createAccountsTable = [NSString stringWithFormat:@"create table if not exists accounts "
                                   "("
                                   " username varchar(36),"
                                   " download_date date,"
                                   " feeds_json text,"
                                   " UNIQUE(username) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createAccountsTable];
+    
+    NSString *createFeedsTable = [NSString stringWithFormat:@"create table if not exists feeds "
+                                  "("
+                                  " feed_id number,"
+                                  " ps number,"
+                                  " nt number,"
+                                  " ng number,"
+                                  " UNIQUE(feed_id) ON CONFLICT REPLACE"
                                   ")"];
     [db executeUpdate:createFeedsTable];
     
@@ -2119,6 +2136,8 @@
                                   " story_feed_id number,"
                                   " story_hash varchar(24),"
                                   " story_timestamp number,"
+                                  " image_url varchar(1024),"
+                                  " image_cached boolean,"
                                   " story_json text,"
                                   " UNIQUE(story_hash) ON CONFLICT REPLACE"
                                   ")"];
@@ -2148,6 +2167,61 @@
 - (NSURL *)applicationDocumentsDirectory
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
+    if (hasQueuedReadStories || forceCheck) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
+            [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+                NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
+                FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
+                while ([stories next]) {
+                    NSString *storyFeedId = [NSString stringWithFormat:@"%@", [stories objectForColumnName:@"story_feed_id"]];
+                    NSString *storyHash = [stories objectForColumnName:@"story_hash"];
+                    if (![hashes objectForKey:storyFeedId]) {
+                        [hashes setObject:[NSMutableArray array] forKey:storyFeedId];
+                    }
+                    [[hashes objectForKey:storyFeedId] addObject:storyHash];
+                }
+                
+                if ([[hashes allKeys] count]) {
+                    hasQueuedReadStories = NO;
+                    [self syncQueuedReadStories:db withStories:hashes withCallback:callback];
+                } else {
+                    if (callback) callback();
+                }
+            }];
+        });
+    } else {
+        if (callback) callback();
+    }
+}
+
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableArray *completedHashes = [NSMutableArray array];
+    for (NSArray *storyHashes in [hashes allValues]) {
+        [completedHashes addObjectsFromArray:storyHashes];
+    }
+    NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
+    [request setDelegate:self];
+    [request setCompletionBlock:^{
+        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
+        ;
+        if (callback) callback();
+    }];
+    [request setFailedBlock:^{
+        NSLog(@"Failed mark read queued.");
+        hasQueuedReadStories = YES;
+        if (callback) callback();
+    }];
+    [request startAsynchronous];
 }
 
 - (void)fetchUnreadHashes {
@@ -2205,6 +2279,8 @@
         _self.totalUnfetchedStoryCount = 0;
         _self.remainingUnfetchedStoryCount = 0;
         _self.latestFetchedStoryDate = 0;
+        _self.totalUncachedImagesCount = 0;
+        _self.remainingUncachedImagesCount = 0;
         [_self fetchAllUnreadStories];
     });
 }
@@ -2225,7 +2301,13 @@
         }
         
         int limit = 100;
-        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT u.story_hash %@ ORDER BY u.story_timestamp DESC LIMIT %d", commonQuery, limit]];
+        NSString *order;
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+            order = @"ASC";
+        } else {
+            order = @"DESC";
+        }
+        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT u.story_hash %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit]];
         
         while ([cursor next]) {
             [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
@@ -2254,7 +2336,8 @@
     if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController hideNotifier];
+//            [self.feedsViewController hideNotifier];
+            [self fetchAllUncachedImages];
         });
         return;
     }
@@ -2291,13 +2374,14 @@
         [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in [results objectForKey:@"stories"]) {
                 BOOL inserted = [db executeUpdate:@"INSERT into stories"
-                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-                 "(?, ?, ?, ?)",
-                 [story objectForKey:@"story_feed_id"],
-                 [story objectForKey:@"story_hash"],
-                 [story objectForKey:@"story_timestamp"],
-                 [story JSONRepresentation]
-                 ];
+                                 "(story_feed_id, story_hash, story_timestamp, image_url, story_json) VALUES "
+                                 "(?, ?, ?, ?, ?)",
+                                 [story objectForKey:@"story_feed_id"],
+                                 [story objectForKey:@"story_hash"],
+                                 [story objectForKey:@"story_timestamp"],
+                                 [story objectForKey:@"image_url"],
+                                 [story JSONRepresentation]
+                                 ];
                 if (!anySuccess && inserted) anySuccess = YES;
             }
             if (anySuccess) {
@@ -2316,59 +2400,105 @@
     });
 }
 
-- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
-    if (hasQueuedReadStories || forceCheck) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                 (unsigned long)NULL), ^(void) {
-            [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-                NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
-                FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
-                while ([stories next]) {
-                    NSString *storyFeedId = [NSString stringWithFormat:@"%@", [stories objectForColumnName:@"story_feed_id"]];
-                    NSString *storyHash = [stories objectForColumnName:@"story_hash"];
-                    if (![hashes objectForKey:storyFeedId]) {
-                        [hashes setObject:[NSMutableArray array] forKey:storyFeedId];
-                    }
-                    [[hashes objectForKey:storyFeedId] addObject:storyHash];
-                }
-                
-                if ([[hashes allKeys] count]) {
-                    hasQueuedReadStories = NO;
-                    [self syncQueuedReadStories:db withStories:hashes withCallback:callback];
-                } else {
-                    if (callback) callback();
-                }
-            }];
+#pragma mark -- Offline - Image Cache
+
+- (NSArray *)uncachedImageUrls {
+    NSMutableArray *urls = [NSMutableArray array];
+    
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *commonQuery = @"FROM stories s "
+        "INNER JOIN unread_hashes u ON (s.story_hash = u.story_hash) "
+        "WHERE s.image_cached is null and s.image_url is not null";
+        int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
+        if (self.totalUncachedImagesCount == 0) {
+            self.totalUncachedImagesCount = count;
+            self.remainingUncachedImagesCount = self.totalUncachedImagesCount;
+        } else {
+            self.remainingUncachedImagesCount = count;
+        }
+        
+        int limit = 25;
+        NSString *order;
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+            order = @"ASC";
+        } else {
+            order = @"DESC";
+        }
+        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT s.image_url %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit]];
+        
+        while ([cursor next]) {
+            [urls addObject:[cursor objectForColumnName:@"image_url"]];
+        }
+        int start = (int)[[NSDate date] timeIntervalSince1970];
+        int end = self.latestFetchedStoryDate;
+        int seconds = start - (end ? end : start);
+        __block int hours = (int)round(seconds / 60.f / 60.f);
+        
+        __block float progress = 0.f;
+        if (self.totalUncachedImagesCount) {
+            progress = 1.f - ((float)self.remainingUncachedImagesCount /
+                              (float)self.totalUncachedImagesCount);
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController showCachingNotifier:progress hoursBack:hours];
         });
-    } else {
-        if (callback) callback();
+    }];
+    
+    return urls;
+}
+
+- (void)fetchAllUncachedImages {
+    NSArray *urls = [self uncachedImageUrls];
+    
+    if ([urls count] == 0) {
+        NSLog(@"Finished caching images. %d total", self.totalUncachedImagesCount);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
+        return;
+    }
+    
+    for (NSString *urlString in urls) {
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+//                                                 (unsigned long)NULL), ^(void) {
+//            NSURL *url = [NSURL URLWithString:urlString];
+//            ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
+//            __weak ASIHTTPRequest *request = _request;
+//            [request setResponseEncoding:NSUTF8StringEncoding];
+//            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+//            [request setFailedBlock:^(void) {
+//                NSLog(@"Failed cache image url.");
+//            }];
+//            [request setCompletionBlock:^(void) {
+//                [self storeCachedImage:request];
+//            }];
+//            [request setTimeOutSeconds:30];
+//            [request startAsynchronous];
+//        });
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+//                                                 (unsigned long)NULL), ^(void) {
+//            
+//            [self fetchAllUncachedImages];
+//        });
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
     }
 }
 
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    NSMutableArray *completedHashes = [NSMutableArray array];
-    for (NSArray *storyHashes in [hashes allValues]) {
-        [completedHashes addObjectsFromArray:storyHashes];
+- (void)storeCachedImage:(ASIHTTPRequest *)request {
+    NSData *responseData = [request responseData];
+
+    BOOL anySuccess = YES;
+    
+    if (anySuccess) {
+        [self fetchAllUncachedImages];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
     }
-    NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
-    [request setDelegate:self];
-    [request setCompletionBlock:^{
-        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
-        ;
-        if (callback) callback();
-    }];
-    [request setFailedBlock:^{
-        NSLog(@"Failed mark read queued.");
-        hasQueuedReadStories = YES;
-        if (callback) callback();
-    }];
-    [request startAsynchronous];
 }
 
 @end
