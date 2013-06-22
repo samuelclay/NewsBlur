@@ -27,7 +27,8 @@ def login(request):
 
     if not user_agent or user_agent.lower() in ['nativehost']:
         errors = dict(user_agent="You must set a user agent to login.")
-        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s" % (user_agent))
+        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
+        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s / %s" % (user_agent, ip))
     elif request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.errors:
