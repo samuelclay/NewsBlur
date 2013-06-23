@@ -110,6 +110,10 @@ def app():
     do()
     env.roles = ['app']
 
+def web():
+    do()
+    env.roles = ['app', 'push', 'work']
+
 def work():
     do()
     env.roles = ['work']
@@ -149,7 +153,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push']
+    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push', 'work']
 
 # =============
 # = Bootstrap =
@@ -195,13 +199,17 @@ def setup_app(skip_common=False):
     configure_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
-    setup_node()
-    configure_node()
+    # setup_node_app()
+    # config_node()
     pre_deploy()
-    deploy()
+    deploy_web()
     config_monit_app()
     done()
 
+def setup_node():
+    setup_node_app()
+    config_node()
+    
 def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
@@ -346,6 +354,7 @@ def setup_python():
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
     
     if env.user == 'ubuntu':
         with settings(warn_only=True):
@@ -542,7 +551,7 @@ def setup_staging():
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
-def setup_node():
+def setup_node_app():
     sudo('add-apt-repository -y ppa:chris-lea/node.js')
     sudo('apt-get update')
     sudo('apt-get install -y nodejs')
@@ -550,7 +559,7 @@ def setup_node():
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
 
-def configure_node():
+def config_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     # put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
@@ -860,7 +869,7 @@ def setup_db_mdadm():
     sudo("sudo update-initramfs -u -v -k `uname -r`")
 
 def setup_original_page_server():
-    setup_node()
+    setup_node_app()
     sudo('mkdir -p /srv/originals')
     sudo('chown %s.%s -R /srv/originals' % (env.user, env.user))        # We assume that the group is the same name as the user. It's common on linux
     put('config/supervisor_node_original.conf',
@@ -969,7 +978,7 @@ def do_name(name):
         hosts = do_roledefs(split=False)
         hostnames = [host.name for host in hosts]
         existing_hosts = [hostname for hostname in hostnames if name in hostname]
-        for i in range(10, 50):
+        for i in range(1, 50):
             try_host = "%s%02d" % (name, i)
             if try_host not in existing_hosts:
                 print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 

@@ -15,7 +15,7 @@ IGNORE_HOSTS = [
     'push',
 ]
 
-def main(role="app", role2="app", command=None, path=None):
+def main(role="app", role2="work", command=None, path=None):
     delay = 1
 
     while True:
