@@ -21,5 +21,6 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 + (void)drawLinearGradientWithRect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
 + (void)saveimagesToDisk;
 + (UIImage *)roundCorneredImage:(UIImage *)orig radius:(CGFloat)r;
++ (NSString *)md5:(NSString *)string;
 
 @end

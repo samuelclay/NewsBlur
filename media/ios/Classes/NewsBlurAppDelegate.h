@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
+#import "ASINetworkQueue.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -139,6 +140,7 @@
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
+    ASINetworkQueue *operationQueue;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -233,6 +235,7 @@
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
+@property (readwrite) ASINetworkQueue *operationQueue;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
@@ -338,6 +341,7 @@
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
+- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
 
 @end
 
