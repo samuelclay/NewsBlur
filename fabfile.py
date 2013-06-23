@@ -245,8 +245,8 @@ def setup_task(queue=None, skip_common=False):
 
 def setup_installs():
     sudo('apt-get -y update')
-    sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
     
     sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
     sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
@@ -921,7 +921,7 @@ def copy_task_settings():
 
 def setup_do(name, size=2):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 13.04 x64 Server"
+    IMAGE_NAME = "Ubuntu 13.04 x64"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
