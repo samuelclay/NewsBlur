@@ -713,17 +713,17 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    # shmmax = 2300047872
-    with cd(env.NEWSBLUR_PATH):
-        sudo('./config/postgres_apt.sh')
+    shmmax = 2300047872
+    # sudo('su root -c "echo \\\"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\\\" > /etc/apt/sources.list.d/pgdg.list\"')
+    sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
     ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
-    # sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
-    # sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
-    # sudo('sysctl -p')
+    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    sudo('sysctl -p')
 
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.2/recovery.conf', use_sudo=True)
@@ -732,11 +732,11 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db13'
+    slave = 'db01'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
 
-    # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
+    # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
     sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
