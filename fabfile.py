@@ -196,7 +196,7 @@ def setup_app(skip_common=False):
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
-    configure_nginx()
+    config_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
     # setup_node_app()
@@ -497,9 +497,9 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
-    configure_nginx()
+    config_nginx()
 
-def configure_nginx():
+def config_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
     sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
     sudo("mkdir -p /var/log/nginx")
@@ -714,7 +714,8 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     # shmmax = 2300047872
-    sudo('add-apt-repository ppa:pitti/postgresql')
+    with cd(env.NEWSBLUR_PATH):
+        sudo('./config/postgres_apt.sh')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
