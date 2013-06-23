@@ -47,7 +47,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 16
+#define CURRENT_DB_VERSION 17
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -2446,12 +2446,13 @@
         } else {
             order = @"DESC";
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit];
+        NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash, u.story_timestamp %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit];
         FMResultSet *cursor = [db executeQuery:sql];
         
         while ([cursor next]) {
             [urls addObject:@[[cursor objectForColumnName:@"image_url"],
-                              [cursor objectForColumnName:@"story_hash"]]];
+             [cursor objectForColumnName:@"story_hash"],
+             [cursor objectForColumnName:@"story_timestamp"]]];
         }
         int start = (int)[[NSDate date] timeIntervalSince1970];
         int end = self.latestFetchedStoryDate;
@@ -2497,7 +2498,8 @@
         [request setTimeOutSeconds:5];
         [operationQueue addOperation:request];
     }
-    
+    self.latestFetchedStoryDate = [[[urls lastObject] objectAtIndex:2] intValue];
+
     [operationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
     [operationQueue setShouldCancelAllRequestsOnFailure:NO];
     [operationQueue go];
