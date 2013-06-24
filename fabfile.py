@@ -256,9 +256,10 @@ def setup_installs():
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
     
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
+    with settings(warn_only=True):
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
     
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
