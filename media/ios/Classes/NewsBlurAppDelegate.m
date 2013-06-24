@@ -47,7 +47,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 17
+#define CURRENT_DB_VERSION 18
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -146,6 +146,7 @@
 @synthesize categories;
 @synthesize categoryFeeds;
 @synthesize operationQueue;
+@synthesize activeCachedImages;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -2139,8 +2140,6 @@
                                   " story_feed_id number,"
                                   " story_hash varchar(24),"
                                   " story_timestamp number,"
-                                  " image_url varchar(1024),"
-                                  " image_cached boolean,"
                                   " story_json text,"
                                   " UNIQUE(story_hash) ON CONFLICT REPLACE"
                                   ")"];
@@ -2173,19 +2172,30 @@
                                    ")"];
     [db executeUpdate:createImagesTable];
     
-    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
-}
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSString *faviconsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"favicons"];
+    NSString *avatarsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"avatars"];
 
-// Returns the URL to the application's Documents directory.
-- (NSURL *)applicationDocumentsDirectory
-{
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:faviconsDirectory]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:faviconsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:avatarsDirectory]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:avatarsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+    }
+    
+    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (hasQueuedReadStories || forceCheck) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
+            [self flushOldCachedImages];
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
                 FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
@@ -2387,12 +2397,11 @@
         [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in [results objectForKey:@"stories"]) {
                 BOOL inserted = [db executeUpdate:@"INSERT into stories "
-                                 "(story_feed_id, story_hash, story_timestamp, image_url, story_json) VALUES "
-                                 "(?, ?, ?, ?, ?)",
+                                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+                                 "(?, ?, ?, ?)",
                                  [story objectForKey:@"story_feed_id"],
                                  [story objectForKey:@"story_hash"],
                                  [story objectForKey:@"story_timestamp"],
-                                 [story objectForKey:@"image_url"],
                                  [story JSONRepresentation]
                                  ];
                 if ([[story objectForKey:@"image_url"] class] != [NSNull class]) {
@@ -2519,7 +2528,7 @@
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [paths objectAtIndex:0];
+        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
         NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", md5Url]];
         
         [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
@@ -2540,6 +2549,54 @@
 //    dispatch_async(dispatch_get_main_queue(), ^{
 //        [self.feedsViewController hideNotifier];
 //    });
+}
+
+- (void)flushOldCachedImages {
+    int deleted = 0;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
+    
+    NSString* file;
+    while (file = [en nextObject])
+    {
+        NSError *error = nil;
+        NSString *filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
+        NSDate *creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
+        NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
+        NSDateFormatter *df = [NSDateFormatter alloc]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
+        [df setDateFormat:@"EEEE d"];
+        
+        if ([creationDate compare:d] == NSOrderedAscending) {
+            [[NSFileManager defaultManager]
+             removeItemAtPath:[cacheDirectory stringByAppendingPathComponent:file]
+             error:&error];
+            deleted += 1;
+        }
+    }
+    NSLog(@"Deleted %d old cached images", deleted);
+}
+
+- (void)prepareActiveCachedImages:(FMDatabase *)db {
+    activeCachedImages = [NSMutableDictionary dictionary];
+    
+    NSArray *feedIds;
+    
+    if (isRiverView) {
+        feedIds = activeFolderFeeds;
+    } else if (activeFeed) {
+        feedIds = @[[activeFeed objectForKey:@"id"]];
+    }
+    NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
+                     "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
+                     "WHERE c.image_cached = 1 AND c.story_feed_id in (%@)",
+                     [feedIds componentsJoinedByString:@","]];
+    FMResultSet *cursor = [db executeQuery:sql];
+    
+    while ([cursor next]) {
+        [activeCachedImages setObject:[cursor objectForColumnName:@"image_url"] forKey:[cursor objectForColumnName:@"story_hash"]];
+    }
 }
 
 @end

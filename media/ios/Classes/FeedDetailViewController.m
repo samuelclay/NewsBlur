@@ -425,7 +425,8 @@
             [self showLoadingNotifier];
         } else if (!self.isOffline) {
             [self showLoadingNotifier];
-        }        
+        }
+        [appDelegate prepareActiveCachedImages:db];
     }];
     
     self.pageFinished = YES;
@@ -644,12 +645,11 @@
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
-                 "(story_feed_id, story_hash, story_timestamp, image_url, story_json) VALUES "
-                 "(?, ?, ?, ?, ?)",
+                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+                 "(?, ?, ?, ?)",
                  [story objectForKey:@"story_feed_id"],
                  [story objectForKey:@"story_hash"],
                  [story objectForKey:@"story_timestamp"],
-                 [story objectForKey:@"image_url"],
                  [story JSONRepresentation]
                  ];
             }
@@ -862,7 +862,12 @@
     cell.storyScore = score;
     
     if (self.isOffline) {
-        BOOL read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        BOOL read;
+        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
+            read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        } else {
+            read = NO;
+        }
         cell.isRead = read || ([[story objectForKey:@"read_status"] intValue] == 1);
     } else {
         cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;

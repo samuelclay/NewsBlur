@@ -64,6 +64,11 @@ static NSMutableDictionary *imageCache;
         // Image not in cache, search on disk.
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *cacheDirectory = [paths objectAtIndex:0];
+        if (isSocial) {
+            cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"avatars"];
+        } else {
+            cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"favicons"];
+        }
         NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
         
         image = [UIImage imageWithContentsOfFile:path];
@@ -112,6 +117,11 @@ static NSMutableDictionary *imageCache;
         for (NSString *filename in [imageCache allKeys]) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
             NSString *cacheDirectory = [paths objectAtIndex:0];
+            if ([filename hasPrefix:@"social"]) {
+                cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"avatars"];
+            } else {
+                cacheDirectory = [cacheDirectory stringByAppendingPathComponent:@"favicons"];
+            }
             NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
             
             // Save image to disk

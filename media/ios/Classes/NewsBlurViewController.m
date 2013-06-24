@@ -497,8 +497,8 @@ static const CGFloat kFolderTitleHeight = 28;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DELETE FROM feeds WHERE username = ?", appDelegate.activeUsername];
-            [db executeUpdate:@"INSERT into feeds"
+            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
+            [db executeUpdate:@"INSERT INTO accounts"
              "(username, download_date, feeds_json) VALUES "
              "(?, ?, ?)",
              appDelegate.activeUsername,
@@ -767,7 +767,7 @@ static const CGFloat kFolderTitleHeight = 28;
                 if (!appDelegate.activeUsername) return;
             }
             
-            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM feeds WHERE username = ? LIMIT 1",
+            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
                                    appDelegate.activeUsername];
             
             while ([cursor next]) {
@@ -1104,6 +1104,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section {
+    if ([appDelegate.dictFoldersArray count] == 0) return 0;
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
@@ -1493,6 +1495,10 @@ heightForHeaderInSection:(NSInteger)section {
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showRefreshNotifier];
+    });
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
@@ -1703,8 +1709,15 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.titleView = userInfoView;
 }
 
-- (void)showSyncingNotifier {
+- (void)showRefreshNotifier {
     [self.notifier hide];
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Counting is difficult...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showSyncingNotifier {
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
     [self.notifier setProgress:0];
@@ -1715,13 +1728,13 @@ heightForHeaderInSection:(NSInteger)section {
 //    [self.notifier hide];
     self.notifier.style = NBSyncingProgressStyle;
     if (hours < 2) {
-        self.notifier.title = @"Storing last hour";
+        self.notifier.title = @"Storing past hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Storing %d hours", hours];
+        self.notifier.title = [NSString stringWithFormat:@"Storing past %d hours", hours];
     } else if (hours < 48) {
         self.notifier.title = @"Storing yesterday";
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"Storing %d days ago", (int)round(hours / 24.f)];
+        self.notifier.title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
     }
     [self.notifier setProgress:progress];
     [self.notifier setNeedsDisplay];
@@ -1734,7 +1747,7 @@ heightForHeaderInSection:(NSInteger)section {
     if (hours < 2) {
         self.notifier.title = @"Images from last hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Images from %d hours", hours];
+        self.notifier.title = [NSString stringWithFormat:@"Images from %d hours ago", hours];
     } else if (hours < 48) {
         self.notifier.title = @"Images from yesterday";
     } else {

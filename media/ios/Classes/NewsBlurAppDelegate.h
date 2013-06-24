@@ -141,6 +141,7 @@
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
     ASINetworkQueue *operationQueue;
+    NSMutableDictionary *activeCachedImages;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -236,6 +237,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
 @property (readwrite) ASINetworkQueue *operationQueue;
+@property (nonatomic) NSMutableDictionary *activeCachedImages;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
@@ -334,7 +336,6 @@
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
-- (NSURL *)applicationDocumentsDirectory;
 - (void)fetchUnreadHashes;
 - (void)storeUnreadHashes:(ASIHTTPRequest *)request;
 - (void)fetchAllUnreadStories;
@@ -342,6 +343,8 @@
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
+- (void)flushOldCachedImages;
+- (void)prepareActiveCachedImages:(FMDatabase *)db;
 
 @end
 
