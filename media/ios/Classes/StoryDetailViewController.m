@@ -155,10 +155,12 @@
     if (appDelegate.feedDetailViewController.isOffline) {
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
         NSString *imageUrl = [appDelegate.activeCachedImages objectForKey:storyHash];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *cachedImage = [storyImagesDirectory stringByAppendingPathComponent:[Utilities md5:imageUrl]];
-        storyContent = [[self.activeStory objectForKey:@"story_content"] stringByReplacingOccurrencesOfString:imageUrl withString:cachedImage];
+        if (imageUrl) {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+            NSString *cachedImage = [storyImagesDirectory stringByAppendingPathComponent:[Utilities md5:imageUrl]];
+            storyContent = [[self.activeStory objectForKey:@"story_content"] stringByReplacingOccurrencesOfString:imageUrl withString:cachedImage];
+        }
     }
     
     NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?

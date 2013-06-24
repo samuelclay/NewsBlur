@@ -420,13 +420,14 @@
             self.unreadStoryHashes = unreadStoryHashes;
         }
         
+        [appDelegate prepareActiveCachedImages:db];
+        
         if ([offlineStories count]) {
             [self renderStories:offlineStories];
             [self showLoadingNotifier];
         } else if (!self.isOffline) {
             [self showLoadingNotifier];
         }
-        [appDelegate prepareActiveCachedImages:db];
     }];
     
     self.pageFinished = YES;
