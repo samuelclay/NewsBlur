@@ -256,9 +256,10 @@ def setup_installs():
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
     
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
-    sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
+    with settings(warn_only=True):
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
     
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
@@ -387,12 +388,11 @@ def config_pgbouncer():
 
 def bounce_pgbouncer():
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
-    run('sleep 4')
+    run('sleep 2')
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
-        run('sleep 4')
+        run('sleep 2')
     run('sudo /etc/init.d/pgbouncer start', pty=False)
-    run('sleep 2')
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
@@ -738,7 +738,7 @@ def copy_postgres_to_standby():
 
     # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
-    sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
+    # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -840,6 +840,7 @@ def setup_munin():
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
