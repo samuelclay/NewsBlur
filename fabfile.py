@@ -387,12 +387,11 @@ def config_pgbouncer():
 
 def bounce_pgbouncer():
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
-    run('sleep 4')
+    run('sleep 2')
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
-        run('sleep 4')
+        run('sleep 2')
     run('sudo /etc/init.d/pgbouncer start', pty=False)
-    run('sleep 2')
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
@@ -738,7 +737,7 @@ def copy_postgres_to_standby():
 
     # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
-    sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
+    # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -840,6 +839,7 @@ def setup_munin():
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
