@@ -2359,7 +2359,7 @@
     if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-//            [self.feedsViewController hideNotifier];
+            [self.feedsViewController showCachingNotifier:0 hoursBack:1];
             [self fetchAllUncachedImages];
         });
         return;
@@ -2448,7 +2448,7 @@
             self.remainingUncachedImagesCount = count;
         }
         
-        int limit = 25;
+        int limit = 10;
         NSString *order;
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
             order = @"ASC";
