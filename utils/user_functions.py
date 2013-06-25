@@ -116,5 +116,7 @@ def extract_user_agent(request):
         platform = 'FeedMe'
     elif 'feed reader-window' in user_agent:
         platform = 'FeedRe'
+    elif 'feed reader-background' in user_agent:
+        platform = 'FeReBg'
     
     return platform
