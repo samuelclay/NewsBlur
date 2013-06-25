@@ -61,7 +61,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);
-        this.$el.scrollTop(this.$el.height());
     },
     
     // ===========
