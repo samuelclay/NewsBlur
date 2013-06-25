@@ -53,7 +53,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     append_river_premium_only_notification: function() {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
                 'The full River of News is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
@@ -61,7 +60,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             ])
         ]);
         this.$('.NB-feed-story-premium-only').remove();
-        this.$el.append($notice);
+        this.$(".NB-end-line").append($notice);
+        this.$el.scrollTop(this.$el.height());
     },
     
     // ===========
