@@ -165,4 +165,9 @@
         <item>UNREAD</item>
     </string-array>
     <string name="default_read_filter_value">ALL</string>
+    
+    <string-array name="mark_all_read_options">
+        <item>Mark entire folder read</item>
+        <item>Cancel</item>
+    </string-array>
 </resources>
