@@ -179,9 +179,10 @@ class UserSubscription(models.Model):
             r.delete(ranked_stories_keys)
             cache.delete(unread_ranked_stories_keys)
         
-        if not usersubs:
+        if not usersubs and feed_ids:
             usersubs = cls.objects.get(user=user_id, feed__in=feed_ids)
-        usersubs = dict((sub.feed_id, sub) for sub in usersubs)
+        if usersubs:
+            usersubs = dict((sub.feed_id, sub) for sub in usersubs)
             
         unread_feed_story_hashes = {}
         for feed_id in feed_ids:
