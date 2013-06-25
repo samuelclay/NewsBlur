@@ -82,8 +82,6 @@ def extract_user_agent(request):
         platform = 'Blar'
     elif 'android' in user_agent:
         platform = 'Androd'
-    elif 'metroblur' in user_agent:
-        platform = 'Metrob'
     elif 'pluggio' in user_agent:
         platform = 'Plugio'
     elif 'msie' in user_agent:
@@ -112,5 +110,11 @@ def extract_user_agent(request):
         platform = 'Tafiti'
     elif 'readkit' in user_agent:
         platform = 'ReadKt'
+    elif 'metroblur' in user_agent:
+        platform = 'Metrob'
+    elif 'feedme' in user_agent:
+        platform = 'FeedMe'
+    elif 'feed reader-window' in user_agent:
+        platform = 'FeedRe'
     
     return platform
