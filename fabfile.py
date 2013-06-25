@@ -322,7 +322,7 @@ def setup_local_files():
     put('config/ssh.conf', './.ssh/config')
 
 def setup_psql_client():
-    sudo('apt-get -y --force-yes install postgresql-client-9.2')
+    sudo('apt-get -y --force-yes install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
 
