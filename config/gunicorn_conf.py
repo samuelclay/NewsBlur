@@ -1,4 +1,4 @@
-from vendor import psutil
+import psutil
 import math
 
 GIGS_OF_MEMORY = psutil.TOTAL_PHYMEM/1024/1024/1024.
