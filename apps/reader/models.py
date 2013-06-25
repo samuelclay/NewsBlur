@@ -180,7 +180,7 @@ class UserSubscription(models.Model):
             cache.delete(unread_ranked_stories_keys)
         
         if not usersubs and feed_ids:
-            usersubs = cls.objects.get(user=user_id, feed__in=feed_ids)
+            usersubs = cls.objects.filter(user=user_id, feed__in=feed_ids)
         if usersubs:
             usersubs = dict((sub.feed_id, sub) for sub in usersubs)
             
