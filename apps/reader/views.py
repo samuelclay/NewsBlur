@@ -548,10 +548,16 @@ def load_single_feed(request, feed_id):
     
     # Get intelligence classifier for user
     
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
-    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
-    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+    if usersub and usersub.is_trained:
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
     classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
                                            classifier_feeds=classifier_feeds, 
                                            classifier_authors=classifier_authors, 
