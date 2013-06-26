@@ -201,7 +201,6 @@ def setup_app(skip_common=False):
     update_gunicorn()
     # setup_node_app()
     # config_node()
-    pre_deploy()
     deploy_web()
     config_monit_app()
     done()
