@@ -38,7 +38,7 @@
           example: "new$blur"
         - key: email
           desc: "Email address"
-          optional: true
+          required: true
           example: "samuel@newsblur.com"
         
 - feeds:
