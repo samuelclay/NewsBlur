@@ -47,7 +47,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 19
+#define CURRENT_DB_VERSION 22
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -2476,7 +2476,7 @@
              [cursor objectForColumnName:@"story_timestamp"]]];
         }
         int start = (int)[[NSDate date] timeIntervalSince1970];
-        int end = self.latestFetchedStoryDate;
+        int end = [[[urls lastObject] objectAtIndex:2] intValue];
         int seconds = start - (end ? end : start);
         __block int hours = (int)round(seconds / 60.f / 60.f);
         
@@ -2519,7 +2519,6 @@
         [request setTimeOutSeconds:5];
         [operationQueue addOperation:request];
     }
-    self.latestFetchedStoryDate = [[[urls lastObject] objectAtIndex:2] intValue];
 
     [operationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
     [operationQueue setShouldCancelAllRequestsOnFailure:NO];
