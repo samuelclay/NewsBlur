@@ -14,6 +14,7 @@
 #import "BaseViewController.h"
 #import "WEPopoverController.h"
 #import "NBNotifier.h"
+#import "IASKAppSettingsViewController.h"
 
 @class NewsBlurAppDelegate;
 
@@ -22,13 +23,15 @@
 UIAlertViewDelegate, PullToRefreshViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
 WEPopoverControllerDelegate,
-UIPopoverControllerDelegate> {
+UIPopoverControllerDelegate,
+IASKSettingsDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
-
+    
+    BOOL isOffline;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -61,6 +64,7 @@ UIPopoverControllerDelegate> {
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
+@property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic) PullToRefreshView *pull;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
@@ -76,6 +80,7 @@ UIPopoverControllerDelegate> {
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 - (void)didSelectSectionHeader:(UIButton *)button;
@@ -109,8 +114,13 @@ UIPopoverControllerDelegate> {
 - (void)refreshHeaderCounts;
 - (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
 
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
+- (void)settingDidChange:(NSNotification*)notification;
+
+- (void)showRefreshNotifier;
 - (void)showSyncingNotifier;
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)days;
+- (void)showCachingNotifier:(float)progress hoursBack:(int)hours;
 - (void)showOfflineNotifier;
 - (void)hideNotifier;
 

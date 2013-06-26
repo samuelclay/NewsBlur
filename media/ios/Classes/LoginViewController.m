@@ -180,7 +180,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Authenticating";
     
-    NSString *urlString = [NSString stringWithFormat:@"https://%@/api/login",
+    NSString *urlString = [NSString stringWithFormat:@"%@/api/login",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]

@@ -127,6 +127,7 @@
     NSString *footerString;
     NSString *fontStyleClass = @"";
     NSString *fontSizeClass = @"";
+    NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([userPreferences stringForKey:@"fontStyle"]){
@@ -149,6 +150,22 @@
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";
+    }
+    
+    // Replace image urls that are locally cached, even when online
+    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+    NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+    if (imageUrls) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *storyImagesDirectory = [[paths objectAtIndex:0]
+                                          stringByAppendingPathComponent:@"story_images"];
+        for (NSString *imageUrl in imageUrls) {
+            NSString *cachedImage = [storyImagesDirectory
+                                     stringByAppendingPathComponent:[Utilities md5:imageUrl]];
+            storyContent = [storyContent
+                            stringByReplacingOccurrencesOfString:imageUrl
+                            withString:cachedImage];
+        }
     }
     
     NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
@@ -207,7 +224,7 @@
                             fontSizeClass,
                             storyHeader,
                             shareBarString,
-                            [self.activeStory objectForKey:@"story_content"],
+                            storyContent,
                             sharingHtmlString,
                             commentString,
                             footerString

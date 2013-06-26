@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
+#import "ASINetworkQueue.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -40,6 +41,7 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
+@class IASKAppSettingsViewController;
 @class UnreadCounts;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
@@ -75,7 +77,8 @@
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
     UserProfileViewController *userProfileViewController;
-
+    IASKAppSettingsViewController *preferencesViewController;
+    
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -115,6 +118,8 @@
     int totalUnfetchedStoryCount;
     int remainingUnfetchedStoryCount;
     int latestFetchedStoryDate;
+    int totalUncachedImagesCount;
+    int remainingUncachedImagesCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -135,6 +140,8 @@
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
+    ASINetworkQueue *operationQueue;
+    NSMutableDictionary *activeCachedImages;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -162,6 +169,7 @@
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
+@property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 
 @property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
@@ -205,6 +213,8 @@
 @property (readwrite) int savedStoriesCount;
 @property (readwrite) int totalUnfetchedStoryCount;
 @property (readwrite) int remainingUnfetchedStoryCount;
+@property (readwrite) int totalUncachedImagesCount;
+@property (readwrite) int remainingUncachedImagesCount;
 @property (readwrite) int latestFetchedStoryDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
@@ -226,6 +236,8 @@
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
+@property (readwrite) ASINetworkQueue *operationQueue;
+@property (nonatomic) NSMutableDictionary *activeCachedImages;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
@@ -239,6 +251,7 @@
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
+- (void)showPreferences;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
@@ -279,6 +292,8 @@
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 - (int)locationOfStoryId:(id)storyId;
+- (NSString *)activeOrder;
+- (NSString *)activeReadFilter;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
@@ -321,13 +336,15 @@
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
-- (NSURL *)applicationDocumentsDirectory;
 - (void)fetchUnreadHashes;
 - (void)storeUnreadHashes:(ASIHTTPRequest *)request;
 - (void)fetchAllUnreadStories;
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
+- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
+- (void)flushOldCachedImages;
+- (void)prepareActiveCachedImages:(FMDatabase *)db;
 
 @end
 

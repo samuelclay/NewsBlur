@@ -903,7 +903,7 @@ class Feed(models.Model):
                        story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
-                s.extract_image_url()
+                s.extract_image_urls()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -964,7 +964,7 @@ class Feed(models.Model):
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
                 # existing_story.story_date = story.get('published') # No, don't
-                existing_story.extract_image_url()
+                existing_story.extract_image_urls()
                 
                 try:
                     existing_story.save()
@@ -1151,7 +1151,7 @@ class Feed(models.Model):
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
-        story['image_url']        = story_db.image_url
+        story['image_urls']       = story_db.image_urls
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
         story['comment_user_ids'] = story_db.comment_user_ids if hasattr(story_db, 'comment_user_ids') else []
@@ -1557,7 +1557,7 @@ class MStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
-    image_url                = mongo.StringField(max_length=1024)
+    image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     comment_count            = mongo.IntField()
     comment_user_ids         = mongo.ListField(mongo.IntField())
@@ -1787,9 +1787,9 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_url(self, force=False):
-        if self.image_url and not force:
-            return self.image_url
+    def extract_image_urls(self, force=False):
+        if self.image_urls and not force:
+            return self.image_urls
         
         story_content = self.story_content
         if not story_content and self.story_content_z:
@@ -1798,13 +1798,19 @@ class MStory(mongo.Document):
             return
         
         soup = BeautifulSoup(story_content)
-        image = soup.find('img')
-        if image:
+        images = soup.findAll('img')
+        if not images:
+            return
+        
+        image_urls = []
+        for image in images:
             image_url = image.get('src')
             if image_url and len(image_url) >= 1024:
-                return
-            self.image_url = image_url
-            return self.image_url
+                continue
+            image_urls.append(image_url)
+
+        self.image_urls = image_urls
+        return self.image_urls
 
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
@@ -1838,7 +1844,7 @@ class MStarredStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
-    image_url                = mongo.StringField(max_length=1024)
+    image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
         'collection': 'starred_stories',

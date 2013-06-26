@@ -16,7 +16,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = UIColorFromRGB(0xE1EBFF);
+        self.backgroundColor = UIColorFromRGB(0x5C89C9);
         animating = YES;
     }
     return self;
@@ -35,13 +35,13 @@
 
 - (void)animate {
     if (!self.window || !self.superview.window) return;
-    NSLog(@"Animate");
     if (!animating) return;
-    [UIView animateWithDuration:.650f delay:0.2f options:nil animations:^{
-        self.backgroundColor = UIColorFromRGB(0x5C89C9);
+    self.backgroundColor = UIColorFromRGB(0x5C89C9);
+    [UIView animateWithDuration:.650f delay:0.f options:nil animations:^{
+        self.backgroundColor = UIColorFromRGB(0xE1EBFF);
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:1.05f animations:^{
-            self.backgroundColor = UIColorFromRGB(0xE1EBFF);
+            self.backgroundColor = UIColorFromRGB(0x5C89C9);
         } completion:^(BOOL finished) {
             [self animate];
         }];

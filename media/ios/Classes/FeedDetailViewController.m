@@ -58,6 +58,7 @@
 @synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
+@synthesize isOffline;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -278,7 +279,7 @@
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     appDelegate.activePopularAuthors = [NSArray array];
     appDelegate.activePopularTags = [NSArray array];
-    
+        
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
     } else {
@@ -307,7 +308,6 @@
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (!appDelegate.activeFeed) return;
     
@@ -319,6 +319,14 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
+        if (self.feedPage == 1) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                     (unsigned long)NULL), ^(void) {
+                [appDelegate.database inDatabase:^(FMDatabase *db) {
+                    [appDelegate prepareActiveCachedImages:db];
+                }];
+            });
         }
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
@@ -332,16 +340,12 @@
                                 self.feedPage];
         }
         
-        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate orderKey]]];
-        }
-        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
-        }
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeOrder]];
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeReadFilter]];
         
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -351,11 +355,13 @@
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
             if (self.feedPage == 1) {
+                self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
             } else {
                 [self informError:[request error]];
             }
+            [self.storyTitlesTable reloadData];
         }];
         [request setCompletionBlock:^(void) {
             if (!appDelegate.activeFeed) return;
@@ -372,31 +378,32 @@
 
 - (void)loadOfflineStories {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
-        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSArray *feedIds;
+        
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
-        } else {
+        } else if (appDelegate.activeFeed) {
             feedIds = @[[appDelegate.activeFeed objectForKey:@"id"]];
+        } else {
+            return;
         }
         
-        NSString *order;
-        if ([[userPreferences stringForKey:[appDelegate orderKey]] isEqualToString:@"oldest"]) {
-            order = @"ASC";
+        NSString *orderSql;
+        if ([appDelegate.activeOrder isEqualToString:@"oldest"]) {
+            orderSql = @"ASC";
         } else {
-            order = @"DESC";
+            orderSql = @"DESC";
         }
-        NSString *readFilter;
-        if ([[userPreferences stringForKey:[appDelegate readFilterKey]] isEqualToString:@"unread"]) {
-            readFilter = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
+        NSString *readFilterSql;
+        if ([appDelegate.activeReadFilter isEqualToString:@"unread"]) {
+            readFilterSql = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
         } else {
-            readFilter = @"";
+            readFilterSql = @"";
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@",
-                         readFilter,
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT 500",
+                         readFilterSql,
                          [feedIds componentsJoinedByString:@","],
-                         order];
-        NSLog(@"Sql: %@", sql);
+                         orderSql];
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
@@ -408,12 +415,25 @@
                                        options:nil error:nil]];
         }
         
+        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
+            NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
+                             [feedIds componentsJoinedByString:@","]];
+            FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
+            NSMutableDictionary *unreadStoryHashes = [NSMutableDictionary dictionary];
+            
+            while ([unreadHashCursor next]) {
+                [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
+            }
+            
+            self.unreadStoryHashes = unreadStoryHashes;
+        }
+        
         if ([offlineStories count]) {
             [self renderStories:offlineStories];
             [self showLoadingNotifier];
-        } else {
+        } else if (!self.isOffline) {
             [self showLoadingNotifier];
-        }        
+        }
     }];
     
     self.pageFinished = YES;
@@ -436,9 +456,7 @@
 #pragma mark -
 #pragma mark River of News
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -448,6 +466,15 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 //            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
+        }
+        
+        if (self.feedPage == 1) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                     (unsigned long)NULL), ^(void) {
+                [appDelegate.database inDatabase:^(FMDatabase *db) {
+                    [appDelegate prepareActiveCachedImages:db];
+                }];
+            });
         }
         
         NSString *theFeedDetailURL;
@@ -479,16 +506,12 @@
         }
         
         
-        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate orderKey]]];
-        }
-        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                                theFeedDetailURL,
-                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
-        }
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeOrder]];
+        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                            theFeedDetailURL,
+                            [appDelegate activeReadFilter]];
 
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -496,7 +519,15 @@
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self informError:[request error]];
+            self.pageFinished = YES;
+            if (self.feedPage == 1) {
+                self.isOffline = YES;
+                [self loadOfflineStories];
+                [self showOfflineNotifier];
+            } else {
+                [self informError:[request error]];
+                [self.storyTitlesTable reloadData];
+            }
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -514,18 +545,20 @@
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] >= 500) {
+        self.pageFinished = YES;
         if (self.feedPage == 1) {
+            self.isOffline = YES;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         } else {
-            [self informError:@"The server barfed."]; 
-            self.pageFinished = YES;
-            [self.storyTitlesTable reloadData];
+            [self informError:@"The server barfed."];
         }
+        [self.storyTitlesTable reloadData];
         
         return;
     }
-        
+    
+    self.isOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -622,19 +655,23 @@
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];
     [appDelegate.storyPageControl advanceToNextUnread];
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        for (NSDictionary *story in confirmedNewStories) {
-            [db executeUpdate:@"INSERT into stories"
-             "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-             "(?, ?, ?, ?)",
-             [story objectForKey:@"story_feed_id"],
-             [story objectForKey:@"story_hash"],
-             [story objectForKey:@"story_timestamp"],
-             [story JSONRepresentation]
-             ];
-        }
-        //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [db lastErrorMessage]);
-    }];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *story in confirmedNewStories) {
+                [db executeUpdate:@"INSERT into stories"
+                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
+                 "(?, ?, ?, ?)",
+                 [story objectForKey:@"story_feed_id"],
+                 [story objectForKey:@"story_hash"],
+                 [story objectForKey:@"story_timestamp"],
+                 [story JSONRepresentation]
+                 ];
+            }
+            //    NSLog(@"Inserting %d stories: %@", [confirmedNewStories count], [db lastErrorMessage]);
+        }];
+    });
 
     [self.notifier hide];
 }
@@ -840,7 +877,17 @@
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
-    cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+    if (self.isOffline) {
+        BOOL read;
+        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
+            read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        } else {
+            read = NO;
+        }
+        cell.isRead = read || ([[story objectForKey:@"read_status"] intValue] == 1);
+    } else {
+        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad

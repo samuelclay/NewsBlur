@@ -22,10 +22,15 @@
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
+#import "JSON.h"
 #import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
 #import "AddSiteViewController.h"
+#import "FMDatabase.h"
+#import "FMDatabaseAdditions.h"
+#import "IASKAppSettingsViewController.h"
+#import "IASKSettingsReader.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -68,6 +73,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
 @synthesize notifier;
+@synthesize isOffline;
 
 #pragma mark -
 #pragma mark Globals
@@ -86,14 +92,20 @@ static const CGFloat kFolderTitleHeight = 28;
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
     
+    imageCache = [[NSCache alloc] init];
+    [imageCache setDelegate:self];
+    
     [[NSNotificationCenter defaultCenter] 
      addObserver:self
      selector:@selector(returnToApp)
      name:UIApplicationWillEnterForegroundNotification
      object:nil];
     
-    imageCache = [[NSCache alloc] init];
-    [imageCache setDelegate:self];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(settingDidChange:)
+     name:kIASKAppSettingChanged
+     object:nil];
     
     [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
     [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
@@ -473,13 +485,34 @@ static const CGFloat kFolderTitleHeight = 28;
     }
     
     appDelegate.hasNoSites = NO;
+    self.isOffline = NO;
     NSString *responseString = [request responseString];   
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
                              JSONObjectWithData:responseData
-                             options:kNilOptions 
+                             options:kNilOptions
                              error:&error];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
+            [db executeUpdate:@"INSERT INTO accounts"
+             "(username, download_date, feeds_json) VALUES "
+             "(?, ?, ?)",
+             appDelegate.activeUsername,
+             [NSDate date],
+             [results JSONRepresentation]
+             ];
+        }];
+    });
+
+    [self finishLoadingFeedListWithDict:results];
+}
+
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
 //    NSLog(@"results are %@", results);
@@ -489,6 +522,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
+    [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
+    [userPreferences synchronize];
 
 //    // set title only if on currestont controller
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
@@ -691,25 +726,27 @@ static const CGFloat kFolderTitleHeight = 28;
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
     }
+    
+    if (!self.isOffline) {
+        if (self.inPullToRefresh_) {
+            self.inPullToRefresh_ = NO;
+            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+                [self.appDelegate fetchUnreadHashes];
+            }];
+        } else {
+            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+                [self refreshFeedList];
+            }];
+        }
 
-    if (self.inPullToRefresh_) {
-        self.inPullToRefresh_ = NO;
-        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-            [self.appDelegate fetchUnreadHashes];
-        }];
-    } else {
-        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-            [self refreshFeedList];
-        }];
+        // start up the first time user experience
+        if ([[results objectForKey:@"social_feeds"] count] == 0 &&
+            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [appDelegate showFirstTimeUser];
+            return;
+        }
     }
     
-    // start up the first time user experience
-    if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-        [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
-        [appDelegate showFirstTimeUser];
-        return;
-    }
-
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
@@ -717,7 +754,36 @@ static const CGFloat kFolderTitleHeight = 28;
 
 
 - (void)loadOfflineFeeds {
+    __block __typeof__(self) _self = self;
+    self.isOffline = YES;
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            NSDictionary *results;
+            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+            if (!appDelegate.activeUsername) {
+                appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
+                if (!appDelegate.activeUsername) return;
+            }
+            
+            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
+                                   appDelegate.activeUsername];
+            
+            while ([cursor next]) {
+                NSDictionary *feedsCache = [cursor resultDictionary];
+                results = [NSJSONSerialization
+                           JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
+                                               dataUsingEncoding:NSUTF8StringEncoding]
+                           options:nil error:nil];
+                break;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_self finishLoadingFeedListWithDict:results];
+            });
+        }];
+    });
 }
 
 - (void)showUserProfile {
@@ -771,7 +837,7 @@ static const CGFloat kFolderTitleHeight = 28;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 114)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
@@ -813,6 +879,23 @@ static const CGFloat kFolderTitleHeight = 28;
             [[UIApplication sharedApplication] openURL:url];
         }
     }
+}
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
+	
+	// your code here to reconfigure the app for changed settings
+}
+
+- (void)settingDidChange:(NSNotification*)notification {
+	if ([notification.object isEqual:@"offline_allowed"]) {
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"offline_allowed"] intValue];
+		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"offline_image_download", @"offline_download_connection", nil] animated:YES];
+	}
 }
 
 #pragma mark -
@@ -1021,6 +1104,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section {
+    if ([appDelegate.dictFoldersArray count] == 0) return 0;
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
@@ -1410,6 +1495,10 @@ heightForHeaderInSection:(NSInteger)section {
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showRefreshNotifier];
+    });
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
@@ -1620,8 +1709,15 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.titleView = userInfoView;
 }
 
-- (void)showSyncingNotifier {
+- (void)showRefreshNotifier {
     [self.notifier hide];
+    self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"Counting is difficult...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showSyncingNotifier {
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
     [self.notifier setProgress:0];
@@ -1632,13 +1728,30 @@ heightForHeaderInSection:(NSInteger)section {
 //    [self.notifier hide];
     self.notifier.style = NBSyncingProgressStyle;
     if (hours < 2) {
-        self.notifier.title = @"Storing last hour";
+        self.notifier.title = @"Storing past hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Storing %d hours", hours];
+        self.notifier.title = [NSString stringWithFormat:@"Storing past %d hours", hours];
     } else if (hours < 48) {
         self.notifier.title = @"Storing yesterday";
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"Storing %d days ago", (int)round(hours / 24.f)];
+        self.notifier.title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
+    }
+    [self.notifier setProgress:progress];
+    [self.notifier setNeedsDisplay];
+    [self.notifier show];
+}
+
+- (void)showCachingNotifier:(float)progress hoursBack:(int)hours {
+    //    [self.notifier hide];
+    self.notifier.style = NBSyncingProgressStyle;
+    if (hours < 2) {
+        self.notifier.title = @"Images from last hour";
+    } else if (hours < 24) {
+        self.notifier.title = [NSString stringWithFormat:@"Images from %d hours ago", hours];
+    } else if (hours < 48) {
+        self.notifier.title = @"Images from yesterday";
+    } else {
+        self.notifier.title = [NSString stringWithFormat:@"Images from %d days ago", (int)round(hours / 24.f)];
     }
     [self.notifier setProgress:progress];
     [self.notifier setNeedsDisplay];
