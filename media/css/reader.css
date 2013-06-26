@@ -1732,13 +1732,14 @@ background: transparent;
 }
 
 .NB-end-line {
-    height: 36px;
+    min-height: 36px;
     border-top: 1px solid #404040;
     padding-left: 14px; /* offset for scrollbar on right */
     background-color: #F8F8F8;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F8F8F8), to(#F1F6F0));
     background: -moz-linear-gradient(center top, #F8F8F8 0%, #F1F6F0 100%);
     background-image:  no-repeat center center;
+    overflow: hidden;
 }
 .NB-end-line.NB-short {
     height: 12px;

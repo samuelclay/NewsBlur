@@ -16,6 +16,8 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.FolderItemListFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment;
+import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
@@ -24,7 +26,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
-public class FolderItemsList extends ItemsList {
+public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
 
 	public static final String EXTRA_FOLDER_NAME = "folderName";
 	private String folderName;
@@ -99,18 +101,8 @@ public class FolderItemsList extends ItemsList {
 
 	@Override
 	public void markItemListAsRead() {
-		new MarkFolderAsReadTask(apiManager, getContentResolver()) {
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (result) {
-					setResult(RESULT_OK);
-					Toast.makeText(FolderItemsList.this, R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
-					finish();
-				} else {
-					Toast.makeText(FolderItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
-				}
-			}
-		}.execute(folderName);
+	    MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(folderName);
+	    dialog.show(fragmentManager, "dialog");
 	}
 
 	@Override
@@ -135,5 +127,26 @@ public class FolderItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
+    }
+
+    @Override
+    public void onMarkAllRead() {
+        new MarkFolderAsReadTask(apiManager, getContentResolver()) {
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (result) {
+                    setResult(RESULT_OK);
+                    Toast.makeText(FolderItemsList.this, R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(FolderItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute(folderName);
+    }
+
+    @Override
+    public void onCancel() {
+        // do nothing
     }
 }

@@ -128,7 +128,7 @@ class UserSubscription(models.Model):
                 max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 max_score = 0
-
+                
         if settings.DEBUG and False:
             debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
             print " ---> Unread all stories (%s - %s) %s stories: %s" % (
@@ -157,7 +157,8 @@ class UserSubscription(models.Model):
             return []
         
     @classmethod
-    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
+    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all',
+                     usersubs=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
@@ -178,11 +179,16 @@ class UserSubscription(models.Model):
             r.delete(ranked_stories_keys)
             cache.delete(unread_ranked_stories_keys)
         
+        if not usersubs and feed_ids:
+            usersubs = cls.objects.filter(user=user_id, feed__in=feed_ids)
+        if usersubs:
+            usersubs = dict((sub.feed_id, sub) for sub in usersubs)
+            
         unread_feed_story_hashes = {}
         for feed_id in feed_ids:
-            try:
-                us = cls.objects.get(user=user_id, feed=feed_id)
-            except cls.DoesNotExist:
+            if feed_id in usersubs:
+                us = usersubs[feed_id]
+            else:
                 continue
             story_hashes = us.get_stories(offset=0, limit=200, 
                                           order=order, read_filter=read_filter, 

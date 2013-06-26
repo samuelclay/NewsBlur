@@ -3,10 +3,11 @@ import re
 import random
 import time
 from utils import log as logging
+from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
-
+from utils import json_functions as json
 
 class LastSeenMiddleware(object):
     def process_response(self, request, response):
@@ -175,3 +176,23 @@ class ServerHostnameMiddleware:
 class TimingMiddleware:
     def process_request(self, request):
         setattr(request, 'start_time', time.time())
+
+BANNED_USER_AGENTS = (
+    'feed reader-background',
+    'feed reader-windows',
+    'missing',
+)
+class UserAgentBanMiddleware:
+    def process_request(self, request):
+        user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
+
+        if any(ua in user_agent for ua in BANNED_USER_AGENTS):
+            data = {
+                'error': 'User agent banned: %s' % user_agent,
+                'code': -1
+            }
+            logging.user(request, "~FB~SN~BBBanned UA: ~SB%s" % (user_agent))
+
+            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+            
+

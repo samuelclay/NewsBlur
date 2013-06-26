@@ -1,6 +1,7 @@
 import datetime
 import pickle
 import base64
+import httplib2
 from utils import log as logging
 from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 from bson.errors import InvalidStringData
@@ -146,6 +147,8 @@ def reader_callback(request):
         )
     FLOW.redirect_uri = STEP2_URI
     
+    http = httplib2.Http()
+    http.disable_ssl_certificate_validation = True
     try:
         credential = FLOW.step2_exchange(request.REQUEST)
     except FlowExchangeError:

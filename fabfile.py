@@ -201,7 +201,6 @@ def setup_app(skip_common=False):
     update_gunicorn()
     # setup_node_app()
     # config_node()
-    pre_deploy()
     deploy_web()
     config_monit_app()
     done()
@@ -253,8 +252,8 @@ def setup_task(queue=None, skip_common=False):
 
 def setup_installs():
     sudo('apt-get -y update')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
     
     with settings(warn_only=True):
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
@@ -262,7 +261,7 @@ def setup_installs():
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
     
     # sudo('add-apt-repository ppa:pitti/postgresql')
-    sudo('apt-get -y update')
+    # sudo('apt-get -y update')
     # run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     # sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     with settings(warn_only=True):
@@ -322,7 +321,7 @@ def setup_local_files():
     put('config/ssh.conf', './.ssh/config')
 
 def setup_psql_client():
-    sudo('apt-get -y install postgresql-client')
+    sudo('apt-get -y --force-yes install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
 
@@ -356,6 +355,7 @@ def setup_python():
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
     
     if env.user == 'ubuntu':
         with settings(warn_only=True):
@@ -714,10 +714,10 @@ def setup_rabbitmq():
 
 def setup_postgres(standby=False):
     shmmax = 2300047872
-    # sudo('su root -c "echo \\\"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\\\" > /etc/apt/sources.list.d/pgdg.list\"')
+    # sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
     sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
+    sudo('apt-get -y install postgresql-9.2 postgresql-client-9.2 postgresql-contrib-9.2 libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
     ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
@@ -732,7 +732,7 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db01'
+    slave = 'db02'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
 

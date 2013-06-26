@@ -36,7 +36,7 @@ typedef enum {
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view withOffset:(CGPoint)offset;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style;
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withhOffset:(CGPoint)offset;
+- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withOffset:(CGPoint)offset;
 
 - (void) didChangedOrientation:(NSNotification *)sender;
 - (void)setAccessoryView:(UIView *)view animated:(BOOL)animated;

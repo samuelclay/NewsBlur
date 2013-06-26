@@ -38,7 +38,7 @@
           example: "new$blur"
         - key: email
           desc: "Email address"
-          optional: true
+          required: true
           example: "samuel@newsblur.com"
         
 - feeds:
@@ -323,6 +323,21 @@
       params:
         - key: story_id
           desc: "Story id to save."
+          required: true
+          example: "64"
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+  
+    - url: /reader/mark_story_as_unstarred
+      method: POST
+      short_desc: "Mark a story as unstarred (unsaved)."
+      long_desc: 
+        - "Mark a story as unstarred (unsaved)."
+      params:
+        - key: story_id
+          desc: "Story id to unsave."
           required: true
           example: "64"
         - key: feed_id
