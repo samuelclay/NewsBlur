@@ -261,7 +261,10 @@ class Profile(models.Model):
             transaction = PayPalIPN.objects.filter(custom=self.user.username,
                                                    txn_type='subscr_payment')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
-            refunded = int(float(refund['raw']['TOTALREFUNDEDAMOUNT'][0]))
+            try:
+                refunded = int(float(refund['raw']['TOTALREFUNDEDAMOUNT'][0]))
+            except KeyError:
+                refunded = int(transaction.amount)
             logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
             self.cancel_premium()
         
