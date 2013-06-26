@@ -2580,7 +2580,7 @@
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
-    
+    NSDate *start = [NSDate date];
     NSArray *feedIds;
     
     if (isRiverView) {
@@ -2597,6 +2597,8 @@
     while ([cursor next]) {
         [activeCachedImages setObject:[cursor objectForColumnName:@"image_url"] forKey:[cursor objectForColumnName:@"story_hash"]];
     }
+    
+    NSLog(@"prepareActiveCachedImages time: %d", ([NSDate dateWithTimeInterval:<#(NSTimeInterval)#> sinceDate:<#(NSDate *)#>]));
 }
 
 @end

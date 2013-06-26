@@ -280,6 +280,13 @@
     appDelegate.activePopularAuthors = [NSArray array];
     appDelegate.activePopularTags = [NSArray array];
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            [appDelegate prepareActiveCachedImages:db];
+        }];
+    });
+        
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
     } else {
@@ -419,8 +426,6 @@
             
             self.unreadStoryHashes = unreadStoryHashes;
         }
-        
-        [appDelegate prepareActiveCachedImages:db];
         
         if ([offlineStories count]) {
             [self renderStories:offlineStories];
