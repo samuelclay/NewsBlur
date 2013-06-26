@@ -152,14 +152,19 @@
         contentWidthClass = @"NB-iphone";
     }
     
-    if (appDelegate.feedDetailViewController.isOffline) {
-        NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
-        NSString *imageUrl = [appDelegate.activeCachedImages objectForKey:storyHash];
-        if (imageUrl) {
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-            NSString *cachedImage = [storyImagesDirectory stringByAppendingPathComponent:[Utilities md5:imageUrl]];
-            storyContent = [[self.activeStory objectForKey:@"story_content"] stringByReplacingOccurrencesOfString:imageUrl withString:cachedImage];
+    // Replace image urls that are locally cached, even when online
+    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+    NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+    if (imageUrls) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *storyImagesDirectory = [[paths objectAtIndex:0]
+                                          stringByAppendingPathComponent:@"story_images"];
+        for (NSString *imageUrl in imageUrls) {
+            NSString *cachedImage = [storyImagesDirectory
+                                     stringByAppendingPathComponent:[Utilities md5:imageUrl]];
+            storyContent = [storyContent
+                            stringByReplacingOccurrencesOfString:imageUrl
+                            withString:cachedImage];
         }
     }
     

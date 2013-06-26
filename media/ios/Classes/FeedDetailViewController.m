@@ -279,13 +279,6 @@
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     appDelegate.activePopularAuthors = [NSArray array];
     appDelegate.activePopularTags = [NSArray array];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
-            [appDelegate prepareActiveCachedImages:db];
-        }];
-    });
         
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -326,6 +319,14 @@
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
+        if (self.feedPage == 1) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                     (unsigned long)NULL), ^(void) {
+                [appDelegate.database inDatabase:^(FMDatabase *db) {
+                    [appDelegate prepareActiveCachedImages:db];
+                }];
+            });
         }
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
@@ -465,6 +466,15 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 //            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
+        }
+        
+        if (self.feedPage == 1) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                     (unsigned long)NULL), ^(void) {
+                [appDelegate.database inDatabase:^(FMDatabase *db) {
+                    [appDelegate prepareActiveCachedImages:db];
+                }];
+            });
         }
         
         NSString *theFeedDetailURL;

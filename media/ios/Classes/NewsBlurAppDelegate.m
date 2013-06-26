@@ -47,7 +47,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 18
+#define CURRENT_DB_VERSION 19
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -2092,7 +2092,7 @@
 }
 
 - (void)createDatabaseConnection {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docsPath = [paths objectAtIndex:0];
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
     NSString *path = [docsPath stringByAppendingPathComponent:dbName];
@@ -2144,6 +2144,8 @@
                                   " UNIQUE(story_hash) ON CONFLICT REPLACE"
                                   ")"];
     [db executeUpdate:createStoryTable];
+    NSString *indexStoriesFeed = @"CREATE INDEX IF NOT EXISTS stories_story_feed_id ON stories (story_feed_id)";
+    [db executeUpdate:indexStoriesFeed];
     
     NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
                                        "("
@@ -2153,6 +2155,10 @@
                                        " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                        ")"];
     [db executeUpdate:createUnreadHashTable];
+    NSString *indexUnreadHashes = @"CREATE INDEX IF NOT EXISTS unread_hashes_story_feed_id ON unread_hashes (story_feed_id)";
+    [db executeUpdate:indexUnreadHashes];
+    NSString *indexUnreadTimestamp = @"CREATE INDEX IF NOT EXISTS unread_hashes_timestamp ON stories (story_timestamp)";
+    [db executeUpdate:indexUnreadTimestamp];
     
     NSString *createReadTable = [NSString stringWithFormat:@"create table if not exists queued_read_hashes "
                                  "("
@@ -2161,16 +2167,19 @@
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
     [db executeUpdate:createReadTable];
-    
+
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
                                    " story_feed_id number,"
                                    " story_hash varchar(24),"
                                    " image_url varchar(1024),"
-                                   " image_cached boolean,"
-                                   " UNIQUE(story_hash) ON CONFLICT IGNORE"
+                                   " image_cached boolean"
                                    ")"];
     [db executeUpdate:createImagesTable];
+    NSString *indexImagesFeedId = @"CREATE INDEX IF NOT EXISTS cached_images_story_feed_id ON cached_images (story_feed_id)";
+    [db executeUpdate:indexImagesFeedId];
+    NSString *indexImagesStoryHash = @"CREATE INDEX IF NOT EXISTS cached_images_story_hash ON cached_images (story_hash)";
+    [db executeUpdate:indexImagesStoryHash];
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -2404,14 +2413,17 @@
                                  [story objectForKey:@"story_timestamp"],
                                  [story JSONRepresentation]
                                  ];
-                if ([[story objectForKey:@"image_url"] class] != [NSNull class]) {
-                    [db executeUpdate:@"INSERT INTO cached_images "
-                     "(story_feed_id, story_hash, image_url) VALUES "
-                     "(?, ?, ?)",
-                     [story objectForKey:@"story_feed_id"],
-                     [story objectForKey:@"story_hash"],
-                     [story objectForKey:@"image_url"]
-                     ];
+                if ([[story objectForKey:@"image_urls"] class] != [NSNull class] &&
+                    [[story objectForKey:@"image_urls"] count]) {
+                    for (NSString *imageUrl in [story objectForKey:@"image_urls"]) {
+                        [db executeUpdate:@"INSERT INTO cached_images "
+                         "(story_feed_id, story_hash, image_url) VALUES "
+                         "(?, ?, ?)",
+                         [story objectForKey:@"story_feed_id"],
+                         [story objectForKey:@"story_hash"],
+                         imageUrl
+                         ];
+                    }
                 }
                 if (!anySuccess && inserted) anySuccess = YES;
             }
@@ -2589,16 +2601,24 @@
         feedIds = @[[activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
                      "WHERE c.image_cached = 1 AND c.story_feed_id in (%@)",
                      [feedIds componentsJoinedByString:@","]];
     FMResultSet *cursor = [db executeQuery:sql];
     
     while ([cursor next]) {
-        [activeCachedImages setObject:[cursor objectForColumnName:@"image_url"] forKey:[cursor objectForColumnName:@"story_hash"]];
+        NSString *storyHash = [cursor objectForColumnName:@"story_hash"];
+        NSMutableArray *imageUrls;
+        if (![activeCachedImages objectForKey:storyHash]) {
+            imageUrls = [NSMutableArray array];
+            [activeCachedImages setObject:imageUrls forKey:storyHash];
+        } else {
+            imageUrls = [activeCachedImages objectForKey:storyHash];
+        }
+        [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
+        [activeCachedImages setObject:imageUrls forKey:storyHash];
     }
     
-    NSLog(@"prepareActiveCachedImages time: %d", ([NSDate dateWithTimeInterval:<#(NSTimeInterval)#> sinceDate:<#(NSDate *)#>]));
+    NSLog(@"prepareActiveCachedImages time: %f", ([[NSDate date] timeIntervalSinceDate:start]));
 }
 
 @end
