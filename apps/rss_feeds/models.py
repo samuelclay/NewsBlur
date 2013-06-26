@@ -1805,10 +1805,15 @@ class MStory(mongo.Document):
         image_urls = []
         for image in images:
             image_url = image.get('src')
+            if not image_url:
+                continue
             if image_url and len(image_url) >= 1024:
                 continue
             image_urls.append(image_url)
 
+        if not image_urls:
+            return
+            
         self.image_urls = image_urls
         return self.image_urls
 
