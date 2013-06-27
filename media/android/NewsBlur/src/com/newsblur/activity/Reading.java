@@ -143,6 +143,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		} else if (item.getItemId() == R.id.menu_reading_save) {
 			FeedUtils.saveStory(story, Reading.this, apiManager);
 			return true;
+        } else if (item.getItemId() == R.id.menu_reading_markunread) {
+            this.markStoryUnread(story);
+            return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -214,6 +217,17 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 this.storiesToMarkAsRead.clear();
             }
         }
+    }
+
+    private void markStoryUnread(Story story) {
+
+        // first, ensure the story isn't queued up to be marked as read
+        this.storiesToMarkAsRead.remove(story);
+
+        // next, call the API to un-mark it as read, just in case we missed the batch
+        // operation, or it was read long before now.
+        FeedUtils.markStoryUnread(story, Reading.this, this.apiManager);
+
     }
 
 	@Override

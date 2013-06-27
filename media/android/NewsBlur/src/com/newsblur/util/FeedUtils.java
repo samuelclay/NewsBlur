@@ -54,6 +54,25 @@ public class FeedUtils {
         }
 	}
 
+    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager) {
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... arg) {
+                return apiManager.markStoryAsUnread(story.feedId, story.id);
+            }
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (result) {
+                    Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, R.string.toast_story_unread_error, Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+
+    }
+
     /**
      * This utility method is a fast-returning way to mark as read a batch of stories in both
      * the local DB and on the server.
