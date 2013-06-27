@@ -87,9 +87,10 @@ class UserSubscription(models.Model):
                 self.delete()
     
     @classmethod
-    def unread_story_hashes(cls, user_id, feed_ids=None, include_timestamps=False):
+    def story_hashes(cls, user_id, feed_ids=None, read_filter="unread", order="newest", 
+                     include_timestamps=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        usersubs = {}
+        usersubs = []
     
         if not feed_ids:
             usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
@@ -102,26 +103,45 @@ class UserSubscription(models.Model):
                                                        user=user_id, active=True, feed__in=feed_ids)
 
         pipeline = r.pipeline()
-        read_dates = dict((us.feed_id, us.mark_read_date.strftime('%s')) for us in usersubs)
-        now = datetime.datetime.now().strftime('%s')
-        # story_hashes = json.decode(hashes(keys=feed_ids, args=[json.encode({'read_dates': read_dates, 'user_id': user_id, 'now': datetime.datetime.now().strftime('%s')})]))
-
+        read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
+        current_time = int(time.time() + 60*60*24)
+        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
+        
         for feed_id in feed_ids:
-            stories_key         = 'F:%s' % feed_id
-            sorted_stories_key  = 'zF:%s' % feed_id
-            read_stories_key    = 'RS:%s:%s' % (user_id, feed_id)
-            unread_stories_key  = 'U:%s:%s' % (user_id, feed_id)
-            unread_ranked_stories_key  = 'zU:%s:%s' % (user_id, feed_id)
-            pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            stories_key               = 'F:%s' % feed_id
+            sorted_stories_key        = 'zF:%s' % feed_id
+            read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
+            unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
+            unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
+            
+            max_score = current_time
+            if read_filter == 'unread':
+                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                min_score = read_dates[feed_id] + 1
+                pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            else:
+                min_score = unread_timestamp
+                unread_stories_key = stories_key
+
+            if order == 'oldest':
+                byscorefunc = pipeline.zrangebyscore
+            else:
+                byscorefunc = pipeline.zrevrangebyscore
+                min_score, max_score = max_score, min_score
+            
             pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-            pipeline.zrangebyscore(unread_ranked_stories_key, read_dates[feed_id], now)
+            byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
         
         results = pipeline.execute()
-        unread_story_hashes = {}
-        for i, story_hashes in enumerate(results[2::3]):
-            unread_story_hashes[feed_ids[i]] = story_hashes
+        story_hashes = {}
+        feed_counter = 0
+        for hashes in results:
+            if not isinstance(hashes, list): continue
+            story_hashes[feed_ids[feed_counter]] = hashes
+            feed_counter += 1
 
-        return unread_story_hashes
+        return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

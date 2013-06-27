@@ -926,8 +926,8 @@ def unread_story_hashes(request):
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
     
-    story_hashes = UserSubscription.unread_story_hashes(user.pk, feed_ids=feed_ids,
-                                                        include_timestamps=include_timestamps)
+    story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids,
+                                                 include_timestamps=include_timestamps)
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
