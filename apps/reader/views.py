@@ -886,17 +886,22 @@ def unread_story_hashes(request):
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    usersubs = {}
     
     if not feed_ids:
-        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        usersubs = UserSubscription.objects.filter(user=user, active=True)
         feed_ids = [sub.feed_id for sub in usersubs]
-    
+    else:
+        usersubs = UserSubscription.objects.filter(user=user, active=True, feed__in=feed_ids)
+    if usersubs:
+        usersubs = dict((sub.feed_id, sub) for sub in usersubs)
+
     unread_feed_story_hashes = {}
     story_hash_count = 0
     for feed_id in feed_ids:
-        try:
-            us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
-        except UserSubscription.DoesNotExist:
+        if feed_id in usersubs:
+            us = usersubs[feed_id]
+        else:
             continue
         if not us.unread_count_neutral and not us.unread_count_positive:
             continue
