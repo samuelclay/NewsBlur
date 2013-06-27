@@ -4,6 +4,7 @@ import redis
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -84,6 +85,43 @@ class UserSubscription(models.Model):
                     break
             else:
                 self.delete()
+    
+    @classmethod
+    def unread_story_hashes(cls, user_id, feed_ids=None, include_timestamps=False):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        usersubs = {}
+    
+        if not feed_ids:
+            usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                       Q(unread_count_positive__gt=0),
+                                                       user=user_id, active=True).only('feed', 'mark_read_date')
+            feed_ids = [sub.feed_id for sub in usersubs]
+        else:
+            usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                       Q(unread_count_positive__gt=0),
+                                                       user=user_id, active=True, feed__in=feed_ids)
+
+        pipeline = r.pipeline()
+        read_dates = dict((us.feed_id, us.mark_read_date.strftime('%s')) for us in usersubs)
+        now = datetime.datetime.now().strftime('%s')
+        # story_hashes = json.decode(hashes(keys=feed_ids, args=[json.encode({'read_dates': read_dates, 'user_id': user_id, 'now': datetime.datetime.now().strftime('%s')})]))
+
+        for feed_id in feed_ids:
+            stories_key         = 'F:%s' % feed_id
+            sorted_stories_key  = 'zF:%s' % feed_id
+            read_stories_key    = 'RS:%s:%s' % (user_id, feed_id)
+            unread_stories_key  = 'U:%s:%s' % (user_id, feed_id)
+            unread_ranked_stories_key  = 'zU:%s:%s' % (user_id, feed_id)
+            pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            pipeline.zrangebyscore(unread_ranked_stories_key, read_dates[feed_id], now)
+        
+        results = pipeline.execute()
+        unread_story_hashes = {}
+        for i, story_hashes in enumerate(results[2::3]):
+            unread_story_hashes[feed_ids[i]] = story_hashes
+
+        return unread_story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False, hashes_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

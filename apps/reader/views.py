@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
+from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
@@ -882,63 +883,51 @@ def load_river_stories__redis(request):
     
 
 @json.json_view
+def unread_story_hashes__old(request):
+    user              = get_user(request)
+    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    usersubs = {}
+    
+    if not feed_ids:
+        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                   Q(unread_count_positive__gt=0),
+                                                   user=user, active=True)
+        feed_ids = [sub.feed_id for sub in usersubs]
+    else:
+        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                   Q(unread_count_positive__gt=0),
+                                                   user=user, active=True, feed__in=feed_ids)
+    
+    unread_feed_story_hashes = {}
+    story_hash_count = 0
+    
+    usersubs = dict((sub.feed_id, sub) for sub in usersubs)
+    for feed_id in feed_ids:
+        if feed_id in usersubs:
+            us = usersubs[feed_id]
+        else:
+            continue
+        if not us.unread_count_neutral and not us.unread_count_positive:
+            continue
+        unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
+                                                           withscores=include_timestamps,
+                                                           hashes_only=True)
+        story_hash_count += len(unread_feed_story_hashes[feed_id])
+
+    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
+                           (len(feed_ids), len(story_hash_count)))
+
+    return dict(unread_feed_story_hashes=unread_feed_story_hashes)
+
+@json.json_view
 def unread_story_hashes(request):
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
-    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    usersubs = {}
     
-    if not feed_ids:
-        usersubs = UserSubscription.objects.filter(user=user, active=True)
-        feed_ids = [sub.feed_id for sub in usersubs]
-    else:
-        usersubs = UserSubscription.objects.filter(user=user, active=True, feed__in=feed_ids)
-
-    unread_feed_story_hashes = {}
-    story_hash_count = 0
-
-    lua = """
-        local feed_hashes = {}
-        local args = cjson.decode(ARGV[1])
-        local user_id = args["user_id"]
-        redis.log(redis.LOG_NOTICE, "User id:", user_id)
-        
-        for _, feed_id in pairs(KEYS) do 
-            local stories_key = 'F:'..feed_id
-            local sorted_stories_key = 'zF:'..feed_id
-            local read_stories_key = 'RS:'..user_id..':'..feed_id
-            local unread_stories_key = 'U:'..user_id..':'..feed_id
-            local unread_ranked_stories_key = 'zhU:'..user_id..':'..feed_id
-            redis.call('sdiffstore', unread_stories_key, stories_key, read_stories_key)
-            redis.call('zinterstore', unread_ranked_stories_key, 2, sorted_stories_key, unread_stories_key)
-            local unread_stories = redis.call('zrangebyscore', unread_ranked_stories_key, args["read_dates"][feed_id], args["now"])
-            feed_hashes[feed_id] = unread_stories
-            -- for _, us in pairs(unread_stories) do
-            --    redis.log(redis.LOG_NOTICE, 'Stories', us)
-            -- end
-            -- redis.log(redis.LOG_NOTICE, "Read date:", feed_id, tonumber(args["read_dates"][feed_id]))
-        end
-        redis.log(redis.LOG_NOTICE, "Feed hashes:", type(feed_hashes))
-
-        return cjson.encode(feed_hashes)
-    """
-    hashes = r.register_script(lua)
-    read_dates = dict((us.feed_id, us.mark_read_date.strftime('%s')) for us in usersubs)
-    story_hashes = json.decode(hashes(keys=feed_ids, args=[json.encode({'read_dates': read_dates, 'user_id': user.pk, 'now': datetime.datetime.now().strftime('%s')})]))
-    print story_hashes
-    # usersubs = dict((sub.feed_id, sub) for sub in usersubs)
-    # for feed_id in feed_ids:
-    #     if feed_id in usersubs:
-    #         us = usersubs[feed_id]
-    #     else:
-    #         continue
-    #     if not us.unread_count_neutral and not us.unread_count_positive:
-    #         continue
-    #     unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
-    #                                                        withscores=include_timestamps,
-    #                                                        hashes_only=True)
-    #     story_hash_count += len(unread_feed_story_hashes[feed_id])
+    story_hashes = UserSubscription.unread_story_hashes(user.pk, feed_ids=feed_ids,
+                                                        include_timestamps=include_timestamps)
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
