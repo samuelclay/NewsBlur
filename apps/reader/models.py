@@ -258,6 +258,9 @@ class UserSubscription(models.Model):
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
                                         group_by_feed=False)
+        if not story_hashes:
+            return [], []
+        
         r.zadd(ranked_stories_keys, **dict(story_hashes))
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
