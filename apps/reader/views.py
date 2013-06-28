@@ -56,7 +56,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'debug']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug']:
         username = request.subdomain
         try:
             if '.' in username:
@@ -105,6 +105,7 @@ def dashboard(request, **kwargs):
         'statistics'        : statistics,
         'social_profile'    : social_profile,
         'start_import_from_google_reader': start_import_from_google_reader,
+        'debug'             : settings.DEBUG,
     }, "reader/dashboard.xhtml"
     
 def welcome(request, **kwargs):
