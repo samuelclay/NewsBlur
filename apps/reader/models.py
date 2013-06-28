@@ -241,12 +241,14 @@ class UserSubscription(models.Model):
             
         ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
         unread_ranked_stories_keys  = 'zhU:%s:feeds' % (user_id)
-        if offset and r.exists(ranked_stories_keys) and r.exists(unread_ranked_stories_keys):
+        stories_cached = r.exists(ranked_stories_keys)
+        unreads_cached = True if read_filter == "unread" else r.exists(unread_ranked_stories_keys)
+        if offset and stories_cached and unreads_cached:
             story_hashes = range_func(ranked_stories_keys, offset, limit)
             if read_filter == "unread":
                 unread_story_hashes = story_hashes
             else:
-                unread_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+                unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset+limit)
             return story_hashes, unread_story_hashes
         else:
             r.delete(ranked_stories_keys)
