@@ -85,7 +85,7 @@ public class LoginProgressFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(LoginResponse result) {
-			if (result.authenticated) {
+			if (result.isError()) {
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
 				loggingInProgress.setVisibility(View.GONE);
@@ -103,11 +103,7 @@ public class LoginProgressFragment extends Fragment {
                 getActivity().startActivity(startMain);
 
 			} else {
-				if (result.errors != null && result.errors.message != null) {
-					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
-				} else {
-					Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
-				}
+                Toast.makeText(getActivity(), result.getErrorMessage(), Toast.LENGTH_LONG).show();
 				startActivity(new Intent(getActivity(), Login.class));
 			}
 		}

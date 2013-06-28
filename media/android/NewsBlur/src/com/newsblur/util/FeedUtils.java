@@ -25,6 +25,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.SyncService;
 
 public class FeedUtils {
@@ -35,17 +36,17 @@ public class FeedUtils {
 		if (story != null) {
             final String feedId = story.feedId;
             final String storyId = story.id;
-            new AsyncTask<Void, Void, Boolean>() {
+            new AsyncTask<Void, Void, NewsBlurResponse>() {
                 @Override
-                protected Boolean doInBackground(Void... arg) {
+                protected NewsBlurResponse doInBackground(Void... arg) {
                     return apiManager.markStoryAsStarred(feedId, storyId);
                 }
                 @Override
-                protected void onPostExecute(Boolean result) {
-                    if (result) {
+                protected void onPostExecute(NewsBlurResponse result) {
+                    if (!result.isError()) {
                         Toast.makeText(context, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, R.string.toast_story_save_error, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -56,17 +57,17 @@ public class FeedUtils {
 
     public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager) {
 
-        new AsyncTask<Void, Void, Boolean>() {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
-            protected Boolean doInBackground(Void... arg) {
+            protected NewsBlurResponse doInBackground(Void... arg) {
                 return apiManager.markStoryAsUnread(story.feedId, story.id);
             }
             @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (!result.isError()) {
                     Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, R.string.toast_story_unread_error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();

@@ -20,12 +20,12 @@ import com.newsblur.activity.AddSites;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.LoginProgress;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.RegisterResponse;
 
 public class RegisterProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	private String TAG = "LoginProgress";
+	private String TAG = "RegisterProgress";
 
 	private String username;
 	private String password;
@@ -87,7 +87,7 @@ public class RegisterProgressFragment extends Fragment {
 
 	private class RegisterTask extends AsyncTask<Void, Void, Boolean> {
 
-		private LoginResponse response;
+		private RegisterResponse response;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -118,7 +118,7 @@ public class RegisterProgressFragment extends Fragment {
 			}
 		}
 
-		private String extractErrorMessage(LoginResponse response) {
+		private String extractErrorMessage(RegisterResponse response) {
 			String errorMessage = null;
 			if(response.errors != null) {
 				if(response.errors.email != null && response.errors.email.length > 0) {
