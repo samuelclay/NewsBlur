@@ -17,7 +17,7 @@ from utils.feed_functions import add_object_to_folder
 
 class UserSubscription(models.Model):
     """
-    A feed which a user has subscrubed to. Carries all of the cached information
+    A feed which a user has subscribed to. Carries all of the cached information
     about the subscription, including unread counts of the three primary scores.
     
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
@@ -87,22 +87,31 @@ class UserSubscription(models.Model):
                 self.delete()
     
     @classmethod
-    def story_hashes(cls, user_id, feed_ids=None, read_filter="unread", order="newest", 
-                     include_timestamps=False):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        usersubs = []
-    
+    def subs_for_feeds(cls, user_id, feed_ids=None, read_filter="unread"):
+        usersubs = cls.objects
+        if read_filter == "unread":
+            usersubs = usersubs.filter(Q(unread_count_neutral__gt=0) |
+                                       Q(unread_count_positive__gt=0))
         if not feed_ids:
-            usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                       Q(unread_count_positive__gt=0),
-                                                       user=user_id, active=True).only('feed', 'mark_read_date')
-            feed_ids = [sub.feed_id for sub in usersubs]
+            usersubs = usersubs.filter(user=user_id, 
+                                       active=True).only('feed', 'mark_read_date')
         else:
-            usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                       Q(unread_count_positive__gt=0),
-                                                       user=user_id, active=True, feed__in=feed_ids)
-
+            usersubs = usersubs.filter(user=user_id, 
+                                       active=True, 
+                                       feed__in=feed_ids).only('feed', 'mark_read_date')
+        
+        return usersubs
+        
+    @classmethod
+    def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
+                     include_timestamps=False, store_key=None):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
+        
+        if not usersubs:
+            usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
+            feed_ids = [sub.feed_id for sub in usersubs]
+
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
         unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -132,8 +141,13 @@ class UserSubscription(models.Model):
             
             pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
             byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
+            if store_key:
+                pipeline.zunionstore(store_key, [store_key, unread_ranked_stories_key])
         
         results = pipeline.execute()
+        
+        if store_key: return
+        
         story_hashes = {}
         feed_counter = 0
         for hashes in results:
@@ -215,8 +229,8 @@ class UserSubscription(models.Model):
             return []
         
     @classmethod
-    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all',
-                     usersubs=None):
+    def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
+                     order='newest', read_filter='all'):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
@@ -224,41 +238,34 @@ class UserSubscription(models.Model):
         else:
             range_func = r.zrevrange
             
-        if not isinstance(feed_ids, list):
-            feed_ids = [feed_ids]
-
         ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
         unread_ranked_stories_keys  = 'zhU:%s:feeds' % (user_id)
-        unread_story_hashes = cache.get(unread_ranked_stories_keys)
-        if offset and r.exists(ranked_stories_keys) and unread_story_hashes:
+        if offset and r.exists(ranked_stories_keys) and r.exists(unread_ranked_stories_keys):
             story_hashes = range_func(ranked_stories_keys, offset, limit)
+            if read_filter == "unread":
+                unread_story_hashes = story_hashes
+            else:
+                unread_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
             return story_hashes, unread_story_hashes
         else:
             r.delete(ranked_stories_keys)
-            cache.delete(unread_ranked_stories_keys)
+            r.delete(unread_ranked_stories_keys)
         
-        if not usersubs and feed_ids:
-            usersubs = cls.objects.filter(user=user_id, feed__in=feed_ids)
-        if usersubs:
-            usersubs = dict((sub.feed_id, sub) for sub in usersubs)
-            
-        unread_feed_story_hashes = {}
-        for feed_id in feed_ids:
-            if feed_id in usersubs:
-                us = usersubs[feed_id]
-            else:
-                continue
-            story_hashes = us.get_stories(offset=0, limit=200, 
-                                          order=order, read_filter=read_filter, 
-                                          withscores=True)
-            unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=200,
-                                                               hashes_only=True)
-            if story_hashes:
-                r.zadd(ranked_stories_keys, **dict(story_hashes))
-            
+        cls.story_hashes(user_id, feed_ids=feed_ids, 
+                         read_filter=read_filter, order=order, 
+                         store_key=ranked_stories_keys)
         story_hashes = range_func(ranked_stories_keys, offset, limit)
+
+        if read_filter == "unread":
+            unread_feed_story_hashes = story_hashes
+        else:
+            cls.story_hashes(user_id, feed_ids=feed_ids, 
+                             read_filter="unread", order=order, 
+                             store_key=unread_ranked_stories_keys)
+            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+        
         r.expire(ranked_stories_keys, 60*60)
-        cache.set(unread_ranked_stories_keys, unread_feed_story_hashes, 24*60*60)
+        r.expire(unread_ranked_stories_keys, 60*60)
         
         return story_hashes, unread_feed_story_hashes
         

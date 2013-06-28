@@ -785,13 +785,7 @@ def load_river_stories__redis(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-
-    if not feed_ids and not story_hashes:
-        usersubs = UserSubscription.objects.filter(user=user, active=True)
-        feed_ids = [sub.feed_id for sub in usersubs]
-    else:
-        usersubs = UserSubscription.objects.filter(user=user, active=True, feed__in=feed_ids)
-        
+    
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -803,15 +797,14 @@ def load_river_stories__redis(request):
         story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
                                                                                offset=offset, limit=limit,
                                                                                order=order,
-                                                                               read_filter=read_filter,
-                                                                               usersubs=usersubs)
+                                                                               read_filter=read_filter)
     mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
-    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
-    found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
-    
+    # trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+    # found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
+    found_trained_feed_ids = []
     # Find starred stories
     if found_feed_ids:
         starred_stories = MStarredStory.objects(
@@ -826,13 +819,13 @@ def load_river_stories__redis(request):
     # Intelligence classifiers for all feeds involved
     if found_trained_feed_ids:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                                   feed_id__in=found_trained_feed_ids))
+                                                        feed_id__in=found_trained_feed_ids))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
-                                                       feed_id__in=found_trained_feed_ids))
+                                                            feed_id__in=found_trained_feed_ids))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
-                                                     feed_id__in=found_trained_feed_ids))
+                                                          feed_id__in=found_trained_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
-                                                 feed_id__in=found_trained_feed_ids))
+                                                      feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -849,7 +842,7 @@ def load_river_stories__redis(request):
     for story in stories:
         story['read_status'] = 0
         if read_filter == 'all':
-            if story['story_hash'] not in unread_feed_story_hashes.get(story['story_feed_id'], []):
+            if unread_feed_story_hashes and story['story_hash'] not in unread_feed_story_hashes:
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
@@ -922,11 +915,14 @@ def unread_story_hashes__old(request):
 
 @json.json_view
 def unread_story_hashes(request):
-    user              = get_user(request)
-    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    user               = get_user(request)
+    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    order              = request.REQUEST.get('order', 'newest')
+    read_filter        = request.REQUEST.get('read_filter', 'unread')
     
-    story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids,
+    story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
+                                                 order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps)
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
