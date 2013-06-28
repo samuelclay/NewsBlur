@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="actionbar" parent="Widget.Sherlock.Light.ActionBar">
+        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="background">@drawable/actionbar_background</item>
+        <item name="android:titleTextStyle">@style/actionbarTitleText</item>
+        <item name="titleTextStyle">@style/actionbarTitleText</item>
+    </style>
+
+    <style name="actionbarTitleText" parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+</resources>

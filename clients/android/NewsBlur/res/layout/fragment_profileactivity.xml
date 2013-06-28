@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/item_background" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:background="@drawable/list_background"
+        android:text="@string/profile_recent_actvity" />
+
+    <ListView
+        android:id="@+id/profile_details_activitylist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/item_background"
+        android:divider="@drawable/divider_light"
+        android:dividerHeight="3dp" />
+
+</LinearLayout>

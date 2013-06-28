@@ -185,7 +185,9 @@ BANNED_USER_AGENTS = (
 class UserAgentBanMiddleware:
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
-
+        
+        if 'profile' in request.path: return
+        
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
             data = {
                 'error': 'User agent banned: %s' % user_agent,

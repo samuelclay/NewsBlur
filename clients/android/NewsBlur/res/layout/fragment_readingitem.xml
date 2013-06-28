@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.newsblur.view.NonfocusScrollview xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/item_background" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <include layout="@layout/include_reading_item_metadata" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/divider_light" />
+
+        <include layout="@layout/include_reading_share_bar" />
+
+        <View
+            android:id="@+id/share_bar_underline"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/divider_light"
+            android:visibility="gone" />
+
+        <com.newsblur.view.NewsblurWebview
+            android:id="@+id/reading_webview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/item_background"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:scrollbars="none" />
+
+       <include
+           layout="@layout/include_reading_item_comment" />
+        
+    </LinearLayout>
+
+</com.newsblur.view.NonfocusScrollview>

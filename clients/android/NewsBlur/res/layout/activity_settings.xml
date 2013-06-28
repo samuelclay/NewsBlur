@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory 
+        android:title="@string/settings_default_story_order">
+        <ListPreference
+            android:key="default_story_order"
+            android:title="@string/menu_story_order"
+            android:dialogTitle="@string/menu_story_order"
+            android:entries="@array/default_story_order_entries"
+            android:entryValues="@array/default_story_order_values"
+            android:defaultValue="@string/default_story_order_value" />
+        
+        <ListPreference
+            android:key="default_read_filter"
+            android:title="@string/menu_read_filter"
+            android:dialogTitle="@string/menu_read_filter"
+            android:entries="@array/default_read_filter_entries"
+            android:entryValues="@array/default_read_filter_values"
+            android:defaultValue="@string/default_read_filter_value" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
