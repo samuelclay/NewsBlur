@@ -13,7 +13,7 @@ from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from utils.feed_functions import add_object_to_folder
+from utils.feed_functions import add_object_to_folder, chunks
 
 class UserSubscription(models.Model):
     """
@@ -116,45 +116,47 @@ class UserSubscription(models.Model):
         current_time = int(time.time() + 60*60*24)
         unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
-        
-        for feed_id in feed_ids:
-            stories_key               = 'F:%s' % feed_id
-            sorted_stories_key        = 'zF:%s' % feed_id
-            read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
-            unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
-            unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
-            
-            max_score = current_time
-            if read_filter == 'unread':
-                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-                min_score = read_dates[feed_id] + 1
-                pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-            else:
-                min_score = unread_timestamp
-                unread_stories_key = stories_key
-
-            if order == 'oldest':
-                byscorefunc = pipeline.zrangebyscore
-            else:
-                byscorefunc = pipeline.zrevrangebyscore
-                min_score, max_score = max_score, min_score
-            
-            pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-            byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
-            # if store_key:
-            #     pipeline.zunionstore(store_key, [store_key, unread_ranked_stories_key])
-        
-        results = pipeline.execute()
-        
         story_hashes = {} if group_by_feed else []
         feed_counter = 0
-        for hashes in results:
-            if not isinstance(hashes, list): continue
-            if group_by_feed:
-                story_hashes[feed_ids[feed_counter]] = hashes
-                feed_counter += 1
-            else:
-                story_hashes.extend(hashes)
+
+        for feed_id_group in chunks(feed_ids, 20):
+            pipeline = r.pipeline()
+            for feed_id in feed_ids:
+                stories_key               = 'F:%s' % feed_id
+                sorted_stories_key        = 'zF:%s' % feed_id
+                read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
+                unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
+                unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
+            
+                max_score = current_time
+                if read_filter == 'unread':
+                    # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                    min_score = read_dates[feed_id] + 1
+                    pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                else:
+                    min_score = unread_timestamp
+                    unread_stories_key = stories_key
+
+                if order == 'oldest':
+                    byscorefunc = pipeline.zrangebyscore
+                else:
+                    byscorefunc = pipeline.zrevrangebyscore
+                    min_score, max_score = max_score, min_score
+            
+                pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
+                # if store_key:
+                #     pipeline.zunionstore(store_key, [store_key, unread_ranked_stories_key])
+        
+            results = pipeline.execute()
+        
+            for hashes in results:
+                if not isinstance(hashes, list): continue
+                if group_by_feed:
+                    story_hashes[feed_ids[feed_counter]] = hashes
+                    feed_counter += 1
+                else:
+                    story_hashes.extend(hashes)
 
         return story_hashes
         

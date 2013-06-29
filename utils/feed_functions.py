@@ -6,7 +6,6 @@ import pprint
 import urllib
 import urlparse
 import random
-from itertools import izip_longest
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
 from utils import log as logging
@@ -422,7 +421,6 @@ if __name__ == '__main__':
     print doctest.testmod()
 ## end of http://code.activestate.com/recipes/576611/ }}}
 
-def grouper(n, iterable, fillvalue=None):
-    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return izip_longest(fillvalue=fillvalue, *args)
+def chunks(l, n):
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
