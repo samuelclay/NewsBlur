@@ -75,7 +75,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
         $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
-        var $expires_label = $(".NB-statistics-push-expires", this.$modal);
+        var $expires_label = $(".NB-statistics-push-expires-label", this.$modal);
         var $expires = $(".NB-statistics-push-expires", this.$modal);
         if (data['push_expires']) {
             $expires_label.html("Push expires");
