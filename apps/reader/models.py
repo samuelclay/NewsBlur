@@ -121,7 +121,7 @@ class UserSubscription(models.Model):
 
         for feed_id_group in chunks(feed_ids, 20):
             pipeline = r.pipeline()
-            for feed_id in feed_ids:
+            for feed_id in feed_id_group:
                 stories_key               = 'F:%s' % feed_id
                 sorted_stories_key        = 'zF:%s' % feed_id
                 read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
