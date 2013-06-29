@@ -94,11 +94,11 @@ class UserSubscription(models.Model):
                                        Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, 
-                                       active=True).only('feed', 'mark_read_date')
+                                       active=True).only('feed', 'mark_read_date', 'is_trained')
         else:
             usersubs = usersubs.filter(user=user_id, 
                                        active=True, 
-                                       feed__in=feed_ids).only('feed', 'mark_read_date')
+                                       feed__in=feed_ids).only('feed', 'mark_read_date', 'is_trained')
         
         return usersubs
         
@@ -231,7 +231,7 @@ class UserSubscription(models.Model):
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
-                     order='newest', read_filter='all'):
+                     order='newest', read_filter='all', usersubs=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
@@ -257,7 +257,7 @@ class UserSubscription(models.Model):
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
-                                        group_by_feed=False)
+                                        group_by_feed=False, usersubs=usersubs)
         if not story_hashes:
             return [], []
         
@@ -271,7 +271,8 @@ class UserSubscription(models.Model):
                                                    read_filter="unread", order=order, 
                                                    include_timestamps=True,
                                                    group_by_feed=False)
-            r.zadd(unread_ranked_stories_keys, **dict(unread_story_hashes))
+            if unread_story_hashes:
+                r.zadd(unread_ranked_stories_keys, **dict(unread_story_hashes))
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         r.expire(ranked_stories_keys, 60*60)

@@ -786,7 +786,7 @@ def load_river_stories__redis(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    
+    usersubs          = []
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -795,17 +795,27 @@ def load_river_stories__redis(request):
         unread_feed_story_hashes = []
         read_filter = 'unread'
     else:
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                                   read_filter=read_filter)
+        feed_ids = [sub.feed_id for sub in usersubs]
         story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
                                                                                offset=offset, limit=limit,
                                                                                order=order,
-                                                                               read_filter=read_filter)
+                                                                               read_filter=read_filter,
+                                                                               usersubs=usersubs)
+    
     mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
-    # trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
-    # found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
-    found_trained_feed_ids = []
+    
+    if not usersubs:
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=found_feed_ids,
+                                                   read_filter=read_filter)
+
+    trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+    found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
+
     # Find starred stories
     if found_feed_ids:
         starred_stories = MStarredStory.objects(
