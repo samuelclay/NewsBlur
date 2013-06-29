@@ -275,7 +275,8 @@ class UserSubscription(models.Model):
                                                    include_timestamps=True,
                                                    group_by_feed=False)
             if unread_story_hashes:
-                r.zadd(unread_ranked_stories_keys, **dict(unread_story_hashes))
+                for unread_story_hash_group in chunks(unread_story_hashes, 100):
+                    r.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         r.expire(ranked_stories_keys, 60*60)
