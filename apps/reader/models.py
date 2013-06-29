@@ -263,7 +263,8 @@ class UserSubscription(models.Model):
         if not story_hashes:
             return [], []
         
-        r.zadd(ranked_stories_keys, **dict(story_hashes))
+        for story_hash_group in chunks(story_hashes, 100):
+            r.zadd(ranked_stories_keys, **dict(story_hash_group))
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
         if read_filter == "unread":
