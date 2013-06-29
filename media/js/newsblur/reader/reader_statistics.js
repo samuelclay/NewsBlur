@@ -75,7 +75,12 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
         $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
-        $(".NB-statistics-push-expires", this.$modal).html(data['lease_expires'] || "");
+        var $expires = $(".NB-statistics-push-expires", this.$modal);
+        if (data['lease_expires']) {
+            $expires.html("Push expires: " + data['lease_expires']);
+        } else {
+            $expires.html("");
+        }
         setTimeout(function() {
             self.make_charts(data);  
         }, this.first_load ? 200 : 50);

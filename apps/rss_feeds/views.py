@@ -11,6 +11,7 @@ from django.template import RequestContext
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFetchHistory
 from apps.rss_feeds.models import MFeedIcon
+from apps.push.models import PushSubscription
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
