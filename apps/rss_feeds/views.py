@@ -140,6 +140,13 @@ def load_feed_statistics(request, feed_id):
     stats['last_update'] = relative_timesince(feed.last_update)
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
     stats['push'] = feed.is_push
+    if feed.is_push:
+        try:
+            stats['push_expires'] = feed.push.lease_expires
+        except PushSubscription.DoesNotExist:
+            stats['push_expires'] = 'Missing push'
+            feed.is_push = False
+            feed.save()
 
     # Minutes between updates
     update_interval_minutes = feed.get_next_scheduled_update(force=True, verbose=False)

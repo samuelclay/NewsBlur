@@ -74,7 +74,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
-        $(".NB-modal-feed-subscribers").removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
+        $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
+        $(".NB-statistics-push-expires", this.$modal).html(data['lease_expires'] || "");
         setTimeout(function() {
             self.make_charts(data);  
         }, this.first_load ? 200 : 50);
@@ -166,7 +167,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Feed Push'),
-                    $.make('div', this.make_history(data, 'feed_push'))
+                    $.make('div', this.make_history(data, 'feed_push')),
+                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires' })
                 ])
             ]))
         ]);
