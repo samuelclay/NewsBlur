@@ -1956,7 +1956,7 @@ class MFetchHistory(mongo.Document):
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
 
-        history.insert(0, (date, code, message))
+        history = [[date, code, message]] + history
         if code and code >= 400:
             history = history[:50]
         else:
@@ -1971,43 +1971,10 @@ class MFetchHistory(mongo.Document):
         
         fetch_history.save()
         
-        if exception:
-            MFetchExceptionHistory.add(feed_id, date=date, code=code, 
-                                       message=message, exception=exception)
         if fetch_type == 'feed':
             RStats.add('feed_fetch')
         
         return cls.feed(feed_id, fetch_history=fetch_history)
-
-class MFetchExceptionHistory(mongo.Document):
-    feed_id = mongo.IntField(unique=True)
-    date = mongo.DateTimeField()
-    code = mongo.IntField()
-    message = mongo.StringField()
-    exception = mongo.StringField()
-    
-    meta = {
-        'collection': 'fetch_exception_history',
-        'allow_inheritance': False,
-    }
-    
-    @classmethod
-    def add(cls, feed_id, date=None, code=None, message="", exception=""):
-        if not date:
-            date = datetime.datetime.now()
-        if not isinstance(exception, basestring):
-            exception = unicode(exception)
-        
-        try:
-            fetch_exception = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
-                                         .get(feed_id=feed_id)
-        except cls.DoesNotExist:
-            fetch_exception = cls.objects.create(feed_id=feed_id)
-        fetch_exception.date = date
-        fetch_exception.code = code
-        fetch_exception.message = message
-        fetch_exception.exception = exception
-        fetch_exception.save()
 
 
 class DuplicateFeed(models.Model):
