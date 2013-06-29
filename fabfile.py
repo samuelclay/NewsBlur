@@ -783,7 +783,7 @@ def setup_mongo_mms():
 
 
 def setup_redis(slave=False):
-    redis_version = '2.6.13'
+    redis_version = '2.6.14'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)

@@ -1078,7 +1078,9 @@ def ignore_follower(request):
 def find_friends(request):
     query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
-    profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
+    profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
