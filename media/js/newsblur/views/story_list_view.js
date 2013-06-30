@@ -143,8 +143,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('story_layout') != 'split') return;
         
         this.collection.any(_.bind(function(story) {
-            if (story && story.story_view && story.get('selected')) {
-                this.$el.html(story.story_view.$el);
+            if (story && story.get('selected') && story.story_view) {
+                this.$el.html(story.story_view.el);
+                story.story_view.setElement(story.story_view.el);
                 return true;
             }
         }, this));
