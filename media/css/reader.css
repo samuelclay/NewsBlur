@@ -1742,7 +1742,8 @@ background: transparent;
     overflow: hidden;
 }
 .NB-end-line.NB-short {
-    height: 12px;
+    height: 8px;
+    min-height: 8px;
 }
 
 .NB-end-line .NB-fleuron {
