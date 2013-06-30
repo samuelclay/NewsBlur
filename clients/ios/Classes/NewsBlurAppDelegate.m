@@ -47,7 +47,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 22
+#define CURRENT_DB_VERSION 23
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -138,6 +138,7 @@
 @synthesize dictSocialProfile;
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
+@synthesize dictUnreadCounts;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -436,7 +437,7 @@
 }
 
 #pragma mark -
-#pragma mark Views
+#pragma mark View Management
 
 - (void)showLogin {
     self.dictFeeds = nil;
@@ -445,6 +446,7 @@
     self.dictFoldersArray = nil;
     self.userActivitiesArray = nil;
     self.userInteractionsArray = nil;
+    self.dictUnreadCounts = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
     [self.feedsViewController resetToolbar];
@@ -943,6 +945,8 @@
     }
 }
 
+#pragma mark - Story Traversal
+
 - (int)indexOfNextUnreadStory {
     int location = [self locationOfNextUnreadStory];
     return [self indexFromLocation:location];
@@ -1083,6 +1087,20 @@
     }
 }
 
+#pragma mark - Unread Counts
+
+- (void)populateDictUnreadCounts {
+    self.dictUnreadCounts = [NSMutableDictionary dictionary];
+    
+    [self.database inDatabase:^(FMDatabase *db) {
+        FMResultSet *cursor = [db executeQuery:@"SELECT * FROM unread_counts"];
+        
+        while ([cursor next]) {
+            NSDictionary *unreadCounts = [cursor resultDictionary];
+            [self.dictUnreadCounts setObject:unreadCounts forKey:[unreadCounts objectForKey:@"feed_id"]];
+        }
+    }];
+}
 
 - (int)unreadCount {
     if (self.isRiverView || self.isSocialRiverView) {
@@ -1102,12 +1120,12 @@
         NSLog(@"total is %i", total);
     }
     
-    for (id key in self.dictFeeds) {
-        NSDictionary *feed = [self.dictFeeds objectForKey:key];
+    for (id key in self.dictUnreadCounts) {
+        NSDictionary *feed = [self.dictUnreadCounts objectForKey:key];
         total += [[feed objectForKey:@"ps"] intValue];
         total += [[feed objectForKey:@"nt"] intValue];
-        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
-        NSLog(@"total is %i", total);
+//        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
+//        NSLog(@"total is %i", total);
     }
 
     return total;
@@ -1122,7 +1140,7 @@
         if ([feedIdStr containsString:@"social:"]) {
             feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         } else {
-            feed = [self.dictFeeds objectForKey:feedIdStr];
+            feed = [self.dictUnreadCounts objectForKey:feedIdStr];
         }
 
     } else {
@@ -1154,7 +1172,7 @@
         total = 0;
     } else if ([folderName isEqual:@"everything"] ||
                (!folderName && [self.activeFolder isEqual:@"everything"])) {
-        for (id feedId in self.dictFeeds) {
+        for (id feedId in self.dictUnreadCounts) {
             total += [self unreadCountForFeed:feedId];
         }
     } else {
@@ -1175,23 +1193,17 @@
 
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId {
     UnreadCounts *counts = [UnreadCounts alloc];
-    NSDictionary *feed;
+    NSDictionary *feedCounts;
     
-    if (feedId) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        if ([feedIdStr containsString:@"social:"]) {
-            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
-        } else {
-            feed = [self.dictFeeds objectForKey:feedIdStr];
-        }
-        
-    } else {
-        feed = self.activeFeed;
+    if (!feedId) {
+        feedId = [self.activeFeed objectForKey:@"id"];
     }
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    feedCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     
-    counts.ps += [[feed objectForKey:@"ps"] intValue];
-    counts.nt += [[feed objectForKey:@"nt"] intValue];
-    counts.ng += [[feed objectForKey:@"ng"] intValue];
+    counts.ps += [[feedCounts objectForKey:@"ps"] intValue];
+    counts.nt += [[feedCounts objectForKey:@"nt"] intValue];
+    counts.ng += [[feedCounts objectForKey:@"ng"] intValue];
     
     return counts;
 }
@@ -1244,6 +1256,8 @@
         
     return counts;
 }
+
+#pragma mark - Story Management
 
 - (void)addStories:(NSArray *)stories {
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
@@ -1470,6 +1484,26 @@
     }
     self.activeFeedStories = newActiveFeedStories;
     
+    self.visibleUnreadCount -= 1;
+    if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
+        [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
+    }
+    
+    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
+    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+    } else if (score == 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+    } else if (score < 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+    }
+    [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
+    
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *storyHash = [newStory objectForKey:@"story_hash"];
         [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
@@ -1477,33 +1511,12 @@
          storyHash];
         [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
          storyHash];
+        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+         [newUnreadCounts objectForKey:@"ps"],
+         [newUnreadCounts objectForKey:@"nt"],
+         [newUnreadCounts objectForKey:@"ng"],
+         feedIdStr];
     }];
-    
-    self.visibleUnreadCount -= 1;
-    if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
-        [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
-    }
-    
-    NSMutableDictionary *newFeed = [feed mutableCopy];
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    if (score > 0) {
-        int unreads = MAX(0, [[newFeed objectForKey:@"ps"] intValue] - 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
-    } else if (score == 0) {
-        int unreads = MAX(0, [[newFeed objectForKey:@"nt"] intValue] - 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
-    } else if (score < 0) {
-        int unreads = MAX(0, [[newFeed objectForKey:@"ng"] intValue] - 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
-    }
-    
-    if (self.isSocialView || self.isSocialRiverView) {
-        [self.dictSocialFeeds setValue:newFeed forKey:feedIdStr];
-    } else {
-        [self.dictFeeds setValue:newFeed forKey:feedIdStr];
-    }
-    
-    self.activeFeed = newFeed;
 }
 
 
@@ -1544,26 +1557,28 @@
         [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
 //    }
     
-    NSMutableDictionary *newFeed = [feed mutableCopy];
+    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:[feed objectForKey:feedIdStr]];
+    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        int unreads = MAX(1, [[newFeed objectForKey:@"ps"] intValue] + 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
     } else if (score == 0) {
-        int unreads = MAX(1, [[newFeed objectForKey:@"nt"] intValue] + 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
     } else if (score < 0) {
-        int unreads = MAX(1, [[newFeed objectForKey:@"ng"] intValue] + 1);
-        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
+    [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
     
-    if (self.isSocialView || self.isSocialRiverView) {
-        [self.dictSocialFeeds setValue:newFeed forKey:feedIdStr];
-    } else {
-        [self.dictFeeds setValue:newFeed forKey:feedIdStr];
-    }
-    
-    self.activeFeed = newFeed;
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+         [newUnreadCounts objectForKey:@"ps"],
+         [newUnreadCounts objectForKey:@"nt"],
+         [newUnreadCounts objectForKey:@"ng"],
+         feedIdStr];
+    }];
 }
 
 - (void)markActiveStorySaved:(BOOL)saved {
@@ -1613,16 +1628,18 @@
 
 - (void)markFeedAllRead:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSMutableDictionary *feed = self.isSocialView ? [[self.dictSocialFeeds objectForKey:feedIdStr] mutableCopy] : [[self.dictFeeds objectForKey:feedIdStr] mutableCopy];
+    NSMutableDictionary *unreadCounts = [NSMutableDictionary dictionary];
     
-    [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
-    [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
-    [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
-    if (self.isSocialView) {
-        [self.dictSocialFeeds setValue:feed forKey:feedIdStr];    
-    } else {
-        [self.dictFeeds setValue:feed forKey:feedIdStr];    
-    }
+    [unreadCounts setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
+    [unreadCounts setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
+    [unreadCounts setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+    
+    [self.dictUnreadCounts setObject:unreadCounts forKey:feedIdStr];
+    
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [db executeUpdate:@"UPDATE unread_counts SET ps = 0, nt = 0, ng = 0 WHERE feed_id = ?",
+         feedIdStr];
+    }];
 }
 
 - (void)calculateStoryLocations {
@@ -1661,7 +1678,7 @@
     return score;
 }
 
-
+#pragma mark - Feed Management
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
@@ -2110,7 +2127,7 @@
         [db executeUpdate:@"drop table if exists `stories`"];
         [db executeUpdate:@"drop table if exists `unread_hashes`"];
         [db executeUpdate:@"drop table if exists `accounts`"];
-        [db executeUpdate:@"drop table if exists `feeds`"];
+        [db executeUpdate:@"drop table if exists `unread_counts`"];
         [db executeUpdate:@"drop table if exists `cached_images`"];
         //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"];
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
@@ -2125,15 +2142,15 @@
                                   ")"];
     [db executeUpdate:createAccountsTable];
     
-    NSString *createFeedsTable = [NSString stringWithFormat:@"create table if not exists feeds "
+    NSString *createCountsTable = [NSString stringWithFormat:@"create table if not exists unread_counts "
                                   "("
-                                  " feed_id number,"
+                                  " feed_id varchar(20),"
                                   " ps number,"
                                   " nt number,"
                                   " ng number,"
                                   " UNIQUE(feed_id) ON CONFLICT REPLACE"
                                   ")"];
-    [db executeUpdate:createFeedsTable];
+    [db executeUpdate:createCountsTable];
     
     NSString *createStoryTable = [NSString stringWithFormat:@"create table if not exists stories "
                                   "("
@@ -2460,7 +2477,7 @@
             self.remainingUncachedImagesCount = count;
         }
         
-        int limit = 10;
+        int limit = 12;
         NSString *order;
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
             order = @"ASC";

@@ -30,6 +30,7 @@
 
 #define _displaytime 4.f
 #define NOTIFIER_HEIGHT 32
+#define PROGRESS_BAR_SIZE 40
 
 @implementation NBNotifier
 
@@ -117,7 +118,7 @@
 - (void) didChangedOrientation:(NSNotification *)sender {
 //    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     [self setView:self.view];
-    self.progressBar.frame = CGRectMake(self.frame.size.width - 60 - 12, 14, 60, 6);
+    self.progressBar.frame = CGRectMake(self.frame.size.width - PROGRESS_BAR_SIZE - 12, 14, PROGRESS_BAR_SIZE, 6);
 }
 
 

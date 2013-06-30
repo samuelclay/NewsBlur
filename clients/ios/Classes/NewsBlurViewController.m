@@ -447,7 +447,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
     [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
     [request setDidFailSelector:@selector(finishedWithError:)];
-    [request setTimeOutSeconds:30];
+    [request setTimeOutSeconds:15];
     [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
@@ -494,19 +494,33 @@ static const CGFloat kFolderTitleHeight = 28;
                              options:kNilOptions
                              error:&error];
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
-            [db executeUpdate:@"INSERT INTO accounts"
-             "(username, download_date, feeds_json) VALUES "
-             "(?, ?, ?)",
-             appDelegate.activeUsername,
-             [NSDate date],
-             [results JSONRepresentation]
-             ];
-        }];
-    });
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
+        [db executeUpdate:@"INSERT INTO accounts"
+         "(username, download_date, feeds_json) VALUES "
+         "(?, ?, ?)",
+         appDelegate.activeUsername,
+         [NSDate date],
+         [results JSONRepresentation]
+         ];
+        for (NSDictionary *feed in [results objectForKey:@"social_feeds"]) {
+            [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
+             "(?, ?, ?, ?)",
+             [feed objectForKey:@"id"],
+             [feed objectForKey:@"ps"],
+             [feed objectForKey:@"nt"],
+             [feed objectForKey:@"ng"]];
+        }
+        for (NSString *feedId in [results objectForKey:@"feeds"]) {
+            NSDictionary *feed = [[results objectForKey:@"feeds"] objectForKey:feedId];
+            [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
+             "(?, ?, ?, ?)",
+             [feed objectForKey:@"id"],
+             [feed objectForKey:@"ps"],
+             [feed objectForKey:@"nt"],
+             [feed objectForKey:@"ng"]];
+        }
+    }];
 
     [self finishLoadingFeedListWithDict:results];
 }
@@ -628,7 +642,8 @@ static const CGFloat kFolderTitleHeight = 28;
     
     // set up dictFeeds
     appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
-
+    [appDelegate populateDictUnreadCounts];
+    
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
@@ -686,7 +701,6 @@ static const CGFloat kFolderTitleHeight = 28;
         [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
-
     
     // test for empty    
     if ([[appDelegate.dictFeeds allKeys] count] == 0 &&
@@ -698,8 +712,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
 
-    // assign categories for FTUX
-    
+    // assign categories for FTUX    
     if (![[results objectForKey:@"categories"] isKindOfClass:[NSNull class]]){
         appDelegate.categories = [[results objectForKey:@"categories"] objectForKey:@"categories"];
         appDelegate.categoryFeeds = [[results objectForKey:@"categories"] objectForKey:@"feeds"];
@@ -969,11 +982,12 @@ static const CGFloat kFolderTitleHeight = 28;
     NSDictionary *feed = isSocial ?
                          [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
     cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:isSocial];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
-    cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
-    cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
-    cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
+    cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
+    cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
+    cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
     
     [cell setNeedsDisplay];
@@ -1229,21 +1243,17 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (BOOL)isFeedVisible:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
 
-    NSDictionary *feed = isSocial ?
-                         [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
-                         [appDelegate.dictFeeds objectForKey:feedIdStr];
-    
     NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedIdStr];
     if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
-        [[feed objectForKey:@"ps"] intValue] <= 0) {
+        [[unreadCounts objectForKey:@"ps"] intValue] <= 0) {
         return NO;
     } else if (!stillVisible &&
                !self.viewShowingAllFeeds &&
-               ([[feed objectForKey:@"ps"] intValue] <= 0 &&
-                [[feed objectForKey:@"nt"] intValue] <= 0)) {
+               ([[unreadCounts objectForKey:@"ps"] intValue] <= 0 &&
+                [[unreadCounts objectForKey:@"nt"] intValue] <= 0)) {
         return NO;
     }
 
@@ -1325,9 +1335,9 @@ heightForHeaderInSection:(NSInteger)section {
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     if (intelligenceLevel > 0) {
         BOOL hasFocusStory = NO;
-        for (id feedId in appDelegate.dictFeeds) {
-            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
-            if ([[feed objectForKey:@"ps"] intValue] > 0) {
+        for (id feedId in appDelegate.dictUnreadCounts) {
+            NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
+            if ([[unreadCounts objectForKey:@"ps"] intValue] > 0) {
                 hasFocusStory = YES;
                 break;
             }
@@ -1485,6 +1495,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
+    
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
@@ -1497,6 +1508,7 @@ heightForHeaderInSection:(NSInteger)section {
     [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self hideNotifier];
         [self showRefreshNotifier];
     });
 }
@@ -1520,65 +1532,59 @@ heightForHeaderInSection:(NSInteger)section {
                              options:kNilOptions 
                              error:&error];
     
-    NSMutableDictionary *updatedDictFeeds = [appDelegate.dictFeeds mutableCopy];    
     NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     for (id feed in newFeedCounts) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-        NSMutableDictionary *newFeed = [[appDelegate.dictFeeds objectForKey:feedIdStr] mutableCopy];
+        NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
         NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
-        if ([newFeed isKindOfClass:[NSDictionary class]]) {
-            // Check if a feed goes from visible to hidden, but doesn't disappear.
-            if ((intelligenceLevel > 0 &&
-                 [[newFeed objectForKey:@"ps"] intValue] > 0 &&
-                 [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
-                (intelligenceLevel == 0 &&
-                 ([[newFeed objectForKey:@"ps"] intValue] > 0 || [[newFeed objectForKey:@"nt"] intValue] > 0) &&
-                 [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
-                 [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
-                NSIndexPath *indexPath;
-                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
-                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-                    for (int l=0; l < [activeFolderFeeds count]; l++) {
-                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
-                            indexPath = [NSIndexPath indexPathForRow:l inSection:s];
-                            break;
-                        }
+        if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
+
+        // Check if a feed goes from visible to hidden, but doesn't disappear.
+        if ((intelligenceLevel > 0 &&
+             [[unreadCount objectForKey:@"ps"] intValue] > 0 &&
+             [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
+            (intelligenceLevel == 0 &&
+             ([[unreadCount objectForKey:@"ps"] intValue] > 0 ||
+              [[unreadCount objectForKey:@"nt"] intValue] > 0) &&
+             [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
+             [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
+            NSIndexPath *indexPath;
+            for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+                NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                for (int l=0; l < [activeFolderFeeds count]; l++) {
+                    if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                        indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                        break;
                     }
-                    if (indexPath) break;
                 }
-                if (indexPath) {
-                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-                }
+                if (indexPath) break;
             }
-            [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-            [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-            [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [updatedDictFeeds setObject:newFeed forKey:feedIdStr];
+            if (indexPath) {
+                [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+            }
         }
-        
+        [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+        [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+        [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+        [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
     }
     
-    NSMutableDictionary *updatedDictSocialFeeds = [appDelegate.dictSocialFeeds mutableCopy]; 
     NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
     for (id feed in newSocialFeedCounts) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-        NSMutableDictionary *newFeed = [[appDelegate.dictSocialFeeds objectForKey:feedIdStr] mutableCopy];
+        NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
         NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
 
-        if ([newFeed isKindOfClass:[NSDictionary class]]) {
-            [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-            [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-            [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [updatedDictSocialFeeds setObject:newFeed forKey:feedIdStr];
-        }
+        if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
+        [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+        [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+        [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+        [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
     }
-
-    appDelegate.dictSocialFeeds = updatedDictSocialFeeds;
-    appDelegate.dictFeeds = updatedDictFeeds;
     
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
