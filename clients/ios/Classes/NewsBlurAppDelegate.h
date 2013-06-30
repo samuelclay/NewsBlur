@@ -132,6 +132,7 @@
     NSDictionary * dictSocialProfile;
     NSDictionary * dictUserProfile;
     NSDictionary * dictSocialServices;
+    NSMutableDictionary * dictUnreadCounts;
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
@@ -229,6 +230,7 @@
 @property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
+@property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
@@ -299,6 +301,8 @@
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (void)addStories:(NSArray *)stories;
 - (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
+
+- (void)populateDictUnreadCounts;
 - (int)unreadCount;
 - (int)allUnreadCount;
 - (int)unreadCountForFeed:(NSString *)feedId;
