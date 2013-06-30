@@ -108,7 +108,8 @@ class RStats:
         keys_count = len(keys)
         print " ---> %s total keys" % keys_count
         for prefix, rest in prefixes.items():
-            print " ---> %4s: (%.4s%%) %s keys (%s)" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest), dict(prefixes_ttls[prefix]))
+            total_expiring = sum([k for k in rest.values()])
+            print " ---> %4s: (%.4s%%) %s keys (%s expiring: %s)" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest), total_expiring, dict(prefixes_ttls[prefix]))
         print " ---> %s errors: %s" % (len(errors), errors)
 
 def round_time(dt=None, round_to=60):
