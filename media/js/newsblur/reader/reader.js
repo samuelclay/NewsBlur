@@ -5399,6 +5399,14 @@
             $document.bind('keydown', 'shift+k', function(e) {
                 e.preventDefault();
                 self.show_next_feed(-1);
+            });
+            $document.bind('keydown', 'shift+n', function(e) {
+                e.preventDefault();
+                self.show_next_feed(1);
+            });
+            $document.bind('keydown', 'shift+p', function(e) {
+                e.preventDefault();
+                self.show_next_feed(-1);
             });                       
             $document.bind('keydown', 'shift+down', function(e) {
                 e.preventDefault();

@@ -68,6 +68,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                     $.make('span', '+'),
                     'j'
                 ])
+                // TODO: Mention "shift + n" here? It will be too wide.
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Prev. site'),
@@ -81,6 +82,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                     $.make('span', '+'),
                     'k'
                 ])
+                // TODO: Mention "shift + p" here? It will be too wide.
               ])
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [              
