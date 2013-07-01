@@ -127,12 +127,14 @@ class UserSubscription(models.Model):
                 read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
                 unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
                 unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
+                expire_unread_stories_key = False
             
                 max_score = current_time
                 if read_filter == 'unread':
                     # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
                     min_score = read_dates[feed_id] + 1
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                    expire_unread_stories_key = True
                 else:
                     min_score = unread_timestamp
                     unread_stories_key = stories_key
@@ -145,8 +147,9 @@ class UserSubscription(models.Model):
             
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
                 byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
-                # if store_key:
-                #     pipeline.zunionstore(store_key, [store_key, unread_ranked_stories_key])
+                pipeline.expire(unread_ranked_stories_key, 60*60)
+                if expire_unread_stories_key:
+                    pipeline.delete(unread_stories_key)
         
             results = pipeline.execute()
         
