@@ -1937,8 +1937,12 @@ background: transparent;
     padding: 0 206px 0 28px;
     background-color: #EEF0E9;
     border-bottom: 1px solid rgba(0, 0, 0, .2);
+    border-left: 3px solid transparent;
     position: relative;
     overflow: hidden;
+}
+.NB-feed-story.NB-selected .NB-feed-story-header-info {
+    border-left: 3px solid #EBAA74;
 }
 .NB-feed-story-view-narrow .NB-feed-story .NB-feed-story-header-info {
     padding-right: 28px;
