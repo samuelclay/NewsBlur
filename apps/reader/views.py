@@ -1095,6 +1095,10 @@ def mark_story_as_unread(request):
     
     story, found_original = MStory.find_story(feed_id, story_id)
     
+    if not story:
+        logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
+        return dict(code=-1, message="Story not found.")
+    
     if usersub and story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,

@@ -252,6 +252,12 @@ def setup_task(queue=None, skip_common=False):
     config_monit_task()
     done()
 
+def setup_task_image():
+    copy_task_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy()
+
 # ==================
 # = Setup - Common =
 # ==================
