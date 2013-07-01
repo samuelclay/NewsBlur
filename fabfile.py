@@ -205,6 +205,12 @@ def setup_app(skip_common=False):
     config_monit_app()
     done()
 
+def setup_app_image():
+    copy_app_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy_web()
+
 def setup_node():
     setup_node_app()
     config_node()
@@ -930,16 +936,21 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name, size=2):
+def setup_do(name, size=2, image=None):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 13.04 x64"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
     ssh_key_id = doapi.all_ssh_keys()[0].id
     region_id = doapi.regions()[0].id
-    images = dict((s.name, s.id) for s in doapi.images())
-    image_id = images[IMAGE_NAME]
+    if not image:
+        IMAGE_NAME = "Ubuntu 13.04 x64"
+        images = dict((s.name, s.id) for s in doapi.images())
+        image_id = images[IMAGE_NAME]
+    else:
+        IMAGE_NAME = image
+        images = dict((s.name, s.id) for s in doapi.images(show_all=False))
+        image_id = images[IMAGE_NAME]
     name = do_name(name)
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
