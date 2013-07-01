@@ -792,17 +792,26 @@ def load_river_stories__redis(request):
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if story_hashes:
-        unread_feed_story_hashes = []
+        unread_feed_story_hashes = None
         read_filter = 'unread'
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
         feed_ids = [sub.feed_id for sub in usersubs]
-        story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
-                                                                               offset=offset, limit=limit,
-                                                                               order=order,
-                                                                               read_filter=read_filter,
-                                                                               usersubs=usersubs)
+        if feed_ids:
+            params = {
+                "user_id": user.pk, 
+                "feed_ids": feed_ids,
+                "offset": offset,
+                "limit": limit,
+                "order": order,
+                "read_filter": read_filter,
+                "usersubs": usersubs,
+            }
+            story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+        else:
+            story_hashes = []
+            unread_feed_story_hashes = []
     
     mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
@@ -853,7 +862,8 @@ def load_river_stories__redis(request):
     for story in stories:
         story['read_status'] = 0
         if read_filter == 'all':
-            if unread_feed_story_hashes and story['story_hash'] not in unread_feed_story_hashes:
+            if (unread_feed_story_hashes is not None and 
+                story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
