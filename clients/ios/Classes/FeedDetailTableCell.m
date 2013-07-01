@@ -72,10 +72,10 @@ static UIFont *indicatorFont = nil;
     UIFont *font;
 
     if (self.isRead) {
-        font = [UIFont fontWithName:@"Helvetica" size:11];
-        textColor = UIColorFromRGB(0x808080);
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:11];
+        textColor = UIColorFromRGB(0xA6A9A6);
     } else {
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:11];
         textColor = UIColorFromRGB(0x606060);
         
     }
@@ -92,12 +92,12 @@ static UIFont *indicatorFont = nil;
          alignment:NSTextAlignmentLeft];
         
         if (self.isRead) {
-            font = [UIFont fontWithName:@"Helvetica" size:12];
-            textColor = UIColorFromRGB(0x606060);
+            font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:12];
+            textColor = UIColorFromRGB(0xB6B9B6);
             
         } else {
             textColor = UIColorFromRGB(0x333333);
-            font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+            font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:12];
         }
         if (highlighted) {
             textColor = UIColorFromRGB(0x686868);
@@ -120,7 +120,7 @@ static UIFont *indicatorFont = nil;
      lineBreakMode:NSLineBreakByTruncatingTail 
      alignment:NSTextAlignmentLeft];
 
-    int storyAuthorDateY = 41 + adjustForSocial;
+    int storyAuthorDateY = 43 + adjustForSocial;
     if (self.isShort){
         storyAuthorDateY -= 13;
     }
@@ -128,11 +128,11 @@ static UIFont *indicatorFont = nil;
     // story author style
 
     if (self.isRead) {
-        textColor = UIColorFromRGB(0x808080);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
+        textColor = UIColorFromRGB(0xD6D9D6);
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:10];
     } else {
-        textColor = UIColorFromRGB(0x959595);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        textColor = UIColorFromRGB(0xB5B5B5);
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:10];
     }
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
@@ -148,10 +148,10 @@ static UIFont *indicatorFont = nil;
     // story date
     if (self.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:10];
     } else {
         textColor = UIColorFromRGB(0x262c6c);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:10];
     }
     
     if (highlighted) {

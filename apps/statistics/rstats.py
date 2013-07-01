@@ -92,7 +92,9 @@ class RStats:
             prefix, rest = match.groups()
             prefixes[prefix].add(rest)
             ttl = ttls[k]
-            if ttl < 60*60: # 1 hour
+            if ttl <= 0: # Expired
+                prefixes_ttls[prefix]['X'] += 1
+            elif ttl < 60*60: # 1 hour
                 prefixes_ttls[prefix]['1h'] += 1
             elif ttl < 60*60*12:
                 prefixes_ttls[prefix]['12h'] += 1
