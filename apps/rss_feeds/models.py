@@ -325,7 +325,7 @@ class Feed(models.Model):
             create_okay = False
             if feedfinder.isFeed(url):
                 create_okay = True
-            elif aggressive:
+            elif fetch:
                 # Could still be a feed. Just check if there are entries
                 fp = feedparser.parse(url)
                 if len(fp.entries):

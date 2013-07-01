@@ -1446,7 +1446,8 @@
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
-            this.make_feed_title_in_stories();
+            this.make_feed_title_in_stories();              
+            NEWSBLUR.app.story_titles.show_loading();
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             
             this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
@@ -1527,6 +1528,7 @@
                 feeds = this.active_folder.feed_ids_in_folder();
             }
             this.cache['river_feeds_with_unreads'] = feeds;
+            NEWSBLUR.app.story_titles.show_loading();
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             NEWSBLUR.app.taskbar_info.show_stories_progress_bar(feeds.length);
             this.model.fetch_river_stories(this.active_feed, feeds, 1, 
@@ -1629,6 +1631,7 @@
                 }
             }
 
+            NEWSBLUR.app.story_titles.show_loading();
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             NEWSBLUR.app.taskbar_info.show_stories_progress_bar(100); // Assume 100 followees for popular
             this.model.fetch_river_blurblogs_stories(this.active_feed, 1, 
@@ -1717,6 +1720,7 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
+            NEWSBLUR.app.story_titles.show_loading();
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             NEWSBLUR.app.taskbar_info.show_stories_progress_bar();
             this.model.fetch_social_stories(this.active_feed, 1, 
