@@ -235,7 +235,7 @@ def load_feeds(request):
     scheduled_feeds = []
     for sub in user_subs:
         pk = sub.feed_id
-        if update_counts:
+        if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
