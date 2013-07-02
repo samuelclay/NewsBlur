@@ -5,7 +5,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 
-public class StoriesResponse {
+public class StoriesResponse extends NewsBlurResponse {
 	
 	@SerializedName("stories")
 	public Story[] stories;
@@ -15,6 +15,4 @@ public class StoriesResponse {
 	
 	public Classifier classifiers;
 	
-	public boolean authenticated;
-
 }

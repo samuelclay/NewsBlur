@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.newsblur.domain.Category;
 import com.newsblur.domain.Feed;
 
-public class CategoriesResponse {
+public class CategoriesResponse extends NewsBlurResponse {
 	
 	@SerializedName("feeds")
 	public HashMap<String, Feed> feeds;

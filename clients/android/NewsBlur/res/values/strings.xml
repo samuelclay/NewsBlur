@@ -2,6 +2,11 @@
 
     <string name="newsblur">NewsBlur</string>
     
+    <string name="error_unset_message">An unknown error occurred</string>
+    <string name="error_http_connection">There was a problem connecting to NewsBlur</string>
+    <string name="error_read_connection">There was a problem communicating with NewsBlur</string>
+    <string name="error_offline">There was a problem connecting to the network</string>
+
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
@@ -88,6 +93,7 @@
     <string name="menu_save_story">Save this story</string>
     <string name="menu_mark_previous_stories_as_read">Mark previous as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
+    <string name="menu_mark_unread">Mark as unread</string>
     
     <string name="toast_marked_folder_as_read">Folder marked as read</string>
     <string name="toast_marked_feed_as_read">Feed marked as read</string>
@@ -97,6 +103,9 @@
 
     <string name="toast_story_saved">Story saved</string>
     <string name="toast_story_save_error">Error marking story as saved.</string>
+
+    <string name="toast_story_unread">Story marked as unread</string>
+    <string name="toast_story_unread_error">Error marking story as unread</string>
     
     <string name="logout_warning">Are you sure you want to log out?</string>
     

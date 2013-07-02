@@ -1,5 +1,10 @@
 package com.newsblur.network;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,11 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpStatus;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -40,13 +44,15 @@ import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
-import com.newsblur.network.domain.LoginResponse;
-import com.newsblur.network.domain.Message;
+import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
+import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
+import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -67,47 +73,41 @@ public class APIManager {
                 .create();
 	}
 
-	public LoginResponse login(final String username, final String password) {
-		final APIClient client = new APIClient(context);
+	public NewsBlurResponse login(final String username, final String password) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
-		final APIResponse response = client.post(APIConstants.URL_LOGIN, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtils.saveLogin(context, username, response.cookie);
-			return loginResponse;
-		} else {
-			return new LoginResponse();
-		}		
-	}
+		final APIResponse response = post(APIConstants.URL_LOGIN, values);
+        NewsBlurResponse loginResponse =  response.getResponse(gson);
+		if (!response.isError()) {
+			PrefsUtils.saveLogin(context, username, response.getCookie());
+		} 
+        return loginResponse;
+    }
 
 	public boolean setAutoFollow(boolean autofollow) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put("autofollow_friends", autofollow ? "true" : "false");
-		final APIResponse response = client.post(APIConstants.URL_AUTOFOLLOW_PREF, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_AUTOFOLLOW_PREF, values);
+		return (!response.isError());
 	}
 
 	public boolean addCategories(ArrayList<String> categories) {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String category : categories) {
 			values.put(APIConstants.PARAMETER_CATEGORY, URLEncoder.encode(category));
 		}
-		final APIResponse response = client.post(APIConstants.URL_ADD_CATEGORIES, values, false);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_ADD_CATEGORIES, values, false);
+		return (!response.isError());
 	}
 
 	public boolean markFeedAsRead(final String[] feedIds) {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
-		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -115,11 +115,10 @@ public class APIManager {
 	}
 	
 	public boolean markAllAsRead() {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
-		final APIResponse response = client.post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -127,68 +126,65 @@ public class APIManager {
 	}
 
 	public boolean markSocialStoryAsRead(final String updateJson) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_MARKSOCIAL_JSON, updateJson);
-		final APIResponse response = client.post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public boolean markStoryAsStarred(final String feedId, final String storyId) {
-		final APIClient client = new APIClient(context);
+	public NewsBlurResponse markStoryAsStarred(final String feedId, final String storyId) {
 		final ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			return true;
-		} else {
-			return false;
-		}
+		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+    public NewsBlurResponse markStoryAsUnread( String feedId, String storyId ) {
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNREAD, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class); 
+    }
+
 	public CategoriesResponse getCategories() {
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_CATEGORIES);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			return gson.fromJson(response.responseString, CategoriesResponse.class);
+		final APIResponse response = get(APIConstants.URL_CATEGORIES);
+		if (!response.isError()) {
+			CategoriesResponse categoriesResponse = (CategoriesResponse) response.getResponse(gson, CategoriesResponse.class);
+            return categoriesResponse;
 		} else {
 			return null;
 		}
 	}
 
-	public LoginResponse signup(final String username, final String password, final String email) {
-		final APIClient client = new APIClient(context);
+	public RegisterResponse signup(final String username, final String password, final String email) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		values.put(APIConstants.PARAMETER_EMAIL, email);
-		final APIResponse response = client.post(APIConstants.URL_SIGNUP, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtils.saveLogin(context, username, response.cookie);
+		final APIResponse response = post(APIConstants.URL_SIGNUP, values);
+        RegisterResponse registerResponse = ((RegisterResponse) response.getResponse(gson, RegisterResponse.class));
+		if (!response.isError()) {
+			PrefsUtils.saveLogin(context, username, response.getCookie());
 
 			CookieSyncManager.createInstance(context.getApplicationContext());
 			CookieManager cookieManager = CookieManager.getInstance();
 
-			cookieManager.setCookie(".newsblur.com", response.cookie);
+			cookieManager.setCookie(".newsblur.com", response.getCookie());
 			CookieSyncManager.getInstance().sync();
-
-			return loginResponse;
-		} else {
-			return new LoginResponse();
-		}		
+		}
+        return registerResponse;
 	}
 
 	public ProfileResponse updateUserProfile() {
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_MY_PROFILE);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
+		final APIResponse response = get(APIConstants.URL_MY_PROFILE);
+		if (!response.isError()) {
+			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			PrefsUtils.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
@@ -197,7 +193,6 @@ public class APIManager {
 	}
 
 	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber, StoryOrder order, ReadFilter filter) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
@@ -205,14 +200,14 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
-		final APIResponse response = client.get(feedUri.toString(), values);
+		final APIResponse response = get(feedUri.toString(), values);
 		Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		if (!response.isError()) {
 			if (TextUtils.equals(pageNumber, "1")) {
 				contentResolver.delete(storyUri, null, null);
 			}
-			StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+			StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
@@ -238,7 +233,6 @@ public class APIManager {
 	}
 
 	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
@@ -248,10 +242,10 @@ public class APIManager {
 		}
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-		final APIResponse response = client.get(APIConstants.URL_RIVER_STORIES, values);
+		final APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
 
-		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+		if (!response.isError()) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				contentResolver.delete(storyUri, null, null);
@@ -274,15 +268,14 @@ public class APIManager {
 	}
 
 	public StoriesResponse getStarredStories(String pageNumber) {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
-		final APIResponse response = client.get(APIConstants.URL_STARRED_STORIES, values);
+		final APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
 
-		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+		if (!response.isError()) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
 			}
@@ -300,7 +293,6 @@ public class APIManager {
 	}
 
 	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber) {
-		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
@@ -309,10 +301,9 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
 
-		final APIResponse response = client.get(APIConstants.URL_SHARED_RIVER_STORIES, values);
-
-		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
+		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
+		if (!response.isError()) {
 
 			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
 			if (TextUtils.equals(pageNumber,"1")) {
@@ -349,7 +340,6 @@ public class APIManager {
 	}
 
 	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		values.put(APIConstants.PARAMETER_USERNAME, username);
@@ -357,9 +347,9 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
-		final APIResponse response = client.get(feedUri.toString(), values);
-		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = get(feedUri.toString(), values);
+		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
+		if (!response.isError()) {
 
 			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 			if (TextUtils.equals(pageNumber, "1")) {
@@ -423,11 +413,10 @@ public class APIManager {
 	}
 
 	public boolean followUser(final String userId) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
-		final APIResponse response = client.post(APIConstants.URL_FOLLOW, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_FOLLOW, values);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -435,11 +424,10 @@ public class APIManager {
 	}
 
 	public boolean unfollowUser(final String userId) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
-		final APIResponse response = client.post(APIConstants.URL_UNFOLLOW, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_UNFOLLOW, values);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -447,7 +435,6 @@ public class APIManager {
 	}
 
 	public Boolean shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		if (!TextUtils.isEmpty(comment)) {
 			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
@@ -458,8 +445,8 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 
-		final APIResponse response = client.post(APIConstants.URL_SHARE_STORY, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_SHARE_STORY, values);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -476,17 +463,17 @@ public class APIManager {
      */
     public boolean getFolderFeedMapping(boolean doUpdateCounts) {
 		
-		final APIClient client = new APIClient(context);
 		final ContentValues params = new ContentValues();
 		params.put( APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false") );
-		final APIResponse response = client.get(APIConstants.URL_FEEDS, params);
+		final APIResponse response = get(APIConstants.URL_FEEDS, params);
 
-		final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.responseString, gson);
+		// note: this response is complex enough, we have to do a custom parse in the FFR
+        final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.getResponseBody(), gson);
 
         // there is a rare issue with feeds that have no folder.  capture them for debug.
         List<String> debugFeedIds = new ArrayList<String>();
 		
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		if (!response.isError()) {
 
             // if the response says we aren't logged in, clear the DB and prompt for login. We test this
             // here, since this the first sync call we make on launch if we believe we are cookied.
@@ -554,18 +541,6 @@ public class APIManager {
 		return true;
 	}
 
-	private HashMap<String, Feed> getExistingFeeds() {
-		Cursor feedCursor = contentResolver.query(FeedProvider.FEEDS_URI, null, null, null, null);
-		feedCursor.moveToFirst();
-		HashMap<String, Feed> existingFeeds = new HashMap<String, Feed>();
-		while (!feedCursor.isAfterLast()) {
-			existingFeeds.put(Feed.fromCursor(feedCursor).feedId, Feed.fromCursor(feedCursor));
-			feedCursor.moveToNext();
-		}
-		feedCursor.close();
-		return existingFeeds;
-	}
-	
 	public boolean trainClassifier(String feedId, String key, int type, int action) {
 		String typeText = null;
 		String actionText = null;
@@ -612,18 +587,16 @@ public class APIManager {
 		}
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.post(APIConstants.URL_CLASSIFIER_SAVE, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_CLASSIFIER_SAVE, values);
+		return (!response.isError());
 	}
 
 	public ProfileResponse getUser(String userId) {
-		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
-		final APIResponse response = client.get(APIConstants.URL_USER_PROFILE, values);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
+		final APIResponse response = get(APIConstants.URL_USER_PROFILE, values);
+		if (!response.isError()) {
+			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			return profileResponse;
 		} else {
 			return null;
@@ -631,10 +604,9 @@ public class APIManager {
 	}
 
 	public void refreshFeedCounts() {
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_FEED_COUNTS);
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			final FeedRefreshResponse feedCountUpdate = gson.fromJson(response.responseString, FeedRefreshResponse.class);
+		final APIResponse response = get(APIConstants.URL_FEED_COUNTS);
+		if (!response.isError()) {
+			final FeedRefreshResponse feedCountUpdate = (FeedRefreshResponse) response.getResponse(gson, FeedRefreshResponse.class);
 			for (String feedId : feedCountUpdate.feedCounts.keySet()) {
 				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
                 if (feedCountUpdate.feedCounts.get(feedId) != null) {
@@ -653,40 +625,36 @@ public class APIManager {
 	}
 
 	public boolean favouriteComment(String storyId, String commentId, String feedId) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = client.post(APIConstants.URL_LIKE_COMMENT, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
+		return (!response.isError());
 	}
 
 	public Boolean unFavouriteComment(String storyId, String commentId, String feedId) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
-		final APIResponse response = client.post(APIConstants.URL_UNLIKE_COMMENT, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
+		return (!response.isError());
 	}
 
 	public boolean replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
-		final APIResponse response = client.post(APIConstants.URL_REPLY_TO, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_REPLY_TO, values);
+		return (!response.isError());
 	}
 
 	public boolean markMultipleStoriesAsRead(ContentValues values) {
-		final APIClient client = new APIClient(context);
-		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
-		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+		final APIResponse response = post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
+		if (!response.isError()) {
 			return true;
 		} else {
 			return false;
@@ -694,65 +662,138 @@ public class APIManager {
 	}
 
 	public boolean addFeed(String feedUrl, String folderName) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
 		if (!TextUtils.isEmpty(folderName)) {
 			values.put(APIConstants.PARAMETER_FOLDER, folderName);
 		}
-		final APIResponse response = client.post(APIConstants.URL_ADD_FEED, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_ADD_FEED, values);
+		return (!response.isError());
 	}
 
 	public FeedResult[] searchForFeed(String searchTerm) throws ServerErrorException {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
-		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
+		final APIResponse response = get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
 
-		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			return fromJson(response.responseString, FeedResult[].class);
+		if (!response.isError()) {
+            return gson.fromJson(response.getResponseBody(), FeedResult[].class);
 		} else {
 			return null;
 		}
 	}
 
 	public boolean deleteFeed(long feedId, String folderName) {
-		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
 		if (!TextUtils.isEmpty(folderName)) {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}
-		final APIResponse response = client.post(APIConstants.URL_DELETE_FEED, values);
-		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+		final APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
+		return (!response.isError());
 	}
 
-	private <T> T fromJson(String json, Class<T> classOfT) throws ServerErrorException {
-		if(isServerMessage(json)) {
-			Message errorMessage = gson.fromJson(json, Message.class);
-			throw new ServerErrorException(errorMessage.message);
+    /* HTTP METHODS */
+   
+	private APIResponse get(final String urlString) {
+		HttpURLConnection connection = null;
+		if (!NetworkUtils.isOnline(context)) {
+			return new APIResponse(context);
 		}
-		return gson.fromJson(json, classOfT);
-	}
-
-	private boolean isServerMessage(String json) {
-		// TODO find a better way to identify these failed responses
-		boolean isServerMessage = false;
-		JsonParser parser = new JsonParser();
-		JsonElement jsonElement = parser.parse(json);
-		if(jsonElement.isJsonObject()) {
-			JsonObject asJsonObject = jsonElement.getAsJsonObject();
-			if(asJsonObject.has("code")) {
-				JsonElement codeItem = asJsonObject.get("code");
-				int code = codeItem.getAsInt();
-				if(code == -1)
-					isServerMessage = true;
+		try {
+			final URL url = new URL(urlString);
+            Log.d(this.getClass().getName(), "API GET " + url );
+			connection = (HttpURLConnection) url.openConnection();
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
 			}
-		}
-		return isServerMessage;
+			return new APIResponse(context, url, connection);
+		} catch (IOException e) {
+			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
+			return new APIResponse(context);
+		} 
 	}
-    
+	
+	private APIResponse get(final String urlString, final ContentValues values) {
+        List<String> parameters = new ArrayList<String>();
+        for (Entry<String, Object> entry : values.valueSet()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append((String) entry.getKey());
+            builder.append("=");
+            builder.append(URLEncoder.encode((String) entry.getValue()));
+            parameters.add(builder.toString());
+        }
+        return this.get(urlString + "?" + TextUtils.join("&", parameters));
+	}
+	
+	private APIResponse get(final String urlString, final ValueMultimap valueMap) {
+        return this.get(urlString + "?" + valueMap.getParameterString());
+	}
+
+	private APIResponse post(String urlString, String postBodyString) {
+		HttpURLConnection connection = null;
+		if (!NetworkUtils.isOnline(context)) {
+			return new APIResponse(context);
+		}
+		
+		try {
+			final URL url = new URL(urlString);
+            Log.d(this.getClass().getName(), "API POST " + url );
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setDoOutput(true);
+			connection.setRequestMethod("POST");
+			connection.setFixedLengthStreamingMode(postBodyString.getBytes().length);
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
+			}
+			
+			final PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
+			printWriter.print(postBodyString);
+			printWriter.close();
+
+			return new APIResponse(context, url, connection);
+		} catch (IOException e) {
+			Log.e(this.getClass().getName(), "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
+			return new APIResponse(context);
+		} 
+	}
+
+	private APIResponse post(final String urlString, final ContentValues values) {
+		List<String> parameters = new ArrayList<String>();
+		for (Entry<String, Object> entry : values.valueSet()) {
+			final StringBuilder builder = new StringBuilder();
+			
+			builder.append((String) entry.getKey());
+			builder.append("=");
+			try {
+				builder.append(URLEncoder.encode((String) entry.getValue(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				Log.e(this.getClass().getName(), e.getLocalizedMessage());
+				return new APIResponse(context);
+			}
+			parameters.add(builder.toString());
+		}
+		final String parameterString = TextUtils.join("&", parameters);
+
+        return this.post(urlString, parameterString);
+	}
+	
+	private APIResponse post(final String urlString, final ValueMultimap valueMap) {
+		return post(urlString, valueMap, true);
+	}
+	
+	private APIResponse post(final String urlString, final ValueMultimap valueMap, boolean jsonIfy) {
+        String parameterString = jsonIfy ? valueMap.getJsonString() : valueMap.getParameterString();
+        return this.post(urlString, parameterString);
+	}
+
+
     /**
      * Convenience method to call contentResolver.bulkInsert using a list rather than an array.
      */

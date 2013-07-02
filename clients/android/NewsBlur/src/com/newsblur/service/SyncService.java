@@ -18,7 +18,6 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.ValueMultimap;
-import com.newsblur.network.APIClient;
 import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.SocialFeedResponse;
@@ -69,7 +68,6 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_MULTISOCIALFEED_UPDATE = 40;
     public static final int EXTRA_TASK_STARRED_STORIES_UPDATE = 42;
 
-	public APIClient apiClient;
 	private APIManager apiManager;
 	private ContentResolver contentResolver;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
