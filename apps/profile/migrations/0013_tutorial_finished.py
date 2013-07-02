@@ -64,7 +64,7 @@ class Migration(SchemaMigration):
         'profile.profile': {
             'Meta': {'object_name': 'Profile'},
             'collapsed_folders': ('django.db.models.fields.TextField', [], {'default': "'[]'"}),
-            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '240'}),
+            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '242'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_premium': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_seen_ip': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),

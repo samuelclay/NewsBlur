@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Profile.feed_pane_size'
-        db.add_column('profile_profile', 'feed_pane_size', self.gf('django.db.models.fields.IntegerField')(default=240), keep_default=False)
+        db.add_column('profile_profile', 'feed_pane_size', self.gf('django.db.models.fields.IntegerField')(default=242), keep_default=False)
 
 
     def backwards(self, orm):
@@ -58,7 +58,7 @@ class Migration(SchemaMigration):
         'profile.profile': {
             'Meta': {'object_name': 'Profile'},
             'collapsed_folders': ('django.db.models.fields.TextField', [], {'default': "'[]'"}),
-            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '240'}),
+            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '242'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_premium': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_seen_ip': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),

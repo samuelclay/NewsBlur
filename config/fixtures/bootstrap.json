@@ -12,7 +12,7 @@
         "model": "profile.profile",
         "fields": {
             "secret_token": "4a700381ea08",
-            "feed_pane_size": 240,
+            "feed_pane_size": 242,
             "last_seen_ip": null,
             "view_settings": "{}",
             "is_premium": false,
