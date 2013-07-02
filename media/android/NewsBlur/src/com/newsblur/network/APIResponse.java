@@ -74,7 +74,7 @@ public class APIResponse {
             return;
         }
 
-        Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
+        // Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
 
         try {
             connection.disconnect();
