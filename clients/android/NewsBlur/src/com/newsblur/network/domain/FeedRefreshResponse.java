@@ -7,7 +7,7 @@ import android.content.ContentValues;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class FeedRefreshResponse {
+public class FeedRefreshResponse extends NewsBlurResponse {
 
 	
 	@SerializedName("feeds")
