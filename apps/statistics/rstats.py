@@ -96,7 +96,9 @@ class RStats:
             prefixes[prefix].add(rest)
             sizes[prefix] += len(dump[k])
             ttl = ttls[k]
-            if ttl <= 0: # Expired
+            if ttl < 0: # Never expire
+                prefixes_ttls[prefix]['-'] += 1
+            elif ttl == 0:
                 prefixes_ttls[prefix]['X'] += 1
             elif ttl < 60*60: # 1 hour
                 prefixes_ttls[prefix]['1h'] += 1
@@ -115,7 +117,7 @@ class RStats:
         total_size = float(sum([k for k in sizes.values()]))
         print " ---> %s total keys" % keys_count
         for prefix, rest in prefixes.items():
-            total_expiring = sum([k for k in dict(prefixes_ttls[prefix]).values()])
+            total_expiring = sum([k for p, k in dict(prefixes_ttls[prefix]).items() if p != "-"])
             print " ---> %4s: (%.4s%% keys - %.4s%% space) %s keys (%s expiring: %s)" % (prefix, 100. * (len(rest) / float(keys_count)), 100 * (sizes[prefix] / total_size), len(rest), total_expiring, dict(prefixes_ttls[prefix]))
         print " ---> %s errors: %s" % (len(errors), errors)
 
