@@ -1754,10 +1754,16 @@ class MStory(mongo.Document):
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
-            r.sadd('F:%s' % self.story_feed_id, self.story_hash)
-            r2.sadd('F:%s' % self.story_feed_id, self.story_hash)
-            r.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r2.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
+            feed_key = 'F:%s' % self.story_feed_id
+            r.sadd(feed_key, self.story_hash)
+            r.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.sadd(feed_key, self.story_hash)
+            r2.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            
+            r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self, r=None, r2=None):
         if not r:
