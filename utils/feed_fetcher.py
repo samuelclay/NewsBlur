@@ -259,7 +259,11 @@ class ProcessFeed:
                 logging.debug(u'   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s' % (
                               self.feed.title[:30],
                               "~SKRe-~SN" if push_expired else "", hub_url))
-                PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+                try:
+                    PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+                except TimeoutError:
+                    logging.debug(u'   ---> [%-30s] ~BB~FW~FRTimed out~FW subscribing to PuSH hub: %s' % (
+                                  self.feed.title[:30], hub_url))                    
             elif (self.feed.is_push and 
                   (self.feed.active_subscribers <= 0 or not hub_url)):
                 logging.debug(u'   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (
