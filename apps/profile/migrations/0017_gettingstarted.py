@@ -76,7 +76,7 @@ class Migration(SchemaMigration):
         'profile.profile': {
             'Meta': {'object_name': 'Profile'},
             'collapsed_folders': ('django.db.models.fields.TextField', [], {'default': "'[]'"}),
-            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '240'}),
+            'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '242'}),
             'has_found_friends': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'has_setup_feeds': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'has_trained_intelligence': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
