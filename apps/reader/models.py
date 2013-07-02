@@ -386,7 +386,7 @@ class UserSubscription(models.Model):
 
         return feeds
     
-    def sync_redis(self, r=None):
+    def trim_read_stories(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
@@ -395,7 +395,7 @@ class UserSubscription(models.Model):
         if not stale_story_hashes:
             return
         
-        logging.user(self.user, "~FBTrimming %s read stories..." % (len(stale_story_hashes)))
+        logging.user(self.user, "~FBTrimming ~SB%s~SN read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id))
         r.srem(read_stories_key, *stale_story_hashes)
         r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
     
@@ -564,7 +564,7 @@ class UserSubscription(models.Model):
         if not silent:
             logging.user(self.user, '~FC~SNComputing scores: %s (~SB%s~SN/~SB%s~SN/~SB%s~SN)' % (self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
         
-        self.sync_redis()
+        self.trim_read_stories()
         
         return self
     
