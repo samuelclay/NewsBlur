@@ -563,7 +563,9 @@ class UserSubscription(models.Model):
         
         if not silent:
             logging.user(self.user, '~FC~SNComputing scores: %s (~SB%s~SN/~SB%s~SN/~SB%s~SN)' % (self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
-            
+        
+        self.sync_redis()
+        
         return self
     
     def switch_feed(self, new_feed, old_feed):
