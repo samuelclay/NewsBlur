@@ -638,28 +638,44 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_read(cls, user_id, story_feed_id, story_hash, r=None):
+    def mark_read(cls, user_id, story_feed_id, story_hash, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
         
         if not story_hash: return
         
+        now = int(time.time())
         all_read_stories_key = 'RS:%s' % (user_id)
         r.sadd(all_read_stories_key, story_hash)
+        r2.sadd(all_read_stories_key, story_hash)
+        r2.zadd('z' + all_read_stories_key, story_hash, now)
         r.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('z' + all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
         
         read_story_key = 'RS:%s:%s' % (user_id, story_feed_id)
         r.sadd(read_story_key, story_hash)
+        r2.sadd(read_story_key, story_hash)
+        r2.zadd('z' + read_story_key, story_hash, now)
         r.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('z' + read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
     
     @staticmethod
     def mark_unread(user_id, story_feed_id, story_hash):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         r.srem('RS:%s' % user_id, story_hash)
+        r2.srem('RS:%s' % user_id, story_hash)
+        r2.zrem('zRS:%s' % user_id, story_hash)
         r.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+        r2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+        r2.zrem('zRS:%s:%s' % (user_id, story_feed_id), story_hash)
     
     @staticmethod
     def get_stories(user_id, feed_id, r=None):
@@ -671,15 +687,24 @@ class RUserStory:
     @classmethod
     def switch_feed(cls, user_id, old_feed_id, new_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
+        p2 = r2.pipeline()
         story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
-
+        now = int(time.time())
+        
         for story_hash in story_hashes:
             _, hash_story = MStory.split_story_hash(story_hash)
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
             p.sadd("RS:%s:%s" % (user_id, new_feed_id), new_story_hash)
+            p2.sadd("RS:%s:%s" % (user_id, new_feed_id), new_story_hash)
+            p2.zadd("zRS:%s:%s" % (user_id, new_feed_id), new_story_hash, now)
+            p.sadd("RS:%s" % (user_id), new_story_hash)
+            p2.sadd("RS:%s" % (user_id), new_story_hash)
+            p2.zadd("zRS:%s" % (user_id), new_story_hash, now)
         
         p.execute()
+        p2.execute()
         
         if len(story_hashes) > 0:
             logging.info(" ---> %s read stories" % len(story_hashes))
@@ -687,9 +712,12 @@ class RUserStory:
     @classmethod
     def switch_hash(cls, feed_id, old_hash, new_hash):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
+        p2 = r2.pipeline()
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+        now = int(time.time())
+        
         usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
         for sub in usersubs:
@@ -697,9 +725,14 @@ class RUserStory:
             read = r.sismember(rs_key, old_hash)
             if read:
                 p.sadd(rs_key, new_hash)
+                p2.sadd(rs_key, new_hash)
+                p2.zadd('z' + rs_key, new_hash, now)
                 p.sadd("RS:%s" % sub.user.pk, new_hash)
+                p2.sadd("RS:%s" % sub.user.pk, new_hash)
+                p2.zadd("zRS:%s" % sub.user.pk, new_hash, now)
         
         p.execute()
+        p2.execute()
     
 
 class UserSubscriptionFolders(models.Model):

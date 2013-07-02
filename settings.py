@@ -431,6 +431,9 @@ REDIS = {
 REDIS2 = {
     'host': 'db13',
 }
+REDIS3 = {
+    'host': 'db11',
+}
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
 
@@ -569,6 +572,8 @@ REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
+
+REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS3['host'], port=6379, db=1)
 
 # ==========
 # = Assets =
