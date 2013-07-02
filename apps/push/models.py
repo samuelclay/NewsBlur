@@ -12,11 +12,13 @@ import hashlib
 from apps.push import signals
 from apps.rss_feeds.models import Feed
 from utils import log as logging
+from utils.feed_functions import timelimit
 
 DEFAULT_LEASE_SECONDS = 2592000 # 30 days in seconds
 
 class PushSubscriptionManager(models.Manager):
-
+    
+    @timelimit(5)
     def subscribe(self, topic, feed, hub=None, callback=None,
                   lease_seconds=None, force_retry=False):
         if hub is None:

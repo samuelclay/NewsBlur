@@ -230,12 +230,16 @@ class Feed(models.Model):
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
         
-    def expire_redis(self, r=None):
+    def expire_redis(self, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
         r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
         r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -325,7 +329,7 @@ class Feed(models.Model):
             create_okay = False
             if feedfinder.isFeed(url):
                 create_okay = True
-            elif aggressive:
+            elif fetch:
                 # Could still be a feed. Just check if there are entries
                 fp = feedparser.parse(url)
                 if len(fp.entries):
@@ -903,7 +907,7 @@ class Feed(models.Model):
                        story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
-                s.extract_image_url()
+                s.extract_image_urls()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -964,7 +968,7 @@ class Feed(models.Model):
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
                 # existing_story.story_date = story.get('published') # No, don't
-                existing_story.extract_image_url()
+                existing_story.extract_image_urls()
                 
                 try:
                     existing_story.save()
@@ -1151,7 +1155,7 @@ class Feed(models.Model):
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
-        story['image_url']        = story_db.image_url
+        story['image_urls']       = story_db.image_urls
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
         story['comment_user_ids'] = story_db.comment_user_ids if hasattr(story_db, 'comment_user_ids') else []
@@ -1557,7 +1561,7 @@ class MStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
-    image_url                = mongo.StringField(max_length=1024)
+    image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     comment_count            = mongo.IntField()
     comment_user_ids         = mongo.ListField(mongo.IntField())
@@ -1742,36 +1746,55 @@ class MStory(mongo.Document):
         
         return story_hashes
     
-    def sync_redis(self, r=None):
+    def sync_redis(self, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
-            r.sadd('F:%s' % self.story_feed_id, self.story_hash)
-            r.zadd('zF:%s' % self.story_feed_id, self.story_hash, time.mktime(self.story_date.timetuple()))
+            feed_key = 'F:%s' % self.story_feed_id
+            r.sadd(feed_key, self.story_hash)
+            r.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.sadd(feed_key, self.story_hash)
+            r2.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            
+            r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
     
-    def remove_from_redis(self, r=None):
+    def remove_from_redis(self, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         if self.id:
             r.srem('F:%s' % self.story_feed_id, self.story_hash)
+            r2.srem('F:%s' % self.story_feed_id, self.story_hash)
             r.zrem('zF:%s' % self.story_feed_id, self.story_hash)
+            r2.zrem('zF:%s' % self.story_feed_id, self.story_hash)
 
     @classmethod
     def sync_feed_redis(cls, story_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
         r.delete('F:%s' % story_feed_id)
+        r2.delete('F:%s' % story_feed_id)
         r.delete('zF:%s' % story_feed_id)
+        r2.delete('zF:%s' % story_feed_id)
 
         logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
+        p2 = r2.pipeline()
         for story in stories:
-            story.sync_redis(r=p)
+            story.sync_redis(r=p, r2=p2)
         p.execute()
+        p2.execute()
         
     def count_comments(self):
         from apps.social.models import MSharedStory
@@ -1787,9 +1810,9 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_url(self, force=False):
-        if self.image_url and not force:
-            return self.image_url
+    def extract_image_urls(self, force=False):
+        if self.image_urls and not force:
+            return self.image_urls
         
         story_content = self.story_content
         if not story_content and self.story_content_z:
@@ -1798,13 +1821,24 @@ class MStory(mongo.Document):
             return
         
         soup = BeautifulSoup(story_content)
-        image = soup.find('img')
-        if image:
+        images = soup.findAll('img')
+        if not images:
+            return
+        
+        image_urls = []
+        for image in images:
             image_url = image.get('src')
+            if not image_url:
+                continue
             if image_url and len(image_url) >= 1024:
-                return
-            self.image_url = image_url
-            return self.image_url
+                continue
+            image_urls.append(image_url)
+
+        if not image_urls:
+            return
+            
+        self.image_urls = image_urls
+        return self.image_urls
 
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
@@ -1838,7 +1872,7 @@ class MStarredStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
-    image_url                = mongo.StringField(max_length=1024)
+    image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
         'collection': 'starred_stories',
@@ -1945,7 +1979,7 @@ class MFetchHistory(mongo.Document):
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
 
-        history.insert(0, (date, code, message))
+        history = [[date, code, message]] + history
         if code and code >= 400:
             history = history[:50]
         else:
@@ -1960,43 +1994,10 @@ class MFetchHistory(mongo.Document):
         
         fetch_history.save()
         
-        if exception:
-            MFetchExceptionHistory.add(feed_id, date=date, code=code, 
-                                       message=message, exception=exception)
         if fetch_type == 'feed':
             RStats.add('feed_fetch')
         
         return cls.feed(feed_id, fetch_history=fetch_history)
-
-class MFetchExceptionHistory(mongo.Document):
-    feed_id = mongo.IntField(unique=True)
-    date = mongo.DateTimeField()
-    code = mongo.IntField()
-    message = mongo.StringField()
-    exception = mongo.StringField()
-    
-    meta = {
-        'collection': 'fetch_exception_history',
-        'allow_inheritance': False,
-    }
-    
-    @classmethod
-    def add(cls, feed_id, date=None, code=None, message="", exception=""):
-        if not date:
-            date = datetime.datetime.now()
-        if not isinstance(exception, basestring):
-            exception = unicode(exception)
-        
-        try:
-            fetch_exception = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
-                                         .get(feed_id=feed_id)
-        except cls.DoesNotExist:
-            fetch_exception = cls.objects.create(feed_id=feed_id)
-        fetch_exception.date = date
-        fetch_exception.code = code
-        fetch_exception.message = message
-        fetch_exception.exception = exception
-        fetch_exception.save()
 
 
 class DuplicateFeed(models.Model):

@@ -21,8 +21,8 @@ class NBMuninGraph(MuninGraph):
         from apps.reader.models import UserSubscription
         from apps.social.models import MSocialProfile, MSocialSubscription
         return {
-            'feeds': Feed.objects.count(),
-            'subscriptions': UserSubscription.objects.count(),
+            'feeds': Feed.objects.latest('pk').pk,
+            'subscriptions': UserSubscription.objects.latest('pk').pk,
             'profiles': MSocialProfile.objects.count(),
             'social_subscriptions': MSocialSubscription.objects.count(),
         }

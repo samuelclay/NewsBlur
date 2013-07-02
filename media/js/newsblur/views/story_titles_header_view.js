@@ -1,7 +1,8 @@
 NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     events: {
-        "click .NB-feedbar-options"         : "open_options_popover"
+        "click .NB-feedbar-options"         : "open_options_popover",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles"
     },
     
     el: $('.NB-feedbar'),

@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
+from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
@@ -55,7 +56,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app10', 'www', 'debug']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug']:
         username = request.subdomain
         try:
             if '.' in username:
@@ -104,6 +105,7 @@ def dashboard(request, **kwargs):
         'statistics'        : statistics,
         'social_profile'    : social_profile,
         'start_import_from_google_reader': start_import_from_google_reader,
+        'debug'             : settings.DEBUG,
     }, "reader/dashboard.xhtml"
     
 def welcome(request, **kwargs):
@@ -233,7 +235,7 @@ def load_feeds(request):
     scheduled_feeds = []
     for sub in user_subs:
         pk = sub.feed_id
-        if update_counts:
+        if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         
@@ -653,7 +655,7 @@ def load_single_feed(request, feed_id):
     
     # if page <= 1:
     #     import random
-    #     time.sleep(random.randint(0, 6))
+    #     time.sleep(random.randint(0, 1))
 
     return data
 
@@ -784,33 +786,45 @@ def load_river_stories__redis(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-
-    if not feed_ids and not story_hashes:
-        usersubs = UserSubscription.objects.filter(user=user, active=True)
-        feed_ids = [sub.feed_id for sub in usersubs]
-    else:
-        usersubs = UserSubscription.objects.filter(user=user, active=True, feed__in=feed_ids)
-        
+    usersubs          = []
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if story_hashes:
-        unread_feed_story_hashes = []
+        unread_feed_story_hashes = None
         read_filter = 'unread'
     else:
-        story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(user.pk, feed_ids,
-                                                                               offset=offset, limit=limit,
-                                                                               order=order,
-                                                                               read_filter=read_filter,
-                                                                               usersubs=usersubs)
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                                   read_filter=read_filter)
+        feed_ids = [sub.feed_id for sub in usersubs]
+        if feed_ids:
+            params = {
+                "user_id": user.pk, 
+                "feed_ids": feed_ids,
+                "offset": offset,
+                "limit": limit,
+                "order": order,
+                "read_filter": read_filter,
+                "usersubs": usersubs,
+            }
+            story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+        else:
+            story_hashes = []
+            unread_feed_story_hashes = []
+    
     mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
+    
+    if not usersubs:
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=found_feed_ids,
+                                                   read_filter=read_filter)
+
     trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
     found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
-    
+
     # Find starred stories
     if found_feed_ids:
         starred_stories = MStarredStory.objects(
@@ -825,13 +839,13 @@ def load_river_stories__redis(request):
     # Intelligence classifiers for all feeds involved
     if found_trained_feed_ids:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                                   feed_id__in=found_trained_feed_ids))
+                                                        feed_id__in=found_trained_feed_ids))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
-                                                       feed_id__in=found_trained_feed_ids))
+                                                            feed_id__in=found_trained_feed_ids))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
-                                                     feed_id__in=found_trained_feed_ids))
+                                                          feed_id__in=found_trained_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
-                                                 feed_id__in=found_trained_feed_ids))
+                                                      feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -848,7 +862,8 @@ def load_river_stories__redis(request):
     for story in stories:
         story['read_status'] = 0
         if read_filter == 'all':
-            if story['story_hash'] not in unread_feed_story_hashes.get(story['story_feed_id'], []):
+            if (unread_feed_story_hashes is not None and 
+                story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
@@ -882,21 +897,30 @@ def load_river_stories__redis(request):
     
 
 @json.json_view
-def unread_story_hashes(request):
+def unread_story_hashes__old(request):
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    usersubs = {}
     
     if not feed_ids:
-        usersubs = UserSubscription.objects.filter(user=user, active=True).only('feed')
+        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                   Q(unread_count_positive__gt=0),
+                                                   user=user, active=True)
         feed_ids = [sub.feed_id for sub in usersubs]
+    else:
+        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
+                                                   Q(unread_count_positive__gt=0),
+                                                   user=user, active=True, feed__in=feed_ids)
     
     unread_feed_story_hashes = {}
     story_hash_count = 0
+    
+    usersubs = dict((sub.feed_id, sub) for sub in usersubs)
     for feed_id in feed_ids:
-        try:
-            us = UserSubscription.objects.get(user=user.pk, feed=feed_id)
-        except UserSubscription.DoesNotExist:
+        if feed_id in usersubs:
+            us = usersubs[feed_id]
+        else:
             continue
         if not us.unread_count_neutral and not us.unread_count_positive:
             continue
@@ -906,9 +930,26 @@ def unread_story_hashes(request):
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
-                           (len(feed_ids), story_hash_count))
+                           (len(feed_ids), len(story_hash_count)))
 
     return dict(unread_feed_story_hashes=unread_feed_story_hashes)
+
+@json.json_view
+def unread_story_hashes(request):
+    user               = get_user(request)
+    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    order              = request.REQUEST.get('order', 'newest')
+    read_filter        = request.REQUEST.get('read_filter', 'unread')
+    
+    story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
+                                                 order=order, read_filter=read_filter,
+                                                 include_timestamps=include_timestamps)
+
+    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
+                           (len(feed_ids), len(story_hashes)))
+
+    return dict(unread_feed_story_hashes=story_hashes)
 
 @ajax_login_required
 @json.json_view
@@ -940,7 +981,11 @@ def mark_all_as_read(request):
 @json.json_view
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
-    feed_id = int(get_argument_or_404(request, 'feed_id'))
+    try:
+        feed_id = int(get_argument_or_404(request, 'feed_id'))
+    except ValueError:
+        return dict(code=-1, errors=["You must pass a valid feed_id: %s" %
+                                     request.REQUEST.get('feed_id')])
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -1063,6 +1108,10 @@ def mark_story_as_unread(request):
     data = dict(code=0, payload=dict(story_id=story_id))
     
     story, found_original = MStory.find_story(feed_id, story_id)
+    
+    if not story:
+        logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
+        return dict(code=-1, message="Story not found.")
     
     if usersub and story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.

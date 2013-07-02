@@ -201,10 +201,15 @@ def setup_app(skip_common=False):
     update_gunicorn()
     # setup_node_app()
     # config_node()
-    pre_deploy()
     deploy_web()
     config_monit_app()
     done()
+
+def setup_app_image():
+    copy_app_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy_web()
 
 def setup_node():
     setup_node_app()
@@ -246,6 +251,12 @@ def setup_task(queue=None, skip_common=False):
     update_gunicorn()
     config_monit_task()
     done()
+
+def setup_task_image():
+    copy_task_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy()
 
 # ==================
 # = Setup - Common =
@@ -356,6 +367,7 @@ def setup_python():
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
     
     if env.user == 'ubuntu':
         with settings(warn_only=True):
@@ -783,7 +795,7 @@ def setup_mongo_mms():
 
 
 def setup_redis(slave=False):
-    redis_version = '2.6.13'
+    redis_version = '2.6.14'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -930,16 +942,21 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name, size=2):
+def setup_do(name, size=2, image=None):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 13.04 x64"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
     ssh_key_id = doapi.all_ssh_keys()[0].id
     region_id = doapi.regions()[0].id
-    images = dict((s.name, s.id) for s in doapi.images())
-    image_id = images[IMAGE_NAME]
+    if not image:
+        IMAGE_NAME = "Ubuntu 13.04 x64"
+        images = dict((s.name, s.id) for s in doapi.images())
+        image_id = images[IMAGE_NAME]
+    else:
+        IMAGE_NAME = image
+        images = dict((s.name, s.id) for s in doapi.images(show_all=False))
+        image_id = images[IMAGE_NAME]
     name = do_name(name)
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
