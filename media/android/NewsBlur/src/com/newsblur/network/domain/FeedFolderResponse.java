@@ -36,8 +36,9 @@ public class FeedFolderResponse {
 
 	public boolean isAuthenticated;
 	
-	public FeedFolderResponse(JsonReader json, Gson gson) {
+	public FeedFolderResponse(String json, Gson gson) {
 
+        // TODO: is there really any good reason the default GSON parser doesn't work here?
 		JsonParser parser = new JsonParser();
 		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
 

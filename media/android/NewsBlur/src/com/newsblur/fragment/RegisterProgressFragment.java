@@ -25,7 +25,6 @@ import com.newsblur.network.domain.RegisterResponse;
 public class RegisterProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	private String TAG = "RegisterProgress";
 
 	private String username;
 	private String password;
@@ -85,33 +84,17 @@ public class RegisterProgressFragment extends Fragment {
 		return v;
 	}
 
-	private class RegisterTask extends AsyncTask<Void, Void, Boolean> {
-
-		private RegisterResponse response;
+	private class RegisterTask extends AsyncTask<Void, Void, RegisterResponse> {
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
-			try {
-				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to register and failing.
-				Thread.sleep(700);
-			} catch (InterruptedException e) {
-				Log.e(TAG, "Error sleeping during login.");
-			}
-			response = apiManager.signup(username, password, email);
-			return response.code != -1 && response.authenticated;
+		protected RegisterResponse doInBackground(Void... params) {
+			return apiManager.signup(username, password, email);
 		}
 
 		@Override
-		protected void onPostExecute(Boolean hasFolders) {
-			if (response.code != -1 && response.authenticated) {
-				if (!hasFolders.booleanValue()) {
-					switcher.showNext();
-				} else {
-					Intent i = new Intent(getActivity(), LoginProgress.class);
-					i.putExtra("username", username);
-					i.putExtra("password", password);
-					startActivity(i);
-				}
+		protected void onPostExecute(RegisterResponse response) {
+			if (response.authenticated) {
+                switcher.showNext();
 			} else {
 				Toast.makeText(getActivity(), extractErrorMessage(response), Toast.LENGTH_LONG).show();
 				startActivity(new Intent(getActivity(), Login.class));
@@ -119,18 +102,15 @@ public class RegisterProgressFragment extends Fragment {
 		}
 
 		private String extractErrorMessage(RegisterResponse response) {
-			String errorMessage = null;
-			if(response.errors != null) {
-				if(response.errors.email != null && response.errors.email.length > 0) {
-					errorMessage = response.errors.email[0];
-				} else if(response.errors.username != null && response.errors.username.length > 0) {
-					errorMessage = response.errors.username[0];
-				} else if(response.errors.message != null && response.errors.message.length > 0) {
-					errorMessage = response.errors.message[0];
-				}
-			}
+			// TODO: do we ever see these mysterious email/username messages in practice?
+            String errorMessage = null;
+            if(response.email != null && response.email.length > 0) {
+                errorMessage = response.email[0];
+            } else if(response.username != null && response.username.length > 0) {
+                errorMessage = response.username[0];
+            }
 			if(errorMessage == null) {
-				errorMessage = getResources().getString(R.string.login_message_error);
+				errorMessage = response.getErrorMessage(getResources().getString(R.string.login_message_error));
 			}
 			return errorMessage;
 		}

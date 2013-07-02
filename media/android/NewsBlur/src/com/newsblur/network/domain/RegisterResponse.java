@@ -1,10 +1,8 @@
 package com.newsblur.network.domain;
 
-public class RegisterResponse {
+public class RegisterResponse extends NewsBlurResponse {
 
-    public boolean authenticated;
-    public int code;
-    public LoginErrors errors;
-    public String result;
+	public String[] email;
+    public String[] username;
 
 }

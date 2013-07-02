@@ -8,18 +8,28 @@ public class NewsBlurResponse {
 	public boolean authenticated;
 	public int code;
     public String message;
-	public String[] errors;
+	public ResponseErrors errors;
+    public String result;
 
     public boolean isError() {
         if (message != null) return true;
-        if ((errors != null) && (errors.length > 0) && (errors[0] != null)) return true;
+        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) return true;
         return false;
     }
 
-    public String getErrorMessage() {
+    /**
+     * Gets the error message returned by the API, or defaultMessage if none was found.
+     */
+    public String getErrorMessage(String defaultMessage) {
         if (message != null) return message;
-        if ((errors != null) && (errors.length > 0) && (errors[0] != null)) return errors[0];
-        return Integer.toString(code);
+        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) return errors.message[0];
+        return defaultMessage;
     }
 
+    /**
+     * Gets the error message returned by the API, or a simple numeric error code if non was found.
+     */
+    public String getErrorMessage() {
+        return getErrorMessage(Integer.toString(code));
+    }
 }

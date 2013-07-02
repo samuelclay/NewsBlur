@@ -44,7 +44,6 @@ import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
-import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
@@ -74,12 +73,12 @@ public class APIManager {
                 .create();
 	}
 
-	public LoginResponse login(final String username, final String password) {
+	public NewsBlurResponse login(final String username, final String password) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		final APIResponse response = post(APIConstants.URL_LOGIN, values);
-        LoginResponse loginResponse = ((LoginResponse) response.getResponse(gson, LoginResponse.class));
+        NewsBlurResponse loginResponse =  response.getResponse(gson);
 		if (!response.isError()) {
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 		} 
@@ -90,7 +89,6 @@ public class APIManager {
 		ContentValues values = new ContentValues();
 		values.put("autofollow_friends", autofollow ? "true" : "false");
 		final APIResponse response = post(APIConstants.URL_AUTOFOLLOW_PREF, values);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -100,7 +98,6 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_CATEGORY, URLEncoder.encode(category));
 		}
 		final APIResponse response = post(APIConstants.URL_ADD_CATEGORIES, values, false);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -110,7 +107,6 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
 		final APIResponse response = post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -122,7 +118,6 @@ public class APIManager {
 		final ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
 		final APIResponse response = post(APIConstants.URL_MARK_ALL_AS_READ, values, false);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -134,7 +129,6 @@ public class APIManager {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_MARKSOCIAL_JSON, updateJson);
 		final APIResponse response = post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -161,8 +155,7 @@ public class APIManager {
 	public CategoriesResponse getCategories() {
 		final APIResponse response = get(APIConstants.URL_CATEGORIES);
 		if (!response.isError()) {
-			CategoriesResponse categoriesResponse = gson.fromJson(response.getGsonReader(), CategoriesResponse.class);
-            response.close();
+			CategoriesResponse categoriesResponse = (CategoriesResponse) response.getResponse(gson, CategoriesResponse.class);
             return categoriesResponse;
 		} else {
 			return null;
@@ -175,9 +168,8 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		values.put(APIConstants.PARAMETER_EMAIL, email);
 		final APIResponse response = post(APIConstants.URL_SIGNUP, values);
+        RegisterResponse registerResponse = ((RegisterResponse) response.getResponse(gson, RegisterResponse.class));
 		if (!response.isError()) {
-			RegisterResponse registerResponse = gson.fromJson(response.getGsonReader(), LoginResponse.class);
-            response.close();
 			PrefsUtils.saveLogin(context, username, response.getCookie());
 
 			CookieSyncManager.createInstance(context.getApplicationContext());
@@ -185,18 +177,14 @@ public class APIManager {
 
 			cookieManager.setCookie(".newsblur.com", response.getCookie());
 			CookieSyncManager.getInstance().sync();
-
-			return registerResponse;
-		} else {
-			return new RegisterResponse();
-		}		
+		}
+        return registerResponse;
 	}
 
 	public ProfileResponse updateUserProfile() {
 		final APIResponse response = get(APIConstants.URL_MY_PROFILE);
 		if (!response.isError()) {
-			ProfileResponse profileResponse = gson.fromJson(response.getGsonReader(), ProfileResponse.class);
-            response.close();
+			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			PrefsUtils.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
@@ -219,8 +207,7 @@ public class APIManager {
 			if (TextUtils.equals(pageNumber, "1")) {
 				contentResolver.delete(storyUri, null, null);
 			}
-			StoriesResponse storiesResponse = gson.fromJson(response.getGsonReader(), StoriesResponse.class);
-            response.close();
+			StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
@@ -257,8 +244,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 		final APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
 
-		StoriesResponse storiesResponse = gson.fromJson(response.getGsonReader(), StoriesResponse.class);
-        response.close();
+		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
@@ -288,8 +274,7 @@ public class APIManager {
 		}
 		final APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
 
-		StoriesResponse storiesResponse = gson.fromJson(response.getGsonReader(), StoriesResponse.class);
-        response.close();
+		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
 			if (TextUtils.equals(pageNumber,"1")) {
 				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
@@ -317,9 +302,7 @@ public class APIManager {
 		}
 
 		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
-
-		SocialFeedResponse storiesResponse = gson.fromJson(response.getGsonReader(), SocialFeedResponse.class);
-        response.close();
+		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
 			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
@@ -365,8 +348,7 @@ public class APIManager {
 		}
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
 		final APIResponse response = get(feedUri.toString(), values);
-		SocialFeedResponse socialFeedResponse = gson.fromJson(response.getGsonReader(), SocialFeedResponse.class);
-        response.close();
+		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
 			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
@@ -434,7 +416,6 @@ public class APIManager {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(APIConstants.URL_FOLLOW, values);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -446,7 +427,6 @@ public class APIManager {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(APIConstants.URL_UNFOLLOW, values);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -466,7 +446,6 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 
 		final APIResponse response = post(APIConstants.URL_SHARE_STORY, values);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -489,8 +468,7 @@ public class APIManager {
 		final APIResponse response = get(APIConstants.URL_FEEDS, params);
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
-        final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.getGsonReader(), gson);
-        response.close();
+        final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.getResponseBody(), gson);
 
         // there is a rare issue with feeds that have no folder.  capture them for debug.
         List<String> debugFeedIds = new ArrayList<String>();
@@ -610,7 +588,6 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 
 		final APIResponse response = post(APIConstants.URL_CLASSIFIER_SAVE, values);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -619,8 +596,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		final APIResponse response = get(APIConstants.URL_USER_PROFILE, values);
 		if (!response.isError()) {
-			ProfileResponse profileResponse = gson.fromJson(response.getGsonReader(), ProfileResponse.class);
-            response.close();
+			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			return profileResponse;
 		} else {
 			return null;
@@ -630,8 +606,7 @@ public class APIManager {
 	public void refreshFeedCounts() {
 		final APIResponse response = get(APIConstants.URL_FEED_COUNTS);
 		if (!response.isError()) {
-			final FeedRefreshResponse feedCountUpdate = gson.fromJson(response.getGsonReader(), FeedRefreshResponse.class);
-            response.close();
+			final FeedRefreshResponse feedCountUpdate = (FeedRefreshResponse) response.getResponse(gson, FeedRefreshResponse.class);
 			for (String feedId : feedCountUpdate.feedCounts.keySet()) {
 				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
                 if (feedCountUpdate.feedCounts.get(feedId) != null) {
@@ -655,7 +630,6 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
 		final APIResponse response = post(APIConstants.URL_LIKE_COMMENT, values);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -665,7 +639,6 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
 		final APIResponse response = post(APIConstants.URL_UNLIKE_COMMENT, values);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -676,13 +649,11 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		final APIResponse response = post(APIConstants.URL_REPLY_TO, values);
-        response.close();
 		return (!response.isError());
 	}
 
 	public boolean markMultipleStoriesAsRead(ContentValues values) {
 		final APIResponse response = post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
-        response.close();
 		if (!response.isError()) {
 			return true;
 		} else {
@@ -697,7 +668,6 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_FOLDER, folderName);
 		}
 		final APIResponse response = post(APIConstants.URL_ADD_FEED, values);
-        response.close();
 		return (!response.isError());
 	}
 
@@ -707,9 +677,7 @@ public class APIManager {
 		final APIResponse response = get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
 
 		if (!response.isError()) {
-			FeedResult[] feedResult = gson.fromJson(response.getGsonReader(), FeedResult[].class);
-            response.close();
-            return feedResult;
+            return gson.fromJson(response.getResponseBody(), FeedResult[].class);
 		} else {
 			return null;
 		}
@@ -722,7 +690,6 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}
 		final APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
-        response.close();
 		return (!response.isError());
 	}
 

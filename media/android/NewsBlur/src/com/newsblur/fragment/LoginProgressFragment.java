@@ -19,7 +19,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -68,7 +68,7 @@ public class LoginProgressFragment extends Fragment {
 		return v;
 	}
 
-	private class LoginTask extends AsyncTask<String, Void, LoginResponse> {
+	private class LoginTask extends AsyncTask<Void, Void, NewsBlurResponse> {
 
 		@Override
 		protected void onPreExecute() {
@@ -77,15 +77,15 @@ public class LoginProgressFragment extends Fragment {
 		}
 
 		@Override
-		protected LoginResponse doInBackground(String... params) {
-			LoginResponse response = apiManager.login(username, password);
+		protected NewsBlurResponse doInBackground(Void... params) {
+			NewsBlurResponse response = apiManager.login(username, password);
 			apiManager.updateUserProfile();
 			return response;
 		}
 
 		@Override
-		protected void onPostExecute(LoginResponse result) {
-			if (result.isError()) {
+		protected void onPostExecute(NewsBlurResponse result) {
+			if (!result.isError()) {
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
 				loggingInProgress.setVisibility(View.GONE);
