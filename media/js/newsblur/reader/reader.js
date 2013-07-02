@@ -2169,7 +2169,7 @@
         // ===========
         
         load_page_of_feed_stories: function(options) {
-            options = _.extend({}, {'show_loading': true}, options);
+            options = _.extend({}, {'scroll_to_loadbar': true}, options);
             var $story_titles = this.$s.$story_titles;
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
