@@ -46,9 +46,11 @@ public class FeedItemsList extends ItemsList {
         
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = getContentResolver().query(feedUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-		cursor.moveToFirst();
-		Feed feed = Feed.fromCursor(cursor);
-		setTitle(feed.title);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            Feed feed = Feed.fromCursor(cursor);
+            setTitle(feed.title);
+        }
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
