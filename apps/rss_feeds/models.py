@@ -1329,7 +1329,7 @@ class Feed(models.Model):
                 total = 60 * 6
             else:
                 total = 60 * 24
-            months_since_last_story = seconds_timesince(self.last_story_date) * 60*60*24*30
+            months_since_last_story = seconds_timesince(self.last_story_date) / (60*60*24*30)
             total *= max(1, months_since_last_story)
         # updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
         #                                             * (self.stories_last_month**0.25)))
