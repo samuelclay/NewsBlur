@@ -4,6 +4,7 @@ import httplib2
 import pickle
 import base64
 from StringIO import StringIO
+from oauth2client.client import Error as OAuthError
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree
 from django.db import models
@@ -344,7 +345,10 @@ class GoogleReaderImporter(Importer):
         
     def test(self):
         sub_url = "%s/0/token" % (self.scope)
-        resp = self.send_request(sub_url)
+        try:
+            resp = self.send_request(sub_url)
+        except OAuthError:
+            return False
         return resp
     
     @timelimit(10)

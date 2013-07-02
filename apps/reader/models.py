@@ -700,7 +700,7 @@ class RUserStory:
                 p.sadd("RS:%s" % sub.user.pk, new_hash)
         
         p.execute()
-
+    
 
 class UserSubscriptionFolders(models.Model):
     """
