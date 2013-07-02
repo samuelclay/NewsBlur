@@ -370,9 +370,12 @@ public class APIManager {
 				}
 			}
 
-			for (Feed feed : socialFeedResponse.feeds) {
-				contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
-			}
+            if (socialFeedResponse.feeds != null) {
+                for (Feed feed : socialFeedResponse.feeds) {
+                    contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+                }
+            }
+
 			return socialFeedResponse;
 		} else {
 			return null;
