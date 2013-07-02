@@ -132,8 +132,8 @@ public class ShareDialogFragment extends DialogFragment {
 					protected void onPostExecute(Boolean result) {
 						if (result) {
 							hasShared = true;
-							callback.sharedCallback(shareComment, hasBeenShared);
 							Toast.makeText(getActivity(), R.string.shared, Toast.LENGTH_LONG).show();
+							callback.sharedCallback(shareComment, hasBeenShared);
 						} else {
 							Toast.makeText(getActivity(), R.string.error_sharing, Toast.LENGTH_LONG).show();
 						}
