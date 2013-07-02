@@ -395,7 +395,7 @@ class UserSubscription(models.Model):
         if not stale_story_hashes:
             return
         
-        logging.user(self.user, "~FBTrimming ~SB%s~SN read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id))
+        logging.user(self.user, "~FBTrimming ~FR%s~FB read stories (~SB%s~SN)..." % (len(stale_story_hashes), self.feed_id))
         r.srem(read_stories_key, *stale_story_hashes)
         r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
     
