@@ -179,7 +179,6 @@ class TimingMiddleware:
 
 BANNED_USER_AGENTS = (
     'feed reader-background',
-    'feed reader-windows',
     'missing',
 )
 class UserAgentBanMiddleware:
