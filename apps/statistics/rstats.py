@@ -73,16 +73,19 @@ class RStats:
         keys          = set()
         errors        = set()
         prefixes      = defaultdict(set)
+        sizes         = defaultdict(int)
         prefixes_ttls = defaultdict(lambda: defaultdict(int))
         prefix_re     = re.compile(r"(\w+):(.*)")
 
         p             = r.pipeline()
         [p.randomkey() for _ in range(sample)]
         keys          = set(p.execute())
-        p             = r.pipeline()
 
+        p             = r.pipeline()
         [p.ttl(key) for key in keys]
         ttls          = p.execute()
+
+        dump = [r.execute_command('dump', key) for key in keys]
         
         for k, key in enumerate(keys):
             match = prefix_re.match(key)
@@ -91,6 +94,7 @@ class RStats:
                 continue
             prefix, rest = match.groups()
             prefixes[prefix].add(rest)
+            sizes[prefix] += len(dump[k])
             ttl = ttls[k]
             if ttl <= 0: # Expired
                 prefixes_ttls[prefix]['X'] += 1
@@ -111,7 +115,7 @@ class RStats:
         print " ---> %s total keys" % keys_count
         for prefix, rest in prefixes.items():
             total_expiring = sum([k for k in dict(prefixes_ttls[prefix]).values()])
-            print " ---> %4s: (%.4s%%) %s keys (%s expiring: %s)" % (prefix, 100. * (len(rest) / float(keys_count)), len(rest), total_expiring, dict(prefixes_ttls[prefix]))
+            print " ---> %4s: (%.4s%% - %s) %s keys (%s expiring: %s)" % (prefix, 100. * (len(rest) / float(keys_count)), sizes[prefix], len(rest), total_expiring, dict(prefixes_ttls[prefix]))
         print " ---> %s errors: %s" % (len(errors), errors)
 
 def round_time(dt=None, round_to=60):
