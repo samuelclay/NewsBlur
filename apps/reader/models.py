@@ -385,7 +385,20 @@ class UserSubscription(models.Model):
                 feeds[feed_id]['exception_code'] = sub.feed.exception_code
 
         return feeds
+    
+    def sync_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
+        read_stories_key = "RS:%s:%s" % (self.user_id, self.feed_id)
+        stale_story_hashes = r.sdiff(read_stories_key, "F:%s" % self.feed_id)
+        if not stale_story_hashes:
+            return
+        
+        logging.user(self.user, "~FBTrimming %s read stories..." % (len(stale_story_hashes)))
+        r.srem(read_stories_key, *stale_story_hashes)
+        r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
+    
     def mark_feed_read(self):
         if (self.unread_count_negative == 0
             and self.unread_count_neutral == 0
