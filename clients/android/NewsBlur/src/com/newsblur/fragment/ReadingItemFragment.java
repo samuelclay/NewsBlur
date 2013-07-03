@@ -341,17 +341,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 				((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
 
-				commentView.setBackgroundResource(R.drawable.transition_edit_background);
-
-				final TransitionDrawable transition = (TransitionDrawable) commentView.getBackground();
-				transition.startTransition(1000);
-
-				new Handler().postDelayed(new Runnable() {
-					public void run() {
-						transition.reverseTransition(1000);
-					}
-				}, 1000);
-				
 				ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
 				
 				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
@@ -364,17 +353,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			}
 		} else {
 			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
-			commentViewForUser.setBackgroundResource(R.drawable.transition_edit_background);
-
-			final TransitionDrawable transition = (TransitionDrawable) commentViewForUser.getBackground();
-			transition.startTransition(1000);
-
-			new Handler().postDelayed(new Runnable() {
-				public void run() {
-					transition.reverseTransition(1000);
-				}
-			}, 1000);
-
 			TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
 			commentText.setText(sharedText);
 
