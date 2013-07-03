@@ -6,8 +6,9 @@
 	<artifactId>actionbarsherlock</artifactId>
 	<name>ActionBarSherlock</name>
 	<packaging>apklib</packaging>
+    <scope>provided</scope>
 
-	<parent>
+    <parent>
 		<groupId>com.actionbarsherlock</groupId>
 		<artifactId>parent</artifactId>
 		<version>4.2.0</version>
@@ -23,7 +24,8 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
-		</dependency>
+            <scope>provided</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>junit</groupId>

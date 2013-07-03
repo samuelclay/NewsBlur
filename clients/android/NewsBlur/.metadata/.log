@@ -1,0 +1,23 @@
+!SESSION 2013-07-03 12:04:54.350 -----------------------------------------------
+eclipse.buildId=v21.1.0-569685
+java.version=1.6.0_51
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product com.android.ide.eclipse.adt.package.product -product com.android.ide.eclipse.adt.package.product -keyring /Users/sclay/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product com.android.ide.eclipse.adt.package.product -data /Users/sclay/projects/newsblur/clients/android/NewsBlur -product com.android.ide.eclipse.adt.package.product -keyring /Users/sclay/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2013-07-03 12:04:59.887
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY com.android.ide.eclipse.ddms 4 0 2013-07-03 12:04:59.987
+!MESSAGE DDMS files not found: /Applications/eclipse/Eclipse.app/Contents/MacOS/platform-tools/adb /Applications/eclipse/Eclipse.app/Contents/MacOS/tools/hprof-conv /Applications/eclipse/Eclipse.app/Contents/MacOS/tools/traceview 
+!SESSION 2013-07-03 12:06:38.060 -----------------------------------------------
+eclipse.buildId=v21.1.0-569685
+java.version=1.6.0_51
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product com.android.ide.eclipse.adt.package.product -keyring /Users/sclay/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product com.android.ide.eclipse.adt.package.product -keyring /Users/sclay/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2013-07-03 12:06:43.845
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
