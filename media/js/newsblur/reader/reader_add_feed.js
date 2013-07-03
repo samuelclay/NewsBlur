@@ -3,7 +3,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
     className: "NB-add-popover",
     
     options: {
-        'width': 300,
+        'width': 380,
         'anchor': function() {
             return NEWSBLUR.reader.$s.$add_button;
         },
@@ -121,6 +121,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         
         $add.autocomplete({
             minLength: 1,
+            appendTo: ".NB-add-form",
             source: '/rss_feeds/feed_autocomplete',
             position: {
                 my: "left bottom",

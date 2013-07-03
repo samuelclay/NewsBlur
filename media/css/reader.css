@@ -4303,7 +4303,7 @@ form.opml_import_form input {
 .NB-add-form .NB-folders {
     clear: both;
     float: left;
-    width: 120px;
+    width: 180px;
     font-size: 16px;
     margin: 8px 0 0 1px;
 }
@@ -4334,7 +4334,7 @@ form.opml_import_form input {
     overflow: hidden;
 }
 .NB-add-form .NB-add-folder-input {
-    width: auto;
+    width: 180px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -4408,10 +4408,15 @@ form.opml_import_form input {
 }
 .ui-autocomplete li a.ui-state-hover,
 .ui-autocomplete li a.ui-state-focus {
-  border: none;
-  font-weight: normal;
-  background: none;
-  background-color: #EFF8F2;
+    font-weight: normal;
+    background-color: #FDED8D;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
+    background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
+    border-top: 1px solid #E3D0AE;
+    border-bottom: 1px solid #E3D0AE;
+    border-left: 1px solid #B0B0B0;
+    border-right: 1px solid #B0B0B0;
+    border-radius: 0;
 }
 
 .ui-autocomplete li a .NB-add-autocomplete-subscribers {
@@ -7979,6 +7984,8 @@ form.opml_import_form input {
 .NB-modal-preferences .NB-preference .NB-preference-options {
   float: right;
   width: 420px;
+  overflow: hidden;
+  padding: 2px 0;
 }
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
@@ -8006,9 +8013,6 @@ form.opml_import_form input {
   margin: 0 0 4px 0;
   float: left;
   cursor: pointer;
-}
-.NB-modal-preferences .NB-preference .NB-preference-options div {
-    overflow: hidden;
 }
 .NB-modal-preferences .NB-preference .NB-preference-error {
   color: #83210A;

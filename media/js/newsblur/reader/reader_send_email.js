@@ -208,6 +208,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             .autocomplete({
                 delay: 0,
                 minLength: 0,
+                appendTo: '.NB-modal-email',
                 source: function( request, response ) {
                     // delegate back to autocomplete, but extract the last term
                     console.log(["autocomplete", request, request.term, existing_emails]);
