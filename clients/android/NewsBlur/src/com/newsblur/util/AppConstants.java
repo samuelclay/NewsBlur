@@ -28,4 +28,10 @@ public class AppConstants {
 
     // how long to wait before auto-syncing the feed/folder list
     public static final long AUTO_SYNC_TIME_MILLIS = 10L * 60L * 1000L;
+
+    // how many total attemtps to make at a single API call
+    public static final int MAX_API_TRIES = 3;
+
+    // the base amount for how long to sleep during exponential API failure backoff
+    public static final long API_BACKOFF_BASE_MILLIS = 500L;
 }
