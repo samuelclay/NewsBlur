@@ -132,7 +132,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     story_id: this.queued_read_stories[feed.id],
                     feed_id: feed.id
                 }, null, null, {
-                    'ajax_group': $.browser.msie ? 'rapid' : 'queue_clear',
+                    'ajax_group': 'queue_clear',
                     'beforeSend': function() {
                         self.queued_read_stories = {};
                     }

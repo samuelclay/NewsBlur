@@ -405,8 +405,7 @@
             
             $('.NB-module-content-account-realtime').tipsy('disable').tipsy({
                 gravity: 'se',
-                delayIn: 0,
-                live: true
+                delayIn: 0
             }).tipsy('enable');
         },
         

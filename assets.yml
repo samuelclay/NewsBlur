@@ -22,8 +22,8 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-2.0.0.js
-        - media/js/vendor/jquery.migrate-*.js
+        - media/js/vendor/jquery-2.0.2.js
+        # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
@@ -42,6 +42,7 @@ javascripts:
         - media/js/vendor/jquery.ui.sortable.js
         - media/js/vendor/jquery.ui.slider.js
         - media/js/vendor/jquery.ui.autocomplete.js
+        - media/js/vendor/jquery.ui.menu.js
         - media/js/vendor/jquery.ui.progressbar.js
         - media/js/vendor/jquery.cookie.js
         - media/js/vendor/jquery.layout.js
@@ -71,8 +72,8 @@ javascripts:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-2.0.0.min.js
-        - media/js/vendor/jquery.migrate-*.js
+        - media/js/vendor/jquery-2.0.2.min.js
+        # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
@@ -85,8 +86,8 @@ javascripts:
         - media/js/vendor/underscore.noconflict.js
         - media/js/vendor/readability-*.js
     blurblog:
-        - media/js/vendor/jquery-2.0.0.js
-        - media/js/vendor/jquery.migrate-*.js
+        - media/js/vendor/jquery-2.0.2.js
+        # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js

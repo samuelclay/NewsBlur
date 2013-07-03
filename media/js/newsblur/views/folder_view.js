@@ -96,8 +96,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     render_folder: function($feeds) {
-        var $folder = _.template('\
-        <<%= list_type %> class="folder NB-folder">\
+        var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <div class="NB-folder-icon"></div>\

@@ -61,8 +61,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('\
-        <<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\

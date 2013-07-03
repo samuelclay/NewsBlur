@@ -4406,12 +4406,12 @@ form.opml_import_form input {
   display: block;
   cursor: pointer;
 }
-.ui-autocomplete li a.ui-state-hover {
+.ui-autocomplete li a.ui-state-hover,
+.ui-autocomplete li a.ui-state-focus {
   border: none;
   font-weight: normal;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#F2F8FE), to(#E9F1FB));
-  background-image: -moz-linear-gradient(center top , #F2F8FE 0%, #E9F1FB 100%);
-  background-image: linear-gradient(top, #F2F8FE, #E9F1FB);
+  background: none;
+  background-color: #EFF8F2;
 }
 
 .ui-autocomplete li a .NB-add-autocomplete-subscribers {
@@ -5537,7 +5537,7 @@ form.opml_import_form input {
     width: 260px;
     padding: 0;
     margin: 0;
-    background-color: #DADCD6;
+    background-color: #EAECE6;
     border-top: 1px solid #90928B;
     border-left: 1px solid #90928B;
     border-right: 1px solid #90928B;

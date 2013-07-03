@@ -201,7 +201,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             // don't navigate away from the field on tab when selecting an item
             .bind( "keydown", function( event ) {
                 if ( event.keyCode === $.ui.keyCode.TAB &&
-                        $( this ).data( "autocomplete" ).menu.active ) {
+                        $( this ).data( "ui-autocomplete" ).menu.active ) {
                     event.preventDefault();
                 }
             })
@@ -210,6 +210,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
                 minLength: 0,
                 source: function( request, response ) {
                     // delegate back to autocomplete, but extract the last term
+                    console.log(["autocomplete", request, request.term, existing_emails]);
                     response( $.ui.autocomplete.filter(
                         existing_emails, extractLast( request.term ) ) );
                 },

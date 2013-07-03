@@ -122,7 +122,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
-        this.$el.scrollable().stop();
+        this.$el._scrollable().stop();
         var scroll_to = options.scroll_to_top ? 0 : $story;
         this.$el.scrollTo(scroll_to, { 
             duration: options.immediate ? 0 : 340,

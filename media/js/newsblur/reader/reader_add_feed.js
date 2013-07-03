@@ -149,7 +149,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             },
             change: function(e, ui) {
             }
-        }).data("autocomplete")._renderItem = function(ul, item) {
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
             var feed = new NEWSBLUR.Models.Feed(item);
             return $.make('li', [
                 $.make('a', [
@@ -158,9 +158,9 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-add-autocomplete-title'}, item.label),
                     $.make('div', { className: 'NB-add-autocomplete-address'}, item.value)
                 ])
-            ]).data("item.autocomplete", item).prependTo(ul);
+            ]).data("ui-autocomplete-item", item).prependTo(ul);
         };
-        $add.data("autocomplete")._resizeMenu = function () {
+        $add.data("ui-autocomplete")._resizeMenu = function () {
             var ul = this.menu.element;
             ul.outerWidth(this.element.outerWidth());
         };
