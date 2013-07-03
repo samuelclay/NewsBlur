@@ -51,6 +51,7 @@ import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -699,16 +700,24 @@ public class APIManager {
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {
-		HttpURLConnection connection = null;
+        APIResponse response;
+        int tryCount = 0;
+        do {
+            backoffSleep(tryCount++);
+            response = get_single(urlString);
+        } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
+        return response;
+    }
+	private APIResponse get_single(final String urlString) {
 		if (!NetworkUtils.isOnline(context)) {
 			return new APIResponse(context);
 		}
 		try {
-			final URL url = new URL(urlString);
+			URL url = new URL(urlString);
             Log.d(this.getClass().getName(), "API GET " + url );
-			connection = (HttpURLConnection) url.openConnection();
-			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
@@ -736,30 +745,35 @@ public class APIManager {
 	}
 
 	private APIResponse post(String urlString, String postBodyString) {
-		HttpURLConnection connection = null;
+        APIResponse response;
+        int tryCount = 0;
+        do {
+            backoffSleep(tryCount++);
+            response = post_single(urlString, postBodyString);
+        } while ((response.isError()) && (tryCount < AppConstants.MAX_API_TRIES));
+        return response;
+    }
+
+	private APIResponse post_single(String urlString, String postBodyString) {
 		if (!NetworkUtils.isOnline(context)) {
 			return new APIResponse(context);
 		}
-		
 		try {
-			final URL url = new URL(urlString);
+			URL url = new URL(urlString);
             Log.d(this.getClass().getName(), "API POST " + url );
-			connection = (HttpURLConnection) url.openConnection();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
 			connection.setFixedLengthStreamingMode(postBodyString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			
-			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
-			
-			final PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
+			PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
 			printWriter.print(postBodyString);
 			printWriter.close();
-
 			return new APIResponse(context, url, connection);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
@@ -796,6 +810,21 @@ public class APIManager {
         return this.post(urlString, parameterString);
 	}
 
+    /**
+     * Pause for the sake of exponential retry-backoff as apropriate before the Nth call as counted
+     * by the zero-indexed tryCount.
+     */
+    private void backoffSleep(int tryCount) {
+        if (tryCount == 0) return;
+        Log.i(this.getClass().getName(), "API call failed, pausing before retry number " + tryCount);
+        try {
+            // simply double the base sleep time for each subsequent try
+            long factor = Math.round(Math.pow(2.0d, tryCount));
+            Thread.sleep(AppConstants.API_BACKOFF_BASE_MILLIS * factor);
+        } catch (InterruptedException ie) {
+            Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
+        }
+    }
 
     /**
      * Convenience method to call contentResolver.bulkInsert using a list rather than an array.
