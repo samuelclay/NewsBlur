@@ -55,11 +55,13 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 			if (result.booleanValue()) {
 				favouriteIconViewHolder.get().setImageResource(R.drawable.have_favourite);
 				
-				ImageView favouriteImage = new ImageView(context);
-				favouriteImage.setTag(user.id);
-				userImage = UIUtils.roundCorners(userImage, 10f);
-				favouriteImage.setImageBitmap(userImage);
-				favouriteAvatarHolder.get().addView(favouriteImage);
+                if (userImage != null) {
+                    ImageView favouriteImage = new ImageView(context);
+                    favouriteImage.setTag(user.id);
+                    userImage = UIUtils.roundCorners(userImage, 10f);
+                    favouriteImage.setImageBitmap(userImage);
+                    favouriteAvatarHolder.get().addView(favouriteImage);
+                }
 				
 				String[] newArray = new String[comment.likingUsers.length + 1];
 				System.arraycopy(comment.likingUsers, 0, newArray, 0, comment.likingUsers.length);
