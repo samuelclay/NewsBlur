@@ -6767,10 +6767,14 @@ form.opml_import_form input {
 .NB-modal-intro .NB-intro-imports {
     position: relative;
 }
+.NB-modal-intro .NB-page-2-importing {
+    font-size: 16px;
+    font-weight: bold;
+}
 
 .NB-modal-intro .NB-carousel {
     position: relative;
-    height: 312px;
+    height: 70px;
     overflow: hidden;
 }
 .NB-modal-intro .NB-carousel-inner {
@@ -6790,7 +6794,7 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-carousel-item.NB-intro-imports-start {
     left: 0;
-    padding: 0 48px;
+    padding: 0 24px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -6803,9 +6807,9 @@ form.opml_import_form input {
 }
 
 .NB-modal-intro .NB-intro-import-delayed {
-    color: #808080;
-    margin: -24px 0 12px;
-    font-size: 12px;
+    color: #606060;
+    margin: 8px 0 0;
+    font-size: 14px;
     text-align: center;
     display: none;
 }
@@ -6827,6 +6831,7 @@ form.opml_import_form input {
     border: 1px solid #DFE2DA;
     padding: 12px;
     overflow: hidden;
+    width: 100%;
 }
 
 .NB-modal-intro .NB-page-2 h4 {
@@ -6861,16 +6866,13 @@ form.opml_import_form input {
 .NB-modal-intro .NB-intro-module.NB-intro-import-opml {
     position: relative;
 }
-.NB-modal-intro .NB-intro-module .NB-error  {
-    margin: 12px 12px -24px;
-    font-size: 11px;
-    line-height: 13px;
+.NB-modal-intro .NB-intro-imports .NB-intro-import-message {
+    margin: 0 0 8px;
+    padding: 0;
 }
 .NB-modal-intro .NB-intro-module h3 {
-    height: 42px;
     font-size: 32px;
-    line-height: 36px;
-    margin: 36px 0;
+    margin: 0 0 4px;
 }
 .NB-modal-intro .NB-add-google-reader-arrow {
     width: 16px;
@@ -6881,8 +6883,6 @@ form.opml_import_form input {
 .NB-modal-intro .NB-intro-bookmarklet,
 .NB-modal-intro .NB-intro-starredimport {
     text-align: center;
-    padding: 0 48px;
-    width: 100%;
     overflow: hidden;
     margin: 32px 0 0;
     -webkit-box-sizing: border-box;
@@ -6899,30 +6899,32 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-intro-starredimport-info {
     font-size: 13px;
-    padding: 10px 0 0;
+    padding: 0 0 10px;
+    display: block;
 }
 .NB-modal-intro a.NB-goodies-bookmarklet-button {
     float: left;
     margin: 2px 0 0;
 }
 .NB-modal-intro .NB-intro-imports-progress .NB-loading {
-    margin: 0 auto -24px;
+    margin: 24px auto -24px;
     float: none;
 }
 .NB-modal-intro .NB-intro-imports-progress h4 {
-    margin: 92px 0 48px;
+    margin: 4px 0;
 }
 .NB-modal-intro .NB-intro-imports-sites h4 {
-    margin: 64px 0 36px;
+    margin: 4px 0;
 }
 .NB-modal-intro .NB-intro-imports-sites h6 {
-    margin: -24px 0 36px;
     text-align: center;
-    font-size: 14px;
+    font-size: 16px;
+}
+.NB-modal-intro .NB-intro-imports-sites h6.NB-error {
+    font-size: 13px;
 }
 .NB-modal-intro .NB-intro-imports-sites .NB-modal-submit-button {
     margin: 0 auto 18px;
-    width: 250px;
     text-align: center;
     display: block;
     line-height: 20px;
@@ -7106,9 +7108,18 @@ form.opml_import_form input {
 }
 
 .NB-modal-intro .NB-intro-module.NB-intro-import-opml,
+.NB-modal-intro .NB-intro-module.NB-intro-import-starred {
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 .NB-modal-intro .NB-intro-module.NB-intro-categories-container {
-    height: 160px;
+    height: 200px;
     overflow: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .NB-modal-intro .NB-intro-categories {

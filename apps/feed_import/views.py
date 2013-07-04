@@ -30,7 +30,7 @@ def opml_upload(request):
     message = "OK"
     code = 1
     payload = {}
-
+    
     if request.method == 'POST':
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
