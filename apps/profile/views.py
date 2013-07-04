@@ -312,9 +312,10 @@ def cancel_premium(request):
 @json.json_view
 def refund_premium(request):
     user_id = request.REQUEST.get('user_id')
+    partial = request.REQUEST.get('partial', False)
     user = User.objects.get(pk=user_id)
     try:
-        refunded = user.profile.refund_premium()
+        refunded = user.profile.refund_premium(partial=partial)
     except stripe.InvalidRequestError, e:
         refunded = e
 

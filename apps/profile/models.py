@@ -239,17 +239,21 @@ class Profile(models.Model):
             self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
             self.save()
 
-    def refund_premium(self):
+    def refund_premium(self, partial=False):
         refunded = False
         
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
-            stripe_payments[0].refund()
-            refunded = stripe_payments[0].amount/100
+            if partial:
+                stripe_payments[0].refund(amount=12)
+                refunded = 12
+            else:
+                stripe_payments[0].refund()
+                self.cancel_premium()
+                refunded = stripe_payments[0].amount/100
             logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
-            self.cancel_premium()
         else:
             paypal_opts = {
                 'API_ENVIRONMENT': 'PRODUCTION',

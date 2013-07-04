@@ -1442,10 +1442,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
     
-    refund_premium: function(user_id, callback, error_callback) {
-        this.make_request('/profile/refund_premium', {
-            user_id: user_id
-        }, callback, error_callback);
+    refund_premium: function(data, callback, error_callback) {
+        this.make_request('/profile/refund_premium', data, callback, error_callback);
     },
     
     delete_all_sites: function(callback, error_callback) {
