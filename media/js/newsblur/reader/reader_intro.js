@@ -113,7 +113,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('h3', { className: 'NB-module-content-header' }, 'Google Reader Starred Stories'),
                             $.make('div', { className: 'NB-intro-import-starred NB-intro-module' }, [
                                 $.make('a', { className: 'NB-intro-starredimport-info NB-splash-link', href: "https://www.google.com/takeout/#custom:reader", target: "_blank" }, 'Download from Takeout'),
-                                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-starredimport-button' }, 'Upload starred.json')
+                                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-starredimport-button NB-disabled' }, 'Upload starred.json')
                             ])
                         ])
                     ])
@@ -749,7 +749,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-starredimport-button' }, function($t, $p) {
             e.preventDefault();
-            self.google_reader_connect({'starred_only': true});
+            // self.google_reader_connect({'starred_only': true});
         });
         $.targetIs(e, { tagSelector: '.NB-intro-import-restart' }, function($t, $p) {
             e.preventDefault();
