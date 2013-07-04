@@ -33,8 +33,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.make_find_friends_and_services();
         this.open_modal();
         this.page(this.page_number);
-        this.fetch_friends();
         this.fetch_categories();
+        this.fetch_friends();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -209,7 +209,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 var feed = this.category_feeds[feed_id];
                 if (!feed) return;
                 feed = new NEWSBLUR.Models.Feed(feed);
-                var border = feed.get('favicon_fade') || "707070";
+                var border = feed.get('favicon_color') || "707070";
                 return $.make("div", { className: "NB-category-feed", style: "border-left: 4px solid #" + border + "; border-right: 4px solid #" + border }, [
                     $.make('img', { className: 'NB-category-feed-favicon', src: $.favicon(feed) }),
                     $.make('div', { className: 'NB-category-feed-title' }, feed.get('feed_title'))

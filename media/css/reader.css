@@ -6839,6 +6839,10 @@ form.opml_import_form input {
     padding: 12px;
     overflow: hidden;
     width: 100%;
+    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .NB-modal-intro .NB-page-2 h4 {
