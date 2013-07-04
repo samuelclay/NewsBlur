@@ -131,6 +131,15 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         $notice.animate({'opacity': 1}, {'duration': 250, 'queue': false});
     },
     
+    show_explainer_single_story_mode: function() {
+        var $empty = $.make("div", { className: "NB-story-list-empty" }, [
+            'Select a story to read'
+        ]);
+        
+        this.$(".NB-story-list-empty").remove();
+        this.$el.append($empty);
+    },
+    
     // ==========
     // = Events =
     // ==========

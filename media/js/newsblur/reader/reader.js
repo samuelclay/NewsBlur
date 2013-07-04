@@ -28,6 +28,7 @@
                 $feed_view: $('.NB-feed-story-view'),
                 $feed_stories: $('.NB-feed-stories'),
                 $feed_iframe: $('.NB-feed-iframe'),
+                $story_view: $('.NB-story-view'),
                 $story_iframe: $('.NB-story-iframe'),
                 $text_view: $('.NB-text-view'),
                 $intelligence_slider: $('.NB-intelligence-slider'),
@@ -1285,7 +1286,11 @@
                     !this.active_story &&
                     NEWSBLUR.assets.preference('story_layout') == 'split' &&
                     !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
-                    this.show_next_story(1);
+                    if (this.story_view == 'text') {
+                        NEWSBLUR.app.text_tab_view.show_explainer_single_story_mode();
+                    } else if (this.story_view == 'story') {
+                        NEWSBLUR.app.story_tab_view.show_explainer_single_story_mode();                        
+                    }
                 }
             }
 
@@ -2444,7 +2449,7 @@
                 if (NEWSBLUR.assets.preference('story_layout') == 'split') {
                     NEWSBLUR.app.text_tab_view.fetch_and_render();
                     if (!this.active_story) {
-                        this.show_next_story(1);
+                        NEWSBLUR.app.text_tab_view.show_explainer_single_story_mode();
                     }
                 } else if (this.active_story && 
                            NEWSBLUR.assets.preference('story_layout') == 'list') {
@@ -2460,7 +2465,7 @@
                 });
                 NEWSBLUR.app.story_tab_view.load_story_iframe();
                 if (!this.active_story) {
-                    this.show_next_story(1);
+                    NEWSBLUR.app.story_tab_view.show_explainer_single_story_mode();                        
                 }
             }
             

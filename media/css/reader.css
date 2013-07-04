@@ -1829,7 +1829,7 @@ background: transparent;
 }
 
 #story_pane .NB-feed-iframe,
-#story_pane .NB-story-iframe,
+#story_pane .NB-story-view,
 #story_pane .NB-text-view {
     width: 100%;
     height: 100%;
@@ -1841,11 +1841,20 @@ background: transparent;
     position: absolute;
 }
 
+#story_pane .NB-story-iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: auto !important;
+    display: block;
+}
 #story_pane .NB-text-view {
     left: 200%;
     top: 0;
 }
-#story_pane .NB-story-iframe {
+#story_pane .NB-story-view {
     left: 300%;
     top: 0;
 }
