@@ -6813,6 +6813,13 @@ form.opml_import_form input {
     text-align: center;
     display: none;
 }
+.NB-modal-intro .NB-intro-import-starred-message {
+    display: none;
+    text-align: center;
+    margin: -24px 0 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
 .NB-modal-intro .NB-intro-module-containers {
     overflow: hidden;
 }

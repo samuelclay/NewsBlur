@@ -60,7 +60,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('div', { className: 'NB-intro-imports NB-intro-imports-start'}, [
                     $.make('div', { className: 'NB-page-2-started' }, [
                         $.make('h4', "Let's get some sites to read."),
-                        $.make('h6')
+                        $.make('div', { className: 'NB-intro-import-starred-message' })
                     ]),
                     $.make('div', { className: 'NB-intro-module-containers' }, [
                         $.make('div', { className: 'NB-intro-module-container NB-left' }, [
@@ -497,12 +497,12 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
 
         if (starred_count) {
-            var $info = $(".NB-page-2-started h6", this.$modal);
+            var $info = $(".NB-page-2-started .NB-intro-import-starred-message", this.$modal);
             $info.text([
                 "And you have ",
                 Inflector.pluralize(' saved story', starred_count, true),
                 ". "
-            ].join(""));
+            ].join("")).show();
         }
     },
     
