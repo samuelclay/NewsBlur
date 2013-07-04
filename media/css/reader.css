@@ -4412,11 +4412,8 @@ form.opml_import_form input {
     background-color: #FDED8D;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
     background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
-    border-top: 1px solid #E3D0AE;
-    border-bottom: 1px solid #E3D0AE;
-    border-left: 1px solid #B0B0B0;
-    border-right: 1px solid #B0B0B0;
-    border-radius: 0;
+    border: 1px solid #B0B0B0;
+    border-radius: none;
 }
 
 .ui-autocomplete li a .NB-add-autocomplete-subscribers {
@@ -7107,6 +7104,56 @@ form.opml_import_form input {
 .NB-modal-intro .NB-intro-uptodate-follow-twitter.NB-intro-uptodate-twitter-inactive input {
     display: none;
 }
+
+.NB-modal-intro .NB-intro-module.NB-intro-import-opml,
+.NB-modal-intro .NB-intro-module.NB-intro-categories-container {
+    height: 160px;
+    overflow: auto;
+}
+
+.NB-modal-intro .NB-intro-categories {
+}
+
+.NB-intro-categories .NB-category {
+    margin: 0 0 12px;
+    cursor: pointer;
+}
+.NB-intro-categories .NB-category .NB-category-title {
+    width: auto;
+}
+.NB-intro-categories .NB-category .NB-category-title .NB-checkmark {
+    background: transparent url(/media/embed/reader/checkmark.png) no-repeat 0 0;
+    background-size: 14px 13px;
+    width: 14px;
+    height: 13px;
+    position: absolute;
+    right: 4px;
+    top: 3px;
+    display: none;
+}
+.NB-intro-categories .NB-category.NB-active .NB-category-title .NB-checkmark {
+    display: block;
+}
+.NB-intro-categories .NB-category-feed {
+    text-align: left;
+    height: 18px;
+    padding: 3px 0 0;
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 1px 4px 0;
+    opacity: .5;
+}
+.NB-intro-categories .NB-category.NB-active .NB-category-feed {
+    opacity: 1;
+}
+.NB-intro-categories .NB-category-feed img {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 0 4px 0 6px;
+}
+
 
 /* ============ */
 /* = Carousel = */

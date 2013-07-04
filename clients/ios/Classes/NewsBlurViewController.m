@@ -741,6 +741,13 @@ static const CGFloat kFolderTitleHeight = 28;
     }
     
     if (!self.isOffline) {
+        // start up the first time user experience
+        if ([[results objectForKey:@"social_feeds"] count] == 0 &&
+            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [appDelegate showFirstTimeUser];
+            return;
+        }
+        
         if (self.inPullToRefresh_) {
             self.inPullToRefresh_ = NO;
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
@@ -750,13 +757,6 @@ static const CGFloat kFolderTitleHeight = 28;
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
                 [self refreshFeedList];
             }];
-        }
-
-        // start up the first time user experience
-        if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
-            [appDelegate showFirstTimeUser];
-            return;
         }
     }
     

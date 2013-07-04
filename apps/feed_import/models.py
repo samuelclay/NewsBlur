@@ -105,7 +105,13 @@ class OPMLExporter(Importer):
         
     def fetch_feeds(self):
         subs = UserSubscription.objects.filter(user=self.user)
-        self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
+        self.feeds = []
+        for sub in subs:
+            try:
+                self.feeds.append((sub.feed_id, sub.canonical()))
+            except Feed.DoesNotExist:
+                continue
+        self.feeds = dict(self.feeds)
         
 
 class OPMLImporter(Importer):

@@ -14,6 +14,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     };
     this.flags = {};
     this.autofollow = true;
+    this.chosen_categories = [];
     
     this.page_number = this.options.page_number;
     this.slider_value = 0;
@@ -33,6 +34,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.open_modal();
         this.page(this.page_number);
         this.fetch_friends();
+        this.fetch_categories();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -61,18 +63,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
                             $.make('div', { className: 'NB-intro-module-containers' }, [
                                 $.make('div', { className: 'NB-intro-module-container NB-left' }, [
-                                    $.make('h3', { className: 'NB-module-content-header' }, 'Import from'),
-                                    $.make('div', { className: 'NB-intro-module NB-intro-import-google' }, [
-                                        $.make('h3', [
-                                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.png', width: 115, height: 40 })
-                                        ]),
-                                        $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
-                                            'Connect to Google'
-                                        ]),
-                                        $.make('div', { className: 'NB-error' })
-                                    ])
-                                ]),
-                                $.make('div', { className: 'NB-intro-module-container NB-right' }, [
                                     $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
                                     $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
                                         $.make('h3', 'OPML'),
@@ -84,13 +74,20 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                         ]),
                                         $.make('div', { className: 'NB-error' })
                                     ])
+                                ]),
+                                $.make('div', { className: 'NB-intro-module-container NB-right' }, [
+                                    $.make('h3', { className: 'NB-module-content-header' }, 'Choose categories'),
+                                    $.make('div', { className: 'NB-intro-module NB-intro-categories-container' }, [
+                                        $.make('div', { className: "NB-intro-categories-loader" }),
+                                        $.make('div', { className: "NB-intro-categories" })
+                                    ])
                                 ])
                             ]),
-                            (this.options.force_import && $.make('div', { className: 'NB-intro-starredimport NB-intro-section NB-intro-import-container' }, [
+                            (this.options.force_import && false && $.make('div', { className: 'NB-intro-starredimport NB-intro-section NB-intro-import-container' }, [
                                 $.make('h3', { className: 'NB-module-content-header' }, 'Google Reader Starred Stories'),
                                 $.make('div', { className: 'NB-intro-import NB-intro-module' }, [
-                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-starredimport-button' }, 'Connect to Google'),
-                                    $.make('div', { className: 'NB-intro-starredimport-info' }, 'Import your saved stories from Google Reader')
+                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-starredimport-button' }, 'Upload starred.json'),
+                                    $.make('a', { className: 'NB-intro-starredimport-info NB-splash-link', href: "https://www.google.com/takeout/#custom:reader", target: "_blank" }, 'Download from Google Takeout')
                                 ])
                             ]))
                         ]),
@@ -181,7 +178,77 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ]);
         
         if (this.options.force_import) {
-            this.$modal.addClass('NB-intro-import-only');
+            // this.$modal.addClass('NB-intro-import-only');
+        }
+    },
+    
+    // ==============
+    // = Categories =
+    // ==============
+    
+    fetch_categories: function(callback) {
+        $('.NB-intro-categories-loader', this.$modal).addClass('NB-active');
+        NEWSBLUR.assets.fetch_categories(_.bind(function(data) {
+            this.categories = data.categories;
+            this.category_feeds = data.feeds;
+            this.make_categories();
+            callback && callback();
+        }, this), _.bind(function(data) {
+            console.log(['Categories fetch error', data]);
+        }, this));
+    },
+    
+    make_categories: function() {
+        $('.NB-intro-categories-loader', this.$modal).removeClass('NB-active');
+
+        var $categories = $(".NB-intro-categories", this.$modal);
+        var categories = _.map(this.categories, _.bind(function(category) {
+            var $feeds = _.compact(_.map(category.feed_ids, _.bind(function(feed_id) {
+                var feed = this.category_feeds[feed_id];
+                if (!feed) return;
+                feed = new NEWSBLUR.Models.Feed(feed);
+                var border = feed.get('favicon_border') || "707070";
+                return $.make("div", { className: "NB-category-feed", style: "border-left: 4px solid #" + border + "; border-right: 4px solid #" + border }, [
+                    $.make('img', { className: 'NB-category-feed-favicon', src: $.favicon(feed) }),
+                    $.make('div', { className: 'NB-category-feed-title' }, feed.get('feed_title'))
+                ]);
+            }, this)));
+            var $category = $.make('div', { className: 'NB-category' }, [
+                $.make('div', { className: 'NB-category-title NB-modal-submit-grey NB-modal-submit-button' }, [
+                    $.make('div', { className: 'NB-checkmark' }),
+                    category.title
+                ]),
+                $.make('div', { className: 'NB-category-feeds' }, $feeds)
+            ]).data('category', category.title);
+            return $category;
+        }, this));
+        
+        $categories.html($.make('div', categories));
+    },
+    
+    toggle_category: function(category, $category) {
+        var on = _.contains(this.chosen_categories, category);
+        if (on) {
+            this.chosen_categories = _.without(this.chosen_categories, category);
+        } else {
+            this.chosen_categories.push(category);
+        }
+        $category.toggleClass('NB-active', !on);
+        $(".NB-category-title", $category).toggleClass('NB-modal-submit-grey', on)
+                                          .toggleClass('NB-modal-submit-green', !on);
+
+        if (this.chosen_categories.length) {
+            NEWSBLUR.assets.preference('has_setup_feeds', true);
+            NEWSBLUR.reader.check_hide_getting_started();
+            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+        }
+    },
+    
+    submit_categories: function() {
+        if (this.chosen_categories.length) {
+            NEWSBLUR.assets.subscribe_to_categories(this.chosen_categories, function() {
+                NEWSBLUR.assets.load_feeds();
+            });
         }
     },
     
@@ -383,6 +450,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           this.advance_import_carousel();
       }
       if (page_number == 3) {
+          this.submit_categories();
           this.make_find_friends_and_services();
       }
       if (page_number == 4) {
@@ -729,6 +797,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-intro-uptodate-follow-popular' }, function($t, $p) {
             self.subscribe_to_feed('popular');
+        });
+        $.targetIs(e, { tagSelector: '.NB-category' }, function($t, $p) {
+            var category = $t.data('category');
+            self.toggle_category(category, $t);
         });
     },
     

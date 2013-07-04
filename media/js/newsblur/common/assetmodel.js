@@ -1281,6 +1281,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
       });
     },
     
+    fetch_categories: function(callback, error_callback) {
+        this.make_request('/categories/', null, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
+    subscribe_to_categories: function(categories, callback, error_callback) {
+        this.make_request('/categories/subscribe', {category: categories}, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
     fetch_friends: function(callback, error_callback) {
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
