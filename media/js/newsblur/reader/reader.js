@@ -260,7 +260,7 @@
                 togglerLength_open:     0
             }); 
             
-            if (this.model.preference('feed_pane_size') < 240) {
+            if (this.model.preference('feed_pane_size') < 242) {
                 this.layout.outerLayout.resizeAll();
             }
             
