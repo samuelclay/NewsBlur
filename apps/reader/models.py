@@ -653,7 +653,7 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_read(cls, user_id, story_feed_id, story_hash, r=None, r2=None):
+    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if not r2:
@@ -663,34 +663,43 @@ class RUserStory:
         
         if not story_hash: return
         
-        now = int(time.time())
+        def redis_commands(key):
+            r.sadd(key, story_hash)
+            r2.sadd(key, story_hash)
+            r.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
+
         all_read_stories_key = 'RS:%s' % (user_id)
-        r.sadd(all_read_stories_key, story_hash)
-        r2.sadd(all_read_stories_key, story_hash)
-        r2.zadd('z' + all_read_stories_key, story_hash, now)
-        r.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire(all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('z' + all_read_stories_key, settings.DAYS_OF_UNREAD*24*60*60)
+        redis_commands(all_read_stories_key)
         
         read_story_key = 'RS:%s:%s' % (user_id, story_feed_id)
-        r.sadd(read_story_key, story_hash)
-        r2.sadd(read_story_key, story_hash)
-        r2.zadd('z' + read_story_key, story_hash, now)
-        r.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('z' + read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
+        redis_commands(read_story_key)
+        
+        if social_user_ids:
+            for social_user_id in social_user_ids:
+                social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
+                redis_commands(social_read_story_key)
     
     @staticmethod
-    def mark_unread(user_id, story_feed_id, story_hash):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        
-        r.srem('RS:%s' % user_id, story_hash)
-        r2.srem('RS:%s' % user_id, story_hash)
-        r2.zrem('zRS:%s' % user_id, story_hash)
-        r.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
-        r2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
-        r2.zrem('zRS:%s:%s' % (user_id, story_feed_id), story_hash)
+    def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+
+        h.srem('RS:%s' % user_id, story_hash)
+        h2.srem('RS:%s' % user_id, story_hash)
+        h.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+        h2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+
+        # Find other social feeds with this story to update their counts
+        friend_key = "F:%s:F" % (user_id)
+        share_key = "S:%s" % (story_hash)
+        friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+
+        if friends_with_shares:
+            for social_user_id in friends_with_shares:
+                h.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
+                h2.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
     
     @staticmethod
     def get_stories(user_id, feed_id, r=None):
@@ -706,7 +715,6 @@ class RUserStory:
         p = r.pipeline()
         p2 = r2.pipeline()
         story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
-        now = int(time.time())
         
         for story_hash in story_hashes:
             _, hash_story = MStory.split_story_hash(story_hash)
@@ -714,18 +722,14 @@ class RUserStory:
             read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
             p2.sadd(read_feed_key, new_story_hash)
-            p2.zadd('z' + read_feed_key, new_story_hash, now)
             p.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
             p2.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire('z' + read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
 
             read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
             p2.sadd(read_user_key, new_story_hash)
-            p2.zadd('z' + read_user_key, new_story_hash, now)
             p.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
             p2.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire('z' + read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
         
         p.execute()
         p2.execute()

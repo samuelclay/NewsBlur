@@ -857,9 +857,10 @@ class MSocialSubscription(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
-        stories_key         = 'B:%s' % (self.subscription_user_id)
-        read_stories_key    = 'RS:%s' % (self.user_id)
-        unread_stories_key  = 'UB:%s:%s' % (self.user_id, self.subscription_user_id)
+        stories_key             = 'B:%s' % (self.subscription_user_id)
+        read_stories_key        = 'RS:%s' % (self.user_id)
+        read_social_stories_key = 'RS:%s:B:%s' % (self.user_id, self.subscription_user_id)
+        unread_stories_key      = 'UB:%s:%s' % (self.user_id, self.subscription_user_id)
 
         if not r.exists(stories_key):
             return []
@@ -868,6 +869,7 @@ class MSocialSubscription(mongo.Document):
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            r.sdiffstore(unread_stories_key, unread_stories_key, read_social_stories_key)
 
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
         unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('h' if hashes_only else '', 
@@ -970,14 +972,18 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_hash in set(story_hashes):
+            if feed_id:
+                story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=feed_id)
             if not feed_id:
                 feed_id, _ = MStory.split_story_hash(story_hash)
-            RUserStory.mark_read(self.user_id, feed_id, story_hash)
-            
+
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            
+            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares)
+            
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
             if friends_with_shares:
@@ -1003,7 +1009,8 @@ class MSocialSubscription(mongo.Document):
     def mark_unsub_story_ids_as_read(cls, user_id, social_user_id, story_ids, feed_id=None,
                                      request=None):
         data = dict(code=0, payload=story_ids)
-        
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+
         if not request:
             request = User.objects.get(pk=user_id)
     
@@ -1019,7 +1026,13 @@ class MSocialSubscription(mongo.Document):
             except MSharedStory.DoesNotExist:
                 continue
                 
-            RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
+            # Find other social feeds with this story to update their counts
+            friend_key = "F:%s:F" % (user_id)
+            share_key = "S:%s" % (story.story_hash)
+            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            
+            RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash,
+                                 social_user_ids=friends_with_shares)
             
             # Also count on original subscription
             usersubs = UserSubscription.objects.filter(user=user_id, feed=story.story_feed_id)
