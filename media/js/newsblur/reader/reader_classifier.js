@@ -219,6 +219,7 @@ var classifier_prototype = {
     
     fit_classifiers: function() {
         var $form = $("form", this.$modal);
+        if (!$form.length) return;
         var form_height = $form.innerHeight();
         var form_outerheight = $form.outerHeight(true);
         var offset_top = $form.position().top;
