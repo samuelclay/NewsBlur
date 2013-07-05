@@ -1523,31 +1523,34 @@ def mark_story_as_starred(request):
     code     = 1
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
-    
+    message  = ""
     story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
-    if story:
-        story_db = dict([(k, v) for k, v in story._data.items() 
-                                if k is not None and v is not None])
-        if 'user_id' in story_db: story_db.pop('user_id')
-        if 'starred_date' in story_db: story_db.pop('starred_date')
-        now = datetime.datetime.now()
-        story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
-        starred_story, created = MStarredStory.objects.get_or_create(
-            story_guid=story_values.pop('story_guid'),
-            user_id=story_values.pop('user_id'),
-            defaults=story_values)
-        if created:
-            logging.user(request, "~FCStarring: ~SB%s" % (story.story_title[:50]))
-            MActivity.new_starred_story(user_id=request.user.pk, 
-                                        story_title=story.story_title, 
-                                        story_feed_id=feed_id,
-                                        story_id=starred_story.story_guid)
-        else:
-            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story.story_title[:50]))
+    if not story:
+        return {'code': -1, 'message': "Could not find story to save."}
+        
+    story_db = dict([(k, v) for k, v in story._data.items() 
+                            if k is not None and v is not None])
+    story_db.pop('user_id', None)
+    story_db.pop('starred_date', None)
+    story_db.pop('id', None)
+    now = datetime.datetime.now()
+    story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
+    starred_story, created = MStarredStory.objects.get_or_create(
+        story_guid=story_values.pop('story_guid'),
+        user_id=story_values.pop('user_id'),
+        defaults=story_values)
+    if created:
+        logging.user(request, "~FCStarring: ~SB%s" % (story.story_title[:50]))
+        MActivity.new_starred_story(user_id=request.user.pk, 
+                                    story_title=story.story_title, 
+                                    story_feed_id=feed_id,
+                                    story_id=starred_story.story_guid)
     else:
         code = -1
+        message = "Already saved this story."
+        logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story.story_title[:50]))
     
-    return {'code': code}
+    return {'code': code, 'message': message}
     
 @ajax_login_required
 @json.json_view

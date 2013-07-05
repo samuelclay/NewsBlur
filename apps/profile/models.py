@@ -102,7 +102,7 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting %s shared stories" % shared_stories.count())
         for story in shared_stories:
             try:
-                original_story = MStory.objects.get(pk=story.story_db_id)
+                original_story = MStory.objects.get(story_hash=story.story_hash)
                 original_story.sync_redis()
             except MStory.DoesNotExist:
                 pass

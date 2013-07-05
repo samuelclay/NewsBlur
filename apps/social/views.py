@@ -530,7 +530,6 @@ def mark_story_as_shared(request):
             "story_author_name": story.story_author_name,
             "story_tags": story.story_tags,
             "story_date": story.story_date,
-            "story_db_id": story.id,
             "user_id": request.user.pk,
             "comments": comments,
             "has_comments": bool(comments),

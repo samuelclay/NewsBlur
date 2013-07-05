@@ -1226,7 +1226,6 @@ class MSharedStory(mongo.Document):
     has_replies              = mongo.BooleanField(default=False)
     replies                  = mongo.ListField(mongo.EmbeddedDocumentField(MCommentReply))
     source_user_id           = mongo.IntField()
-    story_db_id              = mongo.ObjectIdField()
     story_hash               = mongo.StringField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
@@ -1254,7 +1253,6 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    ('user_id', 'story_db_id'),
                     'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
@@ -1370,16 +1368,7 @@ class MSharedStory(mongo.Document):
             } for story in other_stories]
         
         return your_story, same_stories, other_stories
-        
-    def ensure_story_db_id(self, save=True, force=False):
-        if not self.story_db_id or force:
-            story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
-            if story:
-                logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
-                self.story_db_id = story.id
-                if save:
-                    self.save()
-                
+    
     def set_source_user_id(self, source_user_id):
         if source_user_id == self.user_id:
             return
@@ -1503,6 +1492,7 @@ class MSharedStory(mongo.Document):
             story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
             story_db.pop('user_id', None)
+            story_db.pop('id', None)
             story_db.pop('comments', None)
             story_db.pop('replies', None)
             story_db['has_comments'] = False
@@ -1568,20 +1558,16 @@ class MSharedStory(mongo.Document):
         if not r2:
             r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
-        if not self.story_db_id:
-            self.ensure_story_db_id(save=True)
-            
-        if self.story_db_id:
-            r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-            r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-            r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-                   time.mktime(self.shared_date.timetuple()))
-            r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-                   time.mktime(self.shared_date.timetuple()))
-            r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+        r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+        r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+               time.mktime(self.shared_date.timetuple()))
+        r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+               time.mktime(self.shared_date.timetuple()))
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
