@@ -26,6 +26,9 @@ class TextImporter:
     def fetch(self, skip_save=False):
         try:
             html = requests.get(self.story.story_permalink, headers=self.headers)
+            text = html.text
+            if html.encoding != 'utf-8':
+                text = text.encode(html.encoding)
             original_text_doc = readability.Document(html.text, url=html.url, debug=settings.DEBUG)
             content = original_text_doc.summary(html_partial=True)
         except:
