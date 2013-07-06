@@ -49,6 +49,7 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import strip_tags
 from utils import log as logging
 from utils.view_functions import get_argument_or_404, render_to, is_true
+from utils.view_functions import required_params
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -1087,12 +1088,12 @@ def mark_social_stories_as_read(request):
     data.update(code=code, errors=errors)
     return data
     
+@required_params('story_id', feed_id=int)
 @ajax_login_required
 @json.json_view
 def mark_story_as_unread(request):
     story_id = request.POST['story_id']
-    feed_id = request.POST['feed_id']
-    feed_id = int(feed_id)
+    feed_id = int(request.POST['feed_id'])
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
