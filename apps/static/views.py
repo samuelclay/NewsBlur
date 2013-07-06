@@ -50,7 +50,7 @@ def ios_download(request):
                               context_instance=RequestContext(request))
                               
 def ios_plist(request):
-    filename = os.path.join(settings.NEWSBLUR_DIR, 'clients/ios/NewsBlur.ipa')
+    filename = os.path.join(settings.NEWSBLUR_DIR, 'clients/ios/NewsBlur.plist')
     manifest = open(filename).read()
     
     logging.user(request, "~SK~FR~BBDownloading NewsBlur.plist...")
