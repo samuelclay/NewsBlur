@@ -1788,7 +1788,7 @@ class MStory(mongo.Document):
         r.delete('zF:%s' % story_feed_id)
         r2.delete('zF:%s' % story_feed_id)
 
-        logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
+        logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
         p2 = r2.pipeline()
         for story in stories:
