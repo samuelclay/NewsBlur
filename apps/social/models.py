@@ -972,9 +972,9 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_hash in set(story_hashes):
-            if feed_id:
+            if feed_id is not None:
                 story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=feed_id)
-            if not feed_id:
+            if feed_id is None:
                 feed_id, _ = MStory.split_story_hash(story_hash)
 
             # Find other social feeds with this story to update their counts
