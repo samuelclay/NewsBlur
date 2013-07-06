@@ -31,7 +31,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         }
         if (!story) return;
 
-        if (is_temporary) {
+        if (is_temporary && NEWSBLUR.assets.preference('story_layout') == 'split') {
             NEWSBLUR.reader.switch_taskbar_view('text', {
                 skip_save_type: is_temporary ? 'text' : false
             });
@@ -46,7 +46,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             show_feed_title: true,
             skip_content: true,
             text_view: true,
-            tagName: 'div'
+            tagName: 'div',
+            inline_story_title: this.options.inline_story_title
         }).render().el);
         this.$el.scrollTop(0);
         this.show_loading();

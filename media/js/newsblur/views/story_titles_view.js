@@ -148,6 +148,19 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
             $.make('div', { className: 'NB-fleuron' })
         ]);
+        
+        if (NEWSBLUR.assets.preference('story_layout') == 'list') {
+            var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
+            var endbar_height = 20;
+            var last_story_height = 100;
+            endbar_height = pane_height - last_story_height;
+            if (endbar_height <= 20) endbar_height = 20;
+
+            var empty_space = pane_height - last_story_height - endbar_height;
+            if (empty_space > 0) endbar_height += empty_space + 1;
+
+            $end_stories_line.css('paddingBottom', endbar_height);
+        }
 
         this.$el.append($end_stories_line);
     },

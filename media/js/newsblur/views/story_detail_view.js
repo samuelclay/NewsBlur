@@ -105,14 +105,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                               NEWSBLUR.reader.flags.social_view || 
                               this.options.show_feed_title;
         return {
-            story            : this.model,
-            feed             : show_feed_title && this.feed,
-            tag              : _.first(this.model.get("story_tags")),
-            title            : this.make_story_title(),
-            authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
-            tags_score       : this.classifiers && this.classifiers.tags,
-            options          : this.options,
-            truncatable      : this.is_truncatable()
+            story             : this.model,
+            feed              : show_feed_title && this.feed,
+            tag               : _.first(this.model.get("story_tags")),
+            title             : this.make_story_title(),
+            authors_score     : this.classifiers && 
+                                this.classifiers.authors[this.model.get('story_authors')],
+            tags_score        : this.classifiers && this.classifiers.tags,
+            options           : this.options,
+            truncatable       : this.is_truncatable(),
+            inline_story_title: this.options.inline_story_title
         };
     },
     
@@ -202,6 +204,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <%= story_share_view %>\
             </div>\
         </div>\
+        <% if (inline_story_title) { %>\
+            <div class="NB-feed-story-header-feed">\
+            </div>\
+        <% } %>\
     '),
     
     generate_gradients: function() {
@@ -470,11 +476,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             .removeClass('NB-score-now-0')
             .addClass('NB-score-now-'+score)
             .one('mouseleave', function() {
-                console.log(["leave", score]);
+                // console.log(["leave", score]);
                 $tag.removeClass('NB-score-now-'+score);
                 _.delay(function() {
                     $tag.one('mouseenter', function() {
-                        console.log(["enter", score]);
+                        // console.log(["enter", score]);
                         $tag.removeClass('NB-score-now-'+score);
                     });
                 }, 100);

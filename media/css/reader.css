@@ -1754,6 +1754,13 @@ background: transparent;
     height: 36px;
 }
 
+/* ============================= */
+/* = Story Detial in List View = */
+/* ============================= */
+
+.NB-story-title-container .NB-feed-story {
+}
+
 /* =================== */
 /* = Story Navigator = */
 /* =================== */
