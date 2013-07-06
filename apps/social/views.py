@@ -315,7 +315,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
-    page = int(request.REQUEST.get('page', 1))
+    try:
+        page = int(request.REQUEST.get('page', 1))
+    except ValueError:
+        page = 1
     format = request.REQUEST.get('format', None)
     has_next_page = False
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
