@@ -25,7 +25,7 @@ case "$1" in
   start)
     echo -n "Starting $DESC: "
     touch $PIDFILE
-    if start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
+    if start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
     then
         echo "$NAME."
     else

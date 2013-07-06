@@ -408,22 +408,22 @@ def bounce_pgbouncer():
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_node():
     put('config/monit_node.conf', '/etc/monit/conf.d/node.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_app():
     put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_redis():
     put('config/monit_redis.conf', '/etc/monit/conf.d/redis.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def setup_mongoengine_repo():
