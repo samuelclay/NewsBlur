@@ -74,7 +74,7 @@ public class APIResponse {
             return;
         }
 
-        // Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
+        //Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
 
         try {
             connection.disconnect();
@@ -106,9 +106,15 @@ public class APIResponse {
         if (this.isError) {
             // if we encountered an error, make a generic response type and populate
             // it's message field
-            NewsBlurResponse response = new NewsBlurResponse();
-            response.message = this.errorMessage;
-            return ((T) response);
+            try {
+                T response = classOfT.newInstance();
+                response.message = this.errorMessage;
+                return ((T) response);
+            } catch (Exception e) {
+                // this should never fail unless the constructor of the base response bean fails
+                Log.wtf(this.getClass().getName(), "" + classOfT);
+                return null;
+            }
         } else {
             // otherwise, parse the response as the expected class and defer error detection
             // to the NewsBlurResponse parent class
