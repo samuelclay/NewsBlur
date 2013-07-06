@@ -52,7 +52,11 @@ class IconImporter(object):
                 pass
             image     = self.normalize_image(image)
             color     = self.determine_dominant_color_in_image(image)
-            image_str = self.string_from_image(image)
+            try:
+                image_str = self.string_from_image(image)
+            except TypeError:
+                return
+            
             if len(image_str) > 500000:
                 image = None
             if (image and 
