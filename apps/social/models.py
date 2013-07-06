@@ -1702,19 +1702,23 @@ class MSharedStory(mongo.Document):
         profiles = dict([(p['user_id'], p) for p in profiles])
         for s, story in enumerate(stories):
             for u, user_id in enumerate(story['shared_by_friends']):
+                if user_id not in profiles: continue
                 stories[s]['shared_by_friends'][u] = profiles[user_id]
             for u, user_id in enumerate(story['shared_by_public']):
+                if user_id not in profiles: continue
                 stories[s]['shared_by_public'][u] = profiles[user_id]
             for comment_set in ['friend_comments', 'public_comments']:
                 for c, comment in enumerate(story[comment_set]):
+                    if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
                     if comment['source_user_id']:
                         stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
                     for r, reply in enumerate(comment['replies']):
-                        if reply['user_id'] in profiles:
-                            stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
+                        if reply['user_id'] not in profiles: continue
+                        stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
                     stories[s][comment_set][c]['liking_user_ids'] = list(comment['liking_users'])
                     for u, user_id in enumerate(comment['liking_users']):
+                        if user_id not in profiles: continue
                         stories[s][comment_set][c]['liking_users'][u] = profiles[user_id]
 
         return stories
@@ -1722,9 +1726,13 @@ class MSharedStory(mongo.Document):
     @staticmethod
     def attach_users_to_comment(comment, profiles):
         profiles = dict([(p['user_id'], p) for p in profiles])
+
+        if comment['user_id'] not in profiles: return comment
         comment['user'] = profiles[comment['user_id']]
+
         if comment['source_user_id']:
             comment['source_user'] = profiles[comment['source_user_id']]
+
         for r, reply in enumerate(comment['replies']):
             comment['replies'][r]['user'] = profiles[reply['user_id']]
         comment['liking_user_ids'] = list(comment['liking_users'])
