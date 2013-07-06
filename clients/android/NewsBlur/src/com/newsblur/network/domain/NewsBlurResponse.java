@@ -22,7 +22,7 @@ public class NewsBlurResponse {
      */
     public String getErrorMessage(String defaultMessage) {
         if (message != null) return message;
-        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) return errors.message[0];
+        if ((errors != null) &&(errors.message != null) && (errors.message.length > 0) && (errors.message[0] != null)) return errors.message[0];
         return defaultMessage;
     }
 

@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,6 @@ import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
-	private static final String TAG = "itemListFragment";
 	public static final String FRAGMENT_TAG = "itemListFragment";
 	private ContentResolver contentResolver;
 	private String feedId;
@@ -47,7 +47,6 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
 	private Feed feed;
-	private Cursor feedCursor;
 	
     private StoryOrder storyOrder;
 
@@ -105,12 +104,16 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		return v;
 	}
 
-	private void setupFeed() {
-		Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		feedCursor = contentResolver.query(feedUri, null, null, null, null);
-		feedCursor.moveToFirst();
-		feed = Feed.fromCursor(feedCursor);
-	}
+    private void setupFeed() {
+        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+        Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+        if (feedCursor.getCount() > 0) {
+            feedCursor.moveToFirst();
+            feed = Feed.fromCursor(feedCursor);
+        } else {
+            Log.w(this.getClass().getName(), "Feed not found in DB, can't load.");
+        }
+    }
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
