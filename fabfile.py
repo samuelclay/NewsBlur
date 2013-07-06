@@ -421,8 +421,8 @@ def config_monit_app():
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
-def config_monit_db():
-    put('config/monit_db.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
+def config_monit_redis():
+    put('config/monit_redis.conf', '/etc/monit/conf.d/redis.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
