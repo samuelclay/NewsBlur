@@ -1033,7 +1033,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
-        if (feed_id = "river:global" && setting == "order") return "newest";
+        if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);
