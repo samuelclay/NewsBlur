@@ -1612,7 +1612,7 @@ def send_story_email(request):
         }
         text    = render_to_string('mail/email_story.txt', params)
         html    = render_to_string('mail/email_story.xhtml', params)
-        subject = '%s shares "%s"' % (from_name, story['story_title'])
+        subject = '%s' % (story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]
