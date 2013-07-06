@@ -7,3 +7,4 @@ out/
 bin/
 .metadata/
 gen/
+libs/ActionBarSherlock/gen/
