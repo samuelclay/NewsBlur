@@ -183,7 +183,7 @@ class API:
             data.append( ("feeds", feed) )
         return data
     
-    @request('reader/mark_story_as_read')
+    @request('reader/mark_story_as_read', method='post')
     def mark_story_as_read(self, feed_id, story_ids):
         '''
          Mark stories as read.
@@ -197,7 +197,7 @@ class API:
             data.append( ("story_id", story_id) )
         return data
 
-    @request('reader/mark_story_as_starred')
+    @request('reader/mark_story_as_starred', method='post')
     def mark_story_as_starred(self, feed_id, story_id):
         '''
         Mark a story as starred (saved).
