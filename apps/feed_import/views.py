@@ -56,6 +56,10 @@ def opml_upload(request):
                     payload = dict(folders=folders, delayed=True, feed_count=feed_count)
                     code = 2
                     message = ""
+                except AttributeError:
+                    code = -1
+                    message = "OPML import failed. Couldn't parse XML file."
+                    folders = None
 
             if folders:
                 feeds = UserSubscription.objects.filter(user=request.user).values()
