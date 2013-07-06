@@ -1088,7 +1088,7 @@ def mark_social_stories_as_read(request):
     data.update(code=code, errors=errors)
     return data
     
-@required_params('story_id', feed_id=int)
+@required_params('story_id', feed_id=int, method="POST")
 @ajax_login_required
 @json.json_view
 def mark_story_as_unread(request):
