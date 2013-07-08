@@ -220,14 +220,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var container_offset = $story_titles.position().top;
-        var visible_height = $story_titles.height();
+        var visible_height = $story_titles.height() * 2;
         var scroll_y = $story_titles.scrollTop();
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
-        if (NEWSBLUR.assets.preference('story_layout') == 'list') {
-            visible_height *= 2;
-        }
-
         // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height]);
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
