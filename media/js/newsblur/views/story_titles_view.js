@@ -202,7 +202,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 position = scroll+container;
             }
 
-            NEWSBLUR.reader.$s.$story_titles.scrollTo(position, {
+            NEWSBLUR.reader.$s.$story_titles.stop().scrollTo(position, {
                 duration: NEWSBLUR.assets.preference('animations') ? 260 : 0,
                 queue: false
             });
