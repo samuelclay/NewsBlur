@@ -5531,6 +5531,11 @@
             });
             $document.bind('keydown', 'm', function(e) {
                 e.preventDefault();
+                // self.show_last_unread_story();
+                self.mark_active_story_read();
+            });
+            $document.bind('keydown', 'shift+m', function(e) {
+                e.preventDefault();
                 self.show_last_unread_story();
             });
             $document.bind('keydown', 'b', function(e) {
