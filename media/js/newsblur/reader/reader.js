@@ -4142,7 +4142,7 @@
                 $('.NB-callout-text', $callout).text('Unlocked');
             } else {
                 
-                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y - NEWSBLUR.app.story_list.cache.story_pane_position);
+                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y);
                 $('.NB-callout-text', $callout).text('Locked');
             }
             
@@ -4159,7 +4159,7 @@
             var container = this.layout.contentLayout.state.container.innerHeight - 30;
 
             if (position <= 0 || position > container) {
-                position = 50; // Start with a 50 offset
+                position = 20; // Start with a 20 offset
             } else {
                 position = position - 8; // Compensate for mouse indicator height.
             }
