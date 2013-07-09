@@ -123,11 +123,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (!NEWSBLUR.reader.active_feed) return;
         NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
         
-        var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
-        var $indicator = $('.NB-story-title-indicator', $story_titles);
-        var hidden_stories = !!NEWSBLUR.assets.stories.hidden().length;
-        
+        var $indicator = this.$('.NB-story-title-indicator');
+        var unread_hidden_stories = NEWSBLUR.reader.flags['river_view'] ? NEWSBLUR.reader.active_folder.folders.unread_counts().ng : NEWSBLUR.assets.active_feed.unread_counts().ng;
+        var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
+        console.log(["show_feed_hidden_story_title_indicator", unread_hidden_stories, hidden_stories, is_feed_load]);
         if (!hidden_stories) {
             $indicator.hide();
             return;
@@ -146,7 +146,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     show_hidden_story_titles: function() {
-        var $indicator = $('.NB-story-title-indicator', NEWSBLUR.reader.$s.$story_titles);
+        var $indicator = this.$('.NB-story-title-indicator');
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
         var hidden_stories_at_threshold = NEWSBLUR.assets.stories.any(function(story) {
             var score = story.score();

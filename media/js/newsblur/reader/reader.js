@@ -1526,6 +1526,9 @@
             }
             this.active_folder = folder || NEWSBLUR.assets.folders;
             
+            if (NEWSBLUR.app.story_unread_counter) {
+                NEWSBLUR.app.story_unread_counter.remove();
+            }
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
             this.$s.$body.addClass('NB-view-river');
@@ -1568,7 +1571,7 @@
                 NEWSBLUR.app.story_titles.show_loading(options);
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
-            NEWSBLUR.app.taskbar_info.show_stories_progress_bar(feeds.length);
+            // NEWSBLUR.app.taskbar_info.show_stories_progress_bar(feeds.length);
             this.model.fetch_river_stories(this.active_feed, feeds, 1, 
                 _.bind(this.post_open_river_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
         },
@@ -1597,11 +1600,11 @@
                 } else if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
                     this.select_story_in_feed();
                 }
-                NEWSBLUR.app.taskbar_info.hide_stories_progress_bar(_.bind(function() {
+                // NEWSBLUR.app.taskbar_info.hide_stories_progress_bar(_.bind(function() {
                     if (first_load) {
                         this.make_story_titles_pane_counter();
                     }
-                }, this));
+                // }, this));
                 if (NEWSBLUR.Globals.is_anonymous) {
                     this.show_tryout_signup_button();
                 } else if (first_load) {
@@ -1818,7 +1821,9 @@
                     this.show_last_unread_story(true);
                 }
                 if (first_load) {
-                    this.make_story_titles_pane_counter();
+                    NEWSBLUR.app.taskbar_info.hide_stories_progress_bar(_.bind(function() {
+                        this.make_story_titles_pane_counter();
+                    }, this));
                     this.find_story_with_action_preference_on_open_feed();
                 }
                 NEWSBLUR.app.taskbar_info.hide_stories_progress_bar();
