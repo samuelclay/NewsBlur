@@ -77,11 +77,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
         
         options = options || {};
-        var $last = this.$('.NB-story-title:visible:last');
-        // var container_height = NEWSBLUR.reader.$s.$story_titles.height();
         
         if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
             !NEWSBLUR.assets.flags['no_more_stories']) {
+            // var $last = this.$('.NB-story-title:visible:last');
+            // var container_height = NEWSBLUR.reader.$s.$story_titles.height();
             // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, NEWSBLUR.reader.$s.$story_titles.scrollTop()]);
             NEWSBLUR.reader.counts['page_fill_outs'] += 1;
             _.delay(_.bind(function() {

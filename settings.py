@@ -582,8 +582,8 @@ REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS3['host'], port=6379, db
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 

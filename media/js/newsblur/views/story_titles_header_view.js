@@ -1,16 +1,23 @@
 NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
+    options: {
+        'layout': 'split'
+    },
+    
     events: {
         "click .NB-feedbar-options"         : "open_options_popover",
         "click .NB-story-title-indicator"   : "show_hidden_story_titles"
     },
     
-    el: $('.NB-feedbar'),
-    
     initialize: function() {
         this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
+        if (this.options.layout == 'split' || this.options.layout == 'list') {
+            this.setElement($(".NB-story-titles-header"));
+        } else if (this.options.layout == 'full') {
+            this.setElement($(".NB-feed-story-view-header"));
+        }
     },
     
     render: function() {

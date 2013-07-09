@@ -210,7 +210,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_starred: function() {
-        var story_titles_visible = NEWSBLUR.assets.preference('story_layout') == 'split';
+        var story_titles_visible = _.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'));
         var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
         
