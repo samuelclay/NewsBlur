@@ -21,7 +21,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     initialize: function(options) {
-        if (_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout')) &&
+        if (NEWSBLUR.assets.preference('story_layout') == 'split' &&
             NEWSBLUR.assets.preference('story_pane_anchor') == 'south') {
             this.options.placement = 'top right';
             this.options.offset = {

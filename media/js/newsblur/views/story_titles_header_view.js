@@ -125,9 +125,15 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();
         var $indicator = this.$('.NB-story-title-indicator');
-        var unread_hidden_stories = NEWSBLUR.reader.flags['river_view'] ? NEWSBLUR.reader.active_folder.folders.unread_counts().ng : NEWSBLUR.assets.active_feed.unread_counts().ng;
+        var unread_hidden_stories;
+        if (NEWSBLUR.reader.flags['river_view']) {
+            unread_hidden_stories = NEWSBLUR.reader.active_folder.folders.unread_counts &&
+                                    NEWSBLUR.reader.active_folder.folders.unread_counts().ng;
+        } else {
+            unread_hidden_stories = NEWSBLUR.assets.active_feed.unread_counts().ng;
+        }
         var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
-        console.log(["show_feed_hidden_story_title_indicator", unread_hidden_stories, hidden_stories, is_feed_load]);
+        // console.log(["show_feed_hidden_story_title_indicator", unread_hidden_stories, hidden_stories, is_feed_load]);
         if (!hidden_stories) {
             $indicator.hide();
             return;
