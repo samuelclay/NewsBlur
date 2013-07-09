@@ -3511,7 +3511,7 @@ background: transparent;
     overflow: hidden;
 }
 .NB-feed-taskbar .NB-task-button {
-    padding: 7px 8px;
+    padding: 7px;
     cursor: pointer;
     opacity: .9;
 }
