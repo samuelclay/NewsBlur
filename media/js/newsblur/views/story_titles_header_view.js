@@ -10,13 +10,21 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     initialize: function() {
+        this.$story_titles_feedbar = $(".NB-story-titles-header");
+        this.$feed_view_feedbar = $(".NB-feed-story-view-header");
+        
+        
         this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         if (this.options.layout == 'split' || this.options.layout == 'list') {
-            this.setElement($(".NB-story-titles-header"));
+            this.$story_titles_feedbar.show();
+            this.$feed_view_feedbar.hide();
+            this.setElement(this.$story_titles_feedbar);
         } else if (this.options.layout == 'full') {
-            this.setElement($(".NB-feed-story-view-header"));
+            this.$story_titles_feedbar.hide();
+            this.$feed_view_feedbar.show();
+            this.setElement(this.$feed_view_feedbar);
         }
     },
     

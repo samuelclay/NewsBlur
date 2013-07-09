@@ -1424,6 +1424,7 @@
             }
             
             this.switch_to_correct_view();
+            this.make_feed_title_in_stories();
             
             _.defer(function() {
                 NEWSBLUR.app.story_titles.scroll_to_selected_story();
@@ -5504,17 +5505,27 @@
             });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();
-                NEWSBLUR.app.story_tab_view.open_story(null, true);
+                if (self.flags['feed_view_showing_story_view']) {
+                    self.switch_to_correct_view();
+                } else {
+                    NEWSBLUR.app.story_tab_view.open_story(null, true);
+                }
             });
             $document.bind('keydown', 'return', function(e) {
                 e.preventDefault();
-                NEWSBLUR.app.story_tab_view.open_story(null, true);
+                if (self.flags['feed_view_showing_story_view']) {
+                    self.switch_to_correct_view();
+                } else {
+                    NEWSBLUR.app.story_tab_view.open_story(null, true);
+                }
             });
             $document.bind('keydown', 'shift+enter', function(e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                     if (!self.active_story) NEWSBLUR.reader.show_next_story(1);
                     self.active_story.story_title_view.render_inline_story_detail(true);
+                } else if (self.flags['temporary_story_view']) {
+                    self.switch_to_correct_view();
                 } else {
                     NEWSBLUR.app.text_tab_view.fetch_and_render(null, true);
                 }
@@ -5524,6 +5535,8 @@
                 if (NEWSBLUR.assets.preference('story_layout') == 'list') {
                     if (!self.active_story) NEWSBLUR.reader.show_next_story(1);
                     self.active_story.story_title_view.render_inline_story_detail(true);
+                } else if (self.flags['temporary_story_view']) {
+                    self.switch_to_correct_view();
                 } else {
                     NEWSBLUR.app.text_tab_view.fetch_and_render(null, true);
                 }
