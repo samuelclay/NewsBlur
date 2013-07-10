@@ -46,7 +46,7 @@ public class FeedUtils {
                     if (!result.isError()) {
                         Toast.makeText(context, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_save_error)), Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -67,7 +67,7 @@ public class FeedUtils {
                 if (!result.isError()) {
                     Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();

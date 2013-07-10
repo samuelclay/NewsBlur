@@ -761,6 +761,9 @@ public class APIManager {
 		try {
 			URL url = new URL(urlString);
             Log.d(this.getClass().getName(), "API POST " + url );
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(this.getClass().getName(), "post body: " + postBodyString);
+            }
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");

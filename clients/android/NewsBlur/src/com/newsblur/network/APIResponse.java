@@ -15,6 +15,7 @@ import org.apache.http.HttpStatus;
 
 import com.newsblur.R;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.util.AppConstants;
 
 /**
  * A JSON-encoded response from the API servers.  This class encodes the possible outcomes of
@@ -74,7 +75,9 @@ public class APIResponse {
             return;
         }
 
-        //Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
+        if (AppConstants.VERBOSE_LOG) {
+            Log.d(this.getClass().getName(), "received API response: \n" + this.responseBody);
+        }
 
         try {
             connection.disconnect();
@@ -112,7 +115,7 @@ public class APIResponse {
                 return ((T) response);
             } catch (Exception e) {
                 // this should never fail unless the constructor of the base response bean fails
-                Log.wtf(this.getClass().getName(), "" + classOfT);
+                Log.wtf(this.getClass().getName(), "Failed to load class: " + classOfT);
                 return null;
             }
         } else {
