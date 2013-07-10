@@ -16,7 +16,8 @@ from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
-from utils import feedparser
+# from utils import feedparser
+from utils import feedparser_trunk as feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
@@ -255,7 +256,12 @@ class ProcessFeed:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-            push_expired = self.feed.is_push and self.feed.push.lease_expires < datetime.datetime.now()
+            push_expired = False
+            if self.feed.is_push:
+                try:
+                    push_expired = self.feed.push.lease_expires < datetime.datetime.now()
+                except PushSubscription.DoesNotExist:
+                    self.feed.is_push = False
             if (hub_url and self_url and not settings.DEBUG and
                 self.feed.active_subscribers > 0 and
                 (push_expired or not self.feed.is_push or self.options.get('force'))):
