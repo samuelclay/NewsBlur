@@ -14,7 +14,6 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -77,6 +76,8 @@ public class SocialFeedItemsList extends ItemsList {
 			intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
+			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
+            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, userId));
 			startService(intent);
 		}
 	}
@@ -103,21 +104,21 @@ public class SocialFeedItemsList extends ItemsList {
 
     @Override
     protected StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        return PrefsUtils.getStoryOrderForFeed(this, userId);
     }
 
     @Override
     public void updateStoryOrderPreference(StoryOrder newValue) {
-        PrefsUtils.setStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+        PrefsUtils.setStoryOrderForFeed(this, userId, newValue);
     }
     
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
+        PrefsUtils.setReadFilterForFeed(this, userId, newValue);
     }
     
     @Override
     protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        return PrefsUtils.getReadFilterForFeed(this, userId);
     }
 }
