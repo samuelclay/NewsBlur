@@ -94,11 +94,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     show_explainer_single_story_mode: function() {
+        if (NEWSBLUR.reader.active_story) return;
+        
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             'Select a story to read'
         ]);
 
-        this.$el.append($empty);
+        var $container = this.$el.closest(".NB-feed-stories-container");
+        $(".NB-story-list-empty", $container).remove();
+        $container.append($empty);
     },
     
     // ===========
@@ -142,6 +146,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     show_only_selected_story: function() {
+        var $container = this.$el.closest(".NB-feed-stories-container");
+        $(".NB-story-list-empty", $container).remove();
+        
         if (!NEWSBLUR.assets.preference('feed_view_single_story')) return;
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) return;
         
