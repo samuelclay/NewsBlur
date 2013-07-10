@@ -94,7 +94,7 @@ def feed_autocomplete(request):
         
     feed_ids = Feed.autocomplete(query)
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
-    feeds = [feed for feed in feeds if not feed.branch_from_feed]
+    feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     if format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
@@ -102,9 +102,9 @@ def feed_autocomplete(request):
             'label': feed.feed_title,
             'tagline': feed.data and feed.data.feed_tagline,
             'num_subscribers': feed.num_subscribers,
-        } for feed in feeds if feed]
+        } for feed in feeds]
     else:
-        feeds = [feed.canonical(full=True) for feed in feeds if feed]
+        feeds = [feed.canonical(full=True) for feed in feeds]
     feeds = sorted(feeds, key=lambda f: -1 * f['num_subscribers'])
     
     feed_ids = [f['id'] for f in feeds]
