@@ -103,6 +103,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
 
         NEWSBLUR.app.story_titles.end_loading();
+        NEWSBLUR.app.story_list.end_loading();
     },
     
     hide_stories_error: function() {

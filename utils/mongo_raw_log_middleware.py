@@ -8,7 +8,7 @@ import struct
 import bson
 from bson.errors import InvalidBSON
 
-class SqldumpMiddleware(object):
+class MongoDumpMiddleware(object):
     def __init__(self):
         if not settings.DEBUG:
             raise MiddlewareNotUsed()

@@ -184,13 +184,11 @@ NEWSBLUR.log = function(msg) {
 
           if (!me._autohider) {
             me.forceHide = function(e) {
-                console.log(["forceHide", e]);
               if (!e && options.onHide) options.onHide();
               me.hide();
               me.removeHide();
             };
             me.removeHide = function() {
-                console.log(["remove autohide"]);
               $(document).unbind('click.autohide', me._autohider);
               $(document).unbind('keypress.autohide', me._autohider);
               $(document).unbind('keyup.autohide', me._checkesc);
@@ -199,7 +197,6 @@ NEWSBLUR.log = function(msg) {
               me.forceHide = null;
             };
             me._autohider = function(e) {
-                console.log(["autohider", e, e.target]);
               if (me._autoignore) return;
               if (options.clickable && (me[0] == e.target || _.include($(e.target).parents(), me[0]))) return;
               if (options.onHide && !options.onHide(e, _.bind(me.forceHide, me))) return;
