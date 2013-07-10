@@ -1557,7 +1557,7 @@
         [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
 //    }
     
-    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:[feed objectForKey:feedIdStr]];
+    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
