@@ -8,8 +8,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -17,7 +15,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,16 +23,12 @@ import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
-import com.newsblur.domain.Folder;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
@@ -293,7 +286,7 @@ public class APIManager {
 		}
 	}
 
-	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber) {
+	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
@@ -301,6 +294,8 @@ public class APIManager {
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
+		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
 		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
 		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
@@ -340,10 +335,12 @@ public class APIManager {
 		}
 	}
 
-	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber) {
+	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		values.put(APIConstants.PARAMETER_USERNAME, username);
+		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
+        values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
@@ -802,10 +799,6 @@ public class APIManager {
 		final String parameterString = TextUtils.join("&", parameters);
 
         return this.post(urlString, parameterString);
-	}
-	
-	private APIResponse post(final String urlString, final ValueMultimap valueMap) {
-		return post(urlString, valueMap, true);
 	}
 	
 	private APIResponse post(final String urlString, final ValueMultimap valueMap, boolean jsonIfy) {

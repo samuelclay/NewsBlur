@@ -16,11 +16,6 @@ from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
-HEADERS = {
-    'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
-    'Connection': 'close',
-}
-
 class IconImporter(object):
     
     def __init__(self, feed, page_data=None, force=False):
@@ -217,8 +212,19 @@ class IconImporter(object):
             
         @timelimit(30)
         def _1(url):
+            headers = {
+                'User-Agent': 'NewsBlur Favicon Fetcher - %s subscriber%s - %s '
+                              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                              'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                              'Safari/534.48.3)' % (
+                    self.feed.num_subscribers,
+                    's' if self.feed.num_subscribers != 1 else '',
+                    self.feed.permalink,
+                ),
+                'Connection': 'close',
+            }
             try:
-                request = urllib2.Request(url, headers=HEADERS)
+                request = urllib2.Request(url, headers=headers)
                 icon = urllib2.urlopen(request).read()
             except Exception:
                 return None

@@ -20,6 +20,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+from django.template.defaultfilters import slugify
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -99,7 +100,11 @@ class Feed(models.Model):
     @property
     def title(self):
         return self.feed_title or "[Untitled]"
-        
+    
+    @property
+    def permalink(self):
+        return "%s/site/%s/%s" % (settings.NEWSBLUR_URL, self.pk, slugify(self.feed_title.lower()[:50]))
+    
     @property
     def favicon_url(self):
         if settings.BACKED_BY_AWS['icons_on_s3'] and self.s3_icon:

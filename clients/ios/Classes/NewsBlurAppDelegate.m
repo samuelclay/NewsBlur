@@ -1557,7 +1557,7 @@
         [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
 //    }
     
-    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:[feed objectForKey:feedIdStr]];
+    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
@@ -2593,7 +2593,7 @@
         NSString *filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
         NSDate *creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
         NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
-        NSDateFormatter *df = [NSDateFormatter alloc]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
         [df setDateFormat:@"EEEE d"];
         
         if ([creationDate compare:d] == NSOrderedAscending) {

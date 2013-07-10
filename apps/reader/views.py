@@ -96,7 +96,9 @@ def dashboard(request, **kwargs):
         url = "https://%s%s" % (Site.objects.get_current().domain,
                                  reverse('stripe-form'))
         return HttpResponseRedirect(url)
-    
+
+    logging.user(request, "~FBLoading dashboard")
+
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
@@ -125,6 +127,7 @@ def welcome(request, **kwargs):
         login_form  = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
     
+    logging.user(request, "~FBLoading welcome")
     
     return {
         'user_profile'      : hasattr(user, 'profile') and user.profile,
