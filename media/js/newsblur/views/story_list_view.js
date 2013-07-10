@@ -94,14 +94,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     show_explainer_single_story_mode: function() {
+        var $container = this.$el.closest(".NB-feed-stories-container");
+        $(".NB-story-list-empty", $container).remove();
+
         if (NEWSBLUR.reader.active_story) return;
         
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             'Select a story to read'
         ]);
 
-        var $container = this.$el.closest(".NB-feed-stories-container");
-        $(".NB-story-list-empty", $container).remove();
         $container.append($empty);
     },
     
