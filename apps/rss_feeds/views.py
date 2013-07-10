@@ -94,6 +94,7 @@ def feed_autocomplete(request):
         
     feed_ids = Feed.autocomplete(query)
     feeds = [Feed.get_by_id(feed_id) for feed_id in feed_ids]
+    feeds = [feed for feed in feeds if not feed.branch_from_feed]
     if format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
