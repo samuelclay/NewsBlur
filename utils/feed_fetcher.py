@@ -67,11 +67,14 @@ class FetchFeed:
             modified = None
             etag = None
         
-        USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
-            self.feed.num_subscribers,
-            's' if self.feed.num_subscribers != 1 else '',
-            settings.NEWSBLUR_URL
-        )
+        USER_AGENT = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
+                      '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                      'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                      'Safari/534.48.3)' % (
+                          self.feed.num_subscribers,
+                          's' if self.feed.num_subscribers != 1 else '',
+                          self.feed.permalink,
+                     ))
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
