@@ -3280,7 +3280,9 @@
             });
             
             // Hide menu on esc.
-            $('input,textarea', $manage_menu_container).bind('keydown.manage_menu', 'esc', function(e) {
+            $(document).add($('input,textarea', $manage_menu_container))
+                .unbind('keydown.manage_menu')
+                .bind('keydown.manage_menu', 'esc', function(e) {
                 e.preventDefault();
                 self.flags['showing_confirm_input_on_manage_menu'] = false;
                 self.hide_manage_menu(type, $item, true);
@@ -3322,6 +3324,9 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $(document).unbind('mouseup.menu');
+            $(document).add($('input,textarea', $manage_menu_container))
+                       .unbind('keydown.manage_menu');
+
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');
             }
@@ -5635,7 +5640,9 @@
             });
             $document.bind('keydown', 'esc', function(e) {
                 e.preventDefault();
-                if (!_.keys($.modal.impl.d).length) {
+                if (!_.keys($.modal.impl.d).length && 
+                    !NEWSBLUR.ReaderPopover.is_open() && 
+                    !self.flags['feed_list_showing_manage_menu']) {
                     self.show_splash_page();
                 }
             });
