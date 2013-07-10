@@ -6649,8 +6649,9 @@ form.opml_import_form input {
   margin: 0 20px 0 0;
   width: 235px;
 }
-.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut.NB-last {
+.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut:last-child {
   margin-bottom: 0;
+  margin-right: 0;
 }
 .NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter {
   overflow: hidden;
@@ -7987,9 +7988,11 @@ form.opml_import_form input {
   float: left;
   margin-right: 20px;
 }
-.NB-modal-keyboard .NB-keyboard-shortcut.NB-last {
+.NB-modal-keyboard .NB-keyboard-shortcut:last-child {
+  margin-bottom: 0;
   margin-right: 0;
-} 
+}
+
 
 .NB-keyboard-shortcut-key {
   border-radius: 6px;
