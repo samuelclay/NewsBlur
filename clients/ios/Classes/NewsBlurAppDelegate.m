@@ -2593,7 +2593,7 @@
         NSString *filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
         NSDate *creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
         NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
-        NSDateFormatter *df = [NSDateFormatter alloc]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
         [df setDateFormat:@"EEEE d"];
         
         if ([creationDate compare:d] == NSOrderedAscending) {

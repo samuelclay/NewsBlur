@@ -112,131 +112,133 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
     
-    UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
-                                          resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
-                                               forState:UIControlStateNormal
-                                             barMetrics:UIBarMetricsDefault];
-    UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
+    if (SYSTEM_VERSION_LESS_THAN(@"7")) {
+        UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
+                                              resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
+                                                   forState:UIControlStateNormal
+                                                 barMetrics:UIBarMetricsDefault];
+        UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
+                                            resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
+                                                   forState:UIControlStateSelected
+                                                 barMetrics:UIBarMetricsDefault];
+        UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
                                         resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
-                                               forState:UIControlStateSelected
-                                             barMetrics:UIBarMetricsDefault];
-    UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
-                                    resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
-                                 forLeftSegmentState:UIControlStateNormal
-                                   rightSegmentState:UIControlStateNormal
-                                          barMetrics:UIBarMetricsDefault];
-    UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
-                                  resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
-                                 forLeftSegmentState:UIControlStateSelected
-                                   rightSegmentState:UIControlStateNormal
-                                          barMetrics:UIBarMetricsDefault];
-    UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
-                                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
-                                 forLeftSegmentState:UIControlStateNormal
-                                   rightSegmentState:UIControlStateSelected
-                                          barMetrics:UIBarMetricsDefault];
-    [[UISegmentedControl appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                             UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
-                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateNormal];
-    [[UISegmentedControl appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                             UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
-                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateSelected];
-    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
-    [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
+        [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
+                                     forLeftSegmentState:UIControlStateNormal
+                                       rightSegmentState:UIControlStateNormal
+                                              barMetrics:UIBarMetricsDefault];
+        UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
+                                      resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
+                                     forLeftSegmentState:UIControlStateSelected
+                                       rightSegmentState:UIControlStateNormal
+                                              barMetrics:UIBarMetricsDefault];
+        UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
+                                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
+                                     forLeftSegmentState:UIControlStateNormal
+                                       rightSegmentState:UIControlStateSelected
+                                              barMetrics:UIBarMetricsDefault];
+        [[UISegmentedControl appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                                 UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
+                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateNormal];
+        [[UISegmentedControl appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
+                                 UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
+                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateSelected];
+        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
+        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
 
-    
-    UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-    UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-    UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-    UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-    
-    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
-                                                      forState:UIControlStateNormal
-                                                    barMetrics:UIBarMetricsDefault];
-    [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
+        
+        UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+        UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+        UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+        UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
+        
+        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
+                                                          forState:UIControlStateNormal
+                                                        barMetrics:UIBarMetricsDefault];
+        [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
 
-    
-    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
-                                                      forState:UIControlStateNormal
-                                                    barMetrics:UIBarMetricsLandscapePhone];
-    
-    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
-                                                      forState:UIControlStateHighlighted
-                                                    barMetrics:UIBarMetricsDefault];
-    
-    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
-                                                      forState:UIControlStateHighlighted 
-                                                    barMetrics:UIBarMetricsLandscapePhone];
-    
-    UIImage *b1 = [[UIImage imageNamed:@"button.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
-                   resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-    
-    [[UIBarButtonItem appearance] setBackgroundImage:b1
-                                            forState:UIControlStateNormal
-                                          barMetrics:UIBarMetricsDefault];
-    [[UIBarButtonItem appearance] setBackgroundImage:b2
-                                            forState:UIControlStateHighlighted
-                                          barMetrics:UIBarMetricsDefault];
-    [[UIBarButtonItem appearance] setBackgroundImage:b3
-                                            forState:UIControlStateNormal
-                                          barMetrics:UIBarMetricsLandscapePhone];
-    [[UIBarButtonItem appearance] setBackgroundImage:b4
-                                            forState:UIControlStateHighlighted
-                                          barMetrics:UIBarMetricsLandscapePhone];
+        
+        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
+                                                          forState:UIControlStateNormal
+                                                        barMetrics:UIBarMetricsLandscapePhone];
+        
+        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
+                                                          forState:UIControlStateHighlighted
+                                                        barMetrics:UIBarMetricsDefault];
+        
+        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
+                                                          forState:UIControlStateHighlighted 
+                                                        barMetrics:UIBarMetricsLandscapePhone];
+        
+        UIImage *b1 = [[UIImage imageNamed:@"button.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
+                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
+        
+        [[UIBarButtonItem appearance] setBackgroundImage:b1
+                                                forState:UIControlStateNormal
+                                              barMetrics:UIBarMetricsDefault];
+        [[UIBarButtonItem appearance] setBackgroundImage:b2
+                                                forState:UIControlStateHighlighted
+                                              barMetrics:UIBarMetricsDefault];
+        [[UIBarButtonItem appearance] setBackgroundImage:b3
+                                                forState:UIControlStateNormal
+                                              barMetrics:UIBarMetricsLandscapePhone];
+        [[UIBarButtonItem appearance] setBackgroundImage:b4
+                                                forState:UIControlStateHighlighted
+                                              barMetrics:UIBarMetricsLandscapePhone];
 
-    [[UIBarButtonItem appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
-                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateNormal];
-    [[UIBarButtonItem appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateSelected];
-    [[UIBarButtonItem appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                             UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateHighlighted];
-    [[UIBarButtonItem appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
-                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                             nil]
-     forState:UIControlStateDisabled];
+        [[UIBarButtonItem appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 UIColorFromRGB(0x404040), UITextAttributeTextColor,
+                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateNormal];
+        [[UIBarButtonItem appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateSelected];
+        [[UIBarButtonItem appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
+                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateHighlighted];
+        [[UIBarButtonItem appearance]
+         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
+                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
+                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
+                                 nil]
+         forState:UIControlStateDisabled];
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
