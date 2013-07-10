@@ -377,7 +377,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(seconds=20),
+        'schedule': datetime.timedelta(minutes=5),
         'options': {'queue': 'beat_tasks'},
     },
 }

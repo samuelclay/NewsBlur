@@ -148,6 +148,19 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
             $.make('div', { className: 'NB-fleuron' })
         ]);
+        
+        if (NEWSBLUR.assets.preference('story_layout') == 'list') {
+            var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
+            var endbar_height = 20;
+            var last_story_height = 100;
+            endbar_height = pane_height - last_story_height;
+            if (endbar_height <= 20) endbar_height = 20;
+
+            var empty_space = pane_height - last_story_height - endbar_height;
+            if (empty_space > 0) endbar_height += empty_space + 1;
+
+            $end_stories_line.css('paddingBottom', endbar_height);
+        }
 
         this.$el.append($end_stories_line);
     },
@@ -189,7 +202,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 position = scroll+container;
             }
 
-            NEWSBLUR.reader.$s.$story_titles.scrollTo(position, {
+            NEWSBLUR.reader.$s.$story_titles.stop().scrollTo(position, {
                 duration: NEWSBLUR.assets.preference('animations') ? 260 : 0,
                 queue: false
             });
@@ -207,14 +220,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
         var container_offset = $story_titles.position().top;
-        var visible_height = $story_titles.height();
+        var visible_height = $story_titles.height() * 2;
         var scroll_y = $story_titles.scrollTop();
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
         
-        if (NEWSBLUR.assets.preference('story_layout') == 'list') {
-            visible_height *= 2;
-        }
-
         // console.log(["scroll titles", container_offset, visible_height, scroll_y, total_height]);
         if (visible_height + scroll_y >= total_height) {
             NEWSBLUR.reader.load_page_of_feed_stories({scroll_to_loadbar: false});
