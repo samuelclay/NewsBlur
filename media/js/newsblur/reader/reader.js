@@ -824,7 +824,7 @@
             } else if ((this.story_view == 'feed' &&
                         !this.flags['temporary_story_view']) || 
                        this.flags['page_view_showing_feed_view']) {
-                this.$s.$feed_stories.scrollTo({
+                this.$s.$feed_scroll.scrollTo({
                     top: dir+'='+amount, 
                     left:'+=0'
                 }, 130, {queue: false});
@@ -1118,7 +1118,7 @@
                 delete this.flags.search;
             }
             this.model.flags['no_more_stories'] = false;
-            this.$s.$feed_stories.scrollTop(0);
+            this.$s.$feed_scroll.scrollTop(0);
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_sites_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
@@ -3303,7 +3303,7 @@
             if (type == 'feed' || type == 'socialfeed') {
                 $scroll = this.$s.$feed_list.parent();
             } else if (type == 'story') {
-                $scroll = this.$s.$story_titles.add(this.$s.$feed_stories);
+                $scroll = this.$s.$story_titles.add(this.$s.$feed_scroll);
             }
             $scroll && $scroll.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
