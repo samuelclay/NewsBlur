@@ -213,7 +213,7 @@ class ProcessFeed:
             self.feed.last_modified = None
             pass
         
-        self.fpf.entries = self.fpf.entries[:50]
+        self.fpf.entries = self.fpf.entries[:100]
         
         if self.fpf.feed.get('title'):
             self.feed.feed_title = self.fpf.feed.get('title')
