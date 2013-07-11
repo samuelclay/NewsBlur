@@ -17,7 +17,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import NewFeeds
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
@@ -127,6 +127,10 @@ class Profile(models.Model):
         activities = MActivity.objects.filter(with_user_id=self.user.pk)
         logging.user(self.user, "Deleting %s activities with user." % activities.count())
         activities.delete()
+        
+        starred_stories = MStarredStory.objects.filter(user_id=self.user.pk)
+        logging.user(self.user, "Deleting %s starred stories." % starred_stories.count())
+        starred_stories.delete()
         
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
