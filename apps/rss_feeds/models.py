@@ -1929,28 +1929,22 @@ class MStarredStory(mongo.Document):
         user_ids = sorted(user_ids, key=lambda x:x['stories'], reverse=True)
         print " ---> Found %s users with more than %s starred stories" % (len(user_ids), stories)
 
-        to_delete = []
-        usernames = {}
+        total = 0
         for stat in user_ids:
             try:
                 user = User.objects.select_related('profile').get(pk=stat['_id'])
             except User.DoesNotExist:
                 user = None
-            if not user or (not user.profile.is_premium and user.profile.last_seen_on < month_ago):
-                to_delete.append(stat['_id'])
-                usernames[stat['_id']] = user and user.username or None
-                print " ---> %20.20s: %-20.20s %s stories" % (user and user.profile.last_seen_on or "Deleted", usernames[stat['_id']] or " -", stat['stories'])
-            elif user.profile.is_premium and user.profile.last_seen_on < month_ago:
-                print " ---> %s is premium (%s)" % (user, user.profile.last_seen_on)
-        
-        print "\n\n ---> Deleting %s users' starred stories" % len(to_delete)
-        total = 0
-        for user_id in to_delete:
-            starred_stories = cls.objects.filter(user_id=user_id).count()
-            total += starred_stories
-            print " ---> %s had %s stories..." % (usernames[user_id], starred_stories)
+            
+            if user and (user.profile.is_premium or user.profile.last_seen_on > month_ago):
+                continue
+            
+            total += stat['stories']
+            print " ---> %20.20s: %-20.20s %s stories" % (user and user.profile.last_seen_on or "Deleted",
+                                                          user and user.username or " -", 
+                                                          stat['stories'])
             if not dryrun:
-                cls.objects.filter(user_id=user_id).delete()
+                cls.objects.filter(user_id=stat['_id']).delete()
         
         print " ---> Deleted %s stories in total." % total
 
