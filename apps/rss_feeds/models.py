@@ -19,6 +19,7 @@ from django.db import IntegrityError
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from mongoengine.queryset import OperationError, Q, NotUniqueError
@@ -1910,6 +1911,49 @@ class MStarredStory(mongo.Document):
                                  story_date=self.story_date,
                                  db_id=str(self.id))
     
+    @classmethod
+    def trim_old_stories(cls, stories=10, days=30, dryrun=False):
+        print " ---> Fetching starred story counts..."
+        stats = settings.MONGODB.newsblur.starred_stories.aggregate([{
+            "$group": {
+                "_id":      "$user_id",
+                "stories":  {"$sum": 1},
+            },
+        }, {
+            "$match": {
+                "stories": {"$gte": stories}
+            },
+        }])
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+        user_ids = stats['result']
+        user_ids = sorted(user_ids, key=lambda x:x['stories'], reverse=True)
+        print " ---> Found %s users with more than %s starred stories" % (len(user_ids), stories)
+
+        to_delete = []
+        usernames = {}
+        for stat in user_ids:
+            try:
+                user = User.objects.select_related('profile').get(pk=stat['_id'])
+            except User.DoesNotExist:
+                user = None
+            if not user or (not user.profile.is_premium and user.profile.last_seen_on < month_ago):
+                to_delete.append(stat['_id'])
+                usernames[stat['_id']] = user and user.username or None
+                print " ---> %20.20s: %-20.20s %s stories" % (user and user.profile.last_seen_on or "Deleted", usernames[stat['_id']] or " -", stat['stories'])
+            elif user.profile.is_premium and user.profile.last_seen_on < month_ago:
+                print " ---> %s is premium (%s)" % (user, user.profile.last_seen_on)
+        
+        print "\n\n ---> Deleting %s users' starred stories" % len(to_delete)
+        total = 0
+        for user_id in to_delete:
+            starred_stories = cls.objects.filter(user_id=user_id).count()
+            total += starred_stories
+            print " ---> %s had %s stories..." % (usernames[user_id], starred_stories)
+            if not dryrun:
+                cls.objects.filter(user_id=user_id).delete()
+        
+        print " ---> Deleted %s stories in total." % total
+
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
