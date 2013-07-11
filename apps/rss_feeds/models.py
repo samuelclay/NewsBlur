@@ -1941,9 +1941,9 @@ class MStarredStory(mongo.Document):
             
             total += stat['stories']
             print " ---> %20.20s: %-20.20s %s stories" % (user and user.profile.last_seen_on or "Deleted",
-                                                          user and user.username or " -", 
+                                                          user and user.username or " - ", 
                                                           stat['stories'])
-            if not dryrun:
+            if not dryrun and stat['_id']:
                 cls.objects.filter(user_id=stat['_id']).delete()
         
         print " ---> Deleted %s stories in total." % total
