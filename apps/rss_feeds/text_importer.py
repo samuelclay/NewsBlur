@@ -23,7 +23,7 @@ class TextImporter:
         }
     
     def fetch(self, skip_save=False):
-        html = requests.get(self.story.story_permalink, headers=self.headers)
+        html = requests.get(self.story.story_permalink, headers=self.headers, verify=False)
         text = html.text
         if html.encoding != 'utf-8':
             text = text.encode(html.encoding)

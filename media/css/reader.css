@@ -459,12 +459,10 @@ body {
   box-sizing: border-box;
 }
 .NB-story-list-empty {
-  background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
-  background-size: 64px;
   color: rgba(0, 0, 0, .4);
   opacity: .4;
   font-size: 16px;
-  padding: 78px 24px 0;
+  padding: 0 24px;
   position: absolute;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
   top: 40%;
@@ -477,6 +475,19 @@ body {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+.NB-story-list-empty .NB-world {
+  background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
+  background-size: 64px;
+  width: 100%;
+  height: 64px;
+  margin: 24px 0;
+}
+
+
+.NB-story-list-empty-subtitle {
+    font-size: 13px;
+    color: rgba(0, 0, 0, .3);
 }
 
 .NB-feedlists ::-moz-selection {
@@ -2806,6 +2817,10 @@ background: transparent;
 .NB-story-share-profiles.NB-story-share-profiles-shares .NB-story-share-profile {
     float: right;
 }
+.NB-story-share-profiles .NB-story-share-profiles-shares-public,
+.NB-story-share-profiles .NB-story-share-profiles-shares-friends {
+    display: inline;
+}
 .NB-story-share-profiles .NB-story-share-profiles-comments-public,
 .NB-story-share-profiles .NB-story-share-profiles-shares-public {
     opacity: .5;
@@ -3527,6 +3542,9 @@ background: transparent;
 .NB-feed-taskbar .NB-task-button.NB-disabled:hover {
     opacity: .2;
     cursor: default;
+}
+.NB-feed-taskbar .NB-task-story-next-unread {
+    min-width: 32px;
 }
 .NB-feed-taskbar .NB-task-add {
     float: left;

@@ -46,6 +46,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
     
     show_explainer_single_story_mode: function() {
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
+            $.make('div', { className: 'NB-world' }),
             'Select a story to read'
         ]);
 
