@@ -5,7 +5,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     events: {
         "dblclick .NB-story-title"      : "open_story_in_story_view",
         "click .NB-story-title"         : "select_story",
-        "contextmenu .NB-story-title"   : "show_manage_menu",
+        "contextmenu .NB-story-title"   : "show_manage_menu_rightclick",
         "click .NB-story-manage-icon"   : "show_manage_menu",
         "click .NB-storytitles-shares"  : "select_story_shared",
         "mouseenter .NB-story-title"    : "mouseenter_manage_icon",
@@ -306,6 +306,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             scroll_to_comments: true,
             scroll_offset: -50
         });
+    },
+    
+    show_manage_menu_rightclick: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
+        return this.show_manage_menu(e);
     },
     
     show_manage_menu: function(e) {

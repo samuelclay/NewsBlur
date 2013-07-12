@@ -90,7 +90,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         this.check_collapsed({skip_animation: true});
         this.update_hidden();
-        this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu, this));
+        this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
         
         return this;
     },
@@ -242,6 +242,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
         NEWSBLUR.reader.open_river_stories(this.$el, this.model);
+    },
+    
+    show_manage_menu_rightclick: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
+        return this.show_manage_menu(e);
     },
     
     show_manage_menu: function(e) {

@@ -16,7 +16,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title"            : "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
-        "contextmenu .NB-feed-story-header"     : "show_manage_menu",
+        "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
         "click .NB-feed-story-hide-changes"     : "hide_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
@@ -570,6 +570,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseleave: function() {
         
+    },
+    
+    show_manage_menu_rightclick: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
+        return this.show_manage_menu(e);
     },
 
     show_manage_menu: function(e) {
