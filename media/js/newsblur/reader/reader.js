@@ -3737,7 +3737,7 @@
             this.flags['unread_threshold_temporarily'] = null;
             this.switch_feed_view_unread_view(value);
             if (NEWSBLUR.app.story_titles_header) {
-                NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(initial_load);
+                NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(true);
             }
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             this.toggle_focus_in_slider();
