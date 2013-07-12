@@ -281,12 +281,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-contextmenus-2', type: 'radio', name: 'show_contextmenus', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-contextmenus-2' }, [
-                                    'Use native browser context menu'
+                                    'Use the native browser context menu'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Right-clicking titles'
+                            'Right-clicking',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
                         ])
                     ]),                    
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
