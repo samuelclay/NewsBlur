@@ -60,7 +60,7 @@ public class FeedUtils {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
-                return apiManager.markStoryAsUnread(story.feedId, story.id);
+                return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {

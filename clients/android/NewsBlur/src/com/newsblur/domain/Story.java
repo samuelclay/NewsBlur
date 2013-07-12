@@ -83,6 +83,9 @@ public class Story implements Serializable {
 	@SerializedName("long_parsed_date")
 	public String longDate;
 
+    @SerializedName("story_hash")
+    public String storyHash;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -108,6 +111,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
+        values.put(DatabaseConstants.STORY_HASH, storyHash);
 		return values;
 	}
 
@@ -136,6 +140,7 @@ public class Story implements Serializable {
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
+        story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
 		return story;
 	}
 
