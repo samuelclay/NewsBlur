@@ -13,7 +13,7 @@ from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
 from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
@@ -27,7 +27,8 @@ def login(request):
 
     if not user_agent or user_agent.lower() in ['nativehost']:
         errors = dict(user_agent="You must set a user agent to login.")
-        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s" % (user_agent))
+        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
+        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s / %s" % (user_agent, ip))
     elif request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.errors:
@@ -296,11 +297,19 @@ def share_story(request, token):
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
     
-    socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
-                                                subscription_user_id=profile.user.pk)
-    socialsub.mark_story_ids_as_read([shared_story.story_hash], 
-                                      shared_story.story_feed_id, 
-                                      request=request)
+    try:
+        socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
+                                                    subscription_user_id=profile.user.pk)
+    except MSocialSubscription.DoesNotExist:
+        socialsub = None
+    
+    if socialsub:
+        socialsub.mark_story_ids_as_read([shared_story.story_hash], 
+                                          shared_story.story_feed_id, 
+                                          request=request)
+    else:
+        RUserStory.mark_read(profile.user.pk, shared_story.story_feed_id, shared_story.story_hash)
+
 
     shared_story.publish_update_to_subscribers()
     

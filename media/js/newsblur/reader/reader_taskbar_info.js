@@ -51,7 +51,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         var $bar = $('.NB-river-progress-bar', $progress);
         var unreads;
         if (feeds_loading) unreads = feeds_loading;
-        else unreads = NEWSBLUR.reader.get_unread_count(false) / 10;
+        else unreads = NEWSBLUR.reader.get_total_unread_count(false) / 10;
         NEWSBLUR.reader.animate_progress_bar($bar, unreads / 10);
         
         $('.NB-river-progress-text', $progress).text(message);
@@ -103,6 +103,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
 
         NEWSBLUR.app.story_titles.end_loading();
+        NEWSBLUR.app.story_list.end_loading();
     },
     
     hide_stories_error: function() {

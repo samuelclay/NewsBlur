@@ -80,6 +80,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
+
         this.setup_classes();
         this.toggle_classes();
         this.toggle_read_status();
@@ -104,14 +105,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                               NEWSBLUR.reader.flags.social_view || 
                               this.options.show_feed_title;
         return {
-            story            : this.model,
-            feed             : show_feed_title && this.feed,
-            tag              : _.first(this.model.get("story_tags")),
-            title            : this.make_story_title(),
-            authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
-            tags_score       : this.classifiers && this.classifiers.tags,
-            options          : this.options,
-            truncatable      : this.is_truncatable()
+            story             : this.model,
+            feed              : show_feed_title && this.feed,
+            tag               : _.first(this.model.get("story_tags")),
+            title             : this.make_story_title(),
+            authors_score     : this.classifiers && 
+                                this.classifiers.authors[this.model.get('story_authors')],
+            tags_score        : this.classifiers && this.classifiers.tags,
+            options           : this.options,
+            truncatable       : this.is_truncatable(),
+            inline_story_title: this.options.inline_story_title
         };
     },
     
@@ -201,6 +204,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <%= story_share_view %>\
             </div>\
         </div>\
+        <% if (inline_story_title) { %>\
+            <div class="NB-feed-story-header-feed">\
+            </div>\
+        <% } %>\
     '),
     
     generate_gradients: function() {
@@ -305,7 +312,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
         this.toggle_intelligence();
         this.render_intelligence();
-
+        
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             this.$('.NB-story-sentiment').tipsy({
                 delayIn: 375,
@@ -362,7 +369,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     truncate_story_height: function() {
         if (this._truncated) return;
-        
+        // if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+
         // console.log(["Checking truncate", this.$el, this.images_to_load, this.truncate_delay / 1000 + " sec delay"]);
         var $expander = this.$(".NB-story-content-expander");
         var $expander_cutoff = this.$(".NB-story-cutoff");
@@ -468,11 +476,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             .removeClass('NB-score-now-0')
             .addClass('NB-score-now-'+score)
             .one('mouseleave', function() {
-                console.log(["leave", score]);
+                // console.log(["leave", score]);
                 $tag.removeClass('NB-score-now-'+score);
                 _.delay(function() {
                     $tag.one('mouseenter', function() {
-                        console.log(["enter", score]);
+                        // console.log(["enter", score]);
                         $tag.removeClass('NB-score-now-'+score);
                     });
                 }, 100);

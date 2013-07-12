@@ -315,7 +315,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
-    page = int(request.REQUEST.get('page', 1))
+    try:
+        page = int(request.REQUEST.get('page', 1))
+    except ValueError:
+        page = 1
     format = request.REQUEST.get('format', None)
     has_next_page = False
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
@@ -530,7 +533,6 @@ def mark_story_as_shared(request):
             "story_author_name": story.story_author_name,
             "story_tags": story.story_tags,
             "story_date": story.story_date,
-            "story_db_id": story.id,
             "user_id": request.user.pk,
             "comments": comments,
             "has_comments": bool(comments),
@@ -1078,7 +1080,9 @@ def ignore_follower(request):
 def find_friends(request):
     query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
-    profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
+    profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:

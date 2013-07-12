@@ -19,6 +19,7 @@ UserInterfaceState\.xcuserstate
 *.xcuserstate
 xcuserdata
 .xcodeproj/ push.xcodeproj/project.pbxproj
+clients/ios/NewsBlur.xcodeproj/project.xcworkspace/xcshareddata/
 *.mode1v3
 *.pbxuser
 media/maintenance.html

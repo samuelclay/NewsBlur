@@ -1,6 +1,7 @@
 import datetime
 import pickle
 import base64
+import httplib2
 from utils import log as logging
 from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 from bson.errors import InvalidStringData
@@ -29,7 +30,7 @@ def opml_upload(request):
     message = "OK"
     code = 1
     payload = {}
-
+    
     if request.method == 'POST':
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
@@ -55,6 +56,10 @@ def opml_upload(request):
                     payload = dict(folders=folders, delayed=True, feed_count=feed_count)
                     code = 2
                     message = ""
+                except AttributeError:
+                    code = -1
+                    message = "OPML import failed. Couldn't parse XML file."
+                    folders = None
 
             if folders:
                 feeds = UserSubscription.objects.filter(user=request.user).values()
@@ -146,6 +151,8 @@ def reader_callback(request):
         )
     FLOW.redirect_uri = STEP2_URI
     
+    http = httplib2.Http()
+    http.disable_ssl_certificate_validation = True
     try:
         credential = FLOW.step2_exchange(request.REQUEST)
     except FlowExchangeError:

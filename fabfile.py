@@ -110,6 +110,10 @@ def app():
     do()
     env.roles = ['app']
 
+def web():
+    do()
+    env.roles = ['app', 'push', 'work']
+
 def work():
     do()
     env.roles = ['work']
@@ -149,7 +153,7 @@ def ec2():
 
 def all():
     do()
-    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push']
+    env.roles = ['app', 'dev', 'db', 'task', 'debug', 'node', 'push', 'work']
 
 # =============
 # = Bootstrap =
@@ -173,10 +177,11 @@ def setup_common():
     setup_hosts()
     config_pgbouncer()
     setup_mongoengine_repo()
-    setup_forked_mongoengine()
+    # setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
+    # setup_imaging()
     setup_munin()
 
 def setup_all():
@@ -191,16 +196,25 @@ def setup_app(skip_common=False):
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
-    configure_nginx()
+    config_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
-    setup_node()
-    configure_node()
-    pre_deploy()
-    deploy()
+    # setup_node_app()
+    # config_node()
+    deploy_web()
     config_monit_app()
     done()
 
+def setup_app_image():
+    copy_app_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy_web()
+
+def setup_node():
+    setup_node_app()
+    config_node()
+    
 def setup_db(engine=None, skip_common=False):
     if not skip_common:
         setup_common()
@@ -238,17 +252,28 @@ def setup_task(queue=None, skip_common=False):
     config_monit_task()
     done()
 
+def setup_task_image():
+    copy_task_settings()
+    setup_hosts()
+    config_pgbouncer()
+    deploy()
+
 # ==================
 # = Setup - Common =
 # ==================
 
 def setup_installs():
     sudo('apt-get -y update')
-    sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit ufw')
-
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
+    
+    with settings(warn_only=True):
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
+        sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
+    
     # sudo('add-apt-repository ppa:pitti/postgresql')
-    sudo('apt-get -y update')
+    # sudo('apt-get -y update')
     # run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     # sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     with settings(warn_only=True):
@@ -308,7 +333,7 @@ def setup_local_files():
     put('config/ssh.conf', './.ssh/config')
 
 def setup_psql_client():
-    sudo('apt-get -y install postgresql-client')
+    sudo('apt-get -y --force-yes install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
 
@@ -341,6 +366,8 @@ def setup_python():
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
+        sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
     
     if env.user == 'ubuntu':
         with settings(warn_only=True):
@@ -348,7 +375,7 @@ def setup_python():
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
-    sudo('easy_install pil')
+    sudo('easy_install --always-unzip pil')
 
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
@@ -373,31 +400,30 @@ def config_pgbouncer():
 
 def bounce_pgbouncer():
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
-    run('sleep 4')
+    run('sleep 2')
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
-        run('sleep 4')
+        run('sleep 2')
     run('sudo /etc/init.d/pgbouncer start', pty=False)
-    run('sleep 2')
 
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_node():
     put('config/monit_node.conf', '/etc/monit/conf.d/node.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def config_monit_app():
     put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
-def config_monit_db():
-    put('config/monit_db.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
-    sudo('echo "startup=1" > /etc/default/monit')
+def config_monit_redis():
+    put('config/monit_redis.conf', '/etc/monit/conf.d/redis.conf', use_sudo=True)
+    sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
 def setup_mongoengine_repo():
@@ -483,9 +509,9 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
-    configure_nginx()
+    config_nginx()
 
-def configure_nginx():
+def config_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
     sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
     sudo("mkdir -p /var/log/nginx")
@@ -537,7 +563,7 @@ def setup_staging():
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
-def setup_node():
+def setup_node_app():
     sudo('add-apt-repository -y ppa:chris-lea/node.js')
     sudo('apt-get update')
     sudo('apt-get install -y nodejs')
@@ -545,10 +571,10 @@ def setup_node():
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
 
-def configure_node():
+def config_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
-    put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
+    # put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
@@ -699,16 +725,17 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    # shmmax = 2300047872
-    sudo('add-apt-repository ppa:pitti/postgresql')
+    shmmax = 2300047872
+    # sudo('su root -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main\" > /etc/apt/sources.list.d/pgdg.list"')
+    sudo('wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.2 postgresql-client postgresql-contrib libpq-dev')
+    sudo('apt-get -y install postgresql-9.2 postgresql-client-9.2 postgresql-contrib-9.2 libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
     ), '/etc/postgresql/9.2/main/postgresql.conf', use_sudo=True)
-    # sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
-    # sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
-    # sudo('sysctl -p')
+    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    sudo('sysctl -p')
 
     if standby:
         put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.2/recovery.conf', use_sudo=True)
@@ -717,13 +744,13 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql start')
 
 def copy_postgres_to_standby():
-    slave = 'db13'
+    slave = 'db02'
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
 
-    # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
+    # sudo('su postgres -c "psql -c \"SELECT pg_start_backup(\'label\', true)\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.2/main postgres@%s:/var/lib/postgresql/9.2/ --exclude postmaster.pid\"' % slave, pty=False)
-    sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
+    # sudo('su postgres -c "psql -c \"SELECT pg_stop_backup()\""', pty=False)
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -768,7 +795,7 @@ def setup_mongo_mms():
 
 
 def setup_redis(slave=False):
-    redis_version = '2.6.13'
+    redis_version = '2.6.14'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -825,6 +852,7 @@ def setup_munin():
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/redis_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
@@ -855,7 +883,7 @@ def setup_db_mdadm():
     sudo("sudo update-initramfs -u -v -k `uname -r`")
 
 def setup_original_page_server():
-    setup_node()
+    setup_node_app()
     sudo('mkdir -p /srv/originals')
     sudo('chown %s.%s -R /srv/originals' % (env.user, env.user))        # We assume that the group is the same name as the user. It's common on linux
     put('config/supervisor_node_original.conf',
@@ -914,16 +942,21 @@ def copy_task_settings():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name, size=2):
+def setup_do(name, size=2, image=None):
     INSTANCE_SIZE = "%sGB" % size
-    IMAGE_NAME = "Ubuntu 13.04 x64 Server"
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
     ssh_key_id = doapi.all_ssh_keys()[0].id
     region_id = doapi.regions()[0].id
-    images = dict((s.name, s.id) for s in doapi.images())
-    image_id = images[IMAGE_NAME]
+    if not image:
+        IMAGE_NAME = "Ubuntu 13.04 x64"
+        images = dict((s.name, s.id) for s in doapi.images())
+        image_id = images[IMAGE_NAME]
+    else:
+        IMAGE_NAME = image
+        images = dict((s.name, s.id) for s in doapi.images(show_all=False))
+        image_id = images[IMAGE_NAME]
     name = do_name(name)
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
@@ -964,7 +997,7 @@ def do_name(name):
         hosts = do_roledefs(split=False)
         hostnames = [host.name for host in hosts]
         existing_hosts = [hostname for hostname in hostnames if name in hostname]
-        for i in range(10, 50):
+        for i in range(1, 50):
             try_host = "%s%02d" % (name, i)
             if try_host not in existing_hosts:
                 print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 

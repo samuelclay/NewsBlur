@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import functools
 import hashlib
 
+
 class ratelimit(object):
     "Instances of this class can be used as decorators"
     # This class is designed to be sub-classed
@@ -84,7 +85,6 @@ class ratelimit(object):
         return key
     
     def disallowed(self, request):
-        "Over-ride this method if you want to log incidents"
         return HttpResponse('Rate limit exceeded', status=429)
     
     def expire_after(self):

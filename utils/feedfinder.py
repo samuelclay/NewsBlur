@@ -102,7 +102,7 @@ class URLGatekeeper:
         _debuglog("gatekeeper of %s says %s" % (url, allow))
         return allow
 
-    def get(self, url, check=True):
+    def get(self, url, check=False):
         if check and not self.can_fetch(url): return ''
         try:
             return requests.get(url, headers=dict(self.urlopener.addheaders)).content

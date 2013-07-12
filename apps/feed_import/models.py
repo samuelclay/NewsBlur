@@ -4,6 +4,7 @@ import httplib2
 import pickle
 import base64
 from StringIO import StringIO
+from oauth2client.client import Error as OAuthError
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree
 from django.db import models
@@ -104,7 +105,13 @@ class OPMLExporter(Importer):
         
     def fetch_feeds(self):
         subs = UserSubscription.objects.filter(user=self.user)
-        self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
+        self.feeds = []
+        for sub in subs:
+            try:
+                self.feeds.append((sub.feed_id, sub.canonical()))
+            except Feed.DoesNotExist:
+                continue
+        self.feeds = dict(self.feeds)
         
 
 class OPMLImporter(Importer):
@@ -122,10 +129,14 @@ class OPMLImporter(Importer):
         # self.clear_feeds()
         outline = opml.from_string(str(self.opml_xml))
         folders = self.get_folders()
-        folders = self.process_outline(outline, folders)
-        # self.clear_folders()
-        self.usf.folders = json.encode(folders)
-        self.usf.save()
+        try:
+            folders = self.process_outline(outline, folders)
+        except AttributeError:
+            folders = None
+        else:
+            # self.clear_folders()
+            self.usf.folders = json.encode(folders)
+            self.usf.save()
         
         return folders
         
@@ -344,7 +355,10 @@ class GoogleReaderImporter(Importer):
         
     def test(self):
         sub_url = "%s/0/token" % (self.scope)
-        resp = self.send_request(sub_url)
+        try:
+            resp = self.send_request(sub_url)
+        except OAuthError:
+            return False
         return resp
     
     @timelimit(10)

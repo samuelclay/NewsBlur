@@ -132,7 +132,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     story_id: this.queued_read_stories[feed.id],
                     feed_id: feed.id
                 }, null, null, {
-                    'ajax_group': $.browser.msie ? 'rapid' : 'queue_clear',
+                    'ajax_group': 'queue_clear',
                     'beforeSend': function() {
                         self.queued_read_stories = {};
                     }
@@ -1033,6 +1033,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
+        if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);
@@ -1281,6 +1282,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
       });
     },
     
+    fetch_categories: function(callback, error_callback) {
+        this.make_request('/categories/', null, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
+    subscribe_to_categories: function(categories, callback, error_callback) {
+        this.make_request('/categories/subscribe', {category: categories}, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
     fetch_friends: function(callback, error_callback) {
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
@@ -1426,10 +1443,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
     
-    refund_premium: function(user_id, callback, error_callback) {
-        this.make_request('/profile/refund_premium', {
-            user_id: user_id
-        }, callback, error_callback);
+    refund_premium: function(data, callback, error_callback) {
+        this.make_request('/profile/refund_premium', data, callback, error_callback);
     },
     
     delete_all_sites: function(callback, error_callback) {

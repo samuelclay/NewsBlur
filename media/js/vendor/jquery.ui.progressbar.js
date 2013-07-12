@@ -1,11 +1,12 @@
 /*!
- * jQuery UI Progressbar 1.8.23
+ * jQuery UI Progressbar 1.10.3
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Progressbar
+ * http://api.jqueryui.com/progressbar/
  *
  * Depends:
  *   jquery.ui.core.js
@@ -14,31 +15,37 @@
 (function( $, undefined ) {
 
 $.widget( "ui.progressbar", {
+	version: "1.10.3",
 	options: {
+		max: 100,
 		value: 0,
-		max: 100
+
+		change: null,
+		complete: null
 	},
 
 	min: 0,
 
 	_create: function() {
+		// Constrain initial value
+		this.oldValue = this.options.value = this._constrainedValue();
+
 		this.element
 			.addClass( "ui-progressbar ui-widget ui-widget-content ui-corner-all" )
 			.attr({
+				// Only set static values, aria-valuenow and aria-valuemax are
+				// set inside _refreshValue()
 				role: "progressbar",
-				"aria-valuemin": this.min,
-				"aria-valuemax": this.options.max,
-				"aria-valuenow": this._value()
+				"aria-valuemin": this.min
 			});
 
 		this.valueDiv = $( "<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>" )
 			.appendTo( this.element );
 
-		this.oldValue = this._value();
 		this._refreshValue();
 	},
 
-	destroy: function() {
+	_destroy: function() {
 		this.element
 			.removeClass( "ui-progressbar ui-widget ui-widget-content ui-corner-all" )
 			.removeAttr( "role" )
@@ -47,63 +54,92 @@ $.widget( "ui.progressbar", {
 			.removeAttr( "aria-valuenow" );
 
 		this.valueDiv.remove();
-
-		$.Widget.prototype.destroy.apply( this, arguments );
 	},
 
 	value: function( newValue ) {
 		if ( newValue === undefined ) {
-			return this._value();
+			return this.options.value;
 		}
 
-		this._setOption( "value", newValue );
-		return this;
+		this.options.value = this._constrainedValue( newValue );
+		this._refreshValue();
+	},
+
+	_constrainedValue: function( newValue ) {
+		if ( newValue === undefined ) {
+			newValue = this.options.value;
+		}
+
+		this.indeterminate = newValue === false;
+
+		// sanitize value
+		if ( typeof newValue !== "number" ) {
+			newValue = 0;
+		}
+
+		return this.indeterminate ? false :
+			Math.min( this.options.max, Math.max( this.min, newValue ) );
+	},
+
+	_setOptions: function( options ) {
+		// Ensure "value" option is set after other values (like max)
+		var value = options.value;
+		delete options.value;
+
+		this._super( options );
+
+		this.options.value = this._constrainedValue( value );
+		this._refreshValue();
 	},
 
 	_setOption: function( key, value ) {
-		if ( key === "value" ) {
-			this.options.value = value;
-			this._refreshValue();
-			if ( this._value() === this.options.max ) {
-				this._trigger( "complete" );
-			}
+		if ( key === "max" ) {
+			// Don't allow a max less than min
+			value = Math.max( this.min, value );
 		}
 
-		$.Widget.prototype._setOption.apply( this, arguments );
-	},
-
-	_value: function() {
-		var val = this.options.value;
-		// normalize invalid value
-		if ( typeof val !== "number" ) {
-			val = 0;
-		}
-		return Math.min( this.options.max, Math.max( this.min, val ) );
+		this._super( key, value );
 	},
 
 	_percentage: function() {
-		return 100 * this._value() / this.options.max;
+		return this.indeterminate ? 100 : 100 * ( this.options.value - this.min ) / ( this.options.max - this.min );
 	},
 
 	_refreshValue: function() {
-		var value = this.value();
-		var percentage = this._percentage();
+		var value = this.options.value,
+			percentage = this._percentage();
+
+		this.valueDiv
+			.toggle( this.indeterminate || value > this.min )
+			.toggleClass( "ui-corner-right", value === this.options.max )
+			.width( percentage.toFixed(0) + "%" );
+
+		this.element.toggleClass( "ui-progressbar-indeterminate", this.indeterminate );
+
+		if ( this.indeterminate ) {
+			this.element.removeAttr( "aria-valuenow" );
+			if ( !this.overlayDiv ) {
+				this.overlayDiv = $( "<div class='ui-progressbar-overlay'></div>" ).appendTo( this.valueDiv );
+			}
+		} else {
+			this.element.attr({
+				"aria-valuemax": this.options.max,
+				"aria-valuenow": value
+			});
+			if ( this.overlayDiv ) {
+				this.overlayDiv.remove();
+				this.overlayDiv = null;
+			}
+		}
 
 		if ( this.oldValue !== value ) {
 			this.oldValue = value;
 			this._trigger( "change" );
 		}
-
-		this.valueDiv
-			.toggle( value > this.min )
-			.toggleClass( "ui-corner-right", value === this.options.max )
-			.width( percentage.toFixed(0) + "%" );
-		this.element.attr( "aria-valuenow", value );
+		if ( value === this.options.max ) {
+			this._trigger( "complete" );
+		}
 	}
-});
-
-$.extend( $.ui.progressbar, {
-	version: "1.8.23"
 });
 
 })( jQuery );

@@ -38,6 +38,10 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         
         this.flags.showing_feed_selector = true;
         NEWSBLUR.reader.layout.leftLayout.sizePane('north');
+        
+        if (NEWSBLUR.reader.flags['sidebar_closed']) {
+            NEWSBLUR.reader.layout.outerLayout.show('west', true);
+        }
     },
     
     hide_feed_selector: function() {
@@ -58,6 +62,10 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
                     
         this.flags.showing_feed_selector = false;
         NEWSBLUR.reader.layout.leftLayout.sizePane('north');
+
+        if (NEWSBLUR.reader.flags['sidebar_closed']) {
+            NEWSBLUR.reader.layout.outerLayout.hide('west');
+        }
     },
     
     filter_feed_selector: function(e) {

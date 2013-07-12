@@ -3,7 +3,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
     className: "NB-add-popover",
     
     options: {
-        'width': 300,
+        'width': 380,
         'anchor': function() {
             return NEWSBLUR.reader.$s.$add_button;
         },
@@ -121,15 +121,12 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         
         $add.autocomplete({
             minLength: 1,
+            appendTo: ".NB-add-form",
             source: '/rss_feeds/feed_autocomplete',
             position: {
                 my: "left bottom",
                 at: "left top",
                 collision: "none"
-            },
-            focus: function(e, ui) {
-                $add.val(ui.item.value);
-                return false;
             },
             select: function(e, ui) {
                 $add.val(ui.item.value);
@@ -149,18 +146,18 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             },
             change: function(e, ui) {
             }
-        }).data("autocomplete")._renderItem = function(ul, item) {
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
             var feed = new NEWSBLUR.Models.Feed(item);
             return $.make('li', [
                 $.make('a', [
-                    $.make('div', { className: 'NB-add-autocomplete-subscribers'}, item.num_subscribers + Inflector.pluralize(' subscriber', item.num_subscribers)),
+                    $.make('div', { className: 'NB-add-autocomplete-subscribers'}, Inflector.pluralize(' subscriber', item.num_subscribers, true)),
                     $.make('img', { className: 'NB-add-autocomplete-favicon', src: $.favicon(feed) }),
                     $.make('div', { className: 'NB-add-autocomplete-title'}, item.label),
                     $.make('div', { className: 'NB-add-autocomplete-address'}, item.value)
                 ])
-            ]).data("item.autocomplete", item).prependTo(ul);
+            ]).data("ui-autocomplete-item", item).prependTo(ul);
         };
-        $add.data("autocomplete")._resizeMenu = function () {
+        $add.data("ui-autocomplete")._resizeMenu = function () {
             var ul = this.menu.element;
             ul.outerWidth(this.element.outerWidth());
         };

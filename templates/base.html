@@ -3,7 +3,7 @@
 <html>
 <head>
   <title>{% block title %}NewsBlur{% endblock %}</title>
-  <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/png" />
   <link rel="icon" href="{{ MEDIA_URL }}img/favicon_32.png" sizes="32x32"/>
   <link rel="icon" href="{{ MEDIA_URL }}img/favicon_64.png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
@@ -34,14 +34,13 @@
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 100,
-      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
+      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 242 %},
       'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
       'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},
       'story_titles_pane_size'  : 168,
       'story_pane_anchor'       : 'south',
-      'story_pane_hidden'       : false,
       'new_window'              : 1,
       'default_view'            : 'feed',
       'default_order'           : 'newest',

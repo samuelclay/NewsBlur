@@ -125,11 +125,13 @@ $(function() {
         if ($payextra.is(':checked')) {
             $label2.hide();
             $label3.show();
-            $radio3.attr('checked', true);
+            // $radio2.attr('checked', false);
+            $radio3.prop('checked', true);
         } else {
             $label2.show();
             $label3.hide();
-            $radio2.attr('checked', true);                            
+            // $radio3.attr('checked', false);
+            $radio2.prop('checked', true);
         }
     };
     $("input[name=payextra]").on('change', change_payextra);

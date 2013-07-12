@@ -11,6 +11,7 @@ from django.template import RequestContext
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFetchHistory
 from apps.rss_feeds.models import MFeedIcon
+from apps.push.models import PushSubscription
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
@@ -20,7 +21,7 @@ from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
 from utils.view_functions import required_params
-
+from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
 def search_feed(request):
@@ -92,7 +93,8 @@ def feed_autocomplete(request):
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
         
     feed_ids = Feed.autocomplete(query)
-    feeds = [Feed.get_by_id(feed_id) for feed_id in feed_ids]
+    feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
+    feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     if format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
@@ -100,9 +102,9 @@ def feed_autocomplete(request):
             'label': feed.feed_title,
             'tagline': feed.data and feed.data.feed_tagline,
             'num_subscribers': feed.num_subscribers,
-        } for feed in feeds if feed]
+        } for feed in feeds]
     else:
-        feeds = [feed.canonical(full=True) for feed in feeds if feed]
+        feeds = [feed.canonical(full=True) for feed in feeds]
     feeds = sorted(feeds, key=lambda f: -1 * f['num_subscribers'])
     
     feed_ids = [f['id'] for f in feeds]
@@ -128,6 +130,7 @@ def feed_autocomplete(request):
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
+    timezone = user.profile.timezone
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.update_all_statistics()
@@ -140,6 +143,14 @@ def load_feed_statistics(request, feed_id):
     stats['last_update'] = relative_timesince(feed.last_update)
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
     stats['push'] = feed.is_push
+    if feed.is_push:
+        try:
+            stats['push_expires'] = localtime_for_timezone(feed.push.lease_expires, 
+                                                           timezone).strftime("%Y-%m-%d %H:%M:%S")
+        except PushSubscription.DoesNotExist:
+            stats['push_expires'] = 'Missing push'
+            feed.is_push = False
+            feed.save()
 
     # Minutes between updates
     update_interval_minutes = feed.get_next_scheduled_update(force=True, verbose=False)
@@ -172,7 +183,6 @@ def load_feed_statistics(request, feed_id):
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     
     # Fetch histories
-    timezone = user.profile.timezone
     fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
     stats['feed_fetch_history'] = fetch_history['feed_fetch_history']
     stats['page_fetch_history'] = fetch_history['page_fetch_history']

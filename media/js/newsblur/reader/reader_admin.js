@@ -67,11 +67,12 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }
             
             if (data.is_premium) {
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: right" }, "Refund"));
-                $actions.append($.make('div', [
+                $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
                     "User is premium, expires: ",
                     (data.premium_expire || $.make('b', 'NEVER'))
                 ]));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
             } else {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
             }
@@ -89,7 +90,21 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         $.targetIs(e, { tagSelector: '.NB-admin-action-refund' }, function($t, $p) {
             e.preventDefault();
             
-            NEWSBLUR.assets.refund_premium(self.user.get('user_id'), function(data) {
+            NEWSBLUR.assets.refund_premium({
+                'user_id': self.user.get('user_id')
+            }, function(data) {
+                $(".NB-admin-action-refund").replaceWith($.make('div', 'Refunded $' + data.refunded));
+            }, function(data) {
+                $(".NB-admin-action-refund").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-refund-partial' }, function($t, $p) {
+            e.preventDefault();
+            
+            NEWSBLUR.assets.refund_premium({
+                'user_id': self.user.get('user_id'),
+                'partial': true
+            }, function(data) {
                 $(".NB-admin-action-refund").replaceWith($.make('div', 'Refunded $' + data.refunded));
             }, function(data) {
                 $(".NB-admin-action-refund").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));

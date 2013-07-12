@@ -857,9 +857,10 @@ class MSocialSubscription(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
-        stories_key         = 'B:%s' % (self.subscription_user_id)
-        read_stories_key    = 'RS:%s' % (self.user_id)
-        unread_stories_key  = 'UB:%s:%s' % (self.user_id, self.subscription_user_id)
+        stories_key             = 'B:%s' % (self.subscription_user_id)
+        read_stories_key        = 'RS:%s' % (self.user_id)
+        read_social_stories_key = 'RS:%s:B:%s' % (self.user_id, self.subscription_user_id)
+        unread_stories_key      = 'UB:%s:%s' % (self.user_id, self.subscription_user_id)
 
         if not r.exists(stories_key):
             return []
@@ -868,6 +869,7 @@ class MSocialSubscription(mongo.Document):
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            r.sdiffstore(unread_stories_key, unread_stories_key, read_social_stories_key)
 
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
         unread_ranked_stories_key   = 'z%sUB:%s:%s' % ('h' if hashes_only else '', 
@@ -970,14 +972,18 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_hash in set(story_hashes):
-            if not feed_id:
+            if feed_id is not None:
+                story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=feed_id)
+            if feed_id is None:
                 feed_id, _ = MStory.split_story_hash(story_hash)
-            RUserStory.mark_read(self.user_id, feed_id, story_hash)
-            
+
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            
+            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares)
+            
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
             if friends_with_shares:
@@ -1003,7 +1009,8 @@ class MSocialSubscription(mongo.Document):
     def mark_unsub_story_ids_as_read(cls, user_id, social_user_id, story_ids, feed_id=None,
                                      request=None):
         data = dict(code=0, payload=story_ids)
-        
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+
         if not request:
             request = User.objects.get(pk=user_id)
     
@@ -1019,7 +1026,13 @@ class MSocialSubscription(mongo.Document):
             except MSharedStory.DoesNotExist:
                 continue
                 
-            RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash)
+            # Find other social feeds with this story to update their counts
+            friend_key = "F:%s:F" % (user_id)
+            share_key = "S:%s" % (story.story_hash)
+            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            
+            RUserStory.mark_read(user_id, story.story_feed_id, story.story_hash,
+                                 social_user_ids=friends_with_shares)
             
             # Also count on original subscription
             usersubs = UserSubscription.objects.filter(user=user_id, feed=story.story_feed_id)
@@ -1213,7 +1226,6 @@ class MSharedStory(mongo.Document):
     has_replies              = mongo.BooleanField(default=False)
     replies                  = mongo.ListField(mongo.EmbeddedDocumentField(MCommentReply))
     source_user_id           = mongo.IntField()
-    story_db_id              = mongo.ObjectIdField()
     story_hash               = mongo.StringField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
@@ -1228,6 +1240,7 @@ class MSharedStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
     story_guid_hash          = mongo.StringField(max_length=6)
+    image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())
@@ -1240,7 +1253,6 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    ('user_id', 'story_db_id'),
                     'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
@@ -1356,16 +1368,7 @@ class MSharedStory(mongo.Document):
             } for story in other_stories]
         
         return your_story, same_stories, other_stories
-        
-    def ensure_story_db_id(self, save=True, force=False):
-        if not self.story_db_id or force:
-            story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
-            if story:
-                logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
-                self.story_db_id = story.id
-                if save:
-                    self.save()
-                
+    
     def set_source_user_id(self, source_user_id):
         if source_user_id == self.user_id:
             return
@@ -1489,6 +1492,7 @@ class MSharedStory(mongo.Document):
             story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
             story_db.pop('user_id', None)
+            story_db.pop('id', None)
             story_db.pop('comments', None)
             story_db.pop('replies', None)
             story_db['has_comments'] = False
@@ -1521,6 +1525,7 @@ class MSharedStory(mongo.Document):
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         if drop:
             for key_name in ["C", "S"]:
                 keys = r.keys("%s:*" % key_name)
@@ -1529,7 +1534,7 @@ class MSharedStory(mongo.Document):
                     r.delete(key)
         for story in cls.objects.all():
             story.sync_redis_shares(r=r)
-            story.sync_redis_story(r=h)
+            story.sync_redis_story(r=h, r2=h2)
     
     def sync_redis(self):
         self.sync_redis_shares()
@@ -1547,19 +1552,22 @@ class MSharedStory(mongo.Document):
         else:
             r.srem(comment_key, self.user_id)
 
-    def sync_redis_story(self, r=None):
+    def sync_redis_story(self, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
-        if not self.story_db_id:
-            self.ensure_story_db_id(save=True)
-            
-        if self.story_db_id:
-            r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-            r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-                   time.mktime(self.shared_date.timetuple()))
-            r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-            r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+        r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+        r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+               time.mktime(self.shared_date.timetuple()))
+        r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+               time.mktime(self.shared_date.timetuple()))
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1570,8 +1578,11 @@ class MSharedStory(mongo.Document):
         r.srem(comment_key, self.user_id)
 
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         h.srem('B:%s' % self.user_id, self.feed_guid_hash)
+        h2.srem('B:%s' % self.user_id, self.feed_guid_hash)
         h.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
+        h2.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
 
     def publish_update_to_subscribers(self):
         try:
@@ -1691,19 +1702,23 @@ class MSharedStory(mongo.Document):
         profiles = dict([(p['user_id'], p) for p in profiles])
         for s, story in enumerate(stories):
             for u, user_id in enumerate(story['shared_by_friends']):
+                if user_id not in profiles: continue
                 stories[s]['shared_by_friends'][u] = profiles[user_id]
             for u, user_id in enumerate(story['shared_by_public']):
+                if user_id not in profiles: continue
                 stories[s]['shared_by_public'][u] = profiles[user_id]
             for comment_set in ['friend_comments', 'public_comments']:
                 for c, comment in enumerate(story[comment_set]):
+                    if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
                     if comment['source_user_id']:
                         stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
                     for r, reply in enumerate(comment['replies']):
-                        if reply['user_id'] in profiles:
-                            stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
+                        if reply['user_id'] not in profiles: continue
+                        stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
                     stories[s][comment_set][c]['liking_user_ids'] = list(comment['liking_users'])
                     for u, user_id in enumerate(comment['liking_users']):
+                        if user_id not in profiles: continue
                         stories[s][comment_set][c]['liking_users'][u] = profiles[user_id]
 
         return stories
@@ -1711,9 +1726,13 @@ class MSharedStory(mongo.Document):
     @staticmethod
     def attach_users_to_comment(comment, profiles):
         profiles = dict([(p['user_id'], p) for p in profiles])
+
+        if comment['user_id'] not in profiles: return comment
         comment['user'] = profiles[comment['user_id']]
+
         if comment['source_user_id']:
             comment['source_user'] = profiles[comment['source_user_id']]
+
         for r, reply in enumerate(comment['replies']):
             comment['replies'][r]['user'] = profiles[reply['user_id']]
         comment['liking_user_ids'] = list(comment['liking_users'])

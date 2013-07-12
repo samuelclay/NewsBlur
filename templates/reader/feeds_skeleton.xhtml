@@ -196,9 +196,12 @@
             </ul>
             
             <ul class="segmented-control NB-taskbar NB-taskbar-layout">
+                <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="Full">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Full</span>
+                </li>
                 <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="Split">
                     <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Split</span>
                 </li>
                 <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="List">
                     <div class="NB-task-image"></div>
@@ -219,7 +222,7 @@
         <div class="content-pane">
             
             <div id="story_titles" class="right-north">
-                <div class="NB-feedbar"></div>
+                <div class="NB-story-titles-header NB-feedbar"></div>
                 <div class="NB-story-titles"></div>
             </div>
         
@@ -236,12 +239,17 @@
                     <iframe id="feed_iframe" class="NB-feed-iframe"></iframe>
                     <div class="NB-feed-story-view NB-view-hidden">
                         <div class="NB-feed-story-view-floater"></div>
-                        <ul class="NB-feed-stories"></ul>
+                        <div class="NB-feed-stories-container">
+                            <div class="NB-feed-story-view-header NB-feedbar"></div>
+                            <ul class="NB-feed-stories"></ul>
+                        </div>
                     </div>
                     <div class="NB-text-view">
                         <div class="NB-text-view-detail"></div>
                     </div>
-                    <iframe id="story_iframe" class="NB-story-iframe"></iframe>
+                    <div class="NB-story-view">
+                        <iframe id="story_iframe" class="NB-story-iframe"></iframe>
+                    </div>
                 </div>
             </div>
 

@@ -103,6 +103,7 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
@@ -376,7 +377,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=1),
+        'schedule': datetime.timedelta(minutes=2),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -429,6 +430,9 @@ REDIS = {
 }
 REDIS2 = {
     'host': 'db13',
+}
+REDIS3 = {
+    'host': 'db11',
 }
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
@@ -569,6 +573,8 @@ REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8
 
 REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
 
+REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS3['host'], port=6379, db=1)
+
 # ==========
 # = Assets =
 # ==========
@@ -576,8 +582,8 @@ REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 

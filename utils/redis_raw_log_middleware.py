@@ -4,7 +4,7 @@ from django.db import connection
 from redis.connection import Connection
 from time import time
 
-class SqldumpMiddleware(object):
+class RedisDumpMiddleware(object):
     def __init__(self):
         if not settings.DEBUG:
             raise MiddlewareNotUsed()

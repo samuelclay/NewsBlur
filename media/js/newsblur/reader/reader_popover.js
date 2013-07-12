@@ -7,6 +7,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     },
     
     initialize: function(options) {
+        _.bindAll(this, 'handle_esc');
         this.options = _.extend({}, {
             width: 236,
             animate: true,
@@ -15,6 +16,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 left: 0
             }
         }, this.options, options);
+        $(document).bind('keydown', 'esc', this.handle_esc);
     },
     
     render: function($content) {
@@ -58,6 +60,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         hide_callback = hide_callback || $.noop;
         this.$popover.removeClass('in');
         this.$overlay.removeClass('in');
+        $(document).unbind('keydown', this.handle_esc);
         this.options.on_hide && this.options.on_hide();
 
         function removeWithAnimation() {
@@ -104,23 +107,38 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         } else {
             return $(this.options.anchor);
         }
+    },
+    
+    handle_esc: function(e) {
+        if (this._open) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            this.close();
+            
+            return false;
+        }
     }
     
 }, {
     
     create: function(options) {
-        if (this._popover && this._popover._open) {
-            this._popover.close();
+        if (NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open) {
+            NEWSBLUR.ReaderPopover._popover.close();
         } else {
-            this._popover = new this(options);
+            NEWSBLUR.ReaderPopover._popover = new this(options);
         }
         
     },
     
     close: function() {
-        if (this._popover && this._popover._open) {
-            this._popover.close();
+        if (NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open) {
+            NEWSBLUR.ReaderPopover._popover.close();
         }
+    },
+    
+    is_open: function() {
+        return NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open;
     }
     
 });

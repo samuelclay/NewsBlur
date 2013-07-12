@@ -16,7 +16,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .folder_title"               : "open",
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
         "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-options"         : "open_options_popover",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
@@ -97,8 +96,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     render_folder: function($feeds) {
-        var $folder = _.template('\
-        <<%= list_type %> class="folder NB-folder">\
+        var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <div class="NB-folder-icon"></div>\
@@ -337,10 +335,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     mark_folder_as_read: function() {
         NEWSBLUR.reader.mark_folder_as_read();
         this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
-    },
-    
-    show_hidden_story_titles: function() {
-        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     },
     
     open_options_popover: function() {
