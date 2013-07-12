@@ -573,6 +573,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     show_manage_menu: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
         e.preventDefault();
         e.stopPropagation();
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
