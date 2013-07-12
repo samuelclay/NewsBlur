@@ -896,20 +896,48 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 }
 
+#pragma mark -
+#pragma mark Preferences
+
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
     } else {
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
-	
-	// your code here to reconfigure the app for changed settings
 }
 
 - (void)settingDidChange:(NSNotification*)notification {
 	if ([notification.object isEqual:@"offline_allowed"]) {
 		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"offline_allowed"] intValue];
-		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil : [NSSet setWithObjects:@"offline_image_download", @"offline_download_connection", nil] animated:YES];
+		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
+         [NSSet setWithObjects:@"offline_image_download",
+          @"offline_download_connection",
+          @"offline_store_limit",
+          @"offline_image_concurrency",
+          nil] animated:YES];
+	}
+}
+
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
+	if ([specifier.key isEqualToString:@"offline_cache_empty_stories"]) {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+        dispatch_async(queue, ^{
+            [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+                [db executeUpdate:@"DROP TABLE unread_hashes"];
+                [db executeUpdate:@"DROP TABLE unread_counts"];
+                [db executeUpdate:@"DROP TABLE accounts"];
+                [db executeUpdate:@"DROP TABLE stories"];
+                [db executeUpdate:@"DROP TABLE cached_images"];
+                [appDelegate setupDatabase:db];
+            }];
+            [appDelegate deleteAllCachedImages];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
+                                                          forKey:specifier.key];
+            });
+        });
 	}
 }
 
