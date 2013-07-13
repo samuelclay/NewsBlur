@@ -2310,17 +2310,22 @@
         [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
             [db executeUpdate:@"DROP TABLE unread_hashes"];
             [_self setupDatabase:db];
-            NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
+
+            id unread_object = [results objectForKey:@"unread_feed_story_hashes"];
+            if (![unread_object isKindOfClass:[NSDictionary class]])
+                return;
+
+            NSDictionary *hashes = (NSDictionary *) unread_object;
             for (NSString *feed in [hashes allKeys]) {
                 NSArray *story_hashes = [hashes objectForKey:feed];
                 for (NSArray *story_hash_tuple in story_hashes) {
                     [db executeUpdate:@"INSERT into unread_hashes"
-                     "(story_feed_id, story_hash, story_timestamp) VALUES "
-                     "(?, ?, ?)",
-                     feed,
-                     [story_hash_tuple objectAtIndex:0],
-                     [story_hash_tuple objectAtIndex:1]
-                     ];
+                                              "(story_feed_id, story_hash, story_timestamp) VALUES "
+                                              "(?, ?, ?)",
+                                      feed,
+                                      [story_hash_tuple objectAtIndex:0],
+                                      [story_hash_tuple objectAtIndex:1]
+                    ];
                 }
             }
         }];
