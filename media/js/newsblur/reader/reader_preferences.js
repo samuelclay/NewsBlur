@@ -432,14 +432,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
                                     'Manually by hitting ',
                                     $.make('div', { className: 'NB-keyboard-shortcut-key', 
-                                                    style: 'display: inline; float: none' }, [
+                                                    style: 'display: inline; float: none;margin: 0 4px' }, [
                                         'u'
+                                    ]),
+                                    'or',
+                                    $.make('div', { className: 'NB-keyboard-shortcut-key', 
+                                                    style: 'display: inline; float: none;margin: 0 4px' }, [
+                                        'm'
                                     ])
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Mark a story as read'
+                            'Mark a story as read',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Clicking on a story marks it as read immediately.')
                         ])
                     ])
 
