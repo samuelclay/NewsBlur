@@ -3,6 +3,8 @@
 #import "PocketService.h"
 #import "KeychainItemWrapper.h"
 #import "ShareThis.h"
+#import "NewsBlurAppDelegate.h"
+#import "StoryPageControl.h"
 
 //Success login or success posted
 const int SUCCESS = 200;
@@ -109,7 +111,7 @@ static PocketService *_manager;
             // Pocket uses the same status code for both login success and success posted
             if (![[keychain objectForKey:(__bridge id) kSecAttrAccount] isEqualToString:@""]
                 && [keychain objectForKey:(__bridge id)kSecValueData]) {
-                [self showAlertMessageWithTitle:@"Success" Message:@"Successfully Added!"];
+                [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
             } else {
                 [keychain setObject:self.username forKey:(__bridge id)kSecAttrAccount];
                 [keychain setObject:self.password forKey:(__bridge id)kSecValueData];
