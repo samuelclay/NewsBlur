@@ -34,12 +34,10 @@ public class FeedUtils {
 
 	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
 		if (story != null) {
-            final String feedId = story.feedId;
-            final String storyId = story.id;
             new AsyncTask<Void, Void, NewsBlurResponse>() {
                 @Override
                 protected NewsBlurResponse doInBackground(Void... arg) {
-                    return apiManager.markStoryAsStarred(feedId, storyId);
+                    return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
                 }
                 @Override
                 protected void onPostExecute(NewsBlurResponse result) {
