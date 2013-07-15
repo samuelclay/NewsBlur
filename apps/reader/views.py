@@ -784,6 +784,8 @@ def load_river_stories__redis(request):
     start             = time.time()
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    if not feed_ids:
+        feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
     story_hashes      = request.REQUEST.getlist('h')[:100]
     original_feed_ids = list(feed_ids)
     page              = int(request.REQUEST.get('page', 1))

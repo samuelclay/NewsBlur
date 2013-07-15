@@ -499,9 +499,9 @@
                                 self.feedPage];
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/reader/river_stories/?feeds=%@&page=%d", 
+                                @"%@/reader/river_stories/?f=%@&page=%d", 
                                 NEWSBLUR_URL,
-                                [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
+                                [appDelegate.activeFolderFeeds componentsJoinedByString:@"&f="],
                                 self.feedPage];
         }
         
