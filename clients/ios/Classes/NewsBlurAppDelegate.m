@@ -368,7 +368,13 @@
     preferencesViewController.showCreditsFooter = NO;
     preferencesViewController.title = @"Preferences";
     BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    preferencesViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"offline_image_download", @"offline_download_connection", nil];
+    preferencesViewController.hiddenKeys = enabled ? nil :
+    [NSSet setWithObjects:@"offline_image_download",
+     @"offline_download_connection",
+     @"offline_store_limit",
+     @"offline_image_concurrency",
+     nil];
+    [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..." forKey:@"offline_cache_empty_stories"];
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
@@ -2129,7 +2135,7 @@
         [db executeUpdate:@"drop table if exists `accounts`"];
         [db executeUpdate:@"drop table if exists `unread_counts`"];
         [db executeUpdate:@"drop table if exists `cached_images`"];
-        //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"];
+        //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
@@ -2191,6 +2197,7 @@
                                    " story_hash varchar(24),"
                                    " image_url varchar(1024),"
                                    " image_cached boolean"
+                                   " failed boolean"
                                    ")"];
     [db executeUpdate:createImagesTable];
     NSString *indexImagesFeedId = @"CREATE INDEX IF NOT EXISTS cached_images_story_feed_id ON cached_images (story_feed_id)";
@@ -2477,7 +2484,7 @@
             self.remainingUncachedImagesCount = count;
         }
         
-        int limit = 12;
+        int limit = 96;
         NSString *order;
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
             order = @"ASC";
@@ -2510,10 +2517,33 @@
     return urls;
 }
 
+- (void)deleteAllCachedImages {
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSError *error = nil;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
+    int removed = 0;
+    
+    if (error == nil) {
+        for (NSString *path in directoryContents) {
+            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:path];
+            BOOL removeSuccess = [fileManager removeItemAtPath:fullPath error:&error];
+            removed++;
+            if (!removeSuccess) {
+                continue;
+            }
+        }
+    }
+    
+    NSLog(@"Deleted %d images.", removed);
+}
+
 - (void)fetchAllUncachedImages {
     NSArray *urls = [self uncachedImageUrls];
     operationQueue = [[ASINetworkQueue alloc] init];
-    operationQueue.maxConcurrentOperationCount = 4;
+    operationQueue.maxConcurrentOperationCount = [[NSUserDefaults standardUserDefaults]
+                                                  integerForKey:@"offline_image_concurrency"];
     operationQueue.delegate = self;
     
     if ([urls count] == 0) {
@@ -2553,6 +2583,9 @@
         NSData *responseData = [request responseData];
         NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
         NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [operationQueue requestsCount]);
+        if ([responseData length] <= 43) {
+            NSLog(@" ---> Image url: %@", [request url]);
+        }
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);

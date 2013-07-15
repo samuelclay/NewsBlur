@@ -346,6 +346,10 @@
 - (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
+- (void)deleteAllCachedImages;
+- (NSArray *)uncachedImageUrls;
+- (void)fetchAllUncachedImages;
+- (void)storeCachedImage:(ASIHTTPRequest *)request;
 - (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
 - (void)flushOldCachedImages;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;

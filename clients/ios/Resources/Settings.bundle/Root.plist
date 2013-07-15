@@ -116,6 +116,72 @@
 			<key>Key</key>
 			<string>offline_download_connection</string>
 		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>More stories take more disk space, but otherwise storing more stories has no noticable effect on performance.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Store</string>
+			<key>Titles</key>
+			<array>
+				<string>500 stories</string>
+				<string>1,000 stories</string>
+				<string>2,000 stories</string>
+				<string>5,000 stories</string>
+				<string>10,000 stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>1000</string>
+			<key>Values</key>
+			<array>
+				<string>500</string>
+				<string>1000</string>
+				<string>2000</string>
+				<string>5000</string>
+				<string>10000</string>
+			</array>
+			<key>Key</key>
+			<string>offline_store_limit</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>More images at once means faster caching, but a less responsive app. Keep this to 1 image at a time if you read while downloading. Bump it up if you want to quickly cache as many images at once and won&apos;t be using the app during the caching process.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Download</string>
+			<key>Titles</key>
+			<array>
+				<string>1 image at a time</string>
+				<string>2 images at a time</string>
+				<string>3 images at a time</string>
+				<string>4 images at a time</string>
+				<string>5 images at a time</string>
+				<string>6 images at a time</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+			<key>Values</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+			</array>
+			<key>Key</key>
+			<string>offline_image_concurrency</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Delete offline stories...</string>
+			<key>Key</key>
+			<string>offline_cache_empty_stories</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>
