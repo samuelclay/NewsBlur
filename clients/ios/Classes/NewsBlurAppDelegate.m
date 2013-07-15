@@ -2281,7 +2281,6 @@
 }
 
 - (void)fetchUnreadHashes {
-    
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
                                        NEWSBLUR_URL]];
     ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
@@ -2330,6 +2329,28 @@
                      ];
                 }
             }
+            
+        }];
+        [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            // Once all unread hashes are in, only keep under preference for offline limit
+            NSInteger offlineLimit = [[NSUserDefaults standardUserDefaults] integerForKey:@"offline_store_limit"];
+            NSString *order;
+            NSString *orderComp;
+            if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+                order = @"ASC";
+                orderComp = @">";
+            } else {
+                order = @"DESC";
+                orderComp = @"<";
+            }
+            FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT story_timestamp FROM unread_hashes ORDER BY story_timestamp %@ LIMIT 1 OFFSET %d", order, offlineLimit]];
+            int offlineLimitTimestamp = 0;
+            while ([cursor next]) {
+                offlineLimitTimestamp = [cursor intForColumn:@"story_timestamp"];
+                break;
+            }
+            NSLog(@"Deleting stories over limit: %d - %d", offlineLimit, offlineLimitTimestamp);
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
         }];
         
         _self.totalUnfetchedStoryCount = 0;
@@ -2379,7 +2400,16 @@
                               (float)self.totalUnfetchedStoryCount);
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController showSyncingNotifier:progress hoursBack:hours];
+            if (![[[NSUserDefaults standardUserDefaults]
+                   objectForKey:@"offline_allowed"] boolValue]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.feedsViewController showDoneNotifier];
+                    [self.feedsViewController hideNotifier];
+                });
+                return;
+            } else {
+                [self.feedsViewController showSyncingNotifier:progress hoursBack:hours];
+            }
         });
     }];
     
@@ -2389,11 +2419,26 @@
 - (void)fetchAllUnreadStories {
     NSArray *hashes = [self unfetchedStoryHashes];
     
-    if ([hashes count] == 0) {
+    if (![[[NSUserDefaults standardUserDefaults]
+           objectForKey:@"offline_allowed"] boolValue]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController hideNotifier];
+        });
+        return;
+    } else if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController showCachingNotifier:0 hoursBack:1];
-            [self fetchAllUncachedImages];
+            if (![[[NSUserDefaults standardUserDefaults]
+                   objectForKey:@"offline_image_download"] boolValue]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.feedsViewController showDoneNotifier];
+                    [self.feedsViewController hideNotifier];
+                });
+                return;
+            } else {
+                [self.feedsViewController showCachingNotifier:0 hoursBack:1];
+                [self fetchAllUncachedImages];
+            }
         });
         return;
     }
@@ -2546,9 +2591,12 @@
                                                   integerForKey:@"offline_image_concurrency"];
     operationQueue.delegate = self;
     
-    if ([urls count] == 0) {
+    if (![[[NSUserDefaults standardUserDefaults]
+           objectForKey:@"offline_image_download"] boolValue] ||
+        [urls count] == 0) {
         NSLog(@"Finished caching images. %d total", self.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
+            [self.feedsViewController showDoneNotifier];
             [self.feedsViewController hideNotifier];
         });
         return;

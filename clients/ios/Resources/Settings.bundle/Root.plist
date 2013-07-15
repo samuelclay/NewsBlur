@@ -125,6 +125,7 @@
 			<string>Store</string>
 			<key>Titles</key>
 			<array>
+				<string>100 stories</string>
 				<string>500 stories</string>
 				<string>1,000 stories</string>
 				<string>2,000 stories</string>
@@ -132,14 +133,15 @@
 				<string>10,000 stories</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>1000</string>
+			<integer>1000</integer>
 			<key>Values</key>
 			<array>
-				<string>500</string>
-				<string>1000</string>
-				<string>2000</string>
-				<string>5000</string>
-				<string>10000</string>
+				<integer>100</integer>
+				<integer>500</integer>
+				<integer>1000</integer>
+				<integer>2000</integer>
+				<integer>5000</integer>
+				<integer>10000</integer>
 			</array>
 			<key>Key</key>
 			<string>offline_store_limit</string>

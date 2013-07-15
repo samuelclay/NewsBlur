@@ -423,12 +423,6 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 -(void)fetchFeedList:(BOOL)showLoader {
-    if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"On its way...";
-    }
-    
     NSURL *urlFeedList;
     
     if (self.inPullToRefresh_) {
@@ -453,6 +447,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
+    [self showRefreshNotifier];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -1539,7 +1534,7 @@ heightForHeaderInSection:(NSInteger)section {
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self hideNotifier];
-        [self showRefreshNotifier];
+        [self showCountingNotifier];
     });
 }
 
@@ -1748,6 +1743,14 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)showRefreshNotifier {
     [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"On its way...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showCountingNotifier {
+    [self.notifier hide];
+    self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Counting is difficult...";
     [self.notifier setProgress:0];
     [self.notifier show];
@@ -1756,6 +1759,13 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)showSyncingNotifier {
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showDoneNotifier {
+    self.notifier.style = NBDoneStyle;
+    self.notifier.title = @"All done";
     [self.notifier setProgress:0];
     [self.notifier show];
 }
@@ -1802,7 +1812,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideNotifier {
-    [self.notifier hide];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+        [self.notifier hide];
+    });
 }
 
 @end

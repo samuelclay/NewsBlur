@@ -20,7 +20,8 @@ typedef enum {
     NBOfflineStyle = 1,
     NBLoadingStyle = 2,
     NBSyncingStyle = 3,
-    NBSyncingProgressStyle = 4
+    NBSyncingProgressStyle = 4,
+    NBDoneStyle = 5
 } NBNotifierStyle;
 
 @property (nonatomic, strong) NSString *_text;
