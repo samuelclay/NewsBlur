@@ -118,7 +118,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             $search.focus();
         }
         
-        this.$el.bind('contextmenu', _.bind(this.show_manage_menu, this));
+        this.$el.bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
         
         return this;
     },
@@ -292,8 +292,15 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
+    show_manage_menu_rightclick: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
+        return this.show_manage_menu(e);
+    },
+    
     show_manage_menu: function(e) {
         if (this.options.feed_chooser) return;
+
         e.preventDefault();
         e.stopPropagation();
         NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);

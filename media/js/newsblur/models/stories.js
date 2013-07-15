@@ -126,6 +126,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
 
         if (options.skip_delay) {
             delay = 0;
+        } else if (options.force) {
+            delay = 0;
         } else if (delay == -1) {
             return;
         }
