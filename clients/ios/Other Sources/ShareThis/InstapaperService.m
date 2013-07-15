@@ -2,6 +2,8 @@
 
 #import "InstapaperService.h"
 #import "KeychainItemWrapper.h"
+#import "NewsBlurAppDelegate.h"
+#import "StoryPageControl.h"
 
 //Instapaper:Successfully logged in, Pocket: Success
 const int SUCCESS_LOGIN = 200;
@@ -102,7 +104,7 @@ static InstapaperService *_manager;
             [self postToService];
             break;
         case SUCCESS_POSTED:
-            [self showAlertMessageWithTitle:@"Success" Message:@"Successfully Added!"];
+            [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
             break;
         case BAD_REQUEST_INSTAPAPER:
             [self showAlertMessageWithTitle:@"Error" Message:@"Bad Request"];

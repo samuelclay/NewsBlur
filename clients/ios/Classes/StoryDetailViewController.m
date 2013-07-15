@@ -1359,6 +1359,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.storyHUD.labelText = @"No longer saved";
     } else if ([messageType isEqualToString:@"unread"]) {
         self.storyHUD.labelText = @"Unread";
+    } else if ([messageType isEqualToString:@"added"]) {
+        self.storyHUD.labelText = @"Added";
     }
     [self.storyHUD hide:YES afterDelay:1];
 }
