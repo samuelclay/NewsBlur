@@ -3,6 +3,8 @@
 #import "ReadabilityService.h"
 #import "GCOAuth.h"
 #import "ShareThis.h"
+#import "NewsBlurAppDelegate.h"
+#import "StoryPageControl.h"
 
 const int LOGIN_SUCCESS = 200;
 const int BOOKMARK_SUCCESS = 202;
@@ -168,7 +170,7 @@ static ReadabilityService *_manager;
             self.loggingIn = YES;
             break;
         case BOOKMARK_SUCCESS:
-            [self showAlertMessageWithTitle:@"Success" Message:@"Successfully Added!"];
+            [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
             break;
         case DUPLICATE_BOOKMARK:
             [self showAlertMessageWithTitle:@"Error" Message:@"Bookmark already exists!"];
