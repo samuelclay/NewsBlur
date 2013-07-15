@@ -987,11 +987,11 @@ class UserSubscriptionFolders(models.Model):
         subs = [us.feed_id for us in
                 UserSubscription.objects.filter(user=self.user).only('feed')]
         
-        missing_feeds = set(all_feeds) - set(subs)
-        if missing_feeds:
-            logging.debug(" ---> %s is missing %s feeds. Adding %s..." % (
-                          self.user, len(missing_feeds), missing_feeds))
-            for feed_id in missing_feeds:
+        missing_subs = set(all_feeds) - set(subs)
+        if missing_subs:
+            logging.debug(" ---> %s is missing %s subs. Adding %s..." % (
+                          self.user, len(missing_subs), missing_subs))
+            for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
@@ -1000,6 +1000,18 @@ class UserSubscriptionFolders(models.Model):
                     if not us.needs_unread_recalc:
                         us.needs_unread_recalc = True
                         us.save()
+
+        missing_folder_feeds = set(subs) - set(all_feeds)
+        if missing_folder_feeds:
+            user_sub_folders = json.decode(self.folders)
+            logging.debug(" ---> %s is missing %s folder feeds. Adding %s..." % (
+                          self.user, len(missing_folder_feeds), missing_folder_feeds))
+            for feed_id in missing_folder_feeds:
+                feed = Feed.get_by_id(feed_id)
+                if feed and feed.pk == feed_id:
+                    user_sub_folders = add_object_to_folder(feed_id.pk, "", user_sub_folders)
+            self.folders = json.encode(user_sub_folders)
+            self.save()
 
 
 class Feature(models.Model):
