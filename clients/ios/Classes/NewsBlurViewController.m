@@ -748,7 +748,7 @@ static const CGFloat kFolderTitleHeight = 28;
         if (self.inPullToRefresh_) {
             self.inPullToRefresh_ = NO;
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-                [self.appDelegate fetchUnreadHashes];
+                [self.appDelegate startOfflineQueue];
             }];
         } else {
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
@@ -1533,7 +1533,6 @@ heightForHeaderInSection:(NSInteger)section {
     [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self hideNotifier];
         [self showCountingNotifier];
     });
 }
@@ -1614,7 +1613,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
-    [self.appDelegate fetchUnreadHashes];
+    [self.appDelegate startOfflineQueue];
 }
 
 // called when the date shown needs to be updated, optional

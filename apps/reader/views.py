@@ -952,7 +952,7 @@ def unread_story_hashes(request):
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
-
+    time.sleep(1)
     return dict(unread_feed_story_hashes=story_hashes)
 
 @ajax_login_required
