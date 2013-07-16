@@ -113,6 +113,9 @@
 - (void)showShareHUD:(NSString *)msg;
 
 - (IBAction)showOriginalSubview:(id)sender;
+
+- (void)flashCheckmarkHud:(NSString *)messageType;
+
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
 - (IBAction)tapProgressBar:(id)sender;

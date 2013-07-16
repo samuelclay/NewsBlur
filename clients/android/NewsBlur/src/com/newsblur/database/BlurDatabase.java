@@ -83,6 +83,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		")";
 
     private final String STORY_TABLES_COLS = 
+		DatabaseConstants.STORY_HASH + TEXT + ", " +
 		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
 		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
 		DatabaseConstants.STORY_DATE + TEXT + ", " +

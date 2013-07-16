@@ -983,6 +983,9 @@
     [self.previousPage changeFontSize:fontSize];
 }
 
+#pragma mark -
+#pragma mark HUDs
+
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -991,6 +994,10 @@
     self.currentPage.noStorySelectedLabel.hidden = YES;
     self.nextPage.noStorySelectedLabel.hidden = YES;
     self.previousPage.noStorySelectedLabel.hidden = YES;
+}
+
+- (void)flashCheckmarkHud:(NSString *)messageType {
+    [[self currentPage] flashCheckmarkHud:messageType];
 }
 
 #pragma mark -

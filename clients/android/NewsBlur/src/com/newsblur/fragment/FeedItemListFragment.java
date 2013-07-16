@@ -38,15 +38,12 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	private ContentResolver contentResolver;
 	private String feedId;
 	private FeedItemsAdapter adapter;
-	private Uri storiesUri;
 	private int currentState;
 	private int currentPage = 1;
 	private boolean requestedPage = false;
-	private boolean doRequest = true;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
-	private Feed feed;
 	
     private StoryOrder storyOrder;
 
@@ -68,51 +65,43 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
 		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
-
-		if (!NetworkUtils.isOnline(getActivity())) {
-			doRequest = false;
-		}
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_itemlist, null);
+        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
-		itemList.setEmptyView(v.findViewById(R.id.empty_view));
+        itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
-		contentResolver = getActivity().getContentResolver();
-		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-
-		setupFeed();
-
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
-
-		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-		adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-		itemList.setOnScrollListener(this);
-
-		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
-		itemList.setAdapter(adapter);
-		itemList.setOnItemClickListener(this);
-		itemList.setOnCreateContextMenuListener(this);
-		
-		return v;
-	}
-
-    private void setupFeed() {
+        contentResolver = getActivity().getContentResolver();
+        Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+        Cursor storiesCursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+
         if (feedCursor.getCount() > 0) {
             feedCursor.moveToFirst();
-            feed = Feed.fromCursor(feedCursor);
+            Feed feed = Feed.fromCursor(feedCursor);
+
+            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
+            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
+
+            getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
+
+            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+            itemList.setOnScrollListener(this);
+
+            adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+            itemList.setAdapter(adapter);
+            itemList.setOnItemClickListener(this);
+            itemList.setOnCreateContextMenuListener(this);
         } else {
             Log.w(this.getClass().getName(), "Feed not found in DB, can't load.");
         }
+        
+        return v;
     }
 
 	@Override
@@ -130,7 +119,6 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	}
 
 	public void hasUpdated() {
-		setupFeed();
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
 		requestedPage = false;
 	}
@@ -154,12 +142,12 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		refreshStories();
 	}
 
-	@Override
-	protected void refreshStories() {
-		final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySortOrder(storyOrder));
-		adapter.swapCursor(cursor);
-	}
+    @Override
+    protected void refreshStories() {
+        Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+        Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+        adapter.swapCursor(cursor);
+    }
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {

@@ -34,19 +34,17 @@ public class FeedUtils {
 
 	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
 		if (story != null) {
-            final String feedId = story.feedId;
-            final String storyId = story.id;
             new AsyncTask<Void, Void, NewsBlurResponse>() {
                 @Override
                 protected NewsBlurResponse doInBackground(Void... arg) {
-                    return apiManager.markStoryAsStarred(feedId, storyId);
+                    return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
                 }
                 @Override
                 protected void onPostExecute(NewsBlurResponse result) {
                     if (!result.isError()) {
                         Toast.makeText(context, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_save_error)), Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -60,14 +58,14 @@ public class FeedUtils {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
-                return apiManager.markStoryAsUnread(story.feedId, story.id);
+                return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
                 if (!result.isError()) {
                     Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();

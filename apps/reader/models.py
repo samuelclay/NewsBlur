@@ -107,18 +107,18 @@ class UserSubscription(models.Model):
                      include_timestamps=False, group_by_feed=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
+        story_hashes = {} if group_by_feed else []
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
-                return []
+                return story_hashes
 
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
         unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
-        story_hashes = {} if group_by_feed else []
         feed_counter = 0
 
         for feed_id_group in chunks(feed_ids, 20):
