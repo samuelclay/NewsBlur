@@ -13,6 +13,7 @@
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
+- (BOOL)fetchStories;
 - (NSArray *)unfetchedStoryHashes;
 - (void)storeAllUnreadStories:(NSDictionary *)results;
 

@@ -18,11 +18,19 @@
 @synthesize appDelegate;
 
 - (void)main {
-    [self fetchImages];
+    while (YES) {
+        BOOL fetched = [self fetchImages];
+        NSLog(@"Fetched: %d", fetched);
+        if (!fetched) break;
+    }
 }
 
-- (void)fetchImages {
-    if (self.isCancelled) return;
+- (BOOL)fetchImages {
+    if (self.isCancelled) {
+        NSLog(@"Images cancelled.");
+        [imageDownloadOperationQueue cancelAllOperations];
+        return NO;
+    }
 
     NSLog(@"Fetching images...");
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
@@ -41,7 +49,7 @@
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
         });
-        return;
+        return NO;
     }
     
     NSMutableArray *downloadRequests = [NSMutableArray array];
@@ -53,19 +61,20 @@
         [request setUserInfo:@{@"story_hash": storyHash}];
         [request setDelegate:self];
         [request setDidFinishSelector:@selector(storeCachedImage:)];
-        [request setDidFailSelector:@selector(storeCachedImage:)];
+        [request setDidFailSelector:@selector(storeFailedImage:)];
         [request setTimeOutSeconds:5];
         [downloadRequests addObject:request];
     }
-    [imageDownloadOperationQueue addOperations:downloadRequests waitUntilFinished:YES];
-    
     [imageDownloadOperationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
     [imageDownloadOperationQueue setShouldCancelAllRequestsOnFailure:NO];
     [imageDownloadOperationQueue go];
+    [imageDownloadOperationQueue addOperations:downloadRequests waitUntilFinished:YES];
+    
     
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
     //    });
+    return YES;
 }
 
 - (NSArray *)uncachedImageUrls {
@@ -117,7 +126,11 @@
 }
 
 - (void)storeCachedImage:(ASIHTTPRequest *)request {
-    if (self.isCancelled) return;
+    if (self.isCancelled) {
+        NSLog(@"Image cancelled.");
+        [request clearDelegatesAndCancel];
+        return;
+    }
 
     NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
     
@@ -142,6 +155,16 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         [db executeUpdate:@"UPDATE cached_images SET "
          "image_cached = 1 WHERE story_hash = ?",
+         storyHash];
+    }];
+}
+
+- (void)storeFailedImage:(ASIHTTPRequest *)request {
+    NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
+    
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
+        [db executeUpdate:@"UPDATE cached_images SET "
+         "image_cached = 1, failed = 1 WHERE story_hash = ?",
          storyHash];
     }];
 }

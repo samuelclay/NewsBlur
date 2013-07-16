@@ -1748,7 +1748,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showCountingNotifier {
-    [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Counting is difficult...";
     [self.notifier setProgress:0];
@@ -1804,7 +1803,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showOfflineNotifier {
-    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];

@@ -2232,9 +2232,9 @@
         offlineQueue = [NSOperationQueue new];
     }
     offlineQueue.name = @"Offline Queue";
+    NSLog(@"Operation queue: %d", offlineQueue.operationCount);
     [offlineQueue cancelAllOperations];
     [offlineQueue setMaxConcurrentOperationCount:1];
-    
     OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
     
     [offlineQueue addOperation:operationSyncUnreads];

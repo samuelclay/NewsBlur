@@ -19,11 +19,18 @@
 @synthesize appDelegate;
 
 - (void)main {
-    [self fetchStories];
+    while (YES) {
+        BOOL fetched = [self fetchStories];
+        NSLog(@"Fetched: %d", fetched);
+        if (!fetched) break;
+    }
 }
 
-- (void)fetchStories {
-    if (self.isCancelled) return;
+- (BOOL)fetchStories {
+    if (self.isCancelled) {
+        NSLog(@"FetchStories is canceled.");
+        return NO;
+    }
 
     NSLog(@"Fetching Stories...");
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
@@ -34,7 +41,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController hideNotifier];
         });
-        return;
+        return NO;
     } else if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -47,7 +54,7 @@
                 [appDelegate startOfflineFetchImages];
             }
         });
-        return;
+        return NO;
     }
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
@@ -63,6 +70,8 @@
                                                              (unsigned long)NULL);
     [request start];
     [request waitUntilFinished];
+    
+    return YES;
 }
 
 - (NSArray *)unfetchedStoryHashes {
@@ -72,7 +81,6 @@
         NSString *commonQuery = @"FROM unread_hashes u "
         "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
         "WHERE s.story_hash IS NULL";
-        NSLog(@"Checking unfetched hashes...");
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
         if (appDelegate.totalUnfetchedStoryCount == 0) {
             appDelegate.totalUnfetchedStoryCount = count;
@@ -112,11 +120,8 @@
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results {
-    if (self.isCancelled) return;
-
-    __block BOOL anySuccess = NO;
-    
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
             BOOL inserted = [db executeUpdate:@"INSERT into stories "
                              "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
@@ -138,21 +143,13 @@
                      ];
                 }
             }
-            if (!anySuccess && inserted) anySuccess = YES;
+            if (inserted) anyInserted = YES;
         }
-        if (anySuccess) {
+        if (anyInserted) {
             appDelegate.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
                                                    objectForKey:@"story_timestamp"] intValue];
         }
     }];
-    
-    if (anySuccess) {
-        [self fetchStories];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController hideNotifier];
-        });
-    }
 }
 
 
