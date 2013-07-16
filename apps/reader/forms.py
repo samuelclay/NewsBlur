@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Q
+from django.conf import settings
 from apps.reader.models import Feature
 from apps.profile.tasks import EmailNewUser
 from apps.social.models import MActivity
@@ -146,6 +147,11 @@ class SignupForm(forms.Form):
         
         if new_user.email:
             EmailNewUser.delay(user_id=new_user.pk)
+        
+        if getattr(settings, 'AUTO_PREMIUM_NEW_USERS', False):
+            new_user.profile.activate_premium()
+        elif getattr(settings, 'AUTO_ENABLE_NEW_USERS', False):
+            new_user.profile.activate_free()
         
         return new_user
 
