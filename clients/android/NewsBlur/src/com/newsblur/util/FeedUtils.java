@@ -90,15 +90,17 @@ public class FeedUtils {
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
 
         for (Story story : stories) {
+            // ops for the local DB
             appendStoryReadOperations(story, updateOps);
+            // API call to ensure the story is marked read in the context of a feed
+            storiesJson.put(story.feedId, story.storyHash);
+            // API call to ensure the story is marked read in the context of a social share
             if (story.socialUserId != null) {
-                // TODO: some stories returned by /social/river_stories seem to have neither a
-                //  socialUserId nor a sourceUserId, so they accidentally get submitted non-
-                //  socially.  If the API fixes this before we ditch social-specific logic,
-                //  we can fix that bug right here.
-                putMapHeirarchy(socialStories, story.socialUserId, story.feedId, story.id);
-            } else {
-                storiesJson.put(story.feedId, story.id);
+                putMapHeirarchy(socialStories, story.socialUserId, story.feedId, story.storyHash);
+            } else if ((story.friendUserIds != null) && (story.friendUserIds.length > 0) && (story.friendUserIds[0] != null)) {
+                putMapHeirarchy(socialStories, story.friendUserIds[0], story.feedId, story.storyHash);
+            } else if ((story.sharedUserIds != null) && (story.sharedUserIds.length > 0) && (story.sharedUserIds[0] != null)) {
+                putMapHeirarchy(socialStories, story.sharedUserIds[0], story.feedId, story.storyHash);
             }
         }
 
