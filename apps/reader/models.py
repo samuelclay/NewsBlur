@@ -661,23 +661,28 @@ class RUserStory:
         
         p = r.pipeline()
         p2 = r2.pipeline()
+        feed_ids = set()
+        friend_ids = set()
         
         if not isinstance(story_hashes, list):
             story_hashes = [story_hashes]
         
         for story_hash in story_hashes:
             feed_id, _ = MStory.split_story_hash(story_hash)
+            feed_ids.add(feed_id)
 
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (user_id)
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
-        
+            friend_ids.update(friends_with_shares)
             cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p, r2=p2)
         
         p.execute()
         p2.execute()
-
+        
+        return feed_ids, friend_ids
+        
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
         if not r:
