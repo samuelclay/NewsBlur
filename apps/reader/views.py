@@ -1045,6 +1045,10 @@ def mark_story_hashes_as_read(request):
                 usersub.needs_unread_recalc = True
                 usersub.save()
             r.publish(request.user.username, 'feed:%s' % feed_id)
+    
+    hash_count = len(story_hashes)
+    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids))
 
     return dict(code=1, story_hashes=story_hashes, feed_ids=feed_ids, friend_user_ids=friend_ids)
 
