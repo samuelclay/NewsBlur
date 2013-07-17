@@ -87,9 +87,10 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
             String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
             int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
 
-            getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
+            // create the adapter before starting the loader, since the callback updates the adapter
             adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+            getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
             itemList.setOnScrollListener(this);
 

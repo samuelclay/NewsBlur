@@ -82,8 +82,8 @@ def list_do():
 def host(*names):
     env.hosts = []
     hostnames = do(split=True)
-    for role in hostnames.keys():
-        for host in hostnames[role]:
+    for role, hosts in hostnames.items():
+        for host in hosts:
             if isinstance(host, dict) and host['name'] in names:
                 env.hosts.append(host['address'])
     print " ---> Using %s as hosts" % env.hosts
@@ -94,7 +94,6 @@ def host(*names):
 
 def server():
     env.NEWSBLUR_PATH = "/srv/newsblur"
-    env.SECRETS_PATH  = "/srv/secrets-newsblur"
     env.VENDOR_PATH   = "/srv/code"
 
 def do(split=False):
@@ -262,29 +261,58 @@ def setup_task_image():
 # = Setup - Common =
 # ==================
 
+def done():
+    print "\n\n\n\n-----------------------------------------------------"
+    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % env.host_string
+    print "\n\n-----------------------------------------------------\n\n\n\n"
+
 def setup_installs():
+    packages = [
+        'build-essential',
+        'gcc',
+        'scons',
+        'libreadline-dev',
+        'sysstat',
+        'iotop',
+        'git',
+        'python-dev',
+        'locate',
+        'python-software-properties',
+        'software-properties-common',
+        'libpcre3-dev',
+        'libncurses5-dev',
+        'libdbd-pg-perl',
+        'libssl-dev',
+        'make',
+        'pgbouncer',
+        'python-setuptools',
+        'python-psycopg2',
+        'libyaml-0-2',
+        'python-yaml',
+        'python-numpy',
+        'python-scipy',
+        'curl',
+        'monit',
+        'ufw',
+        'libjpeg8',
+        'libjpeg62-dev',
+        'libfreetype6',
+        'libfreetype6-dev',
+        'python-imaging',
+    ]
     sudo('apt-get -y update')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install build-essential gcc scons libreadline-dev sysstat iotop git python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-setuptools python-psycopg2 libyaml-0-2 python-yaml python-numpy python-scipy curl monit ufw libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev python-imaging')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib")
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib")
     
-    # sudo('add-apt-repository ppa:pitti/postgresql')
-    # sudo('apt-get -y update')
-    # run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
-    # sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     with settings(warn_only=True):
         sudo('mkdir -p %s' % env.VENDOR_PATH)
         sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
 
-def done():
-    print "\n\n-----------------------------------------------------"
-    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % env.host_string
-    print "\n\n-----------------------------------------------------\n\n"
-    
 def change_shell():
     sudo('apt-get -y install zsh')
     with settings(warn_only=True):
@@ -302,8 +330,8 @@ def setup_user():
     run('echo `cat authorized_keys` >> ~/.ssh/authorized_keys')
     run('rm authorized_keys')
 
-def add_machine_to_ssh():
-    put("~/.ssh/id_dsa.pub", "local_keys")
+def copy_ssh_keys():
+    put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), "local_keys")
     run("echo `cat local_keys` >> .ssh/authorized_keys")
     run("rm local_keys")
 
@@ -386,11 +414,12 @@ def setup_supervisor():
 
 @parallel
 def setup_hosts():
-    put('../secrets-newsblur/configs/hosts', '/etc/hosts', use_sudo=True)
+    put(os.path.join(env.SECRETS_PATH, 'configs/hosts'), '/etc/hosts', use_sudo=True)
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put('../secrets-newsblur/configs/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put(os.path.join(env.SECRETS_PATH, 'configs/pgbouncer_auth.conf'), 
+        '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
@@ -580,17 +609,17 @@ def config_node():
 
 @parallel
 def copy_app_settings():
-    put('../secrets-newsblur/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    put(os.path.join(env.SECRETS_PATH, 'settings/app_settings.py'), 
+        '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 def copy_certificates():
     cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
     run('mkdir -p %s' % cert_path)
-    put('../secrets-newsblur/certificates/newsblur.com.crt', cert_path)
-    put('../secrets-newsblur/certificates/newsblur.com.key', cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
-    # put('../secrets-newsblur/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 @parallel
 def maintenance_on():
@@ -621,7 +650,8 @@ def setup_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
-        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+        put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
+            '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" > /etc/default/haproxy')
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
@@ -636,7 +666,8 @@ def config_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
-        put('../secrets-newsblur/configs/haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
+        put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
+            '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('/etc/init.d/haproxy reload')
 
 def upgrade_django():
@@ -787,7 +818,8 @@ def setup_mongo_mongos():
 
 def setup_mongo_mms():
     pull()
-    put('../secrets-newsblur/settings/mongo_mms_settings.py', '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
+    put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_settings.py'),
+        '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
     sudo('supervisorctl reread')
@@ -935,7 +967,8 @@ def copy_task_settings():
         host = env.host_string.split('.', 2)[0]
 
     with settings(warn_only=True):
-        put('../secrets-newsblur/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        put(os.path.join(env.SECRETS_PATH, 'settings/task_settings.py'), 
+            '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 # =========================
@@ -1015,9 +1048,7 @@ def add_user_to_do():
     run('rm -fr ~%s/.ssh/id_dsa*' % (repo_user))
     run('ssh-keygen -t dsa -f ~%s/.ssh/id_dsa -N ""' % (repo_user))
     run('touch ~%s/.ssh/authorized_keys' % (repo_user))
-    put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % (repo_user))
-    run('rm authorized_keys')
+    copy_ssh_keys()
     run('chown %s.%s -R ~%s/.ssh' % (repo_user, repo_user, repo_user))
     env.user = repo_user
 

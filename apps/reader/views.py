@@ -1016,7 +1016,38 @@ def mark_story_as_read(request):
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     return data
+
+@ajax_login_required
+@json.json_view
+def mark_story_hashes_as_read(request):
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    story_hashes = request.REQUEST.getlist('story_hash')
     
+    feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
+
+    if friend_ids:
+        socialsubs = MSocialSubscription.objects.filter(
+                        user_id=request.user.pk,
+                        subscription_user_id__in=friend_ids)
+        for socialsub in socialsubs:
+            if not socialsub.needs_unread_recalc:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+
+    
+    # Also count on original subscription
+    for feed_id in feed_ids:
+        usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+        if usersubs:
+            usersub = usersubs[0]
+            if not usersub.needs_unread_recalc:
+                usersub.needs_unread_recalc = True
+                usersub.save()
+            r.publish(request.user.username, 'feed:%s' % feed_id)
+
+    return dict(code=1, story_hashes=story_hashes, feed_ids=feed_ids, friend_user_ids=friend_ids)
+
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
