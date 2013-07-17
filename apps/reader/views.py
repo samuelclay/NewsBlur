@@ -1019,7 +1019,16 @@ def mark_story_as_read(request):
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     return data
+
+@ajax_login_required
+@json.json_view
+def mark_story_hashes_as_read(request):
+    story_hashes = request.REQUEST.getlist('story_hash')
+
+    hashes_read = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
     
+    return dict(code=1, hashes_read=hashes_read)
+
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):

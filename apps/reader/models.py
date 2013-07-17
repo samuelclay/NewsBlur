@@ -653,6 +653,32 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
+    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, r2=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        
+        p = r.pipeline()
+        p2 = r2.pipeline()
+        
+        if not isinstance(story_hashes, list):
+            story_hashes = [story_hashes]
+        
+        for story_hash in story_hashes:
+            feed_id, _ = MStory.split_story_hash(story_hash)
+
+            # Find other social feeds with this story to update their counts
+            friend_key = "F:%s:F" % (user_id)
+            share_key = "S:%s" % (story_hash)
+            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+        
+            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p, r2=p2)
+        
+        p.execute()
+        p2.execute()
+
+    @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
