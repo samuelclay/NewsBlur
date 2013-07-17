@@ -265,7 +265,7 @@
           desc: "List of story hashes to mark as read."
           required: true
           example: >
-            story_hash=123:a1de23f&story_hash=1456789:4e3c12
+            story_hash=123:a1d62b&story_hash=1456789:4e3c12
           
     - url: /reader/mark_story_as_read
       method: POST
