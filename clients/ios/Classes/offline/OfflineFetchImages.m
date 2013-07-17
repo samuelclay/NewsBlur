@@ -86,7 +86,7 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSString *commonQuery = @"FROM cached_images c "
         "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
-        "WHERE c.image_cached is null ";
+        "WHERE c.image_cached is null and c.failed != 1 ";
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
         if (appDelegate.totalUncachedImagesCount == 0) {
             appDelegate.totalUncachedImagesCount = count;
