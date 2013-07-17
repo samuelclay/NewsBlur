@@ -681,7 +681,7 @@ class RUserStory:
         p.execute()
         p2.execute()
         
-        return feed_ids, friend_ids
+        return list(feed_ids), list(friend_ids)
         
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
