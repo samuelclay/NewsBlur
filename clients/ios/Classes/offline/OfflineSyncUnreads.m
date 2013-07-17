@@ -16,6 +16,7 @@
 @implementation OfflineSyncUnreads
 
 @synthesize appDelegate;
+@synthesize request;
 
 - (void)main {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
@@ -25,15 +26,16 @@
         [appDelegate.feedsViewController showSyncingNotifier];
     });
 
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
+    NSURL *url = [NSURL URLWithString:[NSString
+                                       stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
                                        NEWSBLUR_URL]];
-    AFJSONRequestOperation *request = [AFJSONRequestOperation
-                                       JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
-                                       success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                                           [self storeUnreadHashes:JSON];
-                                       } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                           NSLog(@"Failed fetch all story hashes.");                                           
-                                       }];
+    request = [AFJSONRequestOperation
+               JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
+               success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                   [self storeUnreadHashes:JSON];
+               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                   NSLog(@"Failed fetch all story hashes.");                                           
+               }];
     request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                              (unsigned long)NULL);
     [request start];
@@ -41,7 +43,11 @@
 }
 
 - (void)storeUnreadHashes:(NSDictionary *)results {
-    if (self.isCancelled) return;
+    if (self.isCancelled) {
+        NSLog(@"Canceled storing unread hashes");
+        [request cancel];
+        return;
+    }
     
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSLog(@"Storing unread story hashes...");
@@ -90,8 +96,8 @@
     appDelegate.totalUncachedImagesCount = 0;
     appDelegate.remainingUncachedImagesCount = 0;
     
-    [appDelegate startOfflineFetchStories];
     NSLog(@"Done syncing Unreads...");
+    [appDelegate startOfflineFetchStories];
 }
 
 @end

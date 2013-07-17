@@ -951,7 +951,6 @@ def unread_story_hashes(request):
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps)
-
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
     return dict(unread_feed_story_hashes=story_hashes)

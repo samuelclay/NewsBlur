@@ -242,6 +242,7 @@
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
+- (void)registerDefaultsFromSettingsBundle;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;

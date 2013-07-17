@@ -19,6 +19,8 @@
 @synthesize appDelegate;
 
 - (void)main {
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+
     while (YES) {
         BOOL fetched = [self fetchStories];
         NSLog(@"Fetched: %d", fetched);
@@ -31,18 +33,21 @@
         NSLog(@"FetchStories is canceled.");
         return NO;
     }
-
-    NSLog(@"Fetching Stories...");
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    NSArray *hashes = [self unfetchedStoryHashes];
+    
     
     if (![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_allowed"] boolValue]) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
         });
         return NO;
-    } else if ([hashes count] == 0) {
+    }
+    NSLog(@"Fetching Stories...");
+    
+    NSArray *hashes = [self unfetchedStoryHashes];
+    
+    if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (![[[NSUserDefaults standardUserDefaults]

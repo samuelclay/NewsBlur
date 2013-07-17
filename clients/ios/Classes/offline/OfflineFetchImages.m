@@ -18,6 +18,8 @@
 @synthesize appDelegate;
 
 - (void)main {
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+
     while (YES) {
         BOOL fetched = [self fetchImages];
         NSLog(@"Fetched: %d", fetched);
@@ -33,7 +35,6 @@
     }
 
     NSLog(@"Fetching images...");
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSArray *urls = [self uncachedImageUrls];
 
     imageDownloadOperationQueue = [[ASINetworkQueue alloc] init];
@@ -43,6 +44,8 @@
     
     if (![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_image_download"] boolValue] ||
+        ![[[NSUserDefaults standardUserDefaults]
+           objectForKey:@"offline_allowed"] boolValue] ||
         [urls count] == 0) {
         NSLog(@"Finished caching images. %d total", appDelegate.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -131,32 +134,36 @@
         [request clearDelegatesAndCancel];
         return;
     }
-
-    NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
     
-    if ([request responseStatusCode] == 200) {
-        NSData *responseData = [request responseData];
-        NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
-        NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
-        if ([responseData length] <= 43) {
-            NSLog(@" ---> Image url: %@", [request url]);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^{
+        
+        NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
+        
+        if ([request responseStatusCode] == 200) {
+            NSData *responseData = [request responseData];
+            NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
+            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
+            if ([responseData length] <= 43) {
+                NSLog(@" ---> Image url: %@", [request url]);
+            }
+            
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", md5Url]];
+            
+            [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
+        } else {
+            NSLog(@"Failed to fetch: %@ / %@", [[request originalURL] absoluteString], storyHash);
         }
         
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", md5Url]];
-        
-        [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
-    } else {
-        NSLog(@"Failed to fetch: %@ / %@", [[request originalURL] absoluteString], storyHash);
-    }
-    
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
-        [db executeUpdate:@"UPDATE cached_images SET "
-         "image_cached = 1 WHERE story_hash = ?",
-         storyHash];
-    }];
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            [db executeUpdate:@"UPDATE cached_images SET "
+             "image_cached = 1 WHERE story_hash = ?",
+             storyHash];
+        }];
+    });
 }
 
 - (void)storeFailedImage:(ASIHTTPRequest *)request {

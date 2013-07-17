@@ -1809,7 +1809,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideNotifier {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
         [self.notifier hide];
     });
