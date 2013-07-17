@@ -1175,7 +1175,8 @@
         }
 
     } else {
-        feed = self.activeFeed;
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [self.activeFeed objectForKey:@"id"]];
+        feed = [self.dictUnreadCounts objectForKey:feedIdStr];
     }
     
     total += [[feed objectForKey:@"ps"] intValue];
@@ -1535,19 +1536,22 @@
     }
     [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
     
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        NSString *storyHash = [newStory objectForKey:@"story_hash"];
-        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-         [newStory JSONRepresentation],
-         storyHash];
-        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
-         storyHash];
-        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
-         [newUnreadCounts objectForKey:@"ps"],
-         [newUnreadCounts objectForKey:@"nt"],
-         [newUnreadCounts objectForKey:@"ng"],
-         feedIdStr];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            NSString *storyHash = [newStory objectForKey:@"story_hash"];
+            [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+             [newStory JSONRepresentation],
+             storyHash];
+            [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
+             storyHash];
+            [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+             [newUnreadCounts objectForKey:@"ps"],
+             [newUnreadCounts objectForKey:@"nt"],
+             [newUnreadCounts objectForKey:@"ng"],
+             feedIdStr];
+        }];
+    });
 }
 
 
