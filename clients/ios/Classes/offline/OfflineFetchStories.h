@@ -15,6 +15,6 @@
 
 - (BOOL)fetchStories;
 - (NSArray *)unfetchedStoryHashes;
-- (void)storeAllUnreadStories:(NSDictionary *)results;
+- (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes;
 
 @end

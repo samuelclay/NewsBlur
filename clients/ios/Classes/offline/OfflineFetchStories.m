@@ -67,7 +67,7 @@
     AFJSONRequestOperation *request = [AFJSONRequestOperation
                                        JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                                           [self storeAllUnreadStories:JSON];
+                                           [self storeAllUnreadStories:JSON withHashes:hashes];
                                        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                            NSLog(@"Failed fetch all unreads.");
                                        }];
@@ -124,7 +124,8 @@
     return hashes;
 }
 
-- (void)storeAllUnreadStories:(NSDictionary *)results {
+- (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
+    NSMutableArray *storyHashes = [hashes mutableCopy];
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
@@ -148,11 +149,19 @@
                      ];
                 }
             }
-            if (inserted) anyInserted = YES;
+            if (inserted) {
+                anyInserted = YES;
+                [storyHashes removeObject:[story objectForKey:@"story_hash"]];
+            }
         }
         if (anyInserted) {
             appDelegate.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
                                                    objectForKey:@"story_timestamp"] intValue];
+        }
+        if ([storyHashes count]) {
+            NSLog(@"Failed to fetch stories: %@", storyHashes);
+            [db executeUpdate:[NSString stringWithFormat:@"DELTE FROM unread_hashes WHERE story_hash IN (%@)",
+                               [storyHashes componentsJoinedByString:@", "]]];
         }
     }];
 }
