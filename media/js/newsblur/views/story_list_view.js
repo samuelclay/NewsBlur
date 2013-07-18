@@ -409,9 +409,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     
     fetch_story_locations_in_feed_view: function(options) {
         options = options || {};
+        var stories = NEWSBLUR.assets.stories;
         
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) return;
-        var stories = NEWSBLUR.assets.stories;
         if (!stories || !stories.length) return;
         if (options.reset_timer) this.counts['positions_timer'] = 0;
         
@@ -427,7 +427,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.flags['feed_view_positions_calculated'] = true;
         // NEWSBLUR.log(['Feed view entirely loaded', NEWSBLUR.assets.stories.length + " stories", this.counts['positions_timer']/1000 + " sec delay"]);
         
-        this.counts['positions_timer'] = Math.max(this.counts['positions_timer']*2, 1000);
+        this.counts['positions_timer'] = Math.min(Math.max(this.counts['positions_timer']+1000, 1000), 15*1000);
         clearTimeout(this.flags['next_fetch']);
         this.flags['next_fetch'] = _.delay(_.bind(this.fetch_story_locations_in_feed_view, this),
                                            this.counts['positions_timer']);
