@@ -121,7 +121,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
-    
+    [self cancelRequests];
     self.finishedAnimatingIn = NO;
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -354,7 +354,10 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
-            if (self.feedPage == 1) {
+            if (request.isCancelled) {
+                NSLog(@"Cancelled");
+                return;
+            } else if (self.feedPage == 1) {
                 self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
@@ -373,6 +376,7 @@
         [request setTimeOutSeconds:30];
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
+        [requests addObject:request];
     }
 }
 
