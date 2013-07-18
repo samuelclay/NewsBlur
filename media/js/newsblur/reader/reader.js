@@ -815,27 +815,27 @@
             }
             // NEWSBLUR.log(['scroll_in_story', this.$s.$story_pane, direction, amount]);
             if (NEWSBLUR.assets.preference('story_layout') == 'list') {
-                this.$s.$story_titles.scrollTo({
+                this.$s.$story_titles.stop().scrollTo({
                     top: dir+'='+amount, 
                     left:'+=0'
                 }, 130, {queue: false});
             } else if (this.story_view == 'page' && 
                 !this.flags['page_view_showing_feed_view'] &&
                 !this.flags['temporary_story_view']) {
-                this.$s.$feed_iframe.scrollTo({
+                this.$s.$feed_iframe.stop().scrollTo({
                     top: dir+'='+amount, 
                     left:'+=0'
                 }, 130, {queue: false});
             } else if ((this.story_view == 'feed' &&
                         !this.flags['temporary_story_view']) || 
                        this.flags['page_view_showing_feed_view']) {
-                this.$s.$feed_scroll.scrollTo({
+                this.$s.$feed_scroll.stop().scrollTo({
                     top: dir+'='+amount, 
                     left:'+=0'
                 }, 130, {queue: false});
             } else if (this.story_view == 'text' ||
                        this.flags['temporary_story_view']) {
-                this.$s.$text_view.scrollTo({
+                this.$s.$text_view.stop().scrollTo({
                     top: dir+'='+amount, 
                     left:'+=0'
                 }, 130, {queue: false});

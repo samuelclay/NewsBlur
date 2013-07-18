@@ -114,7 +114,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             if (this.pre_load_page_scroll_position > 0) {
                 this.pre_load_page_scroll_position += $endline.outerHeight();
             }
-            $story_titles.scrollTo($endline, { 
+            $story_titles.stop().scrollTo($endline, { 
                 duration: 0,
                 axis: 'y', 
                 easing: 'easeInOutQuint', 
@@ -170,7 +170,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (this.post_load_page_scroll_position == $story_titles.scrollTop() &&
             this.pre_load_page_scroll_position != null &&
             !NEWSBLUR.reader.flags['select_story_in_feed']) {
-            $story_titles.scrollTo(this.pre_load_page_scroll_position, { 
+            $story_titles.stop().scrollTo(this.pre_load_page_scroll_position, { 
                 duration: 0,
                 axis: 'y', 
                 offset: 0, 
