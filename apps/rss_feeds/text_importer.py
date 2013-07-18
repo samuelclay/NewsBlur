@@ -43,7 +43,10 @@ class TextImporter:
             text = resp.content
 
         if resp.encoding and resp.encoding != 'utf-8':
-            text = text.encode(resp.encoding)
+            try:
+                text = text.encode(resp.encoding)
+            except LookupError:
+                pass
         original_text_doc = readability.Document(text, url=resp.url, debug=settings.DEBUG)
         content = original_text_doc.summary(html_partial=True)
         
