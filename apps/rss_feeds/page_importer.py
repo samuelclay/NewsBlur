@@ -89,6 +89,12 @@ class PageImporter(object):
                         data = response.text
                     except (LookupError, TypeError):
                         data = response.content
+
+                    if response.encoding and response.encoding != 'utf-8':
+                        try:
+                            data = data.encode(response.encoding)
+                        except LookupError:
+                            pass
             else:
                 try:
                     data = open(feed_link, 'r').read()
