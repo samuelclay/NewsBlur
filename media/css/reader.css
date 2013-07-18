@@ -3543,7 +3543,7 @@ background: transparent;
     opacity: .2;
     cursor: default;
 }
-.NB-feed-taskbar .NB-task-story-next-unread {
+#story_taskbar .NB-task-story-next-unread {
     min-width: 32px;
 }
 .NB-feed-taskbar .NB-task-add {
