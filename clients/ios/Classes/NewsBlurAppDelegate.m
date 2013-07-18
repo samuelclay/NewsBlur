@@ -97,7 +97,7 @@
 @synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
-@synthesize feedDetailLoaded;
+@synthesize hasLoadedFeedDetail;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;

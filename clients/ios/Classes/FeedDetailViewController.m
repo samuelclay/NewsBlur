@@ -121,9 +121,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
-    [self cancelRequests];
     self.finishedAnimatingIn = NO;
-    self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     // set center title
@@ -259,12 +257,14 @@
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    appDelegate.hasLoadedFeedDetail = NO;
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
     [self.notifier hideIn:0];
+    [self cancelRequests];
     [self beginOfflineTimer];
 }
 
@@ -524,7 +524,10 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             self.pageFinished = YES;
-            if (self.feedPage == 1) {
+            if (request.isCancelled) {
+                NSLog(@"Cancelled");
+                return;
+            } else if (self.feedPage == 1) {
                 self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
@@ -548,12 +551,18 @@
 #pragma mark Processing Stories
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] >= 500) {
+    if (request.isCancelled) {
+        NSLog(@"Cancelled");
+        return;
+    } else if ([request responseStatusCode] >= 500) {
         self.pageFinished = YES;
         if (self.feedPage == 1) {
             self.isOffline = YES;
             [self loadOfflineStories];
             [self showOfflineNotifier];
+        }
+        if ([request responseStatusCode] == 503) {
+            [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed."];
         }
@@ -562,6 +571,7 @@
         return;
     }
     
+    appDelegate.hasLoadedFeedDetail = YES;
     self.isOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    

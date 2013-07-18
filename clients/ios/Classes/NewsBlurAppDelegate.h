@@ -90,7 +90,7 @@
     BOOL inFeedDetail;
     BOOL inStoryDetail;
     BOOL inFindingStoryMode;
-    BOOL feedDetailLoaded;
+    BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
@@ -186,7 +186,7 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
-@property (nonatomic, readwrite) BOOL feedDetailLoaded;
+@property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
