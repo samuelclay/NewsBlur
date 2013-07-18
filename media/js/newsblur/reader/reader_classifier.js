@@ -701,10 +701,10 @@ var classifier_prototype = {
         
         if (score > 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-like');
-            $('.NB-classifier-input-like', $classifier).attr('checked', true);
+            $('.NB-classifier-input-like', $classifier).prop('checked', true);
         } else if (score < 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-dislike');
-            $('.NB-classifier-input-dislike', $classifier).attr('checked', true);
+            $('.NB-classifier-input-dislike', $classifier).prop('checked', true);
         }
         
         $('.NB-classifier', $classifier).bind('mouseenter', function(e) {
@@ -733,24 +733,24 @@ var classifier_prototype = {
         if (classifier_opinion == 'like') {
             if ($classifier.is('.NB-classifier-like')) {
                 $classifier.removeClass('NB-classifier-like');
-                $dislike.attr('checked', false);
-                $like.attr('checked', false);
+                $dislike.prop('checked', false);
+                $like.prop('checked', false);
             } else {
                 $classifier.removeClass('NB-classifier-dislike');
                 $classifier.addClass('NB-classifier-like');
-                $dislike.attr('checked', false);
-                $like.attr('checked', true);
+                $dislike.prop('checked', false);
+                $like.prop('checked', true);
             }
         } else if (classifier_opinion == 'dislike') {
             if ($classifier.is('.NB-classifier-dislike')) {
                 $classifier.removeClass('NB-classifier-dislike');
-                $like.attr('checked', false);
-                $dislike.attr('checked', false);
+                $like.prop('checked', false);
+                $dislike.prop('checked', false);
             } else {
                 $classifier.removeClass('NB-classifier-like');
                 $classifier.addClass('NB-classifier-dislike');
-                $like.attr('checked', false);
-                $dislike.attr('checked', true);
+                $like.prop('checked', false);
+                $dislike.prop('checked', true);
             }
         }
         
@@ -926,7 +926,7 @@ var classifier_prototype = {
             var name = $this.attr('name').replace(/^(dis)?like_/, '');
             var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
             var value = $this.val();
-            var checked = $this.attr('checked');
+            var checked = $this.prop('checked');
         
             if (checked) {
                 if (name == 'tag') {
