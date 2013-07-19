@@ -119,16 +119,14 @@ public class APIManager {
 		}
 	}
 
-	public boolean markSocialStoryAsRead(final String updateJson) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_MARKSOCIAL_JSON, updateJson);
-		final APIResponse response = post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public NewsBlurResponse markStoriesAsRead(List<String> storyHashes) {
+        ValueMultimap values = new ValueMultimap();
+        for (String storyHash : storyHashes) {
+            values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+        }
+        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
 
 	public NewsBlurResponse markStoryAsStarred(final String feedId, final String storyId) {
 		final ValueMultimap values = new ValueMultimap();
@@ -651,15 +649,6 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		final APIResponse response = post(APIConstants.URL_REPLY_TO, values);
 		return (!response.isError());
-	}
-
-	public boolean markMultipleStoriesAsRead(ContentValues values) {
-		final APIResponse response = post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public boolean addFeed(String feedUrl, String folderName) {

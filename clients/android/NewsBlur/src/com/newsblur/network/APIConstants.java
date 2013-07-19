@@ -22,22 +22,17 @@ public class APIConstants {
 	public static final String URL_FEED_COUNTS = "http://newsblur.com/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = "http://newsblur.com/reader/mark_feed_as_read/";
 	public static final String URL_MARK_ALL_AS_READ = "http://newsblur.com/reader/mark_all_as_read/";
-	public static final String URL_MARK_STORY_AS_READ = "http://newsblur.com/reader/mark_story_as_read/";
-	public static final String URL_MARK_FEED_STORIES_AS_READ = "http://newsblur.com/reader/mark_feed_stories_as_read/";
-	public static final String URL_MARK_SOCIALSTORY_AS_READ = "http://newsblur.com/reader/mark_social_stories_as_read/";
+	public static final String URL_MARK_STORIES_READ = "http://newsblur.com/reader/mark_story_hashes_as_read/";
 	public static final String URL_SHARE_STORY = "http://newsblur.com/social/share_story";
     public static final String URL_MARK_STORY_AS_STARRED = "http://newsblur.com/reader/mark_story_as_starred/";
     public static final String URL_MARK_STORY_AS_UNREAD = "http://newsblur.com/reader/mark_story_as_unread/";
     public static final String URL_STARRED_STORIES = "http://newsblur.com/reader/starred_stories";
-	
 	public static final String URL_FEED_AUTOCOMPLETE = "http://newsblur.com/rss_feeds/feed_autocomplete";
-	
 	public static final String URL_LIKE_COMMENT = "http://newsblur.com/social/like_comment";
 	public static final String URL_UNLIKE_COMMENT = "http://newsblur.com/social/remove_like_comment";
 	public static final String URL_REPLY_TO = "http://newsblur.com/social/save_comment_reply";
 	public static final String URL_ADD_FEED = "http://newsblur.com/reader/add_url";
 	public static final String URL_DELETE_FEED = "http://newsblur.com/reader/delete_feed";
-	
 	public static final String URL_CLASSIFIER_SAVE = "http://newsblur.com/classifier/save";
 	
 	public static final String PARAMETER_FEEDS = "feeds";
@@ -47,6 +42,7 @@ public class APIConstants {
 	public static final String PARAMETER_EMAIL = "email";
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
+	public static final String PARAMETER_STORY_HASH = "story_hash";
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";
 	public static final String PARAMETER_FOLDER = "folder";

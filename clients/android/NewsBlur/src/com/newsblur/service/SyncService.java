@@ -1,5 +1,7 @@
 package com.newsblur.service;
 
+import java.util.List;
+
 import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -57,9 +59,8 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
-	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
-	public static final int EXTRA_TASK_MARK_MULTIPLE_STORIES_READ = 37;
+	public static final int EXTRA_TASK_MARK_STORIES_READ = 43;
 	public static final int EXTRA_TASK_DELETE_FEED = 39;
 	public static final int EXTRA_TASK_MULTISOCIALFEED_UPDATE = 40;
     public static final int EXTRA_TASK_STARRED_STORIES_UPDATE = 42;
@@ -110,22 +111,10 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping(true);
 				break;	
 
-			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
-				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
-				ContentValues values = new ContentValues();
-				values.put(APIConstants.PARAMETER_FEEDS_STORIES, stories.getJsonString());
-				apiManager.markMultipleStoriesAsRead(values);
+			case EXTRA_TASK_MARK_STORIES_READ:
+				final List<String> storyHashes = (List<String>) intent.getSerializableExtra(EXTRA_TASK_STORIES);
+				apiManager.markStoriesAsRead(storyHashes);
 				break;	
-
-			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
-				final String markSocialJson = intent.getStringExtra(EXTRA_TASK_MARK_SOCIAL_JSON);
-				if (!TextUtils.isEmpty(markSocialJson)) {
-					apiManager.markSocialStoryAsRead(markSocialJson);
-				} else {
-					Log.e(this.getClass().getName(), "No feed/story to mark as read included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
-				}
-				break;
 
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
