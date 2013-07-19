@@ -225,7 +225,7 @@
 		FF2D8B331487250200057B80 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8B321487250200057B80 /* Security.framework */; };
 		FF2D8B351487250C00057B80 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8B341487250C00057B80 /* MessageUI.framework */; };
 		FF2D8C6C1487F05100057B80 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8C6B1487F05100057B80 /* Twitter.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		FF2D8CAF1488633A00057B80 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CAE1488633A00057B80 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FF2D8CAF1488633A00057B80 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CAE1488633A00057B80 /* Reachability.m */; };
 		FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
 		FF4130A0162CECAE00DDB6A7 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309F162CECAE00DDB6A7 /* email.png */; };

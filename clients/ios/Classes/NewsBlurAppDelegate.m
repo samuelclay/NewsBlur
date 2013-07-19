@@ -131,6 +131,7 @@
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
+@synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
 @synthesize folderCountCache;
@@ -289,7 +290,6 @@
     self.latestCachedImageDate = 0;
     self.totalUncachedImagesCount = 0;
     self.remainingUncachedImagesCount = 0;
-    [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
@@ -400,7 +400,6 @@
     [NSSet setWithObjects:@"offline_image_download",
      @"offline_download_connection",
      @"offline_store_limit",
-     @"offline_image_concurrency",
      nil];
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..." forKey:@"offline_cache_empty_stories"];
     
@@ -1304,7 +1303,6 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
-    self.recentlyReadStories = [NSMutableArray array];
     self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
     self.storyLocationsCount = [self.activeFeedStoryLocations count];
@@ -1389,7 +1387,8 @@
         }
     }
 
-    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStories addObject:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
 }
@@ -1463,7 +1462,8 @@
         }
     }
     
-    [self.recentlyReadStories removeObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStories removeObject:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryUnread:story feed:feed];
 
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];

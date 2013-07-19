@@ -910,7 +910,6 @@ static const CGFloat kFolderTitleHeight = 28;
          [NSSet setWithObjects:@"offline_image_download",
           @"offline_download_connection",
           @"offline_store_limit",
-          @"offline_image_concurrency",
           nil] animated:YES];
 	}
 }

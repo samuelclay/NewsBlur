@@ -154,7 +154,8 @@
     }
     
     NSMutableArray *indexPaths = [NSMutableArray array];
-    for (id i in appDelegate.recentlyReadStories) {
+    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
+    for (id i in appDelegate.recentlyReadStoryLocations) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                     inSection:0];
 //        NSLog(@"Read story: %d", [i intValue]);
@@ -168,8 +169,8 @@
         [self.storyTitlesTable endUpdates];
         //[self.storyTitlesTable reloadData];
     }
-    [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     
+    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     appDelegate.originalStoryCount = [appDelegate unreadCount];
     
 	[super viewWillAppear:animated];
@@ -263,6 +264,8 @@
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
+    appDelegate.recentlyReadStories = [NSMutableArray array];
+    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     [self.notifier hideIn:0];
     [self cancelRequests];
     [self beginOfflineTimer];
@@ -892,10 +895,13 @@
     cell.storyScore = score;
     
     if (!appDelegate.hasLoadedFeedDetail) {
-        cell.isRead = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        NSLog(@"Offline: %d - %@ - %@ - %@", cell.isRead, [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"], self.unreadStoryHashes);
+        cell.isRead = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue] ||
+                      [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]];
+//        NSLog(@"Offline: %d - %@ - %@", cell.isRead, [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
-        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
+                      [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]];
+//        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;

@@ -147,36 +147,6 @@
 			<string>offline_store_limit</string>
 		</dict>
 		<dict>
-			<key>FooterText</key>
-			<string>More images at once means faster caching, but a less responsive app. Keep this to 1 image at a time if you read while downloading. Bump it up if you want to quickly cache as many images at once and won&apos;t be using the app during the caching process.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Download</string>
-			<key>Titles</key>
-			<array>
-				<string>1 image at a time</string>
-				<string>2 images at a time</string>
-				<string>3 images at a time</string>
-				<string>4 images at a time</string>
-				<string>5 images at a time</string>
-				<string>6 images at a time</string>
-			</array>
-			<key>DefaultValue</key>
-			<integer>1</integer>
-			<key>Values</key>
-			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-				<integer>5</integer>
-				<integer>6</integer>
-			</array>
-			<key>Key</key>
-			<string>offline_image_concurrency</string>
-		</dict>
-		<dict>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 			<key>Title</key>

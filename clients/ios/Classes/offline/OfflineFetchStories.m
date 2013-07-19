@@ -48,6 +48,7 @@
     
     if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
             if (![[[NSUserDefaults standardUserDefaults]
                    objectForKey:@"offline_image_download"] boolValue]) {
@@ -72,6 +73,7 @@
                                        }];
     request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                              (unsigned long)NULL);
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [request start];
     [request waitUntilFinished];
     

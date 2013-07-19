@@ -37,8 +37,7 @@
     NSArray *urls = [self uncachedImageUrls];
 
     imageDownloadOperationQueue = [[ASINetworkQueue alloc] init];
-    imageDownloadOperationQueue.maxConcurrentOperationCount = [[NSUserDefaults standardUserDefaults]
-                                                  integerForKey:@"offline_image_concurrency"];
+    imageDownloadOperationQueue.maxConcurrentOperationCount = 8;
     imageDownloadOperationQueue.delegate = self;
     
     if (![[[NSUserDefaults standardUserDefaults]
@@ -71,6 +70,7 @@
     [imageDownloadOperationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
     [imageDownloadOperationQueue setShouldCancelAllRequestsOnFailure:NO];
     [imageDownloadOperationQueue go];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [imageDownloadOperationQueue addOperations:downloadRequests waitUntilFinished:YES];
     
     
@@ -197,6 +197,7 @@
 
 - (void)cachedImageQueueFinished:(ASINetworkQueue *)queue {
     NSLog(@"Queue finished: %d total (%d remaining)", appDelegate.totalUncachedImagesCount, appDelegate.remainingUncachedImagesCount);
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self fetchImages];
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [self.feedsViewController hideNotifier];
