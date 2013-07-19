@@ -165,7 +165,8 @@
                     appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
                 }
             } else {
-                if ([storyTimestamp intValue] < appDelegate.latestFetchedStoryDate) {
+                if (!appDelegate.latestFetchedStoryDate ||
+                    [storyTimestamp intValue] < appDelegate.latestFetchedStoryDate) {
                     appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
                 }
             }

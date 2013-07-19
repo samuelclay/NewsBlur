@@ -58,9 +58,10 @@
     for (NSArray *urlArray in urls) {
         NSURL *url = [NSURL URLWithString:[urlArray objectAtIndex:0]];
         NSString *storyHash = [urlArray objectAtIndex:1];
+        NSString *storyTimestamp = [urlArray objectAtIndex:2];
         
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setUserInfo:@{@"story_hash": storyHash}];
+        [request setUserInfo:@{@"story_hash": storyHash, @"story_timestamp": storyTimestamp}];
         [request setDelegate:self];
         [request setDidFinishSelector:@selector(storeCachedImage:)];
         [request setDidFailSelector:@selector(storeFailedImage:)];
@@ -172,7 +173,7 @@
                 appDelegate.latestCachedImageDate = storyTimestamp;
             }
         } else {
-            if (storyTimestamp < appDelegate.latestCachedImageDate) {
+            if (!appDelegate.latestCachedImageDate || storyTimestamp < appDelegate.latestCachedImageDate) {
                 appDelegate.latestCachedImageDate = storyTimestamp;
             }
         }
