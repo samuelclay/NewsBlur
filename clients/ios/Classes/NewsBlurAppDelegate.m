@@ -37,7 +37,6 @@
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
-#import "ShareThis.h"
 #import "Reachability.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
@@ -183,7 +182,7 @@
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
     
-    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
+//    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
     
     [[UINavigationBar appearance]
      setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
@@ -296,16 +295,16 @@
     [splashView removeFromSuperview];
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
-}
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [ShareThis handleFacebookOpenUrl:url];
-}
+//- (void)applicationDidBecomeActive:(UIApplication *)application {
+//    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
+//}
+//
+//- (void)applicationWillTerminate:(UIApplication *)application {
+//    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
+//}
+//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+//    return [ShareThis handleFacebookOpenUrl:url];
+//}
 
 - (void)setupReachability {
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];

@@ -24,9 +24,12 @@
 #import "JSON.h"
 #import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
-#import "ShareThis.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
+#import "TUSafariActivity.h"
+#import "RWInstapaperActivity.h"
+#import "ReadabilityActivity.h"
+#import "PocketAPIActivity.h"
 
 @implementation StoryPageControl
 
@@ -800,14 +803,81 @@
 }
 
 - (void)openSendToDialog {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
     NSString *title = [appDelegate.activeStory
                        objectForKey:@"story_title"];
+    NSMutableArray* appActivities = [NSMutableArray array];
+    
+    TUSafariActivity *openInSafari = [[TUSafariActivity alloc] init];
+    [appActivities addObject:openInSafari];
+    
+    if ([[preferences objectForKey:@"enable_instapaper"] boolValue]) {
+        RWInstapaperActivity *instapaper = [[RWInstapaperActivity alloc] init];
+        instapaper.username = [preferences objectForKey:@"instapaper_username"];
+        instapaper.password = [preferences objectForKey:@"instapaper_password"];
+        [appActivities addObject:instapaper];
+    }
+//    if ([ReadabilityActivity canPerformActivity]) {
+        ReadabilityActivity *readabilityActivity = [[ReadabilityActivity alloc] init];
+        [appActivities addObject:readabilityActivity];
+//    }
+    PocketAPIActivity *pocket = [[PocketAPIActivity alloc] init];
+    [appActivities addObject:pocket];    
+    
+    UIActivityViewController *shareSheet = [[UIActivityViewController alloc]
+                                            initWithActivityItems:@[title, url]
+                                            applicationActivities:appActivities];
+    
+    [shareSheet setValue:[appDelegate.activeStory objectForKey:@"story_title"] forKey:@"subject"];
+    
+    [shareSheet setCompletionHandler:^(NSString *activityType, BOOL completed) {
+        NSString *_completedString;
+        if (completed) {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(keyboardDidHide:)
+                                                         name:UIKeyboardDidHideNotification
+                                                       object:nil];
+            
+            if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
+                _completedString = @"Posted";
+            } else if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
+                _completedString = @"Posted";
+            } else if ([activityType isEqualToString:UIActivityTypeMail]) {
+                _completedString = @"Sent";
+            } else if ([activityType isEqualToString:UIActivityTypeSaveToCameraRoll]) {
+                _completedString = @"Saved";
+            } else if ([activityType isEqualToString:@"instapaper"]) {
+                _completedString = @"Saved";
+            } else if ([activityType isEqualToString:@"UIActivityReadability"]) {
+                _completedString = @"Saved";
+            } else if ([activityType isEqualToString:@"Pocket"]) {
+                _completedString = @"Saved";
+            }
+        } else {
+            _completedString = nil;
+        }
+        
+        [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+        self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+        self.storyHUD.mode = MBProgressHUDModeCustomView;
+        self.storyHUD.removeFromSuperViewOnHide = YES;
+        self.storyHUD.labelText = _completedString;
+        [self.storyHUD hide:YES afterDelay:1];
+    }];
+    
+    shareSheet.excludedActivityTypes = @[UIActivityTypePostToWeibo,UIActivityTypeAssignToContact];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
+        UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:shareSheet];
+        [popover presentPopoverFromRect:self.appDelegate.masterContainerViewController.view.frame inView:self.appDelegate.masterContainerViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+
+//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
     } else {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+        [self presentViewController:shareSheet animated:YES completion:nil];
+//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
     }
 }
 

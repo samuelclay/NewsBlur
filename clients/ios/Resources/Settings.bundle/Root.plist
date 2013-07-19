@@ -154,6 +154,48 @@
 			<key>Key</key>
 			<string>offline_cache_empty_stories</string>
 		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Send to - Instapaper</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Instapaper</string>
+			<key>Key</key>
+			<string>enable_instapaper</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Email/username</string>
+			<key>Key</key>
+			<string>instapaper_username</string>
+			<key>KeyboardType</key>
+			<string>EmailAddress</string>
+			<key>AutocorrectionType</key>
+			<string>no</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Password</string>
+			<key>Key</key>
+			<string>instapaper_password</string>
+			<key>IsSecure</key>
+			<true/>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>AutocorrectionType</key>
+			<string>no</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

@@ -13,7 +13,6 @@
 #import "TransparentToolbar.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
-#import "ShareThis.h"
 
 @implementation OriginalStoryViewController
 
@@ -301,9 +300,9 @@
     NSString *title = [appDelegate.activeStory
                        objectForKey:@"story_title"];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
     } else {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
     }
 }
 
