@@ -34,38 +34,35 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 
 		@Override
 		public void onReceiverResult(int resultCode, Bundle resultData) {
-			switch (resultCode) {
-			case SyncService.STATUS_FINISHED:
+            final SyncService.SyncStatus resultStatus = SyncService.SyncStatus.values()[resultCode];
+			switch (resultStatus) {
+			case STATUS_FINISHED:
 				syncRunning = false;
 				if (getActivity() != null) {
 					((SyncUpdateFragmentInterface) getActivity()).updateAfterSync();
 				}
 				break;
-			case SyncService.STATUS_PARTIAL_PROGRESS:
+			case STATUS_PARTIAL_PROGRESS:
 				syncRunning = true;
 				if (getActivity() != null) {
 					((SyncUpdateFragmentInterface) getActivity()).updatePartialSync();
 				}
 				break;
-			case SyncService.STATUS_FINISHED_CLOSE:
+			case STATUS_FINISHED_CLOSE:
 				syncRunning = false;
 				if (getActivity() != null) {
 					((SyncUpdateFragmentInterface) getActivity()).closeAfterUpdate();
 				}
 				break;	
-			case SyncService.STATUS_RUNNING:
+			case STATUS_RUNNING:
 				syncRunning = true;
 				break;
-			case SyncService.STATUS_NO_MORE_UPDATES:
+			case STATUS_NO_MORE_UPDATES:
 				syncRunning = false;
 				if (getActivity() != null) {
 					((SyncUpdateFragmentInterface) getActivity()).setNothingMoreToUpdate();
 				}
 				break;	
-			case SyncService.STATUS_ERROR:
-				syncRunning = false;
-				Log.e(this.getClass().getName(), "Sync completed with an error.");
-				break;		
 			default:
 				syncRunning = false;
 				Log.e(this.getClass().getName(), "Sync completed with an unknown result.");

@@ -119,16 +119,14 @@ public class APIManager {
 		}
 	}
 
-	public boolean markSocialStoryAsRead(final String updateJson) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_MARKSOCIAL_JSON, updateJson);
-		final APIResponse response = post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public NewsBlurResponse markStoriesAsRead(List<String> storyHashes) {
+        ValueMultimap values = new ValueMultimap();
+        for (String storyHash : storyHashes) {
+            values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+        }
+        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
 
 	public NewsBlurResponse markStoryAsStarred(final String feedId, final String storyId) {
 		final ValueMultimap values = new ValueMultimap();
@@ -653,15 +651,6 @@ public class APIManager {
 		return (!response.isError());
 	}
 
-	public boolean markMultipleStoriesAsRead(ContentValues values) {
-		final APIResponse response = post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public boolean addFeed(String feedUrl, String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
@@ -684,14 +673,14 @@ public class APIManager {
 		}
 	}
 
-	public boolean deleteFeed(long feedId, String folderName) {
+	public NewsBlurResponse deleteFeed(long feedId, String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
-		if (!TextUtils.isEmpty(folderName)) {
+		if ((!TextUtils.isEmpty(folderName)) && (!folderName.equals(AppConstants.ROOT_FOLDER))) {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}
-		final APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
+		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
     /* HTTP METHODS */

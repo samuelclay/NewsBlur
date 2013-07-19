@@ -69,7 +69,7 @@ public class SavedStoriesItemsList extends ItemsList {
 			setSupportProgressBarIndeterminateVisibility(true);
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_STARRED_STORIES_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.STARRED_STORIES_UPDATE);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			startService(intent);
 		}

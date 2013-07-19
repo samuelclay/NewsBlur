@@ -129,7 +129,7 @@ public class FeedItemsList extends ItemsList {
 			setSupportProgressBarIndeterminateVisibility(true);
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FEED_UPDATE);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
             intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
