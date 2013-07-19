@@ -55,6 +55,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.newsblur.NewsBlur</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>newsblur</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb230426707030569newsblur</string>

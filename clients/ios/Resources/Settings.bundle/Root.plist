@@ -156,11 +156,13 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Send to - Instapaper</string>
+			<string>Sharing services</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
@@ -171,6 +173,10 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
@@ -183,6 +189,10 @@
 			<string>no</string>
 		</dict>
 		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
@@ -195,6 +205,42 @@
 			<string>Alphabet</string>
 			<key>AutocorrectionType</key>
 			<string>no</string>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>PocketActivity</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Pocket</string>
+			<key>Key</key>
+			<string>enable_pocket</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>Readability-activity-iPhone</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Readability</string>
+			<key>Key</key>
+			<string>enable_readability</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>PinboardActivityImage</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Pinboard</string>
+			<key>Key</key>
+			<string>enable_pinboard</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

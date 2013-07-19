@@ -121,7 +121,7 @@
     int latestCachedImageDate;
     int totalUncachedImagesCount;
     int remainingUncachedImagesCount;
-    NSMutableArray * recentlyReadStories;
+    NSMutableDictionary * recentlyReadStories;
     NSMutableArray * recentlyReadStoryLocations;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -221,7 +221,7 @@
 @property (readwrite) int latestFetchedStoryDate;
 @property (readwrite) int latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
-@property (readwrite) NSMutableArray * recentlyReadStories;
+@property (readwrite) NSMutableDictionary * recentlyReadStories;
 @property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;

@@ -1397,7 +1397,8 @@
         }
     }
 
-    [self.recentlyReadStories addObject:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
+                                 forKey:[self.activeStory objectForKey:@"story_hash"]];
     [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
@@ -1472,7 +1473,7 @@
         }
     }
     
-    [self.recentlyReadStories removeObject:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStories removeObjectForKey:[self.activeStory objectForKey:@"story_hash"]];
     [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryUnread:story feed:feed];
 

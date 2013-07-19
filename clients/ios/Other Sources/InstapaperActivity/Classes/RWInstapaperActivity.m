@@ -142,7 +142,7 @@
 	DLog();
 	//TODO: This should really be a UIView...
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
-													message:NSLocalizedString(@"Incorrect password. Please correct in Settings.app", @"")
+													message:NSLocalizedString(@"Incorrect password. Please fix in Preferences.", @"")
 												   delegate:nil
 										  cancelButtonTitle:NSLocalizedString(@"OK", @"")
 										  otherButtonTitles:nil];

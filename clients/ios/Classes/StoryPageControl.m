@@ -30,6 +30,8 @@
 #import "RWInstapaperActivity.h"
 #import "ReadabilityActivity.h"
 #import "PocketAPIActivity.h"
+#import "VUPinboardActivity.h"
+#import "ARChromeActivity.h"
 
 @implementation StoryPageControl
 
@@ -813,6 +815,12 @@
     TUSafariActivity *openInSafari = [[TUSafariActivity alloc] init];
     [appActivities addObject:openInSafari];
     
+    if ([[UIApplication sharedApplication]
+         canOpenURL:[NSURL URLWithString:@"googlechrome://"]]) {
+        ARChromeActivity *chromeActivity = [[ARChromeActivity alloc]
+                                            initWithCallbackURL:[NSURL URLWithString:@"newsblur://"]];
+        [appActivities addObject:chromeActivity];
+    }
     if ([[preferences objectForKey:@"enable_instapaper"] boolValue]) {
         RWInstapaperActivity *instapaper = [[RWInstapaperActivity alloc] init];
         instapaper.username = [preferences objectForKey:@"instapaper_username"];
@@ -824,8 +832,14 @@
         ReadabilityActivity *readabilityActivity = [[ReadabilityActivity alloc] init];
         [appActivities addObject:readabilityActivity];
     }
-    PocketAPIActivity *pocket = [[PocketAPIActivity alloc] init];
-    [appActivities addObject:pocket];    
+    if ([[preferences objectForKey:@"enable_pocket"] boolValue]) {
+        PocketAPIActivity *pocket = [[PocketAPIActivity alloc] init];
+        [appActivities addObject:pocket];
+    }
+    if ([[preferences objectForKey:@"enable_pinboard"] boolValue]) {
+        VUPinboardActivity *pinboard = [[VUPinboardActivity alloc] init];
+        [appActivities addObject:pinboard];
+    }
     
     UIActivityViewController *shareSheet = [[UIActivityViewController alloc]
                                             initWithActivityItems:@[title, url]
@@ -854,6 +868,8 @@
             } else if ([activityType isEqualToString:@"UIActivityReadability"]) {
                 _completedString = @"Saved";
             } else if ([activityType isEqualToString:@"Pocket"]) {
+                _completedString = @"Saved";
+            } else if ([activityType isEqualToString:@"pinboard"]) {
                 _completedString = @"Saved";
             }
         } else {

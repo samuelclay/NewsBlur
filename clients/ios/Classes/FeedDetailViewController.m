@@ -154,7 +154,7 @@
     }
     
     NSMutableArray *indexPaths = [NSMutableArray array];
-    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
+//    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
     for (id i in appDelegate.recentlyReadStoryLocations) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                     inSection:0];
@@ -264,7 +264,7 @@
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
-    appDelegate.recentlyReadStories = [NSMutableArray array];
+    appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
     appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     [self.notifier hideIn:0];
     [self cancelRequests];
@@ -896,11 +896,11 @@
     
     if (!appDelegate.hasLoadedFeedDetail) {
         cell.isRead = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue] ||
-                      [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]];
+                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
 //        NSLog(@"Offline: %d - %@ - %@", cell.isRead, [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
         cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
-                      [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]];
+                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
 //        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [appDelegate.recentlyReadStories containsObject:[story objectForKey:@"story_hash"]], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     }
     

@@ -248,6 +248,22 @@
 		FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */; };
 		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
+		FF5D3FFE1799F53C00349659 /* VUPinboardAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FEB1799F53C00349659 /* VUPinboardAccess.m */; };
+		FF5D3FFF1799F53C00349659 /* VUPinboardActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FED1799F53C00349659 /* VUPinboardActivity.m */; };
+		FF5D40001799F53C00349659 /* VUPinboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FEF1799F53C00349659 /* VUPinboardViewController.m */; };
+		FF5D40011799F53C00349659 /* BBNetworkRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF21799F53C00349659 /* BBNetworkRequest.m */; };
+		FF5D40021799F53C00349659 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF41799F53C00349659 /* SSKeychain.m */; };
+		FF5D40031799F53C00349659 /* VUDialogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF61799F53C00349659 /* VUDialogViewController.m */; };
+		FF5D40041799F53C00349659 /* VUGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF81799F53C00349659 /* VUGradientButton.m */; };
+		FF5D40051799F53C00349659 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FF91799F53C00349659 /* LICENSE */; };
+		FF5D40061799F53C00349659 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFA1799F53C00349659 /* README.md */; };
+		FF5D40071799F53C00349659 /* PinboardActivityImage.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFC1799F53C00349659 /* PinboardActivityImage.png */; };
+		FF5D40081799F53C00349659 /* PinboardActivityImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFD1799F53C00349659 /* PinboardActivityImage@2x.png */; };
+		FF5D40101799F70200349659 /* ARChromeActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D400B1799F70200349659 /* ARChromeActivity.m */; };
+		FF5D40111799F70200349659 /* ARChromeActivity.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D400C1799F70200349659 /* ARChromeActivity.png */; };
+		FF5D40121799F70200349659 /* ARChromeActivity@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D400D1799F70200349659 /* ARChromeActivity@2x.png */; };
+		FF5D40131799F70200349659 /* ARChromeActivity@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D400E1799F70200349659 /* ARChromeActivity@2x~ipad.png */; };
+		FF5D40141799F70200349659 /* ARChromeActivity~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D400F1799F70200349659 /* ARChromeActivity~ipad.png */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
 		FF5F3A82162B82B5008DBE3E /* rainbow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A81162B82B5008DBE3E /* rainbow.png */; };
 		FF5F3A85162B831A008DBE3E /* user_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A84162B831A008DBE3E /* user_orange.png */; };
@@ -763,6 +779,30 @@
 		FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
+		FF5D3FEA1799F53C00349659 /* VUPinboardAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VUPinboardAccess.h; sourceTree = "<group>"; };
+		FF5D3FEB1799F53C00349659 /* VUPinboardAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VUPinboardAccess.m; sourceTree = "<group>"; };
+		FF5D3FEC1799F53C00349659 /* VUPinboardActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VUPinboardActivity.h; sourceTree = "<group>"; };
+		FF5D3FED1799F53C00349659 /* VUPinboardActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VUPinboardActivity.m; sourceTree = "<group>"; };
+		FF5D3FEE1799F53C00349659 /* VUPinboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VUPinboardViewController.h; sourceTree = "<group>"; };
+		FF5D3FEF1799F53C00349659 /* VUPinboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VUPinboardViewController.m; sourceTree = "<group>"; };
+		FF5D3FF11799F53C00349659 /* BBNetworkRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBNetworkRequest.h; sourceTree = "<group>"; };
+		FF5D3FF21799F53C00349659 /* BBNetworkRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBNetworkRequest.m; sourceTree = "<group>"; };
+		FF5D3FF31799F53C00349659 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
+		FF5D3FF41799F53C00349659 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
+		FF5D3FF51799F53C00349659 /* VUDialogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VUDialogViewController.h; sourceTree = "<group>"; };
+		FF5D3FF61799F53C00349659 /* VUDialogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VUDialogViewController.m; sourceTree = "<group>"; };
+		FF5D3FF71799F53C00349659 /* VUGradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VUGradientButton.h; sourceTree = "<group>"; };
+		FF5D3FF81799F53C00349659 /* VUGradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VUGradientButton.m; sourceTree = "<group>"; };
+		FF5D3FF91799F53C00349659 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		FF5D3FFA1799F53C00349659 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		FF5D3FFC1799F53C00349659 /* PinboardActivityImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PinboardActivityImage.png; sourceTree = "<group>"; };
+		FF5D3FFD1799F53C00349659 /* PinboardActivityImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PinboardActivityImage@2x.png"; sourceTree = "<group>"; };
+		FF5D400A1799F70200349659 /* ARChromeActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARChromeActivity.h; sourceTree = "<group>"; };
+		FF5D400B1799F70200349659 /* ARChromeActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARChromeActivity.m; sourceTree = "<group>"; };
+		FF5D400C1799F70200349659 /* ARChromeActivity.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ARChromeActivity.png; sourceTree = "<group>"; };
+		FF5D400D1799F70200349659 /* ARChromeActivity@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@2x.png"; sourceTree = "<group>"; };
+		FF5D400E1799F70200349659 /* ARChromeActivity@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@2x~ipad.png"; sourceTree = "<group>"; };
+		FF5D400F1799F70200349659 /* ARChromeActivity~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity~ipad.png"; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
 		FF5EA47D143B691000B7563D /* AddSiteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteViewController.m; sourceTree = "<group>"; };
 		FF5F3A81162B82B5008DBE3E /* rainbow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rainbow.png; sourceTree = "<group>"; };
@@ -1092,10 +1132,12 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FF5D40091799F70200349659 /* ARChromeActivity */,
 				FFAF53951799E69D00C7FCCB /* PocketSDK */,
 				FFAF53A61799E69D00C7FCCB /* ReadabilityActivity */,
 				FFAF53741799D1C800C7FCCB /* TUSafariActivity */,
 				FFAF53411799D18B00C7FCCB /* InstapaperActivity */,
+				FF5D3FE71799F53C00349659 /* VUPinboardActivity */,
 				FFF1E498177504CA00BF59D3 /* InAppSettingsKit */,
 				FF753CC2175858FC00344EC9 /* fmdb */,
 				FF22FE5316E53ADC0046165A /* Underscore */,
@@ -1750,6 +1792,78 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
+		FF5D3FE71799F53C00349659 /* VUPinboardActivity */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D3FE81799F53C00349659 /* Classes */,
+				FF5D3FF91799F53C00349659 /* LICENSE */,
+				FF5D3FFA1799F53C00349659 /* README.md */,
+				FF5D3FFB1799F53C00349659 /* Resources */,
+			);
+			name = VUPinboardActivity;
+			path = "Other Sources/VUPinboardActivity";
+			sourceTree = "<group>";
+		};
+		FF5D3FE81799F53C00349659 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D3FE91799F53C00349659 /* Activity */,
+				FF5D3FF01799F53C00349659 /* Common */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		FF5D3FE91799F53C00349659 /* Activity */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D3FEA1799F53C00349659 /* VUPinboardAccess.h */,
+				FF5D3FEB1799F53C00349659 /* VUPinboardAccess.m */,
+				FF5D3FEC1799F53C00349659 /* VUPinboardActivity.h */,
+				FF5D3FED1799F53C00349659 /* VUPinboardActivity.m */,
+				FF5D3FEE1799F53C00349659 /* VUPinboardViewController.h */,
+				FF5D3FEF1799F53C00349659 /* VUPinboardViewController.m */,
+			);
+			path = Activity;
+			sourceTree = "<group>";
+		};
+		FF5D3FF01799F53C00349659 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D3FF11799F53C00349659 /* BBNetworkRequest.h */,
+				FF5D3FF21799F53C00349659 /* BBNetworkRequest.m */,
+				FF5D3FF31799F53C00349659 /* SSKeychain.h */,
+				FF5D3FF41799F53C00349659 /* SSKeychain.m */,
+				FF5D3FF51799F53C00349659 /* VUDialogViewController.h */,
+				FF5D3FF61799F53C00349659 /* VUDialogViewController.m */,
+				FF5D3FF71799F53C00349659 /* VUGradientButton.h */,
+				FF5D3FF81799F53C00349659 /* VUGradientButton.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		FF5D3FFB1799F53C00349659 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D3FFC1799F53C00349659 /* PinboardActivityImage.png */,
+				FF5D3FFD1799F53C00349659 /* PinboardActivityImage@2x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		FF5D40091799F70200349659 /* ARChromeActivity */ = {
+			isa = PBXGroup;
+			children = (
+				FF5D400A1799F70200349659 /* ARChromeActivity.h */,
+				FF5D400B1799F70200349659 /* ARChromeActivity.m */,
+				FF5D400C1799F70200349659 /* ARChromeActivity.png */,
+				FF5D400D1799F70200349659 /* ARChromeActivity@2x.png */,
+				FF5D400E1799F70200349659 /* ARChromeActivity@2x~ipad.png */,
+				FF5D400F1799F70200349659 /* ARChromeActivity~ipad.png */,
+			);
+			name = ARChromeActivity;
+			path = "Other Sources/ARChromeActivity";
+			sourceTree = "<group>";
+		};
 		FF753CC2175858FC00344EC9 /* fmdb */ = {
 			isa = PBXGroup;
 			children = (
@@ -2317,6 +2431,14 @@
 				FFAF53B71799E69D00C7FCCB /* Readability-activity-iPad@2x.png in Resources */,
 				FFAF53B81799E69D00C7FCCB /* Readability-activity-iPhone.png in Resources */,
 				FFAF53B91799E69D00C7FCCB /* Readability-activity-iPhone@2x.png in Resources */,
+				FF5D40051799F53C00349659 /* LICENSE in Resources */,
+				FF5D40061799F53C00349659 /* README.md in Resources */,
+				FF5D40071799F53C00349659 /* PinboardActivityImage.png in Resources */,
+				FF5D40081799F53C00349659 /* PinboardActivityImage@2x.png in Resources */,
+				FF5D40111799F70200349659 /* ARChromeActivity.png in Resources */,
+				FF5D40121799F70200349659 /* ARChromeActivity@2x.png in Resources */,
+				FF5D40131799F70200349659 /* ARChromeActivity@2x~ipad.png in Resources */,
+				FF5D40141799F70200349659 /* ARChromeActivity~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2458,6 +2580,14 @@
 				FFAF53B41799E69D00C7FCCB /* PocketAPIOperation.m in Sources */,
 				FFAF53B51799E69D00C7FCCB /* SFHFKeychainUtils.m in Sources */,
 				FFAF53BA1799E69D00C7FCCB /* ReadabilityActivity.m in Sources */,
+				FF5D3FFE1799F53C00349659 /* VUPinboardAccess.m in Sources */,
+				FF5D3FFF1799F53C00349659 /* VUPinboardActivity.m in Sources */,
+				FF5D40001799F53C00349659 /* VUPinboardViewController.m in Sources */,
+				FF5D40011799F53C00349659 /* BBNetworkRequest.m in Sources */,
+				FF5D40021799F53C00349659 /* SSKeychain.m in Sources */,
+				FF5D40031799F53C00349659 /* VUDialogViewController.m in Sources */,
+				FF5D40041799F53C00349659 /* VUGradientButton.m in Sources */,
+				FF5D40101799F70200349659 /* ARChromeActivity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

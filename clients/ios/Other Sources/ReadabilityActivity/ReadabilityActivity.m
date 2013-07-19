@@ -32,9 +32,9 @@ static NSString * const ReadabilityActivityAdd = @"add";
 
 - (BOOL)canPerformWithActivityItems:(NSArray *)activityItems
 {
-//    if (![ReadabilityActivity canPerformActivity]) {
-//        return NO;
-//    }
+    if (![ReadabilityActivity canPerformActivity]) {
+        return NO;
+    }
     for (NSObject *item in activityItems) {
         if (![item isKindOfClass:[NSURL class]] && ![item isKindOfClass:[NSString class]]) {
             return NO;
