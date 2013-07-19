@@ -673,14 +673,14 @@ public class APIManager {
 		}
 	}
 
-	public boolean deleteFeed(long feedId, String folderName) {
+	public NewsBlurResponse deleteFeed(long feedId, String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
-		if (!TextUtils.isEmpty(folderName)) {
+		if ((!TextUtils.isEmpty(folderName)) && (!folderName.equals(AppConstants.ROOT_FOLDER))) {
 			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
 		}
-		final APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
-		return (!response.isError());
+		APIResponse response = post(APIConstants.URL_DELETE_FEED, values);
+		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
     /* HTTP METHODS */

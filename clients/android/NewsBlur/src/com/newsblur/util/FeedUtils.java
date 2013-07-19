@@ -53,7 +53,29 @@ public class FeedUtils {
         }
 	}
 
-    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager) {
+    public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {
+
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                return apiManager.deleteFeed(feedId, folderName);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (!result.isError()) {
+                    Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_feed_delete_error)), Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+
+        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
+        context.getContentResolver().delete(feedUri, null, null);
+
+    }
+
+    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager ) {
 
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
@@ -76,10 +98,10 @@ public class FeedUtils {
      * This utility method is a fast-returning way to mark as read a batch of stories in both
      * the local DB and on the server.
      */
-    public static void markStoriesAsRead( Collection<Story> stories, Context context ) {
+    public static void markStoriesAsRead( Collection<Story> stories, final Context context ) {
 
         // the list of story hashes to mark read
-        ArrayList<String> storyHashes = new ArrayList<String>();
+        final ArrayList<String> storyHashes = new ArrayList<String>();
         // a list of local DB ops to perform
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
 
@@ -97,10 +119,19 @@ public class FeedUtils {
 
         // next, update the server
         if (storyHashes.size() > 0) {
-            Intent intent = new Intent(Intent.ACTION_SYNC, null, context, SyncService.class);
-            intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MARK_STORIES_READ);
-            intent.putExtra(SyncService.EXTRA_TASK_STORIES, storyHashes);
-            context.startService(intent);
+            new AsyncTask<Void, Void, NewsBlurResponse>() {
+                @Override
+                protected NewsBlurResponse doInBackground(Void... arg) {
+                    APIManager apiManager = new APIManager(context);
+                    return apiManager.markStoriesAsRead(storyHashes);
+                }
+                @Override
+                protected void onPostExecute(NewsBlurResponse result) {
+                    if (!result.isError()) {
+                        Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
+                    }
+                }
+            }.execute();
         }
 
     }

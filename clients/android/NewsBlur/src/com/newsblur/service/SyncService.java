@@ -24,12 +24,11 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 
 /**
- * The SyncService is based on an app architecture that tries to place network calls
- * (especially larger calls or those called regularly) on independent services, making the 
- * activity / fragment a passive receiver of its updates. This, along with data fragments for  
- * handling UI updates, throttles network access and ensures the UI is passively updated
- * and decoupled from network calls. Examples of other apps using this architecture include 
- * the NBCSportsTalk and Google I/O 2011 apps.
+ * A background-sync intent that, by virtue of extending IntentService, has several notable
+ * features:
+ *  * invocations are FIFO and executed serially
+ *  * the OS picks an appropriate thread for execution that won't block the UI, but recycles
+ *  * supports callbacks where necessary
  */
 public class SyncService extends IntentService {
 
@@ -46,22 +45,20 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_READ_FILTER = "read_filter";
 	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
 
-	// TODO: replace these with enums
-    public final static int STATUS_RUNNING = 0x02;
-	public final static int STATUS_FINISHED = 0x03;
-	public final static int STATUS_ERROR = 0x04;
-	public static final int STATUS_NO_MORE_UPDATES = 0x05;
-	public static final int STATUS_FINISHED_CLOSE = 0x06;
-	public static final int NOT_RUNNING = 0x01;
-    public static final int STATUS_PARTIAL_PROGRESS = 0x07;
+    public enum SyncStatus {
+        STATUS_RUNNING,
+        STATUS_FINISHED,
+        STATUS_NO_MORE_UPDATES,
+        STATUS_FINISHED_CLOSE,
+        NOT_RUNNING,
+        STATUS_PARTIAL_PROGRESS,
+    };
 
 	public static final int EXTRA_TASK_FOLDER_UPDATE_TWO_STEP = 30;
 	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
-	public static final int EXTRA_TASK_MARK_STORIES_READ = 43;
-	public static final int EXTRA_TASK_DELETE_FEED = 39;
 	public static final int EXTRA_TASK_MULTISOCIALFEED_UPDATE = 40;
     public static final int EXTRA_TASK_STARRED_STORIES_UPDATE = 42;
 
@@ -86,12 +83,13 @@ public class SyncService extends IntentService {
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
 			if (receiver != null) {
-				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
+				receiver.send(SyncStatus.STATUS_RUNNING.ordinal(), Bundle.EMPTY);
 			}
-            // TODO: is it ever valid for receiver to be null? if not, we could factor out all
-            //       the checks below
 
             Log.d( this.getClass().getName(), "Sync Intent: " + intent.getIntExtra(SYNCSERVICE_TASK , -1) );
+
+            // an extra result code to callback before the final STATUS_FINISHED that is always sent
+            SyncStatus resultStatus = null;
 
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
 
@@ -100,7 +98,7 @@ public class SyncService extends IntentService {
                 apiManager.getFolderFeedMapping(false);
                 // notify UI of progress
                 if (receiver != null) {
-                    receiver.send(STATUS_PARTIAL_PROGRESS, Bundle.EMPTY);
+                    receiver.send(SyncStatus.STATUS_PARTIAL_PROGRESS.ordinal(), Bundle.EMPTY);
                 }
                 // update feed counts
                 apiManager.refreshFeedCounts();
@@ -111,93 +109,54 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping(true);
 				break;	
 
-			case EXTRA_TASK_MARK_STORIES_READ:
-				final List<String> storyHashes = (List<String>) intent.getSerializableExtra(EXTRA_TASK_STORIES);
-				apiManager.markStoriesAsRead(storyHashes);
-				break;	
-
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (storiesForFeed != null && storiesForFeed.stories.length != 0) {
-						receiver.send(STATUS_FINISHED, null);
-					} else {
-						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					if (storiesForFeed == null || storiesForFeed.stories.length == 0) {
+						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
 					}
 				} else {
 					Log.e(this.getClass().getName(), "No feed to refresh included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-
 
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (storiesForFeeds != null && storiesForFeeds.stories.length != 0) {
-						receiver.send(STATUS_FINISHED, Bundle.EMPTY);
-					} else {
-						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					if (storiesForFeeds == null || storiesForFeeds.stories.length == 0) {
+						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
 					}
 				} else {
 					Log.e(this.getClass().getName(), "No feed ids to refresh included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
 
 			case EXTRA_TASK_MULTISOCIALFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					SocialFeedResponse sharedStoriesForFeeds = apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (sharedStoriesForFeeds != null && sharedStoriesForFeeds.stories.length != 0) {
-						receiver.send(STATUS_FINISHED, null);
-					} else {
-						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					if (sharedStoriesForFeeds == null || sharedStoriesForFeeds.stories.length == 0) {
+						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
 					}
 				} else {
 					Log.e(this.getClass().getName(), "No socialfeed ids to refresh included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
 
 			case EXTRA_TASK_STARRED_STORIES_UPDATE:
                 StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-                if (starredStories != null && starredStories.stories.length != 0) {
-                    receiver.send(STATUS_FINISHED, Bundle.EMPTY);
-                } else {
-                    receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+                if (starredStories == null && starredStories.stories.length == 0) {
+                    resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
                 }
 				break;
-
-			case EXTRA_TASK_DELETE_FEED:
-				if (intent.getLongExtra(EXTRA_TASK_FEED_ID, -1) != -1) {
-					Long feedToBeDeleted = intent.getLongExtra(EXTRA_TASK_FEED_ID, -1);
-					if (apiManager.deleteFeed(feedToBeDeleted, intent.getStringExtra(EXTRA_TASK_FOLDER_NAME))) {
-						Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedToBeDeleted)).build();
-						contentResolver.delete(feedUri, null, null);
-						receiver.send(STATUS_FINISHED_CLOSE, Bundle.EMPTY);
-						return;
-					} else {
-						Log.e(this.getClass().getName(), "Error deleting feed");
-						Toast.makeText(this, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();
-						receiver.send(STATUS_ERROR, Bundle.EMPTY);
-					}
-				} else {
-					Log.e(this.getClass().getName(), "No feed id to delete include in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
-				}
-				break;	
 
 			case EXTRA_TASK_SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
 					SocialFeedResponse storiesForSocialFeed = apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (storiesForSocialFeed != null && storiesForSocialFeed.stories.length != 0) {
-						receiver.send(STATUS_FINISHED, null);
-					} else {
-						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					if (storiesForSocialFeed == null || storiesForSocialFeed.stories.length == 0) {
+						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
 					}
 				} else {
 					Log.e(this.getClass().getName(), "Missing parameters for socialfeed SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
 
@@ -206,23 +165,22 @@ public class SyncService extends IntentService {
 				break;
 			}
 
+            // send the first result code if it was set.  The STATUS_FINISHED is sent below
+            if ((receiver != null) && (resultStatus != null)) {
+               receiver.send(resultStatus.ordinal(), Bundle.EMPTY);
+            }
+
             Log.d( this.getClass().getName(), "Sync Intent complete");
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			Log.e(this.getClass().getName(), "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
-			if (receiver != null) {
-				final Bundle bundle = new Bundle();
-				bundle.putString(Intent.EXTRA_TEXT, e.toString());
-				receiver.send(STATUS_ERROR, bundle);
-			}
-		}
+			e.printStackTrace();
+		} finally {
+             if (receiver != null) {
+                receiver.send(SyncStatus.STATUS_FINISHED.ordinal(), Bundle.EMPTY);
+             }
+        }
 
-		if (receiver != null) {
-			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
-		} else {
-			Log.e(this.getClass().getName(), "No receiver attached to Sync?");
-		}
 	}
 
 }
