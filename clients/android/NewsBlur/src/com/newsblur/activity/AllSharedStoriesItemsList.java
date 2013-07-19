@@ -66,7 +66,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 			setSupportProgressBarIndeterminateVisibility(true);
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTISOCIALFEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTISOCIALFEED_UPDATE);
 
 			String[] feeds = new String[feedIds.size()];
 			feedIds.toArray(feeds);

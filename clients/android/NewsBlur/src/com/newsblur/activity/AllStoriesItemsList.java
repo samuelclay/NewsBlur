@@ -69,7 +69,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 			setSupportProgressBarIndeterminateVisibility(true);
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTIFEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
             intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // the API will return all feeds if no IDs are passed
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
