@@ -23,7 +23,7 @@
 
 - (void)commonInit {
     _callbackSource = [[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"];
-    _activityTitle = @"Chrome";
+    _activityTitle = @"Open in Chrome";
 }
 
 - (id)init {

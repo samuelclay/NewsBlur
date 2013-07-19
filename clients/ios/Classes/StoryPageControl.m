@@ -671,12 +671,14 @@
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setEnabled:NO];
-            [buttonPrevious setAlpha:.4];
-        } else {
-            [buttonPrevious setEnabled:YES];
-            [buttonPrevious setAlpha:1];
-        }
+        [buttonPrevious setEnabled:NO];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous_off"]];
+    } else {
+        [buttonPrevious setEnabled:YES];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous"]];
+    }
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
@@ -804,7 +806,7 @@
     //    NSLog(@"results in mark as read is %@", results);
 }
 
-- (void)openSendToDialog {
+- (IBAction)openSendToDialog:(id)sender {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
@@ -848,13 +850,13 @@
     [shareSheet setValue:[appDelegate.activeStory objectForKey:@"story_title"] forKey:@"subject"];
     
     [shareSheet setCompletionHandler:^(NSString *activityType, BOOL completed) {
-        NSString *_completedString;
         if (completed) {
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(keyboardDidHide:)
                                                          name:UIKeyboardDidHideNotification
                                                        object:nil];
             
+            NSString *_completedString;
             if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
                 _completedString = @"Posted";
             } else if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
@@ -872,17 +874,14 @@
             } else if ([activityType isEqualToString:@"pinboard"]) {
                 _completedString = @"Saved";
             }
-        } else {
-            _completedString = nil;
+            [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+            self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+            self.storyHUD.mode = MBProgressHUDModeCustomView;
+            self.storyHUD.removeFromSuperViewOnHide = YES;
+            self.storyHUD.labelText = _completedString;
+            [self.storyHUD hide:YES afterDelay:1];
         }
-        
-        [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-        self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
-        self.storyHUD.mode = MBProgressHUDModeCustomView;
-        self.storyHUD.removeFromSuperViewOnHide = YES;
-        self.storyHUD.labelText = _completedString;
-        [self.storyHUD hide:YES afterDelay:1];
     }];
     
     shareSheet.excludedActivityTypes = @[UIActivityTypePostToWeibo,UIActivityTypeAssignToContact];
