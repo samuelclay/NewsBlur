@@ -23,7 +23,6 @@
 
     while (YES) {
         BOOL fetched = [self fetchStories];
-        NSLog(@"Fetched: %d", fetched);
         if (!fetched) break;
     }
 }
@@ -43,7 +42,7 @@
         });
         return NO;
     }
-    NSLog(@"Fetching Stories...");
+//    NSLog(@"Fetching Stories...");
     
     NSArray *hashes = [self unfetchedStoryHashes];
     
@@ -106,22 +105,29 @@
         while ([cursor next]) {
             [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
         }
-        int start = (int)[[NSDate date] timeIntervalSince1970];
-        int end = appDelegate.latestFetchedStoryDate;
-        int seconds = start - (end ? end : start);
-        __block int hours = (int)round(seconds / 60.f / 60.f);
         
-        __block float progress = 0.f;
-        if (appDelegate.totalUnfetchedStoryCount) {
-            progress = 1.f - ((float)appDelegate.remainingUnfetchedStoryCount /
-                              (float)appDelegate.totalUnfetchedStoryCount);
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
-        });
+        [self updateProgress];
     }];
     
     return hashes;
+}
+
+- (void)updateProgress {
+    if (self.isCancelled) return;
+    
+    int start = (int)[[NSDate date] timeIntervalSince1970];
+    int end = appDelegate.latestFetchedStoryDate;
+    int seconds = start - (end ? end : start);
+    __block int hours = (int)round(seconds / 60.f / 60.f);
+    
+    __block float progress = 0.f;
+    if (appDelegate.totalUnfetchedStoryCount) {
+        progress = 1.f - ((float)appDelegate.remainingUnfetchedStoryCount /
+                          (float)appDelegate.totalUnfetchedStoryCount);
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
+    });
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
@@ -129,12 +135,13 @@
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
+            NSString *storyTimestamp = [story objectForKey:@"story_timestamp"];
             BOOL inserted = [db executeUpdate:@"INSERT into stories "
                              "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
                              "(?, ?, ?, ?)",
                              [story objectForKey:@"story_feed_id"],
                              [story objectForKey:@"story_hash"],
-                             [story objectForKey:@"story_timestamp"],
+                             storyTimestamp,
                              [story JSONRepresentation]
                              ];
             if ([[story objectForKey:@"image_urls"] class] != [NSNull class] &&
@@ -153,6 +160,20 @@
                 anyInserted = YES;
                 [storyHashes removeObject:[story objectForKey:@"story_hash"]];
             }
+            if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+                if ([storyTimestamp intValue] > appDelegate.latestFetchedStoryDate) {
+                    appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
+                }
+            } else {
+                if ([storyTimestamp intValue] < appDelegate.latestFetchedStoryDate) {
+                    appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
+                }
+            }
+            appDelegate.remainingUnfetchedStoryCount--;
+            if (appDelegate.remainingUnfetchedStoryCount % 10 == 0) {
+                [self updateProgress];
+            }
+
         }
         if (anyInserted) {
             appDelegate.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
@@ -160,8 +181,8 @@
         }
         if ([storyHashes count]) {
             NSLog(@"Failed to fetch stories: %@", storyHashes);
-            [db executeUpdate:[NSString stringWithFormat:@"DELTE FROM unread_hashes WHERE story_hash IN (%@)",
-                               [storyHashes componentsJoinedByString:@", "]]];
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_hash IN (\"%@\")",
+                               [storyHashes componentsJoinedByString:@"\",\" "]]];
         }
     }];
 }

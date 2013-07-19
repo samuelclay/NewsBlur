@@ -891,14 +891,9 @@
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
-    if (self.isOffline) {
-        BOOL read;
-        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
-            read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        } else {
-            read = NO;
-        }
-        cell.isRead = read || ([[story objectForKey:@"read_status"] intValue] == 1);
+    if (!appDelegate.hasLoadedFeedDetail) {
+        cell.isRead = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        NSLog(@"Offline: %d - %@ - %@ - %@", cell.isRead, [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"], self.unreadStoryHashes);
     } else {
         cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
     }

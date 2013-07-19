@@ -22,7 +22,6 @@
 
     while (YES) {
         BOOL fetched = [self fetchImages];
-        NSLog(@"Fetched: %d", fetched);
         if (!fetched) break;
     }
 }
@@ -34,7 +33,7 @@
         return NO;
     }
 
-    NSLog(@"Fetching images...");
+//    NSLog(@"Fetching images...");
     NSArray *urls = [self uncachedImageUrls];
 
     imageDownloadOperationQueue = [[ASINetworkQueue alloc] init];
@@ -86,7 +85,7 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSString *commonQuery = @"FROM cached_images c "
         "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
-        "WHERE c.image_cached is null and c.failed != 1 ";
+        "WHERE c.image_cached is null ";
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
         if (appDelegate.totalUncachedImagesCount == 0) {
             appDelegate.totalUncachedImagesCount = count;
@@ -95,7 +94,7 @@
             appDelegate.remainingUncachedImagesCount = count;
         }
         
-        int limit = 96;
+        int limit = 36;
         NSString *order;
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
             order = @"ASC";
@@ -110,22 +109,28 @@
              [cursor objectForColumnName:@"story_hash"],
              [cursor objectForColumnName:@"story_timestamp"]]];
         }
-        int start = (int)[[NSDate date] timeIntervalSince1970];
-        int end = [[[urls lastObject] objectAtIndex:2] intValue];
-        int seconds = start - (end ? end : start);
-        __block int hours = (int)round(seconds / 60.f / 60.f);
-        
-        __block float progress = 0.f;
-        if (appDelegate.totalUncachedImagesCount) {
-            progress = 1.f - ((float)appDelegate.remainingUncachedImagesCount /
-                              (float)appDelegate.totalUncachedImagesCount);
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showCachingNotifier:progress hoursBack:hours];
-        });
+        [self updateProgress];
     }];
     
     return urls;
+}
+
+- (void)updateProgress {
+    if (self.isCancelled) return;
+    
+    int start = (int)[[NSDate date] timeIntervalSince1970];
+    int end = appDelegate.latestCachedImageDate;
+    int seconds = start - (end ? end : start);
+    __block int hours = (int)round(seconds / 60.f / 60.f);
+    
+    __block float progress = 0.f;
+    if (appDelegate.totalUncachedImagesCount) {
+        progress = 1.f - ((float)appDelegate.remainingUncachedImagesCount /
+                          (float)appDelegate.totalUncachedImagesCount);
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [appDelegate.feedsViewController showCachingNotifier:progress hoursBack:hours];
+    });
 }
 
 - (void)storeCachedImage:(ASIHTTPRequest *)request {
@@ -139,14 +144,12 @@
                                              (unsigned long)NULL), ^{
         
         NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
+        int storyTimestamp = [[[request userInfo] objectForKey:@"story_timestamp"] intValue];
         
         if ([request responseStatusCode] == 200) {
             NSData *responseData = [request responseData];
             NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
-            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
-            if ([responseData length] <= 43) {
-                NSLog(@" ---> Image url: %@", [request url]);
-            }
+//            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
             
             NSFileManager *fileManager = [NSFileManager defaultManager];
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -163,6 +166,21 @@
              "image_cached = 1 WHERE story_hash = ?",
              storyHash];
         }];
+        
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+            if (storyTimestamp > appDelegate.latestCachedImageDate) {
+                appDelegate.latestCachedImageDate = storyTimestamp;
+            }
+        } else {
+            if (storyTimestamp < appDelegate.latestCachedImageDate) {
+                appDelegate.latestCachedImageDate = storyTimestamp;
+            }
+        }
+        
+        appDelegate.remainingUncachedImagesCount--;
+        if (appDelegate.remainingUncachedImagesCount % 10 == 0) {
+            [self updateProgress];
+        }
     });
 }
 

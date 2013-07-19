@@ -118,6 +118,7 @@
     int totalUnfetchedStoryCount;
     int remainingUnfetchedStoryCount;
     int latestFetchedStoryDate;
+    int latestCachedImageDate;
     int totalUncachedImagesCount;
     int remainingUncachedImagesCount;
     NSMutableArray * recentlyReadStories;
@@ -217,6 +218,7 @@
 @property (readwrite) int totalUncachedImagesCount;
 @property (readwrite) int remainingUncachedImagesCount;
 @property (readwrite) int latestFetchedStoryDate;
+@property (readwrite) int latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -342,6 +344,7 @@
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
+- (void)cancelOfflineQueue;
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;

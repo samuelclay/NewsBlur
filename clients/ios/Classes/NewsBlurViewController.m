@@ -448,6 +448,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
     self.lastUpdate = [NSDate date];
     [self showRefreshNotifier];
+    [appDelegate cancelOfflineQueue];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -1535,6 +1536,8 @@ heightForHeaderInSection:(NSInteger)section {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self showCountingNotifier];
     });
+    
+    [self.appDelegate cancelOfflineQueue];
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {

@@ -50,7 +50,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 23
+#define CURRENT_DB_VERSION 25
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -124,6 +124,7 @@
 @synthesize totalUnfetchedStoryCount;
 @synthesize remainingUnfetchedStoryCount;
 @synthesize latestFetchedStoryDate;
+@synthesize latestCachedImageDate;
 @synthesize totalUncachedImagesCount;
 @synthesize remainingUncachedImagesCount;
 @synthesize originalStoryCount;
@@ -285,6 +286,7 @@
     self.totalUnfetchedStoryCount = 0;
     self.remainingUnfetchedStoryCount = 0;
     self.latestFetchedStoryDate = 0;
+    self.latestCachedImageDate = 0;
     self.totalUncachedImagesCount = 0;
     self.remainingUncachedImagesCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
@@ -2226,7 +2228,7 @@
                                    " story_feed_id number,"
                                    " story_hash varchar(24),"
                                    " image_url varchar(1024),"
-                                   " image_cached boolean"
+                                   " image_cached boolean,"
                                    " failed boolean"
                                    ")"];
     [db executeUpdate:createImagesTable];
@@ -2252,6 +2254,12 @@
     }
     
     NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+}
+
+- (void)cancelOfflineQueue {
+    if (offlineQueue) {
+        [offlineQueue cancelAllOperations];
+    }
 }
 
 - (void)startOfflineQueue {
@@ -2340,8 +2348,8 @@
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
-    NSDate *start = [NSDate date];
     NSArray *feedIds;
+    int cached = 0;
     
     if (isRiverView) {
         feedIds = activeFolderFeeds;
@@ -2349,7 +2357,7 @@
         feedIds = @[[activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "WHERE c.image_cached = 1 AND c.story_feed_id in (%@)",
+                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (%@)",
                      [feedIds componentsJoinedByString:@","]];
     FMResultSet *cursor = [db executeQuery:sql];
     
@@ -2364,9 +2372,10 @@
         }
         [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
         [activeCachedImages setObject:imageUrls forKey:storyHash];
+        cached++;
     }
     
-    NSLog(@"prepareActiveCachedImages time: %f", ([[NSDate date] timeIntervalSinceDate:start]));
+    NSLog(@"Pre-cached %d images", cached);
 }
 
 - (void)flushOldCachedImages {
