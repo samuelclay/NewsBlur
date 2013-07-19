@@ -46,6 +46,7 @@
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
 #import "OfflineFetchImages.h"
+#import "PocketAPI.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -210,6 +211,9 @@
     
     [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     [self createDatabaseConnection];
+    
+    [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
+
 //    [self showFirstTimeUser];
 
 	return YES;
@@ -302,9 +306,16 @@
 //- (void)applicationWillTerminate:(UIApplication *)application {
 //    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
 //}
-//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-//    return [ShareThis handleFacebookOpenUrl:url];
-//}
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+    if ([[PocketAPI sharedAPI] handleOpenURL:url]){
+        return YES;
+    } else {
+        return NO;
+    }
+}
 
 - (void)setupReachability {
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];

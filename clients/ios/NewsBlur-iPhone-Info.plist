@@ -62,7 +62,11 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.getpocket.sdk</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pocketapp16638</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>

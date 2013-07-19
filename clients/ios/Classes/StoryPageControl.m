@@ -819,10 +819,11 @@
         instapaper.password = [preferences objectForKey:@"instapaper_password"];
         [appActivities addObject:instapaper];
     }
-//    if ([ReadabilityActivity canPerformActivity]) {
+    if ([[preferences objectForKey:@"enable_readability"] boolValue] &&
+        [ReadabilityActivity canPerformActivity]) {
         ReadabilityActivity *readabilityActivity = [[ReadabilityActivity alloc] init];
         [appActivities addObject:readabilityActivity];
-//    }
+    }
     PocketAPIActivity *pocket = [[PocketAPIActivity alloc] init];
     [appActivities addObject:pocket];    
     
