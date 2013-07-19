@@ -77,7 +77,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE_TWO_STEP);
+		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_TWO_STEP);
 		startService(intent);
 	}
 	
@@ -93,7 +93,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT);
+		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_WITH_COUNT);
 		startService(intent);
 	}
 

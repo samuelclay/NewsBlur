@@ -32,6 +32,7 @@ import com.newsblur.util.StoryOrder;
  */
 public class SyncService extends IntentService {
 
+    public static final String EXTRA_TASK_TYPE = "syncServiceTaskType";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
 	public static final String EXTRA_TASK_FOLDER_NAME = "taskFoldername";
@@ -54,18 +55,18 @@ public class SyncService extends IntentService {
         STATUS_PARTIAL_PROGRESS,
     };
 
-	public static final int EXTRA_TASK_FOLDER_UPDATE_TWO_STEP = 30;
-	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
-	public static final int EXTRA_TASK_FEED_UPDATE = 31;
-	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
-	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
-	public static final int EXTRA_TASK_MULTISOCIALFEED_UPDATE = 40;
-    public static final int EXTRA_TASK_STARRED_STORIES_UPDATE = 42;
+    public enum TaskType {
+        FOLDER_UPDATE_TWO_STEP,
+        FOLDER_UPDATE_WITH_COUNT,
+        FEED_UPDATE,
+        SOCIALFEED_UPDATE,
+        MULTIFEED_UPDATE,
+        MULTISOCIALFEED_UPDATE,
+        STARRED_STORIES_UPDATE
+    };
 
 	private APIManager apiManager;
 	private ContentResolver contentResolver;
-	public static final String SYNCSERVICE_TASK = "syncservice_task";
-
 
 	public SyncService() {
 		super(SyncService.class.getName());
@@ -82,18 +83,19 @@ public class SyncService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
+            TaskType taskType = (TaskType) intent.getSerializableExtra(EXTRA_TASK_TYPE);
+            Log.d( this.getClass().getName(), "Sync Intent: " + taskType );
+
 			if (receiver != null) {
 				receiver.send(SyncStatus.STATUS_RUNNING.ordinal(), Bundle.EMPTY);
 			}
 
-            Log.d( this.getClass().getName(), "Sync Intent: " + intent.getIntExtra(SYNCSERVICE_TASK , -1) );
-
             // an extra result code to callback before the final STATUS_FINISHED that is always sent
             SyncStatus resultStatus = null;
 
-			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
+			switch (taskType) {
 
-			case EXTRA_TASK_FOLDER_UPDATE_TWO_STEP:
+			case FOLDER_UPDATE_TWO_STEP:
 				// do a quick fetch of folders/feeds
                 apiManager.getFolderFeedMapping(false);
                 // notify UI of progress
@@ -105,11 +107,11 @@ public class SyncService extends IntentService {
                 // UI will be notified again by default
 				break;
 
-			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:
+			case FOLDER_UPDATE_WITH_COUNT:
 				apiManager.getFolderFeedMapping(true);
 				break;	
 
-			case EXTRA_TASK_FEED_UPDATE:
+			case FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (storiesForFeed == null || storiesForFeed.stories.length == 0) {
@@ -120,7 +122,7 @@ public class SyncService extends IntentService {
 				}
 				break;
 
-			case EXTRA_TASK_MULTIFEED_UPDATE:
+			case MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (storiesForFeeds == null || storiesForFeeds.stories.length == 0) {
@@ -131,7 +133,7 @@ public class SyncService extends IntentService {
 				}
 				break;
 
-			case EXTRA_TASK_MULTISOCIALFEED_UPDATE:
+			case MULTISOCIALFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					SocialFeedResponse sharedStoriesForFeeds = apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (sharedStoriesForFeeds == null || sharedStoriesForFeeds.stories.length == 0) {
@@ -142,14 +144,14 @@ public class SyncService extends IntentService {
 				}
 				break;
 
-			case EXTRA_TASK_STARRED_STORIES_UPDATE:
+			case STARRED_STORIES_UPDATE:
                 StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
                 if (starredStories == null && starredStories.stories.length == 0) {
                     resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
                 }
 				break;
 
-			case EXTRA_TASK_SOCIALFEED_UPDATE:
+			case SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
 					SocialFeedResponse storiesForSocialFeed = apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
 					if (storiesForSocialFeed == null || storiesForSocialFeed.stories.length == 0) {
