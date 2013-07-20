@@ -500,6 +500,34 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Delicious' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-delicious', name: 'story_share_delicious' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-delicious' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '新浪微博' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-weibo', name: 'story_share_weibo' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-weibo' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '腾讯微博' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-tweibo', name: 'story_share_tweibo' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-tweibo' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '人人网' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-renren', name: 'story_share_renren' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-renren' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '印象笔记' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-yinxiang', name: 'story_share_yinxiang' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-yinxiang' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '推荐到豆瓣' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-douban', name: 'story_share_douban' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-douban' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: '网易微博' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-t163', name: 'story_share_t163' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-t163' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'QQ空间' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-qzone', name: 'story_share_qzone' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-qzone' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [

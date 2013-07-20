@@ -1985,6 +1985,112 @@
         // = Send To =
         // ===========
         
+        send_story_to_weibo: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var redirect_url = 'https://www.newszeit.com/redirect?location=';
+            var url = 'http://service.weibo.com/share/share.php';
+            var weibo_url = [
+              url,
+              '?url=',
+              encodeURIComponent(redirect_url),
+              encodeURIComponent(story.get('story_permalink')),
+              '&appkey=1534354249',
+              '&title=',
+              encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(weibo_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_tweibo: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://share.v.t.qq.com/index.php?c=share&a=index';
+            var tweibo_url = [
+              url,
+              '&url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&appkey=801385423'
+            ].join('');
+            window.open(tweibo_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_qzone: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey';
+            var qzone_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+            ].join('');
+            window.open(qzone_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_renren: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://widget.renren.com/dialog/share';
+            var renren_url = [
+              url,
+              '?resourceUrl=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(renren_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_yinxiang: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://app.yinxiang.com/clip.action';
+            var yinxiang_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&tags=',
+              encodeURIComponent(story.get('story_tags').join(', '))
+            ].join('');
+            window.open(yinxiang_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_douban: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.douban.com/recommend/';
+            var douban_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(douban_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
+        send_story_to_t163: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://t.163.com/article/user/checkLogin.do';
+            var t163_url = [
+              url,
+              '?info=',
+              encodeURIComponent(story.get('story_title')),
+              encodeURIComponent(' '),
+              encodeURIComponent(story.get('story_permalink')),
+              '&source=',
+              encodeURIComponent('NewsZeit')
+            ].join('');
+            window.open(t163_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.instapaper.com/edit';
@@ -3040,6 +3146,41 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_weibo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-weibo'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('新浪微博').parent().addClass('NB-menu-manage-highlight-weibo');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-weibo');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_tweibo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-tweibo'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('腾讯微博').parent().addClass('NB-menu-manage-highlight-tweibo');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-tweibo');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_renren'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-renren'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('人人网').parent().addClass('NB-menu-manage-highlight-renren');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-renren');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_yinxiang'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-yinxiang'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('印象笔记').parent().addClass('NB-menu-manage-highlight-yinxiang');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-yinxiang');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_douban'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-douban'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('推荐到豆瓣').parent().addClass('NB-menu-manage-highlight-douban');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-douban');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_t163'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-t163'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('网易微博').parent().addClass('NB-menu-manage-highlight-t163');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-t163');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_qzone'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-qzone'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('QQ空间').parent().addClass('NB-menu-manage-highlight-qzone');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-qzone');
+                        }, this))),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
                     ]).bind('click', _.bind(function(e) {
@@ -3050,6 +3191,20 @@
                           this.send_story_to_facebook(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-twitter')) {
                           this.send_story_to_twitter(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-weibo')) {
+                          this.send_story_to_weibo(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-tweibo')) {
+                          this.send_story_to_tweibo(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-renren')) {
+                          this.send_story_to_renren(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-yinxiang')) {
+                          this.send_story_to_yinxiang(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-douban')) {
+                          this.send_story_to_douban(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-t163')) {
+                          this.send_story_to_t163(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-qzone')) {
+                          this.send_story_to_qzone(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {

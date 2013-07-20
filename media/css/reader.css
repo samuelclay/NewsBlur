@@ -6063,6 +6063,28 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-weibo {
+    background: transparent url('/media/embed/reader/weibo_icon.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tweibo {
+    background: transparent url('/media/embed/reader/tweibo.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-renren {
+    background: transparent url('/media/embed/reader/renren.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-yinxiang {
+    background: transparent url('/media/embed/reader/yinxiang.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-douban {
+    background: transparent url('/media/embed/reader/douban.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-t163 {
+    background: transparent url('/media/embed/reader/t163.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-qzone {
+    background: transparent url('/media/embed/reader/qzone.png') no-repeat 0 0;
+}
+
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-image,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-icon {
@@ -6147,6 +6169,55 @@ form.opml_import_form input {
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-readability {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-weibo .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-weibo .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-weibo .NB-menu-manage-thirdparty-weibo {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tweibo .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tweibo .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tweibo .NB-menu-manage-thirdparty-tweibo {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-renren .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-renren .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-renren .NB-menu-manage-thirdparty-renren {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-yinxiang .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-yinxiang .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-yinxiang .NB-menu-manage-thirdparty-yinxiang {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-douban .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-douban .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-douban .NB-menu-manage-thirdparty-douban {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-t163 .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-t163 .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-t163 .NB-menu-manage-thirdparty-t163 {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-qzone .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-qzone .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-qzone .NB-menu-manage-thirdparty-qzone {
   opacity: 1;
 }
 
@@ -8308,6 +8379,27 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-weibo] {
+    background: transparent url('/media/embed/reader/weibo_icon.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tweibo] {
+    background: transparent url('/media/embed/reader/tweibo.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-renren] {
+    background: transparent url('/media/embed/reader/renren.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-yinxiang] {
+    background: transparent url('/media/embed/reader/yinxiang.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-douban] {
+    background: transparent url('/media/embed/reader/douban.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-t163] {
+    background: transparent url('/media/embed/reader/t163.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-qzone] {
+    background: transparent url('/media/embed/reader/qzone.png') no-repeat 0 0;
 }
 
 .NB-modal-preferences .segmented-control {
