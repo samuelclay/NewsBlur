@@ -413,7 +413,8 @@
             }
         }        
         
-        if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
+            [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
                                              "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"

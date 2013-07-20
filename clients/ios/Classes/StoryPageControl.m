@@ -96,7 +96,7 @@
                             progressMode:THProgressModeFill
                             progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
                             progressBackgroundMode:THProgressBackgroundModeCircumference
-                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
+                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.04f]
                             percentage:20];
     circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView addSubview:circularProgressView];
