@@ -103,7 +103,6 @@
 		duration = duration || settings.duration;
 		// Make sure the settings are given right
 		settings.queue = settings.queue && settings.axis.length > 1;
-		
 		if( settings.queue )
 			// Let's keep the overall duration
 			duration /= 2;

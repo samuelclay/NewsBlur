@@ -122,7 +122,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 if (_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) {
                     $scroll_container = this.model.latest_story_detail_view.$el.parent();
                 }
-                $scroll_container.scrollTo(this.$el, {
+                $scroll_container.stop().scrollTo(this.$el, {
                     duration: 600,
                     queue: false,
                     easing: 'easeInOutQuint',

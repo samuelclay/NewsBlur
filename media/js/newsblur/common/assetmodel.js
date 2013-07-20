@@ -143,6 +143,32 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback(read);
     },
     
+    mark_story_hash_as_read: function(story, callback) {
+        var self = this;
+        var read = story.get('read_status');
+        
+        if (!story.get('read_status')) {
+            story.set('read_status', 1);
+            
+            if (NEWSBLUR.Globals.is_authenticated) {
+                if (!('hashes' in this.queued_read_stories)) { this.queued_read_stories['hashes'] = []; }
+                this.queued_read_stories['hashes'].push(story.get('story_hash'));
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story.id]);
+            
+                this.make_request('/reader/mark_story_hashes_as_read', {
+                    story_hash: this.queued_read_stories['hashes']
+                }, null, null, {
+                    'ajax_group': 'queue_clear',
+                    'beforeSend': function() {
+                        self.queued_read_stories = {};
+                    }
+                });
+            }
+        }
+        
+        $.isFunction(callback) && callback(read);
+    },
+    
     mark_social_story_as_read: function(story, social_feed, callback) {
         var self = this;
         var feed_id = story.get('story_feed_id');

@@ -24,9 +24,9 @@
 #import "JSON.h"
 #import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
-#import "ShareThis.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
+#import "UIActivitiesControl.h"
 
 @implementation StoryPageControl
 
@@ -40,6 +40,7 @@
 @synthesize buttonNext;
 @synthesize buttonAction;
 @synthesize buttonText;
+@synthesize buttonSend;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
@@ -96,7 +97,7 @@
                             progressMode:THProgressModeFill
                             progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
                             progressBackgroundMode:THProgressBackgroundModeCircumference
-                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.02f]
+                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.04f]
                             percentage:20];
     circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView addSubview:circularProgressView];
@@ -666,12 +667,14 @@
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setEnabled:NO];
-            [buttonPrevious setAlpha:.4];
-        } else {
-            [buttonPrevious setEnabled:YES];
-            [buttonPrevious setAlpha:1];
-        }
+        [buttonPrevious setEnabled:NO];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous_off"]];
+    } else {
+        [buttonPrevious setEnabled:YES];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous"]];
+    }
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
@@ -696,9 +699,13 @@
     if (currentPage.pageIndex >= 0) {
         [buttonText setEnabled:YES];
         [buttonText setAlpha:1];
+        [buttonSend setEnabled:YES];
+        [buttonSend setAlpha:1];
     } else {
         [buttonText setEnabled:NO];
         [buttonText setAlpha:.4];
+        [buttonSend setEnabled:NO];
+        [buttonSend setAlpha:.4];
     }
     
     if (currentPage.inTextView) {
@@ -799,15 +806,11 @@
     //    NSLog(@"results in mark as read is %@", results);
 }
 
-- (void)openSendToDialog {
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
-    NSString *title = [appDelegate.activeStory
-                       objectForKey:@"story_title"];
+- (IBAction)openSendToDialog:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
+        [UIActivitiesControl showActivitiesInView:appDelegate.masterContainerViewController];
     } else {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
+        [UIActivitiesControl showActivitiesInView:self];
     }
 }
 
@@ -983,6 +986,9 @@
     [self.previousPage changeFontSize:fontSize];
 }
 
+#pragma mark -
+#pragma mark HUDs
+
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -991,6 +997,10 @@
     self.currentPage.noStorySelectedLabel.hidden = YES;
     self.nextPage.noStorySelectedLabel.hidden = YES;
     self.previousPage.noStorySelectedLabel.hidden = YES;
+}
+
+- (void)flashCheckmarkHud:(NSString *)messageType {
+    [[self currentPage] flashCheckmarkHud:messageType];
 }
 
 #pragma mark -

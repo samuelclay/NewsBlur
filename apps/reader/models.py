@@ -107,18 +107,18 @@ class UserSubscription(models.Model):
                      include_timestamps=False, group_by_feed=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
+        story_hashes = {} if group_by_feed else []
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
-                return []
+                return story_hashes
 
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
         unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
-        story_hashes = {} if group_by_feed else []
         feed_counter = 0
 
         for feed_id_group in chunks(feed_ids, 20):
@@ -653,6 +653,37 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
+    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, r2=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not r2:
+            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        
+        p = r.pipeline()
+        p2 = r2.pipeline()
+        feed_ids = set()
+        friend_ids = set()
+        
+        if not isinstance(story_hashes, list):
+            story_hashes = [story_hashes]
+        
+        for story_hash in story_hashes:
+            feed_id, _ = MStory.split_story_hash(story_hash)
+            feed_ids.add(feed_id)
+
+            # Find other social feeds with this story to update their counts
+            friend_key = "F:%s:F" % (user_id)
+            share_key = "S:%s" % (story_hash)
+            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            friend_ids.update(friends_with_shares)
+            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p, r2=p2)
+        
+        p.execute()
+        p2.execute()
+        
+        return list(feed_ids), list(friend_ids)
+        
+    @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -987,11 +1018,11 @@ class UserSubscriptionFolders(models.Model):
         subs = [us.feed_id for us in
                 UserSubscription.objects.filter(user=self.user).only('feed')]
         
-        missing_feeds = set(all_feeds) - set(subs)
-        if missing_feeds:
-            logging.debug(" ---> %s is missing %s feeds. Adding %s..." % (
-                          self.user, len(missing_feeds), missing_feeds))
-            for feed_id in missing_feeds:
+        missing_subs = set(all_feeds) - set(subs)
+        if missing_subs:
+            logging.debug(" ---> %s is missing %s subs. Adding %s..." % (
+                          self.user, len(missing_subs), missing_subs))
+            for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
@@ -1000,6 +1031,18 @@ class UserSubscriptionFolders(models.Model):
                     if not us.needs_unread_recalc:
                         us.needs_unread_recalc = True
                         us.save()
+
+        missing_folder_feeds = set(subs) - set(all_feeds)
+        if missing_folder_feeds:
+            user_sub_folders = json.decode(self.folders)
+            logging.debug(" ---> %s is missing %s folder feeds. Adding %s..." % (
+                          self.user, len(missing_folder_feeds), missing_folder_feeds))
+            for feed_id in missing_folder_feeds:
+                feed = Feed.get_by_id(feed_id)
+                if feed and feed.pk == feed_id:
+                    user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
+            self.folders = json.encode(user_sub_folders)
+            self.save()
 
 
 class Feature(models.Model):

@@ -75,6 +75,8 @@ CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
+AUTO_PREMIUM_NEW_USERS = False
+AUTO_ENABLE_NEW_USERS = False
 
 # ===============
 # = Enviornment =
@@ -377,7 +379,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=2),
+        'schedule': datetime.timedelta(minutes=10),
         'options': {'queue': 'beat_tasks'},
     },
 }

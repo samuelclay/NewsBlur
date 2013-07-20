@@ -207,7 +207,7 @@
             [appDelegate.feedDetailViewController redrawUnreadStory];
         }
     } else if (indexPath.row == 2) {
-        [appDelegate.storyPageControl openSendToDialog];
+        [appDelegate.storyPageControl openSendToDialog:nil];
     } else if (indexPath.row == 3) {
         [appDelegate openTrainStory:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 4) {

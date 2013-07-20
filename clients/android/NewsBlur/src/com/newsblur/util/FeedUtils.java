@@ -34,19 +34,17 @@ public class FeedUtils {
 
 	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
 		if (story != null) {
-            final String feedId = story.feedId;
-            final String storyId = story.id;
             new AsyncTask<Void, Void, NewsBlurResponse>() {
                 @Override
                 protected NewsBlurResponse doInBackground(Void... arg) {
-                    return apiManager.markStoryAsStarred(feedId, storyId);
+                    return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
                 }
                 @Override
                 protected void onPostExecute(NewsBlurResponse result) {
                     if (!result.isError()) {
                         Toast.makeText(context, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_save_error)), Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -55,19 +53,41 @@ public class FeedUtils {
         }
 	}
 
-    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager) {
+    public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {
 
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
-                return apiManager.markStoryAsUnread(story.feedId, story.id);
+                return apiManager.deleteFeed(feedId, folderName);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (!result.isError()) {
+                    Toast.makeText(context, R.string.toast_feed_deleted, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_feed_delete_error)), Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+
+        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
+        context.getContentResolver().delete(feedUri, null, null);
+
+    }
+
+    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager ) {
+
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
                 if (!result.isError()) {
                     Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, result.getErrorMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();
@@ -77,31 +97,17 @@ public class FeedUtils {
     /**
      * This utility method is a fast-returning way to mark as read a batch of stories in both
      * the local DB and on the server.
-     *
-     * TODO: the next version of the NB API will let us mark-as-read by a UUID, so we can
-     *       hopefully remove the ugly detection of social stories and their whole different
-     *       API call.
      */
-    public static void markStoriesAsRead( Collection<Story> stories, Context context ) {
+    public static void markStoriesAsRead( Collection<Story> stories, final Context context ) {
 
-        // the map of non-social feedIds->storyIds to mark (auto-serializing)
-        ValueMultimap storiesJson = new ValueMultimap();
-        // the map of social userIds->feedIds->storyIds to mark
-        Map<String, Map<String, Set<String>>> socialStories = new HashMap<String, Map<String, Set<String>>>();
+        // the list of story hashes to mark read
+        final ArrayList<String> storyHashes = new ArrayList<String>();
         // a list of local DB ops to perform
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
 
         for (Story story : stories) {
             appendStoryReadOperations(story, updateOps);
-            if (story.socialUserId != null) {
-                // TODO: some stories returned by /social/river_stories seem to have neither a
-                //  socialUserId nor a sourceUserId, so they accidentally get submitted non-
-                //  socially.  If the API fixes this before we ditch social-specific logic,
-                //  we can fix that bug right here.
-                putMapHeirarchy(socialStories, story.socialUserId, story.feedId, story.id);
-            } else {
-                storiesJson.put(story.feedId, story.id);
-            }
+            storyHashes.add(story.storyHash);
         }
 
         // first, update unread counts in the local DB
@@ -111,36 +117,23 @@ public class FeedUtils {
             Log.w(FeedUtils.class.getName(), "Could not update unread counts in local storage.", e);
         }
 
-        // next, update the server for normal stories
-        if (storiesJson.size() > 0) {
-            Intent intent = new Intent(Intent.ACTION_SYNC, null, context, SyncService.class);
-            intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MARK_MULTIPLE_STORIES_READ);
-            intent.putExtra(SyncService.EXTRA_TASK_STORIES, storiesJson);
-            context.startService(intent);
+        // next, update the server
+        if (storyHashes.size() > 0) {
+            new AsyncTask<Void, Void, NewsBlurResponse>() {
+                @Override
+                protected NewsBlurResponse doInBackground(Void... arg) {
+                    APIManager apiManager = new APIManager(context);
+                    return apiManager.markStoriesAsRead(storyHashes);
+                }
+                @Override
+                protected void onPostExecute(NewsBlurResponse result) {
+                    if (!result.isError()) {
+                        Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
+                    }
+                }
+            }.execute();
         }
 
-        // finally, update the server for social stories
-        if (socialStories.size() > 0) {
-            Intent intent = new Intent(Intent.ACTION_SYNC, null, context, SyncService.class);
-            intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MARK_SOCIALSTORY_READ);
-            intent.putExtra(SyncService.EXTRA_TASK_MARK_SOCIAL_JSON, gson.toJson(socialStories));
-            context.startService(intent);
-        }
-
-    }
-
-    /**
-     * A utility method to help populate the 3-level map structure that the NB API uses in JSON calls.
-     */
-    private static void putMapHeirarchy(Map<String, Map<String, Set<String>>> map, String s1, String s2, String s3) {
-        if (! map.containsKey(s1)) {
-            map.put(s1, new HashMap<String, Set<String>>());
-        }
-        Map<String, Set<String>> innerMap = map.get(s1);
-        if (! innerMap.containsKey(s2)) {
-            innerMap.put(s2, new HashSet<String>());
-        }
-        innerMap.get(s2).add(s3);
     }
 
 	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations) {

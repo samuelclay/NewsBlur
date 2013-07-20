@@ -13,7 +13,7 @@
 #import "TransparentToolbar.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
-#import "ShareThis.h"
+#import "UIActivitiesControl.h"
 
 @implementation OriginalStoryViewController
 
@@ -298,13 +298,8 @@
 - (IBAction)doOpenActionSheet {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-    NSString *title = [appDelegate.activeStory
-                       objectForKey:@"story_title"];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
-    } else {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
-    }
+    
+    [UIActivitiesControl showActivitiesInView:self withUrl:url];
 }
 
 @end

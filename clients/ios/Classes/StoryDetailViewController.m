@@ -413,7 +413,8 @@
             }
         }        
         
-        if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"show_public_comments"] boolValue] &&
+            [[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
                                              "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
@@ -837,10 +838,9 @@
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-        BOOL atBottom = bottomPosition < 150;
+        BOOL atBottom = bottomPosition < 200;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
-//            NSLog(@"A");
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -850,9 +850,7 @@
                 
             }];
         } else if (singlePage) {
-//            NSLog(@"Single-D");
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
-
             if (bottomPosition > 0) {
                 appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
                                                                              self.webView.scrollView.frame.size.height - tvf.size.height,
@@ -863,7 +861,6 @@
                                                                              tvf.size.width, tvf.size.height);
             }
         } else if (!singlePage && (atTop && !atBottom)) {
-//            NSLog(@"B");
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPageControl.traversePinned = YES;
             appDelegate.storyPageControl.traverseFloating = NO;
@@ -875,12 +872,9 @@
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
                 appDelegate.storyPageControl.traverseView.alpha = 1;
-            } completion:^(BOOL finished) {
-                
-            }];
+            } completion:nil];
         } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
                    appDelegate.storyPageControl.traversePinned) {
-//            NSLog(@"C");
             // Scroll with bottom of scrollview, but smoothly
             appDelegate.storyPageControl.traverseFloating = YES;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
@@ -894,7 +888,6 @@
                  appDelegate.storyPageControl.traversePinned = NO;                 
              }];
         } else {
-//            NSLog(@"D");
             // Scroll with bottom of scrollview
             appDelegate.storyPageControl.traversePinned = NO;
             appDelegate.storyPageControl.traverseFloating = YES;
@@ -1359,6 +1352,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.storyHUD.labelText = @"No longer saved";
     } else if ([messageType isEqualToString:@"unread"]) {
         self.storyHUD.labelText = @"Unread";
+    } else if ([messageType isEqualToString:@"added"]) {
+        self.storyHUD.labelText = @"Added";
     }
     [self.storyHUD hide:YES afterDelay:1];
 }

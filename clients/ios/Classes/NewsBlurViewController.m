@@ -423,12 +423,6 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 -(void)fetchFeedList:(BOOL)showLoader {
-    if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"On its way...";
-    }
-    
     NSURL *urlFeedList;
     
     if (self.inPullToRefresh_) {
@@ -453,6 +447,8 @@ static const CGFloat kFolderTitleHeight = 28;
     [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
+    [self showRefreshNotifier];
+    [appDelegate cancelOfflineQueue];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -495,7 +491,9 @@ static const CGFloat kFolderTitleHeight = 28;
                              JSONObjectWithData:responseData
                              options:kNilOptions
                              error:&error];
-    
+
+    appDelegate.activeUsername = [results objectForKey:@"user"];
+
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
         [db executeUpdate:@"INSERT INTO accounts"
@@ -538,8 +536,10 @@ static const CGFloat kFolderTitleHeight = 28;
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
-    [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
-    [userPreferences synchronize];
+    if (appDelegate.activeUsername) {
+        [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
+        [userPreferences synchronize];
+    }
 
 //    // set title only if on currestont controller
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
@@ -753,7 +753,7 @@ static const CGFloat kFolderTitleHeight = 28;
         if (self.inPullToRefresh_) {
             self.inPullToRefresh_ = NO;
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-                [self.appDelegate fetchUnreadHashes];
+                [self.appDelegate startOfflineQueue];
             }];
         } else {
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
@@ -771,34 +771,33 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)loadOfflineFeeds {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if (!appDelegate.activeUsername) {
+        appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
+        if (!appDelegate.activeUsername) return;
+    }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
-            NSDictionary *results;
-            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-            if (!appDelegate.activeUsername) {
-                appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
-                if (!appDelegate.activeUsername) return;
-            }
-            
-            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
-                                   appDelegate.activeUsername];
-            
-            while ([cursor next]) {
-                NSDictionary *feedsCache = [cursor resultDictionary];
-                results = [NSJSONSerialization
-                           JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
-                                               dataUsingEncoding:NSUTF8StringEncoding]
-                           options:nil error:nil];
-                break;
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_self finishLoadingFeedListWithDict:results];
-            });
-        }];
-    });
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
+        NSDictionary *results;
+
+        
+        FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
+                               appDelegate.activeUsername];
+        
+        while ([cursor next]) {
+            NSDictionary *feedsCache = [cursor resultDictionary];
+            results = [NSJSONSerialization
+                       JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
+                                           dataUsingEncoding:NSUTF8StringEncoding]
+                       options:nil error:nil];
+            break;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_self finishLoadingFeedListWithDict:results];
+        });
+    }];
 }
 
 - (void)showUserProfile {
@@ -914,7 +913,12 @@ static const CGFloat kFolderTitleHeight = 28;
          [NSSet setWithObjects:@"offline_image_download",
           @"offline_download_connection",
           @"offline_store_limit",
-          @"offline_image_concurrency",
+          nil] animated:YES];
+	} else if ([notification.object isEqual:@"enable_instapaper"]) {
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"enable_instapaper"] intValue];
+		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
+         [NSSet setWithObjects:@"instapaper_username",
+          @"instapaper_password",
           nil] animated:YES];
 	}
 }
@@ -1538,9 +1542,10 @@ heightForHeaderInSection:(NSInteger)section {
     [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self hideNotifier];
-        [self showRefreshNotifier];
+        [self showCountingNotifier];
     });
+    
+    [self.appDelegate cancelOfflineQueue];
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
@@ -1619,7 +1624,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
-    [self.appDelegate fetchUnreadHashes];
+    [self.appDelegate startOfflineQueue];
 }
 
 // called when the date shown needs to be updated, optional
@@ -1748,6 +1753,13 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)showRefreshNotifier {
     [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
+    self.notifier.title = @"On its way...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showCountingNotifier {
+    self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Counting is difficult...";
     [self.notifier setProgress:0];
     [self.notifier show];
@@ -1756,6 +1768,13 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)showSyncingNotifier {
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"Syncing stories...";
+    [self.notifier setProgress:0];
+    [self.notifier show];
+}
+
+- (void)showDoneNotifier {
+    self.notifier.style = NBDoneStyle;
+    self.notifier.title = @"All done";
     [self.notifier setProgress:0];
     [self.notifier show];
 }
@@ -1795,14 +1814,16 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showOfflineNotifier {
-    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];
 }
 
 - (void)hideNotifier {
-    [self.notifier hide];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+        [self.notifier hide];
+    });
 }
 
 @end

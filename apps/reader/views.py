@@ -168,9 +168,10 @@ def signup(request):
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
-            url = "https://%s%s" % (Site.objects.get_current().domain,
-                                     reverse('stripe-form'))
-            return HttpResponseRedirect(url)
+            if not new_user.is_active:
+                url = "https://%s%s" % (Site.objects.get_current().domain,
+                                         reverse('stripe-form'))
+                return HttpResponseRedirect(url)
 
     return index(request)
         
@@ -659,7 +660,9 @@ def load_single_feed(request, feed_id):
     
     # if page <= 1:
     #     import random
-    #     time.sleep(random.randint(0, 1))
+    #     if random.random() < .5:
+    #         assert False
+    #     time.sleep(random.randint(0, 3))
 
     return data
 
@@ -784,6 +787,8 @@ def load_river_stories__redis(request):
     start             = time.time()
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    if not feed_ids:
+        feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
     story_hashes      = request.REQUEST.getlist('h')[:100]
     original_feed_ids = list(feed_ids)
     page              = int(request.REQUEST.get('page', 1))
@@ -883,7 +888,6 @@ def load_river_stories__redis(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
-
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -949,10 +953,8 @@ def unread_story_hashes(request):
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps)
-
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
-
     return dict(unread_feed_story_hashes=story_hashes)
 
 @ajax_login_required
@@ -1016,7 +1018,42 @@ def mark_story_as_read(request):
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     return data
+
+@ajax_login_required
+@json.json_view
+def mark_story_hashes_as_read(request):
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    story_hashes = request.REQUEST.getlist('story_hash')
     
+    feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
+
+    if friend_ids:
+        socialsubs = MSocialSubscription.objects.filter(
+                        user_id=request.user.pk,
+                        subscription_user_id__in=friend_ids)
+        for socialsub in socialsubs:
+            if not socialsub.needs_unread_recalc:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+
+    
+    # Also count on original subscription
+    for feed_id in feed_ids:
+        usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+        if usersubs:
+            usersub = usersubs[0]
+            if not usersub.needs_unread_recalc:
+                usersub.needs_unread_recalc = True
+                usersub.save()
+            r.publish(request.user.username, 'feed:%s' % feed_id)
+    
+    hash_count = len(story_hashes)
+    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids))
+
+    return dict(code=1, story_hashes=story_hashes, feed_ids=feed_ids, friend_user_ids=friend_ids)
+
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):

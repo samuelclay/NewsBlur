@@ -4,6 +4,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Main;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.FeedUtils;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -24,8 +25,6 @@ public class DeleteFeedFragment extends DialogFragment {
 	private static final String FEED_NAME = "feed_name";
 	private static final String FOLDER_NAME = "folder_name";
     
-	private APIManager apiManager;
-	
     public static DeleteFeedFragment newInstance(final long feedId, final String feedName, final String folderName) {
     	DeleteFeedFragment frag = new DeleteFeedFragment();
 		Bundle args = new Bundle();
@@ -53,57 +52,27 @@ public class DeleteFeedFragment extends DialogFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		final String deleteFeedString = getResources().getString(R.string.delete_feed_message);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-		apiManager = new APIManager(getActivity());
 		View v = inflater.inflate(R.layout.fragment_confirm_dialog, null);
 		TextView messageView = (TextView) v.findViewById(R.id.dialog_message);
-		messageView.setText(String.format(deleteFeedString, getArguments().getString(FEED_NAME)));
+		messageView.setText(String.format(getResources().getString(R.string.delete_feed_message), getArguments().getString(FEED_NAME)));
 		
 		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
-		okayButton.setOnClickListener(new OnClickListener() {
+        okayButton.setOnClickListener(new OnClickListener() {
 			public void onClick(final View v) {
-				v.setEnabled(false);
+                FeedUtils.deleteFeed(getArguments().getLong(FEED_ID), getArguments().getString(FOLDER_NAME), getActivity(), new APIManager(getActivity()));
+                // if called from main view then refresh otherwise it was
+                // called from the feed view so finish
+                Activity activity = DeleteFeedFragment.this.getActivity();
+                if (activity instanceof Main) {
+                   ((Main)activity).updateAfterSync();
+                } else {
+                   activity.finish();
+                }
+                DeleteFeedFragment.this.dismiss();
+            }
 				
-				new AsyncTask<Void, Void, Boolean>() {
-					@Override
-					protected Boolean doInBackground(Void... arg) {
-						long feedId = getArguments().getLong(FEED_ID);
-						String folderName = getArguments().getString(FOLDER_NAME);
-						if (apiManager.deleteFeed(feedId, folderName)) {
-							Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedId)).build();
-							DeleteFeedFragment.this.getActivity().getContentResolver().delete(feedUri, null, null);
-							return true;
-						} 
-						else {
-							return false;
-						}
-					}
-					
-					@Override
-					protected void onPostExecute(Boolean result) {
-						Activity activity = DeleteFeedFragment.this.getActivity();
-						if (result) {
-							Toast.makeText(activity, "Deleted feed", Toast.LENGTH_SHORT).show();
-							DeleteFeedFragment.this.dismiss();
-							// if called from main view then refresh otherwise it was
-							// called from the feed view so finish
-							if (activity instanceof Main) {
-							   ((Main)activity).updateAfterSync();
-							}
-							else {
-							   activity.finish();
-							}
-						} else {
-							Toast.makeText(activity, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();
-							DeleteFeedFragment.this.dismiss();
-						}
-					};
-				}.execute();
-				
-			}
 		});
 		
 		Button cancelButton = (Button) v.findViewById(R.id.dialog_button_cancel);

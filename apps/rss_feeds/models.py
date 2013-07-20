@@ -1848,9 +1848,10 @@ class MStory(mongo.Document):
 
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
+        feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, request=request)
+            ti = TextImporter(self, feed=feed, request=request)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
@@ -1958,9 +1959,10 @@ class MStarredStory(mongo.Document):
     
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
+        feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, request=request)
+            ti = TextImporter(self, feed, request=request)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
