@@ -502,7 +502,7 @@ body {
     background-color: #F7F8F5;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 11px;
+    font-size: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -1101,7 +1101,7 @@ background: transparent;
     height: 200px;
     width: 100%;
     overflow-y: scroll;
-    font-size: 11px;
+    font-size: 13px;
     display: none;
 }
 
@@ -1156,9 +1156,9 @@ background: transparent;
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: 13px;
     padding: 0 4px 0 8px;
-    line-height: 14px;
+    line-height: 17px;
     margin: 2px 0 0;
     
     -webkit-transition: all .12s ease-out;
@@ -1911,35 +1911,35 @@ background: transparent;
     line-height: 1.5em;
 }
 .NB-theme-sans-serif.NB-theme-size-xs .NB-feed-story {
-    font-size: 11px;    
+    font-size: 12px;
 }
 .NB-theme-sans-serif.NB-theme-size-s .NB-feed-story {
-    font-size: 12px;    
+    font-size: 13px;
 }
 .NB-theme-sans-serif.NB-theme-size-m .NB-feed-story {
-    font-size: 13px;    
+    font-size: 14px;
 }
 .NB-theme-sans-serif.NB-theme-size-l .NB-feed-story {
-    font-size: 14px;    
+    font-size: 15px;
 }
 .NB-theme-sans-serif.NB-theme-size-xl .NB-feed-story {
-    font-size: 15px;    
+    font-size: 16px;
 }
 
 .NB-theme-serif.NB-theme-size-xs .NB-feed-story {
-    font-size: 12px;    
+    font-size: 13px;
 }
 .NB-theme-serif.NB-theme-size-s .NB-feed-story {
-    font-size: 13px;    
+    font-size: 14px;
 }
 .NB-theme-serif.NB-theme-size-m .NB-feed-story {
-    font-size: 14px;    
+    font-size: 15px;
 }
 .NB-theme-serif.NB-theme-size-l .NB-feed-story {
-    font-size: 15px;    
+    font-size: 16px;
 }
 .NB-theme-serif.NB-theme-size-xl .NB-feed-story {
-    font-size: 16px;    
+    font-size: 17px;
 }
 
 .NB-feed-stories {
@@ -2166,7 +2166,7 @@ background: transparent;
 
 .NB-feed-story .NB-feed-story-author-wrapper {
     float: left;
-    font-size: 11px;
+    font-size: 12px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     margin: 0 8px 6px 0;
@@ -2233,7 +2233,7 @@ background: transparent;
     float: left;
     cursor: pointer;
     font-weight: normal;
-    font-size: 9px;
+    font-size: 12px;
     border-radius: 4px;
     
     padding: 1px 5px;
@@ -2315,7 +2315,7 @@ background: transparent;
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date {
     float: left;
     clear: left;
-    font-size: 11px;
+    font-size: 12px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     font-weight: normal;
@@ -2940,7 +2940,7 @@ background: transparent;
     cursor: pointer;
     position: relative;
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: 12px;
     white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
@@ -3035,7 +3035,7 @@ background: transparent;
 }
 .NB-sideoption-share .NB-sideoption-share-title {
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: 12px;
     text-align: left;
     text-shadow: 0 1px 0 #F6F6F6;
     color: #202020;
@@ -3104,7 +3104,7 @@ background: transparent;
     height: 52px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
   color: white;
@@ -3368,7 +3368,7 @@ background: transparent;
     width: 100%;
     height: 22px;
     border-bottom: 1px solid #E9E9E9;
-    font-size: 10px;
+    font-size: 14px;
     cursor: pointer;
     overflow: hidden;
 }
@@ -3589,7 +3589,7 @@ background: transparent;
     margin: 5px 0 0 0;
 }
 #story_taskbar .NB-taskbar .NB-taskbar-button {
-    font-size: 11px;
+    font-size: 13px;
     padding: 4px 8px 3px;
     line-height: 18px;
     position: relative;
@@ -4022,7 +4022,7 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-links a {
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 12px;
     display: block;
 }
 
@@ -4257,7 +4257,7 @@ form.opml_import_form input {
 
 .NB-taskbar-intelligence {
     margin: 4px auto 0;
-    font-size: 9px;
+    font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-align: center;
@@ -5489,7 +5489,7 @@ form.opml_import_form input {
     line-height: 14px;
     float: left;
     color: #585a55;
-    font-size: 11px;
+    font-size: 12px;
     margin: 1px 2px 0 0;
     text-shadow: 0 1px 0 #E9E9E9;
   }
@@ -5547,7 +5547,7 @@ form.opml_import_form input {
       position: relative;
     float: right;
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 12px;
     color: #808080;
     margin: 0 0 0 0;
   }
@@ -5733,7 +5733,7 @@ form.opml_import_form input {
     opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-subtitle {
-  font-size: 11px;
+  font-size: 12px;
   color: #718C7B;
 }
 
@@ -5936,7 +5936,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-move-save,
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-rename-save {
   float: right;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
   color: white;
@@ -7054,7 +7054,7 @@ form.opml_import_form input {
     font-size: 16px;
 }
 .NB-modal-intro .NB-intro-imports-sites h6.NB-error {
-    font-size: 13px;
+    font-size: 14px;
 }
 .NB-modal-intro .NB-intro-imports-sites .NB-modal-submit-button {
     margin: 0 auto 18px;
@@ -8307,7 +8307,7 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-password label {
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 11px;
   color: #505050;
   margin: 0;
 }
@@ -9809,7 +9809,7 @@ form.opml_import_form input {
 }
 .NB-interactions-popover .NB-interactions-header {
     text-transform: uppercase;
-    font-size: 10px;
+    font-size: 12px;
     text-align: center;
     overflow: hidden;
 }
@@ -9895,7 +9895,7 @@ form.opml_import_form input {
 }
 .NB-interaction-date {
     color: #B0B0B0;
-    font-size: 10px;
+    font-size: 11px;
     text-transform: uppercase;
     padding: 5px 0 0;
 }
@@ -10060,7 +10060,7 @@ form.opml_import_form input {
 }
 .NB-filter-popover .segmented-control li {
     padding: 2px 12px 0;
-    font-size: 11px;
+    font-size: 12px;
     width: 85px;
 }
 
@@ -10100,7 +10100,7 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-feedbar-options-stat .NB-stat {
-    font-size: 11px;
+    font-size: 12px;
     color: #6F716A;
 }
 .NB-filter-popover-stats-icon {
@@ -10127,7 +10127,7 @@ form.opml_import_form input {
     color: #585A55;
     text-transform: uppercase;
     margin: 0 0 6px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
 }
 .NB-popover-section {
