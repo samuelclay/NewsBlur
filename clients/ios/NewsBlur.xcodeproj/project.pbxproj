@@ -268,6 +268,7 @@
 		FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4016179A00B900349659 /* traverse_send@2x.png */; };
 		FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4019179A03E700349659 /* traverse_previous_off.png */; };
 		FF5D401C179A03E700349659 /* traverse_previous_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D401A179A03E700349659 /* traverse_previous_off@2x.png */; };
+		FF5D401F179A0FBD00349659 /* UIActivitiesControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D401E179A0FBD00349659 /* UIActivitiesControl.m */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
 		FF5F3A82162B82B5008DBE3E /* rainbow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A81162B82B5008DBE3E /* rainbow.png */; };
 		FF5F3A85162B831A008DBE3E /* user_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A84162B831A008DBE3E /* user_orange.png */; };
@@ -811,6 +812,8 @@
 		FF5D4016179A00B900349659 /* traverse_send@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_send@2x.png"; sourceTree = "<group>"; };
 		FF5D4019179A03E700349659 /* traverse_previous_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_previous_off.png; sourceTree = "<group>"; };
 		FF5D401A179A03E700349659 /* traverse_previous_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_previous_off@2x.png"; sourceTree = "<group>"; };
+		FF5D401D179A0FBD00349659 /* UIActivitiesControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIActivitiesControl.h; sourceTree = "<group>"; };
+		FF5D401E179A0FBD00349659 /* UIActivitiesControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIActivitiesControl.m; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
 		FF5EA47D143B691000B7563D /* AddSiteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteViewController.m; sourceTree = "<group>"; };
 		FF5F3A81162B82B5008DBE3E /* rainbow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rainbow.png; sourceTree = "<group>"; };
@@ -1328,6 +1331,8 @@
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				FF67D3B0168924C40057A7DA /* TrainerViewController.h */,
 				FF67D3B1168924C40057A7DA /* TrainerViewController.m */,
+				FF5D401D179A0FBD00349659 /* UIActivitiesControl.h */,
+				FF5D401E179A0FBD00349659 /* UIActivitiesControl.m */,
 			);
 			name = Story;
 			sourceTree = "<group>";
@@ -2604,6 +2609,7 @@
 				FF5D40031799F53C00349659 /* VUDialogViewController.m in Sources */,
 				FF5D40041799F53C00349659 /* VUGradientButton.m in Sources */,
 				FF5D40101799F70200349659 /* ARChromeActivity.m in Sources */,
+				FF5D401F179A0FBD00349659 /* UIActivitiesControl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
