@@ -658,11 +658,11 @@ def load_single_feed(request, feed_id):
     if not usersub:
         data.update(feed.canonical())
     
-    if page <= 1:
-        import random
-        if random.random() < .5:
-            assert False
-        time.sleep(random.randint(0, 3))
+    # if page <= 1:
+    #     import random
+    #     if random.random() < .5:
+    #         assert False
+    #     time.sleep(random.randint(0, 3))
 
     return data
 
