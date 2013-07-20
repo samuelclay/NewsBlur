@@ -125,6 +125,7 @@
 			<string>Store</string>
 			<key>Titles</key>
 			<array>
+				<string>100 stories</string>
 				<string>500 stories</string>
 				<string>1,000 stories</string>
 				<string>2,000 stories</string>
@@ -132,47 +133,18 @@
 				<string>10,000 stories</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>1000</string>
+			<integer>1000</integer>
 			<key>Values</key>
 			<array>
-				<string>500</string>
-				<string>1000</string>
-				<string>2000</string>
-				<string>5000</string>
-				<string>10000</string>
+				<integer>100</integer>
+				<integer>500</integer>
+				<integer>1000</integer>
+				<integer>2000</integer>
+				<integer>5000</integer>
+				<integer>10000</integer>
 			</array>
 			<key>Key</key>
 			<string>offline_store_limit</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>More images at once means faster caching, but a less responsive app. Keep this to 1 image at a time if you read while downloading. Bump it up if you want to quickly cache as many images at once and won&apos;t be using the app during the caching process.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Download</string>
-			<key>Titles</key>
-			<array>
-				<string>1 image at a time</string>
-				<string>2 images at a time</string>
-				<string>3 images at a time</string>
-				<string>4 images at a time</string>
-				<string>5 images at a time</string>
-				<string>6 images at a time</string>
-			</array>
-			<key>DefaultValue</key>
-			<integer>1</integer>
-			<key>Values</key>
-			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-				<integer>5</integer>
-				<integer>6</integer>
-			</array>
-			<key>Key</key>
-			<string>offline_image_concurrency</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -181,6 +153,94 @@
 			<string>Delete offline stories...</string>
 			<key>Key</key>
 			<string>offline_cache_empty_stories</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Sharing services</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Instapaper</string>
+			<key>Key</key>
+			<string>enable_instapaper</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Email/username</string>
+			<key>Key</key>
+			<string>instapaper_username</string>
+			<key>KeyboardType</key>
+			<string>EmailAddress</string>
+			<key>AutocorrectionType</key>
+			<string>no</string>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>InstapaperActivityIcon</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Password</string>
+			<key>Key</key>
+			<string>instapaper_password</string>
+			<key>IsSecure</key>
+			<true/>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>AutocorrectionType</key>
+			<string>no</string>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>PocketActivity</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Pocket</string>
+			<key>Key</key>
+			<string>enable_pocket</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>Readability-activity-iPhone</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Readability</string>
+			<key>Key</key>
+			<string>enable_readability</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>IASKCellImage</key>
+			<string>PinboardActivityImage</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Pinboard</string>
+			<key>Key</key>
+			<string>enable_pinboard</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

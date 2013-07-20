@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
-#import "ASINetworkQueue.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -91,7 +90,8 @@
     BOOL inFeedDetail;
     BOOL inStoryDetail;
     BOOL inFindingStoryMode;
-    BOOL hashQueuedReadStories;
+    BOOL hasLoadedFeedDetail;
+    BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSMutableDictionary * activeClassifiers;
@@ -118,9 +118,11 @@
     int totalUnfetchedStoryCount;
     int remainingUnfetchedStoryCount;
     int latestFetchedStoryDate;
+    int latestCachedImageDate;
     int totalUncachedImagesCount;
     int remainingUncachedImagesCount;
-    NSMutableArray * recentlyReadStories;
+    NSMutableDictionary * recentlyReadStories;
+    NSMutableArray * recentlyReadStoryLocations;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
@@ -138,10 +140,10 @@
     NSMutableArray * dictFoldersArray;
     
     FMDatabaseQueue *database;
+    NSOperationQueue *offlineQueue;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
-    ASINetworkQueue *operationQueue;
     NSMutableDictionary *activeCachedImages;
 }
 
@@ -186,7 +188,7 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
-@property (nonatomic, readwrite) BOOL hasQueuedReadStories;
+@property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
@@ -217,8 +219,10 @@
 @property (readwrite) int totalUncachedImagesCount;
 @property (readwrite) int remainingUncachedImagesCount;
 @property (readwrite) int latestFetchedStoryDate;
+@property (readwrite) int latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
-@property (readwrite) NSMutableArray * recentlyReadStories;
+@property (readwrite) NSMutableDictionary * recentlyReadStories;
+@property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
@@ -238,11 +242,13 @@
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
-@property (readwrite) ASINetworkQueue *operationQueue;
+@property (nonatomic) NSOperationQueue *offlineQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
+@property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
+- (void)registerDefaultsFromSettingsBundle;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -340,19 +346,15 @@
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
-- (void)fetchUnreadHashes;
-- (void)storeUnreadHashes:(ASIHTTPRequest *)request;
-- (void)fetchAllUnreadStories;
-- (void)storeAllUnreadStories:(ASIHTTPRequest *)request;
+- (void)cancelOfflineQueue;
+- (void)startOfflineQueue;
+- (void)startOfflineFetchStories;
+- (void)startOfflineFetchImages;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
-- (void)deleteAllCachedImages;
-- (NSArray *)uncachedImageUrls;
-- (void)fetchAllUncachedImages;
-- (void)storeCachedImage:(ASIHTTPRequest *)request;
-- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
-- (void)flushOldCachedImages;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
+- (void)flushOldCachedImages;
+- (void)deleteAllCachedImages;
 
 @end
 

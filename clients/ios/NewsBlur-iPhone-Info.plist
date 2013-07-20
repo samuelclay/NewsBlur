@@ -55,6 +55,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.newsblur.NewsBlur</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>newsblur</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb230426707030569newsblur</string>
@@ -62,7 +70,11 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.getpocket.sdk</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pocketapp16638</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>

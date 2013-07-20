@@ -24,9 +24,9 @@
 #import "JSON.h"
 #import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
-#import "ShareThis.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
+#import "UIActivitiesControl.h"
 
 @implementation StoryPageControl
 
@@ -666,12 +666,14 @@
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setEnabled:NO];
-            [buttonPrevious setAlpha:.4];
-        } else {
-            [buttonPrevious setEnabled:YES];
-            [buttonPrevious setAlpha:1];
-        }
+        [buttonPrevious setEnabled:NO];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous_off"]];
+    } else {
+        [buttonPrevious setEnabled:YES];
+//            buttonPrevious.alpha = 1.0f;
+//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous"]];
+    }
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
@@ -799,16 +801,8 @@
     //    NSLog(@"results in mark as read is %@", results);
 }
 
-- (void)openSendToDialog {
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
-    NSString *title = [appDelegate.activeStory
-                       objectForKey:@"story_title"];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
-    } else {
-        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
-    }
+- (IBAction)openSendToDialog:(id)sender {
+    [UIActivitiesControl showActivitiesInView:self];
 }
 
 - (void)markStoryAsSaved {

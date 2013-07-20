@@ -837,10 +837,9 @@
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-        BOOL atBottom = bottomPosition < 150;
+        BOOL atBottom = bottomPosition < 200;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
-//            NSLog(@"A");
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -850,9 +849,7 @@
                 
             }];
         } else if (singlePage) {
-//            NSLog(@"Single-D");
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
-
             if (bottomPosition > 0) {
                 appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
                                                                              self.webView.scrollView.frame.size.height - tvf.size.height,
@@ -863,7 +860,6 @@
                                                                              tvf.size.width, tvf.size.height);
             }
         } else if (!singlePage && (atTop && !atBottom)) {
-//            NSLog(@"B");
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPageControl.traversePinned = YES;
             appDelegate.storyPageControl.traverseFloating = NO;
@@ -875,12 +871,9 @@
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
                 appDelegate.storyPageControl.traverseView.alpha = 1;
-            } completion:^(BOOL finished) {
-                
-            }];
+            } completion:nil];
         } else if (appDelegate.storyPageControl.traverseView.alpha == 1 &&
                    appDelegate.storyPageControl.traversePinned) {
-//            NSLog(@"C");
             // Scroll with bottom of scrollview, but smoothly
             appDelegate.storyPageControl.traverseFloating = YES;
             CGRect tvf = appDelegate.storyPageControl.traverseView.frame;
@@ -894,7 +887,6 @@
                  appDelegate.storyPageControl.traversePinned = NO;                 
              }];
         } else {
-//            NSLog(@"D");
             // Scroll with bottom of scrollview
             appDelegate.storyPageControl.traversePinned = NO;
             appDelegate.storyPageControl.traverseFloating = YES;
