@@ -361,7 +361,7 @@ class GoogleReaderImporter(Importer):
             return False
         return resp
     
-    @timelimit(10)
+    @timelimit(120)
     def try_import_starred_stories(self):
         self.import_starred_items(count=1000)
         
@@ -369,16 +369,29 @@ class GoogleReaderImporter(Importer):
         return starred_count
 
     def import_starred_items(self, count=10):
-        sub_url = "%s/0/stream/contents/user/-/state/com.google/starred?n=%s" % (self.scope, count)
-        stories_str = self.send_request(sub_url)
-        try:
-            stories = json.decode(stories_str)
-        except:
-            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FWNo stories")
-            stories = None
-        if stories:
-            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FW%s stories" % (len(stories['items'])))
-            self.process_starred_items(stories['items'])
+
+        continuation = ''
+
+        while True:
+            if continuation:
+                sub_url = "%s/0/stream/contents/user/-/state/com.google/starred?n=%s&c=%s" % (self.scope, count, continuation)
+            else:
+                sub_url = "%s/0/stream/contents/user/-/state/com.google/starred?n=%s" % (self.scope, count)
+
+            stories_str = self.send_request(sub_url)
+
+            try:
+                stories = json.decode(stories_str)
+                continuation = stories.get('continuation')
+            except:
+                logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FWNo stories")
+                stories = None
+            if stories:
+                logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FW%s stories" % (len(stories['items'])))
+                self.process_starred_items(stories['items'])
+
+            if not continuation or count < 1000:
+                break
             
         starred_count = MStarredStory.objects.filter(user_id=self.user.pk).count()
         return starred_count
