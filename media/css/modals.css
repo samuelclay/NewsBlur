@@ -141,7 +141,7 @@ fieldset legend {
     
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     color: #353634;
-    font-size: 12px;
+    font-size: 13px;
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
     font-weight: bold;
     text-transform: uppercase;
@@ -209,7 +209,7 @@ fieldset legend {
     background-color: #909090;
     color: #F0F0F0;
     margin: 2px 4px 2px 14px;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 15px;
     font-weight: bold;
     padding: 0 4px;
