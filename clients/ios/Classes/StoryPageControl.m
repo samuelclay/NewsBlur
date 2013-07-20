@@ -40,6 +40,7 @@
 @synthesize buttonNext;
 @synthesize buttonAction;
 @synthesize buttonText;
+@synthesize buttonSend;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
@@ -698,9 +699,13 @@
     if (currentPage.pageIndex >= 0) {
         [buttonText setEnabled:YES];
         [buttonText setAlpha:1];
+        [buttonSend setEnabled:YES];
+        [buttonSend setAlpha:1];
     } else {
         [buttonText setEnabled:NO];
         [buttonText setAlpha:.4];
+        [buttonSend setEnabled:NO];
+        [buttonSend setAlpha:.4];
     }
     
     if (currentPage.inTextView) {
@@ -802,7 +807,11 @@
 }
 
 - (IBAction)openSendToDialog:(id)sender {
-    [UIActivitiesControl showActivitiesInView:self];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [UIActivitiesControl showActivitiesInView:appDelegate.masterContainerViewController];
+    } else {
+        [UIActivitiesControl showActivitiesInView:self];
+    }
 }
 
 - (void)markStoryAsSaved {

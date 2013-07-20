@@ -105,16 +105,7 @@
     
     shareSheet.excludedActivityTypes = @[UIActivityTypePostToWeibo,UIActivityTypeAssignToContact];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        UIPopoverController *popover = [[UIPopoverController alloc]
-                                        initWithContentViewController:shareSheet];
-        [popover presentPopoverFromRect:appDelegate.masterContainerViewController.view.frame
-                                 inView:appDelegate.masterContainerViewController.view
-               permittedArrowDirections:UIPopoverArrowDirectionAny
-                               animated:YES];
-    } else {
-        [vc presentViewController:shareSheet animated:YES completion:nil];
-    }
+    [vc presentViewController:shareSheet animated:YES completion:nil];
 }
 
 @end

@@ -10,6 +10,8 @@
 
 @interface UIActivitiesControl : NSObject
 
+@property (nonatomic, retain) UIPopoverController *popover;
+
 + (void)showActivitiesInView:(UIViewController *)vc;
 + (void)showActivitiesInView:(UIViewController *)vc withUrl:(NSURL *)url;
 
