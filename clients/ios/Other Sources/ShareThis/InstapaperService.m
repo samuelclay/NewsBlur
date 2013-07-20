@@ -104,7 +104,7 @@ static InstapaperService *_manager;
             [self postToService];
             break;
         case SUCCESS_POSTED:
-            [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
+            [self showPostConfirmation];
             break;
         case BAD_REQUEST_INSTAPAPER:
             [self showAlertMessageWithTitle:@"Error" Message:@"Bad Request"];

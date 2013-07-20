@@ -170,7 +170,7 @@ static ReadabilityService *_manager;
             self.loggingIn = YES;
             break;
         case BOOKMARK_SUCCESS:
-            [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
+            [self showPostConfirmation];
             break;
         case DUPLICATE_BOOKMARK:
             [self showAlertMessageWithTitle:@"Error" Message:@"Bookmark already exists!"];

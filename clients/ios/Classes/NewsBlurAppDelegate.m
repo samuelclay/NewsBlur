@@ -44,6 +44,7 @@
 #import "FMDatabaseAdditions.h"
 #import "JSON.h"
 #import "IASKAppSettingsViewController.h"
+#import "CheckmarkHud.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -441,6 +442,13 @@
 - (void)resetShareComments {
     [shareViewController clearComments];
 }
+
+- (void)showCheckmarkHud:(NSString *)messageType
+{
+    CheckmarkHud *hud = [[CheckmarkHud alloc] init];
+    [hud flashCheckmarkHud:messageType onView:window];
+}
+
 
 #pragma mark -
 #pragma mark View Management

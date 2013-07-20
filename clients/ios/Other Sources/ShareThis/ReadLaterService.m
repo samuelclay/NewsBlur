@@ -1,6 +1,7 @@
 /* Copyright 2012 IGN Entertainment, Inc. */
 
 #import "ReadLaterService.h"
+#import "NewsBlurAppDelegate.h"
 
 const int LOGIN_ALERT_TAG = 1001;
 const int POST_ALERT_TAG = 1002;
@@ -84,6 +85,11 @@ const int POST_ALERT_TAG = 1002;
         default:
             break;
     }
+}
+
+- (void)showPostConfirmation
+{
+    [[NewsBlurAppDelegate sharedAppDelegate] showCheckmarkHud:@"added"];
 }
 
 #pragma mark NSURLConnection Delegates

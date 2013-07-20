@@ -111,7 +111,7 @@ static PocketService *_manager;
             // Pocket uses the same status code for both login success and success posted
             if (![[keychain objectForKey:(__bridge id) kSecAttrAccount] isEqualToString:@""]
                 && [keychain objectForKey:(__bridge id)kSecValueData]) {
-                [[[NewsBlurAppDelegate sharedAppDelegate] storyPageControl] flashCheckmarkHud:@"added"];
+                [self showPostConfirmation];
             } else {
                 [keychain setObject:self.username forKey:(__bridge id)kSecAttrAccount];
                 [keychain setObject:self.password forKey:(__bridge id)kSecValueData];

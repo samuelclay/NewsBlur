@@ -320,6 +320,7 @@
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
+- (void)showCheckmarkHud:(NSString *)messageType;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
@@ -353,7 +354,6 @@
 - (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
 - (void)flushOldCachedImages;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
-
 @end
 
 @interface UnreadCounts : NSObject {
