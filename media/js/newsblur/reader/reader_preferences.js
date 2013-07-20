@@ -270,6 +270,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             })
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-contextmenu' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-contextmenus-1', type: 'radio', name: 'show_contextmenus', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-contextmenus-1' }, [
+                                    'Open the feed and story title menu'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-contextmenus-2', type: 'radio', name: 'show_contextmenus', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-contextmenus-2' }, [
+                                    'Use the native browser context menu'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Right-clicking',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                        ])
+                    ]),                    
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
@@ -412,14 +432,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
                                     'Manually by hitting ',
                                     $.make('div', { className: 'NB-keyboard-shortcut-key', 
-                                                    style: 'display: inline; float: none' }, [
+                                                    style: 'display: inline; float: none;margin: 0 4px' }, [
                                         'u'
+                                    ]),
+                                    'or',
+                                    $.make('div', { className: 'NB-keyboard-shortcut-key', 
+                                                    style: 'display: inline; float: none;margin: 0 4px' }, [
+                                        'm'
                                     ])
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Mark a story as read'
+                            'Mark a story as read',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Clicking on a story marks it as read immediately.')
                         ])
                     ])
 
@@ -745,7 +771,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-         $('input[name=new_window]', $modal).each(function() {
+        $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
                 $(this).attr('checked', true);
                 return false;
@@ -813,6 +839,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_tooltips]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=show_contextmenus]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_contextmenus) {
                 $(this).attr('checked', true);
                 return false;
             }

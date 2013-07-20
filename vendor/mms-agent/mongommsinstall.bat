@@ -1,0 +1,1 @@
+powershell .\mongommsinstall.ps1

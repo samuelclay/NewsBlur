@@ -6,8 +6,10 @@
 <head>
     <title>{{ social_profile.title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
+    {% if social_profile.photo_url %}
     <link rel="shortcut icon" href="{{ social_profile.photo_url }}">
     <link rel="icon" href="{{ social_profile.photo_url }}">
+    {% endif %}
     <meta name="viewport" content="initial-scale=1, maximum-scale=1.5">
     <link rel="apple-touch-icon" href="{{ MEDIA_URL }}img/circular/circular_apple_icon.png"/>
     <meta name="apple-mobile-web-app-capable" content="yes" />  

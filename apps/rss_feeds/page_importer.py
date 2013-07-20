@@ -42,13 +42,13 @@ class PageImporter(object):
     @property
     def headers(self):
         return {
-            'User-Agent': 'NewsBlur Page Fetcher (%s subscriber%s) - %s '
+            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s '
                           '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
                           'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
                           'Safari/534.48.3)' % (
                 self.feed.num_subscribers,
                 's' if self.feed.num_subscribers != 1 else '',
-                settings.NEWSBLUR_URL
+                self.feed.permalink,
             ),
             'Connection': 'close',
         }
@@ -89,6 +89,12 @@ class PageImporter(object):
                         data = response.text
                     except (LookupError, TypeError):
                         data = response.content
+
+                    if response.encoding and response.encoding != 'utf-8':
+                        try:
+                            data = data.encode(response.encoding)
+                        except LookupError:
+                            pass
             else:
                 try:
                     data = open(feed_link, 'r').read()

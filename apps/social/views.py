@@ -315,7 +315,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
-    page = int(request.REQUEST.get('page', 1))
+    try:
+        page = int(request.REQUEST.get('page', 1))
+    except ValueError:
+        page = 1
     format = request.REQUEST.get('format', None)
     has_next_page = False
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
@@ -441,7 +444,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'user_social_profile' : user_social_profile,
         'user_social_profile_page' : json.encode(user_social_profile and user_social_profile.page()),
         'user_social_services' : user_social_services,
-        'user_social_services_page' : json.encode(user_social_services and user_social_services.to_json()),
+        'user_social_services_page' : json.encode(user_social_services and user_social_services.canonical()),
         'user_following_social_profile': user_following_social_profile,
         'social_profile': social_profile,
         'feeds'         : feeds,
@@ -530,7 +533,6 @@ def mark_story_as_shared(request):
             "story_author_name": story.story_author_name,
             "story_tags": story.story_tags,
             "story_date": story.story_date,
-            "story_db_id": story.id,
             "user_id": request.user.pk,
             "comments": comments,
             "has_comments": bool(comments),
@@ -598,8 +600,7 @@ def mark_story_as_unshared(request):
     original_story_found = True
     
     story, original_story_found = MStory.find_story(story_feed_id=feed_id, 
-                                                    story_id=story_id,
-                                                    original_only=True)
+                                                    story_id=story_id)
     
     shared_story = MSharedStory.objects(user_id=request.user.pk, 
                                         story_feed_id=feed_id, 
@@ -828,7 +829,7 @@ def profile(request):
     if not user_profile.private or user_profile.is_followed_by_user(user.pk):
         activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
 
-    user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
+    user_profile = user_profile.canonical(include_follows=True, common_follows_with_user=user.pk)
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
@@ -842,7 +843,7 @@ def profile(request):
         'following_youknow': user_profile['following_youknow'],
         'following_everybody': user_profile['following_everybody'],
         'requested_follow': user_profile['requested_follow'],
-        'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
+        'profiles': dict([(p.user_id, p.canonical(compact=True)) for p in profiles]),
         'activities': activities,
     }
 
@@ -865,7 +866,7 @@ def load_user_profile(request):
     
     return {
         'services': social_services,
-        'user_profile': social_profile.to_json(include_follows=True, include_settings=True),
+        'user_profile': social_profile.canonical(include_follows=True, include_settings=True),
     }
     
 @ajax_login_required
@@ -890,7 +891,7 @@ def save_user_profile(request):
     
     logging.user(request, "~BB~FRSaving social profile")
     
-    return dict(code=1, user_profile=profile.to_json(include_follows=True))
+    return dict(code=1, user_profile=profile.canonical(include_follows=True))
 
 
 @ajax_login_required
@@ -910,7 +911,7 @@ def upload_avatar(request):
         "code": 1 if image_url else -1,
         "uploaded": image_url,
         "services": social_services,
-        "user_profile": profile.to_json(include_follows=True),
+        "user_profile": profile.canonical(include_follows=True),
     }
 
 @ajax_login_required
@@ -926,7 +927,7 @@ def save_blurblog_settings(request):
 
     logging.user(request, "~BB~FRSaving blurblog settings")
     
-    return dict(code=1, user_profile=profile.to_json(include_follows=True, include_settings=True))
+    return dict(code=1, user_profile=profile.canonical(include_follows=True, include_settings=True))
 
 @json.json_view
 def load_follow_requests(request):
@@ -934,7 +935,7 @@ def load_follow_requests(request):
     follow_request_users = MFollowRequest.objects.filter(followee_user_id=user.pk)
     follow_request_user_ids = [f.follower_user_id for f in follow_request_users]
     request_profiles = MSocialProfile.profiles(follow_request_user_ids)
-    request_profiles = [p.to_json(include_following_user=user.pk) for p in request_profiles]
+    request_profiles = [p.canonical(include_following_user=user.pk) for p in request_profiles]
 
     if len(request_profiles):
         logging.user(request, "~BB~FRLoading Follow Requests (%s requests)" % (
@@ -953,9 +954,8 @@ def load_user_friends(request):
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles  = MSocialProfile.profiles(social_profile.follower_user_ids)
     recommended_users  = social_profile.recommended_users()
-    
-    following_profiles = [p.to_json(include_following_user=user.pk) for p in following_profiles]
-    follower_profiles  = [p.to_json(include_following_user=user.pk) for p in follower_profiles]
+    following_profiles = [p.canonical(include_following_user=user.pk) for p in following_profiles]
+    follower_profiles  = [p.canonical(include_following_user=user.pk) for p in follower_profiles]
     
     logging.user(request, "~BB~FRLoading Friends (%s following, %s followers)" % (
         social_profile.following_count,
@@ -965,7 +965,7 @@ def load_user_friends(request):
     return {
         'services': social_services,
         'autofollow': social_services.autofollow,
-        'user_profile': social_profile.to_json(include_follows=True),
+        'user_profile': social_profile.canonical(include_follows=True),
         'following_profiles': following_profiles,
         'follower_profiles': follower_profiles,
         'recommended_users': recommended_users,
@@ -1007,8 +1007,8 @@ def follow(request):
         logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
     
     return {
-        "user_profile": profile.to_json(include_follows=True), 
-        "follow_profile": follow_profile.to_json(common_follows_with_user=request.user.pk),
+        "user_profile": profile.canonical(include_follows=True), 
+        "follow_profile": follow_profile.canonical(common_follows_with_user=request.user.pk),
         "follow_subscription": follow_subscription,
     }
     
@@ -1037,8 +1037,8 @@ def unfollow(request):
     logging.user(request, "~BB~FRUnfollowing: ~SB%s" % unfollow_profile.username)
     
     return {
-        'user_profile': profile.to_json(include_follows=True),
-        'unfollow_profile': unfollow_profile.to_json(common_follows_with_user=request.user.pk),
+        'user_profile': profile.canonical(include_follows=True),
+        'unfollow_profile': unfollow_profile.canonical(common_follows_with_user=request.user.pk),
     }
 
 
@@ -1080,7 +1080,9 @@ def ignore_follower(request):
 def find_friends(request):
     query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
-    profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
+    profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
@@ -1088,7 +1090,7 @@ def find_friends(request):
     if not profiles:
         profiles = MSocialProfile.objects.filter(location__icontains=query)[:limit]
     
-    profiles = [p.to_json(include_following_user=request.user.pk) for p in profiles]
+    profiles = [p.canonical(include_following_user=request.user.pk) for p in profiles]
     profiles = sorted(profiles, key=lambda p: -1 * p['shared_stories_count'])
 
     return dict(profiles=profiles)
@@ -1241,7 +1243,7 @@ def social_feed_trainer(request):
     user = get_user(request)
     
     social_profile.count_stories()
-    classifier = social_profile.to_json()
+    classifier = social_profile.canonical()
     classifier['classifiers'] = get_classifiers_for_user(user, social_user_id=classifier['id'])
     classifier['num_subscribers'] = social_profile.follower_count
     classifier['feed_tags'] = []
@@ -1280,7 +1282,7 @@ def load_social_statistics(request, social_user_id, username=None):
 def load_social_settings(request, social_user_id, username=None):
     social_profile = MSocialProfile.get_user(social_user_id)
     
-    return social_profile.to_json()
+    return social_profile.canonical()
 
 @ajax_login_required
 def load_interactions(request):

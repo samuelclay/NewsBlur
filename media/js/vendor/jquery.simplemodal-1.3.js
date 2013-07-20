@@ -68,7 +68,7 @@
  * @version @VERSION
  */
 ;(function ($) {
-	var ie6 = $.browser.msie && parseInt($.browser.version) === 6 && typeof window['XMLHttpRequest'] !== 'object',
+	var ie6 = false, //$.browser.msie && parseInt($.browser.version) === 6 && typeof window['XMLHttpRequest'] !== 'object',
 		ieQuirks = null,
 		w = [];
 
@@ -222,7 +222,7 @@
 			}
 
 			// $.boxModel is undefined if checked earlier
-			ieQuirks = $.browser.msie && (parseInt($.browser.version, 10) <= 7 && !$.boxModel);
+			ieQuirks = false; // $.browser.msie && (parseInt($.browser.version, 10) <= 7 && !$.boxModel);
 
 			// merge defaults and user options
 			s.o = $.extend({}, $.modal.defaults, options);
@@ -485,9 +485,10 @@
 			var el = $(window);
 
 			// fix a jQuery/Opera bug with determining the window height
-			var h = $.browser.opera && $.browser.version > '9.5' && $.fn.jquery < '1.3'
-						|| $.browser.opera && $.browser.version < '9.5' && $.fn.jquery > '1.2.6'
-				? el[0].innerHeight : el.height();
+            // var h = $.browser.opera && $.browser.version > '9.5' && $.fn.jquery < '1.3'
+            //             || $.browser.opera && $.browser.version < '9.5' && $.fn.jquery > '1.2.6'
+            //     ? el[0].innerHeight : el.height();
+            var h = el.height();
 
 			return [h, el.width()];
 		},

@@ -42,7 +42,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
@@ -74,7 +74,16 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
-        
+        $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
+        var $expires_label = $(".NB-statistics-push-expires-label", this.$modal);
+        var $expires = $(".NB-statistics-push-expires", this.$modal);
+        if (data['push_expires']) {
+            $expires_label.html("Push expires");
+            $expires.html(data['push_expires']);
+        } else {
+            $expires_label.html("");
+            $expires.html("");
+        }
         setTimeout(function() {
             self.make_charts(data);  
         }, this.first_load ? 200 : 50);
@@ -166,7 +175,9 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Feed Push'),
-                    $.make('div', this.make_history(data, 'feed_push'))
+                    $.make('div', this.make_history(data, 'feed_push')),
+                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires-label' }, 'Push Expires'),
+                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires' })
                 ])
             ]))
         ]);

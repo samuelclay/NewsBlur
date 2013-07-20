@@ -17,7 +17,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import NewFeeds
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
@@ -39,7 +39,7 @@ class Profile(models.Model):
     preferences       = models.TextField(default="{}")
     view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
-    feed_pane_size    = models.IntegerField(default=240)
+    feed_pane_size    = models.IntegerField(default=242)
     tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.NullBooleanField(default=False, null=True, blank=True)
     has_setup_feeds   = models.NullBooleanField(default=False, null=True, blank=True)
@@ -56,7 +56,7 @@ class Profile(models.Model):
     def __unicode__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
-    def to_json(self):
+    def canonical(self):
         return {
             'is_premium': self.is_premium,
             'preferences': json.decode(self.preferences),
@@ -102,7 +102,7 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting %s shared stories" % shared_stories.count())
         for story in shared_stories:
             try:
-                original_story = MStory.objects.get(pk=story.story_db_id)
+                original_story = MStory.objects.get(story_hash=story.story_hash)
                 original_story.sync_redis()
             except MStory.DoesNotExist:
                 pass
@@ -127,6 +127,10 @@ class Profile(models.Model):
         activities = MActivity.objects.filter(with_user_id=self.user.pk)
         logging.user(self.user, "Deleting %s activities with user." % activities.count())
         activities.delete()
+        
+        starred_stories = MStarredStory.objects.filter(user_id=self.user.pk)
+        logging.user(self.user, "Deleting %s starred stories." % starred_stories.count())
+        starred_stories.delete()
         
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
@@ -239,17 +243,21 @@ class Profile(models.Model):
             self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
             self.save()
 
-    def refund_premium(self):
+    def refund_premium(self, partial=False):
         refunded = False
         
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
-            stripe_payments[0].refund()
-            refunded = stripe_payments[0].amount/100
+            if partial:
+                stripe_payments[0].refund(amount=1200)
+                refunded = 12
+            else:
+                stripe_payments[0].refund()
+                self.cancel_premium()
+                refunded = stripe_payments[0].amount/100
             logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
-            self.cancel_premium()
         else:
             paypal_opts = {
                 'API_ENVIRONMENT': 'PRODUCTION',
@@ -261,7 +269,10 @@ class Profile(models.Model):
             transaction = PayPalIPN.objects.filter(custom=self.user.username,
                                                    txn_type='subscr_payment')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
-            refunded = int(float(refund['raw']['TOTALREFUNDEDAMOUNT'][0]))
+            try:
+                refunded = int(float(refund['raw']['TOTALREFUNDEDAMOUNT'][0]))
+            except KeyError:
+                refunded = int(transaction.amount)
             logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
             self.cancel_premium()
         
@@ -752,7 +763,7 @@ class PaymentHistory(models.Model):
     class Meta:
         ordering = ['-payment_date']
         
-    def to_json(self):
+    def canonical(self):
         return {
             'payment_date': self.payment_date.strftime('%Y-%m-%d'),
             'payment_amount': self.payment_amount,

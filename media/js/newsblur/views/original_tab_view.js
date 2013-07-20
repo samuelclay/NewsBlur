@@ -198,8 +198,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                 NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = true;
             }
             
-            $iframe.scrollable().stop();
-            $iframe.scrollTo($story, { 
+            $iframe.stop().scrollTo($story, { 
                 duration: options.immediate ? 0 : 380,
                 axis: 'y', 
                 easing: 'easeInOutQuint', 

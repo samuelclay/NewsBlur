@@ -11,7 +11,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "dblclick .feed_counts"             : "mark_feed_as_read",
         "dblclick"                          : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
@@ -62,8 +61,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('\
-        <<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
@@ -120,7 +118,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             $search.focus();
         }
         
-        this.$el.bind('contextmenu', _.bind(this.show_manage_menu, this));
+        this.$el.bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
         
         return this;
     },
@@ -294,8 +292,15 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
+    show_manage_menu_rightclick: function(e) {
+        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        
+        return this.show_manage_menu(e);
+    },
+    
     show_manage_menu: function(e) {
         if (this.options.feed_chooser) return;
+
         e.preventDefault();
         e.stopPropagation();
         NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);
@@ -338,10 +343,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     open_statistics: function() {
         NEWSBLUR.reader.open_feed_statistics_modal();
-    },
-    
-    show_hidden_story_titles: function() {
-        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     },
     
     open_options_popover: function() {

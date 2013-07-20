@@ -16,11 +16,6 @@ from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
-HEADERS = {
-    'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
-    'Connection': 'close',
-}
-
 class IconImporter(object):
     
     def __init__(self, feed, page_data=None, force=False):
@@ -52,14 +47,20 @@ class IconImporter(object):
                 pass
             image     = self.normalize_image(image)
             color     = self.determine_dominant_color_in_image(image)
-            image_str = self.string_from_image(image)
-
-            if (self.force or 
-                self.feed_icon.color != color or 
-                self.feed_icon.data != image_str or 
-                self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found or
-                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon)):
+            try:
+                image_str = self.string_from_image(image)
+            except TypeError:
+                return
+            
+            if len(image_str) > 500000:
+                image = None
+            if (image and 
+                (self.force or 
+                 self.feed_icon.color != color or 
+                 self.feed_icon.data != image_str or 
+                 self.feed_icon.icon_url != icon_url or
+                 self.feed_icon.not_found or
+                 (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
                 self.feed_icon.data      = image_str
                 self.feed_icon.icon_url  = icon_url
                 self.feed_icon.color     = color
@@ -69,7 +70,8 @@ class IconImporter(object):
                     self.save_to_s3(image_str)
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
-        else:
+
+        if not image:
             self.feed_icon.not_found = True
             self.feed.favicon_not_found = True
             
@@ -210,8 +212,19 @@ class IconImporter(object):
             
         @timelimit(30)
         def _1(url):
+            headers = {
+                'User-Agent': 'NewsBlur Favicon Fetcher - %s subscriber%s - %s '
+                              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                              'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                              'Safari/534.48.3)' % (
+                    self.feed.num_subscribers,
+                    's' if self.feed.num_subscribers != 1 else '',
+                    self.feed.permalink,
+                ),
+                'Connection': 'close',
+            }
             try:
-                request = urllib2.Request(url, headers=HEADERS)
+                request = urllib2.Request(url, headers=headers)
                 icon = urllib2.urlopen(request).read()
             except Exception:
                 return None

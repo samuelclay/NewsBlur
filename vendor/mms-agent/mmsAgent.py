@@ -13,7 +13,7 @@ import bson
 # Python
 import threading, urllib, urllib2, socket, zlib, time, sets, re, gc
 
-mmsAgentVersion = "1.5.6"
+mmsAgentVersion = "1.5.7"
 
 class MmsAgent( object ):
     """ The mms agent object """

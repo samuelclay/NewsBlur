@@ -1,5 +1,6 @@
 NEWSBLUR.ReaderClassifierTrainer = function(options) {
     var defaults = {
+        'width': 620,
         'training': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
@@ -20,6 +21,7 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
 
 NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     var defaults = {
+        'width': 620,
         'training': false,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -42,6 +44,7 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
 
 NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     var defaults = {
+        'width': 620,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
@@ -219,6 +222,7 @@ var classifier_prototype = {
     
     fit_classifiers: function() {
         var $form = $("form", this.$modal);
+        if (!$form.length) return;
         var form_height = $form.innerHeight();
         var form_outerheight = $form.outerHeight(true);
         var offset_top = $form.position().top;
@@ -391,7 +395,7 @@ var classifier_prototype = {
         var self = this;
         var feed = this.feed;
 
-        // NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
+        // NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags, this.options['feed_loaded']]);
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
             $.make('div', { className: 'NB-modal-loading' }),
@@ -437,7 +441,9 @@ var classifier_prototype = {
                       )
                   ])
               ])
-            ),
+          ),
+          (!this.options['feed_loaded'] &&
+              $.make('form', { method: 'post', className: 'NB-publisher' })),
           (this.options['training'] && $.make('div', { className: 'NB-modal-submit-bottom' }, [
             $.make('div', { className: 'NB-modal-submit' }, [
                   $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
@@ -467,7 +473,16 @@ var classifier_prototype = {
         story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
+            $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }),
+            $.make('h2', { className: 'NB-modal-subtitle' }, [
+                (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.make('div', { className: 'NB-modal-feed-heading' }, [
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                ])
+            ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -507,6 +522,8 @@ var classifier_prototype = {
                     ])
                 ])
             ),
+            (!this.options['feed_loaded'] &&
+                $.make('form', { method: 'post', className: 'NB-publisher' })),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
@@ -684,10 +701,10 @@ var classifier_prototype = {
         
         if (score > 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-like');
-            $('.NB-classifier-input-like', $classifier).attr('checked', true);
+            $('.NB-classifier-input-like', $classifier).prop('checked', true);
         } else if (score < 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-dislike');
-            $('.NB-classifier-input-dislike', $classifier).attr('checked', true);
+            $('.NB-classifier-input-dislike', $classifier).prop('checked', true);
         }
         
         $('.NB-classifier', $classifier).bind('mouseenter', function(e) {
@@ -716,24 +733,24 @@ var classifier_prototype = {
         if (classifier_opinion == 'like') {
             if ($classifier.is('.NB-classifier-like')) {
                 $classifier.removeClass('NB-classifier-like');
-                $dislike.attr('checked', false);
-                $like.attr('checked', false);
+                $dislike.prop('checked', false);
+                $like.prop('checked', false);
             } else {
                 $classifier.removeClass('NB-classifier-dislike');
                 $classifier.addClass('NB-classifier-like');
-                $dislike.attr('checked', false);
-                $like.attr('checked', true);
+                $dislike.prop('checked', false);
+                $like.prop('checked', true);
             }
         } else if (classifier_opinion == 'dislike') {
             if ($classifier.is('.NB-classifier-dislike')) {
                 $classifier.removeClass('NB-classifier-dislike');
-                $like.attr('checked', false);
-                $dislike.attr('checked', false);
+                $like.prop('checked', false);
+                $dislike.prop('checked', false);
             } else {
                 $classifier.removeClass('NB-classifier-like');
                 $classifier.addClass('NB-classifier-dislike');
-                $like.attr('checked', false);
-                $dislike.attr('checked', true);
+                $like.prop('checked', false);
+                $dislike.prop('checked', true);
             }
         }
         
@@ -909,7 +926,7 @@ var classifier_prototype = {
             var name = $this.attr('name').replace(/^(dis)?like_/, '');
             var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
             var value = $this.val();
-            var checked = $this.attr('checked');
+            var checked = $this.prop('checked');
         
             if (checked) {
                 if (name == 'tag') {

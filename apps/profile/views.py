@@ -59,6 +59,7 @@ def set_preference(request):
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
+    logging.user(request, "~FMSaving preference: %s" % new_preferences)
     response = dict(code=code, message=message, new_preferences=new_preferences)
     return response
 
@@ -118,6 +119,8 @@ def set_view_setting(request):
     request.user.profile.view_settings = json.encode(view_settings)
     request.user.profile.save()
     
+    logging.user(request, "~FMView settings: %s/%s/%s" % (feed_view_setting, 
+                 feed_order_setting, feed_read_filter_setting))
     response = dict(code=code)
     return response
 
@@ -142,6 +145,7 @@ def set_collapsed_folders(request):
     request.user.profile.collapsed_folders = collapsed_folders
     request.user.profile.save()
     
+    logging.user(request, "~FMCollapsing folder: %s" % collapsed_folders)
     response = dict(code=code)
     return response
 
@@ -312,9 +316,10 @@ def cancel_premium(request):
 @json.json_view
 def refund_premium(request):
     user_id = request.REQUEST.get('user_id')
+    partial = request.REQUEST.get('partial', False)
     user = User.objects.get(pk=user_id)
     try:
-        refunded = user.profile.refund_premium()
+        refunded = user.profile.refund_premium(partial=partial)
     except stripe.InvalidRequestError, e:
         refunded = e
 

@@ -98,10 +98,15 @@ def pre_process_story(entry):
         entry['guid'] = unicode(entry['guid'])
 
     # Normalize story content/summary
+    summary = entry.get('summary', '')
+    content = ""
+    if not summary and 'summary_detail' in entry:
+        summary = entry['summary_detail'].get('value', '')
     if entry.get('content'):
-        entry['story_content'] = entry['content'][0].get('value', '').strip()
+        content = entry['content'][0].get('value', '')
+    if len(content) > len(summary):
+        entry['story_content'] = content.strip()
     else:
-        summary = entry.get('summary') or ''
         entry['story_content'] = summary.strip()
     
     # Add each media enclosure as a Download link

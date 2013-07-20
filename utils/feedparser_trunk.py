@@ -429,16 +429,15 @@ _cp1252 = {
 _urifixer = re.compile('^([A-Za-z][A-Za-z0-9+-.]*://)(/*)(.*?)')
 def _urljoin(base, uri):
     uri = _urifixer.sub(r'\1\3', uri)
-    #try:
     if not isinstance(uri, unicode):
         uri = uri.decode('utf-8', 'ignore')
-    uri = urlparse.urljoin(base, uri)
+    try:
+        uri = urlparse.urljoin(base, uri)
+    except ValueError:
+        uri = u''
     if not isinstance(uri, unicode):
         return uri.decode('utf-8', 'ignore')
     return uri
-    #except:
-    #    uri = urlparse.urlunparse([urllib.quote(part) for part in urlparse.urlparse(uri)])
-    #    return urlparse.urljoin(base, uri)
 
 class _FeedParserMixin:
     namespaces = {
@@ -553,7 +552,11 @@ class _FeedParserMixin:
         self.svgOK = 0
         self.title_depth = -1
         self.depth = 0
-        self.psc_chapters_counter = 0
+        # psc_chapters_flag prevents multiple psc_chapters from being
+        # captured in a single entry or item. The transition states are
+        # None -> True -> False. psc_chapter elements will only be
+        # captured while it is True.
+        self.psc_chapters_flag = None
         if baselang:
             self.feeddata['language'] = baselang.replace('_','-')
 
@@ -878,7 +881,9 @@ class _FeedParserMixin:
 
         # resolve relative URIs
         if (element in self.can_be_relative_uri) and output:
-            output = self.resolveURI(output)
+            # do not resolve guid elements with isPermalink="false"
+            if not element == 'id' or self.guidislink:
+                output = self.resolveURI(output)
 
         # decode entities within embedded markup
         if not self.contentparams.get('base64', 0):
@@ -1344,7 +1349,7 @@ class _FeedParserMixin:
         self.inentry = 1
         self.guidislink = 0
         self.title_depth = -1
-        self.psc_chapters_counter = 0
+        self.psc_chapters_flag = None
         id = self._getAttribute(attrsD, 'rdf:about')
         if id:
             context = self._getContext()
@@ -1894,19 +1899,18 @@ class _FeedParserMixin:
         context['newlocation'] = _makeSafeAbsoluteURI(self.baseuri, url.strip())
 
     def _start_psc_chapters(self, attrsD):
-        version = self._getAttribute(attrsD, 'version')
-        if version == '1.1' and self.psc_chapters_counter == 0:
-            self.psc_chapters_counter += 1
+        if self.psc_chapters_flag is None:
+	    # Transition from None -> True
+            self.psc_chapters_flag = True
             attrsD['chapters'] = []
             self._getContext()['psc_chapters'] = FeedParserDict(attrsD)
             
     def _end_psc_chapters(self):
-        version = self._getContext()['psc_chapters']['version']
-        if version == '1.1':
-            self.psc_chapters_counter += 1
+        # Transition from True -> False
+        self.psc_chapters_flag = False
         
     def _start_psc_chapter(self, attrsD):
-        if self.psc_chapters_counter == 1:
+        if self.psc_chapters_flag:
             start = self._getAttribute(attrsD, 'start')
             attrsD['start_parsed'] = _parse_psc_chapter_start(start)
 
@@ -2280,10 +2284,7 @@ def _resolveRelativeURIs(htmlSource, baseURI, encoding, _type):
 def _makeSafeAbsoluteURI(base, rel=None):
     # bail if ACCEPTABLE_URI_SCHEMES is empty
     if not ACCEPTABLE_URI_SCHEMES:
-        try:
-            return _urljoin(base, rel or u'')
-        except ValueError:
-            return u''
+        return _urljoin(base, rel or u'')
     if not base:
         return rel or u''
     if not rel:
@@ -2294,10 +2295,7 @@ def _makeSafeAbsoluteURI(base, rel=None):
         if not scheme or scheme in ACCEPTABLE_URI_SCHEMES:
             return base
         return u''
-    try:
-        uri = _urljoin(base, rel)
-    except ValueError:
-        return u''
+    uri = _urljoin(base, rel)
     if uri.strip().split(':', 1)[0] not in ACCEPTABLE_URI_SCHEMES:
         return u''
     return uri
@@ -2315,7 +2313,8 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
         'p', 'pre', 'progress', 'q', 's', 'samp', 'section', 'select',
         'small', 'sound', 'source', 'spacer', 'span', 'strike', 'strong',
         'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'time', 'tfoot',
-        'th', 'thead', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'noscript'])
+        'th', 'thead', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'noscript',
+        'object', 'embed', 'iframe', 'param'])
 
     acceptable_attributes = set(['abbr', 'accept', 'accept-charset', 'accesskey',
       'action', 'align', 'alt', 'autocomplete', 'autofocus', 'axis',

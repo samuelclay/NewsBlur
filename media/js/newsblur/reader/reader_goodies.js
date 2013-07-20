@@ -98,6 +98,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-readkit' }),
               $.make('div', { className: 'NB-goodies-title' }, 'ReadKit: User-created Mac App')
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://www.tafitiapp.com/mx/'
+              }, 'Download Tafiti'),
+              $.make('div', { className: 'NB-goodies-tafiti' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Tafiti: User-created Windows 8 App')
+            ]),
             $.make('fieldset', [
                 $.make('legend', 'Browser Extensions for NewsBlur')
             ]),

@@ -8,7 +8,7 @@ import threading, time, traceback, warnings, sets
 
 warnings.simplefilter( 'ignore', DeprecationWarning )
 
-getLogsAgentVersion = "1.5.6"
+getLogsAgentVersion = "1.5.7"
 
 class GetLogsThread( threading.Thread ):
     """ When enabled pull log data from hosts. """

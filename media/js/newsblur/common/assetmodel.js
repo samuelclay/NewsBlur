@@ -132,7 +132,33 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     story_id: this.queued_read_stories[feed.id],
                     feed_id: feed.id
                 }, null, null, {
-                    'ajax_group': $.browser.msie ? 'rapid' : 'queue_clear',
+                    'ajax_group': 'queue_clear',
+                    'beforeSend': function() {
+                        self.queued_read_stories = {};
+                    }
+                });
+            }
+        }
+        
+        $.isFunction(callback) && callback(read);
+    },
+    
+    mark_story_hash_as_read: function(story, callback) {
+        var self = this;
+        var read = story.get('read_status');
+        
+        if (!story.get('read_status')) {
+            story.set('read_status', 1);
+            
+            if (NEWSBLUR.Globals.is_authenticated) {
+                if (!('hashes' in this.queued_read_stories)) { this.queued_read_stories['hashes'] = []; }
+                this.queued_read_stories['hashes'].push(story.get('story_hash'));
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story.id]);
+            
+                this.make_request('/reader/mark_story_hashes_as_read', {
+                    story_hash: this.queued_read_stories['hashes']
+                }, null, null, {
+                    'ajax_group': 'queue_clear',
                     'beforeSend': function() {
                         self.queued_read_stories = {};
                     }
@@ -1033,6 +1059,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
+        if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);
@@ -1281,14 +1308,30 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
       });
     },
     
-    fetch_friends: function(callback) {
+    fetch_categories: function(callback, error_callback) {
+        this.make_request('/categories/', null, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
+    subscribe_to_categories: function(categories, callback, error_callback) {
+        this.make_request('/categories/subscribe', {category: categories}, _.bind(function(data) {
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
+    fetch_friends: function(callback, error_callback) {
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
             this.social_services = data.services;
             this.follower_profiles.reset(data.follower_profiles);
             this.following_profiles.reset(data.following_profiles);
             callback(data);
-        }, this), null, {
+        }, this), error_callback, {
             request_type: 'GET'
         });
     },
@@ -1426,10 +1469,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
     
-    refund_premium: function(user_id, callback, error_callback) {
-        this.make_request('/profile/refund_premium', {
-            user_id: user_id
-        }, callback, error_callback);
+    refund_premium: function(data, callback, error_callback) {
+        this.make_request('/profile/refund_premium', data, callback, error_callback);
     },
     
     delete_all_sites: function(callback, error_callback) {

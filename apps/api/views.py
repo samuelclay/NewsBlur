@@ -13,7 +13,7 @@ from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
 from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
@@ -23,14 +23,19 @@ from utils.feed_functions import relative_timesince
 def login(request):
     code = -1
     errors = None
-    
-    if request.method == "POST":
+    user_agent = request.environ.get('HTTP_USER_AGENT', '')
+
+    if not user_agent or user_agent.lower() in ['nativehost']:
+        errors = dict(user_agent="You must set a user agent to login.")
+        ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
+        logging.user(request, "~FG~BB~SK~FRBlocked ~FGAPI Login~SN~FW: %s / %s" % (user_agent, ip))
+    elif request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.errors:
             errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.user(request, "~FG~BB~SKAPI Login~FW")
+            logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
             code = 1
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
@@ -99,7 +104,7 @@ def add_site_load_script(request, token):
         'token': token,
         'folders': (usf and usf.folders) or [],
         'user': profile and profile.user or {},
-        'user_profile': user_profile and json.encode(user_profile.to_json()) or {},
+        'user_profile': user_profile and json.encode(user_profile.canonical()) or {},
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
@@ -292,11 +297,19 @@ def share_story(request, token):
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
     
-    socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
-                                                subscription_user_id=profile.user.pk)
-    socialsub.mark_story_ids_as_read([shared_story.story_hash], 
-                                      shared_story.story_feed_id, 
-                                      request=request)
+    try:
+        socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
+                                                    subscription_user_id=profile.user.pk)
+    except MSocialSubscription.DoesNotExist:
+        socialsub = None
+    
+    if socialsub:
+        socialsub.mark_story_ids_as_read([shared_story.story_hash], 
+                                          shared_story.story_feed_id, 
+                                          request=request)
+    else:
+        RUserStory.mark_read(profile.user.pk, shared_story.story_feed_id, shared_story.story_hash)
+
 
     shared_story.publish_update_to_subscribers()
     

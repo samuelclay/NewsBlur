@@ -420,3 +420,7 @@ if __name__ == '__main__':
     import doctest
     print doctest.testmod()
 ## end of http://code.activestate.com/recipes/576611/ }}}
+
+def chunks(l, n):
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]

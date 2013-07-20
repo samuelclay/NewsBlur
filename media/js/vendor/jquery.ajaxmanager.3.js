@@ -134,7 +134,7 @@
 				if(o.beforeCreate.call(o.context || that, id, o) === false){return;}
 				that.inProgress++;
 				if(that.inProgress === 1){
-					$.event.trigger(that.name +'AjaxStart');
+                    // $.event.trigger(that.name +'AjaxStart');
 				}
 				if(o.cacheResponse && cache[id]){
 					if(!cache[id].cacheTTL || cache[id].cacheTTL < 0 || ((new Date().getTime() - cache[id].timestamp) < cache[id].cacheTTL)){
@@ -183,7 +183,7 @@
 			}
 			origFn.call(context, xhr, status, o);
 			
-			$.event.trigger(this.name +'AjaxComplete', [xhr, status, o]);
+            // $.event.trigger(this.name +'AjaxComplete', [xhr, status, o]);
 			
 			if(o.domCompleteTrigger){
 				$(o.domCompleteTrigger)
@@ -194,7 +194,7 @@
 			
 			this._removeXHR(xhrID);
 			if(!this.inProgress){
-				$.event.trigger(this.name +'AjaxStop');
+                // $.event.trigger(this.name +'AjaxStop');
 			}
 			xhr = null;
 		},
@@ -246,7 +246,7 @@
 				}
 			}
 			origFn.call(context, data, status, xhr, o);
-			$.event.trigger(this.name +'AjaxSuccess', [xhr, o, data]);
+            // $.event.trigger(this.name +'AjaxSuccess', [xhr, o, data]);
 			if(o.domSuccessTrigger){
 				$(o.domSuccessTrigger)
 					.trigger(this.name +'DOMSuccess', [data, o])

@@ -15,7 +15,7 @@ def getlogger():
     logger = logging.getLogger('newsblur')
     return logger
 
-def user(u, msg, request=None):
+def user(u, msg, request=None, warn_color=True):
     if not u:
         return debug(msg)
         
@@ -29,11 +29,12 @@ def user(u, msg, request=None):
 
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
-            color = '~FK~SB'
-            if seconds >= 1:
-                color = '~FR'
-            elif seconds <= .2:
-                color = '~FB'
+            color = '~FB'
+            if warn_color:
+                if seconds >= 1:
+                    color = '~FR'
+                elif seconds > .2:
+                    color = '~SB~FK'
             time_elapsed = "[%s%.4ss~SB] " % (
                 color,
                 seconds,

@@ -72,45 +72,51 @@ def generate_secret_token(phrase, size=12):
     return hashlib.sha1("".join(info)).hexdigest()[:size]
 
 def extract_user_agent(request):
-    user_agent = request.environ.get('HTTP_USER_AGENT', '')
+    user_agent = request.environ.get('HTTP_USER_AGENT', '').lower()
     platform = '------'
-    if 'iPad App' in user_agent:
+    if 'ipad app' in user_agent:
         platform = 'iPad'
-    elif 'iPhone App' in user_agent:
+    elif 'iphone app' in user_agent:
         platform = 'iPhone'
-    elif 'Blar' in user_agent:
+    elif 'blar' in user_agent:
         platform = 'Blar'
-    elif 'Android' in user_agent:
+    elif 'android' in user_agent:
         platform = 'Androd'
-    elif 'Metroblur' in user_agent:
-        platform = 'Metrob'
-    elif 'Pluggio' in user_agent:
+    elif 'pluggio' in user_agent:
         platform = 'Plugio'
-    elif 'MSIE' in user_agent:
+    elif 'msie' in user_agent:
         platform = 'IE'
-        if 'MSIE 9' in user_agent:
+        if 'msie 9' in user_agent:
             platform += '9'
-        elif 'MSIE 10' in user_agent:
+        elif 'msie 10' in user_agent:
             platform += '10'
-        elif 'MSIE 8' in user_agent:
+        elif 'msie 8' in user_agent:
             platform += '8'
-    elif 'Chrome' in user_agent:
+    elif 'chrome' in user_agent:
         platform = 'Chrome'
-    elif 'Safari' in user_agent:
+    elif 'safari' in user_agent:
         platform = 'Safari'
-    elif 'MeeGo' in user_agent:
+    elif 'meego' in user_agent:
         platform = 'MeeGo'
-    elif 'Firefox' in user_agent:
+    elif 'firefox' in user_agent:
         platform = 'FF'
-    elif 'Opera' in user_agent:
+    elif 'opera' in user_agent:
         platform = 'Opera'
-    elif 'WP7' in user_agent:
+    elif 'wp7' in user_agent:
         platform = 'WP7'
-    elif 'WP8' in user_agent:
+    elif 'wp8' in user_agent:
         platform = 'WP8'
-    elif 'Tafiti' in user_agent:
+    elif 'tafiti' in user_agent:
         platform = 'Tafiti'
-    elif 'ReadKit' in user_agent:
+    elif 'readkit' in user_agent:
         platform = 'ReadKt'
+    elif 'metroblur' in user_agent:
+        platform = 'Metrob'
+    elif 'feedme' in user_agent:
+        platform = 'FeedMe'
+    elif 'feed reader-window' in user_agent:
+        platform = 'FeedRe'
+    elif 'feed reader-background' in user_agent:
+        platform = 'FeReBg'
     
     return platform

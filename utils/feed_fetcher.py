@@ -16,7 +16,8 @@ from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
-from utils import feedparser
+# from utils import feedparser
+from utils import feedparser_trunk as feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
@@ -67,11 +68,14 @@ class FetchFeed:
             modified = None
             etag = None
         
-        USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
-            self.feed.num_subscribers,
-            's' if self.feed.num_subscribers != 1 else '',
-            settings.NEWSBLUR_URL
-        )
+        USER_AGENT = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
+                      '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                      'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                      'Safari/534.48.3)' % (
+                          self.feed.num_subscribers,
+                          's' if self.feed.num_subscribers != 1 else '',
+                          self.feed.permalink,
+                     ))
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
@@ -210,7 +214,7 @@ class ProcessFeed:
             self.feed.last_modified = None
             pass
         
-        self.fpf.entries = self.fpf.entries[:50]
+        self.fpf.entries = self.fpf.entries[:100]
         
         if self.fpf.feed.get('title'):
             self.feed.feed_title = self.fpf.feed.get('title')
@@ -252,14 +256,23 @@ class ProcessFeed:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-            push_expired = self.feed.is_push and self.feed.push.lease_expires < datetime.datetime.now()
+            push_expired = False
+            if self.feed.is_push:
+                try:
+                    push_expired = self.feed.push.lease_expires < datetime.datetime.now()
+                except PushSubscription.DoesNotExist:
+                    self.feed.is_push = False
             if (hub_url and self_url and not settings.DEBUG and
                 self.feed.active_subscribers > 0 and
                 (push_expired or not self.feed.is_push or self.options.get('force'))):
                 logging.debug(u'   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s' % (
                               self.feed.title[:30],
                               "~SKRe-~SN" if push_expired else "", hub_url))
-                PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+                try:
+                    PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+                except TimeoutError:
+                    logging.debug(u'   ---> [%-30s] ~BB~FW~FRTimed out~FW subscribing to PuSH hub: %s' % (
+                                  self.feed.title[:30], hub_url))                    
             elif (self.feed.is_push and 
                   (self.feed.active_subscribers <= 0 or not hub_url)):
                 logging.debug(u'   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (
@@ -513,7 +526,7 @@ class Dispatcher:
     
     def publish_to_subscribers(self, feed):
         try:
-            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             listeners_count = r.publish(str(feed.pk), 'story:new')
             if listeners_count:
                 logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))

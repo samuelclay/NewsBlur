@@ -1,6 +1,7 @@
 import datetime
 import pickle
 import base64
+import httplib2
 from utils import log as logging
 from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 from bson.errors import InvalidStringData
@@ -29,7 +30,7 @@ def opml_upload(request):
     message = "OK"
     code = 1
     payload = {}
-
+    
     if request.method == 'POST':
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
@@ -55,6 +56,10 @@ def opml_upload(request):
                     payload = dict(folders=folders, delayed=True, feed_count=feed_count)
                     code = 2
                     message = ""
+                except AttributeError:
+                    code = -1
+                    message = "OPML import failed. Couldn't parse XML file."
+                    folders = None
 
             if folders:
                 feeds = UserSubscription.objects.filter(user=request.user).values()
@@ -84,6 +89,7 @@ def opml_export(request):
 
 
 def reader_authorize(request): 
+    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
     reader_importer = GoogleReaderImporter(request.user)
     if reader_importer.test():
         logging.user(request, "~BB~FW~SBSkipping Google Reader import, already tokened")
@@ -105,7 +111,7 @@ def reader_authorize(request):
         approval_prompt="force",
         )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
-        request.META['REMOTE_ADDR'],
+        request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', ""),
     ))
 
     authorize_url = FLOW.step1_get_authorize_url(redirect_uri=STEP2_URI)
@@ -120,17 +126,17 @@ def reader_authorize(request):
         auth_token_dict['user'] = request.user
     else:
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
-        OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).delete()
+        OAuthToken.objects.filter(remote_ip=ip).delete()
     auth_token_dict['uuid'] = str(uuid.uuid4())
     auth_token_dict['session_id'] = request.session.session_key
-    auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
+    auth_token_dict['remote_ip'] = ip
     OAuthToken.objects.create(**auth_token_dict)
 
     response.set_cookie('newsblur_reader_uuid', str(uuid.uuid4()))
     return response
 
 def reader_callback(request):
-    
+    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
     domain = Site.objects.get_current().domain
     STEP2_URI = "http://%s%s" % (
         (domain + '.com') if not domain.endswith('.com') else domain,
@@ -145,6 +151,8 @@ def reader_callback(request):
         )
     FLOW.redirect_uri = STEP2_URI
     
+    http = httplib2.Http()
+    http.disable_ssl_certificate_validation = True
     try:
         credential = FLOW.step2_exchange(request.REQUEST)
     except FlowExchangeError:
@@ -165,7 +173,7 @@ def reader_callback(request):
         if session.session_key:
             user_token = OAuthToken.objects.filter(session_id=request.session.session_key).order_by('-created_date')
     if not user_token:
-        user_token = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+        user_token = OAuthToken.objects.filter(remote_ip=ip).order_by('-created_date')
 
     if user_token:
         user_token = user_token[0]
@@ -176,7 +184,7 @@ def reader_callback(request):
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True
 
-    logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
+    logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % ip)
 
     if request.user.is_authenticated():
         return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
@@ -233,6 +241,8 @@ def import_starred_stories_from_google_reader(request):
     return dict(code=code, delayed=delayed, feed_count=feed_count, starred_count=starred_count)
 
 def import_signup(request):
+    ip = request.META.get('HTTP_X_REAL_IP', None) or request.META.get('REMOTE_ADDR', "")
+    
     if request.method == "POST":
         signup_form = SignupForm(prefix='signup', data=request.POST)
         if signup_form.is_valid():
@@ -247,7 +257,7 @@ def import_signup(request):
                 if request.session.session_key:
                     user_token = OAuthToken.objects.filter(session_id=request.session.session_key).order_by('-created_date')
             if not user_token:
-                user_token = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+                user_token = OAuthToken.objects.filter(remote_ip=ip).order_by('-created_date')
 
             if user_token:
                 user_token = user_token[0]

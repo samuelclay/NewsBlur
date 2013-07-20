@@ -2,7 +2,7 @@ express = require 'express'
 mongo = require 'mongodb'
 
 DEV = process.env.NODE_ENV == 'development'
-MONGODB_SERVER = if DEV then 'localhost' else 'db24'
+MONGODB_SERVER = if DEV then 'localhost' else 'db22'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
 if DEV
@@ -28,7 +28,7 @@ app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
     feed_id = parseInt(req.params, 10)
     etag = req.header('If-None-Match')
     @collection.findOne _id: feed_id, (err, docs) ->
-        # console.log "Req: #{feed_id}, etag: #{etag}"
+        console.log "Req: #{feed_id}, etag: #{etag}/#{docs.color}"
         if not err and etag and docs and docs.color == etag
             res.send 304
         else if not err and docs and docs.data

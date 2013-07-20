@@ -53,10 +53,21 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         NEWSBLUR.reader.update_starred_count();
     },
     
-    open_story_in_new_tab: function() {
+    open_story_in_new_tab: function(background) {
         this.mark_read({skip_delay: true});
-        window.open(this.get('story_permalink'), '_blank');
-        window.focus();
+
+        if (background && !$.browser.mozilla) {
+            var anchor, event;
+
+            anchor = document.createElement("a");
+            anchor.href = this.get('story_permalink');
+            event = document.createEvent("MouseEvents");
+            event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, true, false, false, true, 0, null);
+            return anchor.dispatchEvent(event);
+        } else {
+            window.open(this.get('story_permalink'), '_blank');
+            window.focus();
+        }
     },
     
     open_share_dialog: function(e, view) {
@@ -114,6 +125,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var delay = NEWSBLUR.assets.preference('read_story_delay');
 
         if (options.skip_delay) {
+            delay = 0;
+        } else if (options.force) {
             delay = 0;
         } else if (delay == -1) {
             return;

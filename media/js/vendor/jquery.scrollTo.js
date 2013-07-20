@@ -1,15 +1,12 @@
-/**
+/*!
  * jQuery.ScrollTo
- * Copyright (c) 2007-2009 Ariel Flesler - aflesler(at)gmail(dot)com | http://flesler.blogspot.com
+ * Copyright (c) 2007-2013 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com
  * Dual licensed under MIT and GPL.
- * Date: 3/9/2009
  *
  * @projectDescription Easy element scrolling using jQuery.
  * http://flesler.blogspot.com/2007/10/jqueryscrollto.html
- * Works with jQuery +1.2.6. Tested on FF 2/3, IE 6/7, Opera 9.5/6, Safari 3, Chrome 1 on WinXP.
- *
  * @author Ariel Flesler
- * @version 1.4.1
+ * @version 1.4.6
  *
  * @id jQuery.scrollTo
  * @id jQuery.fn.scrollTo
@@ -20,10 +17,12 @@
  *		- A jQuery/DOM element ( logically, child of the element to scroll )
  *		- A string selector, that will be relative to the element to scroll ( 'li:eq(2)', etc )
  *		- A hash { top:x, left:y }, x and y can be any kind of number/string like above.
- * @param {Number} duration The OVERALL length of the animation, this argument can be the settings object instead.
+ *		- A percentage of the container's dimension/s, for example: 50% to go to the middle.
+ *		- The string 'max' for go-to-end. 
+ * @param {Number, Function} duration The OVERALL length of the animation, this argument can be the settings object instead.
  * @param {Object,Function} settings Optional set of settings or the onAfter callback.
  *	 @option {String} axis Which axis must be scrolled, use 'x', 'y', 'xy' or 'yx'.
- *	 @option {Number} duration The OVERALL length of the animation.
+ *	 @option {Number, Function} duration The OVERALL length of the animation.
  *	 @option {String} easing The easing method for the animation.
  *	 @option {Boolean} margin If true, the margin of the target element will be deducted from the final position.
  *	 @option {Object, Number} offset Add/deduct from the end position. One number for both axes or { top:x, left:y }.
@@ -39,10 +38,10 @@
  * @desc Scroll relatively to the actual position
  * @example $('div').scrollTo( '+=340px', { axis:'y' } );
  *
- * @dec Scroll using a selector (relative to the scrolled element)
+ * @desc Scroll using a selector (relative to the scrolled element)
  * @example $('div').scrollTo( 'p.paragraph:eq(2)', 500, { easing:'swing', queue:true, axis:'xy' } );
  *
- * @ Scroll to a DOM element (same for jQuery object)
+ * @desc Scroll to a DOM element (same for jQuery object)
  * @example var second_child = document.getElementById('container').firstChild.nextSibling;
  *			$('#container').scrollTo( second_child, { duration:500, axis:'x', onAfter:function(){
  *				alert('scrolled!!');																   
@@ -51,6 +50,7 @@
  * @desc Scroll on both axes, to different values
  * @example $('div').scrollTo( { top: 300, left:'+=200' }, { axis:'xy', offset:-20 } );
  */
+
 ;(function( $ ){
 	
 	var $scrollTo = $.scrollTo = function( target, duration, settings ){
@@ -60,18 +60,18 @@
 	$scrollTo.defaults = {
 		axis:'xy',
 		duration: parseFloat($.fn.jquery) >= 1.3 ? 0 : 1,
-		queue: true
+		limit:true
 	};
 
 	// Returns the element that needs to be animated to scroll the window.
 	// Kept for backwards compatibility (specially for localScroll & serialScroll)
 	$scrollTo.window = function( scope ){
-		return $(window).scrollable();
+		return $(window)._scrollable();
 	};
 
-	// Hack, hack, hack... stay away!
+	// Hack, hack, hack :)
 	// Returns the real elements to scroll (supports window/iframes, documents and regular nodes)
-	$.fn.scrollable = function(){
+	$.fn._scrollable = function(){
 		return this.map(function(){
 			var elem = this,
 				isWin = !elem.nodeName || $.inArray( elem.nodeName.toLowerCase(), ['iframe','#document','html','body'] ) != -1;
@@ -81,7 +81,7 @@
 
 			var doc = (elem.contentWindow || elem).document || elem.ownerDocument || elem;
 			
-			return $.browser.safari || doc.compatMode == 'BackCompat' ?
+			return /webkit/i.test(navigator.userAgent) || doc.compatMode == 'BackCompat' ?
 				doc.body : 
 				doc.documentElement;
 		});
@@ -100,17 +100,19 @@
 			
 		settings = $.extend( {}, $scrollTo.defaults, settings );
 		// Speed is still recognized for backwards compatibility
-		duration = duration || settings.speed || settings.duration;
+		duration = duration || settings.duration;
 		// Make sure the settings are given right
 		settings.queue = settings.queue && settings.axis.length > 1;
-		
 		if( settings.queue )
 			// Let's keep the overall duration
 			duration /= 2;
 		settings.offset = both( settings.offset );
 		settings.over = both( settings.over );
 
-		return this.scrollable().each(function(){
+		return this._scrollable().each(function(){
+			// Null target yields nothing, just like jQuery does
+			if (target == null) return;
+
 			var elem = this,
 				$elem = $(elem),
 				targ = target, toff, attr = {},
@@ -120,13 +122,14 @@
 				// A number will pass the regex
 				case 'number':
 				case 'string':
-					if( /^([+-]=)?\d+(\.\d+)?(px)?$/.test(targ) ){
+					if( /^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ) ){
 						targ = both( targ );
 						// We are done
 						break;
 					}
 					// Relative selector, no break!
 					targ = $(targ,this);
+					if (!targ.length) return;
 				case 'object':
 					// DOMElement / jQuery
 					if( targ.is || targ.style )
@@ -138,7 +141,7 @@
 					pos = Pos.toLowerCase(),
 					key = 'scroll' + Pos,
 					old = elem[key],
-					Dim = axis == 'x' ? 'Width' : 'Height';
+					max = $scrollTo.max(elem, axis);
 
 				if( toff ){// jQuery / DOMElement
 					attr[key] = toff[pos] + ( win ? 0 : old - $elem.offset()[pos] );
@@ -153,14 +156,19 @@
 					
 					if( settings.over[pos] )
 						// Scroll to a fraction of its width/height
-						attr[key] += targ[Dim.toLowerCase()]() * settings.over[pos];
-				}else
-					attr[key] = targ[pos];
+						attr[key] += targ[axis=='x'?'width':'height']() * settings.over[pos];
+				}else{ 
+					var val = targ[pos];
+					// Handle percentage values
+					attr[key] = val.slice && val.slice(-1) == '%' ? 
+						parseFloat(val) / 100 * max
+						: val;
+				}
 
 				// Number or 'number'
-				if( /^\d+$/.test(attr[key]) )
+				if( settings.limit && /^\d+$/.test(attr[key]) )
 					// Check the limits
-					attr[key] = attr[key] <= 0 ? 0 : Math.min( attr[key], max(Dim) );
+					attr[key] = attr[key] <= 0 ? 0 : Math.min( attr[key], max );
 
 				// Queueing axes
 				if( !i && settings.queue ){
@@ -176,34 +184,29 @@
 			animate( settings.onAfter );			
 
 			function animate( callback ){
-				$elem.animate( attr, {
-			        'duration': duration, 
-			        'easing': settings.easing, 
-			        'complete': callback && function(){
-				        callback.call(this, target, settings);
-    				},
-    				'queue': settings.queue
-        		});
-			};
-
-			// Max scrolling position, works on quirks mode
-			// It only fails (not too badly) on IE, quirks mode.
-			function max( Dim ){
-				var scroll = 'scroll'+Dim;
-				
-				if( !win )
-					return elem[scroll];
-				
-				var size = 'client' + Dim,
-					html = elem.ownerDocument.documentElement,
-					body = elem.ownerDocument.body;
-
-				return Math.max( html[scroll], body[scroll] ) 
-					 - Math.min( html[size]  , body[size]   );
-					
+				$elem.animate( attr, duration, settings.easing, callback && function(){
+					callback.call(this, targ, settings);
+				});
 			};
 
 		}).end();
+	};
+	
+	// Max scrolling position, works on quirks mode
+	// It only fails (not too badly) on IE, quirks mode.
+	$scrollTo.max = function( elem, axis ){
+		var Dim = axis == 'x' ? 'Width' : 'Height',
+			scroll = 'scroll'+Dim;
+		
+		if( !$(elem).is('html,body') )
+			return elem[scroll] - $(elem)[Dim.toLowerCase()]();
+		
+		var size = 'client' + Dim,
+			html = elem.ownerDocument.documentElement,
+			body = elem.ownerDocument.body;
+
+		return Math.max( html[scroll], body[scroll] ) 
+			 - Math.min( html[size]  , body[size]   );
 	};
 
 	function both( val ){

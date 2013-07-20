@@ -1,0 +1,16 @@
+{{ from_name }} shares "{{ story.story_title }}" from {{ feed.feed_title }}{% if comments %}:
+
+{{ comments }}
+{% else %}.{% endif %}
+
+---------------------------------------------------------------------------
+
+{{ story.story_title }}
+
+{{ story.story_permalink|safe }}
+
+{{ story.text|safe }}
+
+---------------------------------------------------------------------------
+
+Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.

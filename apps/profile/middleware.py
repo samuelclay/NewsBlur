@@ -3,25 +3,33 @@ import re
 import random
 import time
 from utils import log as logging
+from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
-
+from utils import json_functions as json
 
 class LastSeenMiddleware(object):
     def process_response(self, request, response):
-        if ((request.path in ('/', '/reader/refresh_feeds', '/reader/load_feeds'))
+        if ((request.path == '/' or
+             request.path.startswith('/reader/refresh_feeds') or
+             request.path.startswith('/reader/load_feeds'))
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
+            ip = request.META.get('HTTP_X_REAL_IP', None) or request.META['REMOTE_ADDR']
             # SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
-                    request.user.profile.last_seen_on, request.META['REMOTE_ADDR']))
+                    request.user.profile.last_seen_on, ip))
+            elif settings.DEBUG:
+                logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
+                    request.user.profile.last_seen_on, ip))
+
             # if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
                 # request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
-            request.user.profile.last_seen_ip = request.META['REMOTE_ADDR']
+            request.user.profile.last_seen_ip = ip
             request.user.profile.save()
         
         return response
@@ -168,3 +176,24 @@ class ServerHostnameMiddleware:
 class TimingMiddleware:
     def process_request(self, request):
         setattr(request, 'start_time', time.time())
+
+BANNED_USER_AGENTS = (
+    'feed reader-background',
+    'missing',
+)
+class UserAgentBanMiddleware:
+    def process_request(self, request):
+        user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
+        
+        if 'profile' in request.path: return
+        
+        if any(ua in user_agent for ua in BANNED_USER_AGENTS):
+            data = {
+                'error': 'User agent banned: %s' % user_agent,
+                'code': -1
+            }
+            logging.user(request, "~FB~SN~BBBanned UA: ~SB%s" % (user_agent))
+
+            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+            
+

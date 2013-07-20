@@ -9,7 +9,7 @@
 
   DEV = process.env.NODE_ENV === 'development';
 
-  MONGODB_SERVER = DEV ? 'localhost' : 'db24';
+  MONGODB_SERVER = DEV ? 'localhost' : 'db22';
 
   MONGODB_PORT = parseInt(process.env.MONGODB_PORT || 27017, 10);
 
@@ -50,6 +50,7 @@
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
+      console.log("Req: " + feed_id + ", etag: " + etag + "/" + docs.color);
       if (!err && etag && docs && docs.color === etag) {
         return res.send(304);
       } else if (!err && docs && docs.data) {

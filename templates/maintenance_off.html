@@ -35,9 +35,9 @@
         table {
             background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#533754), to(#372238));
             background: -moz-linear-gradient(center top , #533754 0%, #372238 100%) repeat scroll 0 0 transparent;
-            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#304332), to(#172018));
+/*            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#304332), to(#172018));
             background: -moz-linear-gradient(center top , #304332 0%, #172018 100%) repeat scroll 0 0 transparent;
-        }
+*/        }
         #container {
             width: 500px
         }
@@ -74,7 +74,7 @@
             margin: 0 0 48px;
         }
         </style>
-        <title>NewsBlur is in maintenance mode...</title>
+        <title>NewsBlur is upgrading...</title>
     </head>
     <body>
         <table height="100%" width="100%">
@@ -84,7 +84,8 @@
                         <img src="/media/img/logo_512.png" class="logo">
                         <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
                         <div class="description">
-                            <p>Upgrading the PostgreSQL server. This can be done in the background, but it's a whole hell of a lot easier to just bring the site down for 15 minutes...</p>
+                            <p>This will take about 2 minutes. About a week ago my primary Redis server became big enough to consume the entire machine, which is a one way ticket to getting killed automatically by the machine. The last four outages, three lasting less than 2 minutes and this morning's bigger outage, were all caused by this server toppling over.</p>
+                            <p>I am performing the simple fix right now by moving it to a bigger machine. I am also performing the more complicated fix by concurrently writing data with a smaller footprint to another server. But this more complicated solution takes 14 days to run and won't complete until July 15th. I was hoping that I could avoid the simple fix and just wait until the 15th, but four outages is more than enough to convince me.</p>
                             <p>To pass the time, <a href="http://mlkshk.com/popular">check out what's popular on MLKSHK</a>.</p>
                         </div>
                     </div>

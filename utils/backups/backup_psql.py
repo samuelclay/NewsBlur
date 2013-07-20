@@ -1,9 +1,10 @@
 import os
 import sys
 
-CURRENT_DIR  = os.path.dirname(__file__)
-NEWSBLUR_DIR = ''.join([CURRENT_DIR, '/../../'])
+NEWSBLUR_DIR = '/srv/newsblur'
 sys.path.insert(0, NEWSBLUR_DIR)
+VENDOR_DIR = '/srv/newsblur/vendor'
+sys.path.insert(0, VENDOR_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import time

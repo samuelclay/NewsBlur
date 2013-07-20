@@ -1,13 +1,9 @@
 import os
-import base64
 import yaml
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from apps.profile.models import Profile
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from utils import json_functions as json
 from utils import log as logging
 
 def about(request):
@@ -54,14 +50,14 @@ def ios_download(request):
                               context_instance=RequestContext(request))
                               
 def ios_plist(request):
-    filename = settings.MEDIA_ROOT + '/ios/NewsBlur.plist'
+    filename = os.path.join(settings.NEWSBLUR_DIR, 'clients/ios/NewsBlur.plist')
     manifest = open(filename).read()
     
     logging.user(request, "~SK~FR~BBDownloading NewsBlur.plist...")
     return HttpResponse(manifest, content_type='text/xml')
     
 def ios_ipa(request):
-    filename = settings.MEDIA_ROOT + '/ios/NewsBlur.ipa'
+    filename = os.path.join(settings.NEWSBLUR_DIR, 'clients/ios/NewsBlur.ipa')
     manifest = open(filename).read()
     
     logging.user(request, "~SK~FR~BBDownloading NewsBlur.ipa...")

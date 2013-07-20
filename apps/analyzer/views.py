@@ -100,7 +100,7 @@ def save_classifier(request):
     _save_classifier(MClassifierTitle, 'title')
     _save_classifier(MClassifierFeed, 'feed')
 
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
 
     response = dict(code=code, message=message, payload=payload)

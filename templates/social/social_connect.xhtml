@@ -52,8 +52,9 @@
         var opener = parent && parent.window.opener || window.opener;
         var next = "{{ next|safe }}";
         if (next) {
-            console.log(["Forwarding to next", next]);
+            console.log(["Forwarding to next", next, opener]);
             setTimeout(function() {
+                console.log(["Forwarding to next", next, opener]);
                 window.location.href = next;
             }, 1000);
         } else if (opener && opener.NEWSBLUR) {

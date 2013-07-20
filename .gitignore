@@ -19,6 +19,7 @@ UserInterfaceState\.xcuserstate
 *.xcuserstate
 xcuserdata
 .xcodeproj/ push.xcodeproj/project.pbxproj
+clients/ios/NewsBlur.xcodeproj/project.xcworkspace/xcshareddata/
 *.mode1v3
 *.pbxuser
 media/maintenance.html
@@ -58,3 +59,6 @@ media/android/NewsBlur/local.properties
 media/android/NewsBlurTest/local.properties
 originals
 media/safari/NewsBlur.safariextz
+
+# IDE files
+.idea
