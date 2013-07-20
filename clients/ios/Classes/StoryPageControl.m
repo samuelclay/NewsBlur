@@ -889,11 +889,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:shareSheet];
         [popover presentPopoverFromRect:self.appDelegate.masterContainerViewController.view.frame inView:self.appDelegate.masterContainerViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-
-//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self.appDelegate.masterContainerViewController];
     } else {
         [self presentViewController:shareSheet animated:YES completion:nil];
-//        [ShareThis showShareOptionsToShareUrl:url title:title image:nil onViewController:self];
     }
 }
 

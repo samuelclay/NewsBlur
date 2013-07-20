@@ -491,7 +491,9 @@ static const CGFloat kFolderTitleHeight = 28;
                              JSONObjectWithData:responseData
                              options:kNilOptions
                              error:&error];
-    
+
+    appDelegate.activeUsername = [results objectForKey:@"user"];
+
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
         [db executeUpdate:@"INSERT INTO accounts"
@@ -534,8 +536,10 @@ static const CGFloat kFolderTitleHeight = 28;
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
-    [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
-    [userPreferences synchronize];
+    if (appDelegate.activeUsername) {
+        [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
+        [userPreferences synchronize];
+    }
 
 //    // set title only if on currestont controller
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
@@ -767,34 +771,33 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)loadOfflineFeeds {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if (!appDelegate.activeUsername) {
+        appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
+        if (!appDelegate.activeUsername) return;
+    }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
-            NSDictionary *results;
-            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-            if (!appDelegate.activeUsername) {
-                appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
-                if (!appDelegate.activeUsername) return;
-            }
-            
-            FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
-                                   appDelegate.activeUsername];
-            
-            while ([cursor next]) {
-                NSDictionary *feedsCache = [cursor resultDictionary];
-                results = [NSJSONSerialization
-                           JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
-                                               dataUsingEncoding:NSUTF8StringEncoding]
-                           options:nil error:nil];
-                break;
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_self finishLoadingFeedListWithDict:results];
-            });
-        }];
-    });
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
+        NSDictionary *results;
+
+        
+        FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
+                               appDelegate.activeUsername];
+        
+        while ([cursor next]) {
+            NSDictionary *feedsCache = [cursor resultDictionary];
+            results = [NSJSONSerialization
+                       JSONObjectWithData:[[feedsCache objectForKey:@"feeds_json"]
+                                           dataUsingEncoding:NSUTF8StringEncoding]
+                       options:nil error:nil];
+            break;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_self finishLoadingFeedListWithDict:results];
+        });
+    }];
 }
 
 - (void)showUserProfile {

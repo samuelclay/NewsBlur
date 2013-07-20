@@ -181,10 +181,10 @@
     
     
     [window makeKeyAndVisible];
+    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
+
     [self.feedsViewController fetchFeedList:YES];
-    
-//    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
-    
+        
     [[UINavigationBar appearance]
      setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
      forBarMetrics:UIBarMetricsDefault];
@@ -209,7 +209,6 @@
                              UITextAttributeTextShadowOffset,
                              nil]];
     
-    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     [self createDatabaseConnection];
     
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
@@ -594,6 +593,8 @@
                                       target: nil
                                       action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -602,8 +603,6 @@
                                         animated:YES];
     }
     
-    [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     [self flushQueuedReadStories:NO withCallback:nil];
 }
 
