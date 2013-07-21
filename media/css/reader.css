@@ -4019,6 +4019,16 @@ form.opml_import_form input {
   background-size: 16px;
 }
 
+.NB-splash-info .NB-splash-links .NB-splash-link-uservoice a:hover {
+  background: transparent url('/media/embed/reader/uservoice.png') no-repeat 0 7px;
+  background-size: 16px;
+}
+
+.NB-splash-info .NB-splash-links .NB-splash-link-weibo a:hover {
+  background: transparent url('/media/embed/reader/weibo.png') no-repeat 0 7px;
+  background-size: 16px;
+}
+
 .NB-splash-info .NB-splash-links a {
     font-weight: bold;
     text-transform: uppercase;
