@@ -107,7 +107,7 @@ def reader_authorize(request):
         client_secret=settings.GOOGLE_OAUTH2_SECRET,
         scope="http://www.google.com/reader/api",
         redirect_uri=STEP2_URI,
-        user_agent='NewsBlur Pro, www.newsblur.com',
+        user_agent='NewsZeit Pro, www.newszeit.com',
         approval_prompt="force",
         )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
@@ -132,7 +132,7 @@ def reader_authorize(request):
     auth_token_dict['remote_ip'] = ip
     OAuthToken.objects.create(**auth_token_dict)
 
-    response.set_cookie('newsblur_reader_uuid', str(uuid.uuid4()))
+    response.set_cookie('newszeit_reader_uuid', str(uuid.uuid4()))
     return response
 
 def reader_callback(request):
@@ -147,7 +147,7 @@ def reader_callback(request):
         client_secret=settings.GOOGLE_OAUTH2_SECRET,
         scope="http://www.google.com/reader/api",
         redirect_uri=STEP2_URI,
-        user_agent='NewsBlur Pro, www.newsblur.com',
+        user_agent='NewsZeit Pro, www.newszeit.com',
         )
     FLOW.redirect_uri = STEP2_URI
     
@@ -165,7 +165,7 @@ def reader_callback(request):
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.filter(user=request.user).order_by('-created_date')
     if not user_token:
-        user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+        user_uuid = request.COOKIES.get('newszeit_reader_uuid')
         if user_uuid:
             user_token = OAuthToken.objects.filter(uuid=user_uuid).order_by('-created_date')
     if not user_token:
@@ -250,7 +250,7 @@ def import_signup(request):
             
             user_token = OAuthToken.objects.filter(user=new_user)
             if not user_token:
-                user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+                user_uuid = request.COOKIES.get('newszeit_reader_uuid')
                 if user_uuid:
                     user_token = OAuthToken.objects.filter(uuid=user_uuid).order_by('-created_date')
             if not user_token:

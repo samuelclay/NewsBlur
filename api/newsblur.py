@@ -9,7 +9,7 @@ import json
 __author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"
 
-API_URL = "http://www.newsblur.com/"
+API_URL = "http://www.newszeit.com/"
 # API_URL = "http://nb.local.host:8000/"
 
 
