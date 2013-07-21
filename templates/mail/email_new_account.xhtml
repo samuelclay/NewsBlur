@@ -3,18 +3,18 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Welcome to NewsBlur, {{ user.username }}.</p>
-    <p style="line-height: 20px;">Thanks for trying out NewsBlur! I hope Newsblur can make your daily reading more personal, sociable, and pleasurable.</p>
-    <p style="line-height: 20px;">Here are some ways to make NewsBlur work for you:</p>
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">欢迎来到 NewsZeit，{{ user.username }}。</p>
+    <p style="line-height: 20px;">感谢您尝试 NewsZeit。我希望 NewsZeit 能让你的日常阅读更个性化、社会化，更愉悦。</p>
+    <p style="line-height: 20px;">这里有一些方法可以让 NewsZeit 更好地为您服务：</p>
     <p style="line-height: 20px;">
         <ul style="list-style: none;">
-            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/circular/share.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends" style="text-decoration:none">Follow friends from Twitter, Facebook, and NewsBlur</a></li>
-            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Visit <a href="http://popular.newsblur.com" style="text-decoration:none">The People Have Spoken</a>, our blog of the most popular and talked-about articles posted by NewsBlur readers</li>
-            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/circular/g_icn_coffeecup_gold32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">Upgrade to a premium account for only $24/year, and get access to an unlimited number of RSS feeds</a></li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/circular/share.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends" style="text-decoration:none">关注你在 Twitter、Facebook 和 NewsZeit 上的好友</a></li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 访问 <a href="http://popular.newsblur.com" style="text-decoration:none">人们的声音</a>，这个 Zeitblog 包含 NewsZeit 上最流行的文章。</li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/circular/g_icn_coffeecup_gold32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">升级到高级帐户仅需 50 元每年，高级帐户不限订阅站点的数量并提供一些高级功能</a></li>
         </ul>
     </p>
-    <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>
-    <p>- Sam Clay</p>
+    <p style="line-height: 20px;">我创建 NewsZeit 是因为我想提供一种更好的新闻阅读的体验并让人们能够在这里讨论正在发生的新闻。希望你也喜欢它。</p>
+    <p>- Singer</p>
 {% endblock %}
 
-{% block resources_header %}If you enjoy using NewsBlur, these resources might be of interest to you:{% endblock resources_header %}
+{% block resources_header %}如果你喜欢 NewsZeit，你可能会对这些资源感兴趣：{% endblock resources_header %}

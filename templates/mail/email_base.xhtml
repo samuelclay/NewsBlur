@@ -32,27 +32,28 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <p style="line-height:20px;">NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.</p>
-                                        <p style="line-height:20px;">Stay up to date and in touch with a few different ways:</p>
+                                        <p style="line-height:20px;">NewsZeit 是一个 RSS 新闻阅读器，它将人们聚集到一起来谈论这个世界上正在发生的新闻。</p>
+<!--
+                                        <p style="line-height:20px;">和NewsZeit保持联系：</p>
                                         <p style="line-height: 20px;">
                                             <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://twitter.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Follow @newsblur on Twitter</a></li>
-                                                <li style="line-height:22px;"><a href="http://github.com/samuelclay/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/welcome/github_favicon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Follow @samuelclay on GitHub</a></li>
+                                                <li style="line-height:22px;"><a href="http://twitter.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 关注 @newsblur on Twitter</a></li>
+                                                <li style="line-height:22px;"><a href="http://github.com/samuelclay/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/welcome/github_favicon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 关注 @samuelclay on GitHub</a></li>
+                                            </ul>
+                                        </p>-->
+                                        <p style="line-height: 20px;">{% block resources_header %}如果您想了解 NewsZeit 的最新动态，可以订阅我们的博客{% endblock resources_header %}</p>
+                                        <p style="line-height: 20px;">
+                                            <ul style="list-style: none;">
+                                                <li style="line-height:22px;"><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 查看 NewsZeit 的博客</a></li>
+                                                <li style="line-height:22px;"><a href="http://newszeit.uservoice.com" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/uservoice.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 提出问题或建议</a></li>
                                             </ul>
                                         </p>
-                                        <p style="line-height: 20px;">{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}</p>
+                                        <p style="line-height: 20px;">你还可以通过其他方式使用 NewsZeit:</p>
                                         <p style="line-height: 20px;">
                                             <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Read the NewsBlur Blog</a></li>
-                                                <li style="line-height:22px;"><a href="http://getsatisfaction.com/newsblur/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/getsatisfaction.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Get support on NewsBlur's Get Satisfaction</a></li>
-                                            </ul>
-                                        </p>
-                                        <p style="line-height: 20px;">There are plenty of ways to use NewsBlur beyond the web:</p>
-                                        <p style="line-height: 20px;">
-                                            <ul style="list-style: none;">
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}/ios/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Download the free iPad/iPhone App</a></li>
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}/android/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Download the free Android App</a></li>
-                                                <li style="line-height:22px;"><a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Download browser extensions for Safari, Firefox, and Chrome</a></li>
+                                                <li style="line-height:22px;"><a href="" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 下载免费的 iPad/iPhone 应用：即将推出</a></li>
+                                                <li style="line-height:22px;"><a href="https://{% current_domain %}/android/" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 下载免费的 Android 应用</a></li>
+                                                <li style="line-height:22px;"><a href="" style="text-decoration:none"><img src="http://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> 下载 Safari，Firefox 和 Chrome 的浏览器插件：即将推出</a></li>
                                             </ul>
                                         </p>
                                     </td>
@@ -66,7 +67,7 @@
                                 <tr>
                                     <td>
                                         <p style="font-size:12px;"> 
-                                            Don't want to be notified about anything NewsBlur related? <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=optout" style="text-decoration:none;">Opt-out of emails from NewsBlur</a>.
+                                            不想收到来自 NewsZeit 的通知或消息？ 您可以选择<a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=optout" style="text-decoration:none;">取消邮件通知</a>。
                                         </p>
                                     </td>
                                 </tr>

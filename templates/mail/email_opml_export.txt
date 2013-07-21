@@ -2,7 +2,7 @@
 
 {% load utils_tags %}
 
-{% block body %}Here's a backup of your sites on NewsBlur. It contains <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}. 
+{% block body %}这是您在 NewsZeit 上所订阅站点的备份，共包含 <b>{{ feed_count }}</b> 个站点。 
 
-You can re-upload the attached file to NewsBlur and get all of your sites back. 
-Just go to Manage > Import > Upload OPML.{% endblock body %}
+你可以在 NewsZeit 通过导入此附件恢复你所订阅的站点。
+管理 > 导入 > 上传 OPML。{% endblock body %}

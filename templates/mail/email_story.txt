@@ -1,7 +1,7 @@
-{{ from_name }} shares "{{ story.story_title }}" from {{ feed.feed_title }}{% if comments %}:
+{{ from_name }} 给你分享了一篇来自 {{ feed.feed_title }} 题为“{{ story.story_title }}”的文章{% if comments %}：
 
 {{ comments }}
-{% else %}.{% endif %}
+{% else %}。{% endif %}
 
 ---------------------------------------------------------------------------
 
@@ -13,4 +13,4 @@
 
 ---------------------------------------------------------------------------
 
-Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
+发送自 NewsZeit - www.newszeit.com - 一个RSS新闻阅读器，将人们聚集到一起来谈论这个世界上正在发生的新闻。

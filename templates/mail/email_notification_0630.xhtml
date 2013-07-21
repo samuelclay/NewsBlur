@@ -1,0 +1,21 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}，Google Reader 即将关闭，NewsZeit 已经为你做好准备...</p>
+    <p style="line-height: 20px;">{% if days_ago >= 1 %}您最近一次登录 NewsZeit 是在 {{ days_ago }} 天前，这段时间 NewsZeit 发生了很多变化。{% else %}您一直在使用 NewsZeit，但我还是认为有必要总结一下 NewsZeit 最近的改变。{% endif %}</p>
+    <p style="line-height: 20px;">我们每天都在努力工作以使 NewsZeit 变得更好用，下面总结一下 NewsZeit 近期的主要变化：</p>
+   
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">网站稳定性持续改进并修正不少 Bug，日常使用已没有问题</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">服务器扩容，Feed 抓取速度进一步提升</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">Android 客户端发布 2.0.3 版本，修正大量 Bug，界面更加美观，并加入不少实用的功能，如浏览已收藏文章</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">iOS 客户端内测中，即将发布（预计一周之内提交到 Apple Store，之后要看苹果的审查速度）</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">注册用户数量已达到 4000 人，并仍在稳步增长</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">订阅的 Feed 总数量达到 150000</p>
+    
+    <p style="line-height: 20px;">{% if user.profile.is_premium %}感谢你的付费支持！有你的支持 NewsZeit 必定能够坚持走下去。{% else %}升级到高级用户仅需 50/元 年：http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser{% endif %}</p>
+
+    
+    <p style="line-height: 20px;">Google Reader 明天就要关闭，是时候切换到 <a href="http://{% current_domain %}{{ user.profile.autologin_url }}">NewsZeit</a> 了，真心希望你能够喜欢它。</p>
+{% endblock %}

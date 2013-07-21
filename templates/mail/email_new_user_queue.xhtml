@@ -3,11 +3,11 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Your free account is ready, {{ user.username }}.</p>
-    <p style="line-height: 20px;">Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.</p>
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">你的免费帐户可以用了，{{ user.username }}。</p>
+    <p style="line-height: 20px;">非常感谢您使用 NewsZeit！你的帐户现在已经准备好了，登录并开始阅读吧。</p>
     <p style="line-height: 20px;">http://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
-    <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>
-    <p style="line-height: 20px;">- Sam Clay</p>
+    <p style="line-height: 20px;">我创建 NewsZeit 是因为我想提供一种更好的新闻阅读的体验并让人们能够在这里讨论正在发生的新闻。希望你也喜欢它。</p>
+    <p style="line-height: 20px;">- Singer</p>
 {% endblock %}
 
-{% block resources_header %}If you enjoy using NewsBlur, these resources might be of interest to you:{% endblock resources_header %}
+{% block resources_header %}如果你喜欢 NewsZeit，你可能会对这些资源感兴趣：{% endblock resources_header %}

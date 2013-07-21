@@ -2,16 +2,16 @@
 
 {% load utils_tags %}
 
-{% block body %}Welcome to NewsBlur, {{ user.username }}.
+{% block body %}欢迎来到 NewsZeit，{{ user.username }}。
 
-OK, firstly, thank you for trying out NewsBlur. I've worked hard to make a great app, so congratulations on discovering a handcrafted experience.
+感谢您尝试 NewsZeit。我希望 NewsZeit 能让你的日常阅读更个性化、社会化，更愉悦。
 
-Here are some easy ways to have a great time on NewsBlur:
+这里有一些方法可以让 NewsZeit 更好地为您服务：
 
-    * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends
-    * Visit the popular blurblog, The People Have Spoken: http://popular.newsblur.com
-    * Upgrade to a premium account for only $24/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
+    * 关注你在 Twitter、Facebook 和 NewsZeit 上的好友：http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends
+    * 访问 popular 的 Zeitblog（包含 NewsZeit 上最流行文章）, 倾听人们的声音：http://popular.newsblur.com
+    * 升级到高级帐户仅需 50 元每年，高级帐户不限订阅站点的数量并提供一些高级功能：http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
 
-Spend a few days trying out NewsBlur. I hope you love it.
+我创建 NewsZeit 是因为我想提供一种更好的新闻阅读的体验并让人们能够在这里讨论正在发生的新闻。希望你也喜欢它。
 
-- Sam Clay{% endblock body %}
+- Singer{% endblock body %}

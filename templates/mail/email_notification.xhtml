@@ -1,0 +1,24 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}，NewsZeit 最近发生了很多变化...</p>
+    <p style="line-height: 20px;">{% if days_ago >= 1 %}您最近一次登录 NewsZeit 是在 {{ days_ago }} 天前，这段时间 NewsZeit 发生了很多变化。{% else %}您一直在使用 NewsZeit，但我还是认为有必要总结一下 NewsZeit 最近的改变。{% endif %}</p>
+    <p style="line-height: 20px;">我每天都在努力工作以使 NewsZeit 变得更好用，下面我总结一下 NewsZeit 近期的主要变化：</p>
+   
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">修复 Google Reader 上加星标文章无法全部导入的问题，5000条？不是问题！</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">修复很多正确 RSS 地址无法订阅的问题</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">修复站点 favicon （站点图标）无法正常显示问题，现在看上去更美观了</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">调整服务器架构，Feed 抓取速度全面提升，确保不丢任何一篇文章</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">整合 UserVoice 用户反馈平台（通过页面下方的“支持与反馈”即可进入）</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">发布了一个实用的 Android 客户端（参考邮件末尾的链接）</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">注册用户达到 1200</p>
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center">订阅的 Feed 数量达到 50000</p>
+
+    
+    <p style="line-height: 20px;">{% if user.profile.is_premium %}感谢你的付费支持！有你的支持 NewsZeit 必定能够坚持走下去。{% else %}升级到高级用户仅需 50/元 年：http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser{% endif %}</p>
+
+    
+    <p style="line-height: 20px;">从现在开始，您再也不用担心 Google Reader 什么时候关闭了。请再花一段时间试用 <a href="http://{% current_domain %}{{ user.profile.autologin_url }}">NewsZeit</a>，我相信你会喜欢它。</p>
+{% endblock %}

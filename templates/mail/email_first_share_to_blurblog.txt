@@ -1,13 +1,13 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Your shared story is now on your Blurblog
+{% block body %}您分享的文章现在在你的 Zeitblog 上
 
-You can view your Blurblog here: {{ blurblog_url }}
+您可以查看你的 Zeitblog：{{ blurblog_url }}
 
-Your Blurblog also has an RSS feed: {{ blurblog_rss }}
+您也可以通过 RSS feed 访问你的 Zeitblog：{{ blurblog_rss }}
 
-{% if shared_stories > 1 %}You've already shared {{ shared_stories }} stories, but you may not have known that your shared stories are on your Blurblog.{% else %}You just shared your first story on NewsBlur. All of your shared stories are available on your Blurblog.{% endif %}
+{% if shared_stories > 1 %}您已经分享了 {{ shared_stories }} 篇文章，但是有可能不知道你分享的文章会出现在你的 Zeitblog 上。{% else %}这是您第一次在 NewsZeit 上分享文章，所有你分享的文章都将出现在你的 Zeitblog上。{% endif %}
 
-This is a personal website made for you that you can customize. You can also share out links to your blurblog, where friends and followers can reply and re-share your stories.
+Zeitblog 是为您准备的一个个人站点，你也可以做一些定制。你可以分享文章到你的 Zeitblog，在 Zeitblog 你的好友或关注者可以回复和转发你的文章。
 
-Blurblogs were built so you would have a way to share stories with people who aren't on NewsBlur and don't want to load the entire reader just to read and comment on your shared stories.{% endblock body %}
+通过 Zeitblog这种方式，其他用户在没有打开 NewsZeit 阅读器时同样可以阅读到你分享的文章，并可以做出评论。{% endblock body %}

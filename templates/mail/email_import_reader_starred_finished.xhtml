@@ -5,12 +5,11 @@
 {% block body %}
     
     <p style="margin-top: 12px;">
-        Good news! NewsBlur has finished importing your starred stories from Google Reader. 
-        You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}
-        and have <b>{{ starred_count }}</b> saved stor{{ starred_count|pluralize:"y,ies" }}.
+        好消息！NewsZeit 已经成功导入了你的 Google Reader 帐户里所有加星标的文章。
+        现在您一共订阅了 <b>{{ feed_count }}</b> 个站点，并收藏了 <b>{{ starred_count }}</b> 篇文章。
     </p>
         
     <p>
-        Head over to <a href="http://{% current_domain %}">NewsBlur</a> and get reading.
+        现在就前往 <a href="http://{% current_domain %}">NewsZeit</a> 阅读吧。
     </p>
 {% endblock %}

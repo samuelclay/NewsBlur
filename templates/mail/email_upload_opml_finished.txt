@@ -2,6 +2,6 @@
 
 {% load utils_tags %}
 
-{% block body %}Good news! NewsBlur has finished importing your OPML file. You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}.
+{% block body %}好消息！NewsZeit 成功导入了你的 OPML 文件，现在你一共订阅了 <b>{{ feed_count }}</b> 个站点。
 
-Head over to NewsBlur and get reading: http://{% current_domain %}{% endblock body %}
+现在就前往 NewsZeit 阅读吧：http://{% current_domain %}{% endblock body %}

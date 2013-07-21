@@ -6,7 +6,7 @@
 {% block body %}
     
     <p style="font-size: 18px; color:#555555; margin-top: 0;margin-bottom: 10px;padding-top:0px;line-height: 28px;">
-        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: 0 12px 0 0;border-radius: 1px;border: none;float: left;vertical-align: middle"></a> {{ from_name }} shares "<a href="{{ story.story_permalink|safe }}">{{ story.story_title }}</a>"{% if feed %} from <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed.feed_title }}{% endif %}{% if comments %}:</p>
+        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: 0 12px 0 0;border-radius: 1px;border: none;float: left;vertical-align: middle"></a> {{ from_name }} 给您分享了一篇{% if feed %}来自 <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed.feed_title }} 的{% endif %}文章 “<a href="{{ story.story_permalink|safe }}">{{ story.story_title }}</a>”{% if comments %}：</p>
     <p>{{ comments }}
     {% endif %}
     </p>
