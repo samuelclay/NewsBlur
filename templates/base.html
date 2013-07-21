@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{% block title %}NewsBlur{% endblock %}</title>
+  <title>{% block title %}NewsZeit{% endblock %}</title>
   <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/png" />
   <link rel="icon" href="{{ MEDIA_URL }}img/favicon_32.png" sizes="32x32"/>
   <link rel="icon" href="{{ MEDIA_URL }}img/favicon_64.png" sizes="64x64"/>
@@ -10,7 +10,6 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <meta name="msapplication-TileImage" content="{{ MEDIA_URL }}img/logo_144.png" />
   <meta name="msapplication-TileColor" content="#F7E5A8"/>
-  <meta name="apple-itunes-app" content="app-id=463981119">
 
   <script type="text/javascript" charset="utf-8">
     window.NEWSBLUR = {};
@@ -71,11 +70,11 @@
       'timezone'                : "{{ user_profile.timezone }}",
       'title_counts'            : true,
       'truncate_story'          : 'social',
-      'story_share_twitter'     : true,
-      'story_share_facebook'    : true,
+      'story_share_weibo'       : true,
+      'story_share_tweibo'      : true,
       'story_share_readitlater' : false,
-      'story_share_instapaper'  : true,
-      'story_share_readability' : false,
+      'story_share_renren'      : true,
+      'story_share_yinxiang'    : true,
       'story_share_email'       : true
     };
     NEWSBLUR.URLs = {
@@ -103,13 +102,16 @@
   </script>
   
   {% if not debug %}
-  <script type="text/javascript">
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40833601-1', 'newszeit.com');
+  ga('send', 'pageview');
+
+</script>
   {% endif %}
 </head>
 

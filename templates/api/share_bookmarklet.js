@@ -54,7 +54,7 @@
             this.fix_title();
         
             if (this.check_if_on_newsblur()) {
-                var message = "This bookmarklet is successfully installed.\nClick it while on a site you want to read in NewsBlur.";
+                var message = "此书签小程序已成功安装。\n当你想在 NewsZeit 阅读某个站点时可以点击此书签程序。";
                 this.alert(message);
                 return this.close();
             }
@@ -82,10 +82,10 @@
 
             this.$modal = $.make('div', { className: 'NB-bookmarklet NB-modal' }, [
                 $.make('div', { className: 'NB-modal-information' }, [
-                    'Signed in as ',
+                    '已登录为 ',
                     $.make('b', { style: 'color: #505050' }, this.username)
                 ]),
-                $.make('div', { className: 'NB-modal-title' }, 'Share this story on NewsBlur'),
+                $.make('div', { className: 'NB-modal-title' }, '分享此文章到 NewsZeit'),
                 $.make('div', { className: 'NB-bookmarklet-main'}, [
                     $.make('div', { className: 'NB-bookmarklet-page' }, [
                         $.make('div', { className: 'NB-bookmarklet-page-title', contenteditable: true }),
@@ -97,9 +97,9 @@
                                 $.make('img', { src: this.profile.photo_url })
                             ]),
                             $.make('div', { className: 'NB-bookmarklet-comment-input' }, [
-                                $.make('textarea', { name: 'newsblur_comment', placeholder: "Comments..." })
+                                $.make('textarea', { name: 'newsblur_comment', placeholder: "评论..." })
                             ]),
-                            $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, 'Share this story'),
+                            $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, '分享此文章'),
                             $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' })
                         ])
                     ])
@@ -108,7 +108,7 @@
                     $.make('div', { className: 'NB-bookmarklet-side-half NB-bookmarklet-side-subscribe' }, [
                         $.make('div', { className: 'NB-subscribe-feed' }),
                         $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
-                            $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
+                            $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: '创建新文件夹' }),
                             this.make_folders(),
                             $.make('div', { className: 'NB-bookmarklet-new-folder-container' }, [
                                 $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' }),
@@ -116,15 +116,15 @@
                             ])
                         ]),
                         $.make('div', { className: 'NB-modal-submit' }, [
-                            $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
+                            $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, '订阅此站点')
                         ]),
                         $.make('div', { className: 'NB-bookmarklet-stories-same NB-empty'}),
                         $.make('div', { className: 'NB-bookmarklet-stories-other NB-empty'}),
                         $.make('div', { className: 'NB-bookmarklet-stories-previous NB-empty'})
                     ]),
                     $.make('div', { className: 'NB-bookmarklet-side-half NB-bookmarklet-side-loading' }, [
-                        $.make('img', { className: 'NB-subscribe-loader', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Loading...' }),
-                        $.make('div', { className: 'NB-subscribe-load-text' }, 'Shared stories are on their way...')
+                        $.make('img', { className: 'NB-subscribe-loader', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: '正在载入...' }),
+                        $.make('div', { className: 'NB-subscribe-load-text' }, '已分享...')
                     ])
                 ])
             ]);
@@ -136,7 +136,7 @@
         
             $options = this.make_folder_options($options, folders, '-');
             
-            var $option = $.make('option', { value: '', selected: true }, "Top Level");
+            var $option = $.make('option', { value: '', selected: true }, "顶级目录");
             $options.prepend($option);
     
             return $options;
@@ -207,7 +207,7 @@
             $('.NB-bookmarklet-folder-container', this.$modal).hide();
             $('.NB-modal-submit', this.$modal).html($.make('div', { className: 'NB-error-invalid' }, [
                 'This bookmarklet no longer matches an account. Re-create it in ',
-                $.make('a', { href: 'http://www.newsblur.com/?next=goodies' }, 'Goodies on NewsBlur'),
+                $.make('a', { href: 'http://www.newszeit.com/?next=goodies' }, 'NewsZeit 上的好东西'),
                 '.'
             ]));
         },
@@ -218,7 +218,7 @@
             var folder = $('.NB-folders').val();
             var add_site_url = "http://"+this.domain+"{% url "api-add-site" token %}?callback=?";
             
-            $submit.addClass('NB-disabled').text('Fetching and parsing...');
+            $submit.addClass('NB-disabled').text('正在抓取和解析...');
             
             var data = {
                 url: window.location.href,
@@ -245,7 +245,7 @@
             if (subscribed) {
                 $submit.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
                     $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
-                    'Subscribed'
+                    '已订阅'
                 ]));
                 // setTimeout(function() {
                 //     $.modal.close();
@@ -373,7 +373,7 @@
             $stories.removeClass('NB-empty');
             $stories.empty().append($.make('div', { className: 'NB-bookmarklet-stories-title' }, [
                 $.make('img', { src: user.photo_url }),
-                'Previously you shared'
+                '你最近的分享'
             ]));
             
             __NB_.each(stories, __NB_.bind(function(story) {
@@ -391,10 +391,10 @@
             }, [
                 $.make('img', { src: user.photo_url }),
                 $.make('div', { className: 'NB-story-username' }, user.username),
-                (story.story_title && story.story_title.length && ' shared '),
+                (story.story_title && story.story_title.length && ' 分享了 '),
                 (story.story_title && story.story_title.length && $.make('div', { className: 'NB-story-title' }, story.story_title)),
                 (story.comments && story.comments.length && $.make('div', { className: 'NB-story-comments' }, story.comments)),
-                $.make('div', { className: 'NB-story-date' }, story.relative_date + ' ago')
+                $.make('div', { className: 'NB-story-date' }, story.relative_date + ' 前')
             ]);
             
             return $story;
@@ -462,7 +462,7 @@
             
             this.update_share_button_title();
 
-            $error.text(data.message || "Sorry, but there was an error trying to share this story.")
+            $error.text(data.message || "抱歉，分享此文章时发生错误。")
         },
         
         open_add_folder: function() {
@@ -626,9 +626,9 @@
             $error.html('');
             $submit.removeClass('NB-disabled');
             if ($comment.val().length) {
-                $submit.text('Share with comments');
+                $submit.text('评论并分享');
             } else {
-                $submit.text('Share this story');
+                $submit.text('分享此文章');
             }
         }
     
