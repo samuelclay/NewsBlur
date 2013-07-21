@@ -92,7 +92,7 @@ NEWSBLUR.Modal.prototype = {
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
-        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(this.feed.get('num_subscribers') + ' 订阅者');
     },
     
     switch_tab: function(newtab) {
