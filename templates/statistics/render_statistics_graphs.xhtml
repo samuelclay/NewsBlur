@@ -1,33 +1,33 @@
 {% load utils_tags statistics_tags %}
 <div class="NB-module NB-module-stats NB-module-site-stats">
   <h5 class="NB-module-header">
-    Site Statistics
+    网站统计信息
   </h5>
   
   <div class="NB-splash-module-section">
       <h3 class="NB-module-content-header">
-        Past day
+        过去一天
       </h3>
   
       <div class="NB-module-stats-counts">
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.premium_users|commify }}</div>
-            <div class="NB-module-stats-count-description">Premium Users</div>
+            <div class="NB-module-stats-count-description">活跃高级用户</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.standard_users|commify }}</div>
-            <div class="NB-module-stats-count-description">Standard Users</div>
+            <div class="NB-module-stats-count-description">活跃免费用户</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.feeds_fetched|commify }}</div>
-            <div class="NB-module-stats-count-description">Feeds fetched</div>
+            <div class="NB-module-stats-count-description">抓取 Feed</div>
           </div>
       </div>
   </div>
   
   <div class="NB-splash-module-section">
       <h3 class="NB-module-content-header NB-module-content-header-hour">
-        Past day by hour
+        过去一天（按小时统计）
       </h3>
   
       <div class="NB-module-stats-counts">
@@ -39,7 +39,7 @@
               </div>{% endfor %}
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.total_sites_loaded|commify }}</div>
-            <div class="NB-module-stats-count-description">Sites loaded</div>
+            <div class="NB-module-stats-count-description">加载站点</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-graph">
@@ -51,7 +51,7 @@
               {% endfor %}
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.latest_avg_time_taken|floatformat:2 }} <small>sec</small></div>
-            <div class="NB-module-stats-count-description">Avg. load time</div>
+            <div class="NB-module-stats-count-description">平均加载时间</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-graph">
@@ -64,7 +64,7 @@
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.total_stories_shared|commify }}</div>
             <div class="NB-module-stats-count-description">
-                {% if statistics.latest_stories_shared == 1 %}Story{% else %}Stories{% endif %} Shared
+                分享文章
             </div>
           </div>
       </div>

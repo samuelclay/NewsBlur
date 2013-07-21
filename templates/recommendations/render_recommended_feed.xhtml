@@ -2,14 +2,14 @@
 <div class="NB-module-recommended NB-module {% if unmoderated and not page %}NB-recommended-unmoderated{% endif %}">
   <h5 class="NB-module-header">
     {% if unmoderated %}
-      Moderation Queue
+      审查队列
     {% else %}
-      Recommended Site
+      推荐源
     {% endif %}
     <div class="NB-module-header-right">
       {% if user.is_staff and not unmoderated %}
         <div class="NB-recommended-show-moderation-wrapper">
-          <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">Moderate</a>
+          <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">审查</a>
         </div>
       {% endif %}
 
@@ -40,20 +40,20 @@
     <div class="NB-modal-submit">
       <div class="NB-recommended-subscribers">
           <div class="NB-recommended-statistics NB-javascript"></div>
-        <b>{{ recommended_feed.feed.num_subscribers|commify }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}
+        <b>{{ recommended_feed.feed.num_subscribers|commify }}</b> 订阅者
         <br />
-        <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
+        <b>{{ recommended_feed.feed.average_stories_per_month }}</b> 篇文章每月
       </div>
       {% if usersub %}
-        <div class="NB-recommended-added">Subscribed</div>
+        <div class="NB-recommended-added">已订阅</div>
       {% else %}
-        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
-        <div class="NB-recommended-add NB-modal-submit-grey NB-modal-submit-button NB-javascript">Add</div>
+        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">试读</div>
+        <div class="NB-recommended-add NB-modal-submit-grey NB-modal-submit-button NB-javascript">添加</div>
       {% endif %}
       {% if unmoderated %}
         <input type="text" class="NB-recommended-moderation-date" name="date" value="{{ today|date:"Y-m-d" }}" />
-        <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">Approve</div>
-        <div class="NB-recommended-decline NB-modal-submit-grey NB-modal-submit-button NB-javascript">Decline</div>
+        <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">批准</div>
+        <div class="NB-recommended-decline NB-modal-submit-grey NB-modal-submit-button NB-javascript">拒绝</div>
       {% endif %}
     </div>
   </div>
