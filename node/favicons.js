@@ -8,8 +8,9 @@
   mongo = require('mongodb');
 
   DEV = process.env.NODE_ENV === 'development';
-
-  MONGODB_SERVER = DEV ? 'localhost' : 'db22';
+  DEV = true;
+  // MONGODB_SERVER = DEV ? 'localhost' : 'db22';
+  MONGODB_SERVER = '106.186.25.142';
 
   MONGODB_PORT = parseInt(process.env.MONGODB_PORT || 27017, 10);
 
@@ -28,7 +29,7 @@
     });
   }
 
-  db = new mongo.Db('newsblur', server, {
+  db = new mongo.Db('newszeit', server, {
     readPreference: mongo.ReadPreference.SECONDARY_PREFERRED,
     safe: false
   });
@@ -50,7 +51,7 @@
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
-      console.log("Req: " + feed_id + ", etag: " + etag + "/" + docs.color);
+      console.log("Req: " + feed_id + ", etag: " + etag);
       if (!err && etag && docs && docs.color === etag) {
         return res.send(304);
       } else if (!err && docs && docs.data) {
