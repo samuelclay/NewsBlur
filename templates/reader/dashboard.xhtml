@@ -28,8 +28,8 @@
 {% block content %}
 
 
-<h1 class="NB-splash-heading">NewsBlur</h1>
-<h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
+<h1 class="NB-splash-heading">NewsZeit</h1>
+<h2 class="NB-splash-heading">—— 来自你好友和你喜欢的站点的最好的文章，都在这里。</h2>
 
 <div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 242 %}px">
     <div class="NB-splash-modules">
@@ -51,19 +51,19 @@
         
         <div class="NB-module-search NB-module">
             <h5 class="NB-module-header">
-                Search Sites and People
+                搜索站点和用户
             </h5>
             
             <div class="NB-module-search-container">
                 <div class="NB-module-search-input NB-module-search-sites">
                     <div class="NB-search-close"></div>
                     <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
-                    <input id="search_site" name="search_site" placeholder="Site name or address...">
+                    <input id="search_site" name="search_site" placeholder="站点名称或地址...">
                 </div>
                 <div class="NB-module-search-input NB-module-search-people">
                     <div class="NB-search-close"></div>
                     <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
-                    <input id="search_people" name="search_people" placeholder="Username or email...">
+                    <input id="search_people" name="search_people" placeholder="用户名或邮件地址...">
                 </div>
                 <div class="NB-module-search-results"></div>
             </div>

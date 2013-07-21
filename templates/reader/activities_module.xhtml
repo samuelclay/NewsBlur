@@ -11,82 +11,82 @@
         {% if activity.category == 'follow' %}
             <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
             <div class="NB-interaction-title">
-                {{ username }} followed
-                <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>.
+                {{ username }}关注了
+                <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>。
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
         
         {% if activity.category == 'signup' %}
             <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
             <div class="NB-interaction-title">
-                {{ username }} signed up for NewsBlur.
+                {{ username }}在 NewsZeit 注册。
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
 
         {% if activity.category == 'comment_reply' %}
             <img class="NB-interaction-photo" src="{{ activity.photo_url }}" data-feed-id="{{ activity.feed_id }}">
             <div class="NB-interaction-title">
-                {{ username }} replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
+                {{ username }}回应了 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>：
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-reply-content" data-story-id="{{ activity.content_id }}">{{ activity.content|safe|truncatewords:16 }}</span>"
+                “<span class="NB-interaction-reply-content" data-story-id="{{ activity.content_id }}">{{ activity.content|safe|truncatewords:16 }}</span>”
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
 
         {% if activity.category == 'comment_like' %}
             <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
             <div class="NB-interaction-title">
-                {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>'s comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
+                {{ username }} 将 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span> 对 <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span> 的评论标识为最爱：
             </div>
             <div class="NB-interaction-content">
                 "<span class="NB-interaction-sharedstory-content">{{ activity.content|truncatewords:16 }}</span>"
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
 
         {% if activity.category == 'sharedstory' %}
             <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.story_feed_id }}" data-feed-id="{{ activity.story_feed_id }}">
             <div class="NB-interaction-title">
-                {{ username }} shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
+                {{ username }}分享了 <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>{% if activity.content %}：{% else %}。{% endif %}
             </div>
             {% if activity.content %}
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-sharedstory-content">{{ activity.content|safe|truncatewords:16 }}</span>"
+                    “<span class="NB-interaction-sharedstory-content">{{ activity.content|safe|truncatewords:16 }}</span>”
                 </div>
             {% endif %}
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
         
         {% if activity.category == 'star' %}
             <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/icons/circular/clock.png">
             <div class="NB-interaction-title">
-                You saved "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>".
+                你保存了 “<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>”。
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
 
         {% if activity.category == 'feedsub' %}
             <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
             <div class="NB-interaction-title">
-                You subscribed to <span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>.
+                你订阅了 <span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>。
             </div>
             <div class="NB-interaction-date">
-                {{ activity.time_since }} ago
+                {{ activity.time_since }}前
             </div>
         {% endif %}
         

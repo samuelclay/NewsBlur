@@ -33,28 +33,48 @@
                 <a href="/"><img src="{{ MEDIA_URL }}img/logo_512.png" class="NB-module-logo-image" style="height: 128px;" /></a>
             </div>
             <div class="NB-welcome-header-tagline">
-                <span style="font-size:24px;">NewsBlur is a personal news reader</span><br /><span style="font-size: 17px;color: #FBDB9B">bringing people together to talk about the world</span>
+                <span style="font-size:24px;">NewsZeit 是一个 RSS 新闻阅读器 <script type="text/javascript" charset="utf-8">
+(function(){
+  var _w = 72 , _h = 16;
+  var param = {
+    url:location.href,
+    type:'3',
+    count:'1', /**是否显示分享数，1显示(可选)*/
+    appkey:'1534354249', /**您申请的应用appkey,显示分享来源(可选)*/
+    title:'NewsZeit —— 简洁、流畅而强大的 RSS 新闻阅读器，跨平台支持Web、Android及iOS，在国内同类产品中用户体验最佳！', /**分享的文字内容(可选，默认为所在页面的title)*/
+    pic:'', /**分享图片的路径(可选)*/
+    ralateUid:'', /**关联用户的UID，分享微博会@该用户(可选)*/
+    language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
+    dpc:1
+  }
+  var temp = [];
+  for( var p in param ){
+    temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
+  }
+  document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://service.weibo.com/staticjs/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
+})()
+</script></span><br /><span style="font-size: 17px;color: #FBDB9B">将人们聚集到一起来谈论这个世界上正在发生的新闻</span>
             </div>
             <div class="NB-welcome-header-captions">
-                <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
+                <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>网站</span></div>
                 <div class="NB-welcome-header-caption NB-2" data-ss="2"><span>iPad &amp; iPhone</span></div>
                 <div class="NB-welcome-header-caption NB-3" data-ss="3"><span>Android</span></div>
-                <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>Sign in</span></div>
+                <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>登录</span></div>
             </div>
             <div class="NB-welcome-header-actions">
                 <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">First</div>
+                    <div class="NB-welcome-header-action-subtext">首先</div>
                     <div class="NB-button NB-button-tryout">
                         <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
-                        Try out NewsBlur
+                        试用 NewsZeit
                     </div>
                 </div>
                 <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">Then</div>
+                    <div class="NB-welcome-header-action-subtext">然后</div>
                     <div class="NB-button NB-button-login">
                         <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
                         <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
-                        Sign up or Log in
+                        注册或登录
                     </div>
                 </div>
             </div>
@@ -66,8 +86,8 @@
 
             <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
                 <div class="NB-account-header">
-                    <div class="NB-module-header-login">Log in</div>
-                    <div class="NB-module-header-signup">Sign up</div>
+                    <div class="NB-module-header-login">登录</div>
+                    <div class="NB-module-header-signup">注册</div>
                 </div>
                 <div class="NB-login">
                     <form method="post" action="{% url "login" %}">
@@ -78,15 +98,15 @@
                         <div>
                             <div class="NB-signup-optional">
                                 {% if login_form.errors and login_form.errors|length %}
-                                    <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
+                                    <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">忘记密码？</a>
                                 {% else %}
-                                    Optional
+                                    <!--Optional-->
                                 {% endif %}
                             </div>
                             {{ login_form.password.label_tag }}
                             {{ login_form.password }}
                         </div>
-                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="log in" />
+                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="登录" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if login_form.errors %}
@@ -103,7 +123,7 @@
                             {{ signup_form.username }}
                         </div>
                         <div class="NB-signup-hidden">
-                            <div class="NB-signup-optional">Optional</div>
+                            <!--<div class="NB-signup-optional">可选</div>-->
                             {{ signup_form.password.label_tag }}
                             {{ signup_form.password }}
                         </div>
@@ -112,7 +132,7 @@
                             {{ signup_form.email }}
                         </div>
 
-                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="create account" />
+                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="创建帐户" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if signup_form.errors %}
@@ -133,60 +153,61 @@
         <div class="NB-inner">
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
-                <div class="NB-feature-caption">Real-time RSS</div>
-                <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in.</div>
+                <div class="NB-feature-caption">实时 RSS</div>
+                <div class="NB-feature-text">实时推送新闻，这样你就能够在新闻发出时的第一时间读到它。</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
-                <div class="NB-feature-caption">Original site</div>
-                <div class="NB-feature-text">Read the content in context, the way it was meant to be seen.</div>
+                <div class="NB-feature-caption">原始站点</div>
+                <div class="NB-feature-text">在本站的上下文中，直接以文章在其原始网站上的形式阅读。</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
-                <div class="NB-feature-caption">Shared stories</div>
-                <div class="NB-feature-text">Reading news is better with friends. Share stories on your public blurblog.</div>
+                <div class="NB-feature-caption">分享文章</div>
+                <div class="NB-feature-text">你可以分享文章到你公开的 Zeitblog，和朋友一起读文章。</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
-                <div class="NB-feature-caption">Training</div>
-                <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do.</div>
+                <div class="NB-feature-caption">智能训练</div>
+                <div class="NB-feature-text">隐藏你不喜欢的文章，突出显示你喜欢的。</div>
             </div>
         </div>    
     </div>
 
     <div class="NB-welcome-pricing">
         <div class="NB-inner">
-            <h2>Pricing</h2>
-            <p>NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a <br> premium account, you support a growing service and unlock a few restrictions.</p>
+            <h2>定价</h2>
+            <p>NewsZeit 的网站可以免费使用，在Adnroid、iPad 和 iPhone 都提供免费的客户端（即将推出）。<br/>但是通过订阅高级帐户，您可以解除一些限制并能够帮我们分担日益增长的运维费用，以及支持我们开发越来越多的新功能。</p>
             <table class="NB-pricing">
                 <tr>
                     <th></th>
-                    <th>Free Account</th>
+                    <th>免费帐户</th>
                     <th class="NB-last">
-                        <div class="NB-price">$24 / year</div>
-                        Premium Account
+                        <div class="NB-price">￥50 / 年</div>
+                        高级帐户
                     </th>
                 </tr>
                 <tr>
-                    <td class="NB-bold">Number of Sites</td>
-                    <td>Up to 64 sites</td>
-                    <td class="NB-last">Unlimited sites</td>
+                    <td class="NB-bold">可以订阅的站点数</td>
+                    <td>最多 64 个站点</td>
+                    <td class="NB-last">无限制</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold">River of News</td>
-                    <td>Only 10 stories at a time</td>
-                    <td class="NB-last">All stories at once</td>
+                    <td class="NB-bold">集合页面（如文件夹）</td>
+                    <td>只显示 10 篇文章最新的文章</td>
+                    <td class="NB-last">同时显示所有的文章</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold">Site updates</td>
+                    <td class="NB-bold">订阅站点更新速度</td>
                     <td>1X</td>
-                    <td class="NB-last">Up to 10X as often</td>
+                    <td class="NB-last">速度提高 10 倍</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold">Privacy</td>
-                    <td>Public shares only</td>
-                    <td class="NB-last">Public, protected, and private shares</td>
+                    <td class="NB-bold">Zeitblog 隐私保护</td>
+                    <td>你的共享和评论内容是公开的</td>
+                    <td class="NB-last">可以设置为公开、受限访问或者私有</td>
                 </tr>
+<!--
                 <tr>
                     <td class="NB-bold">Instant Access</td>
                     <td>Wait in a queue</td>
@@ -194,12 +215,12 @@
                 </tr>
                 <tr>
                     <td class="NB-bold">
-                        Feed poor Shiloh
+                        养活可怜的 Shiloh
                     </td>
-                    <td>She goes hungry</td>
+                    <td>她挨饿</td>
                     <td class="NB-last">
-                        <img src="{{ MEDIA_URL }}img/reader/shiloh.jpg" class="NB-shiloh">Home cooked meals of green beans, sweet potatoes, carrots, and brown rice</td>
-                </tr>
+                        <img src="{{ MEDIA_URL }}img/reader/shiloh.jpg" class="NB-shiloh">家常饭菜、绿豆、红薯、胡萝卜、以及糙米饭</td>
+                </tr>-->
             </table>
         </div>
     </div>
@@ -207,7 +228,7 @@
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}
-            <h2>Real-time Stats</h2>
+            <h2>实时状态</h2>
             {% render_statistics_graphs statistics %}
         </div>
     </div>
@@ -216,18 +237,18 @@
         <div class="NB-inner">
             <div class="NB-welcome-header-actions">
                 <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">First</div>
+                    <div class="NB-welcome-header-action-subtext">首先</div>
                     <div class="NB-button NB-button-tryout">
                         <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
-                        Try out NewsBlur
+                        试用 NewsZeit
                     </div>
                 </div>
                 <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">Then</div>
+                    <div class="NB-welcome-header-action-subtext">然后</div>
                     <div class="NB-button NB-button-login">
                         <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
                         <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
-                        Sign up or Log in
+                        注册或登录
                     </div>
                 </div>
             </div>
@@ -242,16 +263,19 @@
 
     <footer class="NB-welcome-footer">
         <div class="NB-welcome-footer-content NB-inner">
+<!--
             <div class="NB-footer-icons">
                 <a href="http://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png"></a>
                 <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
-            </div>
-            <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
-            is built in New York City and San Francisco by 
+            </div>-->
+            <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>基于 <a href="http://www.newsblur.com/">NewsBlur<a> 的开源代码开发和部署。<a href="http://www.newsblur.com/">NewsBlur<a>
+            由
             <a href="http://twitter.com/samuelclay" class="NB-splash-link">
                 <img src="http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_reasonably_small.jpg" class="NB-twitter-avatar">
                 @samuelclay
-            </a>
+            </a>开发，并以MIT License开放源代码。Thank <a href="http://twitter.com/samuelclay" class="NB-splash-link">
+                @samuelclay
+            </a>!
         </div>
         
         {% render_footer "welcome" %}

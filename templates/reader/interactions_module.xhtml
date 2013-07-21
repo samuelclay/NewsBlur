@@ -14,10 +14,10 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> is now following you.
+                </span> 开始关注你。
             </div>
             <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
+                {{ interaction.time_since }} 前
             </div>
         {% endif %}
 
@@ -26,13 +26,13 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
+                </span> 回应了你的 {% if interaction.category == 'comment_reply' %}评论{% else %}回复{% endif %}:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+                “<span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>”
             </div>
             <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
+                {{ interaction.time_since }} 前
             </div>
         {% endif %}
         
@@ -41,7 +41,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> re-shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>{% if interaction.content %}:{% else %}.{% endif %}
+                </span> 转发了 <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>{% if interaction.content %}：{% else %}。{% endif %}
             </div>
             {% if interaction.content %}
                 <div class="NB-interaction-content">
@@ -49,7 +49,7 @@
                 </div>
             {% endif %}
             <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
+                {{ interaction.time_since }} 前
             </div>
         {% endif %}
         
@@ -58,13 +58,13 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
+                </span> 将你对 <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>的评论标记为最爱：
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-sharedstory-content">{{ interaction.content|truncatewords:16 }}</span>"
+                “<span class="NB-interaction-sharedstory-content">{{ interaction.content|truncatewords:16 }}</span>”
             </div>
             <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
+                {{ interaction.time_since }} 前
             </div>
         {% endif %}
     </li>
