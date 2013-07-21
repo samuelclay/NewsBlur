@@ -8,7 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
-from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
+from mongoengine.queryset import QuerySet as MongoQuerySet
 from bson.objectid import ObjectId
 import sys
 import datetime
