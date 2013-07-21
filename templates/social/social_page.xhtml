@@ -102,19 +102,19 @@
             <a class="NB-header-tab NB-blurblog-tab {% if current_tab == "blurblogs" %}NB-active{% endif %}" href="{% if user_social_profile %}{{ user_social_profile.blurblog_url }}{% endif %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Blurblogs
+                    Zeitblogs
                 </div>
             </a>
             <a class="NB-header-tab NB-following-tab {% if current_tab == "global" %}NB-active{% endif %}" href="//popular.global.{% current_domain strip_www=True %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Global
+                    全局
                 </div>
             </a>
             <a class="NB-header-tab NB-trending-tab {% if current_tab == "popular" %}NB-active{% endif %}" href="//popular.{% current_domain strip_www=True %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Popular
+                    潮流
                 </div>
             </a>
             {% if user.is_authenticated %}
@@ -125,9 +125,9 @@
                         {{ user_social_profile.username }}
                     </div>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-menu-newsblur">View on NewsBlur</a></li>
+                        <li><a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-menu-newsblur">在 NewsZeit 查看</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" class="NB-menu-logout">Logout</a></li>
+                        <li><a href="#" class="NB-menu-logout">退出</a></li>
                     </ul>
                 </div>
             {% else %}
@@ -135,7 +135,7 @@
                     <div class="NB-tab-inner">
                         <span class="NB-icon"></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
-                        Log in
+                        登录
 
                     </div>
                     <div class="NB-circular-popover-title NB-hidden">
@@ -193,16 +193,16 @@
                             </div>
                         {% endif %}
                         <div class="NB-banner-stats">
-                            <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                            <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> 文章</div>
                             <div class="NB-banner-stat"><b>&middot;</b></div>
-                            <div class="NB-banner-stat NB-stat-followers"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                            <div class="NB-banner-stat NB-stat-followers"><b>{{ social_profile.follower_count }}</b> 关注者</div>
                         </div>
                     </div>
                 </td>
             </tr>
         </table>
         <div class="NB-banner-feed">
-            {# <a type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
+            {# <a type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}">本页面的 RSS feed</a> #}
         </div>
     </div>
 
@@ -220,7 +220,7 @@
     <div class="NB-page-controls">
         <div class="NB-page-controls-next">
             <div class="NB-page-controls-text NB-page-controls-text-next">
-                Next Page of Stories
+                下一页
             </div>
             <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
             <div class="NB-page-controls-text NB-page-controls-text-loaded">

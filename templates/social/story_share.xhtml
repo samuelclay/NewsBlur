@@ -24,14 +24,14 @@
             <div class="NB-story-share-label">
                 {% if story.comment_count %}
                     {{ story.comment_count }}
-                    {{ story.comment_count|pluralize:"Comment,Comments" }}
+                    评论
                     {% if story.share_count != story.comment_count %}
-                        and
+                        和
                     {% endif %}
                 {% endif %}
                 {% if story.share_count != story.comment_count %}
                     {{ story.share_count }}
-                    {{ story.share_count|pluralize:"Share,Shares" }}
+                    分享
                 {% endif %}
             </div>
             

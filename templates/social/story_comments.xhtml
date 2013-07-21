@@ -14,7 +14,7 @@
             <div class="NB-story-comment-input-form">
                 <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>
                 <div class="NB-story-comment-buttons">
-                    <div class="NB-modal-submit-button NB-modal-submit-green NB-story-comment-save">Share this story</div>
+                    <div class="NB-modal-submit-button NB-modal-submit-green NB-story-comment-save">分享此文章</div>
                     <div class="NB-modal-submit-button NB-modal-submit-red NB-story-comment-delete NB-hidden">Delete</div>
                     <div class="NB-story-comment-crossposts">
                         <div class="NB-story-comment-crosspost-twitter NB-hidden"></div>
@@ -29,7 +29,7 @@
             {% if story.comment_count_public %}
                 <div class="NB-story-comments-public-header-wrapper">
                     <div class="NB-story-comments-public-header">
-                        {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+                        {{ story.comment_count_public }} 公开评论
                     </div>
                 </div>
             {% endif %}
