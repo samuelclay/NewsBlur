@@ -2,11 +2,14 @@ from django.conf.urls import include, url, patterns
 from django.conf import settings
 from apps.reader import views as reader_views
 from apps.static import views as static_views
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$',              reader_views.index, name='index'),
     (r'^reader/',           include('apps.reader.urls')),
     (r'^add/?',             reader_views.index),
+    (r"^admin/", include(admin.site.urls)),
     (r'^try/?',             reader_views.index),
     (r'^site/(?P<feed_id>\d+)?', reader_views.index),
     (r'^folder/(?P<folder_name>\d+)?', reader_views.index),
