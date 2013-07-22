@@ -170,6 +170,9 @@
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;        
+    } else if (style == NBDoneStyle) {
+        UIImage *doneImage = [UIImage imageNamed:@"checkmark.png"];
+        self.accessoryView = [[UIImageView alloc] initWithImage:doneImage];
     }
     
     [self setNeedsDisplay];
@@ -355,7 +358,7 @@
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.4 green:0.15 blue:0.1 alpha:0.6f].CGColor);
     } else if (self.style == NBSyncingStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.6f].CGColor);
-    } else if (self.style == NBSyncingProgressStyle) {
+    } else if (self.style == NBSyncingProgressStyle || self.style == NBDoneStyle) {
         CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.4f].CGColor);
     }
     CGContextFillRect(context, rectangle);

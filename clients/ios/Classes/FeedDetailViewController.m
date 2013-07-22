@@ -121,9 +121,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
-    
     self.finishedAnimatingIn = NO;
-    self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     // set center title
@@ -156,7 +154,8 @@
     }
     
     NSMutableArray *indexPaths = [NSMutableArray array];
-    for (id i in appDelegate.recentlyReadStories) {
+    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
+    for (id i in appDelegate.recentlyReadStoryLocations) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                     inSection:0];
 //        NSLog(@"Read story: %d", [i intValue]);
@@ -164,14 +163,14 @@
             [indexPaths addObject:indexPath];
         }
     }
-    if ([indexPaths count] > 0) {
+    if ([indexPaths count] > 0 && [self.storyTitlesTable numberOfRowsInSection:0]) {
         [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
         //[self.storyTitlesTable reloadData];
     }
-    [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     
+    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     appDelegate.originalStoryCount = [appDelegate unreadCount];
     
 	[super viewWillAppear:animated];
@@ -259,12 +258,16 @@
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    appDelegate.hasLoadedFeedDetail = NO;
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
+    appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
+    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     [self.notifier hideIn:0];
+    [self cancelRequests];
     [self beginOfflineTimer];
 }
 
@@ -354,7 +357,10 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             NSLog(@"in failed block %@", request);
-            if (self.feedPage == 1) {
+            if (request.isCancelled) {
+                NSLog(@"Cancelled");
+                return;
+            } else if (self.feedPage == 1) {
                 self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
@@ -373,6 +379,7 @@
         [request setTimeOutSeconds:30];
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
+        [requests addObject:request];
     }
 }
 
@@ -520,7 +527,10 @@
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
             self.pageFinished = YES;
-            if (self.feedPage == 1) {
+            if (request.isCancelled) {
+                NSLog(@"Cancelled");
+                return;
+            } else if (self.feedPage == 1) {
                 self.isOffline = YES;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
@@ -544,12 +554,18 @@
 #pragma mark Processing Stories
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] >= 500) {
+    if (request.isCancelled) {
+        NSLog(@"Cancelled");
+        return;
+    } else if ([request responseStatusCode] >= 500) {
         self.pageFinished = YES;
         if (self.feedPage == 1) {
             self.isOffline = YES;
             [self loadOfflineStories];
             [self showOfflineNotifier];
+        }
+        if ([request responseStatusCode] == 503) {
+            [self informError:@"In maintenance mode"];
         } else {
             [self informError:@"The server barfed."];
         }
@@ -558,6 +574,7 @@
         return;
     }
     
+    appDelegate.hasLoadedFeedDetail = YES;
     self.isOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
@@ -877,16 +894,15 @@
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
-    if (self.isOffline) {
-        BOOL read;
-        if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
-            read = ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        } else {
-            read = NO;
-        }
-        cell.isRead = read || ([[story objectForKey:@"read_status"] intValue] == 1);
+    if (!appDelegate.hasLoadedFeedDetail) {
+        cell.isRead = ([appDelegate.activeReadFilter isEqualToString:@"all"] &&
+                       ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
+                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
-        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
+                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+//        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;

@@ -53,6 +53,7 @@
 @property (nonatomic) IBOutlet UIButton *buttonPrevious;
 @property (nonatomic) IBOutlet UIButton *buttonNext;
 @property (nonatomic) IBOutlet UIButton *buttonText;
+@property (nonatomic) IBOutlet UIButton *buttonSend;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
@@ -98,7 +99,6 @@
 - (void)setTextButton;
 - (void)markStoryAsRead;
 - (void)finishMarkAsRead:(ASIFormDataRequest *)request;
-- (void)openSendToDialog;
 - (void)markStoryAsUnread;
 - (void)finishMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)markStoryAsSaved;
@@ -116,6 +116,7 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType;
 
+- (IBAction)openSendToDialog:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
 - (IBAction)tapProgressBar:(id)sender;

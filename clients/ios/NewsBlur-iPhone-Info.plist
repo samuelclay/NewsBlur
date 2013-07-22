@@ -49,11 +49,19 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.4</string>
+	<string>2.4.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.newsblur.NewsBlur</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>newsblur</string>
+			</array>
+		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -62,11 +70,15 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.getpocket.sdk</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pocketapp16638</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.4</string>
+	<string>2.4.1</string>
 	<key>FacebookAppID</key>
 	<string>230426707030569</string>
 	<key>LSRequiresIPhoneOS</key>

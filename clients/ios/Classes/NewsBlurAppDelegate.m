@@ -37,17 +37,20 @@
 #import "Utilities.h"
 #import "StringHelper.h"
 #import "AuthorizeServicesViewController.h"
-#import "ShareThis.h"
 #import "Reachability.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
 #import "FMDatabaseAdditions.h"
 #import "JSON.h"
 #import "IASKAppSettingsViewController.h"
+#import "OfflineSyncUnreads.h"
+#import "OfflineFetchStories.h"
+#import "OfflineFetchImages.h"
+#import "PocketAPI.h"
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 23
+#define CURRENT_DB_VERSION 25
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -94,7 +97,7 @@
 @synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
-@synthesize hasQueuedReadStories;
+@synthesize hasLoadedFeedDetail;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
@@ -121,12 +124,14 @@
 @synthesize totalUnfetchedStoryCount;
 @synthesize remainingUnfetchedStoryCount;
 @synthesize latestFetchedStoryDate;
+@synthesize latestCachedImageDate;
 @synthesize totalUncachedImagesCount;
 @synthesize remainingUncachedImagesCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
+@synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
 @synthesize folderCountCache;
@@ -146,8 +151,9 @@
 @synthesize database;
 @synthesize categories;
 @synthesize categoryFeeds;
-@synthesize operationQueue;
 @synthesize activeCachedImages;
+@synthesize hasQueuedReadStories;
+@synthesize offlineQueue;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -156,6 +162,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
@@ -174,10 +181,10 @@
     
     
     [window makeKeyAndVisible];
+    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
+
     [self.feedsViewController fetchFeedList:YES];
-    
-    [ShareThis startSessionWithFacebookURLSchemeSuffix:@"newsblur" pocketAPI:@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9" readabilityKey:@"samuelclay" readabilitySecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"];
-    
+        
     [[UINavigationBar appearance]
      setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
      forBarMetrics:UIBarMetricsDefault];
@@ -202,11 +209,34 @@
                              UITextAttributeTextShadowOffset,
                              nil]];
     
-    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     [self createDatabaseConnection];
+    
+    [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
+
 //    [self showFirstTimeUser];
 
 	return YES;
+}
+
+- (void)registerDefaultsFromSettingsBundle {
+    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+    if(!settingsBundle) {
+        NSLog(@"Could not find Settings.bundle");
+        return;
+    }
+    
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+    
+    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+    for(NSDictionary *prefSpecification in preferences) {
+        NSString *key = [prefSpecification objectForKey:@"Key"];
+        if (key && [[prefSpecification allKeys] containsObject:@"DefaultValue"]) {
+            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
+        }
+    }
+    
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
 }
 
 - (void)showSplashView {
@@ -259,24 +289,31 @@
     self.totalUnfetchedStoryCount = 0;
     self.remainingUnfetchedStoryCount = 0;
     self.latestFetchedStoryDate = 0;
+    self.latestCachedImageDate = 0;
     self.totalUncachedImagesCount = 0;
     self.remainingUncachedImagesCount = 0;
-    [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
     [splashView removeFromSuperview];
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
-}
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [ShareThis handleFacebookOpenUrl:url];
+//- (void)applicationDidBecomeActive:(UIApplication *)application {
+//    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
+//}
+//
+//- (void)applicationWillTerminate:(UIApplication *)application {
+//    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
+//}
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+    if ([[PocketAPI sharedAPI] handleOpenURL:url]){
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (void)setupReachability {
@@ -372,7 +409,6 @@
     [NSSet setWithObjects:@"offline_image_download",
      @"offline_download_connection",
      @"offline_store_limit",
-     @"offline_image_concurrency",
      nil];
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..." forKey:@"offline_cache_empty_stories"];
     
@@ -557,6 +593,8 @@
                                       target: nil
                                       action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -565,8 +603,6 @@
                                         animated:YES];
     }
     
-    [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     [self flushQueuedReadStories:NO withCallback:nil];
 }
 
@@ -1150,7 +1186,8 @@
         }
 
     } else {
-        feed = self.activeFeed;
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [self.activeFeed objectForKey:@"id"]];
+        feed = [self.dictUnreadCounts objectForKey:feedIdStr];
     }
     
     total += [[feed objectForKey:@"ps"] intValue];
@@ -1275,7 +1312,6 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
-    self.recentlyReadStories = [NSMutableArray array];
     self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
     self.storyLocationsCount = [self.activeFeedStoryLocations count];
@@ -1360,7 +1396,9 @@
         }
     }
 
-    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
+                                 forKey:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
 }
@@ -1434,7 +1472,8 @@
         }
     }
     
-    [self.recentlyReadStories removeObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStories removeObjectForKey:[self.activeStory objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryUnread:story feed:feed];
 
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
@@ -1510,19 +1549,22 @@
     }
     [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
     
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        NSString *storyHash = [newStory objectForKey:@"story_hash"];
-        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-         [newStory JSONRepresentation],
-         storyHash];
-        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
-         storyHash];
-        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
-         [newUnreadCounts objectForKey:@"ps"],
-         [newUnreadCounts objectForKey:@"nt"],
-         [newUnreadCounts objectForKey:@"ng"],
-         feedIdStr];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            NSString *storyHash = [newStory objectForKey:@"story_hash"];
+            [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+             [newStory JSONRepresentation],
+             storyHash];
+            [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
+             storyHash];
+            [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+             [newUnreadCounts objectForKey:@"ps"],
+             [newUnreadCounts objectForKey:@"nt"],
+             [newUnreadCounts objectForKey:@"ng"],
+             feedIdStr];
+        }];
+    });
 }
 
 
@@ -2196,7 +2238,7 @@
                                    " story_feed_id number,"
                                    " story_hash varchar(24),"
                                    " image_url varchar(1024),"
-                                   " image_cached boolean"
+                                   " image_cached boolean,"
                                    " failed boolean"
                                    ")"];
     [db executeUpdate:createImagesTable];
@@ -2224,8 +2266,42 @@
     NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
+- (void)cancelOfflineQueue {
+    if (offlineQueue) {
+        [offlineQueue cancelAllOperations];
+    }
+}
+
+- (void)startOfflineQueue {
+    if (!offlineQueue) {
+        offlineQueue = [NSOperationQueue new];
+    }
+    offlineQueue.name = @"Offline Queue";
+    NSLog(@"Operation queue: %d", offlineQueue.operationCount);
+    [offlineQueue cancelAllOperations];
+    [offlineQueue setMaxConcurrentOperationCount:1];
+    OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
+    
+    [offlineQueue addOperation:operationSyncUnreads];
+}
+
+- (void)startOfflineFetchStories {
+    OfflineFetchStories *operationFetchStories = [[OfflineFetchStories alloc] init];
+    
+    [offlineQueue addOperation:operationFetchStories];
+    
+    NSLog(@"Done start offline fetch stories");
+}
+
+- (void)startOfflineFetchImages {
+    OfflineFetchImages *operationFetchImages = [[OfflineFetchImages alloc] init];
+    
+    [offlineQueue addOperation:operationFetchImages];
+}
+
+
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
-    if (hasQueuedReadStories || forceCheck) {
+    if (self.hasQueuedReadStories || forceCheck) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
             [self flushOldCachedImages];
@@ -2242,7 +2318,7 @@
                 }
                 
                 if ([[hashes allKeys] count]) {
-                    hasQueuedReadStories = NO;
+                    self.hasQueuedReadStories = NO;
                     [self syncQueuedReadStories:db withStories:hashes withCallback:callback];
                 } else {
                     if (callback) callback();
@@ -2274,342 +2350,42 @@
     }];
     [request setFailedBlock:^{
         NSLog(@"Failed mark read queued.");
-        hasQueuedReadStories = YES;
+        self.hasQueuedReadStories = YES;
         if (callback) callback();
     }];
     [request startAsynchronous];
 }
 
-- (void)fetchUnreadHashes {
+- (void)prepareActiveCachedImages:(FMDatabase *)db {
+    activeCachedImages = [NSMutableDictionary dictionary];
+    NSArray *feedIds;
+    int cached = 0;
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
-                                       NEWSBLUR_URL]];
-    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
-    __weak ASIHTTPRequest *request = _request;
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setFailedBlock:^(void) {
-        NSLog(@"Failed fetch all story hashes.");
-    }];
-    [request setCompletionBlock:^(void) {
-        [self storeUnreadHashes:request];
-    }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
+    if (isRiverView) {
+        feedIds = activeFolderFeeds;
+    } else if (activeFeed) {
+        feedIds = @[[activeFeed objectForKey:@"id"]];
+    }
+    NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
+                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (%@)",
+                     [feedIds componentsJoinedByString:@","]];
+    FMResultSet *cursor = [db executeQuery:sql];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.feedsViewController showSyncingNotifier];
-    });
-}
-
-- (void)storeUnreadHashes:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    __block __typeof__(self) _self = self;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DROP TABLE unread_hashes"];
-            [_self setupDatabase:db];
-            NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
-            for (NSString *feed in [hashes allKeys]) {
-                NSArray *story_hashes = [hashes objectForKey:feed];
-                for (NSArray *story_hash_tuple in story_hashes) {
-                    [db executeUpdate:@"INSERT into unread_hashes"
-                     "(story_feed_id, story_hash, story_timestamp) VALUES "
-                     "(?, ?, ?)",
-                     feed,
-                     [story_hash_tuple objectAtIndex:0],
-                     [story_hash_tuple objectAtIndex:1]
-                     ];
-                }
-            }
-        }];
-        
-        _self.totalUnfetchedStoryCount = 0;
-        _self.remainingUnfetchedStoryCount = 0;
-        _self.latestFetchedStoryDate = 0;
-        _self.totalUncachedImagesCount = 0;
-        _self.remainingUncachedImagesCount = 0;
-        [_self fetchAllUnreadStories];
-    });
-}
-
-- (NSArray *)unfetchedStoryHashes {
-    NSMutableArray *hashes = [NSMutableArray array];
-    
-    [self.database inDatabase:^(FMDatabase *db) {
-        NSString *commonQuery = @"FROM unread_hashes u "
-                                 "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
-                                 "WHERE s.story_hash IS NULL";
-        int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
-        if (self.totalUnfetchedStoryCount == 0) {
-            self.totalUnfetchedStoryCount = count;
-            self.remainingUnfetchedStoryCount = self.totalUnfetchedStoryCount;
+    while ([cursor next]) {
+        NSString *storyHash = [cursor objectForColumnName:@"story_hash"];
+        NSMutableArray *imageUrls;
+        if (![activeCachedImages objectForKey:storyHash]) {
+            imageUrls = [NSMutableArray array];
+            [activeCachedImages setObject:imageUrls forKey:storyHash];
         } else {
-            self.remainingUnfetchedStoryCount = count;
+            imageUrls = [activeCachedImages objectForKey:storyHash];
         }
-        
-        int limit = 100;
-        NSString *order;
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-            order = @"ASC";
-        } else {
-            order = @"DESC";
-        }
-        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT u.story_hash %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit]];
-        
-        while ([cursor next]) {
-            [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
-        }
-        int start = (int)[[NSDate date] timeIntervalSince1970];
-        int end = self.latestFetchedStoryDate;
-        int seconds = start - (end ? end : start);
-        __block int hours = (int)round(seconds / 60.f / 60.f);
-        
-        __block float progress = 0.f;
-        if (self.totalUnfetchedStoryCount) {
-            progress = 1.f - ((float)self.remainingUnfetchedStoryCount /
-                              (float)self.totalUnfetchedStoryCount);
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController showSyncingNotifier:progress hoursBack:hours];
-        });
-    }];
-    
-    return hashes;
-}
-
-- (void)fetchAllUnreadStories {
-    NSArray *hashes = [self unfetchedStoryHashes];
-    
-    if ([hashes count] == 0) {
-        NSLog(@"Finished downloading unread stories. %d total", self.totalUnfetchedStoryCount);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController showCachingNotifier:0 hoursBack:1];
-            [self fetchAllUncachedImages];
-        });
-        return;
+        [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
+        [activeCachedImages setObject:imageUrls forKey:storyHash];
+        cached++;
     }
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
-                                       NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
-    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:url];
-    __weak ASIHTTPRequest *request = _request;
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setFailedBlock:^(void) {
-        NSLog(@"Failed fetch all unreads.");
-    }];
-    [request setCompletionBlock:^(void) {
-        [self storeAllUnreadStories:request];
-    }];
-    [request setTimeOutSeconds:30];
-    [request startAsynchronous];
-}
-
-- (void)storeAllUnreadStories:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    __block BOOL anySuccess = NO;
-    __block __typeof__(self) _self = self;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [_self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            for (NSDictionary *story in [results objectForKey:@"stories"]) {
-                BOOL inserted = [db executeUpdate:@"INSERT into stories "
-                                 "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
-                                 "(?, ?, ?, ?)",
-                                 [story objectForKey:@"story_feed_id"],
-                                 [story objectForKey:@"story_hash"],
-                                 [story objectForKey:@"story_timestamp"],
-                                 [story JSONRepresentation]
-                                 ];
-                if ([[story objectForKey:@"image_urls"] class] != [NSNull class] &&
-                    [[story objectForKey:@"image_urls"] count]) {
-                    for (NSString *imageUrl in [story objectForKey:@"image_urls"]) {
-                        [db executeUpdate:@"INSERT INTO cached_images "
-                         "(story_feed_id, story_hash, image_url) VALUES "
-                         "(?, ?, ?)",
-                         [story objectForKey:@"story_feed_id"],
-                         [story objectForKey:@"story_hash"],
-                         imageUrl
-                         ];
-                    }
-                }
-                if (!anySuccess && inserted) anySuccess = YES;
-            }
-            if (anySuccess) {
-                _self.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
-                                                 objectForKey:@"story_timestamp"] intValue];
-            }
-        }];
-        
-        if (anySuccess) {
-            [_self fetchAllUnreadStories];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_self.feedsViewController hideNotifier];
-            });
-        }
-    });
-}
-
-#pragma mark -- Offline - Image Cache
-
-- (NSArray *)uncachedImageUrls {
-    NSMutableArray *urls = [NSMutableArray array];
-    
-    [self.database inDatabase:^(FMDatabase *db) {
-        NSString *commonQuery = @"FROM cached_images c "
-        "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
-        "WHERE c.image_cached is null ";
-        int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
-        if (self.totalUncachedImagesCount == 0) {
-            self.totalUncachedImagesCount = count;
-            self.remainingUncachedImagesCount = self.totalUncachedImagesCount;
-        } else {
-            self.remainingUncachedImagesCount = count;
-        }
-        
-        int limit = 96;
-        NSString *order;
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-            order = @"ASC";
-        } else {
-            order = @"DESC";
-        }
-        NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash, u.story_timestamp %@ ORDER BY u.story_timestamp %@ LIMIT %d", commonQuery, order, limit];
-        FMResultSet *cursor = [db executeQuery:sql];
-        
-        while ([cursor next]) {
-            [urls addObject:@[[cursor objectForColumnName:@"image_url"],
-             [cursor objectForColumnName:@"story_hash"],
-             [cursor objectForColumnName:@"story_timestamp"]]];
-        }
-        int start = (int)[[NSDate date] timeIntervalSince1970];
-        int end = [[[urls lastObject] objectAtIndex:2] intValue];
-        int seconds = start - (end ? end : start);
-        __block int hours = (int)round(seconds / 60.f / 60.f);
-        
-        __block float progress = 0.f;
-        if (self.totalUncachedImagesCount) {
-            progress = 1.f - ((float)self.remainingUncachedImagesCount /
-                              (float)self.totalUncachedImagesCount);
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController showCachingNotifier:progress hoursBack:hours];
-        });
-    }];
-    
-    return urls;
-}
-
-- (void)deleteAllCachedImages {
-    NSFileManager *fileManager = [[NSFileManager alloc] init];
-    NSError *error = nil;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
-    int removed = 0;
-    
-    if (error == nil) {
-        for (NSString *path in directoryContents) {
-            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:path];
-            BOOL removeSuccess = [fileManager removeItemAtPath:fullPath error:&error];
-            removed++;
-            if (!removeSuccess) {
-                continue;
-            }
-        }
-    }
-    
-    NSLog(@"Deleted %d images.", removed);
-}
-
-- (void)fetchAllUncachedImages {
-    NSArray *urls = [self uncachedImageUrls];
-    operationQueue = [[ASINetworkQueue alloc] init];
-    operationQueue.maxConcurrentOperationCount = [[NSUserDefaults standardUserDefaults]
-                                                  integerForKey:@"offline_image_concurrency"];
-    operationQueue.delegate = self;
-    
-    if ([urls count] == 0) {
-        NSLog(@"Finished caching images. %d total", self.totalUncachedImagesCount);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedsViewController hideNotifier];
-        });
-        return;
-    }
-    
-    for (NSArray *urlArray in urls) {
-        NSURL *url = [NSURL URLWithString:[urlArray objectAtIndex:0]];
-        NSString *storyHash = [urlArray objectAtIndex:1];
-        
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setUserInfo:@{@"story_hash": storyHash}];
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(storeCachedImage:)];
-        [request setDidFailSelector:@selector(storeCachedImage:)];
-        [request setTimeOutSeconds:5];
-        [operationQueue addOperation:request];
-    }
-
-    [operationQueue setQueueDidFinishSelector:@selector(cachedImageQueueFinished:)];
-    [operationQueue setShouldCancelAllRequestsOnFailure:NO];
-    [operationQueue go];
-    
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self.feedsViewController hideNotifier];
-//    });
-}
-
-- (void)storeCachedImage:(ASIHTTPRequest *)request {
-    NSString *storyHash = [[request userInfo] objectForKey:@"story_hash"];
-
-    if ([request responseStatusCode] == 200) {
-        NSData *responseData = [request responseData];
-        NSString *md5Url = [Utilities md5:[[request originalURL] absoluteString]];
-        NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [operationQueue requestsCount]);
-        if ([responseData length] <= 43) {
-            NSLog(@" ---> Image url: %@", [request url]);
-        }
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", md5Url]];
-        
-        [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
-    } else {
-        NSLog(@"Failed to fetch: %@ / %@", [[request originalURL] absoluteString], storyHash);
-    }
-    
-    [self.database inDatabase:^(FMDatabase *db) {
-        [db executeUpdate:@"UPDATE cached_images SET "
-         "image_cached = 1 WHERE story_hash = ?",
-         storyHash];
-    }];
-}
-
-- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue {
-    NSLog(@"Queue finished: %d total (%d remaining)", self.totalUncachedImagesCount, self.remainingUncachedImagesCount);
-    [self fetchAllUncachedImages];
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self.feedsViewController hideNotifier];
-//    });
+    NSLog(@"Pre-cached %d images", cached);
 }
 
 - (void)flushOldCachedImages {
@@ -2639,35 +2415,26 @@
     NSLog(@"Deleted %d old cached images", deleted);
 }
 
-- (void)prepareActiveCachedImages:(FMDatabase *)db {
-    activeCachedImages = [NSMutableDictionary dictionary];
-    NSDate *start = [NSDate date];
-    NSArray *feedIds;
+- (void)deleteAllCachedImages {
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSError *error = nil;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
+    int removed = 0;
     
-    if (isRiverView) {
-        feedIds = activeFolderFeeds;
-    } else if (activeFeed) {
-        feedIds = @[[activeFeed objectForKey:@"id"]];
-    }
-    NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "WHERE c.image_cached = 1 AND c.story_feed_id in (%@)",
-                     [feedIds componentsJoinedByString:@","]];
-    FMResultSet *cursor = [db executeQuery:sql];
-    
-    while ([cursor next]) {
-        NSString *storyHash = [cursor objectForColumnName:@"story_hash"];
-        NSMutableArray *imageUrls;
-        if (![activeCachedImages objectForKey:storyHash]) {
-            imageUrls = [NSMutableArray array];
-            [activeCachedImages setObject:imageUrls forKey:storyHash];
-        } else {
-            imageUrls = [activeCachedImages objectForKey:storyHash];
+    if (error == nil) {
+        for (NSString *path in directoryContents) {
+            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:path];
+            BOOL removeSuccess = [fileManager removeItemAtPath:fullPath error:&error];
+            removed++;
+            if (!removeSuccess) {
+                continue;
+            }
         }
-        [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
-        [activeCachedImages setObject:imageUrls forKey:storyHash];
     }
     
-    NSLog(@"prepareActiveCachedImages time: %f", ([[NSDate date] timeIntervalSinceDate:start]));
+    NSLog(@"Deleted %d images.", removed);
 }
 
 @end

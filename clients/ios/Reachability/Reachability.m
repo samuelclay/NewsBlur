@@ -99,6 +99,12 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 @synthesize reachabilityObject;
 
 #pragma mark - class constructor methods
+
++(Reachability*)reachabilityWithHostName:(NSString*)hostname
+{
+    return [Reachability reachabilityWithHostname:hostname];
+}
+
 +(Reachability*)reachabilityWithHostname:(NSString*)hostname
 {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);

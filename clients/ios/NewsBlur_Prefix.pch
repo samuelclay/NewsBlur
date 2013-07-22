@@ -3,6 +3,16 @@
     #import <UIKit/UIKit.h>
     #import "Underscore.h"
 
+//#define DEBUG 1
+
+#ifdef DEBUG
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
+    #define NEWSBLUR_HOST [NSString stringWithFormat:@"nb.local.com"]
+#else
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
+    #define NEWSBLUR_HOST [NSString stringWithFormat:@"www.newsblur.com"]
+#endif
+
     #define _ Underscore
 
     #define UIColorFromRGB(rgbValue) [UIColor \
@@ -10,14 +20,7 @@
     green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
     blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-//    #define BACKGROUND_REFRESH_SECONDS -5
     #define BACKGROUND_REFRESH_SECONDS -10*60
-
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
-    #define NEWSBLUR_HOST [NSString stringWithFormat:@"nb.local.com"]
-//    #define NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
-//    #define NEWSBLUR_HOST [NSString stringWithFormat:@"www.newsblur.com"]
-
     #define NEWSBLUR_LINK_COLOR 0x405BA8
     #define NEWSBLUR_HIGHLIGHT_COLOR 0xd2e6fd
 

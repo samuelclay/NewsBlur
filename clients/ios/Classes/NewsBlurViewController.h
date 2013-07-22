@@ -118,10 +118,12 @@ IASKSettingsDelegate> {
 - (void)settingDidChange:(NSNotification*)notification;
 
 - (void)showRefreshNotifier;
+- (void)showCountingNotifier;
 - (void)showSyncingNotifier;
 - (void)showSyncingNotifier:(float)progress hoursBack:(int)days;
 - (void)showCachingNotifier:(float)progress hoursBack:(int)hours;
 - (void)showOfflineNotifier;
+- (void)showDoneNotifier;
 - (void)hideNotifier;
 
 @end
