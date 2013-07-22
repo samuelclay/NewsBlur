@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -12,13 +13,13 @@ from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label=_("Username or Email"), max_length=30,
+    username = forms.CharField(label=_("用户名或邮件地址"), max_length=30,
                                widget=forms.TextInput(attrs={'tabindex': 1, 'class': 'NB-input'}),
-                               error_messages={'required': 'Please enter a username.'})
-    password = forms.CharField(label=_("Password"),
+                               error_messages={'required': '请输入用户名。'})
+    password = forms.CharField(label=_("密码"),
                                widget=forms.PasswordInput(attrs={'tabindex': 2, 'class': 'NB-input'}),
-                               required=False)    
-                               # error_messages={'required': 'Please enter a password.'})
+                               required=True,
+                               error_messages={'required': '请输入密码。'})
 
     def __init__(self, *args, **kwargs):
         self.user_cache = None
@@ -52,9 +53,9 @@ class LoginForm(forms.Form):
                         self.user_cache = authenticate(username=email_user.username, password=email_user.username)
             if self.user_cache is None:
                 logging.info(" ***> [%s] Bad Login" % username)
-                raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                raise forms.ValidationError(_("哎呀，登录失败！请重试。"))
         elif username and not user:
-            raise forms.ValidationError(_("That username is not registered. Please try again."))
+            raise forms.ValidationError(_("此用户名没有注册。请重试。"))
             
         return self.cleaned_data
 
@@ -68,22 +69,22 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.RegexField(regex=r'^\w+$',
+    username = forms.RegexField(regex=r'^[a-zA-Z0-9]+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
-                                label=_(u'username'),
+                                label=_(u'用户名'),
                                 error_messages={
-                                    'required': 'Please enter a username.', 
-                                    'invalid': "Your username may only contain letters and numbers."
+                                    'required': '请输入用户名。', 
+                                    'invalid': "用户名只能包含字母或数字。"
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label=_(u'email address'),
+                             label=_(u'邮件地址'),
                              required=True,
-                             error_messages={'required': 'Please enter an email.'})
+                             error_messages={'required': '请输入邮件地址。'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
-                               label=_(u'password'),
-                               required=False)
-                               # error_messages={'required': 'Please enter a password.'})
+                               label=_(u'密码'),
+                               required=True,
+                               error_messages={'required': '请输入密码。'})
     
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -104,12 +105,12 @@ class SignupForm(forms.Form):
         if email:
             email_exists = User.objects.filter(email__iexact=email).count()
             if email_exists:
-                raise forms.ValidationError(_(u'Someone is already using that email address.'))
+                raise forms.ValidationError(_(u'此邮件地址已经被使用。'))
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
             if not user_auth:
-                raise forms.ValidationError(_(u'Someone is already using that username.'))
+                raise forms.ValidationError(_(u'此用户名已经被使用。'))
         return self.cleaned_data
         
     def save(self, profile_callback=None):
@@ -120,13 +121,13 @@ class SignupForm(forms.Form):
         if email:
             email_exists = User.objects.filter(email__iexact=email).count()
             if email_exists:
-                raise forms.ValidationError(_(u'Someone is already using that email address.'))
+                raise forms.ValidationError(_(u'此邮件地址已经被使用。'))
 
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
             if not user_auth:
-                raise forms.ValidationError(_(u'Someone is already using that username.'))
+                raise forms.ValidationError(_(u'此用户名已经被使用。'))
             else:
                 return user_auth
         

@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import datetime
 import time
 import boto
@@ -117,7 +118,7 @@ def welcome(request, **kwargs):
     social_profile    = MSocialProfile.get_user(user.pk)
     
     if request.method == "POST":
-        if request.POST.get('submit', '').startswith('log'):
+        if request.POST.get('submit', '').startswith('登录'):
             login_form  = LoginForm(request.POST, prefix='login')
             signup_form = SignupForm(prefix='signup')
         else:
@@ -1173,7 +1174,7 @@ def mark_story_as_unread(request):
                      datetime.timedelta(days=settings.DAYS_OF_UNREAD))
     if story.story_date < UNREAD_CUTOFF:
         data['code'] = -1
-        data['message'] = "Story is more than %s days old, cannot mark as unread." % (
+        data['message'] = "文章发布已超过 %s 天，不能标记为未读。" % (
                             settings.DAYS_OF_UNREAD)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
@@ -1533,7 +1534,7 @@ def activate_premium_account(request):
                 sub.feed.count_subscribers()
                 sub.feed.schedule_feed_fetch_immediately()
     except Exception, e:
-        subject = "Premium activation failed"
+        subject = "高级帐户激活失败"
         message = "%s -- %s\n\n%s" % (request.user, usersubs, e)
         mail_admins(subject, message, fail_silently=True)
         
@@ -1621,7 +1622,7 @@ def send_story_email(request):
     email_cc   = is_true(request.POST.get('email_cc', 'true'))
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
-    from_address = 'share@newsblur.com'
+    from_address = 'share@newszeit.com'
     share_user_profile = MSocialProfile.get_user(request.user.pk)
 
     if not to_addresses:
@@ -1653,13 +1654,13 @@ def send_story_email(request):
         }
         text    = render_to_string('mail/email_story.txt', params)
         html    = render_to_string('mail/email_story.xhtml', params)
-        subject = '%s' % (story['story_title'])
+        subject = '%s 分享了一篇文章给你："%s"' % (from_name, story['story_title'])
         cc      = None
         if email_cc:
             cc = ['%s <%s>' % (from_name, from_email)]
         subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % from_address,
+                                         from_email='NewsZeit <%s>' % from_address,
                                          to=to_addresses, 
                                          cc=cc,
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})

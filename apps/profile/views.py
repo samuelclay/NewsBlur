@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import stripe
 import datetime
 from django.contrib.auth.decorators import login_required
@@ -201,7 +202,7 @@ def profile_is_premium(request):
     if retries >= 30:
         code = -1
         if not request.user.profile.is_premium:
-            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
+            subject = "高级帐户激活失败：%s (%s/%s)" % (request.user, activated_subs, total_subs)
             message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
             mail_admins(subject, message, fail_silently=True)
             request.user.profile.is_premium = True
@@ -285,7 +286,7 @@ def load_activities(request):
         'activities': activities,
         'page': page,
         'has_next_page': has_next_page,
-        'username': 'You',
+        'username': '你',
     }
 
 @ajax_login_required

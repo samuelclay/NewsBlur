@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import datetime
 import time
 import zlib
@@ -85,9 +86,9 @@ class MRequestInvite(mongo.Document):
         }
         text    = render_to_string('mail/email_social_beta.txt', params)
         html    = render_to_string('mail/email_social_beta.xhtml', params)
-        subject = "Psst, you're in..."
+        subject = "嘘，你在..."
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['<%s>' % (email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -281,7 +282,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def title(self):
-        return self.blurblog_title if self.blurblog_title else self.username + "'s blurblog"
+        return self.blurblog_title if self.blurblog_title else self.username + "的Zeitblog"
         
     def feed(self):
         params = self.canonical(compact=True)
@@ -580,9 +581,9 @@ class MSocialProfile(mongo.Document):
         
         text    = render_to_string('mail/email_new_follower.txt', data)
         html    = render_to_string('mail/email_new_follower.xhtml', data)
-        subject = "%s is now following your Blurblog on NewsBlur!" % follower_profile.username
+        subject = "%s 开始在 NewsZeit 关注你的 Zeitblog！" % follower_profile.username
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user.username, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -634,9 +635,9 @@ class MSocialProfile(mongo.Document):
         
         text    = render_to_string('mail/email_follow_request.txt', data)
         html    = render_to_string('mail/email_follow_request.xhtml', data)
-        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.username
+        subject = "%s 申请关注你在 NewsZeit 的 Zeitblog" % follower_profile.username
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user.username, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -1421,7 +1422,7 @@ class MSharedStory(mongo.Document):
         if not days:
             days = 3
         if not cutoff:
-            cutoff = 7
+            cutoff = 2
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
@@ -1865,9 +1866,9 @@ class MSharedStory(mongo.Document):
         
             text    = render_to_string('mail/email_reply.txt', data)
             html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
-            subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, self.story_title)
+            subject = "%s 在 NewsZeit 上的文章 “%s” 中回复了你" % (reply_user.username, self.story_title)
             msg     = EmailMultiAlternatives(subject, text, 
-                                             from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                             from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                              to=['%s <%s>' % (user.username, user.email)])
             msg.attach_alternative(html, "text/html")
             msg.send()
@@ -1928,9 +1929,9 @@ class MSharedStory(mongo.Document):
     
         text    = render_to_string('mail/email_reshare.txt', data)
         html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
-        subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, self.story_title)
+        subject = "%s 在 NewsZeit 转发了你的分享 “%s”" % (reshare_user.username, self.story_title)
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (original_user.username, original_user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -1984,10 +1985,9 @@ class MSharedStory(mongo.Document):
     
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
-        feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, feed, request=request)
+            ti = TextImporter(self, request=request)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
