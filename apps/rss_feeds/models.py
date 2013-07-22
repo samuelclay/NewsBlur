@@ -1086,19 +1086,19 @@ class Feed(models.Model):
     def story_cutoff(self):
         cutoff = 500
         if self.active_subscribers <= 0:
-            cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
-            cutoff = 100
+            cutoff = 50
+        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 0:
+            cutoff = 500
         elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
-            cutoff = 200
+            cutoff = 200000
         elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
-            cutoff = 300
+            cutoff = 200000
         elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
-            cutoff = 350
+            cutoff = 200000
         elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
-            cutoff = 400
+            cutoff = 200000
         elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
-            cutoff = 450
+            cutoff = 200000
 
         return cutoff
                 
