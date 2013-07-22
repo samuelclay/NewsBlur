@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import time
 import datetime
 import zlib
@@ -1332,7 +1333,7 @@ def load_activities(request):
         'activities': activities,
         'page': page,
         'has_next_page': has_next_page,
-        'username': (user.username if public else 'You'),
+        'username': (user.username if public else '我'),
     }
     
     logging.user(request, "~FBLoading activities ~SBp/%s" % page)

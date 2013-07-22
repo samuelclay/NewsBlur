@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django import forms
 from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
@@ -31,7 +32,7 @@ class StripePlusPaymentForm(StripePaymentForm):
             self.fields['plan'].initial = plan
 
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
-                             label='Email address',
+                             label='邮件地址',
                              required=False)
     plan = forms.ChoiceField(required=False, widget=forms.RadioSelect(renderer=HorizRadioRenderer),
                              choices=PLANS, label='Plan')
@@ -39,9 +40,9 @@ class StripePlusPaymentForm(StripePaymentForm):
 
 class DeleteAccountForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(),
-                               label="Confirm your password",
+                               label="确认密码",
                                required=False)
-    confirm = forms.CharField(label="Type \"Delete\" to confirm",
+    confirm = forms.CharField(label="请输入“Delete”以确认",
                               widget=forms.TextInput(),
                               required=False)
 
@@ -56,19 +57,19 @@ class DeleteAccountForm(forms.Form):
             user_auth = blank_authenticate(username=self.user.username)
         
         if not user_auth:
-            raise forms.ValidationError('Your password doesn\'t match.')
+            raise forms.ValidationError('你的密码不匹配。')
 
         return self.cleaned_data
 
     def clean_confirm(self):
         if self.cleaned_data.get('confirm', "").lower() != "delete":
-            raise forms.ValidationError('Please type "DELETE" to confirm deletion.')
+            raise forms.ValidationError('请输入“Delete”以确认删除。')
 
         return self.cleaned_data
 
 class ForgotPasswordForm(forms.Form):
     email = forms.CharField(widget=forms.TextInput(),
-                               label="Your email address",
+                               label="你的邮件地址",
                                required=False)
 
     def __init__(self, *args, **kwargs):
@@ -76,42 +77,42 @@ class ForgotPasswordForm(forms.Form):
     
     def clean_email(self):
         if not self.cleaned_data['email']:
-            raise forms.ValidationError('Please enter in an email address.')
+            raise forms.ValidationError('请输入邮件地址。')
         try:
             User.objects.get(email__iexact=self.cleaned_data['email'])
         except User.MultipleObjectsReturned:
             pass
         except User.DoesNotExist:
-            raise forms.ValidationError('No user has that email address.')
+            raise forms.ValidationError('没有用户使用此邮件地址。')
 
         return self.cleaned_data
 
 class ForgotPasswordReturnForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(),
-                               label="Your new password",
-                               required=False)
+                               label="你的新密码",
+                               required=True)
 
 class AccountSettingsForm(forms.Form):
-    username = forms.RegexField(regex=r'^\w+$',
+    username = forms.RegexField(regex=r'^[a-zA-Z0-9]+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
-                                label='username',
+                                label='用户名',
                                 required=False,
                                 error_messages={
-                                    'invalid': "Your username may only contain letters and numbers."
+                                    'invalid': "用户名只能包含字母或数字"
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label='email address',
+                             label='邮件地址',
                              required=True,
-                             error_messages={'required': 'Please enter an email.'})
+                             error_messages={'required': '请输入邮件地址。'})
     new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
-                                   label='password',
-                                   required=False)
-                                   # error_messages={'required': 'Please enter a password.'})
+                                   label='密码',
+                                   required=False,
+                                   error_messages={'required': '请输入密码。'})
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
-                                   label='password',
-                                   required=False)
-                                   # error_messages={'required': 'Please enter a password.'})
+                                   label='密码',
+                                   required=False,
+                                   error_messages={'required': '请输入密码。'})
     
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -141,16 +142,16 @@ class AccountSettingsForm(forms.Form):
             except User.DoesNotExist:
                 pass
             else:
-                raise forms.ValidationError("This username is already taken. Try something different.")
+                raise forms.ValidationError("此用户名已被使用，请尝试其他用户名。")
         
         if self.user.email != email:
             if email and User.objects.filter(email__iexact=email).count():
-                raise forms.ValidationError("This email is already being used by another account. Try something different.")
+                raise forms.ValidationError("此邮件地址已被其他帐户使用，请尝试其他邮件地址。")
         
         if old_password or new_password:
             code = change_password(self.user, old_password, new_password, only_check=True)
             if code <= 0:
-                raise forms.ValidationError("Your old password is incorrect.")    
+                raise forms.ValidationError("你的旧密码不正确。")    
 
         return self.cleaned_data
         

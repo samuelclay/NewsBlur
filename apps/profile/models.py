@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import time
 import datetime
 import stripe
@@ -48,7 +49,7 @@ class Profile(models.Model):
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
     dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
-    timezone          = TimeZoneField(default="America/New_York")
+    timezone          = TimeZoneField(default="Asia/Hong_Kong")
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
@@ -356,9 +357,9 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_new_account.txt', locals())
         html    = render_to_string('mail/email_new_account.xhtml', locals())
-        subject = "Welcome to NewsBlur, %s" % (self.user.username)
+        subject = "欢迎来到 NewsZeit， %s" % (self.user.username)
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -381,10 +382,10 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_opml_export.txt', params)
         html    = render_to_string('mail/email_opml_export.xhtml', params)
-        subject = "Backup OPML file of your NewsBlur sites"
+        subject = "您在 NewsZeit 所订阅站点的 OPML 格式文件备份"
         filename= 'NewsBlur Subscriptions - %s.xml' % datetime.datetime.now().strftime('%Y-%m-%d')
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.attach(filename, opml, 'text/xml')
@@ -413,9 +414,9 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_first_share_to_blurblog.txt', params)
         html    = render_to_string('mail/email_first_share_to_blurblog.xhtml', params)
-        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        subject = "您在 NewsZeit 上分享的文章可以在你的 Zeitblog 上看到"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -445,9 +446,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_new_premium.txt', locals())
         html    = render_to_string('mail/email_new_premium.xhtml', locals())
-        subject = "Thanks for going premium on NewsBlur!"
+        subject = "感谢您成为 NewsZeit 的高级用户！"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -466,9 +467,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_forgot_password.txt', locals())
         html    = render_to_string('mail/email_forgot_password.xhtml', locals())
-        subject = "Forgot your password on NewsBlur?"
+        subject = "您忘记了在 NewsZeit 的密码？"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -488,9 +489,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_new_user_queue.txt', locals())
         html    = render_to_string('mail/email_new_user_queue.xhtml', locals())
-        subject = "Your free account is now ready to go on NewsBlur"
+        subject = "您在 NewsZeit 上免费帐户现在可用了"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -505,9 +506,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_upload_opml_finished.txt', locals())
         html    = render_to_string('mail/email_upload_opml_finished.xhtml', locals())
-        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        subject = "您上传 OPML 文件成功，现在就去 NewsZeit 阅读吧！"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -522,9 +523,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_import_reader_finished.txt', locals())
         html    = render_to_string('mail/email_import_reader_finished.xhtml', locals())
-        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        subject = "导入 Google Reader 完成，现在就去 NewsZeit 阅读吧！"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -539,9 +540,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_import_reader_starred_finished.txt', locals())
         html    = render_to_string('mail/email_import_reader_starred_finished.xhtml', locals())
-        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        subject = "导入 Google Reader 加星标文章成功，现在就去 NewsZeit 阅读吧！"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -568,12 +569,37 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         html    = render_to_string('mail/email_launch_social.xhtml', data)
         subject = "NewsBlur is now a social news reader"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
+
+    def send_notification_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending notification email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
+            return
+        
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='notification_0630')
+        
+        if not created and not force:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending notification email for user, sent already: %s" % self.user.email)
+            return
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        days_ago = delta.days
+        user    = self.user
+        data    = dict(user=user, days_ago=days_ago)
+        text    = render_to_string('mail/email_notification_0630.txt', data)
+        html    = render_to_string('mail/email_notification_0630.xhtml', data)
+        subject = "Google Reader 明天即将关闭，是时候切换到 NewsZeit 了！"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
         
     def send_premium_expire_grace_period_email(self, force=False):
         if not self.user.email:
@@ -597,9 +623,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         data    = dict(user=user, months_ago=months_ago)
         text    = render_to_string('mail/email_premium_expire_grace.txt', data)
         html    = render_to_string('mail/email_premium_expire_grace.xhtml', data)
-        subject = "Your premium account on NewsBlur has one more month!"
+        subject = "我们将您在 NewsZeit 的付费帐户延长了一个月！"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
@@ -626,9 +652,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         data    = dict(user=user, months_ago=months_ago)
         text    = render_to_string('mail/email_premium_expire.txt', data)
         html    = render_to_string('mail/email_premium_expire.xhtml', data)
-        subject = "Your premium account on NewsBlur has expired"
+        subject = "您在 NewsZeit 上的付费帐户已到期"
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
