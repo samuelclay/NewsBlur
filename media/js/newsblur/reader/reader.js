@@ -950,7 +950,7 @@
             var $bar = $('.NB-progress-bar', $progress);
             var percentage = 0;
             
-            $('.NB-progress-title', $progress).text('Get Started');
+            $('.NB-progress-title', $progress).text('开始使用');
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
@@ -1046,7 +1046,7 @@
             var $progress = this.$s.$feeds_progress;
             var percentage = parseInt(this.counts['fetched_feeds'] / (this.counts['unfetched_feeds'] + this.counts['fetched_feeds']) * 100, 10);
 
-            $('.NB-progress-title', $progress).text('Fetching your feeds');
+            $('.NB-progress-title', $progress).text('正在载入 Feeds');
             $('.NB-progress-counts', $progress).show();
             $('.NB-progress-counts-fetched', $progress).text(this.counts['fetched_feeds']);
             $('.NB-progress-counts-total', $progress).text(this.counts['unfetched_feeds'] + this.counts['fetched_feeds']);
@@ -2824,62 +2824,62 @@
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-manage-site-info' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
+                        $.make('span', { className: 'NB-menu-manage-title' }, "管理 NewsZeit")
                     ]).corner('top 8px').corner('bottom 0px'),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '标记所有文章为已读'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '可以选择标记多少天以前的文章。')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-trainer' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '智能训练'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '准确的过滤器提升阅读体验。')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '选择你的64个站点'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '启用你想要的站点。')
                     ])),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '升级至高级帐户')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-keyboard' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '键盘快捷键')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-tutorial' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
-                    ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
-                    ]),
+//                    $.make('li', { className: 'NB-menu-item NB-menu-manage-tutorial' }, [
+//                        $.make('div', { className: 'NB-menu-manage-image' }),
+//                       $.make('div', { className: 'NB-menu-manage-title' }, '提示与技巧')
+//                    ]),
+//                    $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
+  //                      $.make('div', { className: 'NB-menu-manage-image' }),
+    //                    $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
+      //              ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Import or upload sites')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '导入或上传站点')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-logout NB-modal-submit-green NB-modal-submit-button' }, 'Logout'),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
+                        $.make('div', { className: 'NB-menu-manage-logout NB-modal-submit-green NB-modal-submit-button' }, '退出'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, '帐户设置')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Profile &amp; Blurblog')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '个人档案和 Zeitblog')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-friends' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends &amp; Followers')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '好友和关注者')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '首选项')
                     ])
                 ]);
                 $manage_menu.addClass('NB-menu-manage-notop');
@@ -2892,40 +2892,40 @@
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '修复此异常的站点')
                     ])),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
                     (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '标记为已读')
                     ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-reload' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '立即更新此站点')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '统计信息')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '智能训练'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '你喜欢什么或不喜欢什么。')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '推荐此站点')
                     ])),
                     (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-separator' })),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '站点设置')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-feed-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '移动至文件夹')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
@@ -2936,7 +2936,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '重命名此站点')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
@@ -2947,11 +2947,11 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '移除此站点')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-feed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '确定移除？')
                     ])
                 ]);
                 $manage_menu.data('feed_id', feed_id);
@@ -2968,40 +2968,40 @@
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '修复此异常的站点')
                     ])),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-social-profile' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'View profile')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '查看个人档案')
                     ]),
                     (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-separator' })),
                     (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '标记为已读')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '统计信息')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '智能训练'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '你喜欢什么或不喜欢什么。')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '站点设置')
                     ]),
                     (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-socialfeed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Unfollow')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '取消关注')
                     ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-socialfeed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really unfollow?')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '确定取消关注？')
                     ])
                 ]);
                 $manage_menu.data('feed_id', feed_id);
@@ -3014,20 +3014,20 @@
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-folder-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '标记此文件夹为已读')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subscribe' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Add a site to this folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '向此文件夹添加一个站点')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '创建子文件夹')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '移动至文件夹')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-folder-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
@@ -3038,22 +3038,22 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '重命名文件夹')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
-                            $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                            $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, '保存'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
                             $.make('input', { name: 'new_title', className: 'NB-menu-manage-title NB-input', value: feed_id })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '删除此文件夹')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-folder-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '确定删除？')
                     ])
                 ]);
                 $manage_menu.data('folder_name', feed_id);
@@ -3062,9 +3062,9 @@
                 var feed          = this.model.get_feed(feed_id);
                 var story         = this.model.get_story(story_id);
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
-                var starred_title = story.get('starred') ? 'Unsave this story' : 'Save this story';
+                var starred_title = story.get('starred') ? '取消收藏' : '收藏此文章';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
-                var shared_title = story.get('shared') ? 'Shared' : 'Share to your Blurblog';
+                var shared_title = story.get('shared') ? '已分享' : '分享到 Zeitblog';
                 story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
                     model: story
                 });
@@ -3074,12 +3074,12 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input NB-input', value: story.get('story_permalink') }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '打开')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (story.get('read_status') && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-unread' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '标记为未读')
                     ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3089,62 +3089,62 @@
                         (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-facebook');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-facebook');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_twitter'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Twitter').parent().addClass('NB-menu-manage-highlight-twitter');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-twitter');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-twitter');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pocket (RIL)').parent().addClass('NB-menu-manage-highlight-readitlater');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readitlater');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_tumblr'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-tumblr'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Tumblr').parent().addClass('NB-menu-manage-highlight-tumblr');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-delicious');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-delicious');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-diigo');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_kippt'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-kippt'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Kippt').parent().addClass('NB-menu-manage-highlight-kippt');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-kippt');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-kippt');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-evernote');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-evernote');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-googleplus');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-googleplus');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_instapaper'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-instapaper'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Instapaper').parent().addClass('NB-menu-manage-highlight-instapaper');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-instapaper');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-instapaper');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Readability').parent().addClass('NB-menu-manage-highlight-readability');
                         }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
+                            $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-readability');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_weibo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-weibo'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('新浪微博').parent().addClass('NB-menu-manage-highlight-weibo');
@@ -3182,7 +3182,7 @@
                             $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-qzone');
                         }, this))),
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '邮件发送或分享至')
                     ]).bind('click', _.bind(function(e) {
                       e.preventDefault();
                       e.stopPropagation();
@@ -3241,8 +3241,8 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-title' }, '智能训练'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, '你喜欢什么或不喜欢什么。')
                     ])
                 ]);
                 $manage_menu.data('feed_id', feed_id);
@@ -3490,7 +3490,6 @@
             $(document).unbind('mouseup.menu');
             $(document).add($('input,textarea', $manage_menu_container))
                        .unbind('keydown.manage_menu');
-
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');
             }
@@ -3524,7 +3523,7 @@
             var $confirm = $('.NB-menu-manage-feed-delete-confirm,.NB-menu-manage-folder-delete-confirm');
             
             $delete.addClass('NB-menu-manage-feed-delete-cancel');
-            $('.NB-menu-manage-title', $delete).text('Cancel delete');
+            $('.NB-menu-manage-title', $delete).text('取消移除');
             $confirm.slideDown(500);
         },
         
@@ -3554,7 +3553,7 @@
             var $confirm = $('.NB-menu-manage-socialfeed-delete-confirm');
             
             $unfollow.addClass('NB-menu-manage-socialfeed-delete-cancel');
-            $('.NB-menu-manage-title', $unfollow).text('Cancel unfollow');
+            $('.NB-menu-manage-title', $unfollow).text('停止取消关注');
             $confirm.slideDown(500);
         },
         
@@ -3564,7 +3563,7 @@
             
             $unfollow.removeClass('NB-menu-manage-socialfeed-delete-cancel');
 
-            $('.NB-menu-manage-title', $unfollow).text('Unfollow');
+            $('.NB-menu-manage-title', $unfollow).text('取消关注');
             $confirm.slideUp(500);
         },
         
@@ -3607,7 +3606,7 @@
             }
 
             $move.addClass('NB-menu-manage-feed-move-cancel');
-            $('.NB-menu-manage-title', $move).text('Cancel move');
+            $('.NB-menu-manage-title', $move).text('取消移动');
             $position.css('position', 'relative');
             var height = $confirm.height();
             $position.css('position', 'absolute');
@@ -3694,7 +3693,7 @@
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
             
             $rename.addClass('NB-menu-manage-feed-rename-cancel');
-            $('.NB-menu-manage-title', $rename).text('Cancel rename');
+            $('.NB-menu-manage-title', $rename).text('取消重命名');
             $position.css('position', 'relative');
             var height = $confirm.height();
             $position.css('position', 'absolute');
@@ -3770,7 +3769,7 @@
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
             
             $share.addClass('NB-menu-manage-story-share-cancel');
-            $('.NB-menu-manage-title', $share).text('Cancel share');
+            $('.NB-menu-manage-title', $share).text('取消分享');
             $confirm.css({'height': 0, 'display': 'block'});
             story.story_share_menu_view.toggle_feed_story_share_dialog({immediate: true});
             $position.css('position', 'relative');
@@ -3848,11 +3847,11 @@
             $(".NB-feeds-list-empty").remove();
             if (!view_not_empty && !all_mode) {
                 var $empty = $.make("div", { className: "NB-feeds-list-empty" }, [
-                    'You have no unread stories',
-                    unread_view >= 1 ? " in Focus mode." : ".",
+                    unread_view >= 1 ? " 在“专注”模式下<br>没有未读文章" : "你没有未读文章",
+
                     $.make('br'),
                     $.make('br'),
-                    unread_view >= 1 ? 'Switch to All or Unread.' : ""
+                    unread_view >= 1 ? '请切换到“全部”或“未读”' : ""
                 ]);
                 $(".NB-sidebar.NB-feedlists").prepend($empty);
             }
@@ -4338,14 +4337,14 @@
         handle_mouse_indicator_hover: function() {
             var self = this;
             var $callout = $('.NB-callout-mouse-indicator');
-            $('.NB-callout-text', $callout).text('Lock');
+            $('.NB-callout-text', $callout).text('锁定');
             $callout.corner('5px');
             
             this.$s.$mouse_indicator.hover(function() {
                 if (self.model.preference('lock_mouse_indicator')) {
-                    $('.NB-callout-text', $callout).text('Unlock');
+                    $('.NB-callout-text', $callout).text('取消锁定');
                 } else {
-                    $('.NB-callout-text', $callout).text('Lock');
+                    $('.NB-callout-text', $callout).text('锁定');
                 }
                 self.flags['still_hovering_on_mouse_indicator'] = true;
                 setTimeout(function() {
@@ -4370,11 +4369,11 @@
             
             if (self.model.preference('lock_mouse_indicator')) {
                 self.model.preference('lock_mouse_indicator', 0);
-                $('.NB-callout-text', $callout).text('Unlocked');
+                $('.NB-callout-text', $callout).text('已解锁');
             } else {
                 
                 self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y);
-                $('.NB-callout-text', $callout).text('Locked');
+                $('.NB-callout-text', $callout).text('已锁定');
             }
             
             setTimeout(function() {
@@ -4522,7 +4521,7 @@
             var self = this;
             if (this.flags['bouncing_callout']) return;
             
-            $('.NB-callout-ftux .NB-callout-text').text(message || 'First things first...');
+            $('.NB-callout-ftux .NB-callout-text').text(message || '第一件事...');
             $('.NB-callout-ftux').corner('5px');
             $('.NB-callout-ftux').css({
                 'opacity': 0,
@@ -4547,7 +4546,7 @@
             var self = this;
             
             if (!this.flags['bouncing_callout']) {
-                $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
+                $('.NB-callout-ftux-signup .NB-callout-text').text('注册');
                 $('.NB-callout-ftux-signup').corner('5px');
                 $('.NB-callout-ftux-signup').css({
                     'opacity': 0,
@@ -4588,7 +4587,7 @@
             var percentage = 0;
             this.flags['import_from_google_reader_working'] = true;
             
-            $('.NB-progress-title', $progress).text('Importing from Google Reader');
+            $('.NB-progress-title', $progress).text('从 Google Reader 导入');
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $bar.progressbar({
@@ -4617,7 +4616,7 @@
                 NEWSBLUR.log(['Import Error!', data]);
                 this.$s.$feed_link_loader.fadeOut(250);
                 $progress.addClass('NB-progress-error');
-                $('.NB-progress-title', $progress).text('Error importing Google Reader');
+                $('.NB-progress-title', $progress).text('从 Google Reader 导入时发生错误');
                 $('.NB-progress-link', $progress).html($.make('a', { 
                     className: 'NB-modal-submit-button NB-modal-submit-green',
                     href: NEWSBLUR.URLs['google-reader-authorize']
@@ -4637,7 +4636,7 @@
             
             this.flags['count_unreads_after_import_working'] = true;
             
-            $('.NB-progress-title', $progress).text('Counting is difficult');
+            $('.NB-progress-title', $progress).text('难以计数');
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $bar.progressbar({
@@ -4769,7 +4768,7 @@
             if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
             
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
-              $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, 'Sign Up')
+              $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, '注册')
             ]).css({'opacity': 0});
             this.$s.$story_taskbar.append($add);
             $add.animate({'opacity': 1}, {'duration': 600});

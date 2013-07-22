@@ -282,7 +282,7 @@ var classifier_prototype = {
           this.feed_authors = this.model.get_feed_authors();
           $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
-          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
+          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(this.feed.get('num_subscribers') + ' 订阅者');
         }
     },
     
@@ -310,38 +310,38 @@ var classifier_prototype = {
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal NB-modal-trainer'}, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Intelligence Trainer',
+                '智能训练',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
-            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
+            $.make('h3', { className: 'NB-modal-subtitle' }, '将要做的是：'),
             $.make('ol', { className: 'NB-trainer-points NB-classifiers' }, [
                 $.make('li', [
                     $.make('div', { className: 'NB-classifier-example' }),
-                    $.make('b', 'You will see a bunch of tags and authors.'),
-                    ' Sites will be ordered by popularity. Click on what you like and don\'t like.'
+                    $.make('b', '你将会看到一批标签和博客作者。'),
+                    ' 站点将根据流行程度排序。点击确定你喜欢的和不喜欢的。'
                 ]),
                 $.make('li', [
-                    $.make('b', 'The intelligence slider filters stories.'),
+                    $.make('b', '可以通过智能滑块过滤文章。'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
-                    ' are stories you like',
+                    ' 是你喜欢的文章',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
-                    ' are stories you have not yet rated',
+                    ' 是你没有做出判断的文章',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
-                    ' are stories you don\'t like'
+                    ' 是你不喜欢的文章'
                 ]),
                 $.make('li', [
                     // $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
-                    $.make('b', 'Stop any time you like.'),
-                    ' You can easily train individual stories as you read.'
+                    $.make('b', '你可以随时停止。'),
+                    ' 你完全可以根据你的阅读需要只针对部分站点或作者进行训练。'
                 ])
             ]),
-            (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
+            (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, '请创建一个帐户并添加你要订阅的站点，然后你就可以对这些站点进行训练。')),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-grey NB-modal-submit-button' }, 'Close')),
-                    (NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-grey NB-disabled' }, 'Loading Training...'))
+                    (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-grey NB-modal-submit-button' }, '关闭')),
+                    (NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-grey NB-disabled' }, '正在载入训练...'))
                 ])
             ])
         ]);
@@ -352,39 +352,39 @@ var classifier_prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal NB-modal-trainer'}, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Congratulations! You\'re done.'),
-            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what happens next:'),
+            $.make('h2', { className: 'NB-modal-title' }, '祝贺你！你已经完成了。'),
+            $.make('h3', { className: 'NB-modal-subtitle' }, '接下来将要发生的是：'),
             $.make('ol', { className: 'NB-trainer-points' }, [
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
-                    $.make('b', 'You can change your opinions.'),
-                    ' You can click the ',
+                    $.make('b', '你可以修改你的选择。'),
+                    ' 当你阅读时你可以点击文章旁边的图标 ',
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
-                    ' buttons next to stories as you read them.'
+                    ' 。'
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
-                    $.make('b', 'As a reminder, use the intelligence slider to select a filter:'),
+                    $.make('b', '提醒：你可以使用智能滑块去选择一个过滤器：'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
-                    ' are stories you don\'t like',
+                    ' 是你不喜欢的文章',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
-                    ' are stories you have not yet rated',
+                    ' 是你没有做出判断的文章',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
-                    ' are stories you like'
+                    ' 是你喜欢的文章'
 
                 ]),
                 $.make('li', [
-                    $.make('b', 'You can also filter out stories you don\'t want to read.'),
-                    ' As great as finding good stuff is, you can just as easily ignore the stories you do not like.'
+                    $.make('b', '你也可以选择过滤掉你不想读的文章。'),
+                    ' 和发现好东西同样重要，你可以很容易地忽略你不喜欢的文章。'
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-reset' }, $.entity('&laquo;') + ' Retrain all sites'),
-                    $.make('div', { className: 'NB-modal-submit-end NB-modal-submit-button' }, 'Close Training and Start Reading')
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-reset' }, $.entity('&laquo;') + ' 重新训练所有的站点'),
+                    $.make('div', { className: 'NB-modal-submit-end NB-modal-submit-button' }, '关闭训练开始阅读')
                 ])
             ])
         ]);
@@ -405,37 +405,37 @@ var classifier_prototype = {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, this.feed.get('num_subscribers') + ' 订阅者')
                 ])
             ]),
             (this.options['feed_loaded'] &&
               $.make('form', { method: 'post', className: 'NB-publisher' }, [
                   (!_.isEmpty(this.user_classifiers.titles) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                      $.make('h5', 'Titles and Phrases'),
+                      $.make('h5', '标题和短语'),
                       $.make('div', { className: 'NB-classifier-titles NB-fieldset-fields NB-classifiers' },
                           this.make_user_titles()
                       )
                   ])),
                   (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                      $.make('h5', 'Authors'),
+                      $.make('h5', '作者'),
                       $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
                           this.make_authors(this.feed_authors).concat(this.make_user_authors())
                       )
                   ])),
                   (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                      $.make('h5', 'Categories &amp; Tags'),
+                      $.make('h5', '分类 & 标签'),
                       $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                           this.make_tags(this.feed_tags).concat(this.make_user_tags())
                       )
                   ])),
                   (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
-                      $.make('h5', 'Sharing Stories From These Sites'),
+                      $.make('h5', '从这个站点分享的文章'),
                       $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
                           this.make_publishers(this.feed_publishers)
                       )
                   ])),
                   $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                      $.make('h5', 'Everything by This Publisher'),
+                      $.make('h5', '此站点的所有文章'),
                       $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                           this.make_publisher(feed)
                       )
@@ -447,16 +447,16 @@ var classifier_prototype = {
           (this.options['training'] && $.make('div', { className: 'NB-modal-submit-bottom' }, [
             $.make('div', { className: 'NB-modal-submit' }, [
                   $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
-                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
-                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey' }, 'Close')
+                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' 返回'),
+                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, '保存 & 继续 '+$.entity('&raquo;')),
+                  $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey' }, '关闭')
             ])
           ])),
           (!this.options['training'] && $.make('div', { className: 'NB-modal-submit-bottom' }, [
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
               $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-              $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Check what you like above...')
+              $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, '在上面选择你所喜欢的...')
             ])
           ]))
         ]);
@@ -486,36 +486,36 @@ var classifier_prototype = {
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Title'),
+                        $.make('h5', '文章标题'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                             $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
+                            this.make_classifier('<span class="NB-classifier-title-placeholder">高亮此短语以便在以后的文章中找到类似的</span>', '', 'title'),
                             $.make('span',
                                 this.make_user_titles(story_title)
                             )
                         ])
                     ])),
                     (story.get('story_authors') && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Author'),
+                        $.make('h5', '文章作者'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                             this.make_authors([story.get('story_authors')])
                         )
                     ])),
                     (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Categories &amp; Tags'),
+                        $.make('h5', '文章分类 &amp; 标签'),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                             this.make_tags(story.get('story_tags'))
                         )
                     ])),
 
                     (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
-                        $.make('h5', 'Sharing Stories From These Sites'),
+                        $.make('h5', '从这些站点分享的文章'),
                         $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
                             this.make_publishers(this.feed_publishers)
                         )
                     ])),
                     $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Everything by This Publisher'),
+                        $.make('h5', '此站点的全部文章'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                             this.make_publisher(feed)
                         )
@@ -528,7 +528,7 @@ var classifier_prototype = {
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Check what you like above...')
+                    $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, '在上面选择你所喜欢的...')
                 ])
             ])
         ]);
@@ -538,14 +538,14 @@ var classifier_prototype = {
         var $modal_title = $('.NB-modal-title', this.$modal);
         
         var $title = $.make('div', [
-            'What do you ',
-            $.make('b', { className: 'NB-classifier-title-like' }, 'like'),
-            ' and ',
-            $.make('b', { className: 'NB-classifier-title-dislike' }, 'dislike'),
-            ' about this ',
-            (this.flags['publisher'] && 'site'),
-            (this.flags['story'] && 'story'),
-            '?'
+            '你 ',
+            $.make('b', { className: 'NB-classifier-title-like' }, '喜欢'),
+            ' 或者 ',
+            $.make('b', { className: 'NB-classifier-title-dislike' }, '不喜欢'),
+            ' 此',
+            (this.flags['publisher'] && '站点'),
+            (this.flags['story'] && '文章'),
+            '的哪一方面？'
         ]);
 
         $modal_title.html($title);
@@ -662,7 +662,7 @@ var classifier_prototype = {
         }
         
         var classifier_type_title = Inflector.capitalize(classifier_type=='feed' ?
-                                    'site' :
+                                    '站点' :
                                     classifier_type);
                                     
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
@@ -755,9 +755,9 @@ var classifier_prototype = {
         }
         
         if (this.options['training']) {
-            $close.text('Save & Close');
+            $close.text('保存 & 关闭');
         } else {
-            $save.removeClass("NB-disabled").text('Save Training');
+            $save.removeClass("NB-disabled").text('保存选择');
         }
         // NEWSBLUR.log(['change_classifier', classifier_opinion, $classifier, $like.is(':checked'), $dislike.is(':checked')]);
     },
@@ -903,7 +903,7 @@ var classifier_prototype = {
         if (this.options['training']) {
             this.cache[this.feed_id] = this.$modal.clone();
         }
-        $save.text('Saving...');
+        $save.text('正在保存...');
         $save.addClass('NB-disabled');
         
         this.update_opinions();

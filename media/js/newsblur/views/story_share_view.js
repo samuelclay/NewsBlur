@@ -29,7 +29,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     <div class="NB-sideoption-share-wrapper">\
         <div class="NB-sideoption-share">\
             <div class="NB-sideoption-share-wordcount"></div>\
-            <div class="NB-sideoption-share-title">Comments:</div>\
+            <div class="NB-sideoption-share-title">评论：</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
             <% if (!profile.get("private") && \
                    ((social_services.twitter && social_services.twitter.twitter_uid) || \
@@ -43,8 +43,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     <% }) %>\
                 </div>\
             <% } %>\
-            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
-            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
+            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">分享</div>\
+            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">取消分享</div>\
         </div>\
     </div>\
     '),

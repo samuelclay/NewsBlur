@@ -54,9 +54,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_river_premium_only_notification: function() {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
-                'The full River of News is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-                '.'
+                '在此页面完整加载全部文章是一项 ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能')
             ])
         ]);
         this.$('.NB-feed-story-premium-only').remove();
