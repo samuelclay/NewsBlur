@@ -1308,7 +1308,7 @@ def delete_feed(request):
     if feed:
         feed[0].count_subscribers()
     
-    return dict(code=1)
+    return dict(code=1, message="Removed %s from '%s'." % (feed, in_folder))
 
 @ajax_login_required
 @json.json_view
