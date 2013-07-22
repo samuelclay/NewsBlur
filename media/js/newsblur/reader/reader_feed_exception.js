@@ -81,24 +81,24 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, 'Fix a misbehaving site'),
-            $.make('h2', { className: 'NB-modal-title' }, 'Site settings'),
+            $.make('h2', { className: 'NB-modal-title' }, '站点设置'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' },Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, this.feed.get('num_subscribers') + " 订阅者")
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-view NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-status NB-right' }),
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    'View settings'
+                    '视图设置'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Reading view'
+                            '视图'
                         ]),
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -127,12 +127,12 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 1:'),
-                    'Retry'
+                    '重试'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-retry' }, 'Retry fetching and parsing'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-retry' }, '重试抓取和解析'),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -141,7 +141,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 2:'),
-                    'Change RSS Feed Address'
+                    '修改 RSS Feed 地址'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-exception-input-wrapper' }, [
@@ -153,7 +153,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed.get('feed_address') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-address' }, 'Parse this RSS/XML Feed'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-address' }, '解析此 RSS/XML Feed'),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-feed-history' })
                     ]))
@@ -163,19 +163,19 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 3:'),
-                    'Change Website Address'
+                    '修改网站地址'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-loading' }),
                         $.make('label', { 'for': 'NB-exception-input-link', className: 'NB-exception-label' }, [
                             $.make('div', { className: 'NB-folder-icon' }),
-                            'Website URL: '
+                            '网站 URL: '
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed.get('feed_link') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-link' }, 'Fetch Feed From Website'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-link' }, '从此网站获取 Feed'),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-page-history' })
                     ]))
@@ -184,12 +184,12 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-exception-block-only NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 4:'),
-                    'Just Delete This Feed'
+                    '删除此 Feed'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-modal-submit-delete' }, 'Delete It. It Just Won\'t Work!'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-modal-submit-delete' }, '删除此 Feed，此 Feed 无法正常工作！'),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -289,7 +289,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var feed_address = $feed_address.val();
         
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').attr('value', 'Parsing...');
+        $submit.addClass('NB-disabled').attr('value', '正在解析...');
         $error.hide().html('');
         
         if (feed_address.length) {
@@ -309,7 +309,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     $error.show().html((data && data.message) || error);
                 }
                 $loading.removeClass('NB-active');
-                $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
+                $submit.removeClass('NB-disabled').attr('value', '解析此 RSS/XML Feed');
                 this.populate_settings(data);
             }, this));
         }
@@ -336,14 +336,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 var feed = NEWSBLUR.assets.get_feed(data.new_feed_id) || NEWSBLUR.assets.get_feed(feed_id);
                 
                 if (!data || data.code < 0 || !data.new_feed_id) {
-                    var error = data.message || "There was a problem fetching the feed from this URL.";
+                    var error = data.message || "从此 URL 抓取 Feed 出错。";
                     if (feed.get('exception_code') == '404') {
-                        error = "URL gives a 404 - page not found.";
+                        error = "URL 报错 404 - 页面没有找到";
                     }
                     $error.show().html((data && data.message) || error);
                 }
                 $loading.removeClass('NB-active');
-                $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
+                $submit.removeClass('NB-disabled').attr('value', '从此网站获取 Feed');
                 this.populate_settings(data);
             }, this));
         }

@@ -56,38 +56,76 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
-                    ' Premium Account'
+                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, '付费'),
+                    ' 高级帐户'
                   ])
               ])),
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Enable every site by going premium'
+                  '付费之后你可以打开无限多的站点'
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Sites updated up to 10x more often'
+                  '网站更新速度提高 10x'
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'River of News (reading by folder)'
+                  '文件夹也支持 River of News 阅读'
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Privacy options for your blurblog'
+                  '你的 Zeitblog 可以设置为私有或受限访问'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Text view conveniently extracts the story'
-                ]),
-                $.make('li', { className: 'NB-6' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed Shiloh, my poor, hungry dog, for ',
-                  $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
-                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
+                  '全文视图可以方便地提取出完整的文章'
                 ])
+//,
+//                $.make('li', { className: 'NB-6' }, [
+//                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+//                  '喂养可怜而饥饿的小狗 Shiloh ',
+//                  $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 天'),
+//                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
+//                ])
               ]),
+
+                $.make('div', { className: 'NB-static-form NB-stripe-form' }, [
+                    $.make('label', '支付说明'),
+                    $.make('label', { className: 'payextra-label', 'for': 'payextra' }, '普通帐户免费，高级帐户收费50元每年，欢迎一次购买多年，支付200元即可终生使用。<br><br>通过付费您能够为 NewsZeit 分担一点日益增长的费用，并且能够支持我们为 NewsZeit 开发更好的功能。<br><br>支持 “支付宝” 和 “PayPal” 付款，付款时请在支付说明中写下你的帐号信息，我们会尽快为您开通。<br><br>'),
+                    $.make('label', '支付宝'),
+                    $.make('a', { href: 'https://me.alipay.com/bruceyou', target: '_blank' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/alipay.png'}),
+                    ]),
+
+                    $.make('form', { action: 'https://www.paypal.com/cgi-bin/webscr', method: 'post', target: '_top' }, [
+                        $.make('label', 'PayPal'),
+                        $.make('input', { type: 'hidden', name: 'cmd', value: '_s-xclick'}),
+                        $.make('input', { type: 'hidden', name: 'hosted_button_id', value: 'P7CJUARGHYCKU'}),
+                        $.make('table', [
+                            $.make('tr', [
+                                $.make('td', [
+                                    $.make('input', { type: 'hidden', name: 'on0', value: 'Purchase for'}, 'Purchase for'),
+                                ]),
+                            ]),
+                            $.make('tr', [
+                                $.make('td', [
+                                    $.make('select', { name: 'os0' }, [
+                                        $.make('option', { value: '1 Year'}, '1 Year $ 9.00 USD'),
+                                        $.make('option', { value: 'Forever'}, 'Forever $ 36.00 USD'),
+                                    ]),
+                                ]),
+                            ]),
+                        ]),
+                        $.make('input', { type: 'hidden', name: 'currency_code', value: 'USD'}),
+                        $.make('label', ''),
+                        $.make('input', { type: 'image', src: 'https://www.paypalobjects.com/zh_XC/C2/i/btn/btn_buynowCC_LG.gif', border: '0', name: 'submit', alt: 'PayPal——最安全便捷的在线支付方式！'}, [
+                            $.make('img', { alt: '', border: '0', src: 'https://www.paypalobjects.com/zh_XC/i/scr/pixel.gif', width: '1', height: '1'}),
+                        ]),
+                    ]),
+                ]),
+
+/*
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
                   $.make('div', { className: 'NB-feedchooser-payextra' }, [
                     $.make('input', { type: 'checkbox', name: 'payextra', id: 'NB-feedchooser-payextra-checkbox' }),
@@ -138,23 +176,23 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                         ])
                       ])
                   ])
-              ])
+              ]) */
             ]),
             (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                        $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Free'),
-                        ' Standard Account'
+                        $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, '免费'),
+                        ' 标准帐户'
                   ]),
                     $.make('h2', { className: 'NB-modal-subtitle' }, [
                         $.make('b', [
-                            'You can follow up to '+this.MAX_FEEDS+' sites.'
+                            '你最多可以打开 '+this.MAX_FEEDS+' 个站点。'
                         ]),
                         $.make('br'),
-                        'You can always change these.'
+                        '你可以随时修改。'
                     ]),
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
-                  $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity'),
+                  $.make('div', { className: 'NB-feedchooser-info-sort'}, '根据流行程度自动选择'),
                   $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Reset to popular sites')
               ]),
               this.make_feeds(),
@@ -322,13 +360,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.hide_autoselected_label();
         }
         if (approved > this.MAX_FEEDS) {
-          $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
+          $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('你选择的站点数量已超出！ 请取消选择 ' + (
             difference == 1 ?
-            '1 site...' :
-            difference + ' sites...'
+            '1 站点...' :
+            difference + ' 站点...'
           ));
         } else {
-          $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these '+ approved +' sites, please');
+          $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('请打开这 '+ approved +' 个站点');
         }
     },
     
@@ -461,13 +499,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $value.filter('.NB-'+plan).addClass('NB-selected');
         if (plan == 1) {
             $input.val(12);
-            $days.text('6 days');
+            $days.text('6 天');
         } else if (plan == 2) {
             $input.val(24);
-            $days.text('12 days');
+            $days.text('12 天');
         } else if (plan == 3) {
             $input.val(36);
-            $days.text('18 days');
+            $days.text('18 天');
         }
     },
     

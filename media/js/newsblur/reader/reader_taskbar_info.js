@@ -77,14 +77,14 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         NEWSBLUR.assets.flags['no_more_stories'] = true;
         
         if (!message || message == 'error') {
-            message = "Oh no! <br> There was an error!";
+            message = "抱歉！ <br> 发生了一个错误！";
         }
         
         if (data && data.status) {
             if (data.status == 502) {
-                message = "NewsBlur is down right now. <br> Try again soon.";
+                message = "NewsZeit 服务暂时关闭。 <br> 请稍后再试。";
             } else if (data.status == 503) {
-                message = "NewsBlur is in maintenance mode. <br> Try again soon.";
+                message = "NewsZeit 正在维护。 <br> 请稍后再试。";
                 this.show_maintenance_page();
             }
         }

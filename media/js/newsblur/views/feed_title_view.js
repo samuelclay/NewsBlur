@@ -79,9 +79,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               <div class="NB-feedbar-options-container">\
                   <span class="NB-feedbar-options">\
                       <div class="NB-icon"></div>\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                      <%= read_filter %>\
                       &middot;\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                      <%= order %>\
                   </span>\
               </div>\
           <% } %>\
@@ -91,6 +91,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="NB-feed-highlight"></div>\
         </<%= list_type %>>\
         ', {
+          read_filter         : NEWSBLUR.assets.view_setting(feed.id, "read_filter") == "all" ? "全部" : "未读",
+          order               : NEWSBLUR.assets.view_setting(feed.id, "order") == "newest" ? "最新" : "最旧",
           feed                : feed,
           type                : this.options.type,
           extra_classes       : extra_classes,

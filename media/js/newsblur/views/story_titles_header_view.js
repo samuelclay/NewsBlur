@@ -57,9 +57,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-feedbar-options-container">\
                             <span class="NB-feedbar-options">\
                                 <div class="NB-icon"></div>\
-                                <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
+                                <%= read_filter %>\
                                 &middot;\
-                                <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
+                                <%= order %>\
                             </span>\
                         </div>\
                     <% } %>\
@@ -67,6 +67,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: this.fake_folder_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
+                read_filter : NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "read_filter") == "all" ? "全部" : "未读",
+                order       : NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order") == "oldest" ? "最旧" : "最新",
                 show_options: !NEWSBLUR.reader.active_folder.get('fake')
             }));
         } else if (NEWSBLUR.reader.flags['river_view'] && 
@@ -95,12 +97,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     fake_folder_title: function() {
-        var title = "All Site Stories";
+        var title = "所有站点的文章";
         if (NEWSBLUR.reader.flags['social_view']) {
             if (NEWSBLUR.reader.flags['global_blurblogs']) {
-                title = "Global Shared Stories";
+                title = "全局分享的文章";
             } else {
-                title = "All Shared Stories";
+                title = "我关注的分享";
             }
         }
         

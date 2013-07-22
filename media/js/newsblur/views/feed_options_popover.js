@@ -52,34 +52,34 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
                 (feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
+                $.make('div', { className: 'NB-popover-section-title' }, '过滤选项'),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, 'Unread only')
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, '全部'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread' }, '未读')
                 ]),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, 'Newest first'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, 'Oldest')
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active' }, '最新在前'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest' }, '最旧在前')
                 ])
             ]),
             (feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Site Stats'),
+                $.make('div', { className: 'NB-popover-section-title' }, '站点统计'),
                 $.make('div', { className: 'NB-feedbar-options-stat NB-stat-subscribers' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize('subscriber', feed.get('num_subscribers'), true))
+                    $.make('div', { className: 'NB-stat' }, feed.get('num_subscribers') + ' 订阅者')
                 ]),
                 (feed.get('is_push') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-realtime' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Stories arrive in real-time")
+                    $.make('div', { className: 'NB-stat' }, "文章实时推送")
                 ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')
+                    $.make('div', { className: 'NB-stat' }, "最近更新 " + feed.get('updated') + ' 前')
                 ])),
                 (feed.get('min_to_decay') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-decay' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
+                    $.make('div', { className: 'NB-stat' }, "抓取间隔 " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
                 ]))
             ]))
         ]));
@@ -97,8 +97,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         $oldest.toggleClass('NB-active', order == 'oldest');
         $newest.toggleClass('NB-active', order != 'oldest');
-        $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
-        $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
+        $oldest.text('最旧' + (order == 'oldest' ? '在前' : ''));
+        $newest.text('最新' + (order != 'oldest' ? '在前' : ''));
         $unread.toggleClass('NB-active', read_filter == 'unread');
         $all.toggleClass('NB-active', read_filter != 'unread');
 

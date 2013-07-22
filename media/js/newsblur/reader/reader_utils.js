@@ -150,7 +150,7 @@ NEWSBLUR.utils = {
         var folders = model.get_folders();
         var $options = $.make('select', { className: 'NB-folders'});
         
-        var $option = $.make('option', { value: '' }, "Top Level");
+        var $option = $.make('option', { value: '' }, "顶级目录");
         $options.append($option);
 
         $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
@@ -199,13 +199,13 @@ NEWSBLUR.utils = {
         var interval_end = update_interval_minutes * 1.25;
         var interval = '';
         if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
+            interval = interval_start + ' 到 ' + interval_end + ' 分钟';
         } else {
             var interval_start_hours = parseInt(interval_start / 60, 10);
             var interval_end_hours = parseInt(interval_end / 60, 10);
             var dec_start = interval_start % 60;
             var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' 到 ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' 小时';
         }
         
         return interval;

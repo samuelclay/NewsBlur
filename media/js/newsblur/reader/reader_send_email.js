@@ -27,7 +27,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         this.autocomplete_emails();
         
         if (!NEWSBLUR.Globals.is_authenticated) {
-          this.save_callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
+          this.save_callback({'code': -1, 'message': '你必须登录之后才能通过邮件发送文章。'});
         }
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
@@ -41,7 +41,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-email NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('div', { className: 'NB-modal-error'}),
-            $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
+            $.make('h2', { className: 'NB-modal-title' }, '通过邮件发送文章'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.feed && $.make('div', { className: 'NB-modal-email-feed' }, [
                   $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
@@ -52,13 +52,13 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             ]),
             $.make('div', { className: 'NB-modal-email-to-container' }, [
               $.make('label', { 'for': 'NB-send-email-to' }, [
-                ' Recipient emails: '
+                ' 接收方邮件地址：'
               ]),
               $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: 
           ($.cookie('NB:email:to') || "") })
             ]),
             $.make('div', { className: 'NB-modal-email-explanation' }, [
-                "Add an optional comment to send with the story. The story will be sent below your comment."
+                "您可以选择添加一段评论，此评论会显示在文章的上方。"
             ]),
             $.make('div', { className: 'NB-modal-email-comments-container' }, [
                 $.make('textarea', { className: 'NB-modal-email-comments' })
@@ -66,24 +66,24 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('div', { className: 'NB-modal-email-from-container' }, [
               $.make('div', [
                 $.make('label', { 'for': 'NB-send-email-from-name' }, [
-                  ' Your name: '
+                  ' 你的姓名：'
                 ]),
                 $.make('input', { className: 'NB-input NB-modal-email-from', name: 'from_name', id: 'NB-send-email-from-name', value: this.model.preference('full_name') || NEWSBLUR.Globals.username || '' })
               ]),
               $.make('div', { style: 'margin-top: 8px' }, [
                 $.make('label', { 'for': 'NB-send-email-from-email' }, [
-                  ' Your email: '
+                  ' 你的邮箱：'
                 ]),
                 $.make('input', { className: 'NB-input NB-modal-email-from', name: 'from_email', id: 'NB-send-email-from-email', value: NEWSBLUR.Globals.email || this.model.preference('email') || '' })
               ]),
               $.make('div', { style: 'margin-top: 8px' }, [
                 $.make('label', { 'for': 'NB-send-email-cc' }, [
-                  ' CC me: '
+                  ' CC 我：'
                 ]),
                 $.make('div', { className: 'NB-modal-email-cc-wrapper' }, [
                     $.make('input', { className: 'NB-modal-email-cc', name: 'email_cc', id: 'NB-send-email-cc', type: "checkbox", checked: this.model.preference('email_cc') }),
                     $.make('label', { 'for': 'NB-send-email-cc' }, [
-                        "Yes, send me a copy of this email"
+                        "给我发送一封此邮件的拷贝"
                     ])
                 ])
               ])
@@ -91,9 +91,9 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-error' }),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Send this story' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: '发送文章' }),
+                    ' 或 ',
+                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, '在邮件客户端中打开')
                 ])
             ])
         ]);
@@ -170,7 +170,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             to,
             '?subject=',
             from_name,
-            ' is sharing a story: ',
+            ' 给您共享了一篇文章：',
             this.story.story_title,
             '&body=',
             comments,
@@ -181,7 +181,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             '%0D%0A%0D%0A',
             '--',
             '%0D%0A%0D%0A',
-            'Shared with NewsBlur.com'
+            '通过 NewsZeit.com 共享'
         ].join('');
         window.open(url);
     },

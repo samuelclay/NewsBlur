@@ -27,19 +27,19 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-admin NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'User Admin'
+                '用户管理'
             ]),
             new NEWSBLUR.Views.SocialProfileBadge({
                 model: this.user
             }),
             $.make('fieldset', [
-                $.make('legend', 'Payments')
+                $.make('legend', '付款')
             ]),
             $.make('ul', { className: 'NB-account-payments' }, [
-                $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                $.make('li', { className: 'NB-payments-loading' }, '正在载入...')
             ]),
             $.make('fieldset', [
-                $.make('legend', 'Actions')
+                $.make('legend', '动作')
             ]),
             $.make('div', { className: 'NB-admin-actions' }, [
             ])
@@ -63,18 +63,18 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 ]));
             });
             if (!data.payments.length) {
-                $history.append($.make('i', 'No payments found.'));
+                $history.append($.make('i', '无付款记录。'));
             }
             
             if (data.is_premium) {
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
-                    "User is premium, expires: ",
-                    (data.premium_expire || $.make('b', 'NEVER'))
+                    "用户是付费用户，期限是： ",
+                    (data.premium_expire || $.make('b', '无期限'))
                 ]));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
             } else {
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "升级至高级帐户"));
             }
             $(window).resize();
         }, this));
@@ -114,10 +114,10 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             e.preventDefault();
             
             NEWSBLUR.assets.upgrade_premium(self.user.get('user_id'), function() {
-                $(".NB-admin-action-upgrade").replaceWith($.make('div', 'Upgraded!'));
+                $(".NB-admin-action-upgrade").replaceWith($.make('div', '已升级！'));
                 self.fetch_payment_history();
             }, function(data) {
-                $(".NB-admin-action-upgrade").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-upgrade").replaceWith($.make('div', '错误：' + JSON.stringify(data)));
             });
         });
 

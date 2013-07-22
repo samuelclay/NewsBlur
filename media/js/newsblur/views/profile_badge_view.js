@@ -54,8 +54,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     (_.isNumber(profile.get('shared_stories_count')) && 
                      $.make('div', { className: 'NB-profile-badge-stats' }, [
                         $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
-                        'shared ',
-                        Inflector.pluralize('story', profile.get('shared_stories_count')),
+                        '文章分享',
                         ' &middot; ',
                         $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', '')),
                         (this.model.get('following_you') && $.make('span', [
@@ -77,32 +76,32 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 $.make('div', { 
                     className: 'NB-profile-badge-action-approve NB-modal-submit-button NB-modal-submit-green' 
                 }, [
-                    $.make('span', 'Approve')
+                    $.make('span', '批准')
                 ]),
                 $.make('div', { 
                     className: 'NB-profile-badge-action-ignore NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Ignore')
+                }, '忽略')
             ]);            
         } else if (NEWSBLUR.reader.model.user_profile.get('user_id') == profile.get('user_id')) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
                 $.make('div', { 
                     className: 'NB-profile-badge-action-self NB-modal-submit-button' 
-                }, 'You'),
+                }, '我'),
                 (this.options.show_edit_button && $.make('div', { 
                     className: 'NB-profile-badge-action-edit NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Edit Profile'))
+                }, '编辑个人档案'))
             ]);
         } else if (profile.get('followed_by_you')) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey' 
-            }, 'Following');
+            }, '正在关注');
         } else if (profile.get('requested_follow')) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey' 
             }, [
-                $.make('span', 'Requested')
+                $.make('span', '已请求')
             ]);
         } else if (profile.get('protected')) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
@@ -110,24 +109,24 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     className: 'NB-profile-badge-action-follow NB-profile-badge-action-protected-follow NB-modal-submit-button NB-modal-submit-green' 
                 }, [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                    $.make('span', 'Follow')
+                    $.make('span', '关注')
                 ]),
                 (!profile.get('private') && $.make('div', { 
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview'))
+                }, '预览'))
             ]);            
         } else {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
                 $.make('div', { 
                     className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
                 }, [
-                    $.make('span', 'Follow')
+                    $.make('span', '关注')
                 ]),
                 $.make('div', { 
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview')
+                }, '预览')
             ]);
         }
         this.$('.NB-profile-badge-actions').append($actions);

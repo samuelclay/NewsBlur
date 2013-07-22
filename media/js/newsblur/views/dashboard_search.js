@@ -49,7 +49,7 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                     className: 'NB-friends-search-badges-empty' 
                 }, [
                     $.make('div', { className: 'NB-raquo' }, '&raquo;'),
-                    'Sorry, nothing matches "'+query+'".'
+                    '抱歉，没有找到匹配 "'+query+'" 的结果。'
                 ]));
                 return;
             }            
@@ -87,7 +87,7 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                     className: 'NB-friends-search-badges-empty' 
                 }, [
                     $.make('div', { className: 'NB-raquo' }, '&raquo;'),
-                    'Sorry, nobody matches "'+query+'".'
+                    '抱歉，没有找到 "'+query+'" 相关的人。'
                 ]));
                 return;
             }

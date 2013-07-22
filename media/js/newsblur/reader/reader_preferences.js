@@ -35,15 +35,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, 'Keyboard')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, '一般'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, '站点'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, '文章'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, '快捷键')
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Preferences',
+                '首选项',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
@@ -146,9 +146,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Timezone'
+                            '时区'
                         ])
                     ]),
+/*
                     $.make('div', { className: 'NB-preference NB-preference-ssl' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -168,18 +169,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label'}, [
                             'SSL'
                         ])
-                    ]),
+                    ]),*/
                     $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showunreadcountsintitle-1', type: 'checkbox', name: 'title_counts', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showunreadcountsintitle-1' }, [
-                                    'Show unread counts in the window title'
+                                    '在窗口标题显示未读文章数'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Window title'
+                            '浏览器窗口标题'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-animations' }, [
@@ -188,19 +189,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-animations-1', type: 'radio', name: 'animations', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-animations-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/arrow_in.png' }),
-                                    'Show all animations'
+                                    '显示所有动画效果'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-animations-2', type: 'radio', name: 'animations', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-animations-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/arrow_right.png' }),
-                                    'Jump immediately with no animations'
+                                    '立即跳转不显示任何动画'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Animations'
+                            '动画'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-feedorder' }, [
@@ -209,19 +210,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-feedorder-1', type: 'radio', name: 'feed_order', value: 'ALPHABETICAL' }),
                                 $.make('label', { 'for': 'NB-preference-feedorder-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/pilcrow.png' }),
-                                    'Alphabetical'
+                                    '按字母顺序'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-feedorder-2', type: 'radio', name: 'feed_order', value: 'MOSTUSED' }),
                                 $.make('label', { 'for': 'NB-preference-feedorder-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/report_user.png' }),
-                                    'Most used at top, then alphabetical'
+                                    '使用最多的排在上面，优先于字母顺序'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Site sidebar order'
+                            '侧边栏站点顺序'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-folder-counts' }, [
@@ -229,18 +230,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-folder-counts-1', type: 'radio', name: 'folder_counts', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-folder-counts-1' }, [
-                                    'Only show counts on collapsed folders'
+                                    '只在折叠状态的文件夹显示未读文章数'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-folder-counts-2', type: 'radio', name: 'folder_counts', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-folder-counts-2' }, [
-                                    'Always show unread counts on folders'
+                                    '总是在文件夹显示未读文章数'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Folder unread counts'
+                            '文件夹未读文章数'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-tooltips' }, [
@@ -248,21 +249,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-tooltips-1', type: 'radio', name: 'show_tooltips', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-tooltips-1' }, [
-                                    'Show tooltips'
+                                    '显示工具提示'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-tooltips-2', type: 'radio', name: 'show_tooltips', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-tooltips-2' }, [
-                                    'Don\'t bother showing tooltips'
+                                    '不要显示'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Tooltips',
+                            '工具提示',
                             $.make('div', { className: 'tipsy tipsy-n' }, [
                                 $.make('div', { className: 'tipsy-arrow' }),
-                                $.make('div', { className: 'tipsy-inner' }, 'Tooltips like this')
+                                $.make('div', { className: 'tipsy-inner' }, '类似这样的工具提示')
                             ]).css({
                                 'display': 'block',
                                 'top': 24,
@@ -275,28 +276,28 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-contextmenus-1', type: 'radio', name: 'show_contextmenus', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-contextmenus-1' }, [
-                                    'Open the feed and story title menu'
+                                    '打开文件夹、Feed 和文章的菜单'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-contextmenus-2', type: 'radio', name: 'show_contextmenus', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-contextmenus-2' }, [
-                                    'Use the native browser context menu'
+                                    '使用浏览器原生的右键菜单'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Right-clicking',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                            '右键点击',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '文件夹、Feed 和文章的标题')
                         ])
                     ]),                    
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, '下载 OPML')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Backup your sites',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                            '备份你的站点',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '下载此 XML 文件作为备份')
                         ])
                     ])
                 ]),
@@ -323,24 +324,24 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Default view',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
+                            '默认视图',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '你可以为每个站点分别设置而覆盖此选项。')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-view-setting' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'segmented-control NB-preference-view-setting-order' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, 'Newest first'),
-                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, 'Oldest')
+                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, '最新文章在前'),
+                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, '最旧文章在前')
                             ]),
                             $.make('ul', { className: 'segmented-control NB-preference-view-setting-read-filter' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, 'All stories'),
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, 'Unread only')
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, '所有文章'),
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, '未读文章')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Default story order',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.')
+                            '默认文章顺序',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '你可以为每个站点分别设置而覆盖此选项。')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
@@ -349,19 +350,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-singlestory-1', type: 'radio', name: 'feed_view_single_story', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-singlestory-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_linespacing.png' }),
-                                    'Show all stories'
+                                    '显示所有文章'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-singlestory-2', type: 'radio', name: 'feed_view_single_story', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-singlestory-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_horizontalrule.png' }),
-                                    'Show a single story at a time'
+                                    '一次显示一篇文章'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view'
+                            'Feed 视图'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-pane-position' }, [
@@ -370,26 +371,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-story-pane-position-1', type: 'radio', name: 'story_pane_anchor', value: 'north' }),
                                 $.make('label', { 'for': 'NB-preference-story-pane-position-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_top.png' }),
-                                    'Top'
+                                    '上方'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-pane-position-2', type: 'radio', name: 'story_pane_anchor', value: 'west' }),
                                 $.make('label', { 'for': 'NB-preference-story-pane-position-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_left.png' }),
-                                    'Left'
+                                    '左侧'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-pane-position-3', type: 'radio', name: 'story_pane_anchor', value: 'south' }),
                                 $.make('label', { 'for': 'NB-preference-story-pane-position-3' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_bottom.png' }),
-                                    'Bottom'
+                                    '下方'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Story titles pane'
+                            '文章标题窗格'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
@@ -397,18 +398,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-1' }, [
-                                    'Open the first story'
+                                    '打开第一篇文章'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0, checked: true }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-0' }, [
-                                    'Show all stories'
+                                    '显示所有文章'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'When opening a site'
+                            '当打开一个站点时'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
@@ -416,13 +417,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-1', type: 'radio', name: 'read_story_delay', value: '0' }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-1' }, [
-                                    'Immediately'
+                                    '立即'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-2', type: 'radio', name: 'read_story_delay', value: '1' }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
-                                    'After ',
+                                    '延迟 ',
                                     $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
                                     $.make('span', { className: 'NB-tangle-seconds' }, ' second.')
                                 ])
@@ -430,7 +431,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
-                                    'Manually by hitting ',
+                                    '通过键盘快捷键 ',
                                     $.make('div', { className: 'NB-keyboard-shortcut-key', 
                                                     style: 'display: inline; float: none;margin: 0 4px' }, [
                                         'u'
@@ -444,8 +445,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Mark a story as read',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Clicking on a story marks it as read immediately.')
+                            '标记一篇文章为已读',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '点击一篇文章后立即标记其为已读。')
                         ])
                     ])
 
@@ -531,7 +532,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Sharing services'
+                            '分享服务'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-window' }, [
@@ -540,19 +541,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-window-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_view_gallery.png' }),
-                                    'In this window'
+                                    '在此标签页'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-window-2', type: 'radio', name: 'new_window', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-window-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_side_expand.png' }),
-                                    'In a new window'
+                                    '打开新标签页'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Open links'
+                            '打开链接'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
@@ -561,22 +562,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_modified.png' }),
-                                    'Show ',
-                                    $.make('del', 'changes'),
-                                    ' ',
-                                    $.make('ins', 'revisions'),
-                                    ' in stories'
+                                    '在文章中显示 ',
+                                    $.make('del', '变更'),
+                                    ' 和 ',
+                                    $.make('ins', '修订')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-hidestorychanges-2', type: 'radio', name: 'hide_story_changes', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-hidestorychanges-2' }, [
-                                    'Hide changes and only show the final story'
+                                    '隐藏所有变更记录只显示最终版本'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Story changes'
+                            '文章的变更记录'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
@@ -584,24 +584,24 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-1', type: 'radio', name: 'truncate_story', value: 'social' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-1' }, [
-                                    'Only truncate long shared stories in blurblogs'
+                                    '只在 Zeitblog 里截短长文章'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-2', type: 'radio', name: 'truncate_story', value: 'all' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-2' }, [
-                                    'Force all tall stories to have a max height'
+                                    '使所有的文章都不超过一个最大长度'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-3', type: 'radio', name: 'truncate_story', value: 'none' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-3' }, [
-                                    'Show the entire story, even if really, really long'
+                                    '显示完整的文章，即使很长很长'
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Truncate stories'
+                            '截短文章'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
@@ -616,57 +616,57 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view font family'
+                            'Feed 视图的字体'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-size' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-size-1', type: 'radio', name: 'story_size', value: 'xs' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-1', className: 'NB-preference-story-size-xs' }, 'Extra small')
+                                $.make('label', { 'for': 'NB-preference-story-size-1', className: 'NB-preference-story-size-xs' }, '超小')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-size-2', type: 'radio', name: 'story_size', value: 's' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-2', className: 'NB-preference-story-size-s' }, 'Small')
+                                $.make('label', { 'for': 'NB-preference-story-size-2', className: 'NB-preference-story-size-s' }, '小')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-size-3', type: 'radio', name: 'story_size', value: 'm' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-3', className: 'NB-preference-story-size-m' }, 'Medium')
+                                $.make('label', { 'for': 'NB-preference-story-size-3', className: 'NB-preference-story-size-m' }, '中')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-size-4', type: 'radio', name: 'story_size', value: 'l' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-4', className: 'NB-preference-story-size-l' }, 'Large')
+                                $.make('label', { 'for': 'NB-preference-story-size-4', className: 'NB-preference-story-size-l' }, '大')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-size-5', type: 'radio', name: 'story_size', value: 'xl' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-5', className: 'NB-preference-story-size-xl' }, 'Extra large')
+                                $.make('label', { 'for': 'NB-preference-story-size-5', className: 'NB-preference-story-size-xl' }, '超大')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view text size'
+                            'Feed 视图的文字大小'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, 'Show from both friends and the public')
+                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, '同时显示好友的评论和其他公开的评论')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, 'Only show comments from friends')
+                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, '只显示来自好友的评论')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Show all comments'
+                            '显示所有评论'
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' }, [
-                        'You must have a ',
-                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
-                        ' to change keyboard shortcuts.'
+                        '你必须拥有 ',
+                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, '高级帐户'),
+                        ' 才能自定义键盘快捷键。'
                     ])),
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
@@ -678,7 +678,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'view',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, 'Switch between views (original, feed, text, story)')
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, '在视图之间切换 (原始站点、Feed、全文、原文)')
                             ]),
                             $.make('div', [
                                 $.make('input', { 
@@ -688,7 +688,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'site',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, 'Open the next site/folder')
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, '打开下一个站点/文件夹')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -710,7 +710,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'story',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, 'Navigate between stories')
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, '在文章之间切换')
                             ]),
                             $.make('div', [
                                 $.make('input', { 
@@ -721,7 +721,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
                                 $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, [
-                                    'Scroll up/down in story by ',
+                                    '上下滚动文章 ',
                                     $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
                                     $.make('span', { className: 'NB-tangle-arrowscrollspacing' }, '100'),
                                     'px.',
@@ -741,11 +741,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-spacebar' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                'Page down by ',
+                                '向下翻页 ',
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
                                 ' ',
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing' }, '40%'),
-                                ' of the screen',
+                                ' 的屏幕高度',
                                 $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
                             ])
                         ]),
@@ -758,7 +758,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
-                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...')
+                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, '修改上面的配置...')
             ])
         ]);
     },
@@ -1134,11 +1134,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
     
     enable_save: function() {
-        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text('Save Preferences');
+        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text('保存首选项');
     },
     
     disable_save: function() {
-        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text('Make changes above...');
+        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text('修改上面的配置...');
     }
     
 });

@@ -35,47 +35,47 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile-editor' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, 'Profile'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, 'Blurblog')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, '档案'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, 'Zeitblog')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Profile',
+                '个人档案',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-tab NB-tab-profile NB-active' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Preview'),
+                    $.make('legend', '预览'),
                     $.make('div', { className: 'NB-modal-section NB-friends-findfriends-profile' })
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Profile picture'),
+                    $.make('legend', '头像'),
                     $.make('div', { className: 'NB-modal-section NB-friends-profilephoto'})
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Profile Details'),
+                    $.make('legend', '详细'),
                     $.make('div', { className: 'NB-modal-section NB-friends-profile'}, [
                         $.make('form', [
-                            $.make('label', 'Username'),
+                            $.make('label', '用户名'),
                             $.make('div', { className: 'NB-profile-username' }, [
                                 NEWSBLUR.Globals.username,
-                                $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, 'Change')
+                                $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, '修改')
                             ]),
-                            $.make('label', { 'for': 'NB-profile-location' }, 'Location'),
+                            $.make('label', { 'for': 'NB-profile-location' }, '位置'),
                             $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 300px', value: this.profile.get('location'), "data-max": 40 }),
                             $.make('span', { className: 'NB-count NB-count-location' }),
-                            $.make('label', { 'for': 'NB-profile-website' }, 'Website'),
+                            $.make('label', { 'for': 'NB-profile-website' }, '网站'),
                             $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 410px', value: this.profile.get('website'), "data-max": 200 }),
                             $.make('span', { className: 'NB-count NB-count-website' }),
-                            $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
+                            $.make('label', { 'for': 'NB-profile-bio' }, '个人简介'),
                             $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 520px', value: this.profile.get('bio'), "data-max": 160 }),
                             $.make('span', { className: 'NB-count NB-count-bio' }),
                             $.make('label', { 'for': 'NB-profile-privacy-public' }, [
-                                'Privacy',
+                                '隐私',
                                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
-                                    'You must have a ',
-                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
-                                    ' to change privacy.'
+                                    '必须升级到 ',
+                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, '高级帐户 account'),
+                                    ' 才能修改隐私选项。'
                                 ]))
                             ]),
                             $.make('div', { className: 'NB-profile-privacy-options' }, [
@@ -90,8 +90,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-public', className: 'NB-profile-protected-label' }, [
-                                        $.make('b', 'Public:'),
-                                        $.make('span', 'My shared stories are public and anybody can reply to me')
+                                        $.make('b', '公开：'),
+                                        $.make('span', '我共享的文章是公开的，所有人都可以查看并回复')
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
@@ -106,8 +106,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-protected', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                                        $.make('b', 'Protected:'),
-                                        $.make('span', 'My shared stories are public but only people I approve can reply')
+                                        $.make('b', '受限访问：'),
+                                        $.make('span', '我共享的文章是公开的，但只有经过我允许的人才能回复')
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
@@ -122,35 +122,35 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-private', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                                        $.make('b', 'Private:'),
-                                        $.make('span', 'Only people I approve can see my shared stories and reply to me')
+                                        $.make('b', '私有：'),
+                                        $.make('span', '只有经过我允许的人才能查看和回复')
                                     ])
                                 ])
                             ])
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, '修改你的个人档案')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Your Blurblog'),
+                    $.make('legend', '你的 Zeitblog'),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-preview' }, [
-                        $.make('label', { 'for': 'NB-profile-blurblog-address' }, 'Blurblog address'),
+                        $.make('label', { 'for': 'NB-profile-blurblog-address' }, 'Zeitblog 地址'),
                         $.make('a', { href: this.profile.get('feed_link'), target: '_blank', className: 'NB-profile-blurblog-address NB-splash-link' }, this.profile.get('feed_link')),
-                        $.make('label', { 'for': 'NB-profile-blurblog-title' }, 'Blurblog title'),
+                        $.make('label', { 'for': 'NB-profile-blurblog-title' }, 'Zeitblog 标题'),
                         $.make('input', { type: 'text', id: 'NB-profile-blurblog-title', name: 'blurblog_title', value: this.profile.get('feed_title'), className: 'NB-input' }),
-                        $.make('label', 'Background color'),
+                        $.make('label', '背景颜色'),
                         this.make_color_palette()
                     ])
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Custom CSS for your Blurblog'),
+                    $.make('legend', '为你的 Zeitblog 定制 CSS'),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'}, [
                         $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' }, this.profile.get('custom_css'))
                     ])
                 ]),
-                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, '修改你的 Zeitblog 设置')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
@@ -241,7 +241,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 ]),
                 (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
                     $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data' }, [
-                        $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, 'upload picture'),
+                        $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, '上传图片'),
                         $.make('input', { type: 'file', name: 'photo', id: "NB-photo-upload-file", className: 'NB-photo-upload-file' })
                     ])
                 ])),
@@ -249,7 +249,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
                 ])),
                 (_.contains(['facebook', 'twitter'], service) && $.make('div', { className: 'NB-friends-link' }, [
-                    $.make('div', { className: 'NB-splash-link' }, 'connect')
+                    $.make('div', { className: 'NB-splash-link' }, '连接')
                 ]))
             ]);
             if (service == this.profile.get('photo_service') ||
@@ -374,7 +374,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             $('input[name=website]', this.$modal).val(this.profile.get('website'));
         }, this));
         this.disable_save_profile();
-        $('.NB-profile-save-button', this.$modal).text('Saving...');
+        $('.NB-profile-save-button', this.$modal).text('正在保存...');
     },
     
     save_blurblog: function() {
@@ -387,7 +387,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             this.disable_save_blurblog();
         }, this));
         this.disable_save_blurblog();
-        $('.NB-blurblog-save-button', this.$modal).text('Saving...');
+        $('.NB-blurblog-save-button', this.$modal).text('正在保存...');
     },
     
     animate_profile_badge: function($badge) {
@@ -565,7 +565,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         var $error = $('.NB-photo-upload-error', this.$modal);
         
         $loading.removeClass('NB-active');
-        $error.text("There was a problem uploading your photo.");
+        $error.text("上传图片出错。");
         $error.slideDown(300);
     },
     
@@ -578,25 +578,25 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     enable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
             .removeClass('NB-disabled')
-            .text('Save My Profile');
+            .text('保存我的个人档案');
     },
     
     enable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
             .removeClass('NB-disabled')
-            .text('Save My Blurblog Settings');
+            .text('保存我的 Zeitblog 设置');
     },
     
     disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Change what you like above...');
+            .text('修改上面的信息...');
     },
     
     disable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Change what you like above...');
+            .text('修改上面的信息...');
     }
     
 });

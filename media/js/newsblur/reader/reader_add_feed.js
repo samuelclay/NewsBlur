@@ -56,7 +56,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                     $.make('h3', { className: 'NB-module-content-header' }, [
-                        'Add a new site'
+                        '添加订阅'
                     ]),
                     $.make('div', [
                         $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-input NB-add-url', name: 'url', value: self.options.url })
@@ -64,13 +64,13 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-group NB-add-site' }, [
                         NEWSBLUR.utils.make_folders(this.model, this.options.folder_title),
                         $.make('div', { className: 'NB-add-folder-icon' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-url-submit' }, 'Add site'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-url-submit' }, '添加站点'),
                         $.make('div', { className: 'NB-loading' })
                     ]),
                     $.make('div', { className: "NB-add-folder NB-hidden" }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-folder-submit' }, 'Add folder'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-folder-submit' }, '添加文件夹'),
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "New folder name..." })
+                        $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "新文件夹名..." })
                     ]),
                     $.make('div', { className: 'NB-group NB-error' }, [
                         $.make('div', { className: 'NB-error-message' })
@@ -78,16 +78,16 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-anonymous-ok NB-modal-submit NB-hidden' }, [
                     $.make('h5', [
-                        'Import feeds'
+                        '导入订阅'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', { className: 'NB-add-import-button NB-modal-submit-green NB-modal-submit-button' }, [
-                            'Import from Google Reader or upload OPML',
+                            '从 Google Reader 导入或上传 OPML 文件',
                             $.make('img', { className: 'NB-add-google-reader-arrow', src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/arrow_right.png' })
                         ]),
                         $.make('div', { className: 'NB-add-danger' }, (NEWSBLUR.Globals.is_authenticated && _.size(this.model.feeds) > 0 && [
                             $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
-                            'This will erase all existing feeds and folders.'
+                            '这将覆盖所有已存在的订阅和文件夹。'
                         ]))
                     ])
                 ])
@@ -215,7 +215,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             
         $error.slideUp(300);
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').text('Adding...');
+        $submit.addClass('NB-disabled').text('正在添加...');
         
         this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this), $.rescope(this.error, this));
     },
@@ -234,7 +234,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             });
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
-            $submit.text('Added!');
+            $submit.text('已添加!');
             this.close();
             this.model.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
@@ -247,9 +247,9 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
     error: function(data) {
         var $submit = this.$('.NB-add-url-submit');
         var $error = this.$('.NB-error');
-        $(".NB-error-message", $error).text(data.message || "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened.");
+        $(".NB-error-message", $error).text(data.message || "抱歉，抓取此 URL 时发生了未知错误。");
         $error.slideDown(300);
-        $submit.text('Add Site');
+        $submit.text('添加订阅');
     },
     
     open_add_folder: function() {
@@ -277,7 +277,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             
         $error.slideUp(300);
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').text('Adding...');
+        $submit.addClass('NB-disabled').text('正在添加...');
 
         this.model.save_add_folder(folder, parent_folder, $.rescope(this.post_save_add_folder, this));
     },
@@ -291,19 +291,19 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            $submit.text('Added!');
+            $submit.text('已添加!');
             NEWSBLUR.assets.load_feeds(_.bind(function() {
                 var $folders = NEWSBLUR.utils.make_folders(this.model, $folder.val());
                 this.$(".NB-folders").replaceWith($folders);
                 this.open_add_folder();
-                $submit.text('Add Folder');
+                $submit.text('添加文件夹');
                 $folder.val('');
                 this.$('.NB-add-url').focus();
             }, this));
         } else {
             $(".NB-error-message", $error).text(data.message);
             $error.slideDown(300);
-            $submit.text('Add Folder');
+            $submit.text('添加文件夹');
         }
     }
     

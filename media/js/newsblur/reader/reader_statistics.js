@@ -37,12 +37,12 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 this.make_feed_chooser()
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
+            $.make('h2', { className: 'NB-modal-title' }, '统计信息 &amp; 历史记录'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, this.feed.get('num_subscribers') + '订阅者')
                 ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
@@ -100,24 +100,24 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-label' }, 'Last Update'),
-                $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
+                $.make('div', { className: 'NB-statistics-label' }, '最近一次更新'),
+                $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' 前')))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
                     $.make('div', { className: 'NB-statistics-label' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/realtime_spinner.gif', className: 'NB-statisics-realtime-spinner' }),
-                        'Real-time'
+                        '实时'
                     ]),
                     $.make('div', { className: 'NB-statistics-count' }, 'Supplemented by checks every ' + update_interval)
                 ])),
                 (!data['push'] && $.make('div', [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Every'),
+                    $.make('div', { className: 'NB-statistics-label' }, '更新间隔'),
                     $.make('div', { className: 'NB-statistics-count' }, update_interval)
                 ]))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
+                $.make('div', { className: 'NB-statistics-label' }, '下一次更新'),
                 (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
                 (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
@@ -135,18 +135,18 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
                     $.make('div', { className: 'NB-statistics-label' }, [
-                        'If you went ',
-                        $.make('a', { href: '#', className: 'NB-premium-link NB-splash-link' }, 'premium'),
+                        '如果你升级到 ',
+                        $.make('a', { href: '#', className: 'NB-premium-link NB-splash-link' }, '高级帐户'),
                         ', ',
                         $.make('br'),
-                        'this site would update every'
+                        '此站点将会以下面的时间间隔更新'
                     ]),
                     $.make('div', { className: 'NB-statistics-count' }, premium_update_interval),
                     (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
                         $.make('div', { className: 'NB-statistics-label' }, [
-                            'but it wouldn\'t matter because',
+                            '但这并不重要，因为',
                             $.make('br'),
-                            'this site is already in real-time'
+                            '此站点已经是实时更新了'
                         ])
                     ]))
                   ])
@@ -154,7 +154,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')
+                    $.make('div', { className: 'NB-statistics-label' }, '每月文章数量')
                 ]),
                 $.make('canvas', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ]),
@@ -166,17 +166,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             ])),
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Fetch'),
+                    $.make('div', { className: 'NB-statistics-label' }, 'Feed 抓取'),
                     $.make('div', this.make_history(data, 'feed_fetch'))
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Page Fetch'),
+                    $.make('div', { className: 'NB-statistics-label' }, '页面 抓取'),
                     $.make('div', this.make_history(data, 'page_fetch'))
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Push'),
+                    $.make('div', { className: 'NB-statistics-label' }, 'Feed 推送'),
                     $.make('div', this.make_history(data, 'feed_push')),
-                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires-label' }, 'Push Expires'),
+                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires-label' }, '推送超时'),
                     $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires' })
                 ])
             ]))
@@ -240,7 +240,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $history;
         
         if (!fetches || !fetches.length) {
-            $history = $.make('div', { className: 'NB-history-empty' }, "Nothing recorded.");
+            $history = $.make('div', { className: 'NB-history-empty' }, "暂无记录。");
         } else {
             $history = _.map(fetches, function(fetch) {
                 var feed_ok = _.contains([200, 304], fetch.status_code) || !fetch.status_code;

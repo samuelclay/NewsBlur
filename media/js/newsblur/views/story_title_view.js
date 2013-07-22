@@ -219,7 +219,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
         
         if (this.model.get('starred')) {
-            $star.attr({'title': 'Saved!'});
+            $star.attr({'title': '已收藏!'});
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
@@ -248,7 +248,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.$st.one('mouseout', _.bind(function() {
                 this.$st.removeClass('NB-unstarred');
             }, this));
-            $star.attr({'title': 'Removed'});
+            $star.attr({'title': '已取消收藏'});
         
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',

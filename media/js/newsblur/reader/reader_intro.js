@@ -49,7 +49,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('span', { className: 'NB-modal-loading NB-spinner'})
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
-                'Welcome to NewsBlur',
+                '欢迎来到 NewsZeit',
                 $.make('div', { className: 'NB-divider' })
             ]),
             $.make('img', { className: 'NB-intro-spinning-logo', src: NEWSBLUR.Globals.MEDIA_URL + 'img/logo_512.png' }),
@@ -59,19 +59,19 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-page NB-page-2' }, [
                 $.make('div', { className: 'NB-intro-imports NB-intro-imports-start'}, [
                     $.make('div', { className: 'NB-page-2-started' }, [
-                        $.make('h4', "Let's get some sites to read."),
+                        $.make('h4', "添加一些站点来阅读。"),
                         $.make('div', { className: 'NB-intro-import-starred-message' })
                     ]),
                     $.make('div', { className: 'NB-intro-module-containers' }, [
                         $.make('div', { className: 'NB-intro-module-container NB-left' }, [
-                            $.make('h3', { className: 'NB-module-content-header' }, 'Choose categories'),
+                            $.make('h3', { className: 'NB-module-content-header' }, '选择类别'),
                             $.make('div', { className: 'NB-intro-module NB-intro-categories-container' }, [
                                 $.make('div', { className: "NB-intro-categories-loader" }),
                                 $.make('div', { className: "NB-intro-categories" })
                             ])
                         ]),
                         $.make('div', { className: 'NB-intro-module-container NB-right' }, [
-                            $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
+                            $.make('h3', { className: 'NB-module-content-header' }, '上传'),
                             $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
                                 $.make('div', { className: 'NB-carousel'}, [
                                     $.make('div', { className: 'NB-carousel-inner NB-intro-imports' }, [
@@ -79,29 +79,29 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                             $.make('h3', 'OPML'),
                                             $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                                 $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
-                                                    'Upload OPML File',
+                                                    '上传 OPML 文件',
                                                     $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
                                                 ])
                                             ])
                                         ]),
                                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-progress' }, [
-                                            $.make('div', { className: 'NB-page-2-importing' }, "Importing your sites..."),
+                                            $.make('div', { className: 'NB-page-2-importing' }, "正在导入你的站点..."),
                                             $.make('div', { className: 'NB-loading' })
                                         ]),
                                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-sites' }, [
                                             $.make('h6', { className: 'NB-intro-import-message' }),
                                             $.make('div', { className: 'NB-intro-import-delayed' }, [
-                                                'There are too many sites and stories to process. ',
-                                                'You will be emailed within a minute or three.'
+                                                '有很多站点和文章需要处理。',
+                                                '完成之后您将在几分钟之内收到一封邮件。'
                                             ]),
                                             $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
-                                                '&laquo; Re-upload your sites'
+                                                '&laquo; 返回重新导入你的站点'
                                             ]),
                                             $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
-                                                $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
+                                                $.make('h3', { className: 'NB-module-content-header' }, '安装书签小程序'),
                                                 $.make('div', { className: 'NB-intro-import NB-intro-module' }, [
                                                     NEWSBLUR.generate_bookmarklet(),
-                                                    $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Drag this bookmarklet into your bookmarks bar')
+                                                    $.make('div', { className: 'NB-intro-bookmarklet-info' }, '您可以拖拽此书签小程序到你的书签工具栏或书签菜单')
                                                 ])
                                             ])
                                         ])
@@ -110,9 +110,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-intro-starredimport NB-intro-module-container NB-right' }, [
-                            $.make('h3', { className: 'NB-module-content-header' }, 'Google Reader Starred Stories'),
+                            $.make('h3', { className: 'NB-module-content-header' }, 'Google Reader 上加星标的文章'),
                             $.make('div', { className: 'NB-intro-import-starred NB-intro-module' }, [
-                                $.make('a', { className: 'NB-intro-starredimport-info NB-splash-link', href: "https://www.google.com/takeout/#custom:reader", target: "_blank" }, 'Download from Takeout'),
+                                $.make('a', { className: 'NB-intro-starredimport-info NB-splash-link', href: "https://www.google.com/takeout/#custom:reader", target: "_blank" }, '通过 Takeout 下载'),
                                 $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-starredimport-button NB-disabled' }, 'Upload starred.json')
                             ])
                         ])
@@ -120,12 +120,13 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
-                $.make('h4', { className: 'NB-page-3-started' }, "Connect with friends"),
+                $.make('h4', { className: 'NB-page-3-started' }, "和朋友连接"),
                 $.make('div', { className: 'NB-intro-services' })
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
-                $.make('h4', { className: 'NB-page-4-started' }, "Keep up-to-date with NewsBlur"),
+                $.make('h4', { className: 'NB-page-4-started' }, "关注 NewsZeit 的最新动态"),
                 $.make('table', { className: 'NB-intro-follows', cellpadding: 0, cellspacing: 0 }, [
+/*
                     $.make('tr', [
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
@@ -143,37 +144,37 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             ]),
                             $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=newsblur", width: 260, height: 20 })
                         ])
-                    ]),
+                    ]),*/
                     $.make('tr', { className: 'NB-intro-uptodate-subscribe' }, [
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
                             $.make('div', [
                                 $.make('img', { src: '/media/img/favicon.png' }),
-                                'Popular Shared Stories'
+                                '流行的文章'
                             ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-popular NB-modal-submit-green NB-modal-submit-button' }, [
-                                'Subscribe'
+                                '订阅'
                             ]),
-                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
+                            $.make('div', { className: 'NB-subscribed' }, "已订阅")
                         ]),
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
                             $.make('div', [
                                 $.make('img', { src: '/media/img/favicon.png' }),
-                                'The NewsBlur Blog'
+                                'NewsZeit 的博客'
                             ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-blog NB-modal-submit-green NB-modal-submit-button' }, [
-                                'Subscribe'
+                                '订阅'
                             ]),
-                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
+                            $.make('div', { className: 'NB-subscribed' }, "已订阅")
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-intro-section' }, [
-                    "You're ready to go! Hope you enjoy NewsBlur."
+                    "你已经准备好了！希望你能够喜欢 NewsZeit。"
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
-                $.make('span', { className: 'NB-tutorial-next-page-text' }, "Let's Get Started "),
+                $.make('span', { className: 'NB-tutorial-next-page-text' }, "让我们开始 "),
                 $.make('span', { className: 'NB-raquo' }, '&raquo;')
               ])
             ])
@@ -286,7 +287,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
                         ]),
                         $.make('div', { className: 'NB-friends-service-connected' }, [
-                            'Connected'
+                            '已连接'
                         ])
                     ])
                 ]);
@@ -301,7 +302,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
                         ]),
                         $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
-                            (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
+                            (syncing ? '获取中...' : '找到 ' + _.string.capitalize(service) + ' 好友')
                         ])
                     ])
                 ]);
@@ -311,15 +312,15 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
        
         var $autofollow = $.make('div', { className: 'NB-friends-autofollow'}, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
-            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, 'and auto-follow them')
+            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, '并自动关注他们')
         ]);
         $services.prepend($autofollow);
         
         if (!this.services.twitter.twitter_uid || !this.services.facebook.facebook_uid) {
              var $note = $.make('div', { className: 'NB-note'}, [
-                'Feel comfortable connecting to these services.',
+                '你可以放心地连接到这些服务。',
                 $.make('br'),
-                'Nothing happens without your permission.'
+                '未经你允许的情况下不会对你的帐户做出任何改变。'
             ]);
             $services.append($note);
         }
@@ -333,7 +334,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $stats.append($stat);
             }, this));
             $services.append($stats);
-            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text('下一步 ');
         }
 
         if (service_syncing) {
@@ -420,7 +421,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       this.page_number = page_number;
       
       if (page_number == page_count) {
-        $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
+        $('.NB-tutorial-next-page-text', this.$modal).text('全部完成 ');
       } else if (page_number > page_count) {
           NEWSBLUR.reader.check_hide_getting_started();
           this.close(_.bind(function() {
@@ -431,16 +432,16 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           }, this));
           return;
       } else if (page_number == 1) {
-        $('.NB-tutorial-next-page-text', this.$modal).text("Let's Get Started ");
+        $('.NB-tutorial-next-page-text', this.$modal).text("让我们开始 ");
       } else {
-        $('.NB-tutorial-next-page-text', this.$modal).text('Skip this step ');
+        $('.NB-tutorial-next-page-text', this.$modal).text('跳过此步骤 ');
       }
       $('.NB-page', this.$modal).css({'display': 'none'});
       $('.NB-page-'+this.page_number, this.$modal).css({'display': 'block'});
       $('.NB-modal-page-text', this.$modal).html($.make('div', [
-        'Step ',
+        '步骤 ',
         $.make('b', this.page_number),
-        ' of ',
+        ' / ',
         $.make('b', page_count)
       ]));
       if (page_number > 1) {
@@ -471,7 +472,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (page >= 2) {
             NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
-            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text('下一步 ');
         }
         
         $carousel.animate({'left': (-1 * page * 100) + '%'}, {
@@ -489,19 +490,19 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         
         if (feed_count) {
             $(".NB-page-2-started h4", this.$modal).text([
-                'You are subscribed to ',
+                '你订阅了 ',
                 (options.fake_count && 'at least '),
-                Inflector.pluralize(' site', feed_count, true),
-                '.'
+                feed_count,
+                ' 个站点。'
             ].join(""));
         }
 
         if (starred_count) {
             var $info = $(".NB-page-2-started .NB-intro-import-starred-message", this.$modal);
             $info.text([
-                "And you have ",
-                Inflector.pluralize(' saved story', starred_count, true),
-                ". "
+                "并且你收藏了 ",
+                starred_count,
+                " 篇文章。"
             ].join("")).show();
         }
     },
@@ -549,8 +550,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var url = "/import/authorize";
         this.flags.starred_only = !!options.starred_only;
         $(".NB-page-2-importing", this.$modal).text(options.starred_only ? 
-                                                    "Importing your sites and stories..." : 
-                                                    "Importing your sites...");
+                                                    "正在导入你的站点和文章..." : 
+                                                    "正在导入你的站点...");
         this.connect_window = window.open(url, '_blank', window_options);
         clearInterval(this.connect_window_timer);
         this.connect_window_timer = setInterval(_.bind(function() {
@@ -610,7 +611,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             } else {
                 $('.NB-intro-import-delayed', self.$modal).hide();
                 $('.NB-intro-import-restart', self.$modal).show();
-                $('.NB-intro-import-message', self.$modal).show().text("All done!");
+                $('.NB-intro-import-message', self.$modal).show().text("全部完成");
             }
         }, this));
     },
@@ -639,7 +640,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $('.NB-intro-import-restart', self.$modal).hide();
                         $('.NB-intro-import-message', self.$modal).hide();
                     } else {
-                        $('.NB-intro-import-message', self.$modal).text("All done!").removeClass('NB-error').show();
+                        $('.NB-intro-import-message', self.$modal).text("全部完成！").removeClass('NB-error').show();
                         $('.NB-intro-import-delayed', self.$modal).hide();
                         $('.NB-intro-import-restart', self.$modal).show();
                     }
@@ -705,7 +706,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     subscribe_to_feed: function(feed) {
         var $button = $('.NB-intro-uptodate-follow-'+feed);
         var $parent = $button.closest(".NB-intro-uptodate-follow");
-        var blog_url = 'http://blog.newsblur.com/rss';
+        var blog_url = 'http://blog.newszeit.com/rss';
         var popular_username = 'social:popular';
         console.log(["subscribe_to_feed", feed, $button, $parent]);
         $parent.addClass('NB-active');
@@ -762,7 +763,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function($t, $p) {
             e.preventDefault();
             
-            alert('Drag this button to your bookmark toolbar.');
+            alert('拖拽此按钮到你的书签工具栏或书签菜单');
         });
         $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function($t, $p) {
             e.preventDefault();

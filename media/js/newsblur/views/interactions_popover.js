@@ -55,10 +55,10 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $tab = $.make('div', [
             $.make('div', { className: 'NB-interactions-header' }, [
                 $.make("div", { className: "NB-tab NB-tab-interactions" }, [
-                    $.make('span', "Interactions")
+                    $.make('span', "好友互动")
                 ]),
                 $.make("div", { className: "NB-tab NB-tab-activities" }, [
-                    $.make('span', "Activities")
+                    $.make('span', "我的动态")
                 ])
             ]),
             $.make('div', { className: 'NB-interactions-container ' + (this.options.tab == 'interactions' && 'NB-active') }),

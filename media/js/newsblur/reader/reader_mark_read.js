@@ -34,7 +34,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Mark old stories as read',
+                '标记较早的文章为已读',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-markread-form' }, [
@@ -82,9 +82,9 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         var explanation;
         
         if (value == 0) {
-            explanation = "Mark every story as read";
+            explanation = "标记所有文章为已读";
         } else if (value >= 1) {
-            explanation = "Mark all stories older than " + value + " day" + (value==1?'':'s') + " old as read";
+            explanation = "标记 " + value + " 天以前的文章为已读";
         }
         
         $button.val(explanation);
@@ -98,7 +98,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         var days = $slider.slider('option', 'value');
         
         this.flags.saving = true;
-        $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
+        $save.attr('value', '正在标记...').addClass('NB-disabled').attr('disabled', true);
         if (NEWSBLUR.Globals.is_authenticated) {
             this.model.save_mark_read(days, _.bind(function() {
                 NEWSBLUR.reader.start_count_unreads_after_import();

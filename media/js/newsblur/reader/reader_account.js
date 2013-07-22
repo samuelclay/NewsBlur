@@ -38,13 +38,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal-account NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, 'Account'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, 'Payments'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, 'Emails')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, '帐户'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, '付款'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, '邮件')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Account',
+                '帐户设置',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
@@ -56,7 +56,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            $.make('label', { 'for': 'NB-preference-username' }, 'Username'),
+                            $.make('label', { 'for': 'NB-preference-username' }, '用户名'),
 
                             $.make('div', { className: 'NB-preference-error'})
                         ])
@@ -68,7 +68,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            $.make('label', { 'for': 'NB-preference-email' }, 'Email address'),
+                            $.make('label', { 'for': 'NB-preference-email' }, '邮件地址'),
 
                             $.make('div', { className: 'NB-preference-error'})
                         ])
@@ -76,77 +76,77 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-password' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-preference-option', style: (this.options.change_password ? 'opacity: .2' : '') }, [
-                                $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
+                                $.make('label', { 'for': 'NB-preference-password-old' }, '旧密码'),
                                 $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
                             ]),
                             $.make('div', { className: 'NB-preference-option' }, [
-                                $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
+                                $.make('label', { 'for': 'NB-preference-password-new' }, '新密码'),
                                 $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Change password',
+                            '修改密码',
                             $.make('div', { className: 'NB-preference-error'})
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, '下载 OPML')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Backup your sites',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                            '备份你订阅的站点',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '下载此 XML 文件作为备份')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-splash-link NB-account-delete-all-sites' }, 'Delete all of my sites')
+                            $.make('div', { className: 'NB-splash-link NB-account-delete-all-sites' }, '删除我的全部站点')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Erase yourself',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Notice: You will be emailed a backup of your sites')
+                            '删除站点',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '注意：您将会收到一份包含站点备份的邮件')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, '删除我的帐户')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Erase yourself permanently',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Warning: This is actually permanent')
+                            '删除我的全部信息',
+                            $.make('div', { className: 'NB-preference-sublabel' }, '警告：此操作是不可恢复的')
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-premium' }, [
                     $.make('div', { className: 'NB-preference NB-preference-premium' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            (!NEWSBLUR.Globals.is_premium && $.make('a', { className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' }, 'Go Premium!')),
+                            (!NEWSBLUR.Globals.is_premium && $.make('a', { className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' }, '升级至高级帐户！')),
                             (NEWSBLUR.Globals.is_premium && $.make('div', [
-                                'Thank you! You have a ',
-                                $.make('b', 'premium account'),
+                                '感谢您！您拥有一个 ',
+                                $.make('b', '付费帐户'),
                                 '.',
-                                $.make('div', { className: 'NB-block' }, 'Your premium account will expire on:'),
+                                $.make('div', { className: 'NB-block' }, '你的高级帐户将在下面的时间到期'),
                                 $.make('div', { className: 'NB-block' }, [
                                     $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                                     ' ',
                                     NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
                                 ]),
-                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, 'Renew and change your payment amount'),
-                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-splash-link' }, 'Cancel subscription renewal')
+                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-splash-link' }, '续费和变更你的付款金额'),
+                                $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-splash-link' }, '取消续订')
                             ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Premium'
+                            '付费'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-premium-history' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'NB-account-payments' }, [
-                                $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                                $.make('li', { className: 'NB-payments-loading' }, '正在载入...')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Payment history'
+                            '付款记录'
                         ])
                     ])
                 ]),
@@ -156,13 +156,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-emails-1' }, [
-                                    'Email replies, re-shares, and new followers'
+                                    '当有回复、转发和新的关注者时给我发邮件'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-emails-2', type: 'radio', name: 'send_emails', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-emails-2' }, [
-                                    'Never ever send me an email'
+                                    '不要给我发邮件'
                                 ])
                             ])
                         ]),
@@ -172,7 +172,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: 'Change what you like above...' })
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: '您可以根据需要修改上面的内容...' })
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();
@@ -249,12 +249,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     delete_all_sites: function() {
         var $link = $(".NB-account-delete-all-sites", this.$modal);
 
-        if (window.confirm("Positive you want to delete everything?")) {
+        if (window.confirm("确认你要删除所有内容？")) {
             NEWSBLUR.assets.delete_all_sites(_.bind(function() {
                 NEWSBLUR.assets.load_feeds();
-                $link.replaceWith($.make('div', 'Everything has been deleted.'));
+                $link.replaceWith($.make('div', '所有的内容都已删除。'));
             }, this), _.bind(function() {
-                $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your sites.'));
+                $link.replaceWith($.make('div', { className: 'NB-error' }, '删除你的站点时遇到一点问题，请刷新或稍候再试。'));
             }, this));
         }
     },
@@ -298,7 +298,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var self = this;
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
-        $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
+        $('input[type=submit]', this.$modal).val('正在保存...').attr('disabled', true).addClass('NB-disabled');
         
         NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
@@ -388,12 +388,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
     
     enable_save: function() {
-        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save My Account');
+        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('保存我的帐户');
     },
     
     disable_save: function() {
         this.resize();
-        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
+        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('您可以根据需要修改上面的内容...');
     }
     
 });

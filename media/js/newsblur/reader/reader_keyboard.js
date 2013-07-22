@@ -26,12 +26,12 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Keyboard shortcuts',
+                '键盘快捷键',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '下一篇文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     '&#x2193;'
                 ]),
@@ -43,7 +43,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Previous story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '上一篇文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     '&#x2191;'
                 ]),
@@ -57,7 +57,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next site'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '下一个站点'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 // TODO: Mention "shift + n" here? It will be too wide.
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Prev. site'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '上一个站点'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -87,7 +87,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [              
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Switch views'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '切换视图'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     '&#x2190;'
                 ]),
@@ -99,7 +99,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),        
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Quick search for a site'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '快速检索站点'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'g'
                 ]),
@@ -110,13 +110,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [              
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Story view'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '以原文视图打开'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'enter'
                 ])
               ]),        
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Text view'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '以全文输出试图打开'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -126,13 +126,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Page down'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '向下翻页'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'space'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Page up'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '向上翻页'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -142,13 +142,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next Unread Story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '下一篇未读文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'n'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Toggle read/unread'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '切换“未读”/“已读”'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'u'
                 ])
@@ -156,13 +156,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Save/Unsave Story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '保存/取消保存文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     's'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Reload feed/folder'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '重新载入Feed/文件夹'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'r'
                 ])
@@ -170,13 +170,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open site/feed trainer'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '打开站点训练页面'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'f'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open story trainer'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '打开文章训练页面'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     't'
                 ])
@@ -184,7 +184,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in background tab'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '在后台标签页打开'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'o'
                 ]),
@@ -193,7 +193,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in new window'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '在新窗口打开'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -203,7 +203,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark all as read'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '标记所有为已读'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -211,7 +211,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open Everything'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '全部文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -221,13 +221,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Email story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '通过邮件发送文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'e'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Oldest unread story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '找到时间最早的未读文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -237,7 +237,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Expand story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '展开文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span','+'),
@@ -245,7 +245,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Collapse story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '收起文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'x'
                 ])
@@ -253,7 +253,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Share this story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '分享此文章'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -261,7 +261,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Save comments'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '保存评论'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'ctrl',
                     $.make('span', '+'),
@@ -271,7 +271,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Hide sites'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '隐藏侧边栏'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -279,7 +279,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Hide story titles'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '隐藏文章列表'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -289,7 +289,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Switch focus/unread'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '切换“喜欢”/“未读”视图'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     '+'
                 ]),
@@ -298,7 +298,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'View keyboard shortcuts'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '查看键盘快捷键'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     '?'
                 ])
@@ -306,13 +306,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Add site/folder'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '添加站点或文件夹'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'a'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Full screen'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '全屏'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
@@ -322,7 +322,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Return to dashboard'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '回到控制面板'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'esc'
                 ]),
@@ -331,7 +331,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Scroll to comments'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '滚动至评论'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'c'
                 ])
