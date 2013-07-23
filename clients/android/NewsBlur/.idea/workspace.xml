@@ -80,18 +80,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="include_reading_item_metadata.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="1350">
-              <folding />
-            </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="fragment_readingitem.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/fragment_readingitem.xml">
           <provider selected="true" editor-type-id="text-editor">
@@ -104,40 +92,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SocialItemViewBinder.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/SocialItemViewBinder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="5" selection-start="976" selection-end="976" vertical-scroll-proportion="0.0" vertical-offset="435" max-vertical-offset="1275">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tag_view.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="255">
-              <folding />
-            </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReadingItemFragment.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="148" column="61" selection-start="5212" selection-end="5212" vertical-scroll-proportion="0.0" vertical-offset="2205" max-vertical-offset="5730">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="include_reading_item_comment.xml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="include_reading_item_comment.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_comment.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="47" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.8076923" vertical-offset="138" max-vertical-offset="1410">
+            <state line="24" column="38" selection-start="919" selection-end="919" vertical-scroll-proportion="-8.222222" vertical-offset="138" max-vertical-offset="1410">
               <folding>
                 <element signature="e#784#804#0" expanded="true" />
                 <element signature="e#1302#1321#0" expanded="true" />
@@ -149,19 +107,88 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ShareDialogFragment.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ShareDialogFragment.java">
+      <file leaf-file-name="row_item.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/row_item.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="90" column="37" selection-start="3329" selection-end="3329" vertical-scroll-proportion="0.0" vertical-offset="1335" max-vertical-offset="2715">
+            <state line="45" column="38" selection-start="1802" selection-end="1802" vertical-scroll-proportion="-6.5185184" vertical-offset="499" max-vertical-offset="1305">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="row_folderitem.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/row_folderitem.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="70" column="42" selection-start="2889" selection-end="2889" vertical-scroll-proportion="-6.5185184" vertical-offset="874" max-vertical-offset="1650">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="row_folder_collapsed.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/row_folder_collapsed.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="73" column="39" selection-start="2873" selection-end="2887" vertical-scroll-proportion="-7.5925927" vertical-offset="890" max-vertical-offset="1575">
+              <folding>
+                <element signature="e#597#634#0" expanded="true" />
+                <element signature="e#992#1029#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MixedExpandableListAdapter.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/MixedExpandableListAdapter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="80" column="104" selection-start="2995" selection-end="2995" vertical-scroll-proportion="0.3321033" vertical-offset="600" max-vertical-offset="8175">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ViewUtils.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
+      <file leaf-file-name="FeedItemsAdapter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/FeedItemsAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="83" column="0" selection-start="3346" selection-end="3346" vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="1770">
+            <state line="47" column="5" selection-start="1604" selection-end="1604" vertical-scroll-proportion="-18.461538" vertical-offset="0" max-vertical-offset="1500">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fragment_itemlist.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/fragment_itemlist.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="22" column="39" selection-start="857" selection-end="857" vertical-scroll-proportion="-12.222222" vertical-offset="0" max-vertical-offset="465">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="divider_light.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/drawable/divider_light.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="16" selection-start="282" selection-end="282" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="300">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ShareDialogFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ShareDialogFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="90" column="37" selection-start="3329" selection-end="3329" vertical-scroll-proportion="0.0" vertical-offset="1335" max-vertical-offset="2715">
               <folding />
             </state>
           </provider>
@@ -182,10 +209,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/newsblur/database/FeedItemsAdapter.java" />
-        <option value="$PROJECT_DIR$/res/layout/row_socialfeed.xml" />
-        <option value="$PROJECT_DIR$/res/layout/state_toggle.xml" />
-        <option value="$PROJECT_DIR$/res/values/colors.xml" />
         <option value="$PROJECT_DIR$/res/drawable/tag_background_neutral.xml" />
         <option value="$PROJECT_DIR$/res/drawable/tag_background_positive.xml" />
         <option value="$PROJECT_DIR$/res/drawable/tag_background_negative.xml" />
@@ -198,6 +221,10 @@
         <option value="$PROJECT_DIR$/res/layout/fragment_readingitem.xml" />
         <option value="$PROJECT_DIR$/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/res/layout/include_reading_item_comment.xml" />
+        <option value="$PROJECT_DIR$/res/drawable/divider_light.xml" />
+        <option value="$PROJECT_DIR$/res/layout/row_item.xml" />
+        <option value="$PROJECT_DIR$/res/layout/row_folderitem.xml" />
+        <option value="$PROJECT_DIR$/res/layout/row_folder_collapsed.xml" />
       </list>
     </option>
   </component>
@@ -607,6 +634,7 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32910448" sideWeight="0.67027026" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21216217" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
@@ -619,14 +647,13 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19925374" sideWeight="0.6716216" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32837838" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19925374" sideWeight="0.78783786" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32837838" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21216217" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -691,53 +718,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/values/colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="34" selection-start="935" selection-end="952" vertical-scroll-proportion="-0.45945945" vertical-offset="585" max-vertical-offset="1140">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/drawable/tag_background_neutral.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="111" selection-end="111" vertical-scroll-proportion="0.054054055" vertical-offset="0" max-vertical-offset="555">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/drawable/tag_background_positive.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="50" selection-start="471" selection-end="471" vertical-scroll-proportion="0.35135135" vertical-offset="0" max-vertical-offset="555">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/FeedItemViewBinder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="24" selection-start="2706" selection-end="2706" vertical-scroll-proportion="0.4144144" vertical-offset="610" max-vertical-offset="1200">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libs/ActionBarSherlock/src/com/actionbarsherlock/internal/app/ActionBarImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="37" selection-start="897" selection-end="940" vertical-scroll-proportion="0.24324325" vertical-offset="15" max-vertical-offset="15180" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ImageLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="0" selection-start="1568" selection-end="1568" vertical-scroll-proportion="0.74786323" vertical-offset="115" max-vertical-offset="2925">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="0" selection-start="3346" selection-end="3346" vertical-scroll-proportion="0.0" vertical-offset="1041" max-vertical-offset="1680">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="1350">
@@ -772,7 +752,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="148" column="61" selection-start="5212" selection-end="5212" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="4920">
+        <state line="160" column="61" selection-start="5499" selection-end="5499" vertical-scroll-proportion="0.0" vertical-offset="2385" max-vertical-offset="5910">
           <folding />
         </state>
       </provider>
@@ -803,7 +783,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_comment.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="47" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.8076923" vertical-offset="138" max-vertical-offset="1410">
+        <state line="24" column="38" selection-start="919" selection-end="919" vertical-scroll-proportion="-8.222222" vertical-offset="138" max-vertical-offset="1410">
           <folding>
             <element signature="e#784#804#0" expanded="true" />
             <element signature="e#1302#1321#0" expanded="true" />
@@ -812,6 +792,70 @@
       </provider>
       <provider editor-type-id="android-designer">
         <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/FeedItemsAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="5" selection-start="1604" selection-end="1604" vertical-scroll-proportion="-18.461538" vertical-offset="0" max-vertical-offset="1500">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/drawable/divider_light.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="16" selection-start="282" selection-end="282" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="300">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/fragment_itemlist.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="39" selection-start="857" selection-end="857" vertical-scroll-proportion="-12.222222" vertical-offset="0" max-vertical-offset="465">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/row_item.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="38" selection-start="1802" selection-end="1802" vertical-scroll-proportion="-6.5185184" vertical-offset="499" max-vertical-offset="1305">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/row_folderitem.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="70" column="42" selection-start="2889" selection-end="2889" vertical-scroll-proportion="-6.5185184" vertical-offset="874" max-vertical-offset="1650">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/row_folder_collapsed.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="39" selection-start="2873" selection-end="2887" vertical-scroll-proportion="-7.5925927" vertical-offset="890" max-vertical-offset="1575">
+          <folding>
+            <element signature="e#597#634#0" expanded="true" />
+            <element signature="e#992#1029#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/MixedExpandableListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="80" column="104" selection-start="2995" selection-end="2995" vertical-scroll-proportion="0.3321033" vertical-offset="600" max-vertical-offset="8175">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>

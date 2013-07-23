@@ -68,7 +68,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:maxLines="2"
-                    android:ellipsize="marquee"
+                    android:ellipsize="end"
                     android:textSize="14sp" />
 
         </RelativeLayout>

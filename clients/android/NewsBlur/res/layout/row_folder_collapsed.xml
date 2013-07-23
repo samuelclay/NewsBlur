@@ -76,14 +76,14 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
+        android:layout_toLeftOf="@+id/row_foldersums"
         android:textColor="@color/folder_text"
         android:paddingBottom="10dp"
     	android:paddingTop="10dp" 
         android:textSize="14dp"
         android:textStyle="bold"
         android:maxLines="1"
-        android:ellipsize="marquee"
-        android:layout_toLeftOf="@+id/row_foldersums"/>
+        android:ellipsize="end"/>
     
     <View 
         android:layout_height="1dp"
