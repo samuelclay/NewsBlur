@@ -782,6 +782,25 @@ def load_starred_stories(request):
     }
 
 @json.json_view
+def starred_story_hashes(request):
+    user               = get_user(request)
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    
+    mstories = MStarredStory.objects(
+        user_id=user.pk
+    ).only('story_hash', 'starred_date').order_by('-starred_date')
+    
+    if include_timestamps:
+        story_hashes = [(s.story_hash, s.starred_date.strftime("%f")) for s in mstories]
+    else:
+        story_hashes = [s.story_hash for s in mstories]
+    
+    logging.user(request, "~FYLoading ~FCstarred story hashes~FY: %s story hashes" % 
+                           (len(story_hashes)))
+
+    return dict(starred_story_hashes=story_hashes)
+
+@json.json_view
 def load_river_stories__redis(request):
     limit             = 12
     start             = time.time()

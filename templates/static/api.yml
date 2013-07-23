@@ -207,6 +207,17 @@
           optional: true
           default: 1
           example: 2
+
+    - url: /reader/starred_story_hashes
+      method: GET
+      short_desc: "Story hashes of starred stories."
+      long_desc: 
+        - "Retrieve the story hashes of a user's starred stories."
+      params:
+        - key: include_timestamps
+          desc: "Including timestamps for starred_date"
+          optional: true
+          default: false
   
     - url: /reader/river_stories
       method: GET
@@ -234,6 +245,10 @@
           optional: true
           default: unread
           example: all
+        - key: h
+          desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
+          optional: true
+          example: "h=a1b2c3&h=d4e5f6"
 
     - url: /reader/unread_story_hashes
       method: GET
@@ -241,12 +256,17 @@
       long_desc: 
         - "The story_hashes of all unread stories."
         - "Useful for offline access of stories and quick unread syncing."
+        - "Use include_timestamps to fetch stories in date order."
       params:
         - key: feed_id
           desc: "Feed ids to check. Omit to include every feed subscription."
           optional: true
           example: "feed_id=12&feed_id=24"
-
+        - key: include_timestamps
+          desc: "Including timestamps for story_date"
+          optional: true
+          default: false
+    
     - url: /reader/mark_story_hash_as_read
       method: POST
       short_desc: "Mark a story as read."
