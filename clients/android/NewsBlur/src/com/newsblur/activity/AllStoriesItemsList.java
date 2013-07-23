@@ -1,8 +1,12 @@
 package com.newsblur.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -20,6 +24,7 @@ import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.network.APIManager;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -67,10 +72,25 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
+
+            String[] feedIds = new String[0]; // default to a wildcard search
+
+            // if we're in Focus mode, only query for feeds with a nonzero focus count
+            if (this.currentState == AppConstants.STATE_BEST) {
+                Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
+                List<String> feedList = new ArrayList<String>();
+                while (cursor.moveToNext() && (feedList.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
+                    feedList.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
+                }
+                feedIds = new String[feedList.size()];
+                feedList.toArray(feedIds);
+                cursor.close();
+            }
+
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
-            intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // the API will return all feeds if no IDs are passed
+            intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feedIds);
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
 			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));

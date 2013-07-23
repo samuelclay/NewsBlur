@@ -43,8 +43,6 @@ import com.newsblur.view.NewsblurWebview;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
-	private static final long serialVersionUID = -5737027559180364671L;
-	private static final String TAG = "ReadingItemFragment";
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
 	public Story story;
@@ -112,6 +110,20 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		getActivity().unregisterReceiver(receiver);
 		super.onDestroy();
 	}
+
+    // WebViews don't automatically pause content like audio and video when they lose focus.  Chain our own
+    // state into the webview so it behaves.
+    @Override
+    public void onPause() {
+        if (this.web != null ) { this.web.onPause(); }
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if (this.web != null ) { this.web.onResume(); }
+        super.onResume();
+    }
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
