@@ -79,11 +79,12 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
             if (this.currentState == AppConstants.STATE_BEST) {
                 Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.FEED_FILTER_FOCUS, null, null);
                 List<String> feedList = new ArrayList<String>();
-                while (cursor.moveToNext()) {
+                while (cursor.moveToNext() && (feedList.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
                     feedList.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
                 }
                 feedIds = new String[feedList.size()];
                 feedList.toArray(feedIds);
+                cursor.close();
             }
 
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
