@@ -29,8 +29,6 @@ public class AllStoriesReading extends Reading {
 
 		setResult(RESULT_OK);
 
-		setupCountCursor();
-		
 		StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
 		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		setTitle(getResources().getString(R.string.all_stories_row_title));
@@ -41,14 +39,6 @@ public class AllStoriesReading extends Reading {
         addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
     
-	private void setupCountCursor() {
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-		feedIds = new ArrayList<String>();
-		while (cursor.moveToNext()) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-		}
-	}
-
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
@@ -78,9 +68,7 @@ public class AllStoriesReading extends Reading {
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
 
-			String[] feeds = new String[feedIds.size()];
-			feedIds.toArray(feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
+			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // ask for all stories via wildcarding the feed param
 			if (page > 1) {
 				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			}
