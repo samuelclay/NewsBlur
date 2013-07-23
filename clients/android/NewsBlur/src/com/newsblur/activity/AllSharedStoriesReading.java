@@ -19,7 +19,6 @@ public class AllSharedStoriesReading extends Reading {
 
 	private Cursor stories;
 	private int currentPage;
-	private ArrayList<String> feedIds;
 	private boolean requestingPage = false;
 	private boolean stopLoading = false;
 
@@ -29,8 +28,6 @@ public class AllSharedStoriesReading extends Reading {
 
 		setResult(RESULT_OK);
 
-		setupCountCursor();
-
 		StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
 		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 		setTitle(getResources().getString(R.string.all_shared_stories));
@@ -39,17 +36,6 @@ public class AllSharedStoriesReading extends Reading {
 		setupPager();
 
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-	}
-
-	private void setupCountCursor() {
-	    StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-		startManagingCursor(cursor);
-		feedIds = new ArrayList<String>();
-		while (cursor.moveToNext()) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-		}
-
 	}
 
 	@Override
@@ -81,9 +67,7 @@ public class AllSharedStoriesReading extends Reading {
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTISOCIALFEED_UPDATE);
 
-			String[] feeds = new String[feedIds.size()];
-			feedIds.toArray(feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
+			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // query for all shared storis via wildcard
 			if (page > 1) {
 				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			}
