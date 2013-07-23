@@ -244,8 +244,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	private void setupTags() {
 		tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
+        ViewUtils.setupTags(getActivity());
 		for (String tag : story.tags) {
-			View v = ViewUtils.createTagView(getActivity(), inflater, getFragmentManager(), tag, classifier, this, story.feedId);
+			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
 			tagContainer.addView(v);
 		}
 		

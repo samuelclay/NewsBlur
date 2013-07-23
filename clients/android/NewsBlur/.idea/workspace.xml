@@ -24,6 +24,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CompilerWorkspaceConfiguration">
+    <option name="USE_COMPILE_SERVER" value="false" />
     <option name="MAKE_PROJECT_ON_SAVE" value="true" />
     <option name="PARALLEL_COMPILATION" value="true" />
   </component>
@@ -70,6 +71,7 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
+    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
@@ -82,29 +84,33 @@
     <leaf>
       <file leaf-file-name="include_reading_item_metadata.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="-24.444445" vertical-offset="510" max-vertical-offset="1350">
+              <folding />
+            </state>
+          </provider>
           <provider editor-type-id="android-designer">
             <state />
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tag_view.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="79" column="46" selection-start="3142" selection-end="3142" vertical-scroll-proportion="-13.444445" vertical-offset="822" max-vertical-offset="1350">
-              <folding>
-                <element signature="e#1045#1082#0" expanded="true" />
-              </folding>
+            <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="-6.111111" vertical-offset="0" max-vertical-offset="255">
+              <folding />
             </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
           </provider>
         </entry>
       </file>
       <file leaf-file-name="ReadingItemFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="240" column="0" selection-start="8375" selection-end="8375" vertical-scroll-proportion="-3.7307692" vertical-offset="2738" max-vertical-offset="4950">
-              <folding>
-                <element signature="e#5348#5361#0" expanded="true" />
-                <element signature="e#7490#7806#0" expanded="true" />
-                <element signature="e#7800#7801#0" expanded="true" />
-                <element signature="e#12280#12292#0" expanded="true" />
-                <element signature="e#13514#13526#0" expanded="true" />
-              </folding>
+            <state line="248" column="56" selection-start="8621" selection-end="8621" vertical-scroll-proportion="0.0" vertical-offset="2715" max-vertical-offset="4920">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -112,23 +118,12 @@
       <file leaf-file-name="ViewUtils.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="85" column="36" selection-start="3470" selection-end="3470" vertical-scroll-proportion="0.44835165" vertical-offset="831" max-vertical-offset="1365">
+            <state line="91" column="19" selection-start="3665" selection-end="3665" vertical-scroll-proportion="0.6118421" vertical-offset="1041" max-vertical-offset="1680">
               <folding>
-                <element signature="e#693#756#0" expanded="true" />
-                <element signature="e#1364#1428#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#806#869#0" expanded="true" />
+                <element signature="e#1318#1382#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tag_view.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="22" selection-start="216" selection-end="226" vertical-scroll-proportion="-2.7777777" vertical-offset="0" max-vertical-offset="255">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -148,7 +143,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/res/layout/row_folder_collapsed.xml" />
         <option value="$PROJECT_DIR$/res/layout/row_all_stories.xml" />
         <option value="$PROJECT_DIR$/res/layout/row_all_shared_stories.xml" />
         <option value="$PROJECT_DIR$/res/layout/row_item.xml" />
@@ -162,6 +156,7 @@
         <option value="$PROJECT_DIR$/res/drawable/tag_background_negative.xml" />
         <option value="$PROJECT_DIR$/res/layout/tag_view.xml" />
         <option value="$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml" />
+        <option value="$PROJECT_DIR$/src/com/newsblur/util/ImageLoader.java" />
         <option value="$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java" />
         <option value="$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java" />
       </list>
@@ -356,11 +351,11 @@
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="AndroidRunProguardForReleaseBuild" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="FullScreen" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RunManager" selected="Android Application.NewsBlur">
     <configuration default="false" name="NewsBlur" type="AndroidTestRunConfigurationType" factoryName="Android Tests" temporary="true">
@@ -544,6 +539,26 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="54" y="31" width="1386" height="860" extended-state="0" />
     <editor active="true" />
@@ -552,27 +567,27 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32910448" sideWeight="0.67027026" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21216217" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19925374" sideWeight="0.67027026" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32972974" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19925374" sideWeight="0.6716216" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32837838" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972974" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21216217" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -637,23 +652,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/drawable/selector_folder_background.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="54" selection-start="265" selection-end="265" vertical-scroll-proportion="0.09615385" vertical-offset="0" max-vertical-offset="468">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/row_folder_collapsed.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="43" selection-start="237" selection-end="237" vertical-scroll-proportion="0.13605443" vertical-offset="0" max-vertical-offset="1575">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/drawable/tag_background_negative.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="48" selection-start="467" selection-end="467" vertical-scroll-proportion="0.35135135" vertical-offset="0" max-vertical-offset="555">
@@ -662,9 +660,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/row_feed.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state line="44" column="36" selection-start="1801" selection-end="1801" vertical-scroll-proportion="0.46022728" vertical-offset="417" max-vertical-offset="1230">
           <folding>
@@ -672,29 +667,28 @@
           </folding>
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ClassifierDialogFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="151" column="92" selection-start="4976" selection-end="4976" vertical-scroll-proportion="0.3956044" vertical-offset="1710" max-vertical-offset="2700">
-          <folding />
-        </state>
+        <state line="151" column="92" selection-start="4976" selection-end="4976" vertical-scroll-proportion="0.3956044" vertical-offset="1710" max-vertical-offset="2700" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/MultipleFeedItemsAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="87" selection-start="1222" selection-end="1282" vertical-scroll-proportion="0.52747256" vertical-offset="0" max-vertical-offset="1815">
-          <folding />
-        </state>
+        <state line="33" column="87" selection-start="1222" selection-end="1282" vertical-scroll-proportion="0.52747256" vertical-offset="0" max-vertical-offset="1815" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/row_item.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state line="39" column="16" selection-start="1475" selection-end="1475" vertical-scroll-proportion="-0.17045455" vertical-offset="675" max-vertical-offset="1305">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/values/colors.xml">
@@ -718,18 +712,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="46" selection-start="3142" selection-end="3142" vertical-scroll-proportion="-13.444445" vertical-offset="822" max-vertical-offset="1350">
-          <folding>
-            <element signature="e#1045#1082#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/FeedItemViewBinder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="71" column="24" selection-start="2706" selection-end="2706" vertical-scroll-proportion="0.4144144" vertical-offset="610" max-vertical-offset="1200">
@@ -744,35 +726,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
+    <entry file="file://$PROJECT_DIR$/libs/ActionBarSherlock/src/com/actionbarsherlock/internal/app/ActionBarImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="240" column="0" selection-start="8375" selection-end="8375" vertical-scroll-proportion="-3.7307692" vertical-offset="2738" max-vertical-offset="4950">
-          <folding>
-            <element signature="e#5348#5361#0" expanded="true" />
-            <element signature="e#7490#7806#0" expanded="true" />
-            <element signature="e#7800#7801#0" expanded="true" />
-            <element signature="e#12280#12292#0" expanded="true" />
-            <element signature="e#13514#13526#0" expanded="true" />
-          </folding>
+        <state line="24" column="37" selection-start="897" selection-end="940" vertical-scroll-proportion="0.24324325" vertical-offset="15" max-vertical-offset="15180" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ImageLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="0" selection-start="1568" selection-end="1568" vertical-scroll-proportion="0.74786323" vertical-offset="115" max-vertical-offset="2925">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
+    <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="-24.444445" vertical-offset="510" max-vertical-offset="1350">
+          <folding />
+        </state>
+      </provider>
       <provider editor-type-id="android-designer">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="22" selection-start="216" selection-end="226" vertical-scroll-proportion="-2.7777777" vertical-offset="0" max-vertical-offset="255">
+        <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="-6.111111" vertical-offset="0" max-vertical-offset="255">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="248" column="56" selection-start="8621" selection-end="8621" vertical-scroll-proportion="0.0" vertical-offset="2804" max-vertical-offset="4965">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="36" selection-start="3470" selection-end="3470" vertical-scroll-proportion="0.44835165" vertical-offset="831" max-vertical-offset="1365">
+        <state line="91" column="19" selection-start="3665" selection-end="3665" vertical-scroll-proportion="0.6118421" vertical-offset="1041" max-vertical-offset="1680">
           <folding>
-            <element signature="e#693#756#0" expanded="true" />
-            <element signature="e#1364#1428#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#806#869#0" expanded="true" />
+            <element signature="e#1318#1382#0" expanded="true" />
           </folding>
         </state>
       </provider>

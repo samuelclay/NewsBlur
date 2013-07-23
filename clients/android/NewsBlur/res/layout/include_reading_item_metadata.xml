@@ -37,7 +37,7 @@
             android:layout_marginTop="7dp"
             android:layout_toRightOf="@id/reading_feed_icon"
             android:textColor="@color/newsblur_blue"
-            android:textSize="16dp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/reading_item_title"
@@ -68,7 +68,7 @@
             android:maxLines="1"
             android:minWidth="80dp"
             android:textColor="@color/half_darkgray"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:textStyle="bold"/>
 
         <com.newsblur.view.FlowLayout
