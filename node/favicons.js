@@ -10,7 +10,7 @@
   DEV = process.env.NODE_ENV === 'development';
   DEV = true;
   // MONGODB_SERVER = DEV ? 'localhost' : 'db22';
-  MONGODB_SERVER = '106.186.25.142';
+  MONGODB_SERVER = 'app';
 
   MONGODB_PORT = parseInt(process.env.MONGODB_PORT || 27017, 10);
 

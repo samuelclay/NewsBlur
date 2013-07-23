@@ -41,13 +41,13 @@ from utils import jammit
 # ===================
 
 ADMINS       = (
-    ('Samuel Clay', 'samuel@newsblur.com'),
+    ('Bruce You', 'bruce.you@gmail.com'),
 )
 
-SERVER_NAME  = 'newsblur'
-SERVER_EMAIL = 'server@newsblur.com'
+SERVER_NAME  = 'newszeit'
+SERVER_EMAIL = 'server@newszeit.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
-NEWSBLUR_URL = 'http://www.newsblur.com'
+NEWSBLUR_URL = 'http://www.newszeit.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 
 
@@ -72,7 +72,7 @@ LOGIN_URL             = '/reader/login'
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 EMAIL_BACKEND         = 'django.core.mail.backends.console.EmailBackend'
 CIPHER_USERNAMES      = False
-DEBUG_ASSETS          = DEBUG
+DEBUG_ASSETS          = False
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "django.contrib.messages.middleware.MessageMiddleware",
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
@@ -200,10 +201,10 @@ APPEND_SLASH            = False
 SOUTH_TESTS_MIGRATE     = False
 SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
-SESSION_COOKIE_NAME     = 'newsblur_sessionid'
+SESSION_COOKIE_NAME     = 'newszeit_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
-SESSION_COOKIE_DOMAIN   = '.newsblur.com'
-SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
+SESSION_COOKIE_DOMAIN   = '.newszeit.com'
+SENTRY_DSN              = 'https://da6d9ee2f7234225bc68ef3f339824af:5a9b0937539d47e5a605e302a2f65441@app.getsentry.com/7663'
 
 # ==============
 # = Subdomains =
@@ -357,11 +358,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(minutes=1),
         'options': {'queue': 'beat_tasks'},
     },
-    'collect-feedback': {
-        'task': 'collect-feedback',
-        'schedule': datetime.timedelta(minutes=1),
-        'options': {'queue': 'beat_tasks'},
-    },
+#    'collect-feedback': {
+#        'task': 'collect-feedback',
+#        'schedule': datetime.timedelta(minutes=1),
+#        'options': {'queue': 'beat_tasks'},
+#    },
     'share-popular-stories': {
         'task': 'share-popular-stories',
         'schedule': datetime.timedelta(hours=1),
@@ -379,7 +380,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=10),
+        'schedule': datetime.timedelta(minutes=1),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -389,11 +390,11 @@ CELERYBEAT_SCHEDULE = {
 # =========
 
 MONGO_DB = {
-    'host': '127.0.0.1:27017',
-    'name': 'newsblur',
+    'host': 'app:27017',
+    'name': 'newszeit',
 }
 MONGO_ANALYTICS_DB = {
-    'host': '127.0.0.1:27017',
+    'host': 'app:27017',
     'name': 'nbanalytics',
 }
 
@@ -428,13 +429,13 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db12',
+    'host': 'redis1',
 }
 REDIS2 = {
-    'host': 'db13',
+    'host': 'redis2',
 }
 REDIS3 = {
-    'host': 'db11',
+    'host': 'redis3',
 }
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
@@ -443,7 +444,7 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db01:9200']
+ELASTICSEARCH_HOSTS = ['app:9200']
 
 # ===============
 # = Social APIs =
@@ -467,10 +468,10 @@ BACKED_BY_AWS = {
 }
 
 PROXY_S3_PAGES = True
-S3_BACKUP_BUCKET = 'newsblur_backups'
-S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
-S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
-S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
+S3_BACKUP_BUCKET = 'backups.newszeit.com'
+S3_PAGES_BUCKET_NAME = 'pages.newszeit.com'
+S3_ICONS_BUCKET_NAME = 'icons.newszeit.com'
+S3_AVATARS_BUCKET_NAME = 'avatars.newszeit.com'
 
 # ==================
 # = Configurations =
@@ -538,8 +539,8 @@ CELERY_RESULT_BACKEND = BROKER_URL
 # =========
 
 MONGO_DB_DEFAULTS = {
-    'name': 'newsblur',
-    'host': 'db02:27017',
+    'name': 'newszeit',
+    'host': 'app:27017',
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
@@ -554,7 +555,7 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db30:27017',
+    'host': 'app:27017',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)

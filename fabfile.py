@@ -31,10 +31,10 @@ except ImportError:
 # = DEFAULTS =
 # ============
 
-env.NEWSBLUR_PATH = "~/projects/newsblur"
-env.SECRETS_PATH = "~/projects/secrets-newsblur"
-env.VENDOR_PATH   = "~/projects/code"
-env.user = 'sclay'
+env.NEWSBLUR_PATH = "~/newsblur"
+env.SECRETS_PATH = "~/secrets-newsblur"
+env.VENDOR_PATH   = "~/code"
+env.user = 'newszeit'
 
 # =========
 # = Roles =
@@ -616,10 +616,10 @@ def copy_app_settings():
 def copy_certificates():
     cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
     run('mkdir -p %s' % cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    put(os.path.join(env.SECRETS_PATH, 'certificates/newszeit.com.crt'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/newszeit.com.key'), cert_path)
+    run('cat %s/newszeit.com.crt > %s/newszeit.pem' % (cert_path, cert_path))
+    run('cat %s/newszeit.com.key >> %s/newszeit.pem' % (cert_path, cert_path))
 
 @parallel
 def maintenance_on():
