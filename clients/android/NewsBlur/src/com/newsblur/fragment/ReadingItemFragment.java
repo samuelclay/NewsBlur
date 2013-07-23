@@ -190,7 +190,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-		itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
+        itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
 		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
 		feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 		
@@ -202,12 +202,17 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setText(feedTitle);
 		}
 
+        itemTitle.setText(story.title);
 		itemDate.setText(story.longDate);
-		itemTitle.setText(story.title);
 
-		if (!TextUtils.isEmpty(story.authors)) {
-			itemAuthors.setText(story.authors.toUpperCase());
-		}
+        if (!TextUtils.isEmpty(story.authors)) {
+            itemAuthors.setText("•   " + story.authors);
+        }
+
+        if (story.tags.length <= 0) {
+            tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
+            tagContainer.setVisibility(View.GONE);
+        }
 
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
@@ -240,7 +245,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private void setupTags() {
 		tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
 		for (String tag : story.tags) {
-			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
+			View v = ViewUtils.createTagView(getActivity(), inflater, getFragmentManager(), tag, classifier, this, story.feedId);
 			tagContainer.addView(v);
 		}
 		
@@ -281,10 +286,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.half_darkgray));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+				itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.half_darkgray));
 				break;	
 			}
 			break;

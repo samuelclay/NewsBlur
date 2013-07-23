@@ -50,11 +50,17 @@
     <color name="linkblue">#405BA8</color>
     
     <color name="negative">#CC2A2E</color>
-    
-    <color name="tag_red">#D2A1A1</color>
-    <color name="tag_green">#BECCA4</color>
-    <color name="tag_gray">#A2A2A2</color>
-    
+
+    <color name="tag_red">#D89595</color>
+    <color name="tag_red_shadow">#D29090</color>
+    <color name="tag_red_text">#FFFFFF</color>
+    <color name="tag_green">#AACFA6</color>
+    <color name="tag_green_shadow">#A4C7A0</color>
+    <color name="tag_green_text">#FFFFFF</color>
+    <color name="tag_gray">#E0E0DE</color>
+    <color name="tag_gray_shadow">#C9C9C8</color>
+    <color name="tag_gray_text">#949181</color>
+
     <color name="newsblur_blue">#0b445a</color>
 
     <!-- To use a selector on a bg colour, the options must be drawables, not colours. -->

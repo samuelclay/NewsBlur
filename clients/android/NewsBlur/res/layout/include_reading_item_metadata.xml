@@ -17,7 +17,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp" >
+        android:layout_marginLeft="10dp"
+        android:paddingBottom="8dp">
 
         <ImageView
             android:id="@+id/reading_feed_icon"
@@ -39,44 +40,46 @@
             android:textSize="16dp" />
 
         <TextView
+            android:id="@+id/reading_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reading_feed_icon"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/story_title_unread"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/reading_item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/reading_feed_title"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="10dp"
-            android:paddingTop="10dp"
-            android:textColor="@color/linkblue"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/reading_item_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/reading_item_date"
-            android:layout_marginRight="10dp"
-            android:textColor="@color/darkgray"
-            android:textSize="20sp" />
+            android:layout_below="@id/reading_item_title"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/half_darkgray"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/reading_item_authors"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/reading_item_title"
-            android:layout_marginTop="10dp"
+            android:layout_alignTop="@id/reading_item_date"
+            android:layout_toRightOf="@id/reading_item_date"
             android:maxLines="1"
             android:minWidth="80dp"
-            android:textColor="@color/darkgray"
-            android:textSize="11dp" />
+            android:textColor="@color/half_darkgray"
+            android:textSize="12dp"
+            android:textStyle="bold"/>
 
         <com.newsblur.view.FlowLayout
             android:id="@+id/reading_item_tags"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="17dp"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/reading_item_authors"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp" />
+            android:layout_below="@id/reading_item_date"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="8dp" />
+
     </RelativeLayout>
+
 </LinearLayout>
