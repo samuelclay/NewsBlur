@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,10 @@ import com.newsblur.fragment.ClassifierDialogFragment;
 import com.newsblur.view.FlowLayout;
 
 public class ViewUtils {
-	
+
+    private static Drawable tag_green_background, tag_red_background;
+    private static int tag_green_text, tag_red_text;
+
 	public static void setupShareCount(Context context, View storyView, int sharedUserCount) {
 		String sharedBy = context.getResources().getString(R.string.reading_shared_count);
 		TextView sharesText = (TextView) storyView.findViewById(R.id.shared_by);
@@ -26,6 +30,7 @@ public class ViewUtils {
 		} else {
 			sharesText.setVisibility(View.INVISIBLE);
 		}
+
 	}
 	
 	public static void setupCommentCount(Context context, View storyView, int sharedCommentCount) {
@@ -65,22 +70,31 @@ public class ViewUtils {
 		});
 		return image;
 	}
-	
+
+    public static void setupTags(Context context) {
+        tag_green_text = context.getResources().getColor(R.color.tag_green_text);
+        tag_red_text = context.getResources().getColor(R.color.tag_red_text);
+        tag_green_background = context.getResources().getDrawable(R.drawable.tag_background_positive);
+        tag_red_background = context.getResources().getDrawable(R.drawable.tag_background_negative);
+    }
+
 	public static View createTagView(final LayoutInflater inflater, final FragmentManager fragmentManager, final String tag, final Classifier classifier, final ClassifierDialogFragment.TagUpdateCallback callback, final String feedId) {
 		
 		View v = inflater.inflate(R.layout.tag_view, null);
-		
+
 		TextView tagText = (TextView) v.findViewById(R.id.tag_text);
 		tagText.setText(tag);
 
 		if (classifier != null && classifier.tags.containsKey(tag)) {
 			switch (classifier.tags.get(tag)) {
 			case Classifier.LIKE:
-				tagText.setBackgroundResource(R.drawable.tag_background_positive);
-				break;
+                tagText.setBackgroundResource(R.drawable.tag_background_positive);
+                tagText.setTextColor(tag_green_text);
+                break;
 			case Classifier.DISLIKE:
-				tagText.setBackgroundResource(R.drawable.tag_background_negative);
-				break;
+                tagText.setBackgroundResource(R.drawable.tag_background_negative);
+                tagText.setTextColor(tag_red_text);
+                break;
 			}
 		}
 

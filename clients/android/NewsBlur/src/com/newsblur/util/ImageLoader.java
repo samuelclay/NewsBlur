@@ -50,7 +50,7 @@ public class ImageLoader {
 		if (bitmap != null) {
 			if (doRound) { 
 				bitmap = UIUtils.roundCorners(bitmap, 5);
-			}
+            }
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);

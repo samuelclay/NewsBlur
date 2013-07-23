@@ -80,7 +80,7 @@ static UIFont *indicatorFont = nil;
         
     }
     if (highlighted) {
-        textColor = UIColorFromRGB(0x686868); //0x686868 
+        textColor = UIColorFromRGB(0x686868); 
     }
     [textColor set];
     
