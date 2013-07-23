@@ -43,7 +43,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_toRightOf="@+id/row_item_sidebar"
                 android:maxLines="2"
-                android:ellipsize="marquee"
+                android:ellipsize="end"
                 android:gravity="left"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"

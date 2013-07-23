@@ -49,16 +49,16 @@ vendor/mms-agent/settings.py
 *.class
 
 # generated files
-media/android/NewsBlur/bin/
-media/android/NewsBlur/gen/
-media/android/NewsBlurTest/bin/
-media/android/NewsBlurTest/gen/
+clients/android/NewsBlur/bin/
+clients/android/NewsBlur/gen/
+clients/android/NewsBlurTest/bin/
+clients/android/NewsBlurTest/gen/
 
 # Local configuration file (sdk path, etc)
-media/android/NewsBlur/local.properties
-media/android/NewsBlurTest/local.properties
+clients/android/NewsBlur/local.properties
+clients/android/NewsBlurTest/local.properties
 originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
-.idea
+clients/android/NewsBlur/.idea
