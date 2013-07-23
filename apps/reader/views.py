@@ -791,7 +791,7 @@ def starred_story_hashes(request):
     ).only('story_hash', 'starred_date').order_by('-starred_date')
     
     if include_timestamps:
-        story_hashes = [(s.story_hash, s.starred_date.strftime("%f")) for s in mstories]
+        story_hashes = [(s.story_hash, s.starred_date.strftime("%s")) for s in mstories]
     else:
         story_hashes = [s.story_hash for s in mstories]
     
