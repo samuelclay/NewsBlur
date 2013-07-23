@@ -6,22 +6,22 @@
 
     <ImageView
         android:id="@+id/row_folder_icon"
-        android:layout_width="23dp"
-        android:layout_height="23dp"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/g_icn_folder_rss" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="12dp"
+        android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/indicator_collapsed" />
     
@@ -31,16 +31,19 @@
          android:layout_height="wrap_content"
          android:layout_alignParentRight="true"
          android:layout_centerVertical="true"
-         android:layout_marginRight="38dp" >
+         android:layout_marginRight="36dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="3dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:padding="3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
@@ -52,10 +55,13 @@
             android:id="@+id/row_foldersumpos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="3dp"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
-            android:padding="3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
             android:shadowColor="@color/positive_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
@@ -70,12 +76,14 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
-        android:layout_alignRight="@id/row_foldersums"
         android:textColor="@color/folder_text"
         android:paddingBottom="10dp"
     	android:paddingTop="10dp" 
-        android:textSize="16dp"
-        android:textStyle="bold" />
+        android:textSize="14dp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:layout_toLeftOf="@+id/row_foldersums"/>
     
     <View 
         android:layout_height="1dp"
