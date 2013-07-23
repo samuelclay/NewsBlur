@@ -23,8 +23,9 @@ a:visited {
 
 blockquote {
     background-color: #F0F0F0;
-    border-left: 1px solid #9B9B9B;
-    padding: 10px 20px;
+    border-left: 1px solid #C2C5BE;
+    color: rgba(10, 12, 38, .8);
+    padding: 10px 1.5em;
     margin: 20px 0;
 }
 

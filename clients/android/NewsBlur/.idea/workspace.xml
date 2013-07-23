@@ -24,8 +24,6 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CompilerWorkspaceConfiguration">
-    <option name="USE_COMPILE_SERVER" value="false" />
-    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
     <option name="PARALLEL_COMPILATION" value="true" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -85,7 +83,7 @@
       <file leaf-file-name="include_reading_item_metadata.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="-24.444445" vertical-offset="510" max-vertical-offset="1350">
+            <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="1350">
               <folding />
             </state>
           </provider>
@@ -94,10 +92,31 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="fragment_readingitem.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/fragment_readingitem.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="39" column="36" selection-start="1476" selection-end="1476" vertical-scroll-proportion="-14.703704" vertical-offset="188" max-vertical-offset="735">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SocialItemViewBinder.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/SocialItemViewBinder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="30" column="5" selection-start="976" selection-end="976" vertical-scroll-proportion="0.0" vertical-offset="435" max-vertical-offset="1275">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="tag_view.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="-6.111111" vertical-offset="0" max-vertical-offset="255">
+            <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="255">
               <folding />
             </state>
           </provider>
@@ -109,21 +128,41 @@
       <file leaf-file-name="ReadingItemFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="248" column="56" selection-start="8621" selection-end="8621" vertical-scroll-proportion="0.0" vertical-offset="2715" max-vertical-offset="4920">
+            <state line="148" column="61" selection-start="5212" selection-end="5212" vertical-scroll-proportion="0.0" vertical-offset="2205" max-vertical-offset="5730">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ViewUtils.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="include_reading_item_comment.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_comment.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="33" column="47" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.8076923" vertical-offset="138" max-vertical-offset="1410">
+              <folding>
+                <element signature="e#784#804#0" expanded="true" />
+                <element signature="e#1302#1321#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ShareDialogFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ShareDialogFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="90" column="37" selection-start="3329" selection-end="3329" vertical-scroll-proportion="0.0" vertical-offset="1335" max-vertical-offset="2715">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ViewUtils.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="91" column="19" selection-start="3665" selection-end="3665" vertical-scroll-proportion="0.6118421" vertical-offset="1041" max-vertical-offset="1680">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#806#869#0" expanded="true" />
-                <element signature="e#1318#1382#0" expanded="true" />
-              </folding>
+            <state line="83" column="0" selection-start="3346" selection-end="3346" vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="1770">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -143,10 +182,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/res/layout/row_all_stories.xml" />
-        <option value="$PROJECT_DIR$/res/layout/row_all_shared_stories.xml" />
-        <option value="$PROJECT_DIR$/res/layout/row_item.xml" />
-        <option value="$PROJECT_DIR$/res/layout/row_folderitem.xml" />
         <option value="$PROJECT_DIR$/src/com/newsblur/database/FeedItemsAdapter.java" />
         <option value="$PROJECT_DIR$/res/layout/row_socialfeed.xml" />
         <option value="$PROJECT_DIR$/res/layout/state_toggle.xml" />
@@ -159,6 +194,10 @@
         <option value="$PROJECT_DIR$/src/com/newsblur/util/ImageLoader.java" />
         <option value="$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java" />
         <option value="$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java" />
+        <option value="$PROJECT_DIR$/assets/reading.css" />
+        <option value="$PROJECT_DIR$/res/layout/fragment_readingitem.xml" />
+        <option value="$PROJECT_DIR$/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/res/layout/include_reading_item_comment.xml" />
       </list>
     </option>
   </component>
@@ -194,6 +233,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -330,8 +371,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -351,11 +390,11 @@
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="AndroidRunProguardForReleaseBuild" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RunManager" selected="Android Application.NewsBlur">
     <configuration default="false" name="NewsBlur" type="AndroidTestRunConfigurationType" factoryName="Android Tests" temporary="true">
@@ -652,45 +691,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/drawable/tag_background_negative.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="48" selection-start="467" selection-end="467" vertical-scroll-proportion="0.35135135" vertical-offset="0" max-vertical-offset="555">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/row_feed.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="36" selection-start="1801" selection-end="1801" vertical-scroll-proportion="0.46022728" vertical-offset="417" max-vertical-offset="1230">
-          <folding>
-            <element signature="e#2237#2266#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ClassifierDialogFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="151" column="92" selection-start="4976" selection-end="4976" vertical-scroll-proportion="0.3956044" vertical-offset="1710" max-vertical-offset="2700" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/database/MultipleFeedItemsAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="87" selection-start="1222" selection-end="1282" vertical-scroll-proportion="0.52747256" vertical-offset="0" max-vertical-offset="1815" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/row_item.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="16" selection-start="1475" selection-end="1475" vertical-scroll-proportion="-0.17045455" vertical-offset="675" max-vertical-offset="1305">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/values/colors.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="34" selection-start="935" selection-end="952" vertical-scroll-proportion="-0.45945945" vertical-offset="585" max-vertical-offset="1140">
@@ -719,13 +719,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/SocialItemViewBinder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="21" selection-start="2564" selection-end="2564" vertical-scroll-proportion="0.7927928" vertical-offset="220" max-vertical-offset="1065">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/ActionBarSherlock/src/com/actionbarsherlock/internal/app/ActionBarImpl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="24" column="37" selection-start="897" selection-end="940" vertical-scroll-proportion="0.24324325" vertical-offset="15" max-vertical-offset="15180" />
@@ -738,9 +731,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="83" column="0" selection-start="3346" selection-end="3346" vertical-scroll-proportion="0.0" vertical-offset="1041" max-vertical-offset="1680">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_metadata.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="-24.444445" vertical-offset="510" max-vertical-offset="1350">
+        <state line="78" column="54" selection-start="3093" selection-end="3093" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="1350">
           <folding />
         </state>
       </provider>
@@ -748,9 +748,21 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/view/SocialItemViewBinder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="5" selection-start="976" selection-end="976" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1065">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/reading.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="17" selection-start="377" selection-end="377" vertical-scroll-proportion="0.86353946" vertical-offset="0" max-vertical-offset="645" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/tag_view.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="-6.111111" vertical-offset="0" max-vertical-offset="255">
+        <state line="11" column="0" selection-start="431" selection-end="431" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="255">
           <folding />
         </state>
       </provider>
@@ -760,20 +772,46 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ReadingItemFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="248" column="56" selection-start="8621" selection-end="8621" vertical-scroll-proportion="0.0" vertical-offset="2804" max-vertical-offset="4965">
+        <state line="148" column="61" selection-start="5212" selection-end="5212" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="4920">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/newsblur/util/ViewUtils.java">
+    <entry file="file://$PROJECT_DIR$/src/com/newsblur/fragment/ShareDialogFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="19" selection-start="3665" selection-end="3665" vertical-scroll-proportion="0.6118421" vertical-offset="1041" max-vertical-offset="1680">
+        <state line="90" column="37" selection-start="3329" selection-end="3329" vertical-scroll-proportion="0.0" vertical-offset="1335" max-vertical-offset="2715">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="59" column="0" selection-start="3122" selection-end="3122" vertical-scroll-proportion="0.33333334" vertical-offset="700" max-vertical-offset="2850">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/fragment_readingitem.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="36" selection-start="1476" selection-end="1476" vertical-scroll-proportion="-14.703704" vertical-offset="188" max-vertical-offset="735">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/include_reading_item_comment.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="47" selection-start="1324" selection-end="1324" vertical-scroll-proportion="0.8076923" vertical-offset="138" max-vertical-offset="1410">
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#806#869#0" expanded="true" />
-            <element signature="e#1318#1382#0" expanded="true" />
+            <element signature="e#784#804#0" expanded="true" />
+            <element signature="e#1302#1321#0" expanded="true" />
           </folding>
         </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
   </component>
