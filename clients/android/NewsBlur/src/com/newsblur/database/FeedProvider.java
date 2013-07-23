@@ -1,5 +1,7 @@
 package com.newsblur.database;
 
+import java.util.Arrays;
+
 import android.R.string;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -330,7 +332,10 @@ public class FeedProvider extends ContentProvider {
             mdb = db;
         }
         public Cursor rawQuery(String sql, String[] selectionArgs) {
-            //Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
+                Log.d(LoggingDatabase.class.getName(), "selArgs : " + Arrays.toString(selectionArgs));
+            }
             return mdb.rawQuery(sql, selectionArgs);
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
@@ -347,10 +352,12 @@ public class FeedProvider extends ContentProvider {
 
 			// Query for all feeds (by default only return those that have unread items in them)
 		case ALL_FEEDS:
-			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+            String feedsQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
-					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
+                    ((selection == null) ? "" : selection) +
+					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE";
+            return db.rawQuery(feedsQuery, selectionArgs);
 
 			// Query for a specific feed	
 		case INDIVIDUAL_FEED:

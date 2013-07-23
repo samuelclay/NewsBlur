@@ -152,6 +152,7 @@ public class DatabaseConstants {
     private static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
     private static final String SUM_STORY_TOTAL = "storyTotal";
 
+    public static final String FEED_FILTER_FOCUS = " WHERE " + FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
 
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 

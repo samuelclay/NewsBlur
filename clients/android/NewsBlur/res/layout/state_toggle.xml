@@ -22,7 +22,7 @@
             android:paddingRight="5dp"
             android:text="ALL"
             android:textColor="@color/button_state_text_selector"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -35,9 +35,9 @@
             android:orientation="horizontal" >
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="15dp"
-                android:paddingRight="5dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:paddingRight="4dp"
                 android:src="@drawable/g_icn_unread" />
 
             <TextView
@@ -48,7 +48,7 @@
                 android:enabled="false"
                 android:text="UNREAD"
                 android:textColor="@color/button_state_text_selector"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -62,9 +62,9 @@
             android:orientation="horizontal" >
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="15dp"
-                android:paddingRight="5dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:paddingRight="4dp"
                 android:src="@drawable/g_icn_focus" />
 
             <TextView
@@ -74,7 +74,7 @@
                 android:gravity="center"
                 android:text="FOCUS"
                 android:textColor="@color/button_state_text_selector"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
