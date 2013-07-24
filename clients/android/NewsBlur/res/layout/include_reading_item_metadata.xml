@@ -43,6 +43,13 @@
 
         </RelativeLayout>
 
+        <View
+                android:id="@+id/item_feed_border"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/row_item_feed_header"
+                android:background="@color/darkgray"/>
+
         <TextView
             android:id="@+id/reading_item_title"
             android:layout_width="match_parent"
@@ -50,7 +57,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
-            android:layout_below="@id/row_item_feed_header"
+            android:layout_below="@id/item_feed_border"
             android:textColor="@color/story_title_unread"
             android:textSize="16sp" />
 

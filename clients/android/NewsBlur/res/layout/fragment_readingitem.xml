@@ -14,6 +14,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_gravity="bottom"
             android:background="@drawable/divider_item_header" />
 
         <include layout="@layout/include_reading_share_bar" />
@@ -22,7 +23,6 @@
             android:id="@+id/share_bar_underline"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:layout_marginTop="3dp"
             android:background="@drawable/divider_light"
             android:visibility="gone" />
 

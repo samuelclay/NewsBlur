@@ -3,7 +3,7 @@
 
     <color name="white">#FFF</color>
     <color name="darkgray">#434343</color>
-    <color name="midgray">#bbbbbb</color>
+    <color name="midgray">#898989</color>
     <color name="lightgray">#ccc</color>
 
 	<color name="folder_background_end">#E9EBE4</color>
@@ -14,6 +14,8 @@
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
     <color name="feed_background">#F7F8F5</color>
+    <color name="feed_background_end">#303030</color>
+    <color name="feed_background_start">#505050</color>
 
     <color name="story_title_unread">#333333</color>
     <color name="story_title_read">#808080</color>
@@ -33,6 +35,7 @@
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="item_header_border">#C2C5BE</color>
     <color name="item_background">#FFF</color>
+    <color name="share_bar_background">#F5F5EF</color>
     
     <color name="half_black">#7000</color>
     
@@ -67,7 +70,7 @@
 
     <color name="newsblur_blue">#0b445a</color>
 
-    <!-- To use a selector on a bg colour, the options must be drawables, not colours. -->
+    <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>
     <drawable name="toggle_bg_normal">#dfe1dd</drawable>
 
