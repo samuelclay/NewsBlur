@@ -16,7 +16,10 @@
             android:layout_marginRight="10dp"
             android:textColor="@color/half_darkgray"
             android:textSize="12sp"
-            android:padding="6dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:drawableLeft="@drawable/share_half"
             android:text="@string/share_this" />
         
@@ -29,7 +32,10 @@
             android:layout_marginRight="10dp"
             android:textColor="@color/half_darkgray"
             android:textSize="12sp"
-            android:padding="6dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:drawableLeft="@drawable/clock_half"
             android:text="@string/save_this" />
 

@@ -15,9 +15,9 @@
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:minHeight="8dp"
+                android:minHeight="6dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:background="@drawable/row_item_feed_header">
 
             <ImageView
@@ -27,15 +27,14 @@
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginRight="5dp"
-                    android:layout_marginTop="2dp"
                     android:contentDescription="@string/description_row_folder_icon" />
 
             <TextView
                     android:id="@+id/reading_feed_title"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_height="match_parent"
                     android:layout_toRightOf="@id/reading_feed_icon"
+                    android:layout_centerVertical="true"
                     android:ellipsize="end"
                     android:lines="1"
                     android:textColor="@color/newsblur_blue"
