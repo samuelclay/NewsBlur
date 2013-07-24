@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,7 +51,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
-	private String feedColor, feedTitle, feedFade, feedIconUrl;
+	private String feedColor, feedTitle, feedFade, feedIconUrl, faviconText;
 	private Classifier classifier;
 	private ContentResolver resolver;
 	private NewsblurWebview web;
@@ -63,7 +65,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String faviconUrl, Classifier classifier, boolean displayFeedDetails) { 
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -71,6 +73,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putString("feedTitle", feedTitle);
 		args.putString("feedColor", feedFaviconColor);
 		args.putString("feedFade", feedFaviconFade);
+        args.putString("faviconText", faviconText);
 		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
@@ -98,6 +101,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		feedTitle = getArguments().getString("feedTitle");
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
+        faviconText = getArguments().getString("faviconText");
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
 
@@ -189,22 +193,30 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	private void setupItemMetadata() {
 
-		View borderOne = view.findViewById(R.id.row_item_favicon_borderbar_1);
-		View borderTwo = view.findViewById(R.id.row_item_favicon_borderbar_2);
+        View feedHeader = view.findViewById(R.id.row_item_feed_header);
+        TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
+        TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
+        itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
+        itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
+        feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
 		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feedColor));
-			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
-		} else {
-			borderOne.setBackgroundColor(Color.GRAY);
-			borderTwo.setBackgroundColor(Color.LTGRAY);
-		}
+            int[] colors = {
+                Color.parseColor(feedColor),
+                Color.parseColor(feedFade)
+            };
+            GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    colors);
+            feedHeader.setBackgroundDrawable(gradient);
 
-		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
-		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
-		feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
+            if (TextUtils.equals(faviconText, "white")) {
+                itemFeed.setTextColor(getActivity().getResources().getColor(R.color.white));
+                itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_black));
+            } else {
+                itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+                itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_white));
+            }
+        }
 		
 		if (!displayFeedDetails) {
 			itemFeed.setVisibility(View.GONE);

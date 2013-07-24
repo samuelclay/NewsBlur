@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/row_saved_icon"
-        android:layout_width="23dp"
-        android:layout_height="23dp"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
@@ -25,7 +25,7 @@
         android:paddingTop="10dp"
         android:text="@string/saved_stories_row_title"
         android:textColor="@color/folder_text"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:textStyle="bold" />
 
     <TextView

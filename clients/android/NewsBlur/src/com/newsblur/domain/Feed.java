@@ -40,8 +40,11 @@ public class Feed {
 	@SerializedName("ps")
 	public int positiveCount;
 
-	@SerializedName("favicon_fade")
-	public String faviconFade;
+    @SerializedName("favicon_fade")
+    public String faviconFade;
+
+    @SerializedName("favicon_text_color")
+    public String faviconText;
 
 	@SerializedName("feed_link")
 	public String feedLink;
@@ -65,7 +68,8 @@ public class Feed {
 		values.put(DatabaseConstants.FEED_POSITIVE_COUNT, positiveCount);
 		values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, neutralCount);
 		values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, negativeCount);
-		values.put(DatabaseConstants.FEED_FAVICON_FADE, "#" + faviconFade);
+        values.put(DatabaseConstants.FEED_FAVICON_FADE, "#" + faviconFade);
+        values.put(DatabaseConstants.FEED_FAVICON_TEXT, faviconText);
 		values.put(DatabaseConstants.FEED_FAVICON, favicon);
 		values.put(DatabaseConstants.FEED_FAVICON_URL, faviconUrl);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);
@@ -81,7 +85,8 @@ public class Feed {
 		feed.address = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
 		feed.favicon = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));
 		feed.faviconColour = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
-		feed.faviconFade = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        feed.faviconFade = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        feed.faviconText = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
 		feed.faviconBorder = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
 		feed.faviconUrl = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
 		feed.feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
