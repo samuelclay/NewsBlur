@@ -25,7 +25,7 @@
                     android:layout_width="17dp"
                     android:layout_height="17dp"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="12dp"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginRight="5dp"
                     android:contentDescription="@string/description_row_folder_icon" />
 
@@ -54,9 +54,9 @@
             android:id="@+id/reading_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="16dp"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="16dp"
             android:layout_below="@id/item_feed_border"
             android:textColor="@color/story_title_unread"
             android:textSize="16sp" />
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/reading_item_title"
             android:layout_alignLeft="@id/reading_item_title"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="12dp"
             android:layout_marginTop="8dp"
             android:textColor="@color/half_darkgray"
             android:textSize="12sp" />

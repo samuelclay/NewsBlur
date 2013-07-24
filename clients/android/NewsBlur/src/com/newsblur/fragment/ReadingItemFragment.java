@@ -289,13 +289,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=0.75; maximum-scale=0.75; minimum-scale=0.75; user-scalable=0;\" />");
+		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=0; target-densityDpi=medium-dpi\" />");
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");
-		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
+		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
 		builder.append(story.content);
-		builder.append("</body></html>");
+		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
 
 	}
