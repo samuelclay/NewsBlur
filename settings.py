@@ -334,7 +334,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.reader.tasks",
                                "apps.feed_import.tasks",
                                "apps.statistics.tasks",)
-CELERYD_CONCURRENCY         = 4
+CELERYD_CONCURRENCY         = 3
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
