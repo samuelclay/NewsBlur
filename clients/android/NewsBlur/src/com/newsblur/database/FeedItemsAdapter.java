@@ -54,9 +54,9 @@ public class FeedItemsAdapter extends SimpleCursorAdapter implements StoryItemsA
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
 		cursor.moveToPosition(position);
 
-		if (!TextUtils.equals(feed.faviconColour, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feed.faviconBorder));
-			borderTwo.setBackgroundColor(Color.parseColor(feed.faviconColour));
+		if (!TextUtils.equals(feed.faviconColor, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
+			borderOne.setBackgroundColor(Color.parseColor(feed.faviconColor));
+			borderTwo.setBackgroundColor(Color.parseColor(feed.faviconFade));
 		} else {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);

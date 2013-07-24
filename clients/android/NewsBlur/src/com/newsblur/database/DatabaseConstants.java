@@ -19,8 +19,9 @@ public class DatabaseConstants {
 	public static final String FEED_SUBSCRIBERS = "subscribers";
 	public static final String FEED_UPDATED_SECONDS = "updated_seconds";
 	public static final String FEED_FAVICON_FADE = "favicon_fade";
-	public static final String FEED_FAVICON_COLOUR = "favicon_colour";
+	public static final String FEED_FAVICON_COLOR = "favicon_color";
 	public static final String FEED_FAVICON_BORDER = "favicon_border";
+    public static final String FEED_FAVICON_TEXT = "favicon_text_color";
 	public static final String FEED_ACTIVE = "active";
 	public static final String FEED_FAVICON = "favicon";
 	public static final String FEED_FAVICON_URL = "favicon_url";
@@ -123,7 +124,7 @@ public class DatabaseConstants {
 	};
 
 	public static final String[] FEED_COLUMNS = {
-		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOUR, FEED_TABLE + "." + FEED_FAVICON_BORDER,
+		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
 		FEED_TABLE + "." + FEED_FAVICON, FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT
 	};
 

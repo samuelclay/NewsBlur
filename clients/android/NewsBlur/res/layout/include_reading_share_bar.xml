@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp"
-    android:visibility="gone" >
+    android:paddingBottom="4dp"
+    android:paddingTop="4dp"
+    android:visibility="gone"
+    android:background="@color/share_bar_background">
 
     <View
         android:id="@+id/center_filler"
@@ -22,11 +21,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginRight="5dp"
-        android:textColor="@color/darkgray"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textColor="@color/midgray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:shadowColor="@color/white"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="1" />
 
     <TextView
         android:id="@+id/shared_by"
@@ -35,10 +38,14 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="15dp"
-        android:textColor="@color/darkgray"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:layout_marginRight="16dp"
+        android:textColor="@color/midgray"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:shadowColor="@color/white"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="1" />
 
     <com.newsblur.view.FlowLayout
         android:id="@+id/reading_social_commentimages"

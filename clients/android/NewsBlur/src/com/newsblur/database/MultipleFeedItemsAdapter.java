@@ -65,14 +65,14 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter implements Sto
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
 
 		cursor.moveToPosition(position);
-		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
-		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
+		String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
+        String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
 
 		String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
 		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
 
-		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feedColour));
+		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
+			borderOne.setBackgroundColor(Color.parseColor(feedColor));
 			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
 		} else {
 			borderOne.setBackgroundColor(Color.GRAY);
