@@ -38,7 +38,7 @@
     
     <color name="half_darkgray">#77434343</color>
     <color name="half_lightgray">#77dddddd</color>
-    <color name="half_white">#77fff</color>
+    <color name="half_white">#7fff</color>
     
     <color name="positive">#6EA74A</color>
     <color name="positive_drop_shadow">#417E53</color>
