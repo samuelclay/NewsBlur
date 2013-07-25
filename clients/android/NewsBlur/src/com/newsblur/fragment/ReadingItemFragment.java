@@ -239,6 +239,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
+            if (classifier != null && classifier.authors.containsKey(story.authors)) {
+                updateTagView(story.authors, Classifier.AUTHOR, classifier.authors.get(story.authors));
+            }
         }
 
         if (story.tags.length <= 0) {
@@ -349,7 +352,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			break;	
 		}
 	}
-
 
 	@Override
 	public void sharedCallback(String sharedText, boolean hasAlreadyBeenShared) {
