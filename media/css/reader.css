@@ -1428,16 +1428,17 @@ background: transparent;
   opacity: .5;
 }
 
-.NB-feedbar .NB-feed-story-premium-only .NB-feed-story-premium-only-divider {
+.NB-feed-story-premium-only .NB-feed-story-premium-only-divider {
   background: transparent url(/media/embed/reader/separator_small.png) no-repeat 50% 100%;
   height: 20px;
   width: 100%;
   margin: 4px 0 0;
 }
-.NB-feedbar .NB-feed-story-premium-only .NB-feed-story-premium-only-text {
+.NB-feed-story-premium-only .NB-feed-story-premium-only-text {
   text-align: center;
   margin: 6px 0 8px 0;
   color: #707070;
+  font-size: 11px;
 }
 
 /* ======================== */
@@ -1745,6 +1746,7 @@ background: transparent;
 .NB-end-line {
     min-height: 36px;
     border-top: 1px solid #404040;
+    border-top: 1px solid #E1E6E0;
     padding-left: 14px; /* offset for scrollbar on right */
     background-color: #F8F8F8;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F8F8F8), to(#F1F6F0));

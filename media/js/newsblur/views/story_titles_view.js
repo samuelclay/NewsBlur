@@ -129,8 +129,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     check_premium_river: function() {
-        this.show_no_more_stories();
-        this.append_river_premium_only_notification();
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.Globals.is_authenticated &&
+            NEWSBLUR.reader.flags['river_view']) {
+            this.show_no_more_stories();
+            this.append_river_premium_only_notification();
+        } else if (NEWSBLUR.assets.flags['no_more_stories']) {
+            this.show_no_more_stories();
+        }
     },
     
     end_loading: function() {

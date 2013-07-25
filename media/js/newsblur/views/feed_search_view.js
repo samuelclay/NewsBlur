@@ -12,11 +12,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     
     initialize: function(options) {
         this.feedbar_view = options.feedbar_view;
-        this.search_debounced = _.debounce(function(query) {
-            NEWSBLUR.reader.reload_feed({
-                search: query
-            });
-        }, 250);
+        this.search_debounced = _.debounce(_.bind(this.perform_search, this), 350);
     },
     
     render: function() {
@@ -77,6 +73,12 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             NEWSBLUR.reader.flags.search = query;
             this.search_debounced(query);
         }
+    },
+    
+    perform_search: function(query) {
+        NEWSBLUR.reader.reload_feed({
+            search: query
+        });
     },
     
     close_search: function() {

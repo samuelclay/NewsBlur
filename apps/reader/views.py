@@ -805,6 +805,7 @@ def load_river_stories__redis(request):
     limit             = 12
     start             = time.time()
     user              = get_user(request)
+    message           = None
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     if not feed_ids:
         feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
@@ -907,6 +908,13 @@ def load_river_stories__redis(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
+    
+    if not user.profile.is_premium:
+        message = "The full River of News is a premium feature."
+        if page > 1:
+            stories = []
+        else:
+            stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -916,8 +924,9 @@ def load_river_stories__redis(request):
     # if page <= 1:
     #     import random
     #     time.sleep(random.randint(0, 6))
-
-    return dict(stories=stories,
+    
+    return dict(message=message,
+                stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
                 user_profiles=user_profiles)

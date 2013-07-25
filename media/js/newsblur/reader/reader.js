@@ -1092,7 +1092,6 @@
                 'unread_threshold_temporarily': null,
                 'river_view': false,
                 'social_view': false,
-                'non_premium_river_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false
             });
@@ -1185,6 +1184,12 @@
                                         this.active_folder);
             } else {
                 this.open_feed(this.active_feed, options);
+            }
+            
+            if (options.search && !_.contains(['feed', 'text', 'story'], this.story_view)) {
+                this.switch_taskbar_view('feed', {
+                    skip_save_type: true
+                });
             }
         },
         
@@ -1592,12 +1597,6 @@
             }
             
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
-                if (!NEWSBLUR.Globals.is_premium &&
-                    NEWSBLUR.Globals.is_authenticated &&
-                    this.flags['river_view'] &&
-                    this.active_feed.indexOf('river:') != -1) {
-                    this.flags['non_premium_river_view'] = true;
-                }
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
@@ -1702,12 +1701,6 @@
             }
             
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
-                if (!NEWSBLUR.Globals.is_premium &&
-                    NEWSBLUR.Globals.is_authenticated &&
-                    this.flags['river_view'] &&
-                    this.active_feed.indexOf('river:') != -1) {
-                    this.flags['non_premium_river_view'] = true;
-                }
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
