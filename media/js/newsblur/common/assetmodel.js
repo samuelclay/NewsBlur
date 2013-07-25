@@ -636,7 +636,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/social/stories/'+user_id+'/', {
             page: page,
             order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter')
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
             'request_type': 'GET'

@@ -1177,7 +1177,7 @@
                        this.active_feed == 'river:global') {
                 this.open_river_blurblogs_stories({'global': true});
             } else if (this.flags['social_view']) {
-                this.open_social_stories(this.active_feed);
+                this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
@@ -1767,10 +1767,9 @@
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
             feed.set('selected', true, options);
+            this.set_correct_story_view_for_feed(this.active_feed);
             this.make_feed_title_in_stories();
             this.$s.$body.addClass('NB-view-river');
-            
-            this.set_correct_story_view_for_feed(this.active_feed);
             
             // TODO: Only make feed the default for blurblogs, not overriding an explicit pref.
             this.switch_taskbar_view(this.story_view);

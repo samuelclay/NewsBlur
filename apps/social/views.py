@@ -45,6 +45,7 @@ def load_social_stories(request, user_id, username=None):
     page           = request.REQUEST.get('page')
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
+    query          = request.REQUEST.get('query')
     stories        = []
     message        = ""
     
@@ -60,6 +61,8 @@ def load_social_stories(request, user_id, username=None):
     
     if social_profile.private and not social_profile.is_followed_by_user(user.pk):
         message = "%s has a private blurblog and you must be following them in order to read it." % social_profile.username
+    elif query:
+        stories = social_profile.find_stories(query, offset=offset, limit=limit)
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
