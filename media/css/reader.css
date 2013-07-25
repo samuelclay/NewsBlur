@@ -9873,7 +9873,8 @@ form.opml_import_form input {
     outline: none;
 }
 
-.NB-search-input:focus {
+.NB-search-input:focus,
+.NB-searching .NB-search-input {
     border: 1px solid #5F5F5F;
     box-shadow: 0 1px 0 #B1B1B1;
     background-color: white;
