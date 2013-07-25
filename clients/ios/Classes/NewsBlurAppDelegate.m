@@ -1356,20 +1356,18 @@
         
         // make sure we set the active feed
         self.activeFeed = feed;
-    } else if (self.isSocialRiverView) {
-        if ([[self.activeStory objectForKey:@"friend_user_ids"] count]) {
-            feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
-            feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
-            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
-        
-            [otherFriendShares removeObject:feedId];
-            NSLog(@"otherFriendFeeds is %@", otherFriendShares);
-            [otherFriendComments removeObject:feedId];
-            NSLog(@"otherFriendFeeds is %@", otherFriendComments);
-        
-            // make sure we set the active feed
-            self.activeFeed = feed;
-        }
+    } else if (self.isSocialRiverView && [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
+        feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
+        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
+        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+    
+        [otherFriendShares removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+        [otherFriendComments removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
+    
+        // make sure we set the active feed
+        self.activeFeed = feed;
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -1512,6 +1510,10 @@
 
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    if (!feed) {
+        feedIdStr = @"0";
+    }
+    
     
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
@@ -1528,6 +1530,9 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
+    
+    // If not a feed, then don't bother updating local feed.
+    if (!feed) return;
     
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
