@@ -1157,9 +1157,9 @@ background: transparent;
     border-radius: 16px;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 0 4px 0 8px;
+    padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 2px 0 0;
+    margin: 1px 0 0;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -9861,13 +9861,13 @@ form.opml_import_form input {
 
 .NB-search-input {
     border-radius: 16px;
-    border: 1px solid #5F5F5F;
+    border: 1px solid rgba(0, 0, 0, .1);
     font-weight: bold;
     width: 82%;
-    padding: 1px 18px 1px 18px;
-    background: white url('/media/embed/reader/search_icon2.png') no-repeat 4px 2px;
+    padding: 2px 18px 1px 18px;
+    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 4px 3px;
     background-size: 12px;
-    margin: 4px auto;
+    margin: 3px auto 0;
     display: block;
     font-size: 11px;
     outline: none;
@@ -9876,6 +9876,7 @@ form.opml_import_form input {
 .NB-search-input:focus {
     border: 1px solid #5F5F5F;
     box-shadow: 0 1px 0 #B1B1B1;
+    background-color: white;
 }
 
 .NB-search-close {
@@ -9913,7 +9914,7 @@ form.opml_import_form input {
     -o-transition: all .22s ease-in-out;
     -ms-transition: all .22s ease-in-out;
 
-    width: 40px;
+    width: 24px;
 }
 .NB-searching .NB-story-title-search-input {
     width: 174px;

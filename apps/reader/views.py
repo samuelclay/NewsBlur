@@ -31,7 +31,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
-from apps.search.models import SearchStarredStory
+# from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
 except:
