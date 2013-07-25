@@ -1745,7 +1745,7 @@ background: transparent;
 
 .NB-end-line {
     min-height: 36px;
-    border-top: 1px solid #404040;
+    border-top: 1px solid #C2C5BE;
     border-bottom: 1px solid #E1E6E0;
     padding-left: 14px; /* offset for scrollbar on right */
     background-color: #F8F8F8;
