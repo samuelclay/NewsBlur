@@ -46,12 +46,16 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         var comment_user_ids = this.model.get('comment_user_ids');
         _.each(this.model.get('shared_by_friends'), function(user_id) { 
             if (_.contains(comment_user_ids, user_id)) return;
-            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
+            var profile_thumb = NEWSBLUR.Views.ProfileThumb.create(user_id);
+            if (!profile_thumb) return;
+            var $thumb = profile_thumb.render().el;
             $shares_friends.append($thumb);
         });
         _.each(this.model.get('shared_by_public'), function(user_id) { 
             if (_.contains(comment_user_ids, user_id)) return;
-            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
+            var profile_thumb = NEWSBLUR.Views.ProfileThumb.create(user_id);
+            if (!profile_thumb) return;
+            var $thumb = profile_thumb.render().el;
             $shares_public.append($thumb);
         });
     },
