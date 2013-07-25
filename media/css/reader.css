@@ -1746,7 +1746,7 @@ background: transparent;
 .NB-end-line {
     min-height: 36px;
     border-top: 1px solid #404040;
-    border-top: 1px solid #E1E6E0;
+    border-bottom: 1px solid #E1E6E0;
     padding-left: 14px; /* offset for scrollbar on right */
     background-color: #F8F8F8;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F8F8F8), to(#F1F6F0));
