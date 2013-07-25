@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -30,6 +32,20 @@ public class Classifier implements Serializable {
 	public HashMap<String, Integer> feeds = new HashMap<String, Integer>();
 	
 	public String feedId;
+
+    public Map<String,Integer> getMapForType(int classifierType) {
+		switch (classifierType) {
+            case Classifier.TAG:
+                return this.tags;
+            case Classifier.AUTHOR:
+                return this.authors;
+            case Classifier.FEED:
+                return this.feeds;
+            default:
+                Log.wtf(this.getClass().getName(), "Unknown classifier type requested.");
+                return null;
+		}
+    }
 	
 	public List<ContentValues> getContentValues() {
 		List<ContentValues> valuesList = new ArrayList<ContentValues>();
