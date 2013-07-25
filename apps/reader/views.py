@@ -727,11 +727,11 @@ def load_starred_stories(request):
     if page: offset = limit * (page - 1)
     
     if query:
-        results = SearchStarredStory.query(user.pk, query)
-        story_ids = [result.db_id for result in results]
+        # results = SearchStarredStory.query(user.pk, query)                                                            
+        # story_ids = [result.db_id for result in results]                                                          
         mstories = MStarredStory.objects(
             user_id=user.pk, 
-            id__in=story_ids
+            story_title__icontains=query
         ).order_by('-starred_date')[offset:offset+limit]
     else:
         mstories = MStarredStory.objects(
