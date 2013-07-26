@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,7 +51,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
-	private String feedColor, feedTitle, feedFade, feedIconUrl;
+	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
 	private ContentResolver resolver;
 	private NewsblurWebview web;
@@ -63,14 +65,16 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String faviconUrl, Classifier classifier, boolean displayFeedDetails) { 
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
 		args.putString("feedTitle", feedTitle);
 		args.putString("feedColor", feedFaviconColor);
-		args.putString("feedFade", feedFaviconFade);
+        args.putString("feedFade", feedFaviconFade);
+        args.putString("feedBorder", feedFaviconBorder);
+        args.putString("faviconText", faviconText);
 		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
@@ -97,7 +101,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		feedIconUrl = getArguments().getString("faviconUrl");
 		feedTitle = getArguments().getString("feedTitle");
 		feedColor = getArguments().getString("feedColor");
-		feedFade = getArguments().getString("feedFade");
+        feedFade = getArguments().getString("feedFade");
+        feedBorder = getArguments().getString("feedBorder");
+        faviconText = getArguments().getString("faviconText");
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
 
@@ -189,23 +195,37 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	private void setupItemMetadata() {
 
-		View borderOne = view.findViewById(R.id.row_item_favicon_borderbar_1);
-		View borderTwo = view.findViewById(R.id.row_item_favicon_borderbar_2);
-
-		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feedColor));
-			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
-		} else {
-			borderOne.setBackgroundColor(Color.GRAY);
-			borderTwo.setBackgroundColor(Color.LTGRAY);
-		}
-
-		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
-		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
+        View feedHeader = view.findViewById(R.id.row_item_feed_header);
+        View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
+        TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
+        TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
         itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
-		feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
-		
+        itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
+        feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
+
+		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
+            feedColor = "#303030";
+            feedFade = "#505050";
+            feedBorder = "#202020";
+        }
+
+        int[] colors = {
+            Color.parseColor(feedColor),
+            Color.parseColor(feedFade)
+        };
+        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                colors);
+        feedHeader.setBackgroundDrawable(gradient);
+        feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
+
+        if (TextUtils.equals(faviconText, "black")) {
+            itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+            itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_white));
+        } else {
+            itemFeed.setTextColor(getActivity().getResources().getColor(R.color.white));
+            itemFeed.setShadowLayer(1, 0, 1, getActivity().getResources().getColor(R.color.half_black));
+        }
+
 		if (!displayFeedDetails) {
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
@@ -219,6 +239,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
+            if (classifier != null && classifier.authors.containsKey(story.authors)) {
+                updateTagView(story.authors, Classifier.AUTHOR, classifier.authors.get(story.authors));
+            }
         }
 
         if (story.tags.length <= 0) {
@@ -269,13 +292,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=0.75; maximum-scale=0.75; minimum-scale=0.75; user-scalable=0;\" />");
+		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=0; target-densityDpi=medium-dpi\" />");
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");
-		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
+		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
 		builder.append(story.content);
-		builder.append("</body></html>");
+		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
 
 	}
@@ -329,7 +352,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			break;	
 		}
 	}
-
 
 	@Override
 	public void sharedCallback(String sharedText, boolean hasAlreadyBeenShared) {

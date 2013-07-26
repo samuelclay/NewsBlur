@@ -369,9 +369,9 @@ public class FeedProvider extends ContentProvider {
 
         case STARRED_STORIES:
 			String savedStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STARRED_STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE +  
-			" FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
+                    " FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STARRED_STORIES_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID; 
 			return db.rawQuery(savedStoriesQuery, null);
@@ -423,9 +423,9 @@ public class FeedProvider extends ContentProvider {
 			// Querying for all stories
 		case ALL_STORIES:
 			String allStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE +  
-			" FROM " + DatabaseConstants.STORY_TABLE +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
+                    " FROM " + DatabaseConstants.STORY_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
 			" WHERE " + selection + " ORDER BY " + sortOrder;
@@ -439,9 +439,9 @@ public class FeedProvider extends ContentProvider {
 				selection = DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( " + TextUtils.join(",", selectionArgs) + ")";
 			}
 			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE +  
-			" FROM " + DatabaseConstants.STORY_TABLE +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
+                    " FROM " + DatabaseConstants.STORY_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
 			" WHERE " + selection + " ORDER BY " + sortOrder;
@@ -537,9 +537,9 @@ public class FeedProvider extends ContentProvider {
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);
 		case ALL_SHARED_STORIES: 
 			String allSharedQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE +  
-			" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
+                    " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE +
 			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
@@ -561,9 +561,9 @@ public class FeedProvider extends ContentProvider {
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
 			String socialQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
-			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
-			DatabaseConstants.FEED_FAVICON_FADE +  
-			" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE + ", " + DatabaseConstants.FEED_FAVICON_TEXT +
+                    " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE +
 			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 

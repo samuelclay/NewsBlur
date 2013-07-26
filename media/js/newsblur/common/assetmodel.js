@@ -481,9 +481,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
                 }
             }
-            if (data.stories && !data.stories.length) {
-                this.flags['no_more_stories'] = true;
-            }
             
             if (data.user_profiles) {
                 var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
@@ -519,6 +516,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.stories.trigger('add', {added: data.stories.length});
             }
             
+            if (data.stories && !data.stories.length) {
+                this.flags['no_more_stories'] = true;
+                this.stories.trigger('no_more_stories');
+            }
             $.isFunction(callback) && callback(data, first_load);
         }
     },
@@ -566,17 +567,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         var pre_callback = function(data) {
             self.load_feed_precallback(data, feed_id, callback, first_load);
-            
-            if (NEWSBLUR.reader.flags['non_premium_river_view']) {
-                var visible_stories = self.stories.visible().length;
-                var max_stories = NEWSBLUR.reader.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT;
-                NEWSBLUR.log(["checking no more stories", visible_stories, max_stories]);
-                if (visible_stories >= max_stories) {
-                    self.flags['no_more_stories'] = true;
-                    self.stories.trigger('no_more_stories');
-                }
-            }
-
         };
         
         this.feed_id = feed_id;
@@ -597,17 +587,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         var pre_callback = function(data) {
             self.load_feed_precallback(data, feed_id, callback, first_load);
-            
-            if (NEWSBLUR.reader.flags['non_premium_river_view']) {
-                var visible_stories = self.stories.visible().length;
-                var max_stories = NEWSBLUR.reader.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT;
-                NEWSBLUR.log(["checking no more stories", visible_stories, max_stories]);
-                if (visible_stories >= max_stories) {
-                    self.flags['no_more_stories'] = true;
-                    self.stories.trigger('no_more_stories');
-                }
-            }
-
         };
         
         this.feed_id = feed_id;
@@ -636,7 +615,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/social/stories/'+user_id+'/', {
             page: page,
             order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter')
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
             'request_type': 'GET'

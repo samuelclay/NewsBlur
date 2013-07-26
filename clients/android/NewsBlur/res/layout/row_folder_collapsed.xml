@@ -78,10 +78,13 @@
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@+id/row_foldersums"
         android:textColor="@color/folder_text"
-        android:paddingBottom="10dp"
-    	android:paddingTop="10dp" 
-        android:textSize="14dp"
+        android:paddingBottom="8dp"
+    	android:paddingTop="8dp"
+        android:textSize="13dp"
         android:textStyle="bold"
+        android:shadowColor="@color/white"
+        android:shadowDy="1"
+        android:shadowRadius="1"
         android:maxLines="1"
         android:ellipsize="end"/>
     

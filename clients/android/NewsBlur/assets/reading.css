@@ -1,13 +1,24 @@
 body {
-	background-color: #f5f5f5;
+	background-color: #FFF;
     overflow: hidden;
     line-height: 1.5em;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
-p, div {
+.NB-story {
+    max-width: 100%;
+    overflow: hidden;
+    margin: 0;
+}
+
+p, div, table {
 	line-height: 1.5em;
     margin: 0px 0px 20px 0;
     clear: both;
+    max-width: 100% !important;
+    overflow: hidden;
 }
 
 div + p {
@@ -20,6 +31,7 @@ img {
 
 img, video, embed, object, iframe, div {
 	max-width: 95% !important;
+	width: auto;
 	height: auto !important;	
 }
 

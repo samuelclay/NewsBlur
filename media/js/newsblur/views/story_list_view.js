@@ -2,6 +2,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     
     el: '.NB-feed-stories',
     
+    events: {
+        "click .NB-feed-story-premium-only a" : function(e) {
+            e.preventDefault();
+            NEWSBLUR.reader.open_feedchooser_modal();
+        }
+    },
+    
     initialize: function() {
         _.bindAll(this, 'check_feed_view_scrolled_to_bottom', 'scroll');
         this.collection.bind('reset', this.reset_flags, this);
@@ -9,7 +16,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('reset', this.reset_story_positions, this);
         this.collection.bind('add', this.add, this);
         this.collection.bind('add', this.reset_story_positions, this);
-        this.collection.bind('no_more_stories', this.show_no_more_stories, this);
+        this.collection.bind('no_more_stories', this.check_premium_river, this);
+        this.collection.bind('no_more_stories', this.check_premium_search, this);
         this.collection.bind('change:selected', this.show_only_selected_story, this);
         this.collection.bind('change:selected', this.check_feed_view_scrolled_to_bottom, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
@@ -233,14 +241,16 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             if (empty_space > 0) endbar_height += empty_space + 1;
         }
         
-        this.$('.NB-feed-story-endbar').remove();
+        this.$('.NB-end-line').remove();
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             var last_story = NEWSBLUR.assets.stories.last();
             if (!last_story.get('selected')) return;
         }
         var $end_stories_line = $.make('div', { 
-            className: 'NB-feed-story-endbar'
-        }).css('paddingBottom', endbar_height);
+            className: 'NB-end-line'
+        }, [
+            $.make('div', { className: 'NB-fleuron' })
+        ]).css('paddingBottom', endbar_height);
         
         this.$el.append($end_stories_line);
     },
@@ -338,8 +348,22 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     check_premium_river: function() {
-        this.show_no_more_stories();
-        this.append_river_premium_only_notification();
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.Globals.is_authenticated &&
+            NEWSBLUR.reader.flags['river_view']) {
+            this.show_no_more_stories();
+            this.append_river_premium_only_notification();
+        } else if (NEWSBLUR.assets.flags['no_more_stories']) {
+            this.show_no_more_stories();
+        }
+    },
+    
+    check_premium_search: function() {
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.reader.flags.search) {
+            this.show_no_more_stories();
+            this.append_search_premium_only_notification();
+        }
     },
     
     end_loading: function() {
@@ -350,6 +374,30 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.flags['no_more_stories']) {
             this.show_no_more_stories();
         }
+    },
+    
+    append_river_premium_only_notification: function() {
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                'The full River of News is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ])
+        ]);
+        this.$('.NB-feed-story-premium-only').remove();
+        this.$(".NB-end-line").append($notice);
+    },
+    
+    append_search_premium_only_notification: function() {
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                'Search is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ])
+        ]);
+        this.$('.NB-feed-story-premium-only').remove();
+        this.$(".NB-end-line").append($notice);
     },
     
     // =============

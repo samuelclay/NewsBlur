@@ -29,7 +29,7 @@ public class NewsblurWebview extends WebView {
 		getSettings().setAppCachePath("/data/data/com.newsblur/cache");
 		getSettings().setAllowFileAccess(true);
 		getSettings().setAppCacheEnabled(true);
-		
+        this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
 	}
 	
 	

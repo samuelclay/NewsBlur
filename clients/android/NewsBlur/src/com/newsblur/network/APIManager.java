@@ -540,7 +540,7 @@ public class APIManager {
 		return true;
 	}
 
-	public boolean trainClassifier(String feedId, String key, int type, int action) {
+	public NewsBlurResponse trainClassifier(String feedId, String key, int type, int action) {
 		String typeText = null;
 		String actionText = null;
 
@@ -587,7 +587,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 
 		final APIResponse response = post(APIConstants.URL_CLASSIFIER_SAVE, values);
-		return (!response.isError());
+		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
 	public ProfileResponse getUser(String userId) {

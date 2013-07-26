@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
@@ -169,4 +170,36 @@ public class FeedUtils {
 
 		operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
 	}
+
+    public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
+
+        // first, update the server
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.trainClassifier(feedId, key, classifierType, classifierAction);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (result.isError()) {
+                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.error_saving_classifier)), Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+
+        // next, update the local DB
+        classifier.getMapForType(classifierType).put(key, classifierAction);
+        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
+        try {
+            // TODO: for feeds with many classifiers, this could be much faster by targeting just the row that changed
+			context.getContentResolver().delete(classifierUri, null, null);
+			for (ContentValues classifierValues : classifier.getContentValues()) {
+                context.getContentResolver().insert(classifierUri, classifierValues);
+            }
+        } catch (Exception e) {
+            Log.w(FeedUtils.class.getName(), "Could not update classifier in local storage.", e);
+        }
+
+    }
 }

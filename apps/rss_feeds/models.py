@@ -520,7 +520,7 @@ class Feed(models.Model):
             
         if status_code not in (200, 304):
             self.count_errors_in_history('page', status_code, fetch_history=fetch_history)
-        elif self.has_page_exception:
+        elif self.has_page_exception or not self.has_page:
             self.has_page_exception = False
             self.has_page = True
             self.active = True

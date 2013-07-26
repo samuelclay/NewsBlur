@@ -424,6 +424,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         $('.NB-tutorial-next-page-text', this.$modal).text('全部完成 ');
       } else if (page_number > page_count) {
           NEWSBLUR.reader.check_hide_getting_started();
+          NEWSBLUR.assets.preference('has_setup_feeds', true);
           this.close(_.bind(function() {
               NEWSBLUR.reader.open_dialog_after_feeds_loaded({
                   delayed_import: this.flags.delayed_import,

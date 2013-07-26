@@ -14,6 +14,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.collection.bind('reset', this.render, this);
         this.collection.bind('add', this.add, this);
         this.collection.bind('no_more_stories', this.check_premium_river, this);
+        this.collection.bind('no_more_stories', this.check_premium_search, this);
         NEWSBLUR.reader.$s.$story_titles.scroll(this.scroll);
     },
     
@@ -56,6 +57,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
                 '在此页面完整加载全部文章是一项 ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能')
+            ])
+        ]);
+        this.$('.NB-feed-story-premium-only').remove();
+        this.$(".NB-end-line").append($notice);
+    },
+    
+    append_search_premium_only_notification: function() {
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                'Search is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
             ])
         ]);
         this.$('.NB-feed-story-premium-only').remove();
@@ -128,8 +141,22 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     check_premium_river: function() {
-        this.show_no_more_stories();
-        this.append_river_premium_only_notification();
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.Globals.is_authenticated &&
+            NEWSBLUR.reader.flags['river_view']) {
+            this.show_no_more_stories();
+            this.append_river_premium_only_notification();
+        } else if (NEWSBLUR.assets.flags['no_more_stories']) {
+            this.show_no_more_stories();
+        }
+    },
+    
+    check_premium_search: function() {
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.reader.flags.search) {
+            this.show_no_more_stories();
+            this.append_search_premium_only_notification();
+        }
     },
     
     end_loading: function() {

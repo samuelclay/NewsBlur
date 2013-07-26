@@ -32,7 +32,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
-from apps.search.models import SearchStarredStory
+# from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
 except:
@@ -522,6 +522,7 @@ def load_single_feed(request, feed_id):
     read_filter             = request.REQUEST.get('read_filter', 'all')
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
+    message                 = None
     
     dupe_feed_id = None
     user_profiles = []
@@ -539,7 +540,11 @@ def load_single_feed(request, feed_id):
         usersub = None
     
     if query:
-        stories = feed.find_stories(query, offset=offset, limit=limit)
+        if user.profile.is_premium:
+            stories = feed.find_stories(query, offset=offset, limit=limit)
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
@@ -643,8 +648,10 @@ def load_single_feed(request, feed_id):
     if timediff > 1 or settings.DEBUG:
         time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
                           diff1, diff2, diff3, diff4)
-    logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
-        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
+    
+    search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
+    logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
+        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
     
     data = dict(stories=stories, 
                 user_profiles=user_profiles,
@@ -653,7 +660,8 @@ def load_single_feed(request, feed_id):
                 classifiers=classifiers,
                 updated=last_update,
                 feed_id=feed.pk,
-                elapsed_time=round(float(timediff), 2))
+                elapsed_time=round(float(timediff), 2),
+                message=message)
     
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -725,15 +733,20 @@ def load_starred_stories(request):
     page   = int(request.REQUEST.get('page', 0))
     query  = request.REQUEST.get('query')
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    message = None
     if page: offset = limit * (page - 1)
     
     if query:
-        results = SearchStarredStory.query(user.pk, query)
-        story_ids = [result.db_id for result in results]
-        mstories = MStarredStory.objects(
-            user_id=user.pk, 
-            id__in=story_ids
-        ).order_by('-starred_date')[offset:offset+limit]
+        # results = SearchStarredStory.query(user.pk, query)                                                            
+        # story_ids = [result.db_id for result in results]                                                          
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk, 
+                story_title__icontains=query
+            ).order_by('-starred_date')[offset:offset+limit]
+        else:
+            mstories = []
+            message = "You must be a premium subscriber to search."
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
@@ -774,19 +787,41 @@ def load_starred_stories(request):
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
     
-    logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
+    search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
+    logging.user(request, "~FCLoading starred stories: ~SB%s stories %s" % (len(stories), search_log))
     
     return {
         "stories": stories,
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
+        "message": message,
     }
+
+@json.json_view
+def starred_story_hashes(request):
+    user               = get_user(request)
+    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    
+    mstories = MStarredStory.objects(
+        user_id=user.pk
+    ).only('story_hash', 'starred_date').order_by('-starred_date')
+    
+    if include_timestamps:
+        story_hashes = [(s.story_hash, s.starred_date.strftime("%s")) for s in mstories]
+    else:
+        story_hashes = [s.story_hash for s in mstories]
+    
+    logging.user(request, "~FYLoading ~FCstarred story hashes~FY: %s story hashes" % 
+                           (len(story_hashes)))
+
+    return dict(starred_story_hashes=story_hashes)
 
 @json.json_view
 def load_river_stories__redis(request):
     limit             = 12
     start             = time.time()
     user              = get_user(request)
+    message           = None
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     if not feed_ids:
         feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
@@ -889,6 +924,13 @@ def load_river_stories__redis(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
+    
+    if not user.profile.is_premium:
+        message = "The full River of News is a premium feature."
+        if page > 1:
+            stories = []
+        else:
+            stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -898,8 +940,9 @@ def load_river_stories__redis(request):
     # if page <= 1:
     #     import random
     #     time.sleep(random.randint(0, 6))
-
-    return dict(stories=stories,
+    
+    return dict(message=message,
+                stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
                 user_profiles=user_profiles)

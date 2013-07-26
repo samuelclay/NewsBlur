@@ -10,6 +10,7 @@ import random
 import requests
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
+from mongoengine.queryset import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -181,7 +182,17 @@ class MSocialProfile(mongo.Document):
                                                     kwargs={'user_id': self.user_id, 
                                                             'username': self.username_slug}))
 
-    
+    def find_stories(self, query, offset=0, limit=25):
+        stories_db = MSharedStory.objects(
+            Q(user_id=self.user_id) &
+            (Q(story_title__icontains=query) |
+             Q(story_content__icontains=query) |
+             Q(story_author_name__icontains=query))
+        ).order_by('-shared_date')[offset:offset+limit]
+        stories = Feed.format_stories(stories_db)
+        
+        return stories
+
     def recommended_users(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         following_key = "F:%s:F" % (self.user_id)
