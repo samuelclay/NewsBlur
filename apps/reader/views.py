@@ -647,8 +647,10 @@ def load_single_feed(request, feed_id):
     if timediff > 1 or settings.DEBUG:
         time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (
                           diff1, diff2, diff3, diff4)
-    logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
-        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
+    
+    search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
+    logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
+        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
     
     data = dict(stories=stories, 
                 user_profiles=user_profiles,
@@ -784,7 +786,8 @@ def load_starred_stories(request):
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
     
-    logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
+    search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
+    logging.user(request, "~FCLoading starred stories: ~SB%s stories %s" % (len(stories), search_log))
     
     return {
         "stories": stories,

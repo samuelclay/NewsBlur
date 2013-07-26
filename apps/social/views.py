@@ -161,8 +161,9 @@ def load_social_stories(request, user_id, username=None):
         socialsub.needs_unread_recalc = True
         socialsub.save()
     
-    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s" % (
-    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else ''))
+    search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
+    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s %s" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', search_log))
 
     return {
         "stories": stories, 
