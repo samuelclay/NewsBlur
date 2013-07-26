@@ -47,7 +47,7 @@ def load_social_stories(request, user_id, username=None):
     read_filter    = request.REQUEST.get('read_filter', 'all')
     query          = request.REQUEST.get('query')
     stories        = []
-    message        = ""
+    message        = None
     
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
@@ -62,7 +62,11 @@ def load_social_stories(request, user_id, username=None):
     if social_profile.private and not social_profile.is_followed_by_user(user.pk):
         message = "%s has a private blurblog and you must be following them in order to read it." % social_profile.username
     elif query:
-        stories = social_profile.find_stories(query, offset=offset, limit=limit)
+        if user.profile.is_premium:
+            stories = social_profile.find_stories(query, offset=offset, limit=limit)
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')

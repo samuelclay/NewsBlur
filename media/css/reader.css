@@ -9886,12 +9886,12 @@ form.opml_import_form input {
     display: none;
     position: absolute;
     right: 1px;
-    top: 8px;
+    top: 7px;
     z-index: 1;
     width: 12px;
     height: 12px;
     background: transparent url('/media/embed/reader/close.png') no-repeat 0 0;
-    background-size: 9px;
+    background-size: 10px;
     cursor: pointer;
     opacity: .7;
     -webkit-transition: all .22s ease-in-out;

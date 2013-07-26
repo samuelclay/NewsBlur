@@ -17,6 +17,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('add', this.add, this);
         this.collection.bind('add', this.reset_story_positions, this);
         this.collection.bind('no_more_stories', this.check_premium_river, this);
+        this.collection.bind('no_more_stories', this.check_premium_search, this);
         this.collection.bind('change:selected', this.show_only_selected_story, this);
         this.collection.bind('change:selected', this.check_feed_view_scrolled_to_bottom, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
@@ -357,6 +358,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
     
+    check_premium_search: function() {
+        if (!NEWSBLUR.Globals.is_premium &&
+            NEWSBLUR.reader.flags.search) {
+            this.show_no_more_stories();
+            this.append_search_premium_only_notification();
+        }
+    },
+    
     end_loading: function() {
         var $endbar = NEWSBLUR.reader.$s.$feed_scroll.find('.NB-end-line');
         $endbar.remove();
@@ -371,6 +380,18 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
                 'The full River of News is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ])
+        ]);
+        this.$('.NB-feed-story-premium-only').remove();
+        this.$(".NB-end-line").append($notice);
+    },
+    
+    append_search_premium_only_notification: function() {
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                'Search is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                 '.'
             ])

@@ -521,6 +521,7 @@ def load_single_feed(request, feed_id):
     read_filter             = request.REQUEST.get('read_filter', 'all')
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
+    message                 = None
     
     dupe_feed_id = None
     user_profiles = []
@@ -538,7 +539,11 @@ def load_single_feed(request, feed_id):
         usersub = None
     
     if query:
-        stories = feed.find_stories(query, offset=offset, limit=limit)
+        if user.profile.is_premium:
+            stories = feed.find_stories(query, offset=offset, limit=limit)
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
@@ -652,7 +657,8 @@ def load_single_feed(request, feed_id):
                 classifiers=classifiers,
                 updated=last_update,
                 feed_id=feed.pk,
-                elapsed_time=round(float(timediff), 2))
+                elapsed_time=round(float(timediff), 2),
+                message=message)
     
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -724,15 +730,20 @@ def load_starred_stories(request):
     page   = int(request.REQUEST.get('page', 0))
     query  = request.REQUEST.get('query')
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    message = None
     if page: offset = limit * (page - 1)
     
     if query:
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
-        mstories = MStarredStory.objects(
-            user_id=user.pk, 
-            story_title__icontains=query
-        ).order_by('-starred_date')[offset:offset+limit]
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk, 
+                story_title__icontains=query
+            ).order_by('-starred_date')[offset:offset+limit]
+        else:
+            mstories = []
+            message = "You must be a premium subscriber to search."
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
@@ -779,6 +790,7 @@ def load_starred_stories(request):
         "stories": stories,
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
+        "message": message,
     }
 
 @json.json_view

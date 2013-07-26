@@ -113,7 +113,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         this.setup_tooltips();
         this.render_updated_time();
         
-        if (NEWSBLUR.reader.flags.search) {
+        if (NEWSBLUR.reader.flags.search || NEWSBLUR.reader.flags.searching) {
             var $search = this.$("input[name=feed_search]");
             $search.focus();
         }

@@ -16,7 +16,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     },
     
     render: function() {
-        if (!NEWSBLUR.Globals.is_staff) return this;
+        // if (!NEWSBLUR.Globals.is_staff) return this;
         
         var $view = $(_.template('\
             <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%= search %>" />\
@@ -35,6 +35,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     // ==========
     
     focus_search: function() {
+        NEWSBLUR.reader.flags.searching = true;
         this.feedbar_view.$el.addClass("NB-searching");
     },
     
@@ -43,9 +44,10 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         var query = $search.val();
         
         if (query.length == 0) {
+            NEWSBLUR.reader.flags.searching = false;
             this.feedbar_view.$el.removeClass("NB-searching");
             if (NEWSBLUR.reader.flags.search) {
-                NEWSBLUR.reader.reload_feed();
+                this.close_search();
             }
         }
     },
@@ -70,6 +72,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         var query = $search.val();
         
         if (query != NEWSBLUR.reader.flags.search) {
+            NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
             this.search_debounced(query);
         }
@@ -84,6 +87,9 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     close_search: function() {
         var $search = this.$("input[name=feed_search]");
         $search.val('');
-        $search.blur();
+        NEWSBLUR.reader.flags.searching = false;
+        
+        NEWSBLUR.reader.reload_feed();
     }
+    
 });
