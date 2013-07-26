@@ -5445,10 +5445,6 @@
                 e.preventDefault();
                 self.open_keyboard_shortcuts_modal();
             });
-            $document.bind('keydown', '/', function(e) {
-                e.preventDefault();
-                self.open_keyboard_shortcuts_modal();
-            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference('keyboard_verticalarrows') == 'scroll') {
@@ -5579,10 +5575,6 @@
                 e.preventDefault();
                 self.toggle_sidebar();
             });
-            $document.bind('keydown', 'shift+t', function(e) {
-                e.preventDefault();
-                self.toggle_story_titles_pane(true);
-            });
             $document.bind('keydown', 'shift+f', function(e) {
                 e.preventDefault();
                 self.toggle_sidebar();
@@ -5661,13 +5653,13 @@
                 e.preventDefault();
                 self.open_story_trainer();
             });
+            $document.bind('keypress', 'shift+t', function(e) {
+                e.preventDefault();
+                self.open_feed_intelligence_modal(1);
+            });
             $document.bind('keypress', 'a', function(e) {
                 e.preventDefault();
                 self.open_add_feed_modal();
-            });
-            $document.bind('keypress', 'f', function(e) {
-                e.preventDefault();
-                self.open_feed_intelligence_modal(1);
             });
             $document.bind('keypress', 'o', function(e) {
                 e.preventDefault();
@@ -5723,6 +5715,12 @@
             $document.bind('keydown', 'g', function(e) {
                 e.preventDefault();
                 NEWSBLUR.app.feed_selector.toggle();
+            });
+            $document.bind('keydown', '/', function(e) {
+                e.preventDefault();
+                if (NEWSBLUR.app.story_titles_header.search_view) {
+                    NEWSBLUR.app.story_titles_header.search_view.focus();
+                }
             });
             $document.bind('keydown', 'shift+s', function(e) {
                 e.preventDefault();

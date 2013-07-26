@@ -30,7 +30,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     render: function() {
         var $view;
-        var search_view = new NEWSBLUR.Views.FeedSearchView({
+        this.search_view = new NEWSBLUR.Views.FeedSearchView({
             feedbar_view: this
         }).render();
         
@@ -42,7 +42,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="folder_title_text">Saved Stories</div>\
                 </div>\
             ', {}));
-            $view.append(search_view.$el);
+            $view.append(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
@@ -85,7 +85,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 type: 'story'
             }).render();
             $view = this.view.$el;
-            $view.append(search_view.$el);
+            $view.append(this.search_view.$el);
         }
         
         this.$el.html($view);

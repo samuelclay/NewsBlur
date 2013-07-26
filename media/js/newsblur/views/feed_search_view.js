@@ -34,8 +34,13 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     // = Events =
     // ==========
     
+    focus: function() {
+        this.$("input").focus();
+    },
+    
     focus_search: function() {
         NEWSBLUR.reader.flags.searching = true;
+        NEWSBLUR.reader.flags.search = "";
         this.feedbar_view.$el.addClass("NB-searching");
     },
     
