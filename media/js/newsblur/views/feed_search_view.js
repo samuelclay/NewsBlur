@@ -37,10 +37,16 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     focus: function() {
         this.$("input").focus();
     },
+
+    blur: function() {
+        this.$("input").blur();
+    },
     
     focus_search: function() {
-        NEWSBLUR.reader.flags.searching = true;
-        NEWSBLUR.reader.flags.search = "";
+        if (!NEWSBLUR.reader.flags.searching || !NEWSBLUR.reader.flags.search) {
+            NEWSBLUR.reader.flags.searching = true;
+            NEWSBLUR.reader.flags.search = "";
+        }
         this.feedbar_view.$el.addClass("NB-searching");
     },
     
@@ -58,6 +64,18 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     },
     
     keyup: function(e) {
+        var arrow = {left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27};
+        
+        if (e.which == arrow.up || e.which == arrow.down) {
+            this.blur();
+
+            var event = $.Event('keydown');
+            event.which = e.which;
+            $(document).trigger(event);
+
+            return false;
+        }
+        
         this.search();
     },
     

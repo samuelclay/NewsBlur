@@ -127,7 +127,10 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         var arrow = {left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27};
         
         if (e.which == arrow.esc) {
+            e.preventDefault();
+            e.stopPropagation();
             this.hide_feed_selector();
+            return false;
         } else if (e.which == arrow.up || e.which == arrow.down) {
             return this.navigate(e);
         } else if (e.which == arrow.enter) {
