@@ -8097,16 +8097,18 @@ form.opml_import_form input {
   overflow: hidden;
   background-color: #F0F0F0;
   padding: 8px;
-  width: 570px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 .NB-modal-keyboard .NB-keyboard-shortcut {
-  width: 270px;
+  width: 50%;
   float: left;
-  margin-right: 20px;
-}
-.NB-modal-keyboard .NB-keyboard-shortcut:last-child {
-  margin-bottom: 0;
-  margin-right: 0;
+  padding: 0 12px;
+  
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 
@@ -8135,7 +8137,7 @@ form.opml_import_form input {
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
-  margin: 6px 0 0 0;
+  margin: 6px 12px 0 0;
   color: #404030;
   text-shadow: 1px 1px 0 #E0E0E0;
 }
@@ -9956,6 +9958,7 @@ form.opml_import_form input {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#434343), to(#696969));
     background: -moz-linear-gradient(center top , #4E4E4E 0%, #696969 100%);
     border-bottom: 1px solid #E9E9E9;
+    padding-bottom: 3px;
     overflow: hidden;
 }
 
@@ -9978,6 +9981,7 @@ form.opml_import_form input {
 }
 
 .NB-search-input:focus,
+.NB-selector-active .NB-feeds-selector .NB-search-input,
 .NB-searching .NB-search-input {
     border: 1px solid #5F5F5F;
     box-shadow: 0 1px 0 #B1B1B1;
