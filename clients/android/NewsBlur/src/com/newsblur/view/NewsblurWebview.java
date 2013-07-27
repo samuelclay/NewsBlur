@@ -6,6 +6,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.webkit.WebSettings;
+import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 
 import com.newsblur.util.AppConstants;
@@ -28,7 +29,7 @@ public class NewsblurWebview extends WebView {
 		getSettings().setAppCachePath("/data/data/com.newsblur/cache");
 		getSettings().setAllowFileAccess(true);
 		getSettings().setAppCacheEnabled(true);
-		
+        this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
 	}
 	
 	
@@ -46,7 +47,16 @@ public class NewsblurWebview extends WebView {
 	    	handler.dispatchMessage(msg);
 	    }
 	}
-	
+
+	public void onPause() {
+        // TODO: is there anything more we can do to get media content to stop playing on pause?
+        super.onPause();
+    }
+
+    public void onResume() {
+        // TODO: restore media content if it was disabled above
+        super.onResume();
+    }
 
 	public void setHandler(Handler h) {
 		this.handler = h;

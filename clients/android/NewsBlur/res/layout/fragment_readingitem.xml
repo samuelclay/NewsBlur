@@ -13,8 +13,9 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/divider_light" />
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/divider_item_header" />
 
         <include layout="@layout/include_reading_share_bar" />
 
@@ -22,7 +23,6 @@
             android:id="@+id/share_bar_underline"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:layout_marginTop="3dp"
             android:background="@drawable/divider_light"
             android:visibility="gone" />
 
@@ -31,8 +31,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/item_background"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="12dp"
             android:scrollbars="none" />
 
        <include

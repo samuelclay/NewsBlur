@@ -61,7 +61,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   href: 'https://market.android.com/details?id=bitwrit.Blar'
               }, 'View in Android Market'),
               $.make('div', { className: 'NB-goodies-android' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Blar: User-Created Android App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Blar')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -69,7 +69,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   href: 'http://windowsphone.com/s?appid=900e67fd-9934-e011-854c-00237de2db9e'
               }, 'View in Windows Phone Store'),
               $.make('div', { className: 'NB-goodies-windows' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Feed Me: User-Created Windows Phone App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Feed Me')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -77,7 +77,23 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   href: 'http://windowsphone.com/s?appid=2585d348-0894-41b6-8c26-77aeb257f9d8'
               }, 'View in Windows Phone Store'),
               $.make('div', { className: 'NB-goodies-windows' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Metroblur: User-Created Windows Phone App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Metroblur')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://www.windowsphone.com/s?appid=f001b025-94d7-4769-a33d-7dd34778141c'
+              }, 'View in Windows Phone Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'NewsSpot')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://www.windowsphone.com/s?appid=5bef74a6-9ccc-df11-9eae-00237de2db9e'
+              }, 'View in Windows Phone Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Feed Reader')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -85,7 +101,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                   href: 'http://projects.developer.nokia.com/feed_reader'
               }, 'View in Nokia Store'),
               $.make('div', { className: 'NB-goodies-nokia' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds')
             ]),
             $.make('fieldset', [
                 $.make('legend', 'Native Apps for NewsBlur')
@@ -94,17 +110,17 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://readkitapp.com'
-              }, 'Download ReadKit'),
+              }, 'Download ReadKit for Mac'),
               $.make('div', { className: 'NB-goodies-readkit' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'ReadKit: User-created Mac App')
+              $.make('div', { className: 'NB-goodies-title' }, 'ReadKit')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://www.tafitiapp.com/mx/'
-              }, 'Download Tafiti'),
+              }, 'Download Tafiti for Windows 8'),
               $.make('div', { className: 'NB-goodies-tafiti' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Tafiti: User-created Windows 8 App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Tafiti')
             ]),
             $.make('fieldset', [
                 $.make('legend', 'Browser Extensions for NewsBlur')

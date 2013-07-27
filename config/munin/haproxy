@@ -1,0 +1,414 @@
+#!/usr/bin/env perl
+#
+# haproxy_ng - Munin plugin HAProxy
+# Copyright (C) 2012 Redpill Linpro AS
+#
+# Author: Trygve Vea <tv@redpill-linpro.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Graph stats from the haproxy daemon
+#
+# Parameters supported:
+#
+#     config
+#
+# Configurable variables
+#
+#     url      - Override default status-url
+#     username - Basic authentication username
+#     password - Basic authentication password
+#
+# Example:
+#
+#   [haproxy_backend]
+#   env.url http://backend.example.com/haproxy-status;csv;norefresh
+#   env.username monitor
+#   env.password somepasswordorother
+#
+# Magic markers:
+#%# family=contrib
+
+use Munin::Plugin;
+
+need_multigraph();
+
+my $ret = undef;
+if (! eval "require LWP::UserAgent;")
+{
+    $ret = "LWP::UserAgent not found";
+}
+
+my $URL = exists $ENV{'url'} ? $ENV{'url'} : "http://localhost/haproxy-status;csv;norefresh";
+
+{
+    package MyLWP;
+    @ISA = qw(LWP::UserAgent);
+
+    sub new {
+        my $self = LWP::UserAgent::new(@_);
+        $self;
+    }
+    sub get_basic_credentials {
+        return ($ENV{"username"}, $ENV{"password"});
+    }
+}
+
+my $ua = MyLWP->new(timeout => 30);
+
+my @types = qw(frontend backend server);
+my $url = $URL;
+my $response = $ua->request(HTTP::Request->new('GET',$url));
+my $content = $response->content;
+my $set;
+my @columns;
+
+my %datas = ();
+
+my @graph_parameters = ('total','order','scale','vlabel','args', 'category');
+my @field_parameters = ('graph', 'min', 'max', 'draw', 'cdef', 'warning', 'colour', 'info', 'type', 'negative');
+
+my %aspects = (
+    'Bandwidth' => {
+        'title' => 'Bandwidth usage',
+        'category' => 'HAProxy',
+        'vlabel' => 'per second',
+        'values' => {
+            'bin' => {
+                'type' => 'DERIVE',
+                'min' => 0,
+                'graph' => 'no'
+            },
+            'bout' => {
+                'type' => 'DERIVE',
+                'draw' => 'AREASTACK',
+                'min' => 0,
+                'label' => 'bytes',
+                'info' => 'Bytes transferred',
+                'negative' => 'bin'
+            }
+        }
+    },
+    'Sessions' => {
+        'title' => 'Sessions',
+        'category' => 'HAProxy',
+        'vlabel' => 'current',
+        'values' => {
+            'scur' => {
+                'type' => 'GAUGE',
+                'draw' => 'AREASTACK',
+                'min' => 0,
+                'label' => 'sessions',
+                'info' => 'Current sessions',
+            }
+        }
+    },
+    'Uptime' => {
+        'title' => 'Uptime',
+        'category' => 'HAProxy',
+        'vlabel' => 'seconds',
+        'values' => {
+            'lastchg' => {
+                'type' => 'GAUGE',
+                'draw' => 'LINE2',
+                'min' => 0,
+                'label' => 'seconds',
+                'info' => 'Seconds',
+            }
+        }
+    },
+    'Active' => {
+        'title' => 'Active Servers',
+        'category' => 'HAProxy',
+        'vlabel' => 'servers',
+        'values' => {
+            'act' => {
+                'type' => 'GAUGE',
+                'draw' => 'LINE2',
+                'min' => 0,
+                'label' => 'servers',
+                'info' => 'Number of active servers'
+            }
+        }
+    },
+    'ErrorReq' => {
+        'title' => 'Request errors',
+        'category' => 'HAProxy',
+        'vlabel' => 'per second',
+        'values' => {
+            'ereq' => {
+                'type' => 'DERIVE',
+                'draw' => 'LINE2',
+                'min' => 0,
+                'label' => 'requests',
+                'info' => 'Number of request errors'
+            }
+        }
+    },
+    'ErrorResp' => {
+        'title' => 'Response errors',
+        'category' => 'HAProxy',
+        'vlabel' => 'per second',
+        'values' => {
+            'eresp' => {
+                'type' => 'DERIVE',
+                'draw' => 'LINE2',
+                'min' => 0,
+                'label' => 'requests',
+                'info' => 'Number of response errors'
+            }
+        }
+    }
+);
+
+my %graphs = (
+    'BandwidthFront' => {
+        'lines' => 'frontend',
+        'title' => 'Bandwidth usage by Frontend',
+        'aspect' => 'Bandwidth'
+    },
+    'BandwidthBack' => {
+        'lines' => 'backend',
+        'title' => 'Bandwidth usage by Backend',
+        'aspect' => 'Bandwidth',
+    },
+    'BandwidthBack.BACKEND' => {
+        'lines' => 'server',
+        'title' => 'Bandwidth usage by backend: BACKEND',
+        'aspect' => 'Bandwidth',
+    },
+    'SessionsFront' => {
+        'lines' => 'frontend',
+        'title' => 'Session rate by Frontend',
+        'aspect' => 'Sessions'
+    },
+    'SessionsBack' => {
+        'lines' => 'backend',
+        'title' => 'Session rate by Backend',
+        'aspect' => 'Sessions'
+    },
+    'SessionsBack.BACKEND' => {
+        'lines' => 'server',
+        'title' => 'Session rate by backend: BACKEND',
+        'aspect' => 'Sessions'
+    },
+    'Uptime' => {
+        'lines' => 'backend',
+        'title' => 'Uptime by Backend',
+        'aspect' => 'Uptime'
+    },
+    'Uptime.BACKEND' => {
+        'lines' => 'server',
+        'title' => 'Uptime by servers in BACKEND',
+        'aspect' => 'Uptime'
+    },
+    'Active' => {
+        'lines' => 'backend',
+        'title' => 'Active servers by Backend',
+        'aspect' => 'Active'
+    },
+    'ErrorsFront' => {
+        'lines' => 'frontend',
+        'title' => 'Request errors by Frontend',
+        'aspect' => 'ErrorReq'
+    },
+    'ErrorsBack' => {
+        'lines' => 'backend',
+        'title' => 'Response errors by Backend',
+        'aspect' => 'ErrorResp'
+    },
+    'ErrorsBack.BACKEND' => {
+        'lines' => 'server',
+        'title' => 'Response errors by backend: BACKEND',
+        'aspect' => 'ErrorResp'
+    }
+);
+
+my @lines = split(/\n/,$content);
+
+foreach ( @lines )
+{
+    my $i = 0;
+    my @line = split(/,/,$_);
+    if ( !$set )
+    {
+        $set++;
+        @columns = @line;
+        $columns[0] =~ s/^# //;
+        next;
+    }
+
+    foreach(@line)
+    {
+        $datas{$types[$line[32]]}{$line[0]}{$line[1]}{$columns[$i]} = $_;
+        $i++;
+    }
+}
+
+sub fetch_graph
+{
+    my $name = shift;
+    my $graphkey = shift;
+    my @names = split(/\./,$name);
+    my $backend = $names[1];
+    my $data;
+    my $aspect = $graphs{$graphkey}{'aspect'};
+
+    print "multigraph HAP$name\n";
+
+    if(!defined $ARGV[0]){ $data = 'values'; }
+    elsif ( $ARGV[0] eq 'config' ) { $data = 'config' }
+
+
+    if ( $data eq 'config' ) {
+        my $title = $graphs{$graphkey}{'title'};
+        $title =~ s/BACKEND/$backend/g;
+
+        print "graph_title $title\n";
+        foreach (@graph_parameters) {
+            if (!defined($aspects{$aspect}{$_})) {
+                next;
+            }
+            print "graph_$_ $aspects{$aspect}{$_}\n";
+        }
+    }
+
+    foreach $val (sort keys %{$aspects{$aspect}{'values'}}) {
+        if ( $graphs{$graphkey}{'lines'} eq 'frontend' )
+        {
+            foreach $fe ( sort keys %{$datas{'frontend'}} )
+            {
+                if ( $data eq 'config' ) {
+                    print $fe."_$val.label $fe\n";
+                    foreach (@field_parameters) {
+                        if (!defined($aspects{$aspect}{'values'}{$val}{$_})) {
+                            next;
+                        }
+                        if ( $_ eq 'negative' )
+                        {
+                            print $fe."_$val.$_ $fe"."_$aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                        else
+                        {
+                            print $fe."_$val.$_ $aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                    }
+                }
+                else {
+                    if ( $val eq 'lastchg' and $datas{'frontend'}{$fe}{'FRONTEND'}{'status'} eq 'DOWN' ) {
+                        print $fe."_".$val.".value 0\n";
+                    }
+                    else {
+                        print $fe."_".$val.".value ".$datas{'frontend'}{$fe}{'FRONTEND'}{$val}."\n";
+                    }
+                }
+            }
+        }
+        elsif ( $graphs{$graphkey}{'lines'} eq 'backend' )
+        {
+            foreach $be ( sort keys %{$datas{'backend'}} )
+            {
+                if ( $data eq 'config' ) {
+                    print $be."_$val.label $be\n";
+                    foreach (@field_parameters) {
+                        if (!defined($aspects{$aspect}{'values'}{$val}{$_})) {
+                            next;
+                        }
+                        if ( $_ eq 'negative' )
+                        {
+                            print $be."_$val.$_ $be"."_$aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                        else
+                        {
+                            print $be."_$val.$_ $aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                    }
+                }
+                else {
+                    if ( $val eq 'lastchg' and $datas{'backend'}{$be}{'BACKEND'}{'status'} eq 'DOWN' ) {
+                        print $be."_".$val.".value 0\n";
+                    }
+                    else {
+                        print $be."_".$val.".value ".$datas{'backend'}{$be}{'BACKEND'}{$val}."\n";
+                    }
+                }
+            }
+        }
+        elsif ( $graphs{$graphkey}{'lines'} eq 'server' )
+        {
+            foreach $server ( sort keys %{$datas{'server'}{$backend}} )
+            {
+                if ( $data eq 'config' ) {
+                    print $server."_$val.label $server\n";
+                    foreach (@field_parameters) {
+                        if (!defined($aspects{$aspect}{'values'}{$val}{$_})) {
+                            next;
+                        }
+                        if ( $_ eq 'negative' )
+                        {
+                            print $server."_$val.$_ $server"."_$aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                        else
+                        {
+                            print $server."_$val.$_ $aspects{$aspect}{'values'}{$val}{$_}\n";
+                        }
+                    }
+                }
+                else {
+                    if ( $val eq 'lastchg' and $datas{'server'}{$backend}{$server}{'status'} eq 'DOWN' ) {
+                        print $server."_".$val.".value 0\n";
+                    }
+                    else {
+                        print $server."_".$val.".value ".$datas{'server'}{$backend}{$server}{$val}."\n";
+                    }
+                }
+            }
+        }
+    }
+    print "\n";
+}
+
+sub proc_graph
+{
+    my $g = shift;
+    my $pre = shift;
+    my $level = shift;
+
+    foreach( sort keys %{$g} )
+    {
+        my $name = $_;
+        my @spects = split(/\./,$name);
+        my $aspect = $spects[0];
+        my $graphkey = $name;
+
+        if ( $name =~ /BACKEND/ )
+        {
+            foreach $be (sort keys %{$datas{'backend'}})
+            {
+                my $name = $name;
+                $name =~ s/BACKEND/$be/;
+                fetch_graph($name, $graphkey, $be);
+            }
+        }
+        else
+        {
+            fetch_graph($name, $graphkey);
+        }
+    }
+}
+
+proc_graph(\%graphs, "", 0);
+
+# vim:syntax=perl

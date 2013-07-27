@@ -4,9 +4,8 @@
     android:layout_width="60dp"
     android:layout_height="15dp"
     android:background="@drawable/tag_background_neutral"
-    android:paddingBottom="2dp"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
-    android:paddingTop="1dp"
-    android:textColor="@color/white"
+    android:paddingBottom="1dp"
+    android:textColor="@color/tag_gray_text"
     android:textSize="11sp" />

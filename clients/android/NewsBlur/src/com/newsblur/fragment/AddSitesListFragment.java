@@ -148,9 +148,9 @@ public class AddSitesListFragment extends Fragment {
 				feedBorderViews.add(borderTwo);
 				feedBorderViews.add(borderOne);
 
-				if (!TextUtils.isEmpty(feed.faviconColour) && !TextUtils.equals(feed.faviconColour, "null")) {
-					borderOne.setBackgroundColor(Color.parseColor("#".concat(feed.faviconColour)));
-					borderTwo.setBackgroundColor(Color.parseColor("#".concat(feed.faviconColour)));
+				if (!TextUtils.isEmpty(feed.faviconColor) && !TextUtils.equals(feed.faviconColor, "null")) {
+					borderOne.setBackgroundColor(Color.parseColor("#".concat(feed.faviconColor)));
+					borderTwo.setBackgroundColor(Color.parseColor("#".concat(feed.faviconColor)));
 				} else {
 					borderOne.setBackgroundColor(Color.LTGRAY);
 					borderTwo.setBackgroundColor(Color.LTGRAY);

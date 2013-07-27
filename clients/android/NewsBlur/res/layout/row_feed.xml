@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="9dp"
         android:gravity="right"
         android:orientation="horizontal" >
 
@@ -19,11 +19,9 @@
             android:id="@+id/row_feedneutral"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="3dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
             android:shadowColor="@color/neutral_drop_shadow"
@@ -37,11 +35,9 @@
             android:id="@+id/row_feedpositive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="3dp"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
             android:shadowColor="@color/positive_drop_shadow"
@@ -54,11 +50,11 @@
 
     <ImageView
         android:id="@+id/row_feedfavicon"
-        android:layout_width="23dp"
-        android:layout_height="23dp"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
         android:contentDescription="@string/description_favicon" />
 
     <TextView
@@ -74,7 +70,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/folder_text"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:textStyle="bold" />
 
 </RelativeLayout>

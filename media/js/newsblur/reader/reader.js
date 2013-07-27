@@ -1092,7 +1092,6 @@
                 'unread_threshold_temporarily': null,
                 'river_view': false,
                 'social_view': false,
-                'non_premium_river_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false
             });
@@ -1121,6 +1120,7 @@
             
             if (_.isUndefined(options.search)) {
                 delete this.flags.search;
+                this.flags.searching = false;
             }
             this.model.flags['no_more_stories'] = false;
             this.$s.$feed_scroll.scrollTop(0);
@@ -1177,7 +1177,7 @@
                        this.active_feed == 'river:global') {
                 this.open_river_blurblogs_stories({'global': true});
             } else if (this.flags['social_view']) {
-                this.open_social_stories(this.active_feed);
+                this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
@@ -1185,6 +1185,12 @@
                                         this.active_folder);
             } else {
                 this.open_feed(this.active_feed, options);
+            }
+            
+            if (options.search && !_.contains(['feed', 'text', 'story'], this.story_view)) {
+                this.switch_taskbar_view('feed', {
+                    skip_save_type: true
+                });
             }
         },
         
@@ -1592,12 +1598,6 @@
             }
             
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
-                if (!NEWSBLUR.Globals.is_premium &&
-                    NEWSBLUR.Globals.is_authenticated &&
-                    this.flags['river_view'] &&
-                    this.active_feed.indexOf('river:') != -1) {
-                    this.flags['non_premium_river_view'] = true;
-                }
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
@@ -1702,12 +1702,6 @@
             }
             
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
-                if (!NEWSBLUR.Globals.is_premium &&
-                    NEWSBLUR.Globals.is_authenticated &&
-                    this.flags['river_view'] &&
-                    this.active_feed.indexOf('river:') != -1) {
-                    this.flags['non_premium_river_view'] = true;
-                }
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
@@ -1767,10 +1761,9 @@
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
             feed.set('selected', true, options);
+            this.set_correct_story_view_for_feed(this.active_feed);
             this.make_feed_title_in_stories();
             this.$s.$body.addClass('NB-view-river');
-            
-            this.set_correct_story_view_for_feed(this.active_feed);
             
             // TODO: Only make feed the default for blurblogs, not overriding an explicit pref.
             this.switch_taskbar_view(this.story_view);
@@ -2271,7 +2264,9 @@
         },
         
         make_feed_title_in_stories: function(options) {
-            if (!_.isUndefined(this.flags.search) && NEWSBLUR.app.story_titles_header) {
+            console.log(["make_feed_title_in_stories", options, this.flags.search, this.flags.searching]);
+            if ((this.flags.search || this.flags.searching)
+                && NEWSBLUR.app.story_titles_header) {
                 console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
@@ -5450,10 +5445,6 @@
                 e.preventDefault();
                 self.open_keyboard_shortcuts_modal();
             });
-            $document.bind('keydown', '/', function(e) {
-                e.preventDefault();
-                self.open_keyboard_shortcuts_modal();
-            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference('keyboard_verticalarrows') == 'scroll') {
@@ -5584,10 +5575,6 @@
                 e.preventDefault();
                 self.toggle_sidebar();
             });
-            $document.bind('keydown', 'shift+t', function(e) {
-                e.preventDefault();
-                self.toggle_story_titles_pane(true);
-            });
             $document.bind('keydown', 'shift+f', function(e) {
                 e.preventDefault();
                 self.toggle_sidebar();
@@ -5666,13 +5653,13 @@
                 e.preventDefault();
                 self.open_story_trainer();
             });
+            $document.bind('keypress', 'shift+t', function(e) {
+                e.preventDefault();
+                self.open_feed_intelligence_modal(1);
+            });
             $document.bind('keypress', 'a', function(e) {
                 e.preventDefault();
                 self.open_add_feed_modal();
-            });
-            $document.bind('keypress', 'f', function(e) {
-                e.preventDefault();
-                self.open_feed_intelligence_modal(1);
             });
             $document.bind('keypress', 'o', function(e) {
                 e.preventDefault();
@@ -5728,6 +5715,12 @@
             $document.bind('keydown', 'g', function(e) {
                 e.preventDefault();
                 NEWSBLUR.app.feed_selector.toggle();
+            });
+            $document.bind('keydown', '/', function(e) {
+                e.preventDefault();
+                if (NEWSBLUR.app.story_titles_header.search_view) {
+                    NEWSBLUR.app.story_titles_header.search_view.focus();
+                }
             });
             $document.bind('keydown', 'shift+s', function(e) {
                 e.preventDefault();

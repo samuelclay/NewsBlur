@@ -12,9 +12,15 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:padding="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textColor="@color/half_darkgray"
+            android:textSize="12sp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:drawableLeft="@drawable/share_half"
             android:text="@string/share_this" />
         
         <Button
@@ -22,9 +28,15 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:padding="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textColor="@color/half_darkgray"
+            android:textSize="12sp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:drawableLeft="@drawable/clock_half"
             android:text="@string/save_this" />
 
     </LinearLayout>
