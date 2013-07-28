@@ -4,7 +4,7 @@
 
 {% block bodyclass %}NB-static NB-static-about{% endblock %}
 
-{% block title %}About NewsBlur{% endblock %}
+{% block title %}关于 NewsZeit{% endblock %}
 
 {% block head %}
     
@@ -13,84 +13,64 @@
 {% block content %}
 
   <div class="NB-static-title">
-    About NewsBlur
+    关于 NewsZeit
   </div>
   
   <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">What:</span> NewsBlur's Motto</h5>
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">What:</span> NewsZeit 的理念</h5>
     <div class="NB-module-content">
       <ul class="NB-about-what">
-        <li>NewsBlur is a personal news reader that brings people together to talk about the world.</li>
+        <li>NewsZeit 是一个 RSS 新闻阅读器，将人们聚集到一起来谈论这个世界上正在发生的新闻。</li>
       </ul>
     </div>
   </div>
   
    <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Why:</span> What makes NewsBlur better</h5>
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Why:</span> 为什么选择 NewsZeit</h5>
     <div class="NB-module-content">
       <ul class="NB-about-why">
-        <li><b>News reading</b>: With first-class iOS, Android, and web apps, NewsBlur is an easy and organized way to read the news wherever you are.</li>
-        <li><b>Training</b>: By using NewsBlur's training filters, you can hide stories you don't want to see and highlight the stories that interest you. Teaching NewsBlur your preferences (or lack thereof) for certain blogs, authors, and topics cuts down on the noise and connects you with the news that interests you most.</li>
-        <li><b>Social</b>: Sharing and talking about the news is not only fun, but allows you to break out of your routine and embrace the serendipity of your friends' tastes.</li>
-        <li><b>Blurblogs</b>: Even if your friends aren't NewsBlur users, they can keep up with what you're reading through a public blog of all the stories you've shared, including your comments.</li>
+        <li><b>新闻阅读</b>：通过网页以及即将到来的 iOS、Android 应用， NewsZeit 让您可以方便而有条理地阅读新闻，无论你身在何处。</li>
+        <li><b>智能训练</b>：通过 NewsZeit 的训练系统，你可以隐藏你不想看到的文章，并突出你感兴趣的文章。 通过训练，你可以教会 NewsZeit 识别出你对某个博客、作者或话题的喜好，减少“噪音”以使你能直接看到你感兴趣的新闻。</li>
+        <li><b>社会化</b>：在 NewsZeit 你不仅能够分享和讨论正在阅读的新闻，你还可以改变一成不变的订阅列表，去看看朋友们的阅读趣味。</li>
+        <li><b>Zeitblogs</b>：所有您分享的文章包括你的注释会形成一个博客（Zeitblog），就算你的朋友不是 NewsZeit 的用户，他们也可以通过你的 Zeitblog 了解你正在阅读什么。</li>
       </ul>
     </div>
   </div>
 
   <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Who:</span> A Labor of Love</h5>
-    <div class="NB-module-content">
-      <ul class="NB-about-who">
-        <li>
-            <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg">
-            <div class="NB-about-who-name">Samuel Clay</div>
-            <div class="NB-acount-who-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></div>
-            <div class="NB-about-who-website"><a href="http://www.samuelclay.com">www.samuelclay.com</a></div>
-            <div class="NB-about-who-email"><a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a></div>
-        </li>
-        <li>
-            <img src="{{ MEDIA_URL }}img/static/Shiloh.jpg">
-            <div class="NB-about-who-name">Shiloh</div>
-            <div class="NB-acount-who-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></div>
-            <div class="NB-about-who-email"><a href="mailto:shiloh@newsblur.com">shiloh@newsblur.com</a></div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">When:</span> The story behind NewsBlur</h5>
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">When:</span> NewsZeit 的背景</h5>
     <div class="NB-module-content">
       <ul class="NB-about-what">
-        <li>During the summer of 2009, Samuel Clay wanted a better way to read the news. So he built the first version of NewsBlur almost entirely underground on the A train in New York City.</li>
-        <li>In mid-2010, NewsBlur launched to the public and to favorable reviews. In October 2010, premium accounts launched, paying for NewsBlur's increasing server costs.</li>
-        <li>After Samuel enters Y Combinator in the summer of 2012, he's able to launch lots of new features, like Blurblogs, the iPad and Android apps, and better intelligence training. Samuel and his dog Shiloh celebrate with champagne and biscuits.</li>
-        <li>On March 13th, 2013, Google sunsets Reader and Samuel's world is turned upside-down as thousands of users flee the dying giant. NewsBlur is one of the top contenders for the successor to the RSS throne and by charging cash American dollar for premium accounts, NewsBlur is able to offer sustainability and longevity as one of its selling points.</li>
+        <li>3月14日，Google 宣布将于今年7月1日关闭其 RSS 订阅服务 Google Reader。和大家一样，作为 Google Reader 的忠实用户，我开始寻找其替代品。</li>
+        <li>我试用了很多产品，豆瓣阅读、鲜果、有道阅读、Feedly、gReader等等，但没有找到满意的。这些产品有的做得不够好并停止更新，有的和 Google Reader 定位不同，还有的干脆只是 Google Reader 的一个客户端（可能会随着 Google Reader 的关闭而死去），最终我找到了 NewsBlur。</li>
+        <li>NewsBlur 设计简洁流畅，功能完善，是一个优秀的产品。但是使用过程中我遇到了一些问题：1. 中文支持不好，作为一个使用中文的用户无法正常分享评论新闻，因为整个社区说的都是英文；2. 服务器在美国，速度较慢；3. “GFW” 问题，你们懂的。后来我发现 NewsBlur 已在 MT License 下开放源代码，经过和原开发者沟通之后，我决定利用 NewsBlur 的代码部署 NewsZeit 服务，为中国用户提供支持。</li>
+        <li>4月份项目在点名时间上线，征集支持者，得到了很多用户的支持。</li>
+        <li>经过一个月准备，克服了种种困难，终于在5月份 NewsZeit 正式上线。</li>
       </ul>
     </div>
   </div>
   
   <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span> Server-side technologies</h5>
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span> 服务器端的技术</h5>
     <div class="NB-module-content">
       <ul class="NB-about-server">
-        <li><a href="http://www.djangoproject.com">Django</a>: Web framework written in Python, used to serve all pages.</li>
-        <li><a href="http://ask.github.com/celery">Celery</a> &amp; <a href="http://www.rabbitmq.com">RabbitMQ</a>: Asynchronous queueing server, used to fetch and parse RSS feeds.</li>
-        <li><a href="http://www.mongodb.com">MongoDB</a>, <a href="http://www.mongodb.com/pymongo">Pymongo</a>, &amp; <a href="http://www.github.com/hmarr/mongoengine">Mongoengine</a>: Non-relational database, used to store stories, read stories, feed/page fetch histories, and proxied sites.</li>
-        <li class=""><a href="http://www.postgresql.com">PostgreSQL</a>: Relational database, used to store feeds, subscriptions, and user accounts.</li>
-        <li class="last"><a href="http://www.redis.io">Redis</a>: Non-relational database, used to calculate unread stories, and used to store friendships and unread story lists. Also used for pub/sub for real-time story updates. Also used as celery's queue backend. Fantastic database technology that changed the game for NewsBlur.</li>
+        <li><a href="http://www.djangoproject.com">Django</a>：Python 语言 Web 框架，用于所有页面。</li>
+        <li><a href="http://ask.github.com/celery">Celery</a> &amp; <a href="http://www.rabbitmq.com">RabbitMQ</a>：异步消息队列服务器，用于抓取和解析 RSS feeds。</li>
+        <li><a href="http://www.mongodb.com">MongoDB</a>, <a href="http://www.mongodb.com/pymongo">Pymongo</a>, &amp; <a href="http://www.github.com/hmarr/mongoengine">Mongoengine</a>：非关系型数据库，用于存储文章、feed 抓取的记录等内容。</li>
+        <li class=""><a href="http://www.postgresql.com">PostgreSQL</a>：关系数据库，用于保存 feeds、订阅、以及用户帐户。</li>
+        <li class="last"><a href="http://www.redis.io">Redis</a>：非关系型数据库，用于计算未读文章，保存好友关系和未读文章列表，还用于发布和订阅实时文章更新，以及作为 celery 的后端。</li>
       </ul>
     </div>
   </div>
 
   <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span> Client-side and design</h5>
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span> 客户端和设计</h5>
     <div class="NB-module-content">
       <ul class="NB-about-client">
-        <li><a href="http://www.jquery.com">jQuery</a>: Cross-browser compliant JavaScript code. IE works without effort.</li>
-        <li><a href="http://documentcloud.github.com/backbone/">Backbone.js</a>: Models and views make for easy maintenance.</li>
-        <li><a href="http://documentcloud.github.com/underscore/">Underscore.js</a>: Functional programming for JavaScript. Indispensible.</li>
-        <li><b>Miscellaneous jQuery Plugins:</b> Everything from resizable layouts, to progress bars, sortables, date handling, colors, corners, JSON, animations. See the complete list on <a href="http://github.com/samuelclay/">NewsBlur's GitHub repository</a></li>
+        <li><a href="http://www.jquery.com">jQuery</a>：跨平台兼容的 JavaScript 框架，同样适用于 IE 浏览器。</li>
+        <li><a href="http://documentcloud.github.com/backbone/">Backbone.js</a>：一个MVC 架构的javaScript库。</li>
+        <li><a href="http://documentcloud.github.com/underscore/">Underscore.js</a>：实用的JavaScript工具框架，提供了与Prototype.js相似的功能编程支持。</li>
+        <li><b>各种 jQuery 插件</b>：使用很多插件，用于处理布局大小调整、进度条、排序、日期处理、颜色、边角、JSON以及动画等等。</li>
       </ul>
     </div>
   </div>
