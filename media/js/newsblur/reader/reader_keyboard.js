@@ -25,9 +25,9 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, '一般'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, '站点'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, '文章')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
