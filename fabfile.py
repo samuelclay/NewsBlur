@@ -1219,7 +1219,16 @@ def kill_celery():
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
-    local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+
+    tries_left = 5
+    while True:
+        try:
+            local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+            break
+        except Exception, e:
+            print " ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's')
+            tries_left -= 1
+            if tries_left <= 0: break
 
 
 def transfer_assets():

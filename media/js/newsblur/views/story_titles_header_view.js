@@ -86,6 +86,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 type: 'story'
             }).render();
             $view = this.view.$el;
+            console.log(["appending", $view, this.search_view.$el]);
             $view.append(this.search_view.$el);
         }
         
