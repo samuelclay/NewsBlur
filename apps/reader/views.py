@@ -579,7 +579,7 @@ def load_single_feed(request, feed_id):
     
     unread_story_hashes = []
     if stories:
-        if read_filter == 'all' and usersub:
+        if (read_filter == 'all' or query) and usersub:
             unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
@@ -604,10 +604,10 @@ def load_single_feed(request, feed_id):
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         if usersub:
             story['read_status'] = 1
-            if read_filter == 'unread' and usersub:
-                story['read_status'] = 0
-            elif read_filter == 'all' and usersub:
+            if (read_filter == 'all' or query) and usersub:
                 story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
+            elif read_filter == 'unread' and usersub:
+                story['read_status'] = 0
             if story['story_hash'] in starred_stories:
                 story['starred'] = True
                 starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
