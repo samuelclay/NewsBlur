@@ -33,6 +33,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         this.search_view = new NEWSBLUR.Views.FeedSearchView({
             feedbar_view: this
         }).render();
+        console.log(["render story titles header", NEWSBLUR.reader.active_feed, this.showing_fake_folder, NEWSBLUR.reader.flags['river_view'], this.search_view]);
         
         if (NEWSBLUR.reader.active_feed == 'starred') {
             $view = $(_.template('\
