@@ -66,7 +66,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
-            <%= feed.get("feed_title") %>\
+            <%- feed.get("feed_title") %>\
             <% if (type == "story") { %>\
                 <div class="NB-feedbar-mark-feed-read"></div>\
             <% } %>\
