@@ -739,18 +739,15 @@ def load_starred_stories(request):
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(
-                user_id=user.pk, 
-                story_title__icontains=query
-            ).order_by('-starred_date')[offset:offset+limit]
+            stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
         else:
-            mstories = []
+            stories = []
             message = "You must be a premium subscriber to search."
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
         ).order_by('-starred_date')[offset:offset+limit]
-    stories        = Feed.format_stories(mstories)
+        stories = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
     
