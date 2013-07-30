@@ -2264,10 +2264,9 @@
         },
         
         make_feed_title_in_stories: function(options) {
-            console.log(["make_feed_title_in_stories", options, this.flags.search, this.flags.searching]);
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header) {
-                console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
+                // console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
             

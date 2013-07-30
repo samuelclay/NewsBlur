@@ -13,7 +13,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         this.$story_titles_feedbar = $(".NB-story-titles-header");
         this.$feed_view_feedbar = $(".NB-feed-story-view-header");
         
-        
         this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
@@ -30,10 +29,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
     render: function() {
         var $view;
-        this.search_view = new NEWSBLUR.Views.FeedSearchView({
-            feedbar_view: this
-        }).render();
-        console.log(["render story titles header", NEWSBLUR.reader.active_feed, this.showing_fake_folder, NEWSBLUR.reader.flags['river_view'], this.search_view]);
         
         if (NEWSBLUR.reader.active_feed == 'starred') {
             $view = $(_.template('\
@@ -43,6 +38,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="folder_title_text">Saved Stories</div>\
                 </div>\
             ', {}));
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
             $view.append(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
@@ -86,13 +84,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 type: 'story'
             }).render();
             $view = this.view.$el;
-            console.log(["appending", $view, this.search_view.$el]);
-            $view.append(this.search_view.$el);
+            this.search_view = this.view.search_view;
         }
         
         this.$el.html($view);
-        this.setElement($view);            
-        this.show_feed_hidden_story_title_indicator();
         
         return this;
     },
@@ -114,7 +109,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (this.view) {
             this.view.remove();
         }
-        Backbone.View.prototype.remove.call(this);
+        // Backbone.View.prototype.remove.call(this);
     },
     
     // ===========

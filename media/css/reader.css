@@ -9889,7 +9889,7 @@ form.opml_import_form input {
 .NB-search-close {
     display: none;
     position: absolute;
-    right: 1px;
+    right: 2px;
     top: 7px;
     z-index: 1;
     width: 12px;
