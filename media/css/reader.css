@@ -1152,7 +1152,7 @@ background: transparent;
 }
 .NB-story-pane-west .NB-feedbar .NB-story-title-search {
     position: relative;
-    margin: 2px 0 5px 24px;
+    margin: 2px 0 5px 28px; /* 24+4 takes the border into account */
     float: left;
 }
 .NB-story-pane-west .NB-feedbar .NB-story-title-search input {
@@ -1387,7 +1387,7 @@ background: transparent;
 .NB-story-pane-west .NB-feedbar .NB-story-title-indicator {
     position: static;
     float: left;
-    margin: 4px 4px 2px 0;
+    margin: 6px 0px 2px 24px;
 }
 .NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count {
     float: left;
