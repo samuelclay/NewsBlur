@@ -201,17 +201,19 @@
         },
         
         adjust_for_narrow_window: function() {
-            var north, center;
+            var north, center, west;
             var story_layout = NEWSBLUR.assets.preference('story_layout');
             if (story_layout == 'split') {
                 north = NEWSBLUR.reader.layout.contentLayout.panes.north;
                 center = NEWSBLUR.reader.layout.contentLayout.panes.center;
+                west = NEWSBLUR.reader.layout.contentLayout.panes.west;
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
-
+            var content_width = center.width() + (west ? west.width() : 0);
+            
             if ((north && north.width() < 640) ||
-                (center && center.width() < 780)) {
+                (content_width < 780)) {
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
                 this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
                 this.$s.$text_view.addClass('NB-feed-story-view-narrow');
