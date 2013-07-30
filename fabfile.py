@@ -496,6 +496,8 @@ def switch_forked_mongoengine():
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
+    sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
+    sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
 
 def setup_ulimit():
     # Increase File Descriptor limits.

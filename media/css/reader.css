@@ -2819,6 +2819,10 @@ background: transparent;
 .NB-story-share-profiles.NB-story-share-profiles-shares .NB-story-share-profile {
     float: right;
 }
+.NB-story-share-profiles .NB-story-share-profiles-comments-friends,
+.NB-story-share-profiles .NB-story-share-profiles-comments-public {
+    float: left;
+}
 .NB-story-share-profiles .NB-story-share-profiles-shares-public,
 .NB-story-share-profiles .NB-story-share-profiles-shares-friends {
     display: inline;
