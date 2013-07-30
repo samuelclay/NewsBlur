@@ -83,6 +83,14 @@ public class ViewUtils {
 		View v = inflater.inflate(R.layout.tag_view, null);
 
 		TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+        
+        // due to a framework bug, the below modification of background resource also resets the declared
+        // padding on the view.  save a copy of said padding so it can be re-applied after the change.
+        int oldPadL = v.getPaddingLeft();
+        int oldPadT = v.getPaddingTop();
+        int oldPadR = v.getPaddingRight();
+        int oldPadB = v.getPaddingBottom();
+
 		tagText.setText(tag);
 
 		if (classifier != null && classifier.tags.containsKey(tag)) {
@@ -96,6 +104,7 @@ public class ViewUtils {
                 tagText.setTextColor(tag_red_text);
                 break;
 			}
+            v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
 		}
 
 		v.setOnClickListener(new OnClickListener() {
