@@ -824,12 +824,9 @@ body {
 
 .NB-feedlist .NB-feeds-list-highlight {
     position: relative;
-    background: #f6a828 url('/media/css/jquery-ui/images/ui-bg_highlight-soft_75_ffe45c_1x100.png') 0 50% repeat-x;
+    background-color: #f6a828;
     border-top: 1px solid #A8A8A8;
     border-bottom: 1px solid #A8A8A8;
-}
-.NB-feedlist .NB-feeds-list-highlight .feed_title {
-/*    color: #FFF;*/
 }
 
 .NB-feed-sorting {
@@ -1148,6 +1145,18 @@ background: transparent;
 }
 .NB-story-pane-west .NB-feedbar .NB-feedbar-options-container {
     position: static;
+    margin: 4px 0 5px 24px;
+    overflow: hidden;
+    float: left;
+    width: auto;
+}
+.NB-story-pane-west .NB-feedbar .NB-story-title-search {
+    position: relative;
+    margin: 2px 0 5px 24px;
+    float: left;
+}
+.NB-story-pane-west .NB-feedbar .NB-story-title-search input {
+    float: left;
 }
 .NB-feedbar .NB-feedbar-options {
     cursor: pointer;
@@ -1224,7 +1233,7 @@ background: transparent;
 .NB-story-pane-west .NB-feedbar .NB-feedbar-mark-feed-read {
     position: static;
     float: right;
-    margin: 4px 0 4px 4px;
+    margin: 6px 0 6px 4px;
 }
 
 .NB-feedbar .NB-feedlist-manage-icon {
@@ -9876,7 +9885,7 @@ form.opml_import_form input {
     padding: 2px 18px 1px 18px;
     background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 4px 3px;
     background-size: 12px;
-    margin: 3px auto 0;
+    margin: 0;
     display: block;
     font-size: 11px;
     outline: none;
@@ -9894,7 +9903,7 @@ form.opml_import_form input {
     display: none;
     position: absolute;
     right: 2px;
-    top: 7px;
+    top: 4px;
     z-index: 1;
     width: 12px;
     height: 12px;
@@ -9916,7 +9925,7 @@ form.opml_import_form input {
 }
 .NB-story-title-search {
     position: absolute;
-    top: 0px;
+    top: 3px;
     right: 4px;
 }
 .NB-story-title-search-input {
@@ -9926,6 +9935,7 @@ form.opml_import_form input {
     -ms-transition: all .22s ease-in-out;
 
     width: 24px;
+    margin: 0;
 }
 .NB-searching .NB-story-title-search-input {
     width: 174px;
