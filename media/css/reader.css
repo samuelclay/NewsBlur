@@ -1233,7 +1233,7 @@ background: transparent;
 .NB-story-pane-west .NB-feedbar .NB-feedbar-mark-feed-read {
     position: static;
     float: right;
-    margin: 6px 0 6px 4px;
+    margin: 6px 0 -2px 4px;
 }
 
 .NB-feedbar .NB-feedlist-manage-icon {
