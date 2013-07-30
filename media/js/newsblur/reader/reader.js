@@ -203,6 +203,9 @@
         adjust_for_narrow_window: function() {
             var north, center, west;
             var story_layout = NEWSBLUR.assets.preference('story_layout');
+            var $windows = this.$s.$body.add(this.$s.$feed_view)
+                                        .add(this.$s.$story_titles)
+                                        .add(this.$s.$text_view);
             if (story_layout == 'split') {
                 north = NEWSBLUR.reader.layout.contentLayout.panes.north;
                 center = NEWSBLUR.reader.layout.contentLayout.panes.center;
@@ -212,17 +215,13 @@
             }
             var content_width = center.width() + (west ? west.width() : 0);
             
+            $windows.toggleClass('NB-narrow-content', center.width() < 780);
+            
             if ((north && north.width() < 640) ||
                 (content_width < 780)) {
-                this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$body.addClass('NB-feed-story-view-narrow');
+                $windows.addClass('NB-narrow');
             } else {
-                this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.removeClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$body.removeClass('NB-feed-story-view-narrow');
+                $windows.removeClass('NB-narrow');
             }
             
             this.apply_tipsy_titles();
@@ -403,7 +402,7 @@
                     gravity: 's',
                     delayIn: 375
                 }).tipsy('enable');
-                $('.NB-feed-story-view-narrow .NB-taskbar-button.NB-tipsy').tipsy({
+                $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 'n',
                     delayIn: 375,
                     title: 'tipsy-title'

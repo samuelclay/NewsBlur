@@ -1987,7 +1987,7 @@ background: transparent;
 .NB-feed-story.NB-selected .NB-feed-story-header-info {
     border-left: 3px solid #EBAA74;
 }
-.NB-feed-story-view-narrow .NB-feed-story .NB-feed-story-header-info {
+.NB-narrow-content .NB-feed-story .NB-feed-story-header-info {
     padding-right: 28px;
 }
 
@@ -2366,7 +2366,7 @@ background: transparent;
     padding: 12px 0 0;
     max-width: 700px;
 }
-.NB-feed-story .NB-feed-story-view-narrow .NB-feed-story-content {
+.NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
 }
 .NB-pref-hide-changes .NB-feed-story-content ins,
@@ -2408,7 +2408,7 @@ background: transparent;
 .NB-feed-story .NB-story-content-wrapper {
     margin: 0 236px 28px 28px;
 }
-.NB-feed-story-view-narrow .NB-feed-story .NB-story-content-wrapper {
+.NB-narrow-content .NB-feed-story .NB-story-content-wrapper {
     margin-right: 28px;
 }
 .NB-story-content-wrapper.NB-story-content-wrapper-height-truncated {
@@ -2527,7 +2527,7 @@ background: transparent;
     background-color: white;
     position: relative;
 }
-.NB-feed-story-view-narrow .NB-feed-story-comments {
+.NB-narrow-content .NB-feed-story-comments {
     margin-right: 28px;
 }
 .NB-story-comment {
@@ -2938,7 +2938,7 @@ background: transparent;
     width: 194px;
 }
 
-.NB-feed-story-view-narrow .NB-feed-story-sideoptions-container {
+.NB-narrow-content .NB-feed-story-sideoptions-container {
     width: auto;
     position: static;
     right: 0;
@@ -2971,12 +2971,12 @@ background: transparent;
     -o-user-select: none;
     user-select: none;
 }
-.NB-feed-story-view-narrow .NB-sideoption {
+.NB-narrow-content .NB-sideoption {
     float: left;
     margin: 8px 8px 0 0;
     border: 1px solid #C0C0C0;
     clear: right;
-    width: 174px;
+    width: 148px;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
@@ -3000,7 +3000,7 @@ background: transparent;
 }
 
 .NB-sideoption .NB-sideoption-title {
-    padding: 7px 36px 8px 6px;
+    padding: 7px 24px 8px 8px;
     color: white;
     text-shadow: none;
     height: 32px;
@@ -3039,7 +3039,7 @@ background: transparent;
 }
 .NB-menu-manage .NB-sideoption-share-wrapper {
 }
-.NB-feed-story-view-narrow .NB-sideoption-share-wrapper {
+.NB-narrow-content .NB-sideoption-share-wrapper {
     clear: both;
     width: 100%;
     margin: 0;
@@ -3777,7 +3777,7 @@ background: transparent;
     box-shadow: #9A9A9A 2px 2px 0px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
-.NB-feed-story-view-narrow #story_taskbar .NB-task-title {
+.NB-narrow #story_taskbar .NB-task-title {
     display: none;
 }
 
