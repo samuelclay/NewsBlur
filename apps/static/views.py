@@ -62,4 +62,6 @@ def ios_ipa(request):
     
     logging.user(request, "~SK~FR~BBDownloading NewsBlur.ipa...")
     return HttpResponse(manifest, content_type='application/octet-stream')
-    
+
+def haproxy_check(request):
+    return HttpResponse("OK")

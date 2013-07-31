@@ -201,26 +201,29 @@
         },
         
         adjust_for_narrow_window: function() {
-            var north, center;
+            var north, center, west;
             var story_layout = NEWSBLUR.assets.preference('story_layout');
+            var content_width;
+            var $windows = this.$s.$body.add(this.$s.$feed_view)
+                                        .add(this.$s.$story_titles)
+                                        .add(this.$s.$text_view);
             if (story_layout == 'split') {
                 north = NEWSBLUR.reader.layout.contentLayout.panes.north;
                 center = NEWSBLUR.reader.layout.contentLayout.panes.center;
+                west = NEWSBLUR.reader.layout.contentLayout.panes.west;
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
-
+            if (center) {
+                $windows.toggleClass('NB-narrow-content', center.width() < 780);
+                content_width = center.width() + (west ? west.width() : 0);
+            }
+            
             if ((north && north.width() < 640) ||
-                (center && center.width() < 780)) {
-                this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$body.addClass('NB-feed-story-view-narrow');
+                (content_width && content_width < 780)) {
+                $windows.addClass('NB-narrow');
             } else {
-                this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.removeClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$body.removeClass('NB-feed-story-view-narrow');
+                $windows.removeClass('NB-narrow');
             }
             
             this.apply_tipsy_titles();
@@ -401,7 +404,7 @@
                     gravity: 's',
                     delayIn: 375
                 }).tipsy('enable');
-                $('.NB-feed-story-view-narrow .NB-taskbar-button.NB-tipsy').tipsy({
+                $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 'n',
                     delayIn: 375,
                     title: 'tipsy-title'
@@ -2370,10 +2373,9 @@
         },
         
         make_feed_title_in_stories: function(options) {
-            console.log(["make_feed_title_in_stories", options, this.flags.search, this.flags.searching]);
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header) {
-                console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
+                // console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
             

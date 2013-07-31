@@ -18,7 +18,7 @@ from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
 # from utils import feedparser
 from utils import feedparser_trunk as feedparser
-from utils.story_functions import pre_process_story
+from utils.story_functions import pre_process_story, strip_tags
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
 # from utils.feed_functions import mail_feed_error_to_admin
@@ -217,7 +217,7 @@ class ProcessFeed:
         self.fpf.entries = self.fpf.entries[:100]
         
         if self.fpf.feed.get('title'):
-            self.feed.feed_title = self.fpf.feed.get('title')
+            self.feed.feed_title = strip_tags(self.fpf.feed.get('title'))
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             self.feed.data.feed_tagline = utf8encode(tagline)

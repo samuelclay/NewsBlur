@@ -106,7 +106,7 @@ def load_social_stories(request, user_id, username=None):
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
     unread_story_hashes = []
-    if read_filter == 'all' and socialsub:
+    if (read_filter == 'all' or query) and socialsub:
         unread_story_hashes = socialsub.get_stories(read_filter='unread', limit=500)
     story_hashes = [story['story_hash'] for story in stories]
 
@@ -129,10 +129,10 @@ def load_social_stories(request, user_id, username=None):
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
         
         story['read_status'] = 1
-        if read_filter == 'unread' and socialsub:
-            story['read_status'] = 0
-        elif read_filter == 'all' and socialsub:
+        if (read_filter == 'all' or query) and socialsub:
             story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
+        elif read_filter == 'unread' and socialsub:
+            story['read_status'] = 0
 
         if story['story_hash'] in starred_stories:
             story['starred'] = True

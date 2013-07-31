@@ -332,7 +332,7 @@ def setup_user():
 
 def copy_ssh_keys():
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), "local_keys")
-    run("echo `cat local_keys` >> .ssh/authorized_keys")
+    run("echo `\ncat local_keys` >> .ssh/authorized_keys")
     run("rm local_keys")
 
 def setup_repo():
@@ -496,6 +496,8 @@ def switch_forked_mongoengine():
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
+    sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
+    sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
 
 def setup_ulimit():
     # Increase File Descriptor limits.
@@ -1219,7 +1221,21 @@ def kill_celery():
 def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
-    local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+
+    tries_left = 5
+    while True:
+        try:
+            success = False
+            with settings(warn_only=True):
+                local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+                success = True
+            if not success:
+                raise Exception("Ack!")
+            break
+        except Exception, e:
+            print " ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's')
+            tries_left -= 1
+            if tries_left <= 0: break
 
 
 def transfer_assets():

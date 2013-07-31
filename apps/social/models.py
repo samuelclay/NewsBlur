@@ -186,8 +186,8 @@ class MSocialProfile(mongo.Document):
         stories_db = MSharedStory.objects(
             Q(user_id=self.user_id) &
             (Q(story_title__icontains=query) |
-             Q(story_content__icontains=query) |
-             Q(story_author_name__icontains=query))
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
         ).order_by('-shared_date')[offset:offset+limit]
         stories = Feed.format_stories(stories_db)
         
