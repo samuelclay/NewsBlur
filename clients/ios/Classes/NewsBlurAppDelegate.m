@@ -2310,6 +2310,10 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
             [self flushOldCachedImages];
+        });
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
                 FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
@@ -2395,29 +2399,32 @@
 
 - (void)flushOldCachedImages {
     int deleted = 0;
+    int checked = 0;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
     NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
+    NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
+    NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
+    [df setDateFormat:@"EEEE d"];
     
+    NSString *filepath;
+    NSDate *creationDate;
     NSString* file;
     while (file = [en nextObject])
     {
-        NSError *error = nil;
-        NSString *filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
-        NSDate *creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
-        NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
-        [df setDateFormat:@"EEEE d"];
+        filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
+        creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
+        checked += 1;
         
         if ([creationDate compare:d] == NSOrderedAscending) {
             [[NSFileManager defaultManager]
              removeItemAtPath:[cacheDirectory stringByAppendingPathComponent:file]
-             error:&error];
+             error:nil];
             deleted += 1;
         }
     }
-    NSLog(@"Deleted %d old cached images", deleted);
+    NSLog(@"Deleted %d/%d old cached images", deleted, checked);
 }
 
 - (void)deleteAllCachedImages {
