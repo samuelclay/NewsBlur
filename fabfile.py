@@ -332,7 +332,7 @@ def setup_user():
 
 def copy_ssh_keys():
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), "local_keys")
-    run("echo `cat local_keys` >> .ssh/authorized_keys")
+    run("echo `\ncat local_keys` >> .ssh/authorized_keys")
     run("rm local_keys")
 
 def setup_repo():
