@@ -53,6 +53,14 @@ blockquote {
     margin: 20px 0;
 }
 
+pre {
+    width: 100%;
+}
+
+pre, code {
+    overflow: auto;
+}
+
 ins { 
 	text-decoration: none;
 }
