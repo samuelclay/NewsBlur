@@ -66,8 +66,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_search_premium_only_notification: function() {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
-                'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '搜索是一项 ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能'),
                 '.'
             ])
         ]);
