@@ -1130,7 +1130,8 @@ background: transparent;
 .NB-feedbar .feed.NB-feed-social .feed_favicon {
     border-radius: 3px;
 }
-.NB-feedbar .feed .feed_title {
+.NB-feedbar .feed .feed_title,
+.NB-feedbar .folder_title_text {
 /*    float: left;*/
   display: block;
   margin-left: 24px;
@@ -1230,12 +1231,6 @@ background: transparent;
     background-color: rgba(0, 0, 0, .1);
 }
 
-.NB-story-pane-west .NB-feedbar .NB-feedbar-mark-feed-read {
-    position: static;
-    float: right;
-    margin: 6px 0 -2px 4px;
-}
-
 .NB-feedbar .NB-feedlist-manage-icon {
     opacity: 0;
     display: none;
@@ -1320,9 +1315,6 @@ background: transparent;
     display: block;
 }
 
-.NB-feedbar .NB-folder {
-    padding-left: 24px;
-}
 .NB-feedbar .NB-folder .NB-folder-title {
     padding: 1px 0 1px 22px;
     font-size: 14px;
