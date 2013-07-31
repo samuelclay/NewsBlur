@@ -10,7 +10,7 @@ NewsZeit 是一个 RSS 新闻阅读器，它将人们聚集到一起来谈论这
 
 你还可以通过其他方式使用 NewsZeit:
 
-    * 下载免费的 iPad/iPhone 应用：即将推出，敬请期待
+    * 下载免费的 iPad/iPhone 应用：https://{% current_domain %}/ios/
     * 下载免费的 Android 应用：https://{% current_domain %}/android/
     * 下载 Safari，Firefox 和 Chrome 的浏览器插件：即将推出，敬请期待
 
