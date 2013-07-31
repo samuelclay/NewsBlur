@@ -203,6 +203,7 @@
         adjust_for_narrow_window: function() {
             var north, center, west;
             var story_layout = NEWSBLUR.assets.preference('story_layout');
+            var content_width;
             var $windows = this.$s.$body.add(this.$s.$feed_view)
                                         .add(this.$s.$story_titles)
                                         .add(this.$s.$text_view);
@@ -213,12 +214,13 @@
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
-            var content_width = center.width() + (west ? west.width() : 0);
-            
-            $windows.toggleClass('NB-narrow-content', center.width() < 780);
+            if (center) {
+                $windows.toggleClass('NB-narrow-content', center.width() < 780);
+                content_width = center.width() + (west ? west.width() : 0);
+            }
             
             if ((north && north.width() < 640) ||
-                (content_width < 780)) {
+                (content_width && content_width < 780)) {
                 $windows.addClass('NB-narrow');
             } else {
                 $windows.removeClass('NB-narrow');

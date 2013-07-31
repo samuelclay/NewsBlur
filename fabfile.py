@@ -1225,7 +1225,12 @@ def compress_assets(bundle=False):
     tries_left = 5
     while True:
         try:
-            local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+            success = False
+            with settings(warn_only=True):
+                local('PYTHONPATH=/srv/newsblur python utils/backups/s3.py set static.tgz')
+                success = True
+            if not success:
+                raise Exception("Ack!")
             break
         except Exception, e:
             print " ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's')

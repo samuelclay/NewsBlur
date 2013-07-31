@@ -15,6 +15,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .NB-feedbar-options"         : "open_options_popover",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click"                             : "open",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
@@ -72,10 +73,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
-              <div class="NB-story-title-indicator">\
-                  <div class="NB-story-title-indicator-count"></div>\
-                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
-              </div>\
               <div class="NB-feedbar-options-container">\
                   <span class="NB-feedbar-options">\
                       <div class="NB-icon"></div>\
@@ -83,6 +80,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                       &middot;\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
                   </span>\
+              </div>\
+              <div class="NB-search-container"></div>\
+              <div class="NB-story-title-indicator">\
+                  <div class="NB-story-title-indicator-count"></div>\
+                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
               </div>\
           <% } %>\
           <div class="NB-feed-exception-icon"></div>\
@@ -103,7 +105,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
-            $feed.append(this.search_view.$el);
+            $(".NB-search-container", $feed).html(this.search_view.$el);
         }
         
         this.$el.replaceWith($feed);
@@ -349,6 +351,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: this.model.id
         });
+    },
+    
+    show_hidden_story_titles: function() {
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
     
 });
