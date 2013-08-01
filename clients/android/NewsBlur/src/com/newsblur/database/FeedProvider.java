@@ -355,7 +355,7 @@ public class FeedProvider extends ContentProvider {
             String feedsQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
-                    ((selection == null) ? "" : selection) +
+                    ((selection == null) ? "" : " WHERE " + selection) +
 					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE";
             return db.rawQuery(feedsQuery, selectionArgs);
 
