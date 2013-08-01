@@ -752,10 +752,12 @@ static const CGFloat kFolderTitleHeight = 28;
         
         if (self.inPullToRefresh_) {
             self.inPullToRefresh_ = NO;
+            [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
                 [self.appDelegate startOfflineQueue];
             }];
         } else {
+            [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
                 [self refreshFeedList];
             }];

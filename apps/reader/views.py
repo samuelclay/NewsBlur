@@ -425,7 +425,7 @@ def refresh_feeds(request):
             feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
             feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
 
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    user_subs = UserSubscription.objects.filter(user=user, active=True)
     sub_feed_ids = [s.feed_id for s in user_subs]
 
     if favicons_fetching:
@@ -472,12 +472,13 @@ def interactions_count(request):
 def feed_unread_count(request):
     user = request.user
     feed_ids = request.REQUEST.getlist('feed_id')
+    force = request.REQUEST.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
     feeds = {}
     if feed_ids:
-        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, force=force)
 
     social_feeds = {}
     if social_feed_ids:

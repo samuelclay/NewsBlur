@@ -346,7 +346,7 @@ class UserSubscription(models.Model):
         return code, message, us
     
     @classmethod
-    def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False):
+    def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False, force=False):
         feeds = {}
         
         # Get subscriptions for user
@@ -355,15 +355,15 @@ class UserSubscription(models.Model):
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         
-        
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         for i, sub in enumerate(user_subs):
             # Count unreads if subscription is stale.
-            if (sub.needs_unread_recalc or 
+            if (force or 
+                sub.needs_unread_recalc or 
                 sub.unread_count_updated < UNREAD_CUTOFF or 
                 sub.oldest_unread_story_date < UNREAD_CUTOFF):
-                sub = sub.calculate_feed_scores(silent=True)
+                sub = sub.calculate_feed_scores(silent=True, force=force)
             if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
 
             feed_id = sub.feed_id

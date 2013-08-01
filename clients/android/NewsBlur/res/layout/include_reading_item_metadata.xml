@@ -59,7 +59,7 @@
             android:layout_marginLeft="16dp"
             android:layout_below="@id/item_feed_border"
             android:textColor="@color/story_title_unread"
-            android:textSize="16sp" />
+            android:textSize="17sp" />
 
         <TextView
             android:id="@+id/reading_item_date"
