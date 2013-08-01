@@ -261,6 +261,7 @@
     appDelegate.hasLoadedFeedDetail = NO;
     self.pageFetching = NO;
     self.pageFinished = NO;
+    self.isOffline = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
@@ -293,6 +294,8 @@
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!appDelegate.storyLocationsCount && self.feedPage == 1) {
+            self.isOffline = YES;
+            [self showLoadingNotifier];
             [self loadOfflineStories];
         }
     });
@@ -331,6 +334,13 @@
                 }];
             });
         }
+        
+        if (self.isOffline) {
+            [self loadOfflineStories];
+            [self showOfflineNotifier];
+            return;
+        }
+        
         if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
                                 NEWSBLUR_URL,
@@ -366,6 +376,7 @@
                 [self showOfflineNotifier];
             } else {
                 [self informError:[request error]];
+                self.pageFinished = YES;
             }
             [self.storyTitlesTable reloadData];
         }];
@@ -384,8 +395,12 @@
 }
 
 - (void)loadOfflineStories {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSArray *feedIds;
+        int limit = 12;
+        int offset = (self.feedPage - 1) * limit;
         
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
@@ -407,10 +422,11 @@
         } else {
             readFilterSql = @"";
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT 500",
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT %d OFFSET %d",
                          readFilterSql,
                          [feedIds componentsJoinedByString:@","],
-                         orderSql];
+                         orderSql,
+                         limit, offset];
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
@@ -426,28 +442,35 @@
             NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
                              [feedIds componentsJoinedByString:@","]];
             FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
-            NSMutableDictionary *unreadStoryHashes = [NSMutableDictionary dictionary];
-            
+            NSMutableDictionary *unreadStoryHashes;
+            if (self.feedPage == 1) {
+                unreadStoryHashes = [NSMutableDictionary dictionary];
+            } else {
+                unreadStoryHashes = self.unreadStoryHashes;
+            }
             while ([unreadHashCursor next]) {
                 [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
             }
-            
-            self.unreadStoryHashes = unreadStoryHashes;
+            self.unreadStoryHashes = unreadStoryHashes;            
         }
         
-        if ([offlineStories count]) {
-            [self renderStories:offlineStories];
-            [self showLoadingNotifier];
-        } else if (!self.isOffline) {
-            [self showLoadingNotifier];
-        }
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (!self.isOffline) {
+                NSLog(@"Online before offline rendered. Tossing offline stories.");
+                return;
+            }
+            if (![offlineStories count]) {
+                self.pageFinished = YES;
+            } else {
+                [self renderStories:offlineStories];
+            }
+        });
     }];
-    
-    self.pageFinished = YES;
+    });
 }
 
 - (void)showOfflineNotifier {
-    [self.notifier hide];
+//    [self.notifier hide];
     self.notifier.style = NBOfflineStyle;
     self.notifier.title = @"Offline";
     [self.notifier show];
@@ -482,6 +505,11 @@
                     [appDelegate prepareActiveCachedImages:db];
                 }];
             });
+        }
+        
+        if (self.isOffline) {
+            [self loadOfflineStories];
+            return;
         }
         
         NSString *theFeedDetailURL;
@@ -526,7 +554,6 @@
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            self.pageFinished = YES;
             if (request.isCancelled) {
                 NSLog(@"Cancelled");
                 return;
@@ -537,6 +564,7 @@
             } else {
                 [self informError:[request error]];
                 [self.storyTitlesTable reloadData];
+                self.pageFinished = YES;
             }
         }];
         [request setCompletionBlock:^(void) {
@@ -558,7 +586,6 @@
         NSLog(@"Cancelled");
         return;
     } else if ([request responseStatusCode] >= 500) {
-        self.pageFinished = YES;
         if (self.feedPage == 1) {
             self.isOffline = YES;
             [self loadOfflineStories];
@@ -566,6 +593,7 @@
         }
         if ([request responseStatusCode] == 503) {
             [self informError:@"In maintenance mode"];
+            self.pageFinished = YES;
         } else {
             [self informError:@"The server barfed."];
         }
