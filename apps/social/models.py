@@ -1575,7 +1575,7 @@ class MSharedStory(mongo.Document):
                time.mktime(self.shared_date.timetuple()))
         r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
                time.mktime(self.shared_date.timetuple()))
-        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW**24*60*60)
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
