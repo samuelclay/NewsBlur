@@ -242,10 +242,10 @@ class Feed(models.Model):
         if not r2:
             r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
-        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -1061,7 +1061,7 @@ class Feed(models.Model):
     @classmethod
     def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
         now = datetime.datetime.now()
-        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed_count = Feed.objects.latest('pk').pk
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
@@ -1757,19 +1757,19 @@ class MStory(mongo.Document):
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if not r2:
             r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
             feed_key = 'F:%s' % self.story_feed_id
             r.sadd(feed_key, self.story_hash)
-            r.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
             r2.sadd(feed_key, self.story_hash)
-            r2.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
             
             r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
             r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     def remove_from_redis(self, r=None, r2=None):
         if not r:
@@ -1786,7 +1786,7 @@ class MStory(mongo.Document):
     def sync_feed_redis(cls, story_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
         r.delete('F:%s' % story_feed_id)

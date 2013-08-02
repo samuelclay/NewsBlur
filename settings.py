@@ -188,6 +188,7 @@ LOGGING = {
 # ==========================
 
 DAYS_OF_UNREAD          = 14
+DAYS_OF_UNREAD_NEW      = 30
 SUBSCRIBER_EXPIRE       = 2
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'

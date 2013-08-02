@@ -897,8 +897,8 @@ class MSocialSubscription(mongo.Document):
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
             now = datetime.datetime.now()
-            two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-            max_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
+            unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            max_score = int(time.mktime(unread_cutoff.timetuple()))-1000
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -1575,10 +1575,10 @@ class MSharedStory(mongo.Document):
                time.mktime(self.shared_date.timetuple()))
         r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
                time.mktime(self.shared_date.timetuple()))
-        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW**24*60*60)
+        r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
