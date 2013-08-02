@@ -26,7 +26,7 @@ for collection in collections:
     os.system(cmd)
 
 print "Compressing %s..." % filename
-cmd = 'tar -jcf %s %s' % (filename, dir_name)
+cmd = 'tar -zcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
 print 'Uploading %s to S3...' % filename
