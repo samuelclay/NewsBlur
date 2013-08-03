@@ -117,7 +117,7 @@ class UserSubscription(models.Model):
 
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
-        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
         feed_counter = 0
 
@@ -197,8 +197,8 @@ class UserSubscription(models.Model):
                 min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 now = datetime.datetime.now()
-                two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-                min_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
+                unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+                min_score = int(time.mktime(unread_cutoff.timetuple()))-1000
             max_score = current_time
         else:
             byscorefunc = r.zrevrangebyscore
@@ -697,8 +697,8 @@ class RUserStory:
         def redis_commands(key):
             r.sadd(key, story_hash)
             r2.sadd(key, story_hash)
-            r.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            r2.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
 
         all_read_stories_key = 'RS:%s' % (user_id)
         redis_commands(all_read_stories_key)
@@ -753,14 +753,14 @@ class RUserStory:
             read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
             p2.sadd(read_feed_key, new_story_hash)
-            p.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            p.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            p2.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
 
             read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
             p2.sadd(read_user_key, new_story_hash)
-            p.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
+            p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         
         p.execute()
         p2.execute()
@@ -774,7 +774,7 @@ class RUserStory:
         r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
         p2 = r2.pipeline()
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         now = int(time.time())
         
         usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
@@ -786,17 +786,17 @@ class RUserStory:
                 p.sadd(rs_key, new_hash)
                 p2.sadd(rs_key, new_hash)
                 p2.zadd('z' + rs_key, new_hash, now)
-                p.expire(rs_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire(rs_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire('z' + rs_key, settings.DAYS_OF_UNREAD*24*60*60)
+                p.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p2.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p2.expire('z' + rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
                 
                 read_user_key = "RS:%s" % sub.user.pk
                 p.sadd(read_user_key, new_hash)
                 p2.sadd(read_user_key, new_hash)
                 p2.zadd('z' + read_user_key, new_hash, now)
-                p.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire('z' + read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
+                p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p2.expire('z' + read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         
         p.execute()
         p2.execute()
