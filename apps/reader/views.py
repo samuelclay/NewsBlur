@@ -1338,7 +1338,7 @@ def add_folder(request):
 @json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', None)
     if in_folder == ' ':
         in_folder = ""
     
@@ -1379,7 +1379,7 @@ def delete_feed_by_url(request):
 @json.json_view
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
