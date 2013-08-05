@@ -9085,9 +9085,6 @@ form.opml_import_form input {
     .NB-static-android .NB-ios-mockup .NB-ios-features-ipad {
         left: 214px;
     }
-    .NB-static-android .NB-ios-mockup .NB-ios-features-iphone {
-        left: -13px;
-    }
 }
 /* ================= */
 /* = Friends Modal = */
