@@ -1618,7 +1618,7 @@ def mark_story_as_starred(request):
     now = datetime.datetime.now()
     story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
     starred_story, created = MStarredStory.objects.get_or_create(
-        story_guid=story_values.pop('story_guid'),
+        story_hash=story.story_hash,
         user_id=story_values.pop('user_id'),
         defaults=story_values)
     if created:
@@ -1639,8 +1639,10 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
-
+    
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
+    if not starred_story:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()
