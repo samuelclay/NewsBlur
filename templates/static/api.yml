@@ -39,7 +39,7 @@
         - key: email
           desc: "Email address"
           required: true
-          example: "samuel@newsblur.com"
+          example: "samuel@newszeit.com"
         
 - feeds:
     - url: /rss_feeds/search_feed
@@ -302,7 +302,7 @@
           desc: "List of story ids to mark as read."
           required: true
           example: >
-            story_id=http://blog.newsblur.com/post/1&story_id=http://blog.newsblur.com/post/2
+            story_id=http://blog.newszeit.com/post/1&story_id=http://blog.newszeit.com/post/2
         - key: feed_id
           desc: "Feed id that each story is from."
           required: true
@@ -448,7 +448,7 @@
         - key: story_id
           desc: "Story id to share."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: comments
           desc: "The meat of the share."
           optional: true
@@ -483,7 +483,7 @@
         - key: story_id
           desc: "Story id to remove the existing share."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: format
           desc: "Return JSON or a HTML template"
           optional: true
@@ -616,7 +616,7 @@
         - key: story_id
           desc: "ID of shared story."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: feed_id
           desc: "ID of feed for the shared story."
           required: true
@@ -643,7 +643,7 @@
         - key: story_id
           desc: "ID of story being commented on."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: comment_user_id
           desc: "ID of user who left the original comment that is now being replied to."
           required: true
@@ -677,7 +677,7 @@
         - key: story_id
           desc: "ID of story being commented on."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: comment_user_id
           desc: "ID of user who left the original comment that is now being replied to."
           required: true
@@ -705,7 +705,7 @@
         - key: story_id
           desc: "ID of story being commented on."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: comment_user_id
           desc: "ID of user who left the original comment that is now being replied to."
           required: true
@@ -728,7 +728,7 @@
         - key: story_id
           desc: "ID of story being commented on."
           required: true
-          example: "http://blog.newsblur.com/post/1"
+          example: "http://blog.newszeit.com/post/1"
         - key: comment_user_id
           desc: "ID of user who left the original comment that is now being replied to."
           required: true
@@ -817,7 +817,7 @@
         - key: url
           desc: "URL of website or RSS feed."
           required: true
-          example: "http://blog.newsblur.com"
+          example: "http://blog.newszeit.com"
         - key: folder
           desc: "Folder to place feed in. Omit to use top level."
           optional: true
@@ -826,7 +826,7 @@
       tips:
         - >
           If you want to just show the Add Site dialog on the site, you can use this URL:
-          <code>http://www.newsblur.com/?url=%u</code>
+          <code>http://www.newszeit.com/?url=%u</code>
   
     - url: /reader/add_folder
       method: POST
