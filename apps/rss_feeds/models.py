@@ -1087,19 +1087,24 @@ class Feed(models.Model):
         cutoff = 500
         if self.active_subscribers <= 0:
             cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+        elif self.active_premium_subscribers < 1:
             cutoff = 100
-        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
+        elif self.active_premium_subscribers <= 2:
             cutoff = 200
-        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
+        elif self.active_premium_subscribers <= 5:
             cutoff = 300
-        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
+        elif self.active_premium_subscribers <= 10:
             cutoff = 350
-        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
+        elif self.active_premium_subscribers <= 15:
             cutoff = 400
-        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
+        elif self.active_premium_subscribers <= 20:
             cutoff = 450
-
+        
+        if self.active_subscribers and self.average_stories_per_month < 5 and self.stories_last_month < 5:
+            cutoff /= 2
+        if self.active_premium_subscribers <= 1 and self.average_stories_per_month <= 1 and self.stories_last_month <= 1:
+            cutoff /= 2
+        
         return cutoff
                 
     def trim_feed(self, verbose=False, cutoff=None):
@@ -1642,7 +1647,7 @@ class MStory(mongo.Document):
         ).order_by('-story_date')
         
         if stories.count() > cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+            logging.debug('   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN...' %
                           (unicode(feed)[:30], stories.count(), cutoff))
             try:
                 story_trim_date = stories[cutoff].story_date
