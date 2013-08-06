@@ -310,7 +310,10 @@ class Profile(models.Model):
             
         stripe.api_key = settings.STRIPE_SECRET
         stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-        stripe_customer.cancel_subscription()
+        try:
+            stripe_customer.cancel_subscription()
+        except stripe.InvalidRequestError:
+            logging.user(self.user, "~FRFailed to cancel Stripe subscription")
 
         logging.user(self.user, "~FRCanceling Stripe subscription")
         
