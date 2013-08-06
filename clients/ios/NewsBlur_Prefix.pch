@@ -20,7 +20,7 @@
     green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
     blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-    #define BACKGROUND_REFRESH_SECONDS -10
+    #define BACKGROUND_REFRESH_SECONDS -10*60
     #define NEWSBLUR_LINK_COLOR 0x405BA8
     #define NEWSBLUR_HIGHLIGHT_COLOR 0xd2e6fd
 
