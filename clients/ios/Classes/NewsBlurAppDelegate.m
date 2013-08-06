@@ -46,6 +46,7 @@
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
 #import "OfflineFetchImages.h"
+#import "OfflineCleanImages.h"
 #import "PocketAPI.h"
 
 @implementation NewsBlurAppDelegate
@@ -154,6 +155,7 @@
 @synthesize activeCachedImages;
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
+@synthesize offlineCleaningQueue;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -2275,6 +2277,9 @@
     if (offlineQueue) {
         [offlineQueue cancelAllOperations];
     }
+    if (offlineCleaningQueue) {
+        [offlineCleaningQueue cancelAllOperations];
+    }
 }
 
 - (void)startOfflineQueue {
@@ -2307,10 +2312,11 @@
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                 (unsigned long)NULL), ^(void) {
-            [self flushOldCachedImages];
-        });
+        OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
+        if (!offlineCleaningQueue) {
+            offlineCleaningQueue = [NSOperationQueue new];
+        }
+        [offlineCleaningQueue addOperation:operationCleanImages];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
@@ -2395,36 +2401,6 @@
     }
     
     NSLog(@"Pre-cached %d images", cached);
-}
-
-- (void)flushOldCachedImages {
-    int deleted = 0;
-    int checked = 0;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-    NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
-    NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
-    [df setDateFormat:@"EEEE d"];
-    
-    NSString *filepath;
-    NSDate *creationDate;
-    NSString* file;
-    while (file = [en nextObject])
-    {
-        filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
-        creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
-        checked += 1;
-        
-        if ([creationDate compare:d] == NSOrderedAscending) {
-            [[NSFileManager defaultManager]
-             removeItemAtPath:[cacheDirectory stringByAppendingPathComponent:file]
-             error:nil];
-            deleted += 1;
-        }
-    }
-    NSLog(@"Deleted %d/%d old cached images", deleted, checked);
 }
 
 - (void)deleteAllCachedImages {

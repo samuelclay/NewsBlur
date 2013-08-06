@@ -899,7 +899,7 @@
     unsigned int colorBorder = 0;
     NSString *faviconColor = [feed valueForKey:@"favicon_fade"];
 
-    if ([faviconColor class] == [NSNull class]) {
+    if ([faviconColor class] == [NSNull class] || !faviconColor) {
         faviconColor = @"707070";
     }    
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
@@ -909,7 +909,7 @@
     
     // feed color bar border
     NSString *faviconFade = [feed valueForKey:@"favicon_color"];
-    if ([faviconFade class] == [NSNull class]) {
+    if ([faviconFade class] == [NSNull class] || !faviconFade) {
         faviconFade = @"505050";
     }    
     scannerBorder = [NSScanner scannerWithString:faviconFade];

@@ -25,6 +25,8 @@ static UIFont *indicatorFont = nil;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
+@synthesize isStarred;
+@synthesize isShared;
 @synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
