@@ -121,7 +121,8 @@ class ProcessFeed:
         if self.feed_id != self.feed.pk:
             logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
             self.feed_id = self.feed.pk
-        
+    
+    @timelimit(30)
     def process(self):
         """ Downloads and parses a feed.
         """
@@ -369,11 +370,16 @@ class Dispatcher:
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
-                    ret_feed, ret_entries = pfeed.process()
+                    try:
+                        ret_feed, ret_entries = pfeed.process()
+                    except TimeoutError:
+                        logging.debug('   ---> [%-30s] ~FR~SBProcessing took too long...' % (feed.title[:30],))
+                        ret_feed = FEED_ERREXC
+
                     feed = pfeed.feed
                     feed_process_duration = time.time() - start_duration
                     
-                    if ret_entries['new'] or self.options['force']:
+                    if (ret_entries and ret_entries['new']) or self.options['force']:
                         start = time.time()
                         if not feed.known_good or not feed.fetched_once:
                             feed.known_good = True
