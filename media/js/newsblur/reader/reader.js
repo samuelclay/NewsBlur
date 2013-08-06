@@ -2852,10 +2852,10 @@
 //                        $.make('div', { className: 'NB-menu-manage-image' }),
 //                       $.make('div', { className: 'NB-menu-manage-title' }, '提示与技巧')
 //                    ]),
-//                    $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
-  //                      $.make('div', { className: 'NB-menu-manage-image' }),
-    //                    $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
-      //              ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, '浏览器插件 &amp; 移动客户端')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-import' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, '导入或上传站点')

@@ -24,37 +24,38 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Goodies &amp; Extras',
+                '浏览器插件 &amp; 移动客户端',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             
             $.make('fieldset', [
-                $.make('legend', 'Bookmarklet')
+                $.make('legend', '书签小工具')
             ]),
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
-              $.make('div', { className: 'NB-goodies-title' }, 'Add Site &amp; Share Story Bookmarklet')
+              $.make('div', { className: 'NB-goodies-title' }, '添加站点和分享文章的书签小工具')
             ]),
             
             $.make('fieldset', [
-                $.make('legend', 'Mobile Apps for NewsBlur')
+                $.make('legend', 'NewsZeit 的移动客户端')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: '/ios/'
-              }, 'See the iOS App'),
+              }, '查看 iOS App'),
               $.make('div', { className: 'NB-goodies-iphone' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone/iPad App')
+              $.make('div', { className: 'NB-goodies-title' }, 'NewsZeit 的官方 iPhone/iPad App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: '/android/'
-              }, 'See the Android App'),
+              }, '查看 Android App'),
               $.make('div', { className: 'NB-goodies-android' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur Android App')
+              $.make('div', { className: 'NB-goodies-title' }, 'NewsZeit 的官方Android App')
             ]),
+/*
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
@@ -122,17 +123,19 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-tafiti' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Tafiti')
             ]),
+*/
             $.make('fieldset', [
-                $.make('legend', 'Browser Extensions for NewsBlur')
+                $.make('legend', 'NewsZeit的浏览器插件')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
-              }, 'Add to Firefox'),
+              }, '添加到 Firefox'),
               $.make('div', { className: 'NB-goodies-firefox' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register NewsBlur as an RSS reader')
+              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: 将 NewsZeit 注册为一个 RSS 阅读器')
             ]),
+/*
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
@@ -140,18 +143,19 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               }, 'Download'),
               $.make('div', { className: 'NB-goodies-chrome' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App')
-            ]),
+            ]),*/
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
                   href: 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd/details?hl=en'
-              }, 'Add to Chrome'),
+              }, '添加到 Chrome'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Register NewsBlur as an RSS reader'),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: 将 NewsZeit 注册为一个 RSS 阅读器'),
               $.make('div', { className: 'NB-goodies-subtitle' }, [
-                'To use this extension, use the custom add site URL below.'
+                '使用此插件时，请使用URL: https://www.newszeit.com/?url=%s'
               ])
             ]),
+/*
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
@@ -177,26 +181,26 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               }, 'Download'),
               $.make('div', { className: 'NB-goodies-safari' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Safari: NewsBlur unread count notifier')
-            ]),
+            ]),*/
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
-              }, 'Download'),
+                  href: 'https://chrome.google.com/webstore/detail/cpabkifmcgjibbmglicdajkanagmjdic'
+              }, '下载'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier')
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsZeit 未读文章数提示器')
             ]),
             
             $.make('fieldset', [
-                $.make('legend', 'Custom URLs')
+                $.make('legend', '自定义 URL')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
                   className: 'NB-goodies-custom-input',
-                  value: 'http://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
+                  value: 'https://www.newszeit.com/?url=站点的 RSS 地址'
               }),
               $.make('div', { className: 'NB-goodies-custom' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
+              $.make('div', { className: 'NB-goodies-title' }, '自定义用于订阅站点的 URL')
             ])
         ]);
     },
@@ -224,13 +228,13 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             ].join('');
             navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
                                              host + "?url=%s",
-                                             "NewsBlur");
+                                             "NewsZeit");
             navigator.registerContentHandler("application/atom+xml",
                                              host + "?url=%s",
-                                             "NewsBlur");
+                                             "NewsZeit");
             navigator.registerContentHandler("application/rss+xml",
                                              host + "?url=%s",
-                                             "NewsBlur");
+                                             "NewsZeit");
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
