@@ -267,7 +267,7 @@
           optional: true
           default: false
     
-    - url: /reader/mark_story_hash_as_read
+    - url: /reader/mark_story_hashes_as_read
       method: POST
       short_desc: "Mark a story as read."
       long_desc: 

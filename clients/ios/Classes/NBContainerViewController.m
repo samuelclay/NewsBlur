@@ -533,7 +533,7 @@
     
     [self hidePopover];
     
-     if (self.isSharingStory) {
+    if (self.isSharingStory) {
         [self transitionFromShareView];
     }
     
@@ -709,6 +709,13 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
+    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"] && !self.isSharingStory) {
+        return;
+    }
+    if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && !self.isHidingStory) {
+        return;
+    }
+    
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];

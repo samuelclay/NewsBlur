@@ -142,7 +142,7 @@
 }
 
 - (void)setProgress:(float)value {
-    [self.progressBar setProgress:value animated:(self.style == NBSyncingProgressStyle)];
+    [self.progressBar setProgress:value animated:NO];
 }
 
 - (void)setTitle:(NSString *)title {

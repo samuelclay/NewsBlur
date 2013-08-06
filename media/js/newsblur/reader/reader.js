@@ -5677,7 +5677,9 @@
             });
             $document.bind('keydown', 'r', function(e) {
                 e.preventDefault();
-                self.reload_feed();
+                if (self.active_feed) {
+                    self.reload_feed();
+                }
             });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();

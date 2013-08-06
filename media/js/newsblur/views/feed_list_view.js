@@ -192,7 +192,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     },
     
     update_dashboard_count: function() {
-        $(".NB-module-stats-count-number-sites").html(NEWSBLUR.assets.feeds.size());
+        var feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
+        $(".NB-module-stats-count-number-sites").html(feed_count);
     },
     
     // ===========

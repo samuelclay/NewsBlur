@@ -853,12 +853,14 @@ class UserSubscriptionFolders(models.Model):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
-                    if (folder == feed_id and (
+                    if (folder == feed_id and in_folder is not None and (
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
                         multiples_found = True
                         logging.user(self.user, "~FB~SBDeleting feed, and a multiple has been found in '%s'" % (folder_name))
-                    if folder == feed_id and (folder_name == in_folder) and not deleted:
+                    if (folder == feed_id and 
+                        (folder_name == in_folder or in_folder is None) and 
+                        not deleted):
                         logging.user(self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (
                             k, len(old_folders)
                         ))
@@ -901,7 +903,7 @@ class UserSubscriptionFolders(models.Model):
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
-                        if f_k == folder_to_delete and folder_name == in_folder:
+                        if f_k == folder_to_delete and (folder_name == in_folder or in_folder is None):
                             logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
                             deleted_folder = folder
                         else:

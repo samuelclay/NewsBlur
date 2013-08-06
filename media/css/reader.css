@@ -835,7 +835,7 @@ body {
 
 .NB-feedlists .folder_title .unread_count {
     margin-top: -3px;
-    line-height: 14px;
+    line-height: 15px;
     padding-top: 2px;
 }
 .NB-feeds-header .unread_count {
@@ -1584,6 +1584,10 @@ background: transparent;
     right: 2px;
     top: 2px;
     max-width: 56px;
+}
+.NB-story-pane-west #story_titles .NB-storytitles-shares {
+    top: none;
+    bottom: 4px;
 }
 #story_titles .NB-storytitles-shares .NB-icon {
     float: right;
@@ -9159,7 +9163,7 @@ form.opml_import_form input {
 }
 .NB-static-android .NB-ios-mockup .NB-ios-features-iphone {
     top: 279px;
-    left: 50px;
+    left: 16px;
     width: 172px;
     height: 268px;
 }
@@ -9186,9 +9190,6 @@ form.opml_import_form input {
 @media screen and (max-width: 1100px) {
     .NB-static-android .NB-ios-mockup .NB-ios-features-ipad {
         left: 214px;
-    }
-    .NB-static-android .NB-ios-mockup .NB-ios-features-iphone {
-        left: -13px;
     }
 }
 /* ================= */

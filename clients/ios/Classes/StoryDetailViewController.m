@@ -316,10 +316,10 @@
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
                 NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
-                                      "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
-                                      tag,
-                                      tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
-                                      tag];
+                                     "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
+                                     tag,
+                                     tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
+                                     tag];
                 [tagStrings addObject:tagHtml];
             }
             storyTags = [NSString
@@ -328,6 +328,11 @@
                          "</div>",
                          [tagStrings componentsJoinedByString:@""]];
         }
+    }
+    NSString *storyStarred = @"";
+    if ([self.activeStory objectForKey:@"starred"] && [self.activeStory objectForKey:@"starred_date"]) {
+        storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">%@</div>",
+                        [self.activeStory objectForKey:@"starred_date"]];
     }
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
@@ -350,11 +355,13 @@
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              storyTitle,
                              [self.activeStory objectForKey:@"long_parsed_date"],
                              storyAuthor,
-                             storyTags];
+                             storyTags,
+                             storyStarred];
     return storyHeader;
 }
 

@@ -886,6 +886,8 @@
     cell.storyTitle = [title stringByDecodingHTMLEntities];
 
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
+    cell.isStarred = [story objectForKey:@"starred"];
+    cell.isShared = [story objectForKey:@"shared"];
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
@@ -897,7 +899,7 @@
     unsigned int colorBorder = 0;
     NSString *faviconColor = [feed valueForKey:@"favicon_fade"];
 
-    if ([faviconColor class] == [NSNull class]) {
+    if ([faviconColor class] == [NSNull class] || !faviconColor) {
         faviconColor = @"707070";
     }    
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
@@ -907,7 +909,7 @@
     
     // feed color bar border
     NSString *faviconFade = [feed valueForKey:@"favicon_color"];
-    if ([faviconFade class] == [NSNull class]) {
+    if ([faviconFade class] == [NSNull class] || !faviconFade) {
         faviconFade = @"505050";
     }    
     scannerBorder = [NSScanner scannerWithString:faviconFade];
@@ -967,6 +969,8 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+    cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
+    cell.isStarred = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];
 }
 
