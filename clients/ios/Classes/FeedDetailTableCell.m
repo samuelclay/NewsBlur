@@ -110,23 +110,32 @@ static UIFont *indicatorFont = nil;
     CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width, 30.0) lineBreakMode:NSLineBreakByTruncatingTail];
     
     int storyTitleY = 7 + adjustForSocial + ((30 - theSize.height)/2);
-    if (self.isShort){
+    if (self.isShort) {
         storyTitleY = 7 + adjustForSocial + 2;
     }
-    
+    int storyTitleX = leftMargin;
+    if (self.isStarred) {
+        UIImage *savedIcon = [UIImage imageNamed:@"clock"];
+        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
+        storyTitleX += 20;
+    }
+    if (self.isShared) {
+        UIImage *savedIcon = [UIImage imageNamed:@"menu_icn_share"];
+        [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
+        storyTitleX += 20;
+    }
     [self.storyTitle
-     drawInRect:CGRectMake(leftMargin, storyTitleY, rect.size.width, theSize.height) 
+     drawInRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
      withFont:font
      lineBreakMode:NSLineBreakByTruncatingTail 
      alignment:NSTextAlignmentLeft];
 
     int storyAuthorDateY = 41 + adjustForSocial;
-    if (self.isShort){
+    if (self.isShort) {
         storyAuthorDateY -= 13;
     }
 
     // story author style
-
     if (self.isRead) {
         textColor = UIColorFromRGB(0x808080);
         font = [UIFont fontWithName:@"Helvetica" size:10];

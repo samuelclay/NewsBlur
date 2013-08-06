@@ -1585,6 +1585,10 @@ background: transparent;
     top: 2px;
     max-width: 56px;
 }
+.NB-story-pane-west #story_titles .NB-storytitles-shares {
+    top: none;
+    bottom: 4px;
+}
 #story_titles .NB-storytitles-shares .NB-icon {
     float: right;
     width: 12px;

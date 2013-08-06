@@ -886,6 +886,8 @@
     cell.storyTitle = [title stringByDecodingHTMLEntities];
 
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
+    cell.isStarred = [story objectForKey:@"starred"];
+    cell.isShared = [story objectForKey:@"shared"];
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
@@ -967,6 +969,8 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+    cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
+    cell.isStarred = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];
 }
 
