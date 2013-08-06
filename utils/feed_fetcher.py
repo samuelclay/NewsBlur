@@ -122,7 +122,7 @@ class ProcessFeed:
             logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
             self.feed_id = self.feed.pk
     
-    @timelimit(30)
+    @timelimit(60)
     def process(self):
         """ Downloads and parses a feed.
         """
@@ -372,11 +372,11 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     try:
                         ret_feed, ret_entries = pfeed.process()
+                        feed = pfeed.feed
                     except TimeoutError:
                         logging.debug('   ---> [%-30s] ~FR~SBProcessing took too long...' % (feed.title[:30],))
                         ret_feed = FEED_ERREXC
 
-                    feed = pfeed.feed
                     feed_process_duration = time.time() - start_duration
                     
                     if (ret_entries and ret_entries['new']) or self.options['force']:
