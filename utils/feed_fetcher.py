@@ -91,15 +91,10 @@ class FetchFeed:
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-        except (TypeError, ValueError), e:
-            logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
+        except (TypeError, ValueError, KeyError), e:
+            logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
                           (self.feed.title[:30], e))
-            feedparser.PARSE_MICROFORMATS = False
-            self.fpf = feedparser.parse(address,
-                                        agent=USER_AGENT,
-                                        etag=etag,
-                                        modified=modified)
-            feedparser.PARSE_MICROFORMATS = True
+            self.fpf = feedparser.parse(address, agent=USER_AGENT)
             
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
@@ -396,8 +391,6 @@ class Dispatcher:
                         if self.options['verbose']:
                             logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.title[:30], time.time() - start))
-            except KeyboardInterrupt:
-                break
             except urllib2.HTTPError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed throws HTTP error: ~SB%s' % (unicode(feed_id)[:30], e.fp.read()))
                 feed.save_feed_history(e.code, e.msg, e.fp.read())

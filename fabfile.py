@@ -1172,7 +1172,7 @@ def staging_full():
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
 
-@parallel
+# @parallel
 def celery():
     celery_slow()
 

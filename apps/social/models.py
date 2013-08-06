@@ -1873,10 +1873,11 @@ class MSharedStory(mongo.Document):
                 'story_feed': story_feed,
                 'mute_url': mute_url,
             }
-        
+            story_title = self.story_title.replace('\n', ' ')
+            
             text    = render_to_string('mail/email_reply.txt', data)
             html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
-            subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, self.story_title)
+            subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, story_title)
             msg     = EmailMultiAlternatives(subject, text, 
                                              from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                              to=['%s <%s>' % (user.username, user.email)])
@@ -1936,10 +1937,11 @@ class MSharedStory(mongo.Document):
             'story_feed': story_feed,
             'mute_url': mute_url,
         }
-    
+        story_title = self.story_title.replace('\n', ' ')
+        
         text    = render_to_string('mail/email_reshare.txt', data)
         html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
-        subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, self.story_title)
+        subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, story_title)
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (original_user.username, original_user.email)])

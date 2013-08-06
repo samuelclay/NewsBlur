@@ -1831,7 +1831,11 @@ class MStory(mongo.Document):
         if not story_content:
             return
         
-        soup = BeautifulSoup(story_content)
+        try:
+            soup = BeautifulSoup(story_content)
+        except ValueError:
+            return
+        
         images = soup.findAll('img')
         if not images:
             return
