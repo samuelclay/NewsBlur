@@ -461,6 +461,8 @@
             }
             if (![offlineStories count]) {
                 self.pageFinished = YES;
+                [self.storyTitlesTable reloadData];
+                [self showOfflineNotifier];
             } else {
                 [self renderStories:offlineStories];
             }
@@ -563,8 +565,8 @@
                 [self showOfflineNotifier];
             } else {
                 [self informError:[request error]];
-                [self.storyTitlesTable reloadData];
                 self.pageFinished = YES;
+                [self.storyTitlesTable reloadData];
             }
         }];
         [request setCompletionBlock:^(void) {
