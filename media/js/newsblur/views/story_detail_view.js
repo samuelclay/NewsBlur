@@ -66,11 +66,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render: function() {
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
+        this.save_view = new NEWSBLUR.Views.StorySaveView({
+            model: this.model, 
+            el: this.el
+        });
         this.share_view = new NEWSBLUR.Views.StoryShareView({
             model: this.model, 
             el: this.el
         });
         
+        params['story_save_view'] = this.save_view.template({
+            story: this.model
+        });
         params['story_share_view'] = this.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
@@ -197,6 +204,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
                 </div>\
+                <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\

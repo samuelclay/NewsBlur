@@ -3029,6 +3029,37 @@ background: transparent;
     color: #90928B;
     opacity: 1;
 }
+
+/* ===================== */
+/* = Sideoption - Save = */
+/* ===================== */
+
+.NB-sideoption-save-wrapper {
+    height: 0;
+    overflow: hidden;
+}
+.NB-narrow-content .NB-sideoption-save-wrapper {
+    clear: both;
+    width: 100%;
+    margin: 0;
+}
+.NB-sideoption-save {
+    padding: 4px 12px 6px;
+    border: 1px solid #DBE6EA;
+}
+
+.NB-sideoption-save .NB-sideoption-save-tag {
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+    height: 18px;
+}
+
+/* ====================== */
+/* = Sideoption - Share = */
+/* ====================== */
+
 .NB-sideoption-share-wrapper {
     height: 0;
     overflow: hidden;
