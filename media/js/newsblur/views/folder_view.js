@@ -116,6 +116,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
                         </span>\
                     </div>\
+                    <div class="NB-search-container"></div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
@@ -142,6 +143,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         if (this.options.feedbar) {
             this.show_collapsed_folder_count();
+        }
+        if (this.options.feedbar && NEWSBLUR.Globals.is_staff) {
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            this.$(".NB-search-container").html(this.search_view.$el);
         }
         return $folder;
     },

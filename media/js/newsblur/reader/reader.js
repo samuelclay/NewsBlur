@@ -1185,7 +1185,8 @@
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
                                         this.active_folder.folder_view.$el,
-                                        this.active_folder);
+                                        this.active_folder,
+                                        options);
             } else {
                 this.open_feed(this.active_feed, options);
             }
