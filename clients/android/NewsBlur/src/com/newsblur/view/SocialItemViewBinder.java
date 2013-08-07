@@ -36,7 +36,7 @@ public class SocialItemViewBinder implements ViewBinder {
 		final int hasBeenRead = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = cursor.getString(columnIndex);
-			imageLoader.displayImage(faviconUrl, ((ImageView) view), false);
+			imageLoader.displayImage(faviconUrl, ((ImageView) view), true);
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
             if (! this.ignoreIntel) {
