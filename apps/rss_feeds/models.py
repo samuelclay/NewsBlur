@@ -886,6 +886,10 @@ class Feed(models.Model):
                           self.title[:30],
                           len(stories),
                           len(existing_stories.keys())))
+        @timelimit(2)
+        def _1(story, story_content, existing_stories):
+            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+            return existing_story, story_has_changed
         
         for story in stories:
             if not story.get('title'):
@@ -899,7 +903,13 @@ class Feed(models.Model):
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
             
-            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+            try:
+                existing_story, story_has_changed = _1(story, story_content, existing_stories)
+            except TimeoutError, e:
+                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
+                existing_story = None
+                story_has_changed = False
+                
             if existing_story is None:
                 if settings.DEBUG and False:
                     logging.debug('   ---> New story in feed (%s - %s): %s' % (self.feed_title, story.get('title'), len(story_content)))
@@ -1311,7 +1321,7 @@ class Feed(models.Model):
         # if story_has_changed or not story_in_system:
         #     print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
-        
+    
     def get_next_scheduled_update(self, force=False, verbose=True):
         if self.min_to_decay and not force:
             return self.min_to_decay
@@ -1831,7 +1841,11 @@ class MStory(mongo.Document):
         if not story_content:
             return
         
-        soup = BeautifulSoup(story_content)
+        try:
+            soup = BeautifulSoup(story_content)
+        except ValueError:
+            return
+        
         images = soup.findAll('img')
         if not images:
             return

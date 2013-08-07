@@ -277,9 +277,6 @@
 
     [appDelegate setStories:nil];
     appDelegate.storyCount = 0;
-
-    [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     appDelegate.activePopularAuthors = [NSArray array];
     appDelegate.activePopularTags = [NSArray array];
@@ -289,6 +286,9 @@
     } else {
         [self fetchFeedDetail:1 withCallback:nil];
     }
+
+    [self.storyTitlesTable reloadData];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 }
 
 - (void)beginOfflineTimer {
@@ -461,9 +461,11 @@
             }
             if (![offlineStories count]) {
                 self.pageFinished = YES;
+                [self.storyTitlesTable reloadData];
             } else {
                 [self renderStories:offlineStories];
             }
+            [self showOfflineNotifier];
         });
     }];
     });
@@ -563,8 +565,8 @@
                 [self showOfflineNotifier];
             } else {
                 [self informError:[request error]];
-                [self.storyTitlesTable reloadData];
                 self.pageFinished = YES;
+                [self.storyTitlesTable reloadData];
             }
         }];
         [request setCompletionBlock:^(void) {
@@ -1114,7 +1116,7 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    if (appDelegate.isRiverView && includeHidden &&
+    if (!self.isOffline && appDelegate.isRiverView && includeHidden &&
         [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
@@ -1125,7 +1127,7 @@
         [request startAsynchronous];
         
         [appDelegate markActiveFolderAllRead];
-    } else if (appDelegate.isRiverView && includeHidden) {
+    } else if (!self.isOffline && appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
@@ -1138,7 +1140,7 @@
         [request startAsynchronous];
         
         [appDelegate markActiveFolderAllRead];
-    } else if (!appDelegate.isRiverView && includeHidden) {
+    } else if (!self.isOffline && !appDelegate.isRiverView && includeHidden) {
         // Mark feed as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
@@ -1150,7 +1152,7 @@
         [request setDelegate:self];
         [request startAsynchronous];
         [appDelegate markFeedAllRead:[appDelegate.activeFeed objectForKey:@"id"]];
-    } else {
+    } else if (!includeHidden) {
         // Mark visible stories as read
         NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
@@ -1159,9 +1161,48 @@
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
         [request setDelegate:self];
+        [request setUserInfo:feedsStories];
         [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
         [request startAsynchronous];
+    } else {
+        // Must be offline and marking all as read, so load all stories.
+        NSMutableDictionary *feedsStories = [NSMutableDictionary dictionary];
+        
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            NSArray *feedIds;
+            
+            if (appDelegate.isRiverView) {
+                feedIds = appDelegate.activeFolderFeeds;
+            } else if (appDelegate.activeFeed) {
+                feedIds = @[[appDelegate.activeFeed objectForKey:@"id"]];
+            } else {
+                return;
+            }
+            
+            NSString *sql = [NSString stringWithFormat:@"SELECT u.story_feed_id, u.story_hash "
+                             "FROM unread_hashes u WHERE u.story_feed_id IN (%@)",
+                             [feedIds componentsJoinedByString:@","]];
+            FMResultSet *cursor = [db executeQuery:sql];
+            
+            while ([cursor next]) {
+                NSDictionary *story = [cursor resultDictionary];
+                NSString *feedIdStr = [story objectForKey:@"story_feed_id"];
+                NSString *storyHash = [story objectForKey:@"story_hash"];
+
+                if (![feedsStories objectForKey:feedIdStr]) {
+                    [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
+                }
+                
+                NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
+                [stories addObject:storyHash];
+            }
+        }];
+
+        for (NSString *feedId in [feedsStories allKeys]) {
+            [appDelegate markFeedAllRead:feedId];
+        }
+        [appDelegate queueReadStories:feedsStories];
     }
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.navigationController popToRootViewControllerAnimated:YES];
@@ -1174,7 +1215,16 @@
     }
 }
 
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request {
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    //    [self informError:@"Failed to mark story as read"];
+    NSDictionary *feedsStories = request.userInfo;
+    [appDelegate queueReadStories:feedsStories];
+}
+
+- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailedMarkStoryRead:request];
+    }
 //    NSString *responseString = [request responseString];
 //    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
 //    NSError *error;
@@ -1211,7 +1261,7 @@
                               otherButtonTitles:nil];
     
     self.actionSheet_ = options;
-    
+    [appDelegate calculateStoryLocations];
     int visibleUnreadCount = appDelegate.visibleUnreadCount;
     int totalUnreadCount = [appDelegate unreadCount];
     NSArray *buttonTitles = nil;

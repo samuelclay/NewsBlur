@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 import datetime
 import time
 import zlib
@@ -1874,10 +1873,11 @@ class MSharedStory(mongo.Document):
                 'story_feed': story_feed,
                 'mute_url': mute_url,
             }
-        
+            story_title = self.story_title.replace('\n', ' ')
+            
             text    = render_to_string('mail/email_reply.txt', data)
             html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
-            subject = "%s 在 NewsZeit 上的文章 “%s” 中回复了你" % (reply_user.username, self.story_title)
+            subject = "%s 在 NewsZeit 上的文章 “%s” 中回复了你" % (reply_user.username, story_title)
             msg     = EmailMultiAlternatives(subject, text, 
                                              from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                              to=['%s <%s>' % (user.username, user.email)])
@@ -1937,10 +1937,11 @@ class MSharedStory(mongo.Document):
             'story_feed': story_feed,
             'mute_url': mute_url,
         }
-    
+        story_title = self.story_title.replace('\n', ' ')
+        
         text    = render_to_string('mail/email_reshare.txt', data)
         html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
-        subject = "%s 在 NewsZeit 转发了你的分享 “%s”" % (reshare_user.username, self.story_title)
+        subject = "%s 在 NewsZeit 转发了你的分享 “%s”" % (reshare_user.username, story_title)
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsZeit <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (original_user.username, original_user.email)])
@@ -1996,9 +1997,10 @@ class MSharedStory(mongo.Document):
     
     def fetch_original_text(self, force=False, request=None):
         original_text_z = self.original_text_z
+        feed = Feed.get_by_id(self.story_feed_id)
         
         if not original_text_z or force:
-            ti = TextImporter(self, request=request)
+            ti = TextImporter(self, feed, request=request)
             original_text = ti.fetch()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")

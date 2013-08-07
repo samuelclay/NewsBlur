@@ -78,7 +78,7 @@ def pre_process_story(entry):
         entry['guid'] = unicode(entry['guid'])
 
     # Normalize story content/summary
-    summary = entry.get('summary', '')
+    summary = entry.get('summary') or ""
     content = ""
     if not summary and 'summary_detail' in entry:
         summary = entry['summary_detail'].get('value', '')
