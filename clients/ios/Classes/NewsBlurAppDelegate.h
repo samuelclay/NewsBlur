@@ -352,6 +352,7 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
+- (void)queueReadStories:(NSDictionary *)feedsStories;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;

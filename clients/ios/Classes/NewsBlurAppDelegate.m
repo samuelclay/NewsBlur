@@ -596,7 +596,10 @@
                                       action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    
+    [self flushQueuedReadStories:NO withCallback:^{
+        [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    }];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -604,8 +607,6 @@
         [navigationController pushViewController:feedDetailViewController
                                         animated:YES];
     }
-    
-    [self flushQueuedReadStories:NO withCallback:nil];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -784,7 +785,10 @@
     self.inFeedDetail = YES;
 
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    
+    [self flushQueuedReadStories:NO withCallback:^{
+        [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    }];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -1491,7 +1495,7 @@
             [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
         }
         NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
-        [stories addObject:[story objectForKey:@"id"]];
+        [stories addObject:[story objectForKey:@"story_hash"]];
         [self markStoryRead:story feed:feed];
     }   
     return feedsStories;
@@ -1502,7 +1506,7 @@
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
             story = s;
             break;
         }
@@ -1515,7 +1519,6 @@
     if (!feed) {
         feedIdStr = @"0";
     }
-    
     
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
@@ -1580,7 +1583,7 @@
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
             story = s;
             break;
         }
@@ -1694,6 +1697,7 @@
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"UPDATE unread_counts SET ps = 0, nt = 0, ng = 0 WHERE feed_id = ?",
          feedIdStr];
+        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_feed_id = ?", feedIdStr];
     }];
 }
 
@@ -2310,6 +2314,19 @@
 }
 
 
+- (void)queueReadStories:(NSDictionary *)feedsStories {
+    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        for (NSString *feedIdStr in [feedsStories allKeys]) {
+            for (NSString *storyHash in [feedsStories objectForKey:feedIdStr]) {
+                [db executeUpdate:@"INSERT INTO queued_read_hashes "
+                 "(story_feed_id, story_hash) VALUES "
+                 "(?, ?)", feedIdStr, storyHash];
+            }
+        }
+    }];
+    self.hasQueuedReadStories = YES;
+}
+
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
         OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
@@ -2355,12 +2372,18 @@
     }
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIHTTPRequest *_request = request;
     [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
     [request setCompletionBlock:^{
-        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
-        ;
+        if ([_request responseStatusCode] == 200) {
+            NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                               "WHERE story_hash in (\"%@\")", completedHashesStr]];
+        } else {
+            NSLog(@"Failed mark read queued.");
+            self.hasQueuedReadStories = YES;
+        }
         if (callback) callback();
     }];
     [request setFailedBlock:^{
