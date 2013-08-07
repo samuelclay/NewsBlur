@@ -180,6 +180,16 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return names;
     },
     
+    parent_folder_names: function() {
+        var names = [this.options.title];
+        if (this.parent_folder) {
+            var parents = _.compact(_.flatten(this.parent_folder.parent_folder_names()));
+            names = names.concat(parents);
+        }
+        
+        return names;
+    },
+    
     feed_ids_in_folder: function() {
         return _.compact(_.flatten(this.map(function(item) {
             return item.feed_ids_in_folder();

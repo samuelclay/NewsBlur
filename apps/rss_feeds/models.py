@@ -1898,6 +1898,7 @@ class MStarredStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    user_tags                = mongo.ListField(mongo.StringField(max_length=128))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
@@ -2001,6 +2002,34 @@ class MStarredStory(mongo.Document):
         
         return original_text
         
+class MStarredStoryCounts(mongo.Document):
+    user_id = mongo.IntField()
+    tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    count = mongo.IntField()
+
+    meta = {
+        'collection': 'starred_stories_counts',
+        'indexes': ['user_id'],
+        'ordering': ['tag'],
+        'allow_inheritance': False,
+    }
+    
+    @classmethod
+    def user_counts(cls, user_id):
+        counts = cls.objects.filter(user_id=user_id).only('tag', 'count')
+        counts = dict((c.tag, c.count) for c in counts)
+        return counts
+    
+    @classmethod
+    def count_tags_for_user(cls, user_id):
+        all_tags = MStarredStory.objects(user_id=user_id,
+                                         user_tags__exists=True).item_frequencies('user_tags')
+        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
+                           key=itemgetter(1), 
+                           reverse=True)
+        for tag, count in user_tags.items():
+            cls.objects(user_id=user_id, tag=tag).update_one(set__count=count, upsert=True)
+
 
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
