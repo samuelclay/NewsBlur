@@ -113,7 +113,7 @@
     <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="feed_search_hint">Search for new feeds</string>
-    <string name="empty_list_notice">Loading stories…</string>
+    <string name="empty_list_notice">Loading…</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
