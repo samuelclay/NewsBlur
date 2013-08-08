@@ -215,10 +215,12 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var content_height      = $story_content.height();
         var content_outerheight = $story_content.outerHeight(true);
         var comments_height     = $story_comments.outerHeight(true);
+        var left_height         = content_outerheight + comments_height;
         var container_offset    = $sideoption_container.length &&
                                   ($sideoption_container.position().top - 32);
         
-        if (content_outerheight + comments_height < sideoptions_height) {
+        console.log(["heights", dialog_height, sideoptions_height, wrapper_height, content_height, content_outerheight, comments_height, left_height, container_offset]);
+        if (left_height < sideoptions_height) {
             $story_content.css('height', $sideoption_container.height());
             $story_content.animate({
                 'height': sideoptions_height + dialog_height - comments_height
