@@ -3046,6 +3046,8 @@ background: transparent;
 .NB-sideoption-save {
     padding: 4px 12px 6px;
     border: 1px solid #DBE6EA;
+    text-align: left;
+    color: #606060;
 }
 
 .NB-sideoption-save .NB-sideoption-save-tag {
@@ -3053,7 +3055,30 @@ background: transparent;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-    height: 18px;
+}
+
+.NB-sideoption-save .NB-sideoption-save-populate {
+    float: right;
+    font-size: 9px;
+    line-height: 11px;
+    text-transform: uppercase;
+    padding: 2px 4px;
+    margin: 0 0 2px 0;
+    border-radius: 2px;
+    background-color: rgba(205, 205, 205, .5);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.NB-sideoption-save .NB-sideoption-save-populate:hover {
+    background-color: rgba(205, 205, 205, .8);    
+}
+.NB-sideoption-save .NB-sideoption-save-populate:active {
+    background-color: rgba(205, 205, 205, 1);    
+}
+.NB-tagging-autocomplete.ui-autocomplete {
+    font-size: 11px;
+    width: 150px !important;
 }
 
 /* ====================== */

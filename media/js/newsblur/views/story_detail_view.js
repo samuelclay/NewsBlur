@@ -75,9 +75,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             el: this.el
         });
         
-        params['story_save_view'] = this.save_view.template({
-            story: this.model
-        });
+        params['story_save_view'] = this.save_view.render();
         params['story_share_view'] = this.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
