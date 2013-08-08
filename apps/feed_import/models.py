@@ -127,7 +127,8 @@ class OPMLImporter(Importer):
         
     def process(self):
         # self.clear_feeds()
-        outline = opml.from_string(str(self.opml_xml))
+
+        outline = opml.from_string(self.opml_xml)
         folders = self.get_folders()
         try:
             folders = self.process_outline(outline, folders)
