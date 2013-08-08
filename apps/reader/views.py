@@ -828,6 +828,7 @@ def load_river_stories__redis(request):
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
+    query             = request.REQUEST.get('query')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     offset = (page-1) * limit
@@ -837,6 +838,21 @@ def load_river_stories__redis(request):
     if story_hashes:
         unread_feed_story_hashes = None
         read_filter = 'unread'
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
+    elif query:
+        if user.profile.is_premium:
+            usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                                       read_filter='all')
+            feed_ids = [sub.feed_id for sub in usersubs]
+            stories = Feed.find_feed_stories(feed_ids, query, offset=offset, limit=limit)
+            mstories = stories
+            unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
+                                                                     read_filter="unread", order=order, 
+                                                                     group_by_feed=False)
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
@@ -855,9 +871,10 @@ def load_river_stories__redis(request):
         else:
             story_hashes = []
             unread_feed_story_hashes = []
+
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
     
-    mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
-    stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     

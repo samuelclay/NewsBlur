@@ -35,33 +35,32 @@ def opml_upload(request):
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
-            xml_opml = file.read()
+            xml_opml = str(file.read().decode('utf-8', 'ignore'))
             try:
-                uploaded_opml = UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
+                UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
             except (UnicodeDecodeError, InvalidStringData):
-                uploaded_opml = None
                 folders = None
                 code = -1
                 message = "There was a Unicode decode error when reading your OPML file."
             
-            if uploaded_opml:
-                opml_importer = OPMLImporter(xml_opml, request.user)
-                try:
-                    folders = opml_importer.try_processing()
-                except TimeoutError:
-                    folders = None
-                    ProcessOPML.delay(request.user.pk)
-                    feed_count = opml_importer.count_feeds_in_opml()
-                    logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
-                    payload = dict(folders=folders, delayed=True, feed_count=feed_count)
-                    code = 2
-                    message = ""
-                except AttributeError:
-                    code = -1
-                    message = "OPML import failed. Couldn't parse XML file."
-                    folders = None
+            opml_importer = OPMLImporter(xml_opml, request.user)
+            try:
+                folders = opml_importer.try_processing()
+            except TimeoutError:
+                folders = None
+                ProcessOPML.delay(request.user.pk)
+                feed_count = opml_importer.count_feeds_in_opml()
+                logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
+                payload = dict(folders=folders, delayed=True, feed_count=feed_count)
+                code = 2
+                message = ""
+            except AttributeError:
+                code = -1
+                message = "OPML import failed. Couldn't parse XML file."
+                folders = None
 
             if folders:
+                code = 1
                 feeds = UserSubscription.objects.filter(user=request.user).values()
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))

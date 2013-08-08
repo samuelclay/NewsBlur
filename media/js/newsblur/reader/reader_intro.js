@@ -609,10 +609,14 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $('.NB-intro-import-delayed', self.$modal).show();
                 $('.NB-intro-import-restart', self.$modal).hide();
                 $('.NB-intro-import-message', self.$modal).hide();
+            } else if (data.code < 0) {
+                $('.NB-intro-import-delayed', self.$modal).hide();
+                $('.NB-intro-import-restart', self.$modal).hide();
+                $('.NB-intro-import-message', self.$modal).show().addClass('NB-error').text(data.message);
             } else {
                 $('.NB-intro-import-delayed', self.$modal).hide();
                 $('.NB-intro-import-restart', self.$modal).show();
-                $('.NB-intro-import-message', self.$modal).show().text("全部完成");
+                $('.NB-intro-import-message', self.$modal).show().removeClass('NB-error').text("全部完成！");
             }
         }, this));
     },
@@ -632,6 +636,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             dataType: 'json',
             success: function (data, status) {
                 NEWSBLUR.assets.load_feeds(function() {
+                    console.log(["opml upload", data, status]);
                     $loading.removeClass('NB-active');
                     self.advance_import_carousel(2);
                     if (data.payload.delayed) {
@@ -640,6 +645,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $('.NB-intro-import-delayed', self.$modal).show();
                         $('.NB-intro-import-restart', self.$modal).hide();
                         $('.NB-intro-import-message', self.$modal).hide();
+                    } else if (data.code < 0) {
+                        $('.NB-intro-import-delayed', self.$modal).hide();
+                        $('.NB-intro-import-restart', self.$modal).show();
+                        $('.NB-intro-import-message', self.$modal).addClass('NB-error').show().text(data.message);
                     } else {
                         $('.NB-intro-import-message', self.$modal).text("全部完成！").removeClass('NB-error').show();
                         $('.NB-intro-import-delayed', self.$modal).hide();

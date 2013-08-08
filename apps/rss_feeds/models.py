@@ -1140,6 +1140,18 @@ class Feed(models.Model):
         
         return stories
     
+    @classmethod
+    def find_feed_stories(cls, feed_ids, query, offset=0, limit=25):
+        stories_db = MStory.objects(
+            Q(story_feed_id__in=feed_ids) &
+            (Q(story_title__icontains=query) |
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
+        ).order_by('-story_date')[offset:offset+limit]
+        stories = cls.format_stories(stories_db)
+        
+        return stories
+        
     def find_stories(self, query, offset=0, limit=25):
         stories_db = MStory.objects(
             Q(story_feed_id=self.pk) &
