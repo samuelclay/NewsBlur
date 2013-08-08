@@ -2970,9 +2970,10 @@ background: transparent;
 .NB-narrow-content .NB-sideoption {
     float: left;
     margin: 8px 8px 0 0;
+    width: auto;
+    min-width: 140px;
     border: 1px solid #C0C0C0;
     clear: right;
-    width: 148px;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
@@ -3007,6 +3008,10 @@ background: transparent;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
+}
+.NB-content-narrow .NB-sideoption .NB-sideoption-title {
+    padding-left: 10px;
+    padding-right: 30px;
 }
 .NB-sideoption:hover {
     cursor: pointer;
