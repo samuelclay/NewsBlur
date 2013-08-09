@@ -14,4 +14,24 @@
         android:layout_height="1dip"
         android:layout_alignParentTop="true" />
 
+    <Button
+        android:id="@+id/reading_overlay_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:text="next" />
+
+    <Button
+        android:id="@+id/reading_overlay_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/reading_overlay_next"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="15dp"
+        android:text="prev" />
+
 </RelativeLayout>

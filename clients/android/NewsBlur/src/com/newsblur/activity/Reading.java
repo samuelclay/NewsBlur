@@ -12,6 +12,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
@@ -34,8 +36,9 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
+import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
+public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -45,10 +48,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
 
+    private static final int OVERLAY_RANGE_TOP_DP = 50;
+    private static final int OVERLAY_RANGE_BOT_DP = 60;
+
 	protected int passedPosition;
 	protected int currentState;
 
 	protected ViewPager pager;
+    protected Set<View> overlayControls = new HashSet<View>(); 
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -58,12 +65,18 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	private Set<Story> storiesToMarkAsRead;
 
+    private float overlayRangeTopPx;
+    private float overlayRangeBotPx;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceBundle);
+
 		setContentView(R.layout.activity_reading);
+        this.overlayControls.add(findViewById(R.id.reading_overlay_next));
+        this.overlayControls.add(findViewById(R.id.reading_overlay_prev));
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -75,6 +88,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		contentResolver = getContentResolver();
 
         this.apiManager = new APIManager(this);
+
+        // this value is expensive to compute but doesn't change during a single runtime
+        this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
+        this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
 
 	}
 
@@ -151,6 +168,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		}
 	}
 
+    // interface OnPageChangeListener
+
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
 	}
@@ -162,6 +181,27 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public void onPageSelected(final int position) {
 	}
+
+    // interface ScrollChangeListener
+
+    @Override
+    public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
+        int scrollMax = currentHeight - findViewById(android.R.id.content).getMeasuredHeight();
+        int posFromBot = (scrollMax - vPos);
+
+        float newAlpha = 0.0f;
+        if (vPos < this.overlayRangeTopPx) {
+            float delta = this.overlayRangeTopPx - ((float) vPos);
+            newAlpha = delta / this.overlayRangeTopPx;
+        } else if (posFromBot < this.overlayRangeBotPx) {
+            float delta = this.overlayRangeBotPx - ((float) posFromBot);
+            newAlpha = delta / this.overlayRangeBotPx;
+        }
+
+        for (View v : this.overlayControls) {
+            UIUtils.setViewAlpha(v, newAlpha);
+        }
+    }
 
 	@Override
 	public void updateAfterSync() {
