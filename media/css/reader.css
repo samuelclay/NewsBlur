@@ -3042,7 +3042,12 @@ background: transparent;
 .NB-sideoption-save-wrapper {
     height: 0;
     overflow: hidden;
+    display: none;
 }
+.NB-sideoption-save-wrapper.NB-active {
+    display: block;
+}
+
 .NB-narrow-content .NB-sideoption-save-wrapper {
     clear: both;
     width: 100%;
@@ -3053,6 +3058,13 @@ background: transparent;
     border: 1px solid #DBE6EA;
     text-align: left;
     color: #606060;
+}
+.NB-sideoption-save .NB-sideoption-save-title {
+    text-transform: uppercase;
+    font-size: 10px;
+    text-align: left;
+    text-shadow: 0 1px 0 #F6F6F6;
+    color: #202020;
 }
 
 .NB-sideoption-save .NB-sideoption-save-tag {

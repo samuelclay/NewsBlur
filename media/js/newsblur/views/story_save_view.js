@@ -1,12 +1,14 @@
 NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     
     events: {
-        "click .NB-feed-story-save" : "toggle_feed_story_save_dialog",
         "click .NB-sideoption-save-populate" : "populate_story_tags"
     },
     
     initialize: function() {
+        _.bindAll(this, 'toggle_feed_story_save_dialog');
+        this.sideoptions_view = this.options.sideoptions_view;
         this.model.story_save_view = this;
+        this.model.bind('change:starred', this.toggle_feed_story_save_dialog);
     },
     
     render: function() {
@@ -32,10 +34,14 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     template: _.template('\
     <div class="NB-sideoption-save-wrapper">\
         <div class="NB-sideoption-save">\
-            <div class="NB-sideoption-save-populate">\
-                Add <%= Inflector.pluralize("story tag", story_tags.length, true) %>\
+            <% if (story_tags.length) { %>\
+                <div class="NB-sideoption-save-populate">\
+                    Add <%= Inflector.pluralize("story tag", story_tags.length, true) %>\
+                </div>\
+            <% } %>\
+            <div class="NB-sideoption-save-title">\
+                Tags:\
             </div>\
-            <div class="NB-sideoption-title">Tags</div>\
             <ul class="NB-sideoption-save-tag">\
                 <% _.each(tags, function(tag) { %>\
                     <li><%= tag %></li>\
@@ -95,44 +101,14 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
         var $tag_input = this.$('.NB-sideoption-save-tag');
         
-        if (options.close ||
-            ($sideoption.hasClass('NB-active') && !options.resize_open)) {
+        if (options.close || !this.model.get('starred')) {
             // Close
-            $save_wrapper.animate({
-                'height': 0
-            }, {
-                'duration': 300,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': _.bind(function() {
-                    this.$('.NB-error').remove();
-                    if (NEWSBLUR.app.story_list) {
-                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                    }
-                }, this)
-            });
-            $sideoption.removeClass('NB-active');
-            if ($story_content.data('original_height')) {
-                $story_content.animate({
-                    'height': $story_content.data('original_height')
-                }, {
-                    'duration': 300,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        if (NEWSBLUR.app.story_list) {
-                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                        }
-                    }
-                });
-                $story_content.removeData('original_height');
-            }
+            this.resize({close: true});
         } else {
             // Open/resize
             if (!options.resize_open) {
                 this.$('.NB-error').remove();
             }
-            $sideoption.addClass('NB-active');
             $tag_input.tagit({
                 fieldName: "tags",
                 availableTags: this.all_tags(),
@@ -180,21 +156,28 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         options = options || {};
         var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
         var $save_wrapper = this.$('.NB-sideoption-save-wrapper');
+        var $save_content = this.$('.NB-sideoption-save');
         var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
-        var $story_wrapper = this.$('.NB-story-content-container');
         var $story_comments = this.$('.NB-feed-story-comments');
         var $tag_input = this.$('.NB-sideoption-save-tag');
-        
+
         var $save_clone = $save_wrapper.clone();
-        var dialog_height = $save_clone.css({
-            'height': 'auto',
+        $save_wrapper.after($save_clone.css({
+            'height': options.close ? 0 : 'auto',
             'position': 'absolute',
-            'visibility': 'hidden'
-        }).appendTo($save_wrapper.parent()).height();
+            'visibility': 'hidden',
+            'display': 'block'
+        }));
+        var sideoption_content_height = $save_clone.height();
         $save_clone.remove();
+        var new_sideoptions_height = $sideoption_container.height() - $save_wrapper.height() + sideoption_content_height;
+        
+        if (!options.close) {
+            $save_wrapper.addClass('NB-active');
+        }
 
         $save_wrapper.animate({
-            'height': dialog_height
+            'height': sideoption_content_height
         }, {
             'duration': options.immediate ? 0 : 350,
             'easing': 'easeInOutQuint',
@@ -206,24 +189,23 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 if (NEWSBLUR.app.story_list) {
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
-
+                if (options.close) {
+                    $save_wrapper.removeClass('NB-active');
+                }
             }, this)
         });
         
-        var sideoptions_height  = $sideoption_container.outerHeight(true);
-        var wrapper_height      = $story_wrapper.height();
+        var sideoptions_height  = $sideoption_container.height();
         var content_height      = $story_content.height();
-        var content_outerheight = $story_content.outerHeight(true);
-        var comments_height     = $story_comments.outerHeight(true);
-        var left_height         = content_outerheight + comments_height;
-        var container_offset    = $sideoption_container.length &&
-                                  ($sideoption_container.position().top - 32);
+        var comments_height     = $story_comments.height();
+        var left_height         = content_height + comments_height;
+        var container_offset    = $sideoption_container.position().top;
+        var original_height     = $story_content.data('original_height') || content_height;
         
-        console.log(["heights", dialog_height, sideoptions_height, wrapper_height, content_height, content_outerheight, comments_height, left_height, container_offset]);
-        if (left_height < sideoptions_height) {
-            $story_content.css('height', $sideoption_container.height());
+        if (!options.close && new_sideoptions_height >= original_height) {
+            // Sideoptions too big, embiggen left side
             $story_content.animate({
-                'height': sideoptions_height + dialog_height - comments_height
+                'height': new_sideoptions_height
             }, {
                 'duration': 350,
                 'easing': 'easeInOutQuint',
@@ -233,21 +215,29 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                         NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                     }
                 }
-            }).data('original_height', content_height);
-        } else if (sideoptions_height + dialog_height > wrapper_height) {
-            $story_content.animate({
-                'height': content_height + dialog_height - container_offset
-            }, {
-                'duration': 350,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': function() {
-                    if (NEWSBLUR.app.story_list) {
-                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+            });
+            if (!$story_content.data('original_height')) {
+                $story_content.data('original_height', content_height);
+            }
+        } else {
+            // Content is bigger, move content back to normal
+            if ($story_content.data('original_height')) {
+                $story_content.animate({
+                    'height': $story_content.data('original_height')
+                }, {
+                    'duration': 300,
+                    'easing': 'easeInOutQuint',
+                    'queue': false,
+                    'complete': function() {
+                        if (NEWSBLUR.app.story_list) {
+                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                        }
                     }
-                }
-            }).data('original_height', content_height);
-        } else if (NEWSBLUR.app.story_list) {
+                });
+            }
+        }
+        
+        if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
     }

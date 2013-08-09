@@ -66,17 +66,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render: function() {
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
-        this.save_view = new NEWSBLUR.Views.StorySaveView({
+        this.sideoptions_view = new NEWSBLUR.Views.StorySideoptionsView({
             model: this.model, 
             el: this.el
         });
-        this.share_view = new NEWSBLUR.Views.StoryShareView({
-            model: this.model, 
-            el: this.el
-        });
+        this.save_view = this.sideoptions_view.save_view;
+        this.share_view = this.sideoptions_view.share_view;
         
-        params['story_save_view'] = this.save_view.render();
-        params['story_share_view'] = this.share_view.template({
+        params['story_save_view'] = this.sideoptions_view.save_view.render();
+        params['story_share_view'] = this.sideoptions_view.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
