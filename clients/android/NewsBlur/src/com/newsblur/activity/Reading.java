@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
@@ -55,7 +56,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected int currentState;
 
 	protected ViewPager pager;
-    protected Set<View> overlayControls = new HashSet<View>(); 
+    protected Button overlayPrev, overlayNext;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -75,8 +76,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
-        this.overlayControls.add(findViewById(R.id.reading_overlay_next));
-        this.overlayControls.add(findViewById(R.id.reading_overlay_prev));
+        this.overlayNext = (Button) findViewById(R.id.reading_overlay_next);
+        this.overlayPrev = (Button) findViewById(R.id.reading_overlay_prev);
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -110,6 +111,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
 		readingAdapter.setCurrentItem(passedPosition);
+        this.enableOverlays();
 	}
 
 	@Override
@@ -181,6 +183,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public void onPageSelected(int position) {
         this.setOverlayAlpha(1.0f);
+        this.enableOverlays();
 	}
 
     // interface ScrollChangeListener
@@ -203,9 +206,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void setOverlayAlpha(float a) {
-        for (View v : this.overlayControls) {
-            UIUtils.setViewAlpha(v, a);
-        }
+        UIUtils.setViewAlpha(this.overlayPrev, a);
+        UIUtils.setViewAlpha(this.overlayNext, a);
+    }
+
+    private void enableOverlays() {
+        int page = this.pager.getCurrentItem();
+        this.overlayPrev.setEnabled(page > 0);
+        this.overlayNext.setEnabled(page < (this.readingAdapter.getCount()-1));
     }
 
 	@Override
@@ -214,6 +222,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	@Override
@@ -221,6 +230,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	public abstract void checkStoryCount(int position);
