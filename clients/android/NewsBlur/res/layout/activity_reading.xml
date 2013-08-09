@@ -22,7 +22,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
-        android:text="next" />
+        android:text="next"
+        android:onClick="overlayNext" />
 
     <Button
         android:id="@+id/reading_overlay_prev"
@@ -32,6 +33,7 @@
         android:layout_toLeftOf="@+id/reading_overlay_next"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="15dp"
-        android:text="prev" />
+        android:text="prev"
+        android:onClick="overlayPrev" />
 
 </RelativeLayout>

@@ -179,7 +179,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	}
 
 	@Override
-	public void onPageSelected(final int position) {
+	public void onPageSelected(int position) {
+        this.setOverlayAlpha(1.0f);
 	}
 
     // interface ScrollChangeListener
@@ -197,9 +198,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             float delta = this.overlayRangeBotPx - ((float) posFromBot);
             newAlpha = delta / this.overlayRangeBotPx;
         }
+        
+        this.setOverlayAlpha(newAlpha);
+    }
 
+    private void setOverlayAlpha(float a) {
         for (View v : this.overlayControls) {
-            UIUtils.setViewAlpha(v, newAlpha);
+            UIUtils.setViewAlpha(v, a);
         }
     }
 
@@ -286,7 +291,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
+    public void overlayNext(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()+1, true);
+    }
 
-
+    public void overlayPrev(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()-1, true);
+    }
 
 }
