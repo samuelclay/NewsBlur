@@ -2361,6 +2361,7 @@ background: transparent;
 .NB-feed-story .NB-feed-story-content {
     padding: 12px 0 0;
     max-width: 700px;
+    min-height: 12px;
 }
 .NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
@@ -3185,7 +3186,9 @@ background: transparent;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-    height: 52px;
+  height: 52px;
+  border-color: #C6C6C6;
+  border-radius: 4px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
   font-size: 10px;

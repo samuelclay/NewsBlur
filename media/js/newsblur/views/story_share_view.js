@@ -68,9 +68,11 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         if (options.close ||
             ($sideoption.hasClass('NB-active') && !options.resize_open)) {
             // Close
+            this.is_open = false;
             this.resize({close: true});
         } else {
             // Open/resize
+            this.is_open = true;
             if (!options.resize_open) {
                 this.$('.NB-error').remove();
             }
@@ -176,7 +178,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             }
         } else {
             // Content is bigger, move content back to normal
-            if ($story_content.data('original_height')) {
+            if ($story_content.data('original_height') && !this.sideoptions_view.save_view.is_open) {
                 $story_content.animate({
                     'height': $story_content.data('original_height')
                 }, {
@@ -189,6 +191,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                         }
                     }
                 });
+            } else if (this.sideoptions_view.save_view.is_open) {
+                this.sideoptions_view.save_view.resize();
             }
         }
         
