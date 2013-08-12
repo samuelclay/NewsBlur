@@ -40,7 +40,7 @@
     var ip;
     ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address;
     socket.on('subscribe:feeds', function(feeds, username) {
-      var _ref, _ref1,
+      var _ref,
         _this = this;
       this.feeds = feeds;
       this.username = username;
@@ -48,13 +48,11 @@
       if (!this.username) {
         return;
       }
+      socket.on("error", function(err) {
+        return console.log(" ---> Error (socket): " + err);
+      });
       if ((_ref = socket.subscribe) != null) {
-        _ref.on("error", function(err) {
-          return console.log(" ---> Error (pre): " + err);
-        });
-      }
-      if ((_ref1 = socket.subscribe) != null) {
-        _ref1.end();
+        _ref.end();
       }
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       socket.subscribe.on("error", function(err) {
@@ -81,6 +79,10 @@
       }
       return log.info(this.username, ("Disconnect (" + ((_ref1 = this.feeds) != null ? _ref1.length : void 0) + " feeds, " + ip + "),") + (" there are now " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
+  });
+
+  io.sockets.on('error', function(err) {
+    return console.log(" ---> Error (sockets): " + err);
   });
 
 }).call(this);

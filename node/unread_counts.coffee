@@ -49,8 +49,8 @@ io.sockets.on 'connection', (socket) ->
         if not @username
             return
         
-        socket.subscribe?.on "error", (err) ->
-            console.log " ---> Error (pre): #{err}"
+        socket.on "error", (err) ->
+            console.log " ---> Error (socket): #{err}"
         socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.on "error", (err) ->
@@ -72,3 +72,6 @@ io.sockets.on 'connection', (socket) ->
         log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                     " there are now #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+
+io.sockets.on 'error', (err) ->
+    console.log " ---> Error (sockets): #{err}"
