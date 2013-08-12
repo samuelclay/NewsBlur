@@ -1586,7 +1586,7 @@ background: transparent;
     max-width: 56px;
 }
 .NB-story-pane-west #story_titles .NB-storytitles-shares {
-    top: none;
+    top: inherit;
     bottom: 4px;
 }
 #story_titles .NB-storytitles-shares .NB-icon {

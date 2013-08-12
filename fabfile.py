@@ -9,6 +9,7 @@ from fabric.contrib import django
 from fabric.state import connections
 from vendor import yaml
 from pprint import pprint
+from collections import defaultdict
 import os
 import time
 import sys
@@ -78,8 +79,24 @@ def do_roledefs(split=False):
 def list_do():
     droplets = do(split=True)
     pprint(droplets)
+    doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
+    droplets = doapi.show_active_droplets()
+    sizes = doapi.sizes()
+    sizes = dict((size.id, re.split(r"([^0-9]+)", size.name)[0]) for size in sizes)
+    role_costs = defaultdict(int)
+    total_cost = 0
+    for droplet in droplets:
+        roledef = re.split(r"([0-9]+)", droplet.name)[0]
+        cost = int(sizes[droplet.size_id]) * 10
+        role_costs[roledef] += cost
+        total_cost += cost
     
-
+    print "\n\n Costs:"
+    pprint(dict(role_costs))
+    print " ---> Total cost: $%s/month" % total_cost
+        
+    
+    
 def host(*names):
     env.hosts = []
     hostnames = do(split=True)
@@ -133,6 +150,10 @@ def debug():
 def node():
     do()
     env.roles = ['node']
+
+def push():
+    do()
+    env.roles = ['push']
 
 def db():
     do()
