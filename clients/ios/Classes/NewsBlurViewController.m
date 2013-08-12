@@ -425,6 +425,8 @@ static const CGFloat kFolderTitleHeight = 28;
 -(void)fetchFeedList:(BOOL)showLoader {
     NSURL *urlFeedList;
     
+    [appDelegate cancelOfflineQueue];
+    
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
@@ -448,7 +450,6 @@ static const CGFloat kFolderTitleHeight = 28;
 
     self.lastUpdate = [NSDate date];
     [self showRefreshNotifier];
-    [appDelegate cancelOfflineQueue];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    

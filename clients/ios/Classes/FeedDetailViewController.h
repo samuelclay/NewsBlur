@@ -30,7 +30,8 @@
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
     BOOL isOffline;
-               
+    BOOL isShowingOffline;
+     
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
     WEPopoverController *popoverController;
@@ -57,6 +58,7 @@
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOffline;
+@property (nonatomic, readwrite) BOOL isShowingOffline;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;

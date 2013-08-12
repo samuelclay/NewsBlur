@@ -59,6 +59,7 @@
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
 @synthesize isOffline;
+@synthesize isShowingOffline;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -262,6 +263,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.isOffline = NO;
+    self.isShowingOffline = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
@@ -294,6 +296,7 @@
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!appDelegate.storyLocationsCount && self.feedPage == 1) {
+            self.isShowingOffline = YES;
             self.isOffline = YES;
             [self showLoadingNotifier];
             [self loadOfflineStories];
@@ -337,7 +340,9 @@
         
         if (self.isOffline) {
             [self loadOfflineStories];
-            [self showOfflineNotifier];
+            if (!self.isShowingOffline) {
+                [self showOfflineNotifier];
+            }
             return;
         }
         
@@ -465,7 +470,9 @@
             } else {
                 [self renderStories:offlineStories];
             }
-            [self showOfflineNotifier];
+            if (!self.isShowingOffline) {
+                [self showOfflineNotifier];
+            }
         });
     }];
     });
@@ -561,6 +568,7 @@
                 return;
             } else if (self.feedPage == 1) {
                 self.isOffline = YES;
+                self.isShowingOffline = NO;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
             } else {
@@ -590,6 +598,7 @@
     } else if ([request responseStatusCode] >= 500) {
         if (self.feedPage == 1) {
             self.isOffline = YES;
+            self.isShowingOffline = NO;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         }
@@ -606,6 +615,7 @@
     
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOffline = NO;
+    self.isShowingOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
