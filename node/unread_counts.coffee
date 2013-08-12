@@ -49,10 +49,13 @@ io.sockets.on 'connection', (socket) ->
         if not @username
             return
         
+        socket.subscribe?.on "error", (err) ->
+            console.log " ---> Error (pre): #{err}"
         socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.on "error", (err) ->
             console.log " ---> Error: #{err}"
+            socket.subscribe.destroy()
         socket.subscribe.on "connect", =>
             socket.subscribe.subscribe @feeds
             socket.subscribe.subscribe @username
