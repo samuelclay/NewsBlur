@@ -52,6 +52,9 @@
         _ref.end();
       }
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
+      socket.subscribe.on("error", function(err) {
+        return console.log(" ---> Error: " + err);
+      });
       socket.subscribe.subscribe(this.feeds);
       socket.subscribe.subscribe(this.username);
       return socket.subscribe.on('message', function(channel, message) {
