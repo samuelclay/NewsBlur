@@ -53,8 +53,9 @@ io.sockets.on 'connection', (socket) ->
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.on "error", (err) ->
             console.log " ---> Error: #{err}"
-        socket.subscribe.subscribe @feeds
-        socket.subscribe.subscribe @username
+        socket.subscribe.on "connect", =>
+            socket.subscribe.subscribe @feeds
+            socket.subscribe.subscribe @username
 
         socket.subscribe.on 'message', (channel, message) =>
             log.info @username, "Update on #{channel}: #{message}"

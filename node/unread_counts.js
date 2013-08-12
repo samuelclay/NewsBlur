@@ -55,8 +55,10 @@
       socket.subscribe.on("error", function(err) {
         return console.log(" ---> Error: " + err);
       });
-      socket.subscribe.subscribe(this.feeds);
-      socket.subscribe.subscribe(this.username);
+      socket.subscribe.on("connect", function() {
+        socket.subscribe.subscribe(_this.feeds);
+        return socket.subscribe.subscribe(_this.username);
+      });
       return socket.subscribe.on('message', function(channel, message) {
         log.info(_this.username, "Update on " + channel + ": " + message);
         if (channel === _this.username) {
