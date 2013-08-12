@@ -35,6 +35,7 @@ env.NEWSBLUR_PATH = "~/projects/newsblur"
 env.SECRETS_PATH = "~/projects/secrets-newsblur"
 env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
+env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 
 # =========
 # = Roles =
@@ -327,12 +328,14 @@ def setup_user():
     run('ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ""')
     run('touch ~/.ssh/authorized_keys')
     put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run('echo `cat authorized_keys` >> ~/.ssh/authorized_keys')
+    run("echo \"\n\" >> ~sclay/.ssh/authorized_keys")
+    run('echo `cat authorized_keys` >> ~sclay/.ssh/authorized_keys')
     run('rm authorized_keys')
 
 def copy_ssh_keys():
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), "local_keys")
-    run("echo `\ncat local_keys` >> .ssh/authorized_keys")
+    run("echo \"\n\" >> ~sclay/.ssh/authorized_keys")
+    run("echo `cat local_keys` >> ~sclay/.ssh/authorized_keys")
     run("rm local_keys")
 
 def setup_repo():
@@ -524,6 +527,10 @@ def setup_ulimit():
     # sudo chmod 666 /etc/sysctl.conf
     # echo "net.ipv4.ip_local_port_range = 1024 65535" >> /etc/sysctl.conf
     # sudo chmod 644 /etc/sysctl.conf
+
+def setup_syncookies():
+    sudo('echo 1 > /proc/sys/net/ipv4/tcp_syncookies')
+    sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
 
 def setup_sudoers(user=None):
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % (user or env.user))
@@ -852,6 +859,7 @@ def setup_redis(slave=False):
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
+    setup_syncookies()
 
 def setup_munin():
     # sudo('apt-get update')
@@ -982,7 +990,7 @@ def setup_do(name, size=2, image=None):
     doapi = dop.client.Client(django_settings.DO_CLIENT_KEY, django_settings.DO_API_KEY)
     sizes = dict((s.name, s.id) for s in doapi.sizes())
     size_id = sizes[INSTANCE_SIZE]
-    ssh_key_id = doapi.all_ssh_keys()[0].id
+    ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
     region_id = doapi.regions()[0].id
     if not image:
         IMAGE_NAME = "Ubuntu 13.04 x64"
@@ -997,7 +1005,7 @@ def setup_do(name, size=2, image=None):
                                     size_id=size_id,
                                     image_id=image_id,
                                     region_id=region_id,
-                                    ssh_key_ids=[str(ssh_key_id)],
+                                    ssh_key_ids=ssh_key_ids,
                                     virtio=True)
     print "Booting droplet: %s/%s (size: %s)" % (instance.id, IMAGE_NAME, INSTANCE_SIZE)
 
