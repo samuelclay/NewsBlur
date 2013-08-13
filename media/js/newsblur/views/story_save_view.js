@@ -14,21 +14,11 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     render: function() {
         return this.template({
             story: this.model,
-            tags: this.existing_tags(),
-            story_tags: this.unused_story_tags(),
+            tags: this.model.existing_tags(),
+            story_tags: this.model.unused_story_tags(),
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
         });
-    },
-    
-    existing_tags: function() {
-        var tags = this.model.get('user_tags');
-
-        if (!tags) {
-            tags = this.folder_tags();
-        }
-        
-        return tags || [];
     },
     
     template: _.template('\
@@ -58,38 +48,11 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
 
         $populate.fadeOut(500);
         _.each(tags, function(tag) {
-            $tag_input.tagit('createTag', tag);
+            $tag_input.tagit('createTag', tag, null, true);
         });
         
         this.toggle_feed_story_save_dialog({resize_open:true});
-    },
-    
-    unused_story_tags: function() {
-        var tags = _.reduce(this.model.get('user_tags') || [], function(m, t) {
-            return _.without(m, t);
-        }, this.model.get('story_tags'));
-        return tags;
-    },
-    
-    folder_tags: function() {
-        var folder_tags = [];
-        var feed_id = this.model.get('story_feed_id');
-        var feed = NEWSBLUR.assets.get_feed(feed_id);
-        if (feed) {
-            folder_tags = feed.parent_folder_names();
-        }
-        return folder_tags;
-    },
-    
-    all_tags: function() {
-        var tags = [];
-        var story_tags = this.model.get('story_tags') || [];
-        var user_tags = this.model.get('user_tags') || [];
-        var folder_tags = this.folder_tags();
-        var all_tags = story_tags.concat(user_tags).concat(folder_tags);
-        
-        console.log(["all_tags", all_tags]);
-        return all_tags;
+        this.save_tags();
     },
     
     toggle_feed_story_save_dialog: function(options) {
@@ -113,7 +76,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
             }
             $tag_input.tagit({
                 fieldName: "tags",
-                availableTags: this.all_tags(),
+                availableTags: this.model.all_tags(),
                 autocomplete: {delay: 0, minLength: 0},
                 showAutocompleteOnFocus: false,
                 removeConfirmation: true,
@@ -128,11 +91,19 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 tabIndex: null,
 
                 // Events
-                afterTagAdded: function(event, ui) {
+                afterTagAdded: function(event, options) {
+                    options = options || {};
                     self.resize();
+                    if (!options.duringInitialization) {
+                        self.save_tags();
+                    }
                 },
-                afterTagRemoved: function(event, ui) {
+                afterTagRemoved: function(event, duringInitialization) {
+                    options = options || {};
                     self.resize();
+                    if (!options.duringInitialization) {
+                        self.save_tags();
+                    }
                 }
             });
             $tag_input.tagit('addClassAutocomplete', 'NB-tagging-autocomplete');
@@ -161,6 +132,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var $save_content = this.$('.NB-sideoption-save');
         var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
         var $story_comments = this.$('.NB-feed-story-comments');
+        var $sideoption = this.$('.NB-feed-story-save');
         var $tag_input = this.$('.NB-sideoption-save-tag');
 
         var $save_clone = $save_wrapper.clone();
@@ -175,6 +147,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var new_sideoptions_height = $sideoption_container.height() - $save_wrapper.height() + sideoption_content_height;
         
         if (!options.close) {
+            $sideoption.addClass('NB-active');
             $save_wrapper.addClass('NB-active');
         }
 
@@ -192,6 +165,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
                 if (options.close) {
+                    $sideoption.removeClass('NB-active');
                     $save_wrapper.removeClass('NB-active');
                 }
             }, this)
@@ -204,7 +178,8 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var container_offset    = $sideoption_container.position().top;
         var original_height     = $story_content.data('original_height') || content_height;
         
-        if (!options.close && new_sideoptions_height >= original_height) {
+        if (!NEWSBLUR.reader.flags.narrow_content &&
+            !options.close && new_sideoptions_height >= original_height) {
             // Sideoptions too big, embiggen left side
             $story_content.animate({
                 'height': new_sideoptions_height
@@ -221,7 +196,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
             if (!$story_content.data('original_height')) {
                 $story_content.data('original_height', content_height);
             }
-        } else {
+        } else if (!NEWSBLUR.reader.flags.narrow_content) {
             // Content is bigger, move content back to normal
             if ($story_content.data('original_height') && !this.sideoptions_view.share_view.is_open) {
                 $story_content.animate({
@@ -244,6 +219,13 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
+    },
+    
+    save_tags: function() {
+        var $tag_input = this.$('.NB-sideoption-save-tag');
+
+        var user_tags = $tag_input.tagit('assignedTags');
+        this.model.set('user_tags', user_tags);
     }
     
 });

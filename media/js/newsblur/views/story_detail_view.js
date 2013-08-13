@@ -23,7 +23,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
-        "click .NB-feed-story-save"             : "star_story",
+        "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
         "click .NB-story-content-expander"      : "expand_story"
     },
@@ -33,7 +33,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
-        this.model.bind('change:starred', this.toggle_starred, this);
+        this.model.bind('change:starred', this.render_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.model.bind('change:shared', this.render_comments, this);
@@ -491,7 +491,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
     },
 
-    toggle_starred: function() {
+    render_starred: function() {
         var story = this.model;
         var $sideoption_title = this.$('.NB-feed-story-save .NB-sideoption-title');
         
@@ -657,8 +657,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },
     
-    star_story: function() {
-        this.model.star_story();
+    toggle_starred: function() {
+        this.model.toggle_starred();
     },
     
     scroll_to_comments: function() {

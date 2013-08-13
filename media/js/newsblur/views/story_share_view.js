@@ -159,7 +159,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var container_offset    = $sideoption_container.position().top;
         var original_height     = $story_content.data('original_height') || content_height;
         
-        if (!options.close && new_sideoptions_height >= original_height) {
+        if (!NEWSBLUR.reader.flags.narrow_content &&
+            !options.close && new_sideoptions_height >= original_height) {
             // Sideoptions too big, embiggen left side
             $story_content.animate({
                 'height': new_sideoptions_height
@@ -176,7 +177,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             if (!$story_content.data('original_height')) {
                 $story_content.data('original_height', content_height);
             }
-        } else {
+        } else if (!NEWSBLUR.reader.flags.narrow_content) {
             // Content is bigger, move content back to normal
             if ($story_content.data('original_height') && !this.sideoptions_view.save_view.is_open) {
                 $story_content.animate({
