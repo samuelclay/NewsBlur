@@ -517,11 +517,15 @@ def switch_forked_mongoengine():
         # run('get branch -D dev')
         # run('git checkout -b dev origin/dev')
 
-def setup_logrotate():
+def setup_logrotate(clear=True):
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
     sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
     sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
+    sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
+    if clear:
+        run('find /srv/newsblur/logs/*.log | xargs tee')
+    sudo('logrotate -f /etc/logrotate.d/newsblur')
 
 def setup_ulimit():
     # Increase File Descriptor limits.
