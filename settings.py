@@ -66,6 +66,7 @@ SITE_ID               = 1
 USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/reader/login'
+MEDIA_URL             = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -199,7 +200,7 @@ INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
 SOUTH_TESTS_MIGRATE     = False
-SESSION_ENGINE          = "django.contrib.sessions.backends.db"
+SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
@@ -380,7 +381,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=5),
+        'schedule': datetime.timedelta(minutes=3.5),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -390,11 +391,11 @@ CELERYBEAT_SCHEDULE = {
 # =========
 
 MONGO_DB = {
-    'host': '127.0.0.1:27017',
+    'host': 'db_mongo:27017',
     'name': 'newsblur',
 }
 MONGO_ANALYTICS_DB = {
-    'host': '127.0.0.1:27017',
+    'host': 'db_mongo_analytics:27017',
     'name': 'nbanalytics',
 }
 
@@ -429,14 +430,15 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db12',
+    'host': 'db_redis',
 }
-REDIS2 = {
-    'host': 'db13',
+REDIS_PUBSUB = {
+    'host': 'db_redis_pubsub',
 }
-REDIS3 = {
-    'host': 'db11',
+REDIS_STORY = {
+    'host': 'db_redis_story',
 }
+
 CELERY_REDIS_DB = 4
 SESSION_REDIS_DB = 5
 
@@ -444,7 +446,7 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db01:9200']
+ELASTICSEARCH_HOSTS = ['db_search:9200']
 
 # ===============
 # = Social APIs =
@@ -460,7 +462,7 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db01:3060"
+ORIGINAL_PAGE_SERVER = "db_pages:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,
@@ -533,6 +535,18 @@ else:
 BROKER_BACKEND = "redis"
 BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
 CELERY_RESULT_BACKEND = BROKER_URL
+SESSION_REDIS_HOST = REDIS['host']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '%s:6379' % REDIS['host'],
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
+    },
+}
 
 # =========
 # = Mongo =
@@ -540,7 +554,7 @@ CELERY_RESULT_BACKEND = BROKER_URL
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db02:27017',
+    'host': 'db_mongo:27017',
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
@@ -555,7 +569,7 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db30:27017',
+    'host': 'db_mongo_analytics:27017',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
@@ -572,11 +586,11 @@ REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3
 REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
 REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
 # REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
 
-REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
+REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
 
-REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS3['host'], port=6379, db=1)
+REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 # ==========
 # = Assets =

@@ -1586,7 +1586,7 @@ background: transparent;
     max-width: 56px;
 }
 .NB-story-pane-west #story_titles .NB-storytitles-shares {
-    top: none;
+    top: inherit;
     bottom: 4px;
 }
 #story_titles .NB-storytitles-shares .NB-icon {
@@ -6054,6 +6054,10 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-buffer {
+    background: transparent url('/media/embed/reader/buffer.png') no-repeat 0 0;
+    background-size: 16px;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-diigo {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
 }
@@ -6074,7 +6078,8 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
-    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
@@ -6120,6 +6125,13 @@ form.opml_import_form input {
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-pinboard {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-buffer {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-image,
@@ -8288,7 +8300,8 @@ form.opml_import_form input {
   margin: 0 0 0 2px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-twitter] {
-    background: transparent url('/media/embed/reader/twitter.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-facebook] {
     background: transparent url('/media/embed/reader/facebook.gif') no-repeat 0 0;
@@ -8304,6 +8317,10 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-buffer] {
+    background: transparent url('/media/embed/reader/buffer.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-diigo] {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;

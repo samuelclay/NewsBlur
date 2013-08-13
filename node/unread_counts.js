@@ -8,7 +8,7 @@
 
   log = require('./log.js');
 
-  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db13';
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db_redis_pubsub';
 
   SECURE = !!process.env.NODE_SSL;
 
