@@ -56,7 +56,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected int currentState;
 
 	protected ViewPager pager;
-    protected Button overlayPrev, overlayNext;
+    protected Button overlayLeft, overlayRight;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -76,8 +76,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
-        this.overlayNext = (Button) findViewById(R.id.reading_overlay_next);
-        this.overlayPrev = (Button) findViewById(R.id.reading_overlay_prev);
+        this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
+        this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -206,14 +206,15 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void setOverlayAlpha(float a) {
-        UIUtils.setViewAlpha(this.overlayPrev, a);
-        UIUtils.setViewAlpha(this.overlayNext, a);
+        UIUtils.setViewAlpha(this.overlayLeft, a);
+        UIUtils.setViewAlpha(this.overlayRight, a);
     }
 
     private void enableOverlays() {
         int page = this.pager.getCurrentItem();
-        this.overlayPrev.setEnabled(page > 0);
-        this.overlayNext.setEnabled(page < (this.readingAdapter.getCount()-1));
+        this.overlayLeft.setEnabled(page > 0);
+        this.overlayRight.setEnabled(page < (this.readingAdapter.getCount()-1));
+        this.overlayRight.setText((page < (this.readingAdapter.getCount()-1)) ? R.string.overlay_next : R.string.overlay_done);
     }
 
 	@Override
@@ -301,11 +302,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
-    public void overlayNext(View v) {
+    public void overlayRight(View v) {
         pager.setCurrentItem(pager.getCurrentItem()+1, true);
     }
 
-    public void overlayPrev(View v) {
+    public void overlayLeft(View v) {
         pager.setCurrentItem(pager.getCurrentItem()-1, true);
     }
 

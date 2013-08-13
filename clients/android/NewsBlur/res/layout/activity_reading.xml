@@ -14,26 +14,37 @@
         android:layout_height="1dip"
         android:layout_alignParentTop="true" />
 
-    <Button
-        android:id="@+id/reading_overlay_next"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        android:text="next"
-        android:onClick="overlayNext" />
+        android:layout_alignParentRight="true" >
 
-    <Button
-        android:id="@+id/reading_overlay_prev"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/reading_overlay_next"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="15dp"
-        android:text="prev"
-        android:onClick="overlayPrev" />
+        <Button
+            android:id="@+id/reading_overlay_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:textSize="12sp"
+            android:layout_marginRight="8dp"
+            android:padding="6dp"
+            android:drawableLeft="@drawable/selector_overlay_left_icon"
+            android:onClick="overlayLeft" />
+
+        <Button
+            android:id="@+id/reading_overlay_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/overlay_next"
+            android:textColor="@color/half_darkgray"
+            android:textSize="12sp"
+            android:padding="6dp"
+            android:drawableRight="@drawable/selector_overlay_right_icon"
+            android:onClick="overlayRight" />
+
+    </LinearLayout>
 
 </RelativeLayout>
