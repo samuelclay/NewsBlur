@@ -928,9 +928,9 @@ def save_blurblog_settings(request):
     data = request.POST
 
     profile = MSocialProfile.get_user(request.user.pk)
-    profile.custom_css = data.get('custom_css', None)
-    profile.custom_bgcolor = data.get('custom_bgcolor', None)
-    profile.blurblog_title = data.get('blurblog_title', None)
+    profile.custom_css = strip_tags(data.get('custom_css', None))
+    profile.custom_bgcolor = strip_tags(data.get('custom_bgcolor', None))
+    profile.blurblog_title = strip_tags(data.get('blurblog_title', None))
     profile.save()
 
     logging.user(request, "~BB~FRSaving blurblog settings")
