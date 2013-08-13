@@ -1073,6 +1073,7 @@ class Feed(models.Model):
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed_count = Feed.objects.latest('pk').pk
+        total = 0
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
                 print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
@@ -1090,7 +1091,9 @@ class Feed(models.Model):
                 if dryrun:
                     print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
                 else:
-                    MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+                    total += MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+                    
+        print " ---> Deleted %s stories in total." % total
     
     @property
     def story_cutoff(self):
@@ -1656,8 +1659,9 @@ class MStory(mongo.Document):
     
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+        extra_stories_count = 0
         if not feed_id and not feed:
-            return
+            return extra_stories_count
         
         if not feed_id:
             feed_id = feed.pk
@@ -1675,7 +1679,7 @@ class MStory(mongo.Document):
                 story_trim_date = stories[cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
-                return
+                return extra_stories_count
                 
             extra_stories = MStory.objects(story_feed_id=feed_id, 
                                            story_date__lte=story_trim_date)
@@ -1687,6 +1691,8 @@ class MStory(mongo.Document):
                 logging.debug("   ---> Deleted %s stories, %s left." % (
                                 extra_stories_count,
                                 existing_story_count))
+
+        return extra_stories_count
         
     @classmethod
     def find_story(cls, story_feed_id, story_id, original_only=False):

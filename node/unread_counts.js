@@ -8,7 +8,7 @@
 
   log = require('./log.js');
 
-  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db13';
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db_redis_pubsub';
 
   SECURE = !!process.env.NODE_SSL;
 
@@ -48,12 +48,21 @@
       if (!this.username) {
         return;
       }
+      socket.on("error", function(err) {
+        return console.log(" ---> Error (socket): " + err);
+      });
       if ((_ref = socket.subscribe) != null) {
         _ref.end();
       }
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
-      socket.subscribe.subscribe(this.feeds);
-      socket.subscribe.subscribe(this.username);
+      socket.subscribe.on("error", function(err) {
+        console.log(" ---> Error: " + err);
+        return socket.subscribe.end();
+      });
+      socket.subscribe.on("connect", function() {
+        socket.subscribe.subscribe(_this.feeds);
+        return socket.subscribe.subscribe(_this.username);
+      });
       return socket.subscribe.on('message', function(channel, message) {
         log.info(_this.username, "Update on " + channel + ": " + message);
         if (channel === _this.username) {
@@ -70,6 +79,10 @@
       }
       return log.info(this.username, ("Disconnect (" + ((_ref1 = this.feeds) != null ? _ref1.length : void 0) + " feeds, " + ip + "),") + (" there are now " + (io.sockets.clients().length - 1) + " users. ") + (" " + (SECURE ? "(SSL)" : "(non-SSL)")));
     });
+  });
+
+  io.sockets.on('error', function(err) {
+    return console.log(" ---> Error (sockets): " + err);
   });
 
 }).call(this);
