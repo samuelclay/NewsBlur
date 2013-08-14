@@ -1203,6 +1203,8 @@ class Feed(models.Model):
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
+        if hasattr(story_db, 'user_tags'):
+            story['user_tags'] = story_db.user_tags
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
