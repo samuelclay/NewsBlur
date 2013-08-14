@@ -3,6 +3,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     el: '.NB-sidebar',
     
     events: {
+        "click .NB-feeds-header-starred .NB-feedlist-collapse-icon": "collapse_starred_stories",
         "click .NB-feeds-header-starred": "open_starred_stories",
         "click .NB-feeds-header-river-sites": "open_river_stories",
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
@@ -103,6 +104,51 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     },
     
     collapse_river_blurblog: function(e, options) {
+        e.stopPropagation();
+        options = options || {};
+        
+        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
+        var $folder = this.$('.NB-socialfeeds-folder');
+        
+        // Hiding / Collapsing
+        if (options.force_collapse || 
+            ($folder.length && 
+             $folder.eq(0).is(':visible'))) {
+            NEWSBLUR.assets.collapsed_folders('river_blurblog', true);
+            $header.addClass('NB-folder-collapsed');
+            $folder.animate({'opacity': 0}, {
+                'queue': false,
+                'duration': options.force_collapse ? 0 : 200,
+                'complete': _.bind(function() {
+                    this.show_collapsed_river_blurblog_count();
+                    $folder.slideUp({
+                        'duration': 270,
+                        'easing': 'easeOutQuart'
+                    });
+                }, this)
+            });
+        } 
+        // Showing / Expanding
+        else if ($folder.length && 
+                 (!$folder.eq(0).is(':visible'))) {
+            NEWSBLUR.assets.collapsed_folders('river_blurblog', false);
+            $header.removeClass('NB-folder-collapsed');
+            if (!NEWSBLUR.assets.preference('folder_counts')) {
+                this.hide_collapsed_river_blurblog_count();
+            }
+            $folder.css({'opacity': 0}).slideDown({
+                'duration': 240,
+                'easing': 'easeInOutCubic',
+                'complete': function() {
+                    $folder.animate({'opacity': 1}, {'queue': false, 'duration': 200});
+                }
+            });
+        }
+        
+        return false;
+    },
+    
+    collapse_starred_stories: function(e, options) {
         e.stopPropagation();
         options = options || {};
         

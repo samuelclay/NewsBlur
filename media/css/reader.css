@@ -3550,9 +3550,10 @@ background: transparent;
 .NB-feeds-header-starred .NB-feeds-header-count {
     background-color: #11448B;
     display: block;
-    padding: 3px 4px 1px;
-    margin: 3px 3px 0 0;
+    padding: 2px 3px 2px;
+    margin: 3px 1px 0 1px;
     border-bottom: 1px solid rgba(0, 0, 0, .2);
+    
 }
 
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
