@@ -1699,12 +1699,13 @@ def iframe_buster(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
-    code     = 1
-    feed_id  = int(request.REQUEST['feed_id'])
-    story_id = request.REQUEST['story_id']
+    code      = 1
+    feed_id   = int(request.REQUEST['feed_id'])
+    story_id  = request.REQUEST['story_id']
     user_tags = request.REQUEST.getlist('user_tags')
-    message  = ""
-    story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    message   = ""
+    story, _  = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    
     if not story:
         return {'code': -1, 'message': "Could not find story to save."}
         
