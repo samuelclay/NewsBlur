@@ -95,6 +95,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return this;
     },
     
+    render_starred_tags: function() {
+        if (this.model.get('starred')) {
+            this.save_view.toggle_feed_story_save_dialog();
+        }
+    },
+    
     render_header: function(model, value, options) {
         var params = this.get_render_params();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));

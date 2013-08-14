@@ -175,7 +175,6 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var content_height      = $story_content.height();
         var comments_height     = $story_comments.height();
         var left_height         = content_height + comments_height;
-        var container_offset    = $sideoption_container.position().top;
         var original_height     = $story_content.data('original_height') || content_height;
         
         if (!NEWSBLUR.reader.flags.narrow_content &&
