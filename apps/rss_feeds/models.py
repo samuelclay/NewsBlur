@@ -1392,8 +1392,7 @@ class Feed(models.Model):
                 total = total * 12
         
         # 3 day max
-        if total > 60*24*3:
-            total = 60*24*3
+        total = min(total, 60*24*2)
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
@@ -1411,6 +1410,7 @@ class Feed(models.Model):
         
         if error_count:
             total = total * error_count
+            total = min(total, 60*24*7)
             if verbose:
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (

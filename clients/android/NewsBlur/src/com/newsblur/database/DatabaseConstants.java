@@ -153,7 +153,7 @@ public class DatabaseConstants {
     private static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
     private static final String SUM_STORY_TOTAL = "storyTotal";
 
-    public static final String FEED_FILTER_FOCUS = " WHERE " + FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
+    public static final String FEED_FILTER_FOCUS = FEED_TABLE + "." + FEED_POSITIVE_COUNT + " > 0 ";
 
 	private static String STORY_SUM_TOTAL = " CASE " + 
 	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 
@@ -163,9 +163,9 @@ public class DatabaseConstants {
 	"ELSE " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " " +
 	"END AS " + DatabaseConstants.SUM_STORY_TOTAL;
 
-	public static final String STORY_INTELLIGENCE_BEST = DatabaseConstants.SUM_STORY_TOTAL + " > 0 ";
-	public static final String STORY_INTELLIGENCE_SOME = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
-	public static final String STORY_INTELLIGENCE_ALL = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
+	private static final String STORY_INTELLIGENCE_BEST = DatabaseConstants.SUM_STORY_TOTAL + " > 0 ";
+	private static final String STORY_INTELLIGENCE_SOME = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
+	private static final String STORY_INTELLIGENCE_ALL = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
 
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE, STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,

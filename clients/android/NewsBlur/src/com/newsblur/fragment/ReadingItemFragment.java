@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -42,6 +43,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
+import com.newsblur.view.NonfocusScrollview;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -64,6 +66,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private UserDetails user;
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
+    private Reading activity;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -83,6 +86,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		return readingFragment;
 	}
 
+    @Override
+    public void onAttach(Activity activity) {
+        if (activity instanceof Reading) {
+            this.activity = (Reading) activity;
+        }
+        super.onAttach(activity);
+    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +156,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
 			setupItemCommentsAndShares(view);
 		}
+
+        NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
+        scrollView.registerScrollChangeListener(this.activity);
 
 		return view;
 	}

@@ -674,6 +674,11 @@ body {
     height: 14px;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
+
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon,
