@@ -236,13 +236,13 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                                              host + "?url=%s",
                                              "NewsZeit");
         });
-
+/*
         $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
             e.preventDefault();
 
             window.location.href = 'https://chrome.google.com/webstore/detail/rss-subscription-extensio/bmjffnfcokiodbeiamclanljnaheeoke';
         });
-
+*/
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {
             e.preventDefault();
             $t.select();
