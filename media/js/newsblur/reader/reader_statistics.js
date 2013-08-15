@@ -210,7 +210,12 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var pos = counts.pos || 0;
             var neg = counts.neg || 0;
             var key = counts[facet];
-            if (facet == 'feed') {
+            if (facet == 'feed' && self.options.social_feed) {
+                key = [$.make('div', [
+                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(counts['feed_id']) }),
+                    $.make('span', { className: 'NB-modal-feed-title' }, counts['feed_title'])
+                ])];                
+             } else  if (facet == 'feed') {
                 key = [$.make('div', [
                     $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed) }),
                     $.make('span', { className: 'NB-modal-feed-title' }, self.feed.get('feed_title'))
