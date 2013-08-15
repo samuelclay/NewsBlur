@@ -25,24 +25,22 @@
 
         <Button
             android:id="@+id/reading_overlay_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" "
-            android:textSize="12sp"
-            android:layout_marginRight="8dp"
+            android:layout_width="52dp"
+            android:layout_height="41dp"
+            android:background="@drawable/selector_overlay_bg_left"
+            android:textSize="14sp"
             android:padding="6dp"
-            android:drawableLeft="@drawable/selector_overlay_left_icon"
             android:onClick="overlayLeft" />
 
         <Button
             android:id="@+id/reading_overlay_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="125dp"
+            android:layout_height="41dp"
+            android:background="@drawable/selector_overlay_bg_right"
             android:text="@string/overlay_next"
             android:textColor="@color/half_darkgray"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:padding="6dp"
-            android:drawableRight="@drawable/selector_overlay_right_icon"
             android:onClick="overlayRight" />
 
     </LinearLayout>
