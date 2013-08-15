@@ -12,6 +12,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
@@ -34,8 +37,9 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
+import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
+public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -45,10 +49,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
 
+    private static final int OVERLAY_RANGE_TOP_DP = 50;
+    private static final int OVERLAY_RANGE_BOT_DP = 60;
+
 	protected int passedPosition;
 	protected int currentState;
 
 	protected ViewPager pager;
+    protected Button overlayLeft, overlayRight;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -58,12 +66,18 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	private Set<Story> storiesToMarkAsRead;
 
+    private float overlayRangeTopPx;
+    private float overlayRangeBotPx;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceBundle);
+
 		setContentView(R.layout.activity_reading);
+        this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
+        this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -75,6 +89,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		contentResolver = getContentResolver();
 
         this.apiManager = new APIManager(this);
+
+        // this value is expensive to compute but doesn't change during a single runtime
+        this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
+        this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
 
 	}
 
@@ -93,6 +111,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
 		readingAdapter.setCurrentItem(passedPosition);
+        this.enableOverlays();
 	}
 
 	@Override
@@ -151,6 +170,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		}
 	}
 
+    // interface OnPageChangeListener
+
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
 	}
@@ -160,8 +181,41 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	}
 
 	@Override
-	public void onPageSelected(final int position) {
+	public void onPageSelected(int position) {
+        this.setOverlayAlpha(1.0f);
+        this.enableOverlays();
 	}
+
+    // interface ScrollChangeListener
+
+    @Override
+    public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
+        int scrollMax = currentHeight - findViewById(android.R.id.content).getMeasuredHeight();
+        int posFromBot = (scrollMax - vPos);
+
+        float newAlpha = 0.0f;
+        if (vPos < this.overlayRangeTopPx) {
+            float delta = this.overlayRangeTopPx - ((float) vPos);
+            newAlpha = delta / this.overlayRangeTopPx;
+        } else if (posFromBot < this.overlayRangeBotPx) {
+            float delta = this.overlayRangeBotPx - ((float) posFromBot);
+            newAlpha = delta / this.overlayRangeBotPx;
+        }
+        
+        this.setOverlayAlpha(newAlpha);
+    }
+
+    private void setOverlayAlpha(float a) {
+        UIUtils.setViewAlpha(this.overlayLeft, a);
+        UIUtils.setViewAlpha(this.overlayRight, a);
+    }
+
+    private void enableOverlays() {
+        int page = this.pager.getCurrentItem();
+        this.overlayLeft.setEnabled(page > 0);
+        this.overlayRight.setEnabled(page < (this.readingAdapter.getCount()-1));
+        this.overlayRight.setText((page < (this.readingAdapter.getCount()-1)) ? R.string.overlay_next : R.string.overlay_done);
+    }
 
 	@Override
 	public void updateAfterSync() {
@@ -169,6 +223,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	@Override
@@ -176,6 +231,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	public abstract void checkStoryCount(int position);
@@ -246,7 +302,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
+    public void overlayRight(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()+1, true);
+    }
 
-
+    public void overlayLeft(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()-1, true);
+    }
 
 }
