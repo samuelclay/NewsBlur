@@ -236,16 +236,16 @@ class Feed(models.Model):
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
         
-    def expire_redis(self, r=None, r2=None):
+    def expire_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+            # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
         r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -1387,7 +1387,9 @@ class Feed(models.Model):
         # subscriber_bonus = int(subscriber_bonus)
 
         if self.is_push:
-            total = total * 12
+            fetch_history = MFetchHistory.feed(self.pk)
+            if len(fetch_history['push_history']):
+                total = total * 12
         
         # 3 day max
         if total > 60*24*3:
@@ -1787,55 +1789,55 @@ class MStory(mongo.Document):
         
         return story_hashes
     
-    def sync_redis(self, r=None, r2=None):
+    def sync_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+            # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
             feed_key = 'F:%s' % self.story_feed_id
             r.sadd(feed_key, self.story_hash)
             r.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-            r2.sadd(feed_key, self.story_hash)
-            r2.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.sadd(feed_key, self.story_hash)
+            # r2.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
             
             r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
             r.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-            r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            # r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
-    def remove_from_redis(self, r=None, r2=None):
+    def remove_from_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         if self.id:
             r.srem('F:%s' % self.story_feed_id, self.story_hash)
-            r2.srem('F:%s' % self.story_feed_id, self.story_hash)
+            # r2.srem('F:%s' % self.story_feed_id, self.story_hash)
             r.zrem('zF:%s' % self.story_feed_id, self.story_hash)
-            r2.zrem('zF:%s' % self.story_feed_id, self.story_hash)
+            # r2.zrem('zF:%s' % self.story_feed_id, self.story_hash)
 
     @classmethod
     def sync_feed_redis(cls, story_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
         r.delete('F:%s' % story_feed_id)
-        r2.delete('F:%s' % story_feed_id)
+        # r2.delete('F:%s' % story_feed_id)
         r.delete('zF:%s' % story_feed_id)
-        r2.delete('zF:%s' % story_feed_id)
+        # r2.delete('zF:%s' % story_feed_id)
 
         logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
-        p2 = r2.pipeline()
+        # p2 = r2.pipeline()
         for story in stories:
-            story.sync_redis(r=p, r2=p2)
+            story.sync_redis(r=p)
         p.execute()
-        p2.execute()
+        # p2.execute()
         
     def count_comments(self):
         from apps.social.models import MSharedStory
