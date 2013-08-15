@@ -3057,6 +3057,7 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
                         }, this))),
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
                     ]).bind('click', _.bind(function(e) {
