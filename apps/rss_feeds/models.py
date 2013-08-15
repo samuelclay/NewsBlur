@@ -1385,7 +1385,9 @@ class Feed(models.Model):
         # subscriber_bonus = int(subscriber_bonus)
 
         if self.is_push:
-            total = total * 12
+            fetch_history = MFetchHistory.feed(self.pk)
+            if len(fetch_history['push_history']):
+                total = total * 12
         
         # 3 day max
         if total > 60*24*3:
