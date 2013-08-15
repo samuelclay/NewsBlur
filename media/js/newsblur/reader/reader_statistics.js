@@ -210,7 +210,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var pos = counts.pos || 0;
             var neg = counts.neg || 0;
             var key = counts[facet];
-            if (facet == 'feed' && self.options.social_feed) {
+            if (facet == 'feed' && self.options.social_feed && counts['feed_id'] != 0) {
                 key = [$.make('div', [
                     $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(counts['feed_id']) }),
                     $.make('span', { className: 'NB-modal-feed-title' }, counts['feed_title'])
