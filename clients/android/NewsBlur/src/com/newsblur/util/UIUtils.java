@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.os.Build;
+import android.view.View;
 
 public class UIUtils {
 	
@@ -70,9 +72,20 @@ public class UIUtils {
 	 * used throughout Android. 
 	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)  
 	 */
-	
 	public static int convertDPsToPixels(Context context, final int dps) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dps * scale + 0.5f);
 	}
+
+    /**
+     * Sets the alpha of a view in a manner that is safe to use before API version 11.
+     * If alpha isn't supported, just make the view invisible if the alpha is so low
+     * that it may as well be.
+     */
+    public static void setViewAlpha(View v, float alpha) {
+        v.setVisibility((alpha > 0.001) ? View.VISIBLE : View.INVISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            v.setAlpha(alpha);
+        }
+    }
 }
