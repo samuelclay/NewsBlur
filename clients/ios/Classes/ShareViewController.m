@@ -363,7 +363,7 @@
     appDelegate.activeFeedUserProfiles = [DataUtilities 
                                           updateUserProfiles:appDelegate.activeFeedUserProfiles 
                                           withNewUserProfiles:userProfiles];
-    
+    [appDelegate.feedDetailViewController redrawUnreadStory];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
 }
 

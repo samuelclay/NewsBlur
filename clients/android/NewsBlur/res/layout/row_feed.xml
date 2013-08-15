@@ -54,8 +54,7 @@
         android:layout_height="19dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:contentDescription="@string/description_favicon" />
+        android:layout_marginRight="12dp" />
 
     <TextView
         android:id="@+id/row_feedname"
@@ -70,7 +69,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/folder_text"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

@@ -18,6 +18,8 @@
     NSString *storyAuthor;
     NSString *storyDate;
     int storyScore;
+    BOOL isStarred;
+    BOOL isShared;
     
     // River view    
     NSString *siteTitle;
@@ -35,6 +37,8 @@
 @property (nonatomic) UIImage *siteFavicon;
 
 @property (readwrite) int storyScore;
+@property (readwrite) BOOL isStarred;
+@property (readwrite) BOOL isShared;
 
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;

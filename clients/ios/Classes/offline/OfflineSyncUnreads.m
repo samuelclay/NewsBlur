@@ -88,6 +88,7 @@
         }
         NSLog(@"Deleting stories over limit: %d - %d", offlineLimit, offlineLimitTimestamp);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
+        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
     }];
     
     appDelegate.totalUnfetchedStoryCount = 0;

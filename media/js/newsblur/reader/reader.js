@@ -201,26 +201,29 @@
         },
         
         adjust_for_narrow_window: function() {
-            var north, center;
+            var north, center, west;
             var story_layout = NEWSBLUR.assets.preference('story_layout');
+            var content_width;
+            var $windows = this.$s.$body.add(this.$s.$feed_view)
+                                        .add(this.$s.$story_titles)
+                                        .add(this.$s.$text_view);
             if (story_layout == 'split') {
                 north = NEWSBLUR.reader.layout.contentLayout.panes.north;
                 center = NEWSBLUR.reader.layout.contentLayout.panes.center;
+                west = NEWSBLUR.reader.layout.contentLayout.panes.west;
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
-
+            if (center) {
+                $windows.toggleClass('NB-narrow-content', center.width() < 780);
+                content_width = center.width() + (west ? west.width() : 0);
+            }
+            
             if ((north && north.width() < 640) ||
-                (center && center.width() < 780)) {
-                this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.addClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.addClass('NB-feed-story-view-narrow');
-                this.$s.$body.addClass('NB-feed-story-view-narrow');
+                (content_width && content_width < 780)) {
+                $windows.addClass('NB-narrow');
             } else {
-                this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$story_titles.removeClass('NB-feed-story-view-narrow');
-                this.$s.$text_view.removeClass('NB-feed-story-view-narrow');
-                this.$s.$body.removeClass('NB-feed-story-view-narrow');
+                $windows.removeClass('NB-narrow');
             }
             
             this.apply_tipsy_titles();
@@ -401,7 +404,7 @@
                     gravity: 's',
                     delayIn: 375
                 }).tipsy('enable');
-                $('.NB-feed-story-view-narrow .NB-taskbar-button.NB-tipsy').tipsy({
+                $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 'n',
                     delayIn: 375,
                     title: 'tipsy-title'
@@ -1182,7 +1185,8 @@
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
                                         this.active_folder.folder_view.$el,
-                                        this.active_folder);
+                                        this.active_folder,
+                                        options);
             } else {
                 this.open_feed(this.active_feed, options);
             }
@@ -2092,6 +2096,20 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
+        send_story_to_buffer: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://bufferapp.com/add?source=newsblur&';
+            var buffer_url = [
+              url,
+              'url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&text=',
+              encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(buffer_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
         send_story_to_diigo: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.diigo.com/post?';
@@ -2264,10 +2282,9 @@
         },
         
         make_feed_title_in_stories: function(options) {
-            console.log(["make_feed_title_in_stories", options, this.flags.search, this.flags.searching]);
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header) {
-                console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
+                // console.log(["make_feed_title_in_stories not destroying", this.flags.search]);
                 return;
             }
             
@@ -3005,6 +3022,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_buffer'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-buffer'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Buffer').parent().addClass('NB-menu-manage-highlight-buffer');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-buffer');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3035,6 +3057,7 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
                         }, this))),
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
                     ]).bind('click', _.bind(function(e) {
@@ -3055,6 +3078,8 @@
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
                           this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-buffer')) {
+                          this.send_story_to_buffer(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
                           this.send_story_to_diigo(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-kippt')) {
@@ -5521,7 +5546,9 @@
             });
             $document.bind('keydown', 'r', function(e) {
                 e.preventDefault();
-                self.reload_feed();
+                if (self.active_feed) {
+                    self.reload_feed();
+                }
             });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();

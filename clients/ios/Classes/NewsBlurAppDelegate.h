@@ -141,6 +141,7 @@
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
+    NSOperationQueue *offlineCleaningQueue;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -243,6 +244,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
+@property (nonatomic) NSOperationQueue *offlineCleaningQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
@@ -350,10 +352,10 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
+- (void)queueReadStories:(NSDictionary *)feedsStories;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
-- (void)flushOldCachedImages;
 - (void)deleteAllCachedImages;
 
 @end

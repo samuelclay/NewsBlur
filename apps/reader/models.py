@@ -117,7 +117,7 @@ class UserSubscription(models.Model):
 
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
-        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
         feed_counter = 0
 
@@ -197,8 +197,8 @@ class UserSubscription(models.Model):
                 min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 now = datetime.datetime.now()
-                two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-                min_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
+                unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+                min_score = int(time.mktime(unread_cutoff.timetuple()))-1000
             max_score = current_time
         else:
             byscorefunc = r.zrevrangebyscore
@@ -346,7 +346,7 @@ class UserSubscription(models.Model):
         return code, message, us
     
     @classmethod
-    def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False):
+    def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False, force=False):
         feeds = {}
         
         # Get subscriptions for user
@@ -355,15 +355,15 @@ class UserSubscription(models.Model):
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         
-        
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         for i, sub in enumerate(user_subs):
             # Count unreads if subscription is stale.
-            if (sub.needs_unread_recalc or 
+            if (force or 
+                sub.needs_unread_recalc or 
                 sub.unread_count_updated < UNREAD_CUTOFF or 
                 sub.oldest_unread_story_date < UNREAD_CUTOFF):
-                sub = sub.calculate_feed_scores(silent=True)
+                sub = sub.calculate_feed_scores(silent=True, force=force)
             if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
 
             feed_id = sub.feed_id
@@ -653,14 +653,14 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, r2=None):
+    def mark_story_hashes_read(cls, user_id, story_hashes, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         p = r.pipeline()
-        p2 = r2.pipeline()
+        # p2 = r2.pipeline()
         feed_ids = set()
         friend_ids = set()
         
@@ -676,19 +676,19 @@ class RUserStory:
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             friend_ids.update(friends_with_shares)
-            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p, r2=p2)
+            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p)
         
         p.execute()
-        p2.execute()
+        # p2.execute()
         
         return list(feed_ids), list(friend_ids)
         
     @classmethod
-    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None, r2=None):
+    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
         
@@ -696,9 +696,9 @@ class RUserStory:
         
         def redis_commands(key):
             r.sadd(key, story_hash)
-            r2.sadd(key, story_hash)
-            r.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.expire(key, settings.DAYS_OF_UNREAD*24*60*60)
+            # r2.sadd(key, story_hash)
+            r.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
 
         all_read_stories_key = 'RS:%s' % (user_id)
         redis_commands(all_read_stories_key)
@@ -715,12 +715,12 @@ class RUserStory:
     def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
         h.srem('RS:%s' % user_id, story_hash)
-        h2.srem('RS:%s' % user_id, story_hash)
+        # h2.srem('RS:%s' % user_id, story_hash)
         h.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
-        h2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+        # h2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
 
         # Find other social feeds with this story to update their counts
         friend_key = "F:%s:F" % (user_id)
@@ -730,7 +730,7 @@ class RUserStory:
         if friends_with_shares:
             for social_user_id in friends_with_shares:
                 h.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
-                h2.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
+                # h2.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
     
     @staticmethod
     def get_stories(user_id, feed_id, r=None):
@@ -742,9 +742,9 @@ class RUserStory:
     @classmethod
     def switch_feed(cls, user_id, old_feed_id, new_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
-        p2 = r2.pipeline()
+        # p2 = r2.pipeline()
         story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
         
         for story_hash in story_hashes:
@@ -752,18 +752,18 @@ class RUserStory:
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
             read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
-            p2.sadd(read_feed_key, new_story_hash)
-            p.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire(read_feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            # p2.sadd(read_feed_key, new_story_hash)
+            p.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # p2.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
 
             read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
-            p2.sadd(read_user_key, new_story_hash)
-            p.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-            p2.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
+            # p2.sadd(read_user_key, new_story_hash)
+            p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         
         p.execute()
-        p2.execute()
+        # p2.execute()
         
         if len(story_hashes) > 0:
             logging.info(" ---> %s read stories" % len(story_hashes))
@@ -771,11 +771,10 @@ class RUserStory:
     @classmethod
     def switch_hash(cls, feed_id, old_hash, new_hash):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
-        p2 = r2.pipeline()
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        now = int(time.time())
+        # p2 = r2.pipeline()
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         
         usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
@@ -784,22 +783,18 @@ class RUserStory:
             read = r.sismember(rs_key, old_hash)
             if read:
                 p.sadd(rs_key, new_hash)
-                p2.sadd(rs_key, new_hash)
-                p2.zadd('z' + rs_key, new_hash, now)
-                p.expire(rs_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire(rs_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire('z' + rs_key, settings.DAYS_OF_UNREAD*24*60*60)
+                # p2.sadd(rs_key, new_hash)
+                p.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                # p2.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
                 
                 read_user_key = "RS:%s" % sub.user.pk
                 p.sadd(read_user_key, new_hash)
-                p2.sadd(read_user_key, new_hash)
-                p2.zadd('z' + read_user_key, new_hash, now)
-                p.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire(read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
-                p2.expire('z' + read_user_key, settings.DAYS_OF_UNREAD*24*60*60)
+                # p2.sadd(read_user_key, new_hash)
+                p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                # p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
         
         p.execute()
-        p2.execute()
+        # p2.execute()
     
 
 class UserSubscriptionFolders(models.Model):
@@ -853,12 +848,14 @@ class UserSubscriptionFolders(models.Model):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
-                    if (folder == feed_id and (
+                    if (folder == feed_id and in_folder is not None and (
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
                         multiples_found = True
                         logging.user(self.user, "~FB~SBDeleting feed, and a multiple has been found in '%s'" % (folder_name))
-                    if folder == feed_id and (folder_name == in_folder) and not deleted:
+                    if (folder == feed_id and 
+                        (folder_name == in_folder or in_folder is None) and 
+                        not deleted):
                         logging.user(self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (
                             k, len(old_folders)
                         ))
@@ -901,7 +898,7 @@ class UserSubscriptionFolders(models.Model):
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
-                        if f_k == folder_to_delete and folder_name == in_folder:
+                        if f_k == folder_to_delete and (folder_name == in_folder or in_folder is None):
                             logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
                             deleted_folder = folder
                         else:

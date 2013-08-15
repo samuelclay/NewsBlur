@@ -839,6 +839,8 @@
     }
     
     [appDelegate markActiveStorySaved:YES];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
@@ -868,10 +870,9 @@
         return [self requestFailed:request];
     }
     
-    //    [appDelegate markActiveStoryUnread];
-    //    [appDelegate.feedDetailViewController redrawUnreadStory];
-    
     [appDelegate markActiveStorySaved:NO];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 

@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 
-CURRENT_DIR  = os.path.dirname(os.getcwd())
+CURRENT_DIR  = os.path.dirname(__file__)
 NEWSBLUR_DIR = ''.join([CURRENT_DIR, '/../../'])
 sys.path.insert(0, NEWSBLUR_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
@@ -26,7 +26,7 @@ for collection in collections:
     os.system(cmd)
 
 print "Compressing %s..." % filename
-cmd = 'tar -jcf %s %s' % (filename, dir_name)
+cmd = 'tar -zcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
 print 'Uploading %s to S3...' % filename

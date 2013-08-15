@@ -39,9 +39,9 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
     
     unread_counts: function() {
         return {
-            ps: this.get('ps'),
-            nt: this.get('nt'),
-            ng: this.get('ng')
+            ps: this.get('ps') || 0,
+            nt: this.get('nt') || 0,
+            ng: this.get('ng') || 0
         };
     }
     

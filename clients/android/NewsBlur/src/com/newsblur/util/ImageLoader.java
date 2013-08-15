@@ -73,7 +73,9 @@ public class ImageLoader {
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, roundRadius);
+            if (roundRadius > 0) {
+			    bitmap = UIUtils.roundCorners(bitmap, roundRadius);
+            }
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);

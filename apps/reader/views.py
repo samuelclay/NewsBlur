@@ -424,7 +424,7 @@ def refresh_feeds(request):
             feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
             feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
 
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    user_subs = UserSubscription.objects.filter(user=user, active=True)
     sub_feed_ids = [s.feed_id for s in user_subs]
 
     if favicons_fetching:
@@ -471,12 +471,13 @@ def interactions_count(request):
 def feed_unread_count(request):
     user = request.user
     feed_ids = request.REQUEST.getlist('feed_id')
+    force = request.REQUEST.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
     feeds = {}
     if feed_ids:
-        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, force=force)
 
     social_feeds = {}
     if social_feed_ids:
@@ -739,18 +740,15 @@ def load_starred_stories(request):
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(
-                user_id=user.pk, 
-                story_title__icontains=query
-            ).order_by('-starred_date')[offset:offset+limit]
+            stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
         else:
-            mstories = []
+            stories = []
             message = "You must be a premium subscriber to search."
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
         ).order_by('-starred_date')[offset:offset+limit]
-    stories        = Feed.format_stories(mstories)
+        stories = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
     
@@ -829,6 +827,7 @@ def load_river_stories__redis(request):
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
+    query             = request.REQUEST.get('query')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     offset = (page-1) * limit
@@ -838,6 +837,21 @@ def load_river_stories__redis(request):
     if story_hashes:
         unread_feed_story_hashes = None
         read_filter = 'unread'
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
+    elif query:
+        if user.profile.is_premium:
+            usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                                       read_filter='all')
+            feed_ids = [sub.feed_id for sub in usersubs]
+            stories = Feed.find_feed_stories(feed_ids, query, offset=offset, limit=limit)
+            mstories = stories
+            unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
+                                                                     read_filter="unread", order=order, 
+                                                                     group_by_feed=False)
+        else:
+            stories = []
+            message = "You must be a premium subscriber to search."
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
@@ -856,9 +870,10 @@ def load_river_stories__redis(request):
         else:
             story_hashes = []
             unread_feed_story_hashes = []
+
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
     
-    mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
-    stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     
@@ -1340,7 +1355,7 @@ def add_folder(request):
 @json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', None)
     if in_folder == ' ':
         in_folder = ""
     
@@ -1381,7 +1396,7 @@ def delete_feed_by_url(request):
 @json.json_view
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -1620,7 +1635,7 @@ def mark_story_as_starred(request):
     now = datetime.datetime.now()
     story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
     starred_story, created = MStarredStory.objects.get_or_create(
-        story_guid=story_values.pop('story_guid'),
+        story_hash=story.story_hash,
         user_id=story_values.pop('user_id'),
         defaults=story_values)
     if created:
@@ -1641,8 +1656,10 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
-
+    
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
+    if not starred_story:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()

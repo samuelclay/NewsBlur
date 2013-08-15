@@ -185,8 +185,8 @@ class MSocialProfile(mongo.Document):
         stories_db = MSharedStory.objects(
             Q(user_id=self.user_id) &
             (Q(story_title__icontains=query) |
-             Q(story_content__icontains=query) |
-             Q(story_author_name__icontains=query))
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
         ).order_by('-shared_date')[offset:offset+limit]
         stories = Feed.format_stories(stories_db)
         
@@ -897,8 +897,8 @@ class MSocialSubscription(mongo.Document):
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
             now = datetime.datetime.now()
-            two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-            max_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
+            unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            max_score = int(time.mktime(unread_cutoff.timetuple()))-1000
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -1536,7 +1536,7 @@ class MSharedStory(mongo.Document):
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         if drop:
             for key_name in ["C", "S"]:
                 keys = r.keys("%s:*" % key_name)
@@ -1545,7 +1545,7 @@ class MSharedStory(mongo.Document):
                     r.delete(key)
         for story in cls.objects.all():
             story.sync_redis_shares(r=r)
-            story.sync_redis_story(r=h, r2=h2)
+            story.sync_redis_story(r=h)
     
     def sync_redis(self):
         self.sync_redis_shares()
@@ -1563,22 +1563,22 @@ class MSharedStory(mongo.Document):
         else:
             r.srem(comment_key, self.user_id)
 
-    def sync_redis_story(self, r=None, r2=None):
+    def sync_redis_story(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-        r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
+        # r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
         r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
                time.mktime(self.shared_date.timetuple()))
-        r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-               time.mktime(self.shared_date.timetuple()))
-        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD*24*60*60)
+        # r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
+        #        time.mktime(self.shared_date.timetuple()))
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1589,11 +1589,11 @@ class MSharedStory(mongo.Document):
         r.srem(comment_key, self.user_id)
 
         h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         h.srem('B:%s' % self.user_id, self.feed_guid_hash)
-        h2.srem('B:%s' % self.user_id, self.feed_guid_hash)
+        # h2.srem('B:%s' % self.user_id, self.feed_guid_hash)
         h.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
-        h2.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
+        # h2.zrem('zB:%s' % self.user_id, self.feed_guid_hash)
 
     def publish_update_to_subscribers(self):
         try:
@@ -1873,10 +1873,11 @@ class MSharedStory(mongo.Document):
                 'story_feed': story_feed,
                 'mute_url': mute_url,
             }
-        
+            story_title = self.story_title.replace('\n', ' ')
+            
             text    = render_to_string('mail/email_reply.txt', data)
             html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
-            subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, self.story_title)
+            subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, story_title)
             msg     = EmailMultiAlternatives(subject, text, 
                                              from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                              to=['%s <%s>' % (user.username, user.email)])
@@ -1936,10 +1937,11 @@ class MSharedStory(mongo.Document):
             'story_feed': story_feed,
             'mute_url': mute_url,
         }
-    
+        story_title = self.story_title.replace('\n', ' ')
+        
         text    = render_to_string('mail/email_reshare.txt', data)
         html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
-        subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, self.story_title)
+        subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, story_title)
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (original_user.username, original_user.email)])
