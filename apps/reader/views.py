@@ -257,7 +257,10 @@ def load_feeds(request):
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
 
-    starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
+    starred_counts = MStarredStoryCounts.user_counts(user.pk)
+    starred_count = starred_counts.get("", 0)
+    if not starred_count and len(starred_counts.keys()):
+        starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
         'user_id': user.pk,
@@ -1752,10 +1755,10 @@ def mark_story_as_unstarred(request):
     if not starred_story:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
     if starred_story:
-        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()
         MStarredStoryCounts.count_tags_for_user(request.user.pk)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
     else:
         code = -1
     
