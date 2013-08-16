@@ -1965,6 +1965,16 @@ class MStarredStory(mongo.Document):
         stories = Feed.format_stories(stories_db)
         
         return stories
+    
+    @classmethod
+    def find_stories_by_user_tag(cls, user_tag, user_id, offset=0, limit=25):
+        stories_db = cls.objects(
+            Q(user_id=user_id),
+            Q(user_tags__icontains=user_tag)
+        ).order_by('-starred_date')[offset:offset+limit]
+        stories = Feed.format_stories(stories_db)
+        
+        return stories
 
     @classmethod
     def trim_old_stories(cls, stories=10, days=30, dryrun=False):
@@ -2049,8 +2059,13 @@ class MStarredStoryCounts(mongo.Document):
         user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
                            key=itemgetter(1), 
                            reverse=True)
-        for tag, count in user_tags.items():
-            cls.objects(user_id=user_id, tag=tag).update_one(set__count=count, upsert=True)
+                           
+        cls.objects(user_id=user_id).delete()
+        for tag, count in dict(user_tags).items():
+            cls.objects.create(user_id=user_id, tag=tag, count=count)
+        
+        total_stories_count = MStarredStory.objects(user_id=user_id).count()
+        cls.objects(user_id=user_id, tag="", count=total_stories_count)
 
 
 class MFetchHistory(mongo.Document):

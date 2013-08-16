@@ -29,7 +29,7 @@ from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_f
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import MFeedIcon
+from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
 try:
@@ -257,7 +257,10 @@ def load_feeds(request):
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
 
-    starred_count = MStarredStory.objects(user_id=user.pk).count()
+    starred_counts = MStarredStoryCounts.user_counts(user.pk)
+    starred_count = starred_counts.get("", 0)
+    if not starred_count and len(starred_counts.keys()):
+        starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
         'user_id': user.pk,
@@ -282,6 +285,7 @@ def load_feeds(request):
         'social_services': social_services,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
+        'starred_counts': starred_counts,
         'categories': categories
     }
     return data
@@ -1647,7 +1651,6 @@ def mark_story_as_starred(request):
         user_id=story_values.pop('user_id'),
         defaults=story_values)
     if created:
-        logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
                                     story_feed_id=feed_id,
@@ -1655,26 +1658,36 @@ def mark_story_as_starred(request):
     else:
         starred_story.user_tags = user_tags
         starred_story.save()
+    
+    MStarredStoryCounts.count_tags_for_user(request.user.pk)
+    starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+    
+    if created:
+        logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
+    else:
         logging.user(request, "~FCUpdating starred:~SN~FC ~SB%s~SN (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))
     
-    return {'code': code, 'message': message}
+    return {'code': code, 'message': message, 'starred_counts': starred_counts}
     
 @ajax_login_required
 @json.json_view
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
+    starred_counts = None
     
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if not starred_story:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
     if starred_story:
-        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()
+        MStarredStoryCounts.count_tags_for_user(request.user.pk)
+        starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
     else:
         code = -1
     
-    return {'code': code}
+    return {'code': code, 'starred_counts': starred_counts}
 
 @ajax_login_required
 @json.json_view
