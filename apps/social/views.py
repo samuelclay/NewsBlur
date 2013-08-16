@@ -1286,6 +1286,13 @@ def load_social_statistics(request, social_user_id, username=None):
     # Classifier counts
     stats['classifier_counts'] = social_profile.feed_classifier_counts
     
+    # Feeds
+    feed_ids = [c['feed_id'] for c in stats['classifier_counts'].get('feed', [])]
+    feeds = Feed.objects.filter(pk__in=feed_ids).only('feed_title')
+    titles = dict([(f.pk, f.feed_title) for f in feeds])
+    for stat in stats['classifier_counts'].get('feed', []):
+        stat['feed_title'] = titles.get(stat['feed_id'], "")
+    
     logging.user(request, "~FBStatistics social: ~SB%s ~FG(%s subs)" % (
                  social_profile.user_id, social_profile.follower_count))
 
