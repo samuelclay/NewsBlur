@@ -241,9 +241,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 								resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
 						  	}
 							folderAdapter.notifyDataSetChanged();
-							Toast.makeText(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT).show();
+							UIUtils.safeToast(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT);
 						} else {
-							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+							UIUtils.safeToast(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT);
 						}
 					};
 				}.execute();

@@ -26,6 +26,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class ShareDialogFragment extends DialogFragment {
 
@@ -132,10 +133,10 @@ public class ShareDialogFragment extends DialogFragment {
 					protected void onPostExecute(Boolean result) {
 						if (result) {
 							hasShared = true;
-							Toast.makeText(getActivity(), R.string.shared, Toast.LENGTH_LONG).show();
+							UIUtils.safeToast(getActivity(), R.string.shared, Toast.LENGTH_LONG);
 							callback.sharedCallback(shareComment, hasBeenShared);
 						} else {
-							Toast.makeText(getActivity(), R.string.error_sharing, Toast.LENGTH_LONG).show();
+							UIUtils.safeToast(getActivity(), R.string.error_sharing, Toast.LENGTH_LONG);
 						}
 						v.setEnabled(true);
 						ShareDialogFragment.this.dismiss();

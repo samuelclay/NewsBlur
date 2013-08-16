@@ -11,6 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.os.Build;
 import android.view.View;
+import android.widget.Toast;
 
 public class UIUtils {
 	
@@ -86,6 +87,18 @@ public class UIUtils {
         v.setVisibility((alpha > 0.001) ? View.VISIBLE : View.INVISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             v.setAlpha(alpha);
+        }
+    }
+
+    /**
+     * Shows a toast in a circumstance where the context might be null.  This can very
+     * rarely happen when toasts are done from async tasks and the context is finished
+     * before the task completes, resulting in a crash.  This prevents the crash at the 
+     * cost of the toast not being shown.
+     */
+    public static void safeToast(Context c, int rid, int duration) {
+        if (c != null) {
+            Toast.makeText(c, rid, duration).show();
         }
     }
 }
