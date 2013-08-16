@@ -23,6 +23,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.$s.$feed_link_loader.css({'display': 'block'});
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
             this.make_feeds();
+            this.make_starred_tags();
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();

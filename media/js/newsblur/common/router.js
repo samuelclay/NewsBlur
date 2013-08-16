@@ -8,6 +8,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id": "site",
         "saved": "starred",
         "saved/:tag": "starred",
+        "folder/saved": "starred",
         "folder/:folder_name": "folder",
         "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
