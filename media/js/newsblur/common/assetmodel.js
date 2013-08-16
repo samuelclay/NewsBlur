@@ -14,6 +14,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
+        this.starred_counts = new NEWSBLUR.Models.StarredCounts();
         this.queued_read_stories = {};
         this.classifiers = {};
         this.friends = {};
@@ -383,6 +384,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             self.folders.reset(_.compact(subscriptions.folders), {parse: true});
             self.starred_count = subscriptions.starred_count;
+            self.starred_counts.set(subscriptions.starred_counts);
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
             self.social_services = subscriptions.social_services;
