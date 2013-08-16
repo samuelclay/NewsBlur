@@ -80,27 +80,32 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
 
-        if (feedCursor.getCount() > 0) {
-            feedCursor.moveToFirst();
-            Feed feed = Feed.fromCursor(feedCursor);
-
-            String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-            int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
-
-            // create the adapter before starting the loader, since the callback updates the adapter
-            adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-            getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-
-            itemList.setOnScrollListener(this);
-
-            adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
-            itemList.setAdapter(adapter);
-            itemList.setOnItemClickListener(this);
-            itemList.setOnCreateContextMenuListener(this);
-        } else {
-            Log.w(this.getClass().getName(), "Feed not found in DB, can't load.");
+        if (feedCursor.getCount() < 1) {
+            // This shouldn't happen, but crash reports indicate that it does (very rarely).
+            // If we are told to create an item list for a feed, but then can't find that feed ID in the DB,
+            // something is very wrong, and we won't be able to recover, so just force the user back to the
+            // feed list until we have a better understanding of how to prevent this.
+            Log.w(this.getClass().getName(), "Feed not found in DB, can't create item list.");
+            getActivity().finish();
         }
+
+        feedCursor.moveToFirst();
+        Feed feed = Feed.fromCursor(feedCursor);
+
+        String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
+        int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
+
+        // create the adapter before starting the loader, since the callback updates the adapter
+        adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+        getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
+
+        itemList.setOnScrollListener(this);
+
+        adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+        itemList.setAdapter(adapter);
+        itemList.setOnItemClickListener(this);
+        itemList.setOnCreateContextMenuListener(this);
         
         return v;
     }
