@@ -23,6 +23,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.$s.$feed_link_loader.css({'display': 'block'});
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
             this.make_feeds();
+            this.make_starred_tags();
     
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
@@ -154,6 +155,34 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-module-stats-count-shared-stories .NB-module-stats-count-number').text(profile.get('shared_stories_count'));
         $('.NB-module-stats-count-followers .NB-module-stats-count-number').text(profile.get('follower_count'));
         $('.NB-module-stats-count-following .NB-module-stats-count-number').text(profile.get('following_count'));
+    },
+    
+    make_starred_tags: function() {
+        var $starred_feeds = $('.NB-starred-feeds', this.$s.$starred_feeds);
+        var $feeds = NEWSBLUR.assets.starred_feeds.map(function(feed) {
+            var feed_view = new NEWSBLUR.Views.FeedTitleView({
+                model: feed, 
+                type: 'feed', 
+                depth: 0
+            }).render();
+            feed.views.push(feed_view);
+            return feed_view.el;
+        });
+
+        $starred_feeds.empty().css({
+            'display': 'block', 
+            'opacity': 0
+        });            
+        $starred_feeds.html($feeds);
+        if (NEWSBLUR.assets.starred_feeds.length) {
+            $('.NB-feeds-header-starred-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({'opacity': 1}, {'duration': 700});
+        }
+
+        var collapsed = NEWSBLUR.app.sidebar.check_river_blurblog_collapsed({skip_animation: true});
+        $starred_feeds.animate({'opacity': 1}, {'duration': collapsed ? 0 : 700});
     },
     
     load_router: function() {

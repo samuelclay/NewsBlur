@@ -110,6 +110,10 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return true;
     },
     
+    is_starred: function() {
+        return false;
+    },
+    
     is_light: function() {
         var is_light = this._is_light;
         if (!_.isUndefined(is_light)) {

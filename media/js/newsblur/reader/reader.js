@@ -21,6 +21,7 @@
                 $feed_lists: $('.NB-feedlists'),
                 $feed_list: $('#feed_list'),
                 $social_feeds: $('.NB-socialfeeds-folder'),
+                $starred_feeds: $('.NB-starred-folder'),
                 $story_titles: $('#story_titles'),
                 $content_pane: $('.content-pane'),
                 $story_taskbar: $('#story_taskbar'),
@@ -1507,6 +1508,15 @@
             
             this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
+
+            if (!options.silent) {
+                var url = "folder/saved";
+                if (!_.string.include(window.location.pathname, url)) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
         },
         
         post_open_starred_stories: function(data, first_load) {

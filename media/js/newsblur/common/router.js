@@ -7,6 +7,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id/:slug": "site",
         "site/:site_id/": "site",
         "site/:site_id": "site",
+        "folder/saved": "starred",
         "folder/:folder_name": "folder",
         "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
@@ -30,7 +31,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     site: function(site_id, slug) {
-        NEWSBLUR.log(["site", site_id, slug]);
+        // NEWSBLUR.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
         var feed = NEWSBLUR.assets.get_feed(site_id);
         if (feed) {
@@ -46,9 +47,14 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
     },
     
+    starred: function() {
+        options = {router: true};
+        NEWSBLUR.reader.open_starred_stories(options);
+    },
+    
     folder: function(folder_name) {
         folder_name = folder_name.replace(/-/g, ' ');
-        NEWSBLUR.log(["folder", folder_name]);
+        // NEWSBLUR.log(["folder", folder_name]);
         var options = {router: true};
         if (folder_name == "everything") {
             NEWSBLUR.reader.open_river_stories(null, null, options);

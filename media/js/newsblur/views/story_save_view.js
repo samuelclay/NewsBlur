@@ -29,6 +29,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                     Add <%= Inflector.pluralize("story tag", story_tags.length, true) %>\
                 </div>\
             <% } %>\
+            <div class="NB-sideoption-save-icon"></div>\
             <div class="NB-sideoption-save-title">\
                 Tags:\
             </div>\

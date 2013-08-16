@@ -2047,9 +2047,16 @@ class MStarredStoryCounts(mongo.Document):
     }
     
     @classmethod
-    def user_counts(cls, user_id):
+    def user_counts(cls, user_id, include_total=False):
         counts = cls.objects.filter(user_id=user_id).only('tag', 'count')
-        counts = dict((c.tag, c.count) for c in counts)
+        counts = [{'tag': c.tag, 'count': c.count} for c in counts]
+
+        if include_total:
+            for c in counts:
+                if c['tag'] == "":
+                    return counts, c['count']
+            return counts, 0
+        
         return counts
     
     @classmethod

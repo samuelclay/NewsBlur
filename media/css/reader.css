@@ -3065,6 +3065,14 @@ background: transparent;
     text-align: left;
     color: #606060;
 }
+.NB-sideoption-save .NB-sideoption-save-icon {
+    float: left;
+    margin: 2px 2px 0 0;
+    width: 16px;
+    height: 16px;
+    background: transparent url("/media/embed/reader/tag.png") no-repeat 0 0;
+    background-size: 14px;
+}
 .NB-sideoption-save .NB-sideoption-save-title {
     text-transform: uppercase;
     font-size: 10px;
@@ -3536,8 +3544,11 @@ background: transparent;
 .NB-feeds-header-river-container .NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
-.NB-feeds-header-starred.NB-feeds-header {
+.NB-feeds-header-starred-container {
     border-top: 1px solid #B7BBAA;
+}
+.NB-feeds-header-starred.NB-feeds-header {
+    border-bottom: 1px solid #B7BBAA;
 }
 .NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
   display: none;

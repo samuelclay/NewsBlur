@@ -17,6 +17,13 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     // = Actions =
     // ===========
     
+    check_starred_collapsed: function(options) {
+        options = options || {};
+        var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, 'starred');
+
+        return collapsed;
+    },
+    
     check_river_blurblog_collapsed: function(options) {
         options = options || {};
         var show_folder_counts = NEWSBLUR.assets.preference('folder_counts');
