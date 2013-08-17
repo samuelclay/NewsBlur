@@ -262,6 +262,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (callback) callback(data);
         };
 
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            if (callback) callback(data);
+        };
+
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id
         }, pre_callback);
