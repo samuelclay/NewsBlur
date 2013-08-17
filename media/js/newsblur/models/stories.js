@@ -108,7 +108,6 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     change_user_tags: function(tags, options, etc) {
-        console.log(["change_user_tags", tags, options, etc, this.get('starred')]);
         NEWSBLUR.assets.mark_story_as_starred(this.id);
     },
     
@@ -144,11 +143,13 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var story_tags = this.get('story_tags') || [];
         var user_tags = this.get('user_tags') || [];
         var folder_tags = this.folder_tags();
-        var all_tags = _.unique(_.compact(_.reduce([story_tags, user_tags, folder_tags], function(x, m) { 
+        var existing_tags = NEWSBLUR.assets.starred_feeds.all_tags();
+        var all_tags = _.unique(_.compact(_.reduce([
+            story_tags, user_tags, folder_tags, existing_tags
+        ], function(x, m) { 
             return m.concat(x); 
         }, [])));
         
-        console.log(["all_tags", all_tags]);
         return all_tags;
     }
     

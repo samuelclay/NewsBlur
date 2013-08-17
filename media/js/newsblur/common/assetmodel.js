@@ -226,21 +226,33 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     mark_story_as_starred: function(story_id, callback) {
+        var self = this;
         var story = this.get_story(story_id);
+        
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            if (callback) callback(data);
+        };
 
         this.make_request('/reader/mark_story_as_starred', {
             story_id:  story_id,
             feed_id:   story.get('story_feed_id'),
             user_tags: story.get('user_tags')
-        }, callback);
+        }, pre_callback);
     },
     
     mark_story_as_unstarred: function(story_id, callback) {
+        var self = this;
         var story = this.get_story(story_id);
+
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            if (callback) callback(data);
+        };
 
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id
-        }, callback);
+        }, pre_callback);
     },
     
     mark_feed_as_read: function(feed_id, callback) {

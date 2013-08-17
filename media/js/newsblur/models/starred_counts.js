@@ -70,6 +70,10 @@ NEWSBLUR.Collections.StarredFeeds = Backbone.Collection.extend({
         }).each(function(feed){ 
             feed.set('selected', false); 
         });
+    },
+    
+    all_tags: function() {
+        return this.pluck('tag');
     }
     
 });

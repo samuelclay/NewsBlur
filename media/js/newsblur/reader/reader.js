@@ -1510,8 +1510,8 @@
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
 
             if (!options.silent) {
-                var url = "folder/saved";
-                if (!_.string.include(window.location.pathname, url)) {
+                var url = "/folder/saved";
+                if (window.location.pathname != url) {
                     NEWSBLUR.log(["Navigating to url", url]);
                     NEWSBLUR.router.navigate(url);
                 }

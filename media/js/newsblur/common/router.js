@@ -8,6 +8,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id/": "site",
         "site/:site_id": "site",
         "folder/saved": "starred",
+        "folder/saved/:tag": "starred",
         "folder/:folder_name": "folder",
         "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
@@ -47,8 +48,12 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
     },
     
-    starred: function() {
-        options = {router: true};
+    starred: function(tag) {
+        options = {
+            router: true,
+            tag: tag
+        };
+        console.log(["starred", options, tag]);
         NEWSBLUR.reader.open_starred_stories(options);
     },
     
