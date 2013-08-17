@@ -20,8 +20,32 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     check_starred_collapsed: function(options) {
         options = options || {};
         var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, 'starred');
-
+        
+        if (collapsed) {
+            this.show_collapsed_starred(options);
+        }
+        
         return collapsed;
+    },
+    
+    show_collapsed_starred: function(options) {
+        options = options || {};
+        var $header = NEWSBLUR.reader.$s.$starred_header;
+        var $folder = this.$('.NB-starred-folder');
+        
+        $header.addClass('NB-folder-collapsed');
+        
+        if (!options.skip_animation) {
+            $header.addClass('NB-feedlist-folder-title-recently-collapsed');
+            $header.one('mouseover', function() {
+                $header.removeClass('NB-feedlist-folder-title-recently-collapsed');
+            });
+        } else {
+            $folder.css({
+                display: 'none',
+                opacity: 0
+            });
+        }
     },
     
     check_river_blurblog_collapsed: function(options) {
@@ -159,20 +183,20 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         e.stopPropagation();
         options = options || {};
         
-        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
-        var $folder = this.$('.NB-socialfeeds-folder');
+        var $header = NEWSBLUR.reader.$s.$starred_header;
+        var $folder = this.$('.NB-starred-folder');
         
         // Hiding / Collapsing
         if (options.force_collapse || 
             ($folder.length && 
              $folder.eq(0).is(':visible'))) {
-            NEWSBLUR.assets.collapsed_folders('river_blurblog', true);
+            NEWSBLUR.assets.collapsed_folders('starred', true);
             $header.addClass('NB-folder-collapsed');
             $folder.animate({'opacity': 0}, {
                 'queue': false,
                 'duration': options.force_collapse ? 0 : 200,
                 'complete': _.bind(function() {
-                    this.show_collapsed_river_blurblog_count();
+                    this.show_collapsed_starred();
                     $folder.slideUp({
                         'duration': 270,
                         'easing': 'easeOutQuart'
@@ -183,11 +207,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         // Showing / Expanding
         else if ($folder.length && 
                  (!$folder.eq(0).is(':visible'))) {
-            NEWSBLUR.assets.collapsed_folders('river_blurblog', false);
+            NEWSBLUR.assets.collapsed_folders('starred', false);
             $header.removeClass('NB-folder-collapsed');
-            if (!NEWSBLUR.assets.preference('folder_counts')) {
-                this.hide_collapsed_river_blurblog_count();
-            }
             $folder.css({'opacity': 0}).slideDown({
                 'duration': 240,
                 'easing': 'easeInOutCubic',

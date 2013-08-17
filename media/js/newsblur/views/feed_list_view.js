@@ -181,7 +181,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }).animate({'opacity': 1}, {'duration': 700});
         }
 
-        var collapsed = NEWSBLUR.app.sidebar.check_river_blurblog_collapsed({skip_animation: true});
+        var collapsed = NEWSBLUR.app.sidebar.check_starred_collapsed({skip_animation: true});
         $starred_feeds.animate({'opacity': 1}, {'duration': collapsed ? 0 : 700});
     },
     

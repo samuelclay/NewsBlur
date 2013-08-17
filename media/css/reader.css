@@ -3564,14 +3564,23 @@ background: transparent;
 }
 
 .NB-feeds-header-starred .NB-feeds-header-count {
-    background-color: #11448B;
+    background-color: #506B9A;
     display: block;
     padding: 2px 3px 2px;
-    margin: 3px 1px 0 1px;
+    margin: 3px 3px 0 1px;
     border-bottom: 1px solid rgba(0, 0, 0, .2);
     
 }
+.NB-starred-feeds .unread_count_positive {
+    background-color: #506B9A;    
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+}
 
+.NB-starred-feeds .feed {
+    border-top: 1px solid #E9EBEE;
+    border-bottom: 1px solid #E9EBEE;
+    background-color: #E9EBEE;
+}
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
   display: none;
 }
