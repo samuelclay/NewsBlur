@@ -206,7 +206,6 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 if not DEVELOPMENT:
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -493,9 +492,10 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
         'raven.contrib.django',
-         'django_ses',
+        'django_ses',
 
     )
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
