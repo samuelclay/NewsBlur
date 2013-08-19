@@ -8,7 +8,7 @@
 
   log = require('./log.js');
 
-  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'redis1' : 'redis1';
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'redis2' : 'redis2';
 
   SECURE = !!process.env.NODE_SSL;
 
