@@ -50,7 +50,6 @@ HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 
-
 # ===================
 # = Global Settings =
 # ===================
@@ -71,7 +70,6 @@ MEDIA_URL             = '/media/'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
-EMAIL_BACKEND         = 'django.core.mail.backends.console.EmailBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
@@ -206,6 +204,12 @@ SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
+
+if not DEVELOPMENT:
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ==============
 # = Subdomains =
@@ -510,9 +514,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-if not DEVELOPMENT:
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
-    EMAIL_BACKEND         = 'django_ses.SESBackend'
 
 if DEBUG:
     TEMPLATE_LOADERS = (
