@@ -248,14 +248,14 @@ NEWSBLUR.log = function(msg) {
         },
         
         favicon: function(feed, empty_on_missing) {
-            if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.get('favicon');
+            if (_.isNumber(feed)) return NEWSBLUR.URLs.favicon.replace('{id}', feed);
+            else if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.get('favicon');
             else if (feed.get('favicon') && feed.get('favicon').length) return 'data:image/png;base64,' + feed.get('favicon');
             else if (feed.get('favicon_url') && !empty_on_missing) return feed.get('favicon_url');
             else if (feed.get('photo_url')) return feed.get('photo_url');
             else if (_.string.include(feed.id, 'social:')) return NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png';
             else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
             else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
-            else if (_.isNumber(feed)) return NEWSBLUR.URLs.favicon.replace('{id}', feed);
             else if (feed.get('favicon_url')) return feed.get('favicon_url');
             return NEWSBLUR.Globals.MEDIA_URL + '/img/silk/circular/world.png';
         },

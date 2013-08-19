@@ -66,6 +66,7 @@ SITE_ID               = 1
 USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/reader/login'
+MEDIA_URL             = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -200,7 +201,7 @@ INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
 SOUTH_TESTS_MIGRATE     = False
-SESSION_ENGINE          = "django.contrib.sessions.backends.db"
+SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newszeit_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
@@ -432,10 +433,10 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'redis1',
 }
-REDIS2 = {
+REDIS_PUBSUB = {
     'host': 'redis2',
 }
-REDIS3 = {
+REDIS_STORY = {
     'host': 'redis3',
 }
 CELERY_REDIS_DB = 4
@@ -534,6 +535,18 @@ else:
 BROKER_BACKEND = "redis"
 BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB)
 CELERY_RESULT_BACKEND = BROKER_URL
+SESSION_REDIS_HOST = REDIS['host']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '%s:6379' % REDIS['host'],
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
+    },
+}
 
 # =========
 # = Mongo =
@@ -567,17 +580,15 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 # = Redis =
 # =========
 
-REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
-REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
-REDIS_STATISTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
-REDIS_FEED_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
-REDIS_SESSION_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
-# REDIS_CACHE_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
-
-REDIS_PUBSUB_POOL = redis.ConnectionPool(host=REDIS2['host'], port=6379, db=0)
-
-REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS3['host'], port=6379, db=1)
+REDIS_POOL               = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+REDIS_ANALYTICS_POOL     = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
+REDIS_STATISTICS_POOL    = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
+REDIS_FEED_POOL          = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
+REDIS_SESSION_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
+# REDIS_CACHE_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
+REDIS_PUBSUB_POOL        = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
+REDIS_STORY_HASH_POOL    = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
+# REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
 
 # ==========
 # = Assets =

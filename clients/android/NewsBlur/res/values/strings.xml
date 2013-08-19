@@ -58,6 +58,9 @@
 	<string name="save_this">SAVE THIS STORY</string>
     <string name="share_this">SHARE THIS STORY</string>
 
+    <string name="overlay_next">NEXT</string>
+    <string name="overlay_done">DONE</string>
+
 	<string name="reply_to">Reply to \"%s\"</string>
 	
 	<string name="alert_dialog_ok">Okay</string>

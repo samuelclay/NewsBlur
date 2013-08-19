@@ -2202,6 +2202,20 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
+        send_story_to_buffer: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://bufferapp.com/add?source=newsblur&';
+            var buffer_url = [
+              url,
+              'url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&text=',
+              encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(buffer_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
         send_story_to_diigo: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.diigo.com/post?';
@@ -3114,6 +3128,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_buffer'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-buffer'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Buffer').parent().addClass('NB-menu-manage-highlight-buffer');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-buffer');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3179,6 +3198,7 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('邮件发送或分享至').parent().removeClass('NB-menu-manage-highlight-qzone');
                         }, this))),
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, '邮件发送或分享至')
                     ]).bind('click', _.bind(function(e) {
@@ -3213,6 +3233,8 @@
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
                           this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-buffer')) {
+                          this.send_story_to_buffer(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
                           this.send_story_to_diigo(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-kippt')) {

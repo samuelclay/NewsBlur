@@ -17,7 +17,6 @@ import com.newsblur.util.StoryOrder;
 
 public class AllStoriesReading extends Reading {
 
-	private Cursor stories;
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean stopLoading = false;
@@ -81,11 +80,8 @@ public class AllStoriesReading extends Reading {
 
 	@Override
 	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-		stories.requery();
 		requestedPage = false;
-		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
+        super.updateAfterSync();
 	}
 
 	@Override
