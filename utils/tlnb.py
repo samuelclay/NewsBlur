@@ -11,6 +11,7 @@ sys.path.insert(0, '/srv/newsblur')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import fabfile
 
+NEWSBLUR_USERNAME = 'sclay'
 IGNORE_HOSTS = [
     'push',
 ]
@@ -61,7 +62,10 @@ def create_streams_for_roles(role, role2, command=None, path=None):
             s = subprocess.Popen(["ssh", "-i", os.path.expanduser("~/.ec2/sclay.pem"), 
                                   address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         else:
-            s = subprocess.Popen(["ssh", address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+            s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
+                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
+                                                                        "keys/newsblur.key")),
+                                  address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         s.name = hostname
         streams.append(s)
         found.add(hostname)
