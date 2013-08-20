@@ -32,9 +32,9 @@ except ImportError:
 # = DEFAULTS =
 # ============
 
-env.NEWSBLUR_PATH = "~/projects/newsblur"
-env.SECRETS_PATH = "~/projects/secrets-newsblur"
-env.VENDOR_PATH   = "~/projects/code"
+env.NEWSBLUR_PATH = "/srv/newsblur"
+env.SECRETS_PATH = "/srv/secrets-newsblur"
+env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 
