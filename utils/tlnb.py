@@ -59,7 +59,9 @@ def create_streams_for_roles(role, role2, command=None, path=None):
         if any(h in hostname for h in IGNORE_HOSTS): continue
         if hostname in found: continue
         if 'ec2' in hostname:
-            s = subprocess.Popen(["ssh", "-i", os.path.expanduser("~/.ec2/sclay.pem"), 
+            s = subprocess.Popen(["ssh", 
+                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
+                                                                        "keys/ec2.pem")),
                                   address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
         else:
             s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
