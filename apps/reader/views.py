@@ -1367,7 +1367,7 @@ def delete_feed(request):
     if feed:
         feed[0].count_subscribers()
     
-    return dict(code=1, message="Removed %s from '%s'." % (feed, in_folder))
+    return dict(code=1, message="已从 %s 删除站点 %s。" % (in_folder, feed))
 
 @ajax_login_required
 @json.json_view
