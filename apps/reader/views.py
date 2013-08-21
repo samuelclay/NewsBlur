@@ -1615,7 +1615,8 @@ def login_as(request):
 def iframe_buster(request):
     logging.user(request, "~FB~SBiFrame bust!")
     return HttpResponse(status=204)
-    
+
+@required_params('story_id', feed_id=int)
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
@@ -1651,6 +1652,7 @@ def mark_story_as_starred(request):
     
     return {'code': code, 'message': message}
     
+@required_params('story_id')
 @ajax_login_required
 @json.json_view
 def mark_story_as_unstarred(request):
