@@ -1244,6 +1244,8 @@ blockquote {
 .NB-page-controls-end .NB-page-controls-text {
   height: auto;
   position: static;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 .NB-page-controls-end:hover {
   background-color: #3B3E49;
