@@ -1516,6 +1516,7 @@ class MSharedStory(mongo.Document):
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
             if created:
+                shared_story.post_to_service('twitter')
                 shared += 1
                 publish_new_stories = True
                 logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
