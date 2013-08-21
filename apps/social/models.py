@@ -1746,9 +1746,11 @@ class MSharedStory(mongo.Document):
             comment['source_user'] = profiles[comment['source_user_id']]
 
         for r, reply in enumerate(comment['replies']):
+            if reply['user_id'] not in profiles: continue
             comment['replies'][r]['user'] = profiles[reply['user_id']]
         comment['liking_user_ids'] = list(comment['liking_users'])
         for u, user_id in enumerate(comment['liking_users']):
+            if user_id not in profiles: continue
             comment['liking_users'][u] = profiles[user_id]
 
         return comment
