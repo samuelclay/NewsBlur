@@ -139,7 +139,10 @@ class IconImporter(object):
                 return
         else:
             # Load XOR bitmap
-            image = BmpImagePlugin.DibImageFile(image_file)
+            try:
+                image = BmpImagePlugin.DibImageFile(image_file)
+            except IOError:
+                return
             if image.mode == 'RGBA':
                 # Windows XP 32-bit color depth icon without AND bitmap
                 pass
