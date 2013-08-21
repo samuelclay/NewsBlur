@@ -1432,12 +1432,12 @@ class MSharedStory(mongo.Document):
         if not days:
             days = 3
         if not cutoff:
-            cutoff = 7
+            cutoff = 6
+        if not shared_feed_ids:
+            shared_feed_ids = []
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
-        if not shared_feed_ids:
-            shared_feed_ids = []
         
         map_f = """
             function() {
