@@ -1621,8 +1621,8 @@ def iframe_buster(request):
 @json.json_view
 def mark_story_as_starred(request):
     code     = 1
-    feed_id  = int(request.POST['feed_id'])
-    story_id = request.POST['story_id']
+    feed_id  = int(request.REQUEST['feed_id'])
+    story_id = request.REQUEST['story_id']
     message  = ""
     story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     if not story:
