@@ -1494,6 +1494,9 @@ class MSharedStory(mongo.Document):
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue
+            if story.story_feed_id in shared_feed_ids:
+                logging.user(popular_user, "~FRPopular stories, story feed just shared: %s" % story_info)
+                continue
             
             if interactive:
                 feed = Feed.get_by_id(story.story_feed_id)
@@ -1518,12 +1521,13 @@ class MSharedStory(mongo.Document):
             if created:
                 shared_story.post_to_service('twitter')
                 shared += 1
+                shared_feed_ids.append(story.story_feed_id)
                 publish_new_stories = True
                 logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
                     story.story_title[:50],
                     story_info['count'],
                     cutoff))
-
+            
         if publish_new_stories:
             socialsubs = MSocialSubscription.objects.filter(subscription_user_id=popular_user.pk)
             for socialsub in socialsubs:
