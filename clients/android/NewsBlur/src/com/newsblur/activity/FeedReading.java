@@ -12,6 +12,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -45,6 +46,8 @@ public class FeedReading extends Reading {
 		feed = Feed.fromCursor(feedCursor);
 		setTitle(feed.title);
 
+        this.unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
+
 		readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories, classifier);
 
 		setupPager();
@@ -58,15 +61,6 @@ public class FeedReading extends Reading {
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 	}
 
-	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-		if (readingAdapter.getStory(position) != null) {
-			addStoryToMarkAsRead(readingAdapter.getStory(position));
-			checkStoryCount(position);
-		}
-	}
-	
 	@Override
 	public void updateAfterSync() {
 		requestedPage = false;
@@ -111,6 +105,5 @@ public class FeedReading extends Reading {
 
 	@Override
 	public void closeAfterUpdate() { }
-
 
 }
