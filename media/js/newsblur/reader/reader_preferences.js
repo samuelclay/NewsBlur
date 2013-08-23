@@ -761,7 +761,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     make_autoopen_folders: function() {
         var autoopen_folder = NEWSBLUR.Preferences.autoopen_folder;
         var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, {
-            name: 'default_folder'
+            name: 'default_folder',
+            toplevel: "All Site Stories"
         });
         return $folders;
     },
