@@ -146,9 +146,10 @@ NEWSBLUR.utils = {
         return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
     },
     
-    make_folders: function(model, selected_folder_title) {
-        var folders = model.get_folders();
-        var $options = $.make('select', { className: 'NB-folders'});
+    make_folders: function(selected_folder_title, options) {
+        options = options || {};
+        var folders = NEWSBLUR.assets.get_folders();
+        var $options = $.make('select', { className: 'NB-folders', name: options.name });
         
         var $option = $.make('option', { value: '' }, "Top Level");
         $options.append($option);
