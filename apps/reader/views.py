@@ -733,6 +733,7 @@ def load_starred_stories(request):
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
     query  = request.REQUEST.get('query')
+    story_hashes = request.REQUEST.getlist('h')[:100]
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page: offset = limit * (page - 1)
@@ -745,6 +746,12 @@ def load_starred_stories(request):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif story_hashes:
+        mstories = MStarredStory.objects(
+            user_id=user.pk,
+            story_hash__in=story_hashes
+        ).order_by('-starred_date')[offset:offset+limit]
+        stories = Feed.format_stories(mstories)
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
