@@ -23,11 +23,14 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
+import com.newsblur.domain.Feed;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
@@ -202,4 +205,34 @@ public class FeedUtils {
         }
 
     }
+
+    /** 
+     * Gets the unread story count for a feed, filtered by view state.
+     */
+    public static int getFeedUnreadCount(Feed feed, int currentState) {
+        if (feed == null ) return 0;
+        int count = 0;
+        count += feed.positiveCount;
+        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
+            count += feed.neutralCount;
+        }
+        if (currentState ==  AppConstants.STATE_ALL ) {
+            count += feed.negativeCount;
+        }
+        return count;
+    }
+
+    public static int getFeedUnreadCount(SocialFeed feed, int currentState) {
+        if (feed == null ) return 0;
+        int count = 0;
+        count += feed.positiveCount;
+        if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
+            count += feed.neutralCount;
+        }
+        if (currentState ==  AppConstants.STATE_ALL ) {
+            count += feed.negativeCount;
+        }
+        return count;
+    }
+        
 }

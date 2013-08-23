@@ -30,6 +30,7 @@
             android:background="@drawable/selector_overlay_bg_left"
             android:textSize="14sp"
             android:padding="6dp"
+            android:layout_marginRight="1dp"
             android:onClick="overlayLeft" />
 
         <Button
@@ -44,5 +45,23 @@
             android:onClick="overlayRight" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/reading_overlay_count"
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="18dp"
+        android:background="@drawable/neutral_count_rect"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" 
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>

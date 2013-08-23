@@ -39,13 +39,6 @@ public class AllStoriesReading extends Reading {
 	}
     
 	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-		addStoryToMarkAsRead(readingAdapter.getStory(position));
-		checkStoryCount(position);
-	}
-
-	@Override
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}
