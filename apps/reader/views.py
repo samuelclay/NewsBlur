@@ -280,6 +280,7 @@ def load_feeds(request):
         'social_feeds': social_feeds,
         'social_profile': social_profile,
         'social_services': social_services,
+        'user_profile': user.profile,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'categories': categories
