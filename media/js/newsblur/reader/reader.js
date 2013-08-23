@@ -5229,7 +5229,7 @@
             }); 
             $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-previous' }, function($t, $p){
                 e.preventDefault();
-                self.show_previous_story();
+                self.show_next_story(-1);
             }); 
             $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-layout-full' }, function($t, $p){
                 e.preventDefault();
