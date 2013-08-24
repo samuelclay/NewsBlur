@@ -30,7 +30,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     render: function() {
         var $view;
         
-        if (NEWSBLUR.reader.active_feed == 'starred') {
+        if (NEWSBLUR.reader.flags['starred_view']) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-starred-icon"></div>\

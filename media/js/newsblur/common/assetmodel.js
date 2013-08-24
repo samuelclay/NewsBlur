@@ -552,7 +552,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_starred_stories: function(page, callback, error_callback, first_load) {
+    fetch_starred_stories: function(page, tag, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -563,7 +563,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/reader/starred_stories', {
             page: page,
-            query: NEWSBLUR.reader.flags.search
+            query: NEWSBLUR.reader.flags.search,
+            tag: tag
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

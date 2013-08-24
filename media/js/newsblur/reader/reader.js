@@ -1098,6 +1098,7 @@
                 'unread_threshold_temporarily': null,
                 'river_view': false,
                 'social_view': false,
+                'starred_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false
             });
@@ -1136,6 +1137,7 @@
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.model.feeds.deselect();
+            this.model.starred_feeds.deselect();
             if (_.string.contains(this.active_feed, 'social:')) {
                 this.model.social_feeds.deselect();
             }
@@ -1174,7 +1176,7 @@
         reload_feed: function(options) {
             options = options || {};
             
-            if (this.active_feed == 'starred') {
+            if (this.flags['starred_view']) {
                 this.open_starred_stories(options);
             } else if (this.flags['social_view'] && 
                        this.active_feed == 'river:blurblogs') {
@@ -1403,7 +1405,7 @@
                 $list.removeClass('NB-active');
             }
 
-            if (feed_id == 'starred') {
+            if (this.flags['starred_view']) {
                 $page_tab.addClass('NB-disabled');
             }
 
@@ -1481,13 +1483,20 @@
             
             this.reset_feed(options);
             this.hide_splash_page();
-            this.active_feed = 'starred';
             if (options.story_id) {
                 this.flags['select_story_in_feed'] = options.story_id;
             }
 
             this.iframe_scroll = null;
-            this.$s.$starred_header.addClass('NB-selected');
+            this.flags['starred_tag'] = options.tag;
+            this.flags['starred_view'] = true;
+            if (options.tag) {
+                this.active_feed = 'starred:' + options.tag;
+                options.model.set('selected', true);
+            } else {
+                this.active_feed = 'starred';
+                this.$s.$starred_header.addClass('NB-selected');
+            }
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -1506,7 +1515,7 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             
-            this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
+            this.model.fetch_starred_stories(1, this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this), 
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
 
             if (!options.silent) {
@@ -1520,7 +1529,7 @@
         },
         
         post_open_starred_stories: function(data, first_load) {
-            if (this.active_feed == 'starred') {
+            if (this.flags['starred_view']) {
                 // NEWSBLUR.log(['post_open_starred_stories', data.stories.length, first_load]);
                 this.flags['opening_feed'] = false;
                 if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
@@ -2270,8 +2279,8 @@
                 NEWSBLUR.app.story_titles.show_loading(options);
             }
             
-            if (this.active_feed == 'starred') {
-                this.model.fetch_starred_stories(this.counts['page'], _.bind(this.post_open_starred_stories, this),
+            if (this.flags['starred_view']) {
+                this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
                                                  NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
                 this.model.fetch_river_blurblogs_stories(this.active_feed,
@@ -3860,7 +3869,7 @@
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             
-            if (feed_id == 'starred') {
+            if (this.flags['starred_view']) {
                 // Umm, no. Not yet.
             } else if (feed) {
                 return feed.unread_counts();
