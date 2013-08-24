@@ -1432,12 +1432,12 @@ class MSharedStory(mongo.Document):
         if not days:
             days = 3
         if not cutoff:
-            cutoff = 7
+            cutoff = 6
+        if not shared_feed_ids:
+            shared_feed_ids = []
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
-        if not shared_feed_ids:
-            shared_feed_ids = []
         
         map_f = """
             function() {
@@ -1494,6 +1494,9 @@ class MSharedStory(mongo.Document):
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue
+            if story.story_feed_id in shared_feed_ids:
+                logging.user(popular_user, "~FRPopular stories, story feed just shared: %s" % story_info)
+                continue
             
             if interactive:
                 feed = Feed.get_by_id(story.story_feed_id)
@@ -1516,13 +1519,15 @@ class MSharedStory(mongo.Document):
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
             if created:
+                shared_story.post_to_service('twitter')
                 shared += 1
+                shared_feed_ids.append(story.story_feed_id)
                 publish_new_stories = True
                 logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
                     story.story_title[:50],
                     story_info['count'],
                     cutoff))
-
+            
         if publish_new_stories:
             socialsubs = MSocialSubscription.objects.filter(subscription_user_id=popular_user.pk)
             for socialsub in socialsubs:
@@ -1745,9 +1750,11 @@ class MSharedStory(mongo.Document):
             comment['source_user'] = profiles[comment['source_user_id']]
 
         for r, reply in enumerate(comment['replies']):
+            if reply['user_id'] not in profiles: continue
             comment['replies'][r]['user'] = profiles[reply['user_id']]
         comment['liking_user_ids'] = list(comment['liking_users'])
         for u, user_id in enumerate(comment['liking_users']):
+            if user_id not in profiles: continue
             comment['liking_users'][u] = profiles[user_id]
 
         return comment

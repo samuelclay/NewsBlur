@@ -129,9 +129,19 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
         this.bind('change:feed_selected', this.propagate_feed_selected);
         this.bind('change:counts', this.propagate_change_counts);
+        this.bind('reset', this.reset_folder_views);
     },
     
     model: NEWSBLUR.Models.FeedOrFolder,
+    
+    reset_folder_views: function() {
+        this.each(function(item) {
+            if (item.is_feed()) {
+                item.feed.views = [];
+                item.feed.folders = [];
+            }
+        });        
+    },
     
     folders: function() {
         return this.select(function(item) {
