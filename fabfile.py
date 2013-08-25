@@ -14,6 +14,7 @@ import os
 import time
 import sys
 import re
+
 try:
     import dop.client
 except ImportError:
@@ -32,9 +33,9 @@ except ImportError:
 # = DEFAULTS =
 # ============
 
-env.NEWSBLUR_PATH = "~/newsblur"
-env.SECRETS_PATH = "~/secrets-newsblur"
-env.VENDOR_PATH   = "~/code"
+env.NEWSBLUR_PATH = "/srv/newsblur"
+env.SECRETS_PATH = "/srv/secrets-newsblur"
+env.VENDOR_PATH   = "/srv/code"
 env.user = 'newszeit'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 
@@ -439,6 +440,7 @@ def setup_supervisor():
 @parallel
 def setup_hosts():
     put(os.path.join(env.SECRETS_PATH, 'configs/hosts'), '/etc/hosts', use_sudo=True)
+    sudo('echo "\n\n127.0.0.1   `hostname`" >> /etc/hosts')
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)

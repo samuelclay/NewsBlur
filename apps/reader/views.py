@@ -281,6 +281,7 @@ def load_feeds(request):
         'social_feeds': social_feeds,
         'social_profile': social_profile,
         'social_services': social_services,
+        'user_profile': user.profile,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
         'categories': categories
@@ -667,6 +668,8 @@ def load_single_feed(request, feed_id):
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
+    if not usersub and feed.num_subscribers <= 1:
+        data = dict(code=-1, message="You must be subscribed to this feed.")
     
     # if page <= 1:
     #     import random
@@ -733,6 +736,7 @@ def load_starred_stories(request):
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
     query  = request.REQUEST.get('query')
+    story_hashes = request.REQUEST.getlist('h')[:100]
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page: offset = limit * (page - 1)
@@ -745,6 +749,12 @@ def load_starred_stories(request):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif story_hashes:
+        mstories = MStarredStory.objects(
+            user_id=user.pk,
+            story_hash__in=story_hashes
+        ).order_by('-starred_date')[offset:offset+limit]
+        stories = Feed.format_stories(mstories)
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
@@ -1616,13 +1626,14 @@ def login_as(request):
 def iframe_buster(request):
     logging.user(request, "~FB~SBiFrame bust!")
     return HttpResponse(status=204)
-    
+
+@required_params('story_id', feed_id=int)
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
     code     = 1
-    feed_id  = int(request.POST['feed_id'])
-    story_id = request.POST['story_id']
+    feed_id  = int(request.REQUEST['feed_id'])
+    story_id = request.REQUEST['story_id']
     message  = ""
     story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     if not story:
@@ -1652,6 +1663,7 @@ def mark_story_as_starred(request):
     
     return {'code': code, 'message': message}
     
+@required_params('story_id')
 @ajax_login_required
 @json.json_view
 def mark_story_as_unstarred(request):

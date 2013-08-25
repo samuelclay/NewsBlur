@@ -43,10 +43,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     destroy: function() {
+        console.log(["destroy", this]);
         if (this.model) {
             this.model.unbind(null, this);
         }
         this.$el.remove();
+        delete this.views;
     },
     
     render: function() {

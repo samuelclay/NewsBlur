@@ -1,7 +1,6 @@
 NEWSBLUR.Router = Backbone.Router.extend({
     
     routes: {
-        "": "index",
         "add/?": "add_site",
         "try/?": "try_site",
         "site/:site_id/:slug": "site",
@@ -13,11 +12,6 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "social/:user_id/": "social",
         "social/:user_id": "social",
         "user/*user": "user"
-    },
-    
-    index: function() {
-        // NEWSBLUR.log(["index"]);
-        NEWSBLUR.reader.show_splash_page();
     },
     
     add_site: function() {

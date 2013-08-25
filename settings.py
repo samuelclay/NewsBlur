@@ -50,7 +50,6 @@ HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newszeit.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 
-
 # ===================
 # = Global Settings =
 # ===================
@@ -71,7 +70,6 @@ MEDIA_URL             = '/media/'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
-EMAIL_BACKEND         = 'django.core.mail.backends.console.EmailBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = False
 HOMEPAGE_USERNAME     = 'popular'
@@ -207,6 +205,11 @@ SESSION_COOKIE_NAME     = 'newszeit_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newszeit.com'
 SENTRY_DSN              = 'https://da6d9ee2f7234225bc68ef3f339824af:5a9b0937539d47e5a605e302a2f65441@app.getsentry.com/7663'
+
+if not DEVELOPMENT:
+    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ==============
 # = Subdomains =
@@ -367,7 +370,7 @@ CELERYBEAT_SCHEDULE = {
 #    },
     'share-popular-stories': {
         'task': 'share-popular-stories',
-        'schedule': datetime.timedelta(hours=1),
+        'schedule': datetime.timedelta(minutes=10),
         'options': {'queue': 'beat_tasks'},
     },
     'clean-analytics': {
@@ -489,9 +492,10 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
         'raven.contrib.django',
-         'django_ses',
+        'django_ses',
 
     )
+    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
@@ -510,9 +514,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-if not DEVELOPMENT:
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
-    EMAIL_BACKEND         = 'django_ses.SESBackend'
 
 if DEBUG:
     TEMPLATE_LOADERS = (
