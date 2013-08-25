@@ -151,7 +151,7 @@ NEWSBLUR.utils = {
         var folders = NEWSBLUR.assets.get_folders();
         var $options = $.make('select', { className: 'NB-folders', name: options.name });
         
-        var $option = $.make('option', { value: '' }, options.toplevel || "Top Level");
+        var $option = $.make('option', { value: '' }, options.toplevel || "顶级目录");
         $options.append($option);
 
         $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
