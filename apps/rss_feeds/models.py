@@ -1414,7 +1414,7 @@ class Feed(models.Model):
                               '~SB%s errors. Time: %s min' % (
                               unicode(self)[:30], self.errors_since_good, total))
         
-        random_factor = random.randint(0, total) / 4
+        random_factor = random.randint(0, total) / 4 + 5
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
         
