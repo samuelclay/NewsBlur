@@ -29,7 +29,6 @@ if '/vendor' not in ' '.join(sys.path):
 import logging
 import datetime
 import redis
-import raven
 import django.http
 import re
 from mongoengine import connect
@@ -203,6 +202,8 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+
+# Set to None to disable
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 if not DEVELOPMENT:
@@ -495,7 +496,9 @@ if not DEVELOPMENT:
         'django_ses',
 
     )
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+    if SENTRY_DSN is not None:
+        import raven
+        RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
