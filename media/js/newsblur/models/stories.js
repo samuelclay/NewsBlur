@@ -18,7 +18,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     score: function() {
-        if (NEWSBLUR.reader.active_feed == 'starred') {
+        if (NEWSBLUR.reader.flags['starred_view']) {
             return 1;
         } else {
             return NEWSBLUR.utils.compute_story_score(this);
