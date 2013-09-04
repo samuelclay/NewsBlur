@@ -2313,6 +2313,20 @@
     [offlineQueue addOperation:operationFetchImages];
 }
 
+- (BOOL)isReachabileForOffline {
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
+    
+    NSString *connection = [[NSUserDefaults standardUserDefaults]
+                            stringForKey:@"offline_download_connection"];
+    
+    NSLog(@"Reachable via: %d / %d", remoteHostStatus == ReachableViaWWAN, remoteHostStatus == ReachableViaWiFi);
+    if ([connection isEqualToString:@"wifi"] && remoteHostStatus != ReachableViaWiFi) {
+        return NO;
+    }
+    
+    return YES;
+}
 
 - (void)queueReadStories:(NSDictionary *)feedsStories {
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {

@@ -34,8 +34,10 @@
     }
     
     
-    if (![[[NSUserDefaults standardUserDefaults]
-           objectForKey:@"offline_allowed"] boolValue]) {
+    BOOL offlineAllowed = [[[NSUserDefaults standardUserDefaults]
+                            objectForKey:@"offline_allowed"] boolValue];
+    if (!offlineAllowed ||
+        ![appDelegate isReachabileForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
