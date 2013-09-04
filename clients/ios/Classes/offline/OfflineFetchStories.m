@@ -42,9 +42,9 @@
         });
         return NO;
     }
-//    NSLog(@"Fetching Stories...");
     
     NSArray *hashes = [self unfetchedStoryHashes];
+    NSLog(@"Fetching Stories: %@", [hashes objectAtIndex:0]);
     
     if ([hashes count] == 0) {
         NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
@@ -83,7 +83,7 @@
 - (NSArray *)unfetchedStoryHashes {
     NSMutableArray *hashes = [NSMutableArray array];
     
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *commonQuery = @"FROM unread_hashes u "
         "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
         "WHERE s.story_hash IS NULL";
@@ -128,14 +128,17 @@
                           (float)appDelegate.totalUnfetchedStoryCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
     NSMutableArray *storyHashes = [hashes mutableCopy];
+    NSLog(@"storing hashes: %@", [storyHashes objectAtIndex:0]);
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         BOOL anyInserted = NO;
+        NSLog(@"First storing: %@", [[[results objectForKey:@"stories"] objectAtIndex:0] objectForKey:@"story_hash"]);
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
             NSString *storyTimestamp = [story objectForKey:@"story_timestamp"];
             BOOL inserted = [db executeUpdate:@"INSERT into stories "
@@ -187,7 +190,10 @@
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_hash IN (\"%@\")",
                                [storyHashes componentsJoinedByString:@"\",\" "]]];
         }
+        NSLog(@"Done inserting stories (in transaction)");
     }];
+    
+    NSLog(@"Done inserting stories");
 }
 
 
