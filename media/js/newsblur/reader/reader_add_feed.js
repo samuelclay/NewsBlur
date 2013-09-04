@@ -62,7 +62,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                         $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-input NB-add-url', name: 'url', value: self.options.url })
                     ]),
                     $.make('div', { className: 'NB-group NB-add-site' }, [
-                        NEWSBLUR.utils.make_folders(this.model, this.options.folder_title),
+                        NEWSBLUR.utils.make_folders(this.options.folder_title),
                         $.make('div', { className: 'NB-add-folder-icon' }),
                         $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-add-url-submit' }, 'Add site'),
                         $.make('div', { className: 'NB-loading' })
@@ -293,7 +293,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         if (data.code > 0) {
             $submit.text('Added!');
             NEWSBLUR.assets.load_feeds(_.bind(function() {
-                var $folders = NEWSBLUR.utils.make_folders(this.model, $folder.val());
+                var $folders = NEWSBLUR.utils.make_folders($folder.val());
                 this.$(".NB-folders").replaceWith($folders);
                 this.open_add_folder();
                 $submit.text('Add Folder');

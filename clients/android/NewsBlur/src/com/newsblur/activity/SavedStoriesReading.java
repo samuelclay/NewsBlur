@@ -30,12 +30,6 @@ public class SavedStoriesReading extends Reading {
 	}
     
 	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-		checkStoryCount(position);
-	}
-
-	@Override
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}

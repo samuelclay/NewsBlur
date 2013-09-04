@@ -14,6 +14,7 @@ import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.FeedUtils;
 
 public class SocialFeedReading extends Reading {
 
@@ -40,18 +41,13 @@ public class SocialFeedReading extends Reading {
 		stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
+        this.unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
+
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-	}
-
-	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-        addStoryToMarkAsRead(readingAdapter.getStory(position));
-		checkStoryCount(position);
 	}
 
 	@Override
