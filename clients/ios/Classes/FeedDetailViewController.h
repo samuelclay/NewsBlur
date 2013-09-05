@@ -51,7 +51,6 @@
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
-@property (nonatomic, retain) NSMutableDictionary *unreadStoryHashes;
 
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;

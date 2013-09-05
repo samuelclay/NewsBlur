@@ -451,12 +451,12 @@
             if (self.feedPage == 1) {
                 unreadStoryHashes = [NSMutableDictionary dictionary];
             } else {
-                unreadStoryHashes = self.unreadStoryHashes;
+                unreadStoryHashes = appDelegate.unreadStoryHashes;
             }
             while ([unreadHashCursor next]) {
                 [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
             }
-            self.unreadStoryHashes = unreadStoryHashes;            
+            appDelegate.unreadStoryHashes = unreadStoryHashes;
         }
         
         dispatch_sync(dispatch_get_main_queue(), ^{
@@ -938,9 +938,9 @@
     
     if (!appDelegate.hasLoadedFeedDetail) {
         cell.isRead = ([appDelegate.activeReadFilter isEqualToString:@"all"] &&
-                       ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
+                       ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
                       [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
+//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
         cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
                       [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];

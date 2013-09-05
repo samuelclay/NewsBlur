@@ -723,7 +723,8 @@
 
 - (void)markStoryAsRead {
     //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
+        [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
         
         [appDelegate markActiveStoryRead];
         

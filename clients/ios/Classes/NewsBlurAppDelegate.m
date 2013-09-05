@@ -135,6 +135,7 @@
 @synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
+@synthesize unreadStoryHashes;
 @synthesize folderCountCache;
 
 @synthesize dictFolders;
