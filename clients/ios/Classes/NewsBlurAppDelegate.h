@@ -258,6 +258,7 @@
 - (void)setupReachability;
 
 // social
+- (NSDictionary *)getUser:(int)userId;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
@@ -354,6 +355,7 @@
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
 - (BOOL)isReachabileForOffline;
+- (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;

@@ -213,7 +213,7 @@
     }
     
     previousPage.view.hidden = YES;
-    
+    self.traverseView.alpha = 1;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
 }

@@ -51,7 +51,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 25
+#define CURRENT_DB_VERSION 29
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -340,6 +340,30 @@
 
 #pragma mark -
 #pragma mark Social Views
+
+- (NSDictionary *)getUser:(int)userId {
+    for (int i = 0; i < self.activeFeedUserProfiles.count; i++) {
+        if ([[[self.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == userId) {
+            return [self.activeFeedUserProfiles objectAtIndex:i];
+        }
+    }
+    
+    // Check DB if not found in active feed
+    __block NSDictionary *user;
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *userSql = [NSString stringWithFormat:@"SELECT * FROM users WHERE user_id = %d", userId];
+        FMResultSet *cursor = [db executeQuery:userSql];
+        while ([cursor next]) {
+            user = [NSJSONSerialization
+                    JSONObjectWithData:[[cursor stringForColumn:@"user_json"]
+                                        dataUsingEncoding:NSUTF8StringEncoding]
+                    options:nil error:nil];
+            if (user) break;
+        }
+    }];
+    
+    return user;
+}
 
 - (void)showUserProfileModal:(id)sender {
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
@@ -2189,6 +2213,7 @@
         [db executeUpdate:@"drop table if exists `accounts`"];
         [db executeUpdate:@"drop table if exists `unread_counts`"];
         [db executeUpdate:@"drop table if exists `cached_images`"];
+        [db executeUpdate:@"drop table if exists `users`"];
         //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
@@ -2244,7 +2269,7 @@
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
     [db executeUpdate:createReadTable];
-
+    
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
                                    " story_feed_id number,"
@@ -2258,6 +2283,21 @@
     [db executeUpdate:indexImagesFeedId];
     NSString *indexImagesStoryHash = @"CREATE INDEX IF NOT EXISTS cached_images_story_hash ON cached_images (story_hash)";
     [db executeUpdate:indexImagesStoryHash];
+    
+    
+    NSString *createUsersTable = [NSString stringWithFormat:@"create table if not exists users "
+                                  "("
+                                  " user_id number,"
+                                  " username varchar(64),"
+                                  " location varchar(128),"
+                                  " image_url varchar(1024),"
+                                  " image_cached boolean,"
+                                  " user_json text,"
+                                  " UNIQUE(user_id) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createUsersTable];
+    NSString *indexUsersUserId = @"CREATE INDEX IF NOT EXISTS users_user_id ON users (user_id)";
+    [db executeUpdate:indexUsersUserId];
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -2329,16 +2369,38 @@
     return YES;
 }
 
-- (void)queueReadStories:(NSDictionary *)feedsStories {
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        for (NSString *feedIdStr in [feedsStories allKeys]) {
-            for (NSString *storyHash in [feedsStories objectForKey:feedIdStr]) {
-                [db executeUpdate:@"INSERT INTO queued_read_hashes "
-                 "(story_feed_id, story_hash) VALUES "
-                 "(?, ?)", feedIdStr, storyHash];
+- (void)storeUserProfiles:(NSArray *)userProfiles {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *user in userProfiles) {
+                [db executeUpdate:@"INSERT INTO users "
+                 "(user_id, username, location, image_url, user_json) VALUES "
+                 "(?, ?, ?, ?, ?)",
+                 [user objectForKey:@"user_id"],
+                 [user objectForKey:@"username"],
+                 [user objectForKey:@"location"],
+                 [user objectForKey:@"photo_url"],
+                 [user JSONRepresentation]
+                 ];
             }
-        }
-    }];
+        }];
+    });
+}
+
+- (void)queueReadStories:(NSDictionary *)feedsStories {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSString *feedIdStr in [feedsStories allKeys]) {
+                for (NSString *storyHash in [feedsStories objectForKey:feedIdStr]) {
+                    [db executeUpdate:@"INSERT INTO queued_read_hashes "
+                     "(story_feed_id, story_hash) VALUES "
+                     "(?, ?)", feedIdStr, storyHash];
+                }
+            }
+        }];
+    });
     self.hasQueuedReadStories = YES;
 }
 

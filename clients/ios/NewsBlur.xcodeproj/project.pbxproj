@@ -257,7 +257,6 @@
 		FF5D40031799F53C00349659 /* VUDialogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF61799F53C00349659 /* VUDialogViewController.m */; };
 		FF5D40041799F53C00349659 /* VUGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D3FF81799F53C00349659 /* VUGradientButton.m */; };
 		FF5D40051799F53C00349659 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FF91799F53C00349659 /* LICENSE */; };
-		FF5D40061799F53C00349659 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFA1799F53C00349659 /* README.md */; };
 		FF5D40071799F53C00349659 /* PinboardActivityImage.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFC1799F53C00349659 /* PinboardActivityImage.png */; };
 		FF5D40081799F53C00349659 /* PinboardActivityImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D3FFD1799F53C00349659 /* PinboardActivityImage@2x.png */; };
 		FF5D40101799F70200349659 /* ARChromeActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5D400B1799F70200349659 /* ARChromeActivity.m */; };
@@ -326,7 +325,6 @@
 		FFAF53681799D18B00C7FCCB /* UIImage+ImageNamedExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAF534A1799D18B00C7FCCB /* UIImage+ImageNamedExtension.m */; };
 		FFAF536E1799D18B00C7FCCB /* InstapaperActivityIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = FFAF53581799D18B00C7FCCB /* InstapaperActivityIcon.png */; };
 		FFAF536F1799D18B00C7FCCB /* InstapaperActivityIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFAF53591799D18B00C7FCCB /* InstapaperActivityIcon@2x.png */; };
-		FFAF53721799D18B00C7FCCB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FFAF53601799D18B00C7FCCB /* README.md */; };
 		FFAF53731799D18B00C7FCCB /* ZYInstapaperActivityItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAF53641799D18B00C7FCCB /* ZYInstapaperActivityItem.m */; };
 		FFAF538F1799D1C800C7FCCB /* TUSafariActivity.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFAF53751799D1C800C7FCCB /* TUSafariActivity.strings */; };
 		FFAF53901799D1C800C7FCCB /* Safari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFAF53851799D1C800C7FCCB /* Safari.png */; };
@@ -389,7 +387,6 @@
 		FFDCA0B416E80866000D8E0C /* REComposeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0AE16E80866000D8E0C /* REComposeViewController.m */; };
 		FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0B716E80877000D8E0C /* GCOAuth.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0B916E80877000D8E0C /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		FFDCA0BD16E80877000D8E0C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FFDCA0BA16E80877000D8E0C /* README.md */; };
 		FFDCA0BF16E80944000D8E0C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFDCA0BE16E80944000D8E0C /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		FFDCA0C116E8094F000D8E0C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFDCA0C016E8094F000D8E0C /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		FFDCA0C316E80952000D8E0C /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFDCA0C216E80952000D8E0C /* AdSupport.framework */; };
@@ -2386,7 +2383,6 @@
 				FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */,
 				FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */,
 				FFDCA0B316E80866000D8E0C /* REComposeViewController.bundle in Resources */,
-				FFDCA0BD16E80877000D8E0C /* README.md in Resources */,
 				FFDD845C16E8871A000AA0A2 /* menu_icn_delete.png in Resources */,
 				FFDD845D16E8871A000AA0A2 /* menu_icn_delete@2x.png in Resources */,
 				FFDD845E16E8871A000AA0A2 /* menu_icn_fetch_subscribers.png in Resources */,
@@ -2439,7 +2435,6 @@
 				FF855B571794A53A0098D48A /* checkmark@2x.png in Resources */,
 				FFAF536E1799D18B00C7FCCB /* InstapaperActivityIcon.png in Resources */,
 				FFAF536F1799D18B00C7FCCB /* InstapaperActivityIcon@2x.png in Resources */,
-				FFAF53721799D18B00C7FCCB /* README.md in Resources */,
 				FFAF538F1799D1C800C7FCCB /* TUSafariActivity.strings in Resources */,
 				FFAF53901799D1C800C7FCCB /* Safari.png in Resources */,
 				FFAF53911799D1C800C7FCCB /* Safari@2x.png in Resources */,
@@ -2454,7 +2449,6 @@
 				FFAF53B81799E69D00C7FCCB /* Readability-activity-iPhone.png in Resources */,
 				FFAF53B91799E69D00C7FCCB /* Readability-activity-iPhone@2x.png in Resources */,
 				FF5D40051799F53C00349659 /* LICENSE in Resources */,
-				FF5D40061799F53C00349659 /* README.md in Resources */,
 				FF5D40071799F53C00349659 /* PinboardActivityImage.png in Resources */,
 				FF5D40081799F53C00349659 /* PinboardActivityImage@2x.png in Resources */,
 				FF5D40111799F70200349659 /* ARChromeActivity.png in Resources */,
