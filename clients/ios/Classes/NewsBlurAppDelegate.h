@@ -346,6 +346,7 @@
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;

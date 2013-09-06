@@ -2015,7 +2015,9 @@
     }
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
+    if (!authors) authors = [NSMutableDictionary dictionary];
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -2026,15 +2028,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:author
                    forKey:authorScore >= 1 ? @"like_author" :
                           authorScore <= -1 ? @"dislike_author" :
                           @"remove_like_author"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2058,7 +2063,9 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
+    if (!tags) tags = [NSMutableDictionary dictionary];
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -2069,15 +2076,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:tag
                    forKey:tagScore >= 1 ? @"like_tag" :
                           tagScore <= -1 ? @"dislike_tag" :
                           @"remove_like_tag"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2105,7 +2115,9 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *titles = [[feedClassifiers objectForKey:@"titles"] mutableCopy];
+    if (!titles) titles = [NSMutableDictionary dictionary];
     [titles setObject:[NSNumber numberWithInt:titleScore] forKey:title];
     [feedClassifiers setObject:titles forKey:@"titles"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -2116,15 +2128,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:title
                    forKey:titleScore >= 1 ? @"like_title" :
                           titleScore <= -1 ? @"dislike_title" :
                           @"remove_like_title"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2147,6 +2162,7 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *feeds = [[feedClassifiers objectForKey:@"feeds"] mutableCopy];
     [feeds setObject:[NSNumber numberWithInt:feedScore] forKey:feedId];
     [feedClassifiers setObject:feeds forKey:@"feeds"];
@@ -2158,20 +2174,39 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:feedId
                    forKey:feedScore >= 1 ? @"like_feed" :
                           feedScore <= -1 ? @"dislike_feed" :
                           @"remove_like_feed"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId {
+    BaseViewController *view;
+    if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
+        view = self.trainerViewController;
+    } else {
+        view = self.storyPageControl.currentPage;
+    }
+    if ([request responseStatusCode] == 503) {
+        return [view informError:@"In maintenance mode"];
+    } else if ([request responseStatusCode] != 200) {
+        return [view informError:@"The server barfed!"];
+    }
+    
+    [self.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
