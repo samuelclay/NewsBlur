@@ -2724,8 +2724,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2734,8 +2734,8 @@
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "B557A49B-2BFD-4D12-BDC2-1336CA98BD74";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B557A49B-2BFD-4D12-BDC2-1336CA98BD74";
+				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2747,8 +2747,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2758,8 +2758,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "B557A49B-2BFD-4D12-BDC2-1336CA98BD74";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B557A49B-2BFD-4D12-BDC2-1336CA98BD74";
+				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = armv7;
