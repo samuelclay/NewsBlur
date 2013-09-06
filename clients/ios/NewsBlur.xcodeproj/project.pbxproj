@@ -2652,8 +2652,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2676,8 +2676,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2691,8 +2691,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2712,8 +2712,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = armv7;
@@ -2724,8 +2724,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2734,8 +2734,8 @@
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "41B59EA9-E2EF-4889-A4F6-21D30635002A";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "41B59EA9-E2EF-4889-A4F6-21D30635002A";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2747,8 +2747,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2758,8 +2758,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "41B59EA9-E2EF-4889-A4F6-21D30635002A";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "41B59EA9-E2EF-4889-A4F6-21D30635002A";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = armv7;
