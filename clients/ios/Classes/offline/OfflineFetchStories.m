@@ -151,7 +151,6 @@
     NSLog(@"storing hashes: %@", [storyHashes objectAtIndex:0]);
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         BOOL anyInserted = NO;
-        NSLog(@"First storing: %@", [[[results objectForKey:@"stories"] objectAtIndex:0] objectForKey:@"story_hash"]);
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
             NSString *storyTimestamp = [story objectForKey:@"story_timestamp"];
             BOOL inserted = [db executeUpdate:@"INSERT into stories "

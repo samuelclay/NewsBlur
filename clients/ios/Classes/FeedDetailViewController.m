@@ -1046,6 +1046,8 @@
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
+    if (![self.appDelegate.activeFeedStories count]) return;
+    
     if (maximumOffset - currentOffset <= 60.0 || 
         (appDelegate.inFindingStoryMode)) {
         if (appDelegate.isRiverView) {
