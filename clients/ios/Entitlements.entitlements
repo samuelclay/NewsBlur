@@ -5,7 +5,7 @@
 	<key>application-identifier</key>
 	<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>get-task-allow</key>
-	<true/>
+	<false/>
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
