@@ -629,18 +629,7 @@
 }
 
 - (void)requestFailed:(id)request {
-    NSString *error;
-    if ([request class] == [ASIHTTPRequest class] || [request class] == [ASIFormDataRequest class]) {
-        NSLog(@"Error in story detail: %@", [request error]);
-        if ([request error]) {
-            error = [NSString stringWithFormat:@"%@", [request error]];
-        } else {
-            error = @"The server barfed!";
-        }
-    } else {
-        error = request;
-    }
-    [self informError:error];
+    [self informError:@"The server barfed!"];
 }
 
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
