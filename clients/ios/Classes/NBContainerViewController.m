@@ -253,10 +253,11 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedDetailMenuViewController];
     
+    [appDelegate.feedDetailMenuViewController buildMenuOptions];
     popoverController.delegate = self;
     
-    
-    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*4 : 38*6)];
+    int menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -275,7 +276,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7)];
+    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender
