@@ -156,7 +156,7 @@
     UIButton *sendtoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     sendtoButton.bounds = CGRectMake(0, 0, 44, 44);
     [sendtoButton setImage:sendtoImage forState:UIControlStateNormal];
-    [sendtoButton addTarget:self action:@selector(doOpenActionSheet) forControlEvents:UIControlEventTouchUpInside];
+    [sendtoButton addTarget:self action:@selector(doOpenActionSheet:) forControlEvents:UIControlEventTouchUpInside];
     [pageAction setCustomView:sendtoButton];
     
     CGRect webViewFrame = CGRectMake(0,
@@ -295,11 +295,16 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)doOpenActionSheet {
-//    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
+- (IBAction)doOpenActionSheet:(id)sender {
+//    NSURL *url = [NSURL URLWithString:appDele\0mg ate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-    
-    [UIActivitiesControl showActivitiesInView:self withUrl:url];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController showSendToPopover:sender];
+    } else {
+        UIActivityViewController *shareSheet = [UIActivitiesControl activityViewControllerForView:self withUrl:url];
+        [self presentViewController:shareSheet animated:YES completion:nil];
+    }
 }
 
 @end

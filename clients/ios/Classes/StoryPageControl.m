@@ -798,9 +798,11 @@
 
 - (IBAction)openSendToDialog:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [UIActivitiesControl showActivitiesInView:appDelegate.masterContainerViewController];
+        [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
-        [UIActivitiesControl showActivitiesInView:self];
+        [self presentViewController:[UIActivitiesControl activityViewControllerForView:self]
+                           animated:YES
+                         completion:nil];
     }
 }
 
