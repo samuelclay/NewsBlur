@@ -908,6 +908,8 @@
 }
 
 - (IBAction)showOriginalSubview:(id)sender {
+    [appDelegate.masterContainerViewController hidePopover];
+
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];
