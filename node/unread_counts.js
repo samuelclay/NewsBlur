@@ -38,7 +38,7 @@
 
   io.sockets.on('connection', function(socket) {
     var ip;
-    ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address;
+    ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address.address;
     socket.on('subscribe:feeds', function(feeds, username) {
       var _ref,
         _this = this;

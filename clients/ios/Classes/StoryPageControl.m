@@ -213,7 +213,7 @@
     }
     
     previousPage.view.hidden = YES;
-    
+    self.traverseView.alpha = 1;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
 }
@@ -629,18 +629,7 @@
 }
 
 - (void)requestFailed:(id)request {
-    NSString *error;
-    if ([request class] == [ASIHTTPRequest class] || [request class] == [ASIFormDataRequest class]) {
-        NSLog(@"Error in story detail: %@", [request error]);
-        if ([request error]) {
-            error = [NSString stringWithFormat:@"%@", [request error]];
-        } else {
-            error = @"The server barfed!";
-        }
-    } else {
-        error = request;
-    }
-    [self informError:error];
+    [self informError:@"The server barfed!"];
 }
 
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
@@ -723,7 +712,8 @@
 
 - (void)markStoryAsRead {
     //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
+        [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
         
         [appDelegate markActiveStoryRead];
         

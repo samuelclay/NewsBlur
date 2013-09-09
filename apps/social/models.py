@@ -111,6 +111,7 @@ class MSocialProfile(mongo.Document):
     photo_service        = mongo.StringField()
     location             = mongo.StringField(max_length=40)
     website              = mongo.StringField(max_length=200)
+    bb_permalink_direct  = mongo.BooleanField()
     subscription_count   = mongo.IntField(default=0)
     shared_stories_count = mongo.IntField(default=0)
     following_count      = mongo.IntField(default=0)
@@ -371,6 +372,7 @@ class MSocialProfile(mongo.Document):
             params.update({
                 'custom_css': self.custom_css,
                 'custom_bgcolor': self.custom_bgcolor,
+                'bb_permalink_direct': self.bb_permalink_direct,
             })
         if include_follows:
             params.update({
@@ -1781,8 +1783,13 @@ class MSharedStory(mongo.Document):
         message = strip_tags(self.comments)
         if not message or len(message) < 1:
             message = self.story_title
-        
-        if include_url:
+            if include_url:
+                message = truncate_chars(message, 92)
+            feed = Feed.get_by_id(self.story_feed_id)
+            message += " (%s)" % truncate_chars(feed.feed_title, 18)
+            if include_url:
+                message += " " + self.blurblog_permalink()
+        elif include_url:
             message = truncate_chars(message, 116)
             message += " " + self.blurblog_permalink()
         

@@ -490,8 +490,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 	} else {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
 	}
-	cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
-	cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
+	cell.textLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont labelFontSize];
+	cell.detailTextLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont labelFontSize];
 	return cell;
 }
 

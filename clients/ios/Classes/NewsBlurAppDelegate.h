@@ -226,6 +226,7 @@
 @property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
+@property (readwrite) NSMutableDictionary *unreadStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
 
 @property (nonatomic) NSDictionary *dictFolders;
@@ -257,6 +258,7 @@
 - (void)setupReachability;
 
 // social
+- (NSDictionary *)getUser:(int)userId;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
@@ -344,6 +346,7 @@
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
@@ -352,6 +355,8 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
+- (BOOL)isReachabileForOffline;
+- (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;

@@ -245,9 +245,14 @@ class UserSubscription(models.Model):
             range_func = r.zrange
         else:
             range_func = r.zrevrange
-            
-        ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
-        unread_ranked_stories_keys  = 'zhU:%s:feeds' % (user_id)
+        
+        if not feed_ids:
+            feed_ids = []
+        
+        # feeds_string = ""
+        feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
+        ranked_stories_keys  = 'zU:%s:feeds:%s' % (user_id, feeds_string)
+        unread_ranked_stories_keys  = 'zhU:%s:feeds:%s' % (user_id, feeds_string)
         stories_cached = r.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else r.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
@@ -653,9 +658,11 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_story_hashes_read(cls, user_id, story_hashes, r=None):
+    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, s=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not s:
+            s = redis.Redis(connection_pool=settings.REDIS_POOL)
         # if not r2:
         #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
@@ -674,7 +681,7 @@ class RUserStory:
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (user_id)
             share_key = "S:%s" % (story_hash)
-            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            friends_with_shares = [int(f) for f in s.sinter(share_key, friend_key)]
             friend_ids.update(friends_with_shares)
             cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p)
         

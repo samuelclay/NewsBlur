@@ -674,8 +674,8 @@ def load_single_feed(request, feed_id):
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
-    if not usersub and feed.num_subscribers <= 1:
-        data = dict(code=-1, message="You must be subscribed to this feed.")
+    # if not usersub and feed.num_subscribers <= 1:
+    #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
     # if page <= 1:
     #     import random
@@ -1150,7 +1150,10 @@ def mark_feed_stories_as_read(request):
     }
     
     for feed_id, story_ids in feeds_stories.items():
-        feed_id = int(feed_id)
+        try:
+            feed_id = int(feed_id)
+        except ValueError:
+            continue
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
             data = usersub.mark_story_ids_as_read(story_ids, request=request)

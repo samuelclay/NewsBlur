@@ -440,6 +440,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                       story_guid_hash=story_id).limit(1)
         if active_story_db:
             active_story_db = active_story_db[0]
+            if user_social_profile.bb_permalink_direct:
+                return HttpResponseRedirect(active_story_db.story_permalink)
             active_story = Feed.format_story(active_story_db)
             if active_story_db.image_count:
                 active_story['image_url'] = active_story_db.image_sizes[0]['src']
@@ -936,6 +938,7 @@ def save_blurblog_settings(request):
     profile.custom_css = strip_tags(data.get('custom_css', None))
     profile.custom_bgcolor = strip_tags(data.get('custom_bgcolor', None))
     profile.blurblog_title = strip_tags(data.get('blurblog_title', None))
+    profile.bb_permalink_direct = is_true(data.get('bb_permalink_direct', False))
     profile.save()
 
     logging.user(request, "~BB~FRSaving blurblog settings")

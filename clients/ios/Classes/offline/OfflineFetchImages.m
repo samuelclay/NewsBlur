@@ -52,6 +52,15 @@
         });
         return NO;
     }
+
+    if (![appDelegate isReachabileForOffline]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [appDelegate.feedsViewController showDoneNotifier];
+            [appDelegate.feedsViewController hideNotifier];
+        });
+        return NO;
+    }
+
     
     NSMutableArray *downloadRequests = [NSMutableArray array];
     for (NSArray *urlArray in urls) {

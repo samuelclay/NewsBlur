@@ -359,6 +359,10 @@
                              options:kNilOptions 
                              error:&error];
     
+    if (request.responseStatusCode != 200) {
+        return [self requestFailed:request];
+    }
+    
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
     appDelegate.activeFeedUserProfiles = [DataUtilities 
                                           updateUserProfiles:appDelegate.activeFeedUserProfiles 
@@ -411,15 +415,28 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
+
+    if (request.responseStatusCode != 200) {
+        return [self requestFailed:request];
+    }
+    
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+    NSString *error;
+    
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    
+    if ([request error]) {
+        error = [NSString stringWithFormat:@"%@", [request error]];
+    } else {
+        error = @"The server barfed!";
+    }
     NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
+    [appDelegate.storyPageControl.currentPage informError:error];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {

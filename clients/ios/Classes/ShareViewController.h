@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface ShareViewController : UIViewController <ASIHTTPRequestDelegate, UITextViewDelegate> {
+@interface ShareViewController : BaseViewController <ASIHTTPRequestDelegate, UITextViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     NSString *activeReplyId;
 }

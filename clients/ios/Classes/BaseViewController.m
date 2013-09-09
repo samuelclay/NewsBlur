@@ -53,7 +53,7 @@
 #pragma mark View methods
 
 - (void)informError:(id)error {
-    NSLog(@"Error: %@", error);
+    NSLog(@"informError: %@", error);
     NSString *errorMessage;
     if ([error isKindOfClass:[NSString class]]) {
         errorMessage = error;
