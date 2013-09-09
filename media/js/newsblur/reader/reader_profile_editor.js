@@ -139,7 +139,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         $.make('label', { 'for': 'NB-profile-blurblog-address' }, 'Blurblog address'),
                         $.make('a', { href: this.profile.get('feed_link'), target: '_blank', className: 'NB-profile-blurblog-address NB-splash-link' }, this.profile.get('feed_link')),
                         $.make('label', { 'for': 'NB-profile-blurblog-title' }, 'Blurblog title'),
-                        $.make('input', { type: 'text', id: 'NB-profile-blurblog-title', name: 'blurblog_title', value: this.profile.get('feed_title'), className: 'NB-input' }),
+                        $.make('input', { type: 'text', id: 'NB-profile-blurblog-title', name: 'blurblog_title', value: this.profile.get('feed_title'), className: 'NB-input NB-profile-blurblog-title' }),
                         $.make('label', 'Background color'),
                         this.make_color_palette()
                     ])
@@ -147,7 +147,31 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 $.make('fieldset', [
                     $.make('legend', 'Custom CSS for your Blurblog'),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'}, [
-                        $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' }, this.profile.get('custom_css'))
+                        $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'custom_css' }, this.profile.get('custom_css'))
+                    ])
+                ]),
+                $.make('fieldset', [
+                    $.make('legend', 'Blurblog Options'),
+                    $.make('div', { className: 'NB-modal-section'}, [
+                        $.make('div', { className: 'NB-preference NB-preference-permalinkdirect' }, [
+                            $.make('label', { className: 'NB-preference-label'}, [
+                                'Blurblog permalinks'
+                            ]),
+                            $.make('div', { className: 'NB-preference-options' }, [
+                                $.make('div', [
+                                    $.make('input', { id: 'NB-preference-permalinkdirect-0', type: 'radio', name: 'bb_permalink_direct', value: 'false', checked: true }),
+                                    $.make('label', { 'for': 'NB-preference-permalinkdirect-0' }, [
+                                        'Link to my blurblog and shared comments'
+                                    ])
+                                ]),
+                                $.make('div', [
+                                    $.make('input', { id: 'NB-preference-permalinkdirect-1', type: 'radio', name: 'bb_permalink_direct', value: 'true' }),
+                                    $.make('label', { 'for': 'NB-preference-permalinkdirect-1' }, [
+                                        'Link directly to the original story'
+                                    ])
+                                ])
+                            ])
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
@@ -207,7 +231,14 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     },
     
     populate_data: function() {
-        $('textarea[name=css]', this.$modal).val(this.profile.get('custom_css'));
+        var profile = this.profile;
+        
+        $('textarea[name=custom_css]', this.$modal).val(this.profile.get('custom_css'));
+        $('input[name=bb_permalink_direct]', this.$modal).each(function() {
+            if ($(this).val() == ""+profile.get('bb_permalink_direct')) {
+                $(this).attr('checked', true);
+            }
+        });
     },
     
     make_profile_section: function() {
@@ -357,6 +388,26 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
     
+    serialize_preferences: function($container) {
+        var preferences = {};
+        $container = $container || this.$modal;
+
+        $('input[type=radio]:checked, select', $container).each(function() {
+            var name       = $(this).attr('name');
+            var preference = preferences[name] = $(this).val();
+            if (preference == 'true')       preferences[name] = true;
+            else if (preference == 'false') preferences[name] = false;
+        });
+        $('input[type=checkbox]', $container).each(function() {
+            preferences[$(this).attr('name')] = $(this).is(':checked');
+        });
+        $('input[type=hidden],input[type=text],textarea', $container).each(function() {
+            preferences[$(this).attr('name')] = $(this).val();
+        });
+
+        return preferences;
+    },
+    
     save_profile: function() {
         var privacy_private = $('input#NB-profile-privacy-private', this.$modal).is(':checked');
         var privacy_protected = $('input#NB-profile-privacy-protected', this.$modal).is(':checked') || privacy_private;
@@ -378,11 +429,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     },
     
     save_blurblog: function() {
-        var data = {
-            'blurblog_title': $('input[name=blurblog_title]', this.$modal).val(),
-            'custom_bgcolor': $('.NB-profile-blurblog-color.NB-active', this.$modal).data('color'),
-            'custom_css': $('textarea[name=css]', this.$modal).val()
-        };
+        var data = this.serialize_preferences($(".NB-tab-blurblog"));
+        data['custom_bgcolor'] = $('.NB-profile-blurblog-color.NB-active', this.$modal).data('color');
         this.model.save_blurblog_settings(data, _.bind(function() {
             this.disable_save_blurblog();
         }, this));
@@ -573,6 +621,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         $('.NB-tab-profile', this.$modal).delegate('input[type=radio],input[type=checkbox],select', 'change', _.bind(this.enable_save_profile, this));
         $('.NB-tab-profile', this.$modal).delegate('input[type=text]', 'keydown', _.bind(this.enable_save_profile, this));
         $('.NB-tab-blurblog', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save_blurblog, this));
+        $('.NB-tab-blurblog', this.$modal).delegate('input,textarea', 'change', _.bind(this.enable_save_blurblog, this));
     },
     
     enable_save_profile: function() {
@@ -590,13 +639,13 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Change what you like above...');
+            .text('Saved!');
     },
     
     disable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Change what you like above...');
+            .text('Saved!');
     }
     
 });

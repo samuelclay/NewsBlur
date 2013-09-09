@@ -9413,8 +9413,8 @@ form.opml_import_form input {
     width: 200px;
     padding: 0 8px 0 12px;
 }
-.NB-modal-profile-editor .NB-tab-blurblog input {
-    width: 300px;
+.NB-modal-profile-editor .NB-tab-blurblog .NB-profile-blurblog-title {
+    width: 480px;
 }
 .NB-modal-profile-editor .NB-profile-blurblog-colors {
     width: 516px;
@@ -9467,6 +9467,46 @@ form.opml_import_form input {
 .NB-modal-profile-editor .NB-tab.NB-tab-profile,
 .NB-modal-profile-editor .NB-tab.NB-tab-blurblog {
     height: 500px;
+}
+
+.NB-modal-profile-editor .NB-preference {
+    margin: 12px 0;
+    overflow: hidden;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-options {
+  float: left;
+  width: 420px;
+  overflow: hidden;
+  padding: 2px 0;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-label {
+  float: left;
+  width: 200px;
+  position: relative;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-sublabel {
+  font-size: 11px;
+  color: #808080;
+  margin: 4px 30px 0px 0px;
+}
+
+.NB-modal-profile-editor .NB-preference .NB-preference-options input {
+  clear: both;
+  float: left;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-options input[type=radio] {
+  margin-top: 4px;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-options input[type=checkbox] {
+  margin-top: 5px;
+}
+.NB-modal-profile-editor .NB-preference .NB-preference-options label {
+  padding-left: 4px;
+  margin: 0 0 4px 0;
+  float: left;
+  width: auto;
+  clear: none;
+  cursor: pointer;
 }
 
 /* ================= */
