@@ -1498,7 +1498,7 @@
                 }
             }
             if (options.tag) {
-                this.active_feed = 'starred:' + options.tag;
+                this.active_feed = options.model.id;
                 this.flags['starred_tag'] = options.model.get('tag');
                 options.model.set('selected', true);
             } else {

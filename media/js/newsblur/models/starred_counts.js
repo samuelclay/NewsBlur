@@ -3,6 +3,7 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
     initialize: function() {
         this.set('feed_title', this.get('tag'));
         this.views = [];
+        this.id = 'starred:' + this.get('tag');
     },
     
     is_social: function() {
