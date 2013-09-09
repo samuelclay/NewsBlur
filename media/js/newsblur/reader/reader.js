@@ -1176,7 +1176,10 @@
         reload_feed: function(options) {
             options = options || {};
             
-            if (this.flags['starred_view']) {
+            if (this.flags['starred_view'] && this.flags['starred_tag']) {
+                options['tag'] = this.flags['starred_tag'];
+                this.open_starred_stories(options);
+            } else if (this.flags['starred_view']) {
                 this.open_starred_stories(options);
             } else if (this.flags['social_view'] && 
                        this.active_feed == 'river:blurblogs') {
@@ -1490,7 +1493,7 @@
             this.iframe_scroll = null;
             if (options.tag && !options.model) {
                 var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                    return feed.tag_slug() == options.tag;
+                    return feed.tag_slug() == options.tag || feed.get('tag') == options.tag;
                 });
                 if (model) {
                     options.model = model;
@@ -1504,6 +1507,7 @@
             } else {
                 this.active_feed = 'starred';
                 this.$s.$starred_header.addClass('NB-selected');
+                this.flags['starred_tag'] = null;
             }
             this.flags['starred_view'] = true;
             this.$s.$body.addClass('NB-view-river');
@@ -3797,8 +3801,7 @@
             NEWSBLUR.app.sidebar_header.toggle_hide_read_preference();
             NEWSBLUR.app.sidebar_header.count();
             NEWSBLUR.assets.folders.update_all_folder_visibility();
-            NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
-            NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
+            NEWSBLUR.app.feed_list.scroll_to_selected();
             
             $('.NB-active', $slider).removeClass('NB-active');
             if (real_value < 0) {

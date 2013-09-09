@@ -35,8 +35,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.starred_feeds.bind('reset', _.bind(function(models, options) {
             this.make_starred_tags(options);
         }, this));
-        NEWSBLUR.assets.social_feeds.bind('change:selected', this.selected, this);
-        NEWSBLUR.assets.feeds.bind('change:selected', this.selected, this);
+        NEWSBLUR.assets.social_feeds.bind('change:selected', this.scroll_to_selected, this);
+        NEWSBLUR.assets.feeds.bind('change:selected', this.scroll_to_selected, this);
+        NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
         if (!NEWSBLUR.assets.folders.size()) {
             NEWSBLUR.assets.load_feeds();
         }
@@ -109,7 +110,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             _.defer(_.bind(function() {
                 NEWSBLUR.reader.open_dialog_after_feeds_loaded();
                 NEWSBLUR.reader.toggle_focus_in_slider();
-                this.selected();
+                this.scroll_to_selected();
                 if (NEWSBLUR.reader.socket) {
                     NEWSBLUR.reader.send_socket_active_feeds();
                 } else {
@@ -250,51 +251,25 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     // = Actions =
     // ===========
     
-    selected: function(model, value, options) {
-        var feed_view;
-        options = options || {};
-        
-        if (!model) {
-            model = NEWSBLUR.assets.feeds.selected() || NEWSBLUR.assets.social_feeds.selected();
-        }
-        if (!model || !model.get('selected')) return;
-        
-        if (options.$feed) {
-            feed_view = _.detect(model.views, function(view) {
-                return view.el == options.$feed[0];
-            });
-        }
-        if (!feed_view) {
-            feed_view = _.detect(model.views, _.bind(function(view) {
-                return !!view.$el.closest(this.$s.$feed_lists).length;
-            }, this));
-        }
-        
-        if (feed_view) {
-            _.defer(_.bind(function() {
-                this.scroll_to_show_selected_feed(feed_view);
-            }, this));
-        }
-    },
-    
-    scroll_to_show_selected_feed: function(feed_view) {
+    scroll_to_show_selected_feed: function() {
         var $feed_lists = this.$s.$feed_lists;
-        if (!feed_view) {
-            var model = NEWSBLUR.assets.feeds.selected() || NEWSBLUR.assets.social_feeds.selected();
-            if (!model || !model.get('selected')) return;
-            var feed_view = _.detect(model.views, _.bind(function(view) {
-                return !!view.$el.closest(this.$s.$feed_lists).length;
-            }, this));
-            if (!feed_view) return;
-        }
-        var is_feed_visible = $feed_lists.isScrollVisible(feed_view.$el);
-
-        if (!is_feed_visible) {
+        var model = NEWSBLUR.assets.feeds.selected() || 
+                    NEWSBLUR.assets.social_feeds.selected() ||
+                    NEWSBLUR.assets.starred_feeds.selected();
+        if (!model) return;
+        var feed_view = _.detect(model.views, _.bind(function(view) {
+            return !!view.$el.closest(this.$s.$feed_lists).length;
+        }, this));
+        if (!feed_view) return;
+        
+        if (!$feed_lists.isScrollVisible(feed_view.$el)) {
             var scroll = feed_view.$el.position().top;
             var container = $feed_lists.scrollTop();
             var height = $feed_lists.outerHeight();
             $feed_lists.scrollTop(scroll+container-height/5);
-        }        
+        }
+        
+        return true;
     },
     
     scroll_to_show_highlighted_feed: function() {
@@ -313,31 +288,40 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         }        
     },
     
-    scroll_to_show_selected_folder: function(folder_view) {
+    scroll_to_show_selected_folder: function() {
         var $feed_lists = this.$s.$feed_lists;
+        var $selected_view;
         
-        if (!folder_view) {
-            var folder = NEWSBLUR.assets.folders.selected();
-            if (!folder || !folder.get('selected')) return;
-            folder_view = folder.folder_view;
-            if (!folder_view) return;
+        var folder = NEWSBLUR.assets.folders.selected();
+        if (folder) {
+            $selected_view = folder.folder_view.$el;
+            $selected_view = $selected_view.find('.folder_title').eq(0);
         }
-
-        var $folder_title = folder_view.$el.find('.folder_title').eq(0);
-        var is_folder_visible = $feed_lists.isScrollVisible($folder_title);
-        // NEWSBLUR.log(["scroll_to_show_selected_folder", folder_view, folder_view.$el, $feed_lists, is_folder_visible]);
+        
+        if (!$selected_view && NEWSBLUR.reader.active_feed == 'river:') {
+            $selected_view = NEWSBLUR.reader.$s.$river_sites_header.closest(".NB-feeds-header-container");
+        } else if (!$selected_view && NEWSBLUR.reader.active_feed == 'starred') {
+            $selected_view = NEWSBLUR.reader.$s.$starred_header.closest(".NB-feeds-header-container");
+        }
+        if (!$selected_view) return;
+        
+        var is_folder_visible = $feed_lists.isScrollVisible($selected_view);
 
         if (!is_folder_visible) {
-            var scroll = folder_view.$el.position().top;
+            var scroll = $selected_view.position().top;
             var container = $feed_lists.scrollTop();
             var height = $feed_lists.outerHeight();
             $feed_lists.scrollTop(scroll+container-height/5);
-        }        
+        }
+        
+        return true;
     },
     
     scroll_to_selected: function() {
-        this.scroll_to_show_selected_feed();
-        this.scroll_to_show_selected_folder();
+        var found = this.scroll_to_show_selected_feed();
+        if (!found) {
+            this.scroll_to_show_selected_folder();
+        }
     },
     
     start_sorting: function() {
