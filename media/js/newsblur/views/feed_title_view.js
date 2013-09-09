@@ -255,7 +255,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed: this.$el});
         } else if (this.model.is_starred()) {
             NEWSBLUR.reader.open_starred_stories({
-                tag: this.model.get('tag'),
+                tag: this.model.tag_slug(),
                 model: this.model
             });
         } else {

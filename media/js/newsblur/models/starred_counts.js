@@ -23,6 +23,10 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
             nt: 0,
             ng: 0
         };
+    },
+    
+    tag_slug: function() {
+        return Inflector.sluggify(this.get('tag'));
     }
     
 });

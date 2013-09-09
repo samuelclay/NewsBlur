@@ -1488,15 +1488,24 @@
             }
 
             this.iframe_scroll = null;
-            this.flags['starred_tag'] = options.tag;
-            this.flags['starred_view'] = true;
+            if (options.tag && !options.model) {
+                var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                    return feed.tag_slug() == options.tag;
+                });
+                if (model) {
+                    options.model = model;
+                    options.tag = model.get('tag');
+                }
+            }
             if (options.tag) {
                 this.active_feed = 'starred:' + options.tag;
+                this.flags['starred_tag'] = options.model.get('tag');
                 options.model.set('selected', true);
             } else {
                 this.active_feed = 'starred';
                 this.$s.$starred_header.addClass('NB-selected');
             }
+            this.flags['starred_view'] = true;
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -1519,7 +1528,10 @@
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
 
             if (!options.silent) {
-                var url = "/folder/saved";
+                var url = "/saved";
+                if (options.model) {
+                    url += "/" + options.model.tag_slug();
+                }
                 if (window.location.pathname != url) {
                     NEWSBLUR.log(["Navigating to url", url]);
                     NEWSBLUR.router.navigate(url);
