@@ -357,6 +357,9 @@ class Dispatcher:
                         skip = True
                 elif feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True
+                    weight = "-"
+                    quick = "-"
+                    rand = "-"
                 if skip:
                     logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)...' % (
                         feed.title[:30],
