@@ -355,6 +355,8 @@ class Dispatcher:
                     rand = random.random()
                     if random_weight < 100 and rand < quick:
                         skip = True
+                elif feed.feed_address.startswith("http://news.google.com/news"):
+                    skip = True
                 if skip:
                     logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)...' % (
                         feed.title[:30],

@@ -1134,7 +1134,10 @@ def mark_feed_stories_as_read(request):
     }
     
     for feed_id, story_ids in feeds_stories.items():
-        feed_id = int(feed_id)
+        try:
+            feed_id = int(feed_id)
+        except ValueError:
+            continue
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
             data = usersub.mark_story_ids_as_read(story_ids, request=request)
