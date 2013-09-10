@@ -198,7 +198,7 @@
       tips:
         - >
           The story score (red, neutral, green) can be computed by following 
-          the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> `compute_story_score` in reader_utils.js</a>.
+          the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> `compute_story_score` in reader_utils.js on GitHub</a>.
   
     - url: /reader/starred_stories
       method: GET
