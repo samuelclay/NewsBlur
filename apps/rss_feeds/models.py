@@ -9,6 +9,7 @@ import zlib
 import hashlib
 import redis
 import pymongo
+import HTMLParser
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -1630,7 +1631,12 @@ class MStory(mongo.Document):
     @property
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id, self.guid_hash)
-    
+
+    @property
+    def decoded_story_title(self):
+        h = HTMLParser.HTMLParser()
+        return h.unescape(self.story_title)
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
