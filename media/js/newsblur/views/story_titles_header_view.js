@@ -43,6 +43,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
+            this.search_view.blur_search();
             $view.append(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\

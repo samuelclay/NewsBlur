@@ -1126,7 +1126,7 @@
             });
             
             if (_.isUndefined(options.search)) {
-                delete this.flags.search;
+                this.flags.search = "";
                 this.flags.searching = false;
             }
             this.model.flags['no_more_stories'] = false;
