@@ -163,7 +163,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     make_starred_tags: function(options) {
         options = options || {};
         var $starred_feeds = $('.NB-starred-feeds', this.$s.$starred_feeds);
-        var $feeds = NEWSBLUR.assets.starred_feeds.map(function(feed) {
+        var $feeds = _.compact(NEWSBLUR.assets.starred_feeds.map(function(feed) {
+            if (feed.get('tag') == "") return;
             var feed_view = new NEWSBLUR.Views.FeedTitleView({
                 model: feed, 
                 type: 'feed', 
@@ -171,7 +172,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }).render();
             feed.views.push(feed_view);
             return feed_view.el;
-        });
+        }));
 
         $starred_feeds.empty().css({
             'display': 'block', 
