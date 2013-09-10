@@ -2051,10 +2051,14 @@ class MStarredStoryCounts(mongo.Document):
     }
     
     @classmethod
-    def user_counts(cls, user_id, include_total=False):
+    def user_counts(cls, user_id, include_total=False, try_counting=True):
         counts = cls.objects.filter(user_id=user_id).only('tag', 'count')
         counts = [{'tag': c.tag, 'count': c.count} for c in counts]
-
+        
+        if counts == [] and try_counting:
+            cls.count_tags_for_user(user_id)
+            return cls.user_counts(user_id, include_total=include_total, try_counting=False)
+        
         if include_total:
             for c in counts:
                 if c['tag'] == "":
@@ -2076,8 +2080,9 @@ class MStarredStoryCounts(mongo.Document):
             cls.objects.create(user_id=user_id, tag=tag, count=count)
         
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects(user_id=user_id, tag="", count=total_stories_count)
-
+        cls.objects.create(user_id=user_id, tag="", count=total_stories_count)
+        
+        return dict(total=total_stories_count, tags=user_tags)
 
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)

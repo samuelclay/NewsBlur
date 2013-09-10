@@ -258,8 +258,6 @@ def load_feeds(request):
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
 
     starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
-    if not starred_count and len(starred_counts):
-        starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
         'user_id': user.pk,
