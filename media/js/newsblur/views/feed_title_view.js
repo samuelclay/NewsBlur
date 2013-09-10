@@ -98,7 +98,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
+          selected            : this.model.get('selected')
         }));
         
         if (this.options.type == 'story') {
