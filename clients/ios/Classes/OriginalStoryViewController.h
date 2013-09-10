@@ -49,7 +49,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (IBAction) doCloseOriginalStoryViewController;
-- (IBAction) doOpenActionSheet;
+- (IBAction) doOpenActionSheet:(id)sender;
 - (IBAction)loadAddress:(id)sender;
 - (IBAction)webViewGoBack:(id)sender;
 - (IBAction)webViewGoForward:(id)sender;

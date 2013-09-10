@@ -36,6 +36,7 @@
 - (void)showFeedDetailMenuPopover:(id)sender;
 - (void)showFontSettingsPopover:(id)sender;
 - (void)showTrainingPopover:(id)sender;
+- (void)showSendToPopover:(id)sender;
 - (void)showSitePopover:(id)sender;
 - (void)hidePopover;
 @end

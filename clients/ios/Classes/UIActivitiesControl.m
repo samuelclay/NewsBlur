@@ -18,15 +18,15 @@
 
 @implementation UIActivitiesControl
 
-+ (void)showActivitiesInView:(UIViewController *)vc {
++ (UIActivityViewController *)activityViewControllerForView:(UIViewController *)vc {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
 
-    [self showActivitiesInView:vc withUrl:url];
+    return [self activityViewControllerForView:vc withUrl:url];
 }
 
-+ (void)showActivitiesInView:(UIViewController *)vc withUrl:(NSURL *)url {
++ (UIActivityViewController *)activityViewControllerForView:(UIViewController *)vc withUrl:(NSURL *)url {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *title = [appDelegate.activeStory
@@ -104,8 +104,8 @@
     }];
     
     shareSheet.excludedActivityTypes = @[UIActivityTypePostToWeibo,UIActivityTypeAssignToContact];
-    
-    [vc presentViewController:shareSheet animated:YES completion:nil];
+
+    return shareSheet;
 }
 
 @end

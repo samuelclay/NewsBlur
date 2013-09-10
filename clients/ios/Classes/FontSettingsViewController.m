@@ -207,16 +207,18 @@
             [appDelegate.feedDetailViewController redrawUnreadStory];
         }
     } else if (indexPath.row == 2) {
-        [appDelegate.storyPageControl openSendToDialog:nil];
+        [appDelegate.storyPageControl openSendToDialog:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 3) {
         [appDelegate openTrainStory:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 4) {
         [appDelegate.storyPageControl.currentPage openShareDialog];
     }
-    
-    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController hidePopover];
+        if (indexPath.row != 2 && indexPath.row != 3) {
+            // if we're opening another popover, then don't animate out - it looks strange
+            [appDelegate.masterContainerViewController hidePopover];
+        }
     } else {
         [appDelegate.storyPageControl.popoverController dismissPopoverAnimated:YES];
         appDelegate.storyPageControl.popoverController = nil;
