@@ -250,9 +250,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_story_as_unstarred: function(story_id, callback) {
         var self = this;
         var story = this.get_story(story_id);
+        var selected = this.starred_feeds.selected();
 
         var pre_callback = function(data) {
             self.starred_feeds.reset(data.starred_counts, {parse: true});
+            
+            if (selected && self.starred_feeds.get(selected)) {
+                self.starred_feeds.get(selected).set('selected', true);
+            }
+            
             if (callback) callback(data);
         };
 

@@ -35,9 +35,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-starred-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text">Saved Stories</div>\
+                    <div class="folder_title_text">Saved Stories<% if (tag) { %> - <%= tag %><% } %></div>\
                 </div>\
-            ', {}));
+            ', {
+                tag: NEWSBLUR.reader.flags['starred_tag']
+            }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
