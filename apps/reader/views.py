@@ -752,16 +752,20 @@ def load_starred_stories(request):
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
+            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
     elif tag:
-        mstories = MStarredStory.objects(
-            user_id=user.pk,
-            user_tags__contains=tag
-        ).order_by('-starred_date')[offset:offset+limit]
-        stories = Feed.format_stories(mstories)        
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk,
+                user_tags__contains=tag
+            ).order_by('-starred_date')[offset:offset+limit]
+            stories = Feed.format_stories(mstories)        
+        else:
+            stories = []
+            message = "You must be a premium subscriber to read saved stories by tag."
     elif story_hashes:
         mstories = MStarredStory.objects(
             user_id=user.pk,

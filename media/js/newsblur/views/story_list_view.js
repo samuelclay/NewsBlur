@@ -226,7 +226,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         
         if (!NEWSBLUR.assets.stories.visible().length) {
             this.show_explainer_no_stories();
-            return;
+            // return;
         }
         
         var pane_height = NEWSBLUR.reader.$s.$story_pane.height();
@@ -379,15 +379,24 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     },
     
     append_river_premium_only_notification: function() {
-        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
-                'The full River of News is a ',
+        var message = [
+            'The full River of News is a ',
+            $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+            '.'
+        ];
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            message = [
+                'Reading saved stories by tag is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                 '.'
-            ])
+            ];
+        }
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);
+        console.log(["append_search_premium_only_notification", this.$(".NB-end-line")]);
     },
     
     append_search_premium_only_notification: function() {

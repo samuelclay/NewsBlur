@@ -1955,13 +1955,17 @@ class MStarredStory(mongo.Document):
                                  db_id=str(self.id))
     
     @classmethod
-    def find_stories(cls, query, user_id, offset=0, limit=25):
+    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):
         stories_db = cls.objects(
             Q(user_id=user_id) &
             (Q(story_title__icontains=query) |
              Q(story_author_name__icontains=query) |
              Q(story_tags__icontains=query))
-        ).order_by('-starred_date')[offset:offset+limit]
+        )
+        if tag:
+            stories_db = stories_db.filter(user_tags__contains=tag)
+            
+        stories_db = stories_db.order_by('-starred_date')[offset:offset+limit]
         stories = Feed.format_stories(stories_db)
         
         return stories
