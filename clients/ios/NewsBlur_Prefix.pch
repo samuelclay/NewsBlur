@@ -11,8 +11,8 @@
     #define NEWSBLUR_HOST [NSString stringWithFormat:@"nb.local.com"]
 #else
     #define BACKGROUND_REFRESH_SECONDS -10*60
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
-    #define NEWSBLUR_HOST [NSString stringWithFormat:@"www.newsblur.com"]
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"https://debug.newsblur.com"]
+    #define NEWSBLUR_HOST [NSString stringWithFormat:@"debug.newsblur.com"]
 #endif
 
     #define _ Underscore
