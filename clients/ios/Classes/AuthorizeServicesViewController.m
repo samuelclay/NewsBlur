@@ -76,7 +76,7 @@
 
 - (void)doCancelButton {
     [appDelegate.shareViewController adjustShareButtons];
-    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -90,7 +90,7 @@
             [appDelegate refreshUserProfile:^{
                 if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                     [appDelegate.shareNavigationController viewWillAppear:YES];
-                    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+                    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
                 } else {
                     [self.navigationController popViewControllerAnimated:YES];
                 }

@@ -94,7 +94,7 @@
 			<key>Key</key>
 			<string>offline_image_download</string>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

@@ -236,16 +236,16 @@ class Feed(models.Model):
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
         
-    def expire_redis(self, r=None, r2=None):
+    def expire_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+            # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
-        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
-        r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD*24*60*60)
+        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        # r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -886,6 +886,10 @@ class Feed(models.Model):
                           self.title[:30],
                           len(stories),
                           len(existing_stories.keys())))
+        @timelimit(2)
+        def _1(story, story_content, existing_stories):
+            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+            return existing_story, story_has_changed
         
         for story in stories:
             if not story.get('title'):
@@ -899,7 +903,13 @@ class Feed(models.Model):
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
             
-            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+            try:
+                existing_story, story_has_changed = _1(story, story_content, existing_stories)
+            except TimeoutError, e:
+                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
+                existing_story = None
+                story_has_changed = False
+                
             if existing_story is None:
                 if settings.DEBUG and False:
                     logging.debug('   ---> New story in feed (%s - %s): %s' % (self.feed_title, story.get('title'), len(story_content)))
@@ -1061,8 +1071,9 @@ class Feed(models.Model):
     @classmethod
     def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
         now = datetime.datetime.now()
-        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed_count = Feed.objects.latest('pk').pk
+        total = 0
         for feed_id in xrange(start, feed_count):
             if feed_id % 1000 == 0:
                 print "\n\n -------------------------- %s --------------------------\n\n" % feed_id
@@ -1080,26 +1091,33 @@ class Feed(models.Model):
                 if dryrun:
                     print " DRYRUN: %s cutoff - %s" % (cutoff, feed)
                 else:
-                    MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+                    total += MStory.trim_feed(feed=feed, cutoff=cutoff, verbose=verbose)
+                    
+        print " ---> Deleted %s stories in total." % total
     
     @property
     def story_cutoff(self):
         cutoff = 500
         if self.active_subscribers <= 0:
             cutoff = 25
-        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+        elif self.active_premium_subscribers < 1:
             cutoff = 100
-        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
+        elif self.active_premium_subscribers <= 2:
             cutoff = 200
-        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
+        elif self.active_premium_subscribers <= 5:
             cutoff = 300
-        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
+        elif self.active_premium_subscribers <= 10:
             cutoff = 350
-        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
+        elif self.active_premium_subscribers <= 15:
             cutoff = 400
-        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
+        elif self.active_premium_subscribers <= 20:
             cutoff = 450
-
+        
+        if self.active_subscribers and self.average_stories_per_month < 5 and self.stories_last_month < 5:
+            cutoff /= 2
+        if self.active_premium_subscribers <= 1 and self.average_stories_per_month <= 1 and self.stories_last_month <= 1:
+            cutoff /= 2
+        
         return cutoff
                 
     def trim_feed(self, verbose=False, cutoff=None):
@@ -1125,13 +1143,25 @@ class Feed(models.Model):
         
         return stories
     
+    @classmethod
+    def find_feed_stories(cls, feed_ids, query, offset=0, limit=25):
+        stories_db = MStory.objects(
+            Q(story_feed_id__in=feed_ids) &
+            (Q(story_title__icontains=query) |
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
+        ).order_by('-story_date')[offset:offset+limit]
+        stories = cls.format_stories(stories_db)
+        
+        return stories
+        
     def find_stories(self, query, offset=0, limit=25):
         stories_db = MStory.objects(
             Q(story_feed_id=self.pk) &
             (Q(story_title__icontains=query) |
-             Q(story_content__icontains=query) |
-             Q(story_author_name__icontains=query))
-        ).order_by('-starred_date')[offset:offset+limit]
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
+        ).order_by('-story_date')[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
         
         return stories
@@ -1306,10 +1336,13 @@ class Feed(models.Model):
         # if story_has_changed or not story_in_system:
         #     print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
-        
-    def get_next_scheduled_update(self, force=False, verbose=True):
-        if self.min_to_decay and not force:
+    
+    def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False):
+        if self.min_to_decay and not force and not premium_speed:
             return self.min_to_decay
+        
+        if premium_speed:
+            self.active_premium_subscribers += 1
         
         upd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
@@ -1355,11 +1388,12 @@ class Feed(models.Model):
         # subscriber_bonus = int(subscriber_bonus)
 
         if self.is_push:
-            total = total * 12
+            fetch_history = MFetchHistory.feed(self.pk)
+            if len(fetch_history['push_history']):
+                total = total * 12
         
         # 3 day max
-        if total > 60*24*3:
-            total = 60*24*3
+        total = min(total, 60*24*2)
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories: %s" % (
@@ -1377,6 +1411,7 @@ class Feed(models.Model):
         
         if error_count:
             total = total * error_count
+            total = min(total, 60*24*7)
             if verbose:
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (
@@ -1629,8 +1664,9 @@ class MStory(mongo.Document):
     
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+        extra_stories_count = 0
         if not feed_id and not feed:
-            return
+            return extra_stories_count
         
         if not feed_id:
             feed_id = feed.pk
@@ -1642,13 +1678,13 @@ class MStory(mongo.Document):
         ).order_by('-story_date')
         
         if stories.count() > cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+            logging.debug('   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN...' %
                           (unicode(feed)[:30], stories.count(), cutoff))
             try:
                 story_trim_date = stories[cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
-                return
+                return extra_stories_count
                 
             extra_stories = MStory.objects(story_feed_id=feed_id, 
                                            story_date__lte=story_trim_date)
@@ -1660,6 +1696,8 @@ class MStory(mongo.Document):
                 logging.debug("   ---> Deleted %s stories, %s left." % (
                                 extra_stories_count,
                                 existing_story_count))
+
+        return extra_stories_count
         
     @classmethod
     def find_story(cls, story_feed_id, story_id, original_only=False):
@@ -1752,55 +1790,55 @@ class MStory(mongo.Document):
         
         return story_hashes
     
-    def sync_redis(self, r=None, r2=None):
+    def sync_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        # if not r2:
+            # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
             feed_key = 'F:%s' % self.story_feed_id
             r.sadd(feed_key, self.story_hash)
-            r.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.sadd(feed_key, self.story_hash)
-            r2.expire(feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.sadd(feed_key, self.story_hash)
+            # r2.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
             
             r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
-            r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD*24*60*60)
+            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            # r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
     
-    def remove_from_redis(self, r=None, r2=None):
+    def remove_from_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        if not r2:
-            r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         if self.id:
             r.srem('F:%s' % self.story_feed_id, self.story_hash)
-            r2.srem('F:%s' % self.story_feed_id, self.story_hash)
+            # r2.srem('F:%s' % self.story_feed_id, self.story_hash)
             r.zrem('zF:%s' % self.story_feed_id, self.story_hash)
-            r2.zrem('zF:%s' % self.story_feed_id, self.story_hash)
+            # r2.zrem('zF:%s' % self.story_feed_id, self.story_hash)
 
     @classmethod
     def sync_feed_redis(cls, story_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
         r.delete('F:%s' % story_feed_id)
-        r2.delete('F:%s' % story_feed_id)
+        # r2.delete('F:%s' % story_feed_id)
         r.delete('zF:%s' % story_feed_id)
-        r2.delete('zF:%s' % story_feed_id)
+        # r2.delete('zF:%s' % story_feed_id)
 
         logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
-        p2 = r2.pipeline()
+        # p2 = r2.pipeline()
         for story in stories:
-            story.sync_redis(r=p, r2=p2)
+            story.sync_redis(r=p)
         p.execute()
-        p2.execute()
+        # p2.execute()
         
     def count_comments(self):
         from apps.social.models import MSharedStory
@@ -1826,7 +1864,11 @@ class MStory(mongo.Document):
         if not story_content:
             return
         
-        soup = BeautifulSoup(story_content)
+        try:
+            soup = BeautifulSoup(story_content)
+        except ValueError:
+            return
+        
         images = soup.findAll('img')
         if not images:
             return
@@ -1912,6 +1954,18 @@ class MStarredStory(mongo.Document):
                                  story_date=self.story_date,
                                  db_id=str(self.id))
     
+    @classmethod
+    def find_stories(cls, query, user_id, offset=0, limit=25):
+        stories_db = cls.objects(
+            Q(user_id=user_id) &
+            (Q(story_title__icontains=query) |
+             Q(story_author_name__icontains=query) |
+             Q(story_tags__icontains=query))
+        ).order_by('-starred_date')[offset:offset+limit]
+        stories = Feed.format_stories(stories_db)
+        
+        return stories
+
     @classmethod
     def trim_old_stories(cls, stories=10, days=30, dryrun=False):
         print " ---> Fetching starred story counts..."

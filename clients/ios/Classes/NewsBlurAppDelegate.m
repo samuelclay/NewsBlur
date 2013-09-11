@@ -46,11 +46,12 @@
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
 #import "OfflineFetchImages.h"
+#import "OfflineCleanImages.h"
 #import "PocketAPI.h"
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 25
+#define CURRENT_DB_VERSION 29
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -134,6 +135,7 @@
 @synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
+@synthesize unreadStoryHashes;
 @synthesize folderCountCache;
 
 @synthesize dictFolders;
@@ -154,6 +156,7 @@
 @synthesize activeCachedImages;
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
+@synthesize offlineCleaningQueue;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -337,6 +340,30 @@
 
 #pragma mark -
 #pragma mark Social Views
+
+- (NSDictionary *)getUser:(int)userId {
+    for (int i = 0; i < self.activeFeedUserProfiles.count; i++) {
+        if ([[[self.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == userId) {
+            return [self.activeFeedUserProfiles objectAtIndex:i];
+        }
+    }
+    
+    // Check DB if not found in active feed
+    __block NSDictionary *user;
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *userSql = [NSString stringWithFormat:@"SELECT * FROM users WHERE user_id = %d", userId];
+        FMResultSet *cursor = [db executeQuery:userSql];
+        while ([cursor next]) {
+            user = [NSJSONSerialization
+                    JSONObjectWithData:[[cursor stringForColumn:@"user_json"]
+                                        dataUsingEncoding:NSUTF8StringEncoding]
+                    options:nil error:nil];
+            if (user) break;
+        }
+    }];
+    
+    return user;
+}
 
 - (void)showUserProfileModal:(id)sender {
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
@@ -594,7 +621,10 @@
                                       action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    
+    [self flushQueuedReadStories:NO withCallback:^{
+        [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    }];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -602,8 +632,6 @@
         [navigationController pushViewController:feedDetailViewController
                                         animated:YES];
     }
-    
-    [self flushQueuedReadStories:NO withCallback:nil];
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -782,7 +810,10 @@
     self.inFeedDetail = YES;
 
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    
+    [self flushQueuedReadStories:NO withCallback:^{
+        [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    }];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
@@ -1489,7 +1520,7 @@
             [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
         }
         NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
-        [stories addObject:[story objectForKey:@"id"]];
+        [stories addObject:[story objectForKey:@"story_hash"]];
         [self markStoryRead:story feed:feed];
     }   
     return feedsStories;
@@ -1500,7 +1531,7 @@
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
             story = s;
             break;
         }
@@ -1513,7 +1544,6 @@
     if (!feed) {
         feedIdStr = @"0";
     }
-    
     
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
@@ -1578,7 +1608,7 @@
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
             story = s;
             break;
         }
@@ -1692,6 +1722,7 @@
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"UPDATE unread_counts SET ps = 0, nt = 0, ng = 0 WHERE feed_id = ?",
          feedIdStr];
+        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_feed_id = ?", feedIdStr];
     }];
 }
 
@@ -1984,7 +2015,9 @@
     }
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
+    if (!authors) authors = [NSMutableDictionary dictionary];
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -1995,15 +2028,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:author
                    forKey:authorScore >= 1 ? @"like_author" :
                           authorScore <= -1 ? @"dislike_author" :
                           @"remove_like_author"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2027,7 +2063,9 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
+    if (!tags) tags = [NSMutableDictionary dictionary];
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -2038,15 +2076,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:tag
                    forKey:tagScore >= 1 ? @"like_tag" :
                           tagScore <= -1 ? @"dislike_tag" :
                           @"remove_like_tag"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2074,7 +2115,9 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *titles = [[feedClassifiers objectForKey:@"titles"] mutableCopy];
+    if (!titles) titles = [NSMutableDictionary dictionary];
     [titles setObject:[NSNumber numberWithInt:titleScore] forKey:title];
     [feedClassifiers setObject:titles forKey:@"titles"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
@@ -2085,15 +2128,18 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:title
                    forKey:titleScore >= 1 ? @"like_title" :
                           titleScore <= -1 ? @"dislike_title" :
                           @"remove_like_title"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
@@ -2116,6 +2162,7 @@
     
     NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *feeds = [[feedClassifiers objectForKey:@"feeds"] mutableCopy];
     [feeds setObject:[NSNumber numberWithInt:feedScore] forKey:feedId];
     [feedClassifiers setObject:feeds forKey:@"feeds"];
@@ -2127,20 +2174,39 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIFormDataRequest *_request = request;
     [request setPostValue:feedId
                    forKey:feedScore >= 1 ? @"like_feed" :
                           feedScore <= -1 ? @"dislike_feed" :
                           @"remove_like_feed"];
     [request setPostValue:feedId forKey:@"feed_id"];
     [request setCompletionBlock:^{
-        [self.feedsViewController refreshFeedList:feedId];
+        [self requestClassifierResponse:_request withFeed:feedId];
     }];
-    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setFailedBlock:^{
+        [self requestClassifierResponse:_request withFeed:feedId];
+    }];
     [request setDelegate:self];
     [request startAsynchronous];
     
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId {
+    BaseViewController *view;
+    if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
+        view = self.trainerViewController;
+    } else {
+        view = self.storyPageControl.currentPage;
+    }
+    if ([request responseStatusCode] == 503) {
+        return [view informError:@"In maintenance mode"];
+    } else if ([request responseStatusCode] != 200) {
+        return [view informError:@"The server barfed!"];
+    }
+    
+    [self.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -2182,6 +2248,7 @@
         [db executeUpdate:@"drop table if exists `accounts`"];
         [db executeUpdate:@"drop table if exists `unread_counts`"];
         [db executeUpdate:@"drop table if exists `cached_images`"];
+        [db executeUpdate:@"drop table if exists `users`"];
         //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
@@ -2237,7 +2304,7 @@
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
     [db executeUpdate:createReadTable];
-
+    
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
                                    " story_feed_id number,"
@@ -2251,6 +2318,21 @@
     [db executeUpdate:indexImagesFeedId];
     NSString *indexImagesStoryHash = @"CREATE INDEX IF NOT EXISTS cached_images_story_hash ON cached_images (story_hash)";
     [db executeUpdate:indexImagesStoryHash];
+    
+    
+    NSString *createUsersTable = [NSString stringWithFormat:@"create table if not exists users "
+                                  "("
+                                  " user_id number,"
+                                  " username varchar(64),"
+                                  " location varchar(128),"
+                                  " image_url varchar(1024),"
+                                  " image_cached boolean,"
+                                  " user_json text,"
+                                  " UNIQUE(user_id) ON CONFLICT REPLACE"
+                                  ")"];
+    [db executeUpdate:createUsersTable];
+    NSString *indexUsersUserId = @"CREATE INDEX IF NOT EXISTS users_user_id ON users (user_id)";
+    [db executeUpdate:indexUsersUserId];
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -2274,6 +2356,9 @@
 - (void)cancelOfflineQueue {
     if (offlineQueue) {
         [offlineQueue cancelAllOperations];
+    }
+    if (offlineCleaningQueue) {
+        [offlineCleaningQueue cancelAllOperations];
     }
 }
 
@@ -2304,12 +2389,66 @@
     [offlineQueue addOperation:operationFetchImages];
 }
 
+- (BOOL)isReachabileForOffline {
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
+    
+    NSString *connection = [[NSUserDefaults standardUserDefaults]
+                            stringForKey:@"offline_download_connection"];
+    
+    NSLog(@"Reachable via: %d / %d", remoteHostStatus == ReachableViaWWAN, remoteHostStatus == ReachableViaWiFi);
+    if ([connection isEqualToString:@"wifi"] && remoteHostStatus != ReachableViaWiFi) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)storeUserProfiles:(NSArray *)userProfiles {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *user in userProfiles) {
+                [db executeUpdate:@"INSERT INTO users "
+                 "(user_id, username, location, image_url, user_json) VALUES "
+                 "(?, ?, ?, ?, ?)",
+                 [user objectForKey:@"user_id"],
+                 [user objectForKey:@"username"],
+                 [user objectForKey:@"location"],
+                 [user objectForKey:@"photo_url"],
+                 [user JSONRepresentation]
+                 ];
+            }
+        }];
+    });
+}
+
+- (void)queueReadStories:(NSDictionary *)feedsStories {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSString *feedIdStr in [feedsStories allKeys]) {
+                for (NSString *storyHash in [feedsStories objectForKey:feedIdStr]) {
+                    [db executeUpdate:@"INSERT INTO queued_read_hashes "
+                     "(story_feed_id, story_hash) VALUES "
+                     "(?, ?)", feedIdStr, storyHash];
+                }
+            }
+        }];
+    });
+    self.hasQueuedReadStories = YES;
+}
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
+        OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
+        if (!offlineCleaningQueue) {
+            offlineCleaningQueue = [NSOperationQueue new];
+        }
+        [offlineCleaningQueue addOperation:operationCleanImages];
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
-            [self flushOldCachedImages];
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
                 FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes"];
@@ -2345,12 +2484,18 @@
     }
     NSString *completedHashesStr = [completedHashes componentsJoinedByString:@"\",\""];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    __weak ASIHTTPRequest *_request = request;
     [request setPostValue:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     [request setDelegate:self];
     [request setCompletionBlock:^{
-        NSLog(@"Completed clearing %@ hashes", completedHashesStr);
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes WHERE story_hash in (\"%@\")", completedHashesStr]]
-        ;
+        if ([_request responseStatusCode] == 200) {
+            NSLog(@"Completed clearing %@ hashes", completedHashesStr);
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
+                               "WHERE story_hash in (\"%@\")", completedHashesStr]];
+        } else {
+            NSLog(@"Failed mark read queued.");
+            self.hasQueuedReadStories = YES;
+        }
         if (callback) callback();
     }];
     [request setFailedBlock:^{
@@ -2391,33 +2536,6 @@
     }
     
     NSLog(@"Pre-cached %d images", cached);
-}
-
-- (void)flushOldCachedImages {
-    int deleted = 0;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-    NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
-    
-    NSString* file;
-    while (file = [en nextObject])
-    {
-        NSError *error = nil;
-        NSString *filepath = [NSString stringWithFormat:[cacheDirectory stringByAppendingString:@"/%@"],file];
-        NSDate *creationDate = [[fileManager attributesOfItemAtPath:filepath error:nil] fileCreationDate];
-        NSDate *d = [[NSDate date] dateByAddingTimeInterval:-14*24*60*60];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init]; // = [NSDateFormatter initWithDateFormat:@"yyyy-MM-dd"];
-        [df setDateFormat:@"EEEE d"];
-        
-        if ([creationDate compare:d] == NSOrderedAscending) {
-            [[NSFileManager defaultManager]
-             removeItemAtPath:[cacheDirectory stringByAppendingPathComponent:file]
-             error:&error];
-            deleted += 1;
-        }
-    }
-    NSLog(@"Deleted %d old cached images", deleted);
 }
 
 - (void)deleteAllCachedImages {

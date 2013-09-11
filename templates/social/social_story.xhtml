@@ -42,7 +42,7 @@
                         <img src="{{ story.feed.favicon_url }}" />
                     </div>
                     <div class="NB-feed-title">
-                        <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
+                        <a href="{{ story.feed.feed_link }}">{{ story.feed.feed_title }}</a>
                     </div>
                 {% endif %}
             </div>

@@ -99,8 +99,9 @@
         
         self.view = view;
         
-        self.progressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(self.frame.size.width - 60 - 12, 14, 60, 6)];
-        self.progressBar.progressTintColor = UIColorFromRGB(0xA0B0A6);
+        self.progressBar = [[UIView alloc] initWithFrame:CGRectMake(0, 4, 0, 1)];
+        self.progressBar.backgroundColor = UIColorFromRGB(0xD05046);
+        self.progressBar.alpha = 0.6f;
         self.progressBar.hidden = YES;
         [self addSubview:self.progressBar];
         
@@ -118,7 +119,7 @@
 - (void) didChangedOrientation:(NSNotification *)sender {
 //    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     [self setView:self.view];
-    self.progressBar.frame = CGRectMake(self.frame.size.width - PROGRESS_BAR_SIZE - 12, 14, PROGRESS_BAR_SIZE, 6);
+    self.progressBar.frame = CGRectMake(0, 4, 0, 1);
 }
 
 
@@ -142,7 +143,7 @@
 }
 
 - (void)setProgress:(float)value {
-    [self.progressBar setProgress:value animated:(self.style == NBSyncingProgressStyle)];
+    self.progressBar.frame = CGRectMake(0, 4, value * self.frame.size.width, 1);
 }
 
 - (void)setTitle:(NSString *)title {
@@ -363,29 +364,41 @@
     }
     CGContextFillRect(context, rectangle);
     
-    //First whiteColor
+    // Top black line
     CGContextSetLineWidth(context, 1.0);
-    CGFloat componentsWhiteLine[] = {1.0, 1.0, 1.0, 0.35};
-    CGColorRef Whitecolor = CGColorCreate(colorspace, componentsWhiteLine);
-    CGContextSetStrokeColorWithColor(context, Whitecolor);
-    
-    CGContextMoveToPoint(context, 0, 4.5);
-    CGContextAddLineToPoint(context, rect.size.width, 4.5);
-    
-    CGContextStrokePath(context);
-    CGColorRelease(Whitecolor);
-    
-    //First whiteColor
-    CGContextSetLineWidth(context, 1.0);
-    CGFloat componentsBlackLine[] = {0.0, 0.0, 0.0, 1.0};
-    CGColorRef Blackcolor = CGColorCreate(colorspace, componentsBlackLine);
-    CGContextSetStrokeColorWithColor(context, Blackcolor);
+    CGColorRef blackcolor;
+    if (self.style == NBSyncingProgressStyle || self.style == NBDoneStyle) {
+        CGFloat componentsBlackLine[] = {0.0, 0.0, 0.0, 0.6f};
+        blackcolor = CGColorCreate(colorspace, componentsBlackLine);
+    } else {
+        CGFloat componentsBlackLine[] = {0.0, 0.0, 0.0, 1.0};
+        blackcolor = CGColorCreate(colorspace, componentsBlackLine);
+    }
+    CGContextSetStrokeColorWithColor(context, blackcolor);
     
     CGContextMoveToPoint(context, 0, 3.5);
     CGContextAddLineToPoint(context, rect.size.width, 3.5);
     
     CGContextStrokePath(context);
-    CGColorRelease(Blackcolor);
+    CGColorRelease(blackcolor);
+    
+    // Second white line
+    CGContextSetLineWidth(context, 1.0);
+    CGColorRef whitecolor;
+    if (self.style == NBSyncingProgressStyle || self.style == NBDoneStyle) {
+        CGFloat componentsWhiteLine[] = {1.0, 1.0, 1.0, 0.65};
+        whitecolor = CGColorCreate(colorspace, componentsWhiteLine);
+    } else {
+        CGFloat componentsWhiteLine[] = {1.0, 1.0, 1.0, 0.35};
+        whitecolor = CGColorCreate(colorspace, componentsWhiteLine);
+    }
+    CGContextSetStrokeColorWithColor(context, whitecolor);
+    
+    CGContextMoveToPoint(context, 0, 4.5);
+    CGContextAddLineToPoint(context, rect.size.width, 4.5);
+    
+    CGContextStrokePath(context);
+    CGColorRelease(whitecolor);
     
     //Draw Shadow
     

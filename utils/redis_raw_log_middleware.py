@@ -10,20 +10,22 @@ class RedisDumpMiddleware(object):
             raise MiddlewareNotUsed()
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
-        if settings.DEBUG:
+        if settings.DEBUG and not getattr(Connection, '_logging', False):
             # save old methods
-            self.orig_pack_command = \
-                    Connection.pack_command
+            setattr(Connection, '_logging', True)
+            # self.orig_pack_command = \
+            #         Connection.pack_command
             # instrument methods to record messages
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
         return None
 
     def process_response(self, request, response):
-        if settings.DEBUG and hasattr(self, 'orig_pack_command'):
-            # remove instrumentation from redis
-            Connection.pack_command = \
-                    self.orig_pack_command
+        # if settings.DEBUG and hasattr(self, 'orig_pack_command'):
+        #     # remove instrumentation from redis
+        #     setattr(Connection, '_logging', False)
+        #     Connection.pack_command = \
+        #             self.orig_pack_command
         return response
 
     def _instrument(self, original_method):

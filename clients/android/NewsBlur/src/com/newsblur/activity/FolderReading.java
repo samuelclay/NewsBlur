@@ -38,13 +38,6 @@ public class FolderReading extends Reading {
 	}
 
 	@Override
-	public void onPageSelected(int position) {
-		addStoryToMarkAsRead(readingAdapter.getStory(position));
-		checkStoryCount(position);
-		super.onPageSelected(position);
-	}
-
-	@Override
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}
@@ -68,11 +61,8 @@ public class FolderReading extends Reading {
 
 	@Override
 	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-		stories.requery();
 		requestedPage = false;
-		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
+        super.updateAfterSync();
 	}
 
 	@Override

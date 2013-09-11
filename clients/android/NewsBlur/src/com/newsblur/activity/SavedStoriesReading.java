@@ -12,7 +12,6 @@ import com.newsblur.service.SyncService;
 
 public class SavedStoriesReading extends Reading {
 
-	private Cursor stories;
 	private int currentPage;
 	private boolean stopLoading = false;
 	private boolean requestedPage = false;
@@ -30,12 +29,6 @@ public class SavedStoriesReading extends Reading {
 		setupPager();
 	}
     
-	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-		checkStoryCount(position);
-	}
-
 	@Override
 	public void triggerRefresh() {
 		triggerRefresh(1);
@@ -66,11 +59,8 @@ public class SavedStoriesReading extends Reading {
 
 	@Override
 	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-		stories.requery();
 		requestedPage = false;
-		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
+        super.updateAfterSync();
 	}
 
 	@Override

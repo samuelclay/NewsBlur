@@ -195,6 +195,10 @@
           optional: true
           default: "true"
           example: "false"
+      tips:
+        - >
+          The story score (red, neutral, green) can be computed by following 
+          the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> `compute_story_score` in reader_utils.js on GitHub</a>.
   
     - url: /reader/starred_stories
       method: GET
@@ -207,6 +211,10 @@
           optional: true
           default: 1
           example: 2
+        - key: h
+          desc: "Pass up to 100 story_hashes. Use with starred_story_hashes."
+          optional: true
+          example: "h=a1b2c3&h=d4e5f6"
 
     - url: /reader/starred_story_hashes
       method: GET
@@ -218,6 +226,8 @@
           desc: "Including timestamps for starred_date"
           optional: true
           default: false
+      tips:
+        - "Use with /reader/starred_stories and pass up to 100 story_hashes as the `h` param."
   
     - url: /reader/river_stories
       method: GET
@@ -267,7 +277,7 @@
           optional: true
           default: false
     
-    - url: /reader/mark_story_hash_as_read
+    - url: /reader/mark_story_hashes_as_read
       method: POST
       short_desc: "Mark a story as read."
       long_desc: 

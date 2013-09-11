@@ -19,7 +19,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         _.defer(_.bind(function() { this.open_modal(); }, this));
         if (!this.options.premium_only) {
             this.find_feeds_in_feed_list();
-            this.initial_load_feeds(true);
+            this.initial_load_feeds();
         }
         this.choose_dollar_amount(2);
         
@@ -337,7 +337,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var self = this;
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
-
+        
         if (!feeds.size()) {
             _.defer(_.bind(function() {
                 var $info = $('.NB-feedchooser-info', this.$modal);

@@ -270,9 +270,9 @@ class Profile(models.Model):
                                                    txn_type='subscr_payment')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
             try:
-                refunded = int(float(refund['raw']['TOTALREFUNDEDAMOUNT'][0]))
+                refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
             except KeyError:
-                refunded = int(transaction.amount)
+                refunded = int(transaction.payment_gross)
             logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
             self.cancel_premium()
         
@@ -310,7 +310,10 @@ class Profile(models.Model):
             
         stripe.api_key = settings.STRIPE_SECRET
         stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-        stripe_customer.cancel_subscription()
+        try:
+            stripe_customer.cancel_subscription()
+        except stripe.InvalidRequestError:
+            logging.user(self.user, "~FRFailed to cancel Stripe subscription")
 
         logging.user(self.user, "~FRCanceling Stripe subscription")
         

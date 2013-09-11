@@ -186,6 +186,7 @@ class UserAgentBanMiddleware:
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
         
         if 'profile' in request.path: return
+        if 'haproxy' in request.path: return
         
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
             data = {

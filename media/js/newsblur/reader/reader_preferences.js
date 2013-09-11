@@ -182,6 +182,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Window title'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-autoopenfolder' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-autoopenfolder-1', type: 'radio', name: 'autoopen_folder', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-autoopenfolder-1' }, [
+                                    'Show the dashboard when loading NewsBlur'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-autoopenfolder-2', type: 'radio', name: 'autoopen_folder', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-autoopenfolder-2' }, [
+                                    this.make_autoopen_folders()
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Default folder'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-animations' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -473,6 +492,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinboard', name: 'story_share_pinboard' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-pinboard' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Buffer' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-buffer', name: 'story_share_buffer' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-buffer' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Diigo' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-diigo', name: 'story_share_diigo' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-diigo' })
@@ -735,6 +758,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         ]);
     },
     
+    make_autoopen_folders: function() {
+        var autoopen_folder = NEWSBLUR.Preferences.autoopen_folder;
+        var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, {
+            name: 'default_folder',
+            toplevel: "All Site Stories"
+        });
+        return $folders;
+    },
+    
     resize_modal: function() {
         var $scroll = $('.NB-tab.NB-active', this.$modal);
         var $modal = this.$modal;
@@ -759,6 +791,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             });
         }
         
+        $('select[name=default_folder] option', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.default_folder) {
+                $(this).attr('selected', true);
+                return false;
+            }
+        });
         $('input[name=default_view]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.default_view) {
                 $(this).attr('checked', true);
@@ -785,6 +823,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=ssl]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.ssl) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=autoopen_folder]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.autoopen_folder) {
                 $(this).attr('checked', true);
                 return false;
             }

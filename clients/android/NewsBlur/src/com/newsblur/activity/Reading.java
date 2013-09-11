@@ -12,8 +12,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -34,8 +38,10 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
+import com.newsblur.util.ViewUtils;
+import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
+public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -45,29 +51,50 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
 
+    private static final int OVERLAY_RANGE_TOP_DP = 50;
+    private static final int OVERLAY_RANGE_BOT_DP = 60;
+
 	protected int passedPosition;
 	protected int currentState;
 
 	protected ViewPager pager;
+    protected Button overlayLeft, overlayRight;
+    protected TextView overlayCount;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
-
 	private Set<Story> storiesToMarkAsRead;
+
+    // subclasses may set this to a nonzero value to enable the unread count overlay
+    protected int unreadCount = 0;
+
+    // keep a local cache of stories we have viewed within this activity cycle.  We need
+    // this to track unread counts since it would be too costly to query and update the DB
+    // on every page change.
+    private Set<Story> storiesAlreadySeen;
+
+
+    private float overlayRangeTopPx;
+    private float overlayRangeBotPx;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceBundle);
+
 		setContentView(R.layout.activity_reading);
+        this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
+        this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
+        this.overlayCount = (TextView) findViewById(R.id.reading_overlay_count);
 
 		fragmentManager = getSupportFragmentManager();
 		
         storiesToMarkAsRead = new HashSet<Story>();
+        storiesAlreadySeen = new HashSet<Story>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -75,6 +102,15 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		contentResolver = getContentResolver();
 
         this.apiManager = new APIManager(this);
+
+        // this value is expensive to compute but doesn't change during a single runtime
+        this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
+        this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
+
+        // the unread count overlay defaults to neutral colour.  set it to positive if we are in focus mode
+        if (this.currentState == AppConstants.STATE_BEST) {
+            ViewUtils.setViewBackground(this.overlayCount, R.drawable.positive_count_rect);
+        }
 
 	}
 
@@ -93,6 +129,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
 		readingAdapter.setCurrentItem(passedPosition);
+        this.enableOverlays();
 	}
 
 	@Override
@@ -151,6 +188,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		}
 	}
 
+    // interface OnPageChangeListener
+
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
 	}
@@ -160,8 +199,62 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	}
 
 	@Override
-	public void onPageSelected(final int position) {
+	public void onPageSelected(int position) {
+        this.enableOverlays();
+
+		if (readingAdapter.getStory(position) != null) {
+			addStoryToMarkAsRead(readingAdapter.getStory(position));
+			checkStoryCount(position);
+		}
 	}
+
+    // interface ScrollChangeListener
+
+    @Override
+    public void scrollChanged(int hPos, int vPos, int currentWidth, int currentHeight) {
+        int scrollMax = currentHeight - findViewById(android.R.id.content).getMeasuredHeight();
+        int posFromBot = (scrollMax - vPos);
+
+        float newAlpha = 0.0f;
+        if ((vPos < this.overlayRangeTopPx) && (posFromBot < this.overlayRangeBotPx)) {
+            // if we have a super-tiny scroll window such that we never leave either top or bottom,
+            // just leave us at full alpha.
+            newAlpha = 1.0f;
+        } else if (vPos < this.overlayRangeTopPx) {
+            float delta = this.overlayRangeTopPx - ((float) vPos);
+            newAlpha = delta / this.overlayRangeTopPx;
+        } else if (posFromBot < this.overlayRangeBotPx) {
+            float delta = this.overlayRangeBotPx - ((float) posFromBot);
+            newAlpha = delta / this.overlayRangeBotPx;
+        }
+        
+        this.setOverlayAlpha(newAlpha);
+    }
+
+    private void setOverlayAlpha(float a) {
+        UIUtils.setViewAlpha(this.overlayLeft, a);
+        UIUtils.setViewAlpha(this.overlayRight, a);
+
+        if (this.unreadCount > 0) {
+            UIUtils.setViewAlpha(this.overlayCount, a);
+        } else {
+            UIUtils.setViewAlpha(this.overlayCount, 0.0f);
+        }
+    }
+
+    /**
+     * Check and correct the display status of the overlays.  Call this any time
+     * an event happens that might change out list position.
+     */
+    private void enableOverlays() {
+        int page = this.pager.getCurrentItem();
+        this.overlayLeft.setEnabled(page > 0);
+        this.overlayRight.setEnabled(page < (this.readingAdapter.getCount()-1));
+        this.overlayRight.setText((page < (this.readingAdapter.getCount()-1)) ? R.string.overlay_next : R.string.overlay_done);
+
+        this.overlayCount.setText(Integer.toString(this.unreadCount));
+        this.setOverlayAlpha(1.0f);
+    }
 
 	@Override
 	public void updateAfterSync() {
@@ -169,6 +262,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	@Override
@@ -176,6 +270,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+        this.enableOverlays();
 	}
 
 	public abstract void checkStoryCount(int position);
@@ -208,6 +303,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         if (this.storiesToMarkAsRead.size() >= AppConstants.MAX_MARK_READ_BATCH) {
             flushStoriesMarkedRead();
         }
+        if (this.storiesAlreadySeen.add(story)) {
+            // only decrement the cached story count if the story wasn't already read
+            this.unreadCount--;
+        }
+        this.enableOverlays();
     }
 
     private void flushStoriesMarkedRead() {
@@ -228,6 +328,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // operation, or it was read long before now.
         FeedUtils.markStoryUnread(story, Reading.this, this.apiManager);
 
+        this.unreadCount++;
+        this.storiesAlreadySeen.remove(story);
+
+        this.enableOverlays();
     }
 
 	@Override
@@ -246,7 +350,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
+    public void overlayRight(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()+1, true);
+    }
 
-
+    public void overlayLeft(View v) {
+        pager.setCurrentItem(pager.getCurrentItem()-1, true);
+    }
 
 }

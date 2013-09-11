@@ -17,6 +17,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
         "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
         "click .NB-feedbar-options"         : "open_options_popover",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
     },
@@ -42,10 +43,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     destroy: function() {
+        console.log(["destroy", this]);
         if (this.model) {
             this.model.unbind(null, this);
         }
         this.$el.remove();
+        delete this.views;
     },
     
     render: function() {
@@ -102,12 +105,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 <div class="NB-folder-icon"></div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon"></div>\
-                <span class="folder_title_text"><%= folder_title %></span>\
+                <span class="folder_title_text">\
+                    <span><%= folder_title %></span>\
+                    <div class="NB-feedbar-mark-feed-read"></div>\
+                </span>\
                 <% if (feedbar) { %>\
-                    <div class="NB-story-title-indicator">\
-                        <div class="NB-story-title-indicator-count"></div>\
-                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
-                    </div>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
@@ -116,7 +118,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-feedbar-mark-feed-read"></div>\
+                    <div class="NB-search-container"></div>\
+                    <div class="NB-story-title-indicator">\
+                        <div class="NB-story-title-indicator-count"></div>\
+                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                    </div>\
               <% } %>\
             </div>\
         <% } %>\
@@ -140,11 +146,17 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         if (this.options.feedbar) {
             this.show_collapsed_folder_count();
         }
+        if (this.options.feedbar && NEWSBLUR.Globals.is_staff) {
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            this.$(".NB-search-container").html(this.search_view.$el);
+        }
         return $folder;
     },
     
     update_title: function() {
-        this.$('.folder_title_text').eq(0).html(this.model.get('folder_title'));
+        this.$('.folder_title_text span').eq(0).html(this.model.get('folder_title'));
     },
     
     update_selected: function() {
@@ -348,8 +360,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: "river:" + this.options.folder_title
         });
+    },
+    
+    show_hidden_story_titles: function() {
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
-
-
     
 });

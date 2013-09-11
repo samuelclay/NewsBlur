@@ -18,7 +18,7 @@ from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher
 # from utils import feedparser
 from utils import feedparser_trunk as feedparser
-from utils.story_functions import pre_process_story
+from utils.story_functions import pre_process_story, strip_tags
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, utf8encode, cache_bust_url
 # from utils.feed_functions import mail_feed_error_to_admin
@@ -91,15 +91,10 @@ class FetchFeed:
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-        except (TypeError, ValueError), e:
-            logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
+        except (TypeError, ValueError, KeyError), e:
+            logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
                           (self.feed.title[:30], e))
-            feedparser.PARSE_MICROFORMATS = False
-            self.fpf = feedparser.parse(address,
-                                        agent=USER_AGENT,
-                                        etag=etag,
-                                        modified=modified)
-            feedparser.PARSE_MICROFORMATS = True
+            self.fpf = feedparser.parse(address, agent=USER_AGENT)
             
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
@@ -126,7 +121,7 @@ class ProcessFeed:
         if self.feed_id != self.feed.pk:
             logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
             self.feed_id = self.feed.pk
-        
+    
     def process(self):
         """ Downloads and parses a feed.
         """
@@ -217,7 +212,7 @@ class ProcessFeed:
         self.fpf.entries = self.fpf.entries[:100]
         
         if self.fpf.feed.get('title'):
-            self.feed.feed_title = self.fpf.feed.get('title')
+            self.feed.feed_title = strip_tags(self.fpf.feed.get('title'))
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             self.feed.data.feed_tagline = utf8encode(tagline)
@@ -360,6 +355,11 @@ class Dispatcher:
                     rand = random.random()
                     if random_weight < 100 and rand < quick:
                         skip = True
+                # elif feed.feed_address.startswith("http://news.google.com/news"):
+                #     skip = True
+                #     weight = "-"
+                #     quick = "-"
+                #     rand = "-"
                 if skip:
                     logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)...' % (
                         feed.title[:30],
@@ -378,7 +378,7 @@ class Dispatcher:
                     feed = pfeed.feed
                     feed_process_duration = time.time() - start_duration
                     
-                    if ret_entries['new'] or self.options['force']:
+                    if (ret_entries and ret_entries['new']) or self.options['force']:
                         start = time.time()
                         if not feed.known_good or not feed.fetched_once:
                             feed.known_good = True
@@ -396,8 +396,6 @@ class Dispatcher:
                         if self.options['verbose']:
                             logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.title[:30], time.time() - start))
-            except KeyboardInterrupt:
-                break
             except urllib2.HTTPError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed throws HTTP error: ~SB%s' % (unicode(feed_id)[:30], e.fp.read()))
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
@@ -474,7 +472,10 @@ class Dispatcher:
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
-                icon_importer = IconImporter(feed, page_data=page_data, force=self.options['force'])
+                force = self.options['force']
+                if random.random() > .99:
+                    force = True
+                icon_importer = IconImporter(feed, page_data=page_data, force=force)
                 try:
                     icon_importer.save()
                     icon_duration = time.time() - start_duration

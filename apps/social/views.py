@@ -105,7 +105,7 @@ def load_social_stories(request, user_id, username=None):
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
     unread_story_hashes = []
-    if read_filter == 'all' and socialsub:
+    if (read_filter == 'all' or query) and socialsub:
         unread_story_hashes = socialsub.get_stories(read_filter='unread', limit=500)
     story_hashes = [story['story_hash'] for story in stories]
 
@@ -128,10 +128,10 @@ def load_social_stories(request, user_id, username=None):
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
         
         story['read_status'] = 1
-        if read_filter == 'unread' and socialsub:
-            story['read_status'] = 0
-        elif read_filter == 'all' and socialsub:
+        if (read_filter == 'all' or query) and socialsub:
             story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
+        elif read_filter == 'unread' and socialsub:
+            story['read_status'] = 0
 
         if story['story_hash'] in starred_stories:
             story['starred'] = True
@@ -435,6 +435,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                       story_guid_hash=story_id).limit(1)
         if active_story_db:
             active_story_db = active_story_db[0]
+            if user_social_profile.bb_permalink_direct:
+                return HttpResponseRedirect(active_story_db.story_permalink)
             active_story = Feed.format_story(active_story_db)
             if active_story_db.image_count:
                 active_story['image_url'] = active_story_db.image_sizes[0]['src']
@@ -928,9 +930,10 @@ def save_blurblog_settings(request):
     data = request.POST
 
     profile = MSocialProfile.get_user(request.user.pk)
-    profile.custom_css = data.get('custom_css', None)
-    profile.custom_bgcolor = data.get('custom_bgcolor', None)
-    profile.blurblog_title = data.get('blurblog_title', None)
+    profile.custom_css = strip_tags(data.get('custom_css', None))
+    profile.custom_bgcolor = strip_tags(data.get('custom_bgcolor', None))
+    profile.blurblog_title = strip_tags(data.get('blurblog_title', None))
+    profile.bb_permalink_direct = is_true(data.get('bb_permalink_direct', False))
     profile.save()
 
     logging.user(request, "~BB~FRSaving blurblog settings")
@@ -1280,6 +1283,13 @@ def load_social_statistics(request, social_user_id, username=None):
     
     # Classifier counts
     stats['classifier_counts'] = social_profile.feed_classifier_counts
+    
+    # Feeds
+    feed_ids = [c['feed_id'] for c in stats['classifier_counts'].get('feed', [])]
+    feeds = Feed.objects.filter(pk__in=feed_ids).only('feed_title')
+    titles = dict([(f.pk, f.feed_title) for f in feeds])
+    for stat in stats['classifier_counts'].get('feed', []):
+        stat['feed_title'] = titles.get(stat['feed_id'], "")
     
     logging.user(request, "~FBStatistics social: ~SB%s ~FG(%s subs)" % (
                  social_profile.user_id, social_profile.follower_count))

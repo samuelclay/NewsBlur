@@ -68,7 +68,6 @@
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(NSString *)key;
-- (NSDictionary *)getUser:(int)user_id;
 - (void)refreshHeader;
 
 - (void)fetchTextView;

@@ -2,9 +2,9 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1552</int>
-		<string key="IBDocument.SystemVersion">12D78</string>
+		<string key="IBDocument.SystemVersion">12E55</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.AppKitVersion">1187.39</string>
 		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -4602,11 +4602,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doOpenActionSheet</string>
+						<string key="label">doOpenActionSheet:</string>
 						<reference key="source" ref="65736986"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
-					<int key="connectionID">51</int>
+					<int key="connectionID">61</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -4739,7 +4739,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">60</int>
+			<int key="maxID">61</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5273,11 +5273,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>loginAsAlert</string>
 							<string>menuTableView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
+							<string>UIAlertView</string>
 							<string>UITableView</string>
 						</object>
 					</object>
@@ -5286,6 +5288,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>loginAsAlert</string>
 							<string>menuTableView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -5293,6 +5296,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">loginAsAlert</string>
+								<string key="candidateClassName">UIAlertView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">menuTableView</string>
@@ -5825,6 +5832,25 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">IASKAppSettingsViewController</string>
+					<string key="superclassName">UITableViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">delegate</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">delegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">delegate</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/IASKAppSettingsViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">InteractionsModule</string>
 					<string key="superclassName">UIView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -6232,6 +6258,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>preferencesViewController</string>
 							<string>shareViewController</string>
 							<string>storyDetailViewController</string>
 							<string>storyPageControl</string>
@@ -6260,6 +6287,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
+							<string>IASKAppSettingsViewController</string>
 							<string>ShareViewController</string>
 							<string>StoryDetailViewController</string>
 							<string>StoryPageControl</string>
@@ -6291,6 +6319,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>preferencesViewController</string>
 							<string>shareViewController</string>
 							<string>storyDetailViewController</string>
 							<string>storyPageControl</string>
@@ -6375,6 +6404,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">originalStoryViewController</string>
 								<string key="candidateClassName">OriginalStoryViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">preferencesViewController</string>
+								<string key="candidateClassName">IASKAppSettingsViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">shareViewController</string>
@@ -6592,7 +6625,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doCloseOriginalStoryViewController</string>
-							<string>doOpenActionSheet</string>
+							<string>doOpenActionSheet:</string>
 							<string>loadAddress:</string>
 							<string>webViewGoBack:</string>
 							<string>webViewGoForward:</string>
@@ -6613,7 +6646,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doCloseOriginalStoryViewController</string>
-							<string>doOpenActionSheet</string>
+							<string>doOpenActionSheet:</string>
 							<string>loadAddress:</string>
 							<string>webViewGoBack:</string>
 							<string>webViewGoForward:</string>
@@ -6626,7 +6659,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">doOpenActionSheet</string>
+								<string key="name">doOpenActionSheet:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -6742,7 +6775,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">ShareViewController</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -6938,12 +6971,16 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>openSendToDialog:</string>
 							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
+							<string>toggleView:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -6957,9 +6994,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>openSendToDialog:</string>
 							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
+							<string>toggleView:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -6969,6 +7008,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doPreviousStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">openSendToDialog:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -6983,6 +7026,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="name">toggleFontSize:</string>
 								<string key="candidateClassName">id</string>
 							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleView:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
@@ -6994,6 +7041,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>buttonSend</string>
+							<string>buttonText</string>
 							<string>circularProgressView</string>
 							<string>fontSettingsButton</string>
 							<string>loadingIndicator</string>
@@ -7015,6 +7064,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIToolbar</string>
 							<string>UIBarButtonItem</string>
+							<string>UIButton</string>
+							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>THCircularProgressView</string>
@@ -7043,6 +7094,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>buttonSend</string>
+							<string>buttonText</string>
 							<string>circularProgressView</string>
 							<string>fontSettingsButton</string>
 							<string>loadingIndicator</string>
@@ -7079,6 +7132,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">buttonPrevious</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">buttonSend</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">buttonText</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

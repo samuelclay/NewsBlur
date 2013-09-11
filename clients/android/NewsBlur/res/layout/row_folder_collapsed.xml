@@ -80,7 +80,7 @@
         android:textColor="@color/folder_text"
         android:paddingBottom="8dp"
     	android:paddingTop="8dp"
-        android:textSize="13dp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:shadowColor="@color/white"
         android:shadowDy="1"

@@ -21,6 +21,7 @@
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
+#import "UIActivitiesControl.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
@@ -253,10 +254,11 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedDetailMenuViewController];
     
+    [appDelegate.feedDetailMenuViewController buildMenuOptions];
     popoverController.delegate = self;
     
-    
-    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*4 : 38*6)];
+    int menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -275,7 +277,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7)];
+    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender
@@ -286,29 +288,45 @@
 - (void)showTrainingPopover:(id)sender {
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
-//        popoverController = nil;
-//        return;
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .001 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-        popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.trainerViewController];
-        popoverController.delegate = self;
-        
-        [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
-        if ([sender class] == [UIBarButtonItem class]) {
-           [popoverController presentPopoverFromBarButtonItem:sender
-                                     permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                     animated:NO];
-        } else {
-           CGRect frame = [sender CGRectValue];
-           [popoverController presentPopoverFromRect:frame
-                                              inView:self.storyPageControl.view
-                            permittedArrowDirections:UIPopoverArrowDirectionAny
-                                            animated:YES];
-        }
-                   });
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.trainerViewController];
+    popoverController.delegate = self;
+
+    [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
+    if ([sender class] == [UIBarButtonItem class]) {
+       [popoverController presentPopoverFromBarButtonItem:sender
+                                 permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                 animated:NO];
+    } else {
+       CGRect frame = [sender CGRectValue];
+       [popoverController presentPopoverFromRect:frame
+                                          inView:self.storyPageControl.view
+                        permittedArrowDirections:UIPopoverArrowDirectionAny
+                                        animated:YES];
+    }
+}
+
+- (void)showSendToPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+    }
+
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:[UIActivitiesControl activityViewControllerForView:self]];
+    popoverController.delegate = self;
+
+    if ([sender class] == [UIBarButtonItem class]) {
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                  animated:NO];
+    } else {
+        [popoverController presentPopoverFromRect:[sender frame]
+                                           inView:[sender superview]
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
+    }
 }
 
 - (void)hidePopover {
@@ -533,7 +551,7 @@
     
     [self hidePopover];
     
-     if (self.isSharingStory) {
+    if (self.isSharingStory) {
         [self transitionFromShareView];
     }
     
@@ -709,6 +727,13 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
+    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"] && !self.isSharingStory) {
+        return;
+    }
+    if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && !self.isHidingStory) {
+        return;
+    }
+    
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];

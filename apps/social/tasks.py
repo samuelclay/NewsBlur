@@ -67,9 +67,7 @@ class SharePopularStories(Task):
 
     def run(self, **kwargs):
         logging.debug(" ---> Sharing popular stories...")
-        shared = MSharedStory.share_popular_stories(interactive=False)
-        if not shared:
-            shared = MSharedStory.share_popular_stories(interactive=False, days=2)
+        MSharedStory.share_popular_stories(interactive=False)
             
 
 class UpdateRecalcForSubscription(Task):

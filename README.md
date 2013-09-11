@@ -240,6 +240,77 @@ reader, and feed importer. To run the test suite:
     ./manage.py test --settings=utils.test-settings
 
 
+## In Case of Downtime
+
+You got the downtime message either through email or SMS. This is the order of operations for determining what's wrong.
+
+ 0. Ensure you have `secrets-newsblur/configs/hosts` installed in your `/etc/hosts` so server hostnames 
+    work.
+
+ 1. Check www.newsblur.com to confirm it's down.
+    
+    If you don't get a 502 page, then NewsBlur isn't even reachable and you just need to contact the
+    hosting provider and yell at them.
+    
+ 2. Check [Sentry](https://app.getsentry.com/newsblur/app/) and see if the answer is at the top of the 
+    list.
+ 
+    This will show if a database (redis, mongo, postgres) can't be found.
+
+ 3. Check the various databases:
+
+     a. If Redis server (db_redis, db_redis_story, db_redis_pubsub) can't connect, redis is probably down.
+        
+        SSH into the offending server (or just check both the `db_redis` and `db_redis_story` servers) and
+        check if `redis` is running. You can often `tail -f -n 100 /var/log/redis.log` to find out if
+        background saving was being SIG(TERM|INT)'ed. When redis goes down, it's always because it's
+        consuming too much memory. That shouldn't happen, so check the [munin
+        graphs](http://db_redis/munin/).
+        
+        Boot it with `sudo /etc/init.d/redis start`.
+     
+     b. If mongo (db_mongo) can't connect, mongo is probably down.
+        
+        This is rare and usually signifies hardware failure. SSH into `db_mongo` and check logs with `tail
+        -f -n 100 /var/log/mongodb/mongodb.log`. Start mongo with `sudo /etc/init.d/mongodb start` then
+        promote the next largest mongodb server. You want to then promote one of the secondaries to
+        primary, kill the offending primary machine, and rebuild it (preferably at a higher size). I
+        recommend waiting a day to rebuild it so that you get a different machine. Don't forget to lodge a
+        support ticket with the hosting provider so they know to check the machine.
+        
+        If it's the db_mongo_analytics machine, there is no backup nor secondaries of the data (because
+        it's ephemeral and used for, you guessed it, analytics). You can easily provision a new mongodb
+        server and point to that machine.
+        
+     c. If postgresql (db_pgsql) can't connect, postgres is probably down.
+        
+        This is the rarest of the rare and has in fact never happened. Machine failure. If you can salvage
+        the db data, move it to another machine. Worst case you have nightly backups in S3. The fabfile.py
+        has commands to assist in restoring from backup (the backup file just needs to be local).
+    
+ 4. Point to a new/different machine
+    
+    a. Confirm the IP address of the new machine with `fab list_do`.
+    
+    b. Change `secrets-newsbur/config/hosts` to reflect the new machine.
+    
+    c. Copy the new `hosts` file to all machines with:
+    
+       ```
+       fab all setup_hosts
+       fab ec2task setup_hosts
+       ```
+    
+    d. Changes should be instant, but you can also bounce every machine with:
+    
+       ```
+       fab web deploy:fast=True # fast=True just kill -9's processes.
+       fab task celery
+       fab ec2task celery
+       ```
+      
+    e. Monitor tlnb.py and tlnbt.py for lots of reading and feed fetching.    
+
 ## Author
 
  * Created by [Samuel Clay](http://www.samuelclay.com).

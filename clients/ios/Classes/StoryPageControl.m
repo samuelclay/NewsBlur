@@ -213,7 +213,7 @@
     }
     
     previousPage.view.hidden = YES;
-    
+    self.traverseView.alpha = 1;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
 }
@@ -629,18 +629,7 @@
 }
 
 - (void)requestFailed:(id)request {
-    NSString *error;
-    if ([request class] == [ASIHTTPRequest class] || [request class] == [ASIFormDataRequest class]) {
-        NSLog(@"Error in story detail: %@", [request error]);
-        if ([request error]) {
-            error = [NSString stringWithFormat:@"%@", [request error]];
-        } else {
-            error = @"The server barfed!";
-        }
-    } else {
-        error = request;
-    }
-    [self informError:error];
+    [self informError:@"The server barfed!"];
 }
 
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
@@ -723,7 +712,8 @@
 
 - (void)markStoryAsRead {
     //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
+        [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
         
         [appDelegate markActiveStoryRead];
         
@@ -808,9 +798,11 @@
 
 - (IBAction)openSendToDialog:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [UIActivitiesControl showActivitiesInView:appDelegate.masterContainerViewController];
+        [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
-        [UIActivitiesControl showActivitiesInView:self];
+        [self presentViewController:[UIActivitiesControl activityViewControllerForView:self]
+                           animated:YES
+                         completion:nil];
     }
 }
 
@@ -839,6 +831,8 @@
     }
     
     [appDelegate markActiveStorySaved:YES];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
@@ -868,10 +862,9 @@
         return [self requestFailed:request];
     }
     
-    //    [appDelegate markActiveStoryUnread];
-    //    [appDelegate.feedDetailViewController redrawUnreadStory];
-    
     [appDelegate markActiveStorySaved:NO];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 
@@ -917,6 +910,8 @@
 }
 
 - (IBAction)showOriginalSubview:(id)sender {
+    [appDelegate.masterContainerViewController hidePopover];
+
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];

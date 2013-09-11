@@ -5,7 +5,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = false;
+    public static final boolean VERBOSE_LOG = true;
 
 	public static final int STATE_ALL = 0;
 	public static final int STATE_SOME = 1;
@@ -27,7 +27,8 @@ public class AppConstants {
     public static final String LAST_APP_VERSION = "LAST_APP_VERSION";
 
     // the max number of mark-as-read ops to batch up before flushing to the server
-    public static final int MAX_MARK_READ_BATCH = 5;
+    // set to 1 to effectively disable batching
+    public static final int MAX_MARK_READ_BATCH = 1;
 
     // a pref for the time we completed the last full sync of the feed/fodler list
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";

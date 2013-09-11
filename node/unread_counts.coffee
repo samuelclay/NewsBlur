@@ -2,7 +2,7 @@ fs     = require 'fs'
 redis  = require 'redis'
 log    = require './log.js'
 
-REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db13'
+REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db_redis_pubsub'
 SECURE = !!process.env.NODE_SSL
 # client = redis.createClient 6379, REDIS_SERVER
 
@@ -39,7 +39,7 @@ io.configure 'development', ->
 #     redisClient : rclient
 
 io.sockets.on 'connection', (socket) ->
-    ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address
+    ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address.address
     
     socket.on 'subscribe:feeds', (@feeds, @username) ->
         log.info @username, "Connecting (#{feeds.length} feeds, #{ip})," +
@@ -49,10 +49,16 @@ io.sockets.on 'connection', (socket) ->
         if not @username
             return
         
+        socket.on "error", (err) ->
+            console.log " ---> Error (socket): #{err}"
         socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
-        socket.subscribe.subscribe @feeds
-        socket.subscribe.subscribe @username
+        socket.subscribe.on "error", (err) ->
+            console.log " ---> Error: #{err}"
+            socket.subscribe.end()
+        socket.subscribe.on "connect", =>
+            socket.subscribe.subscribe @feeds
+            socket.subscribe.subscribe @username
 
         socket.subscribe.on 'message', (channel, message) =>
             log.info @username, "Update on #{channel}: #{message}"
@@ -66,3 +72,6 @@ io.sockets.on 'connection', (socket) ->
         log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                     " there are now #{io.sockets.clients().length-1} users. " +
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+
+io.sockets.on 'error', (err) ->
+    console.log " ---> Error (sockets): #{err}"

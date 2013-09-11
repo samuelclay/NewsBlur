@@ -10,7 +10,7 @@
 
 @interface NBNotifier : UIView {
     
-    UIProgressView *progressBar;
+    UIView *progressBar;
     
     @protected
     UILabel *_txtLabel;
@@ -31,7 +31,7 @@ typedef enum {
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) BOOL showing;
-@property (nonatomic, retain) UIProgressView *progressBar;
+@property (nonatomic, retain) UIView *progressBar;
 
 - (id)initWithTitle:(NSString *)title;
 - (id)initWithTitle:(NSString *)title inView:(UIView *)view;

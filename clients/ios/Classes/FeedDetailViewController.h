@@ -30,7 +30,8 @@
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
     BOOL isOffline;
-               
+    BOOL isShowingOffline;
+     
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
     WEPopoverController *popoverController;
@@ -50,13 +51,13 @@
 @property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
-@property (nonatomic, retain) NSMutableDictionary *unreadStoryHashes;
 
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOffline;
+@property (nonatomic, readwrite) BOOL isShowingOffline;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;
@@ -90,5 +91,6 @@
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 @end

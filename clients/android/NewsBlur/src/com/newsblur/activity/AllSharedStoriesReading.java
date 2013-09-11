@@ -17,7 +17,6 @@ import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesReading extends Reading {
 
-	private Cursor stories;
 	private int currentPage;
 	private boolean requestingPage = false;
 	private boolean stopLoading = false;
@@ -36,13 +35,6 @@ public class AllSharedStoriesReading extends Reading {
 		setupPager();
 
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-	}
-
-	@Override
-	public void onPageSelected(int position) {
-		super.onPageSelected(position);
-		addStoryToMarkAsRead(readingAdapter.getStory(position));
-		checkStoryCount(position);
 	}
 
 	@Override
@@ -80,11 +72,8 @@ public class AllSharedStoriesReading extends Reading {
 
 	@Override
 	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-		stories.requery();
-		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
 		requestingPage = false;
+        super.updateAfterSync();
 	}
 
 	@Override

@@ -45,7 +45,13 @@ public class ImageLoader {
 		Bitmap bitmap = memoryCache.get(url);
 		if (bitmap == null) {
 			File f = fileCache.getFile(url);
-			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+            try {
+			    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+            } catch (Exception e) {
+                Log.e(this.getClass().getName(), "error decoding image, using default.", e);
+                // this can rarely happen if the device is low on memory and is not recoverable.
+                // just leave bitmap null and the default placeholder image will be used
+            }
 		}
 		if (bitmap != null) {
 			if (doRound) { 
@@ -67,7 +73,9 @@ public class ImageLoader {
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, roundRadius);
+            if (roundRadius > 0) {
+			    bitmap = UIUtils.roundCorners(bitmap, roundRadius);
+            }
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);

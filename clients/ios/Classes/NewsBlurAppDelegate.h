@@ -141,6 +141,7 @@
     
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
+    NSOperationQueue *offlineCleaningQueue;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -225,6 +226,7 @@
 @property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
+@property (readwrite) NSMutableDictionary *unreadStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
 
 @property (nonatomic) NSDictionary *dictFolders;
@@ -243,6 +245,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
+@property (nonatomic) NSOperationQueue *offlineCleaningQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
@@ -255,6 +258,7 @@
 - (void)setupReachability;
 
 // social
+- (NSDictionary *)getUser:(int)userId;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
@@ -342,6 +346,7 @@
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
 - (int)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
@@ -350,10 +355,12 @@
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
 - (void)startOfflineFetchImages;
+- (BOOL)isReachabileForOffline;
+- (void)storeUserProfiles:(NSArray *)userProfiles;
+- (void)queueReadStories:(NSDictionary *)feedsStories;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
-- (void)flushOldCachedImages;
 - (void)deleteAllCachedImages;
 
 @end

@@ -83,16 +83,17 @@ public class ViewUtils {
 		View v = inflater.inflate(R.layout.tag_view, null);
 
 		TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+        
 		tagText.setText(tag);
 
 		if (classifier != null && classifier.tags.containsKey(tag)) {
 			switch (classifier.tags.get(tag)) {
 			case Classifier.LIKE:
-                tagText.setBackgroundResource(R.drawable.tag_background_positive);
+                setViewBackground(tagText, R.drawable.tag_background_positive);
                 tagText.setTextColor(tag_green_text);
                 break;
 			case Classifier.DISLIKE:
-                tagText.setBackgroundResource(R.drawable.tag_background_negative);
+                setViewBackground(tagText, R.drawable.tag_background_negative);
                 tagText.setTextColor(tag_red_text);
                 break;
 			}
@@ -108,5 +109,22 @@ public class ViewUtils {
 
 		return v;
 	}
+
+    /**
+     * Sets the background resource of a view, working around a platform bug that causes the declared
+     * padding to get reset.
+     */
+    public static void setViewBackground(View v, int resId) {
+        // due to a framework bug, the below modification of background resource also resets the declared
+        // padding on the view.  save a copy of said padding so it can be re-applied after the change.
+        int oldPadL = v.getPaddingLeft();
+        int oldPadT = v.getPaddingTop();
+        int oldPadR = v.getPaddingRight();
+        int oldPadB = v.getPaddingBottom();
+
+        v.setBackgroundResource(resId);
+
+        v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
+    }
 
 }
