@@ -49,6 +49,7 @@
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
+@property (readwrite) UIDeviceOrientation rotatingToOrientation;
 
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
@@ -168,7 +169,12 @@
 	return YES;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    self.rotatingToOrientation = toInterfaceOrientation;
+}
+
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    self.rotatingToOrientation = UIDeviceOrientationUnknown;
     if (!self.feedDetailIsVisible) {
         [self adjustDashboardScreen];
     } else {
@@ -733,6 +739,10 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
+    if (self.rotatingToOrientation != UIDeviceOrientationUnknown) {
+        return; // don't animate changes in the old orientation
+    }
+
     if (notification.name == UIKeyboardWillShowNotification) {
         self.keyboardIsShown = YES;
     } else if (notification.name == UIKeyboardWillHideNotification) {
