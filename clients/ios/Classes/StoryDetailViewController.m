@@ -101,10 +101,6 @@
     appDelegate.shareViewController.commentField.text = nil;
     self.webView.hidden = NO;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromShareView];
-    }
-    
     [appDelegate hideShareView:YES];
     [appDelegate resetShareComments];
 }
