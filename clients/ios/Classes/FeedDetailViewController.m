@@ -737,7 +737,7 @@
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
-    NSInteger existingStoriesCount = appDelegate.storyLocationsCount;
+
     NSInteger newStoriesCount = [newStories count];
     
     if (newStoriesCount > 0) {
@@ -746,16 +746,12 @@
         } else {
             [appDelegate addStories:newStories];
         }
-    }
-        
-    [self.storyTitlesTable reloadData];
-    if (newStoriesCount == 0 ||
-        (self.feedPage > 25 &&
-         existingStoriesCount >= [appDelegate unreadCount])) {
+    } else {
         self.pageFinished = YES;
-        [self.storyTitlesTable reloadData];
     }
-        
+    
+    [self.storyTitlesTable reloadData];
+    
     self.pageFetching = NO;
         
     if (self.finishedAnimatingIn) {

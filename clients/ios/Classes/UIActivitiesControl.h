@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class UIActivityViewController;
+
 @interface UIActivitiesControl : NSObject
 
 @property (nonatomic, retain) UIPopoverController *popover;
 
-+ (void)showActivitiesInView:(UIViewController *)vc;
-+ (void)showActivitiesInView:(UIViewController *)vc withUrl:(NSURL *)url;
++ (UIActivityViewController *)activityViewControllerForView:(UIViewController *)vc;
++ (UIActivityViewController *)activityViewControllerForView:(UIViewController *)vc withUrl:(NSURL *)url;
 
 @end
