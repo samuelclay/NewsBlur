@@ -66,6 +66,7 @@
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     self.activityLabel.frame = activityLabelRect;
+    self.activityLabel.numberOfLines = 0;
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 
     NSString *category = [activity objectForKey:@"category"];
@@ -140,33 +141,36 @@
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:14]} range:NSMakeRange(0, [txtWithTime length])];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
-        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
-        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
     }
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
-        [attrStr setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:14]} range:[txtWithTime rangeOfString:username]];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
+        [attrStr addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13]} range:[txtWithTime rangeOfString:username]];
     }
     if (withUserUsername.length) {
-        [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:withUserUsername]];
-        [attrStr setAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:14]} range:[txtWithTime rangeOfString:withUserUsername]];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:withUserUsername]];
+        [attrStr addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13]} range:[txtWithTime rangeOfString:withUserUsername]];
     }
 
-    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
-    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
-    [attrStr setAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
-    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:10]} range:[txtWithTime rangeOfString:time]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
     NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
     style.lineBreakMode = NSLineBreakByWordWrapping;
-    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
     
     self.activityLabel.attributedText = attrStr;
     
-    [self.activityLabel sizeToFit];
+    CGRect rect = [attrStr boundingRectWithSize:CGSizeMake(self.activityLabel.frame.size.width, 0.0f)
+                                        options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                                        context:nil];
+    self.activityLabel.frame = rect;
     
     int height = self.activityLabel.frame.size.height;
     

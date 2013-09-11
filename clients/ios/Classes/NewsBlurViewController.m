@@ -31,6 +31,7 @@
 #import "FMDatabaseAdditions.h"
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
+#import "UIImageView+AFNetworking.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -550,18 +551,23 @@ static const CGFloat kFolderTitleHeight = 28;
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
     NSURL * imageURL = [NSURL URLWithString:url];
-    NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
-    UIImage * userAvatarImage = [UIImage imageWithData:imageData];
-    userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
     userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-    [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
     UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
                                           initWithCustomView:userAvatarButton];
     
+    
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
+    [avatarRequest setHTTPShouldHandleCookies:NO];
+    [avatarRequest setHTTPShouldUsePipelining:YES];
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
+    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        image = [Utilities roundCorneredImage:image radius:3];
+        [userAvatarButton setImage:image forState:UIControlStateNormal];
+    } failure:nil];
     self.navigationItem.leftBarButtonItem = userInfoBarButton;
     [self setUserAvatarLayout:orientation];
     
