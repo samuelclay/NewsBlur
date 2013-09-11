@@ -29,7 +29,7 @@
         [self.contentView addSubview:interaction];
         
         topMargin = 10;
-        bottomMargin = 10;
+        bottomMargin = 0;
         leftMargin = 10;
         rightMargin = 10;
         avatarSize = 32;
@@ -48,6 +48,7 @@
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
     // position label to bounds
+    NSLog(@"Frame of cell: %@ / %@", NSStringFromCGRect(contentRect), NSStringFromCGRect(self.interactionLabel.frame));
     CGRect labelRect = contentRect;
     labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
     labelRect.origin.y = labelRect.origin.y + topMargin - 1;
@@ -60,6 +61,7 @@
         self.interactionLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);
     }
     self.interactionLabel.backgroundColor = [UIColor clearColor];
+    [self.interactionLabel sizeToFit];
 }
 
 @end

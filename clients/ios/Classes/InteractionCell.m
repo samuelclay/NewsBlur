@@ -41,8 +41,8 @@
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         self.selectedBackgroundView = myBackView;
         
-        topMargin = 0;
-        bottomMargin = 0;
+        topMargin = 15;
+        bottomMargin = 15;
         leftMargin = 20;
         rightMargin = 20;
         avatarSize = 48;
@@ -64,6 +64,7 @@
     labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
     labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
     self.interactionLabel.frame = labelRect;
+    [self.interactionLabel sizeToFit];
 }
 
 
@@ -72,7 +73,7 @@
     CGRect interactionLabelRect = self.interactionLabel.bounds;
     interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     interactionLabelRect.size.height = 300;
-    NSLog(@"Interaction frame: %@", NSStringFromCGRect(interactionLabelRect));
+
     self.interactionLabel.frame = interactionLabelRect;
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     self.interactionLabel.numberOfLines = 0;
@@ -97,23 +98,29 @@
     if ([category isEqualToString:@"follow"]) {        
         txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n%@", username, title, comment];          
+        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n \n%@", username, title, comment];          
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n%@", username, title, comment];  
+        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n \n%@", username, title, comment];  
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n%@", username, title, comment];
+            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n%@", username, title, comment]; 
+        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n \n%@", username, title, comment]; 
     }
     
-    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
+    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
+    NSMutableParagraphStyle* style = [NSMutableParagraphStyle new];
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    style.alignment = NSTextAlignmentLeft;
+    style.lineSpacing = 1.0f;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
         [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
@@ -131,18 +138,28 @@
 
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
     
-    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    style.alignment = NSTextAlignmentLeft;
-    style.lineHeightMultiple = 1.1f;
-    [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
-
-    self.interactionLabel.attributedText = attrStr;
+    NSRange commentRange = [txtWithTime rangeOfString:comment];
+    if (commentRange.location != NSNotFound) {
+        commentRange.location -= 2;
+        commentRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:4.0f]
+                        range:commentRange];
+    }
     
-    CGRect rect = [attrStr boundingRectWithSize:CGSizeMake(self.interactionLabel.frame.size.width, 0.0f)
-                                        options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                                        context:nil];
-    self.interactionLabel.frame = rect;
+    NSRange dateRange = [txtWithTime rangeOfString:time];
+    if (dateRange.location != NSNotFound) {
+        dateRange.location -= 2;
+        dateRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:4.0f]
+                        range:dateRange];
+    }
+    
+    self.interactionLabel.attributedText = attrStr;
+    NSLog(@"Frame: %@", NSStringFromCGRect(self.interactionLabel.frame));
+    [self.interactionLabel sizeToFit];
+    NSLog(@"Frame after: %@", NSStringFromCGRect(self.interactionLabel.frame));
     
     int height = self.interactionLabel.frame.size.height;
     

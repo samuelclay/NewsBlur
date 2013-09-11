@@ -24,7 +24,8 @@
 @synthesize pageFinished;
 @synthesize activitiesPage;
 
-#define MINIMUM_ACTIVITY_HEIGHT 48 + 30
+#define MINIMUM_ACTIVITY_HEIGHT_IPAD 78
+#define MINIMUM_ACTIVITY_HEIGHT_IPHONE 48
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -173,7 +174,11 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     int activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row >= activitiesCount) {
-        return MINIMUM_ACTIVITY_HEIGHT;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            return MINIMUM_ACTIVITY_HEIGHT_IPAD;
+        } else {
+            return MINIMUM_ACTIVITY_HEIGHT_IPHONE;
+        }
     }
     
     id activityCell;
@@ -310,7 +315,12 @@
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
-        int height = MINIMUM_ACTIVITY_HEIGHT;
+        int height;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            height = MINIMUM_ACTIVITY_HEIGHT_IPAD;
+        } else {
+            height = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
+        }
         
         fleuron.frame = CGRectMake(0, 0, self.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;

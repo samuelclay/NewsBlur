@@ -59,10 +59,11 @@
     labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
     labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
     self.activityLabel.frame = labelRect;
+    [self.activityLabel sizeToFit];
 }
 
 - (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
-    // must set the height again for dynamic height in heightForRowAtIndexPath in 
+    // must set the height again for dynamic height in heightForRowAtIndexPath in
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     self.activityLabel.frame = activityLabelRect;
@@ -119,15 +120,15 @@
         txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ replied to %@: \n%@", username, withUserUsername, comment];  
+        txt = [NSString stringWithFormat:@"%@ replied to %@: \n \n%@", username, withUserUsername, comment];  
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n%@", username, withUserUsername, title, comment];
+        txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n \n%@", username, withUserUsername, title, comment];
     } else if ([category isEqualToString:@"sharedstory"]) {
         if ([content class] == [NSNull class] || [content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ shared %@.", username, title]; 
         } else {
-            txt = [NSString stringWithFormat:@"%@ shared %@:\n%@", username, title, comment];      
+            txt = [NSString stringWithFormat:@"%@ shared %@:\n \n%@", username, title, comment];
         }
         
     } else if ([category isEqualToString:@"star"]) {
@@ -138,7 +139,7 @@
         txt = [NSString stringWithFormat:@"You signed up for NewsBlur."];
     }
 
-    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
+    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
     [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
@@ -165,13 +166,27 @@
     style.lineBreakMode = NSLineBreakByWordWrapping;
     [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
     
+    NSRange commentRange = [txtWithTime rangeOfString:comment];
+    if (commentRange.location != NSNotFound) {
+        commentRange.location -= 2;
+        commentRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:4.0f]
+                        range:commentRange];
+    }
+    
+    NSRange dateRange = [txtWithTime rangeOfString:time];
+    if (dateRange.location != NSNotFound) {
+        dateRange.location -= 2;
+        dateRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:4.0f]
+                        range:dateRange];
+    }
+    
     self.activityLabel.attributedText = attrStr;
-    
-    CGRect rect = [attrStr boundingRectWithSize:CGSizeMake(self.activityLabel.frame.size.width, 0.0f)
-                                        options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                                        context:nil];
-    self.activityLabel.frame = rect;
-    
+    [self.activityLabel sizeToFit];
+        
     int height = self.activityLabel.frame.size.height;
     
     return MAX(height, self.faviconView.frame.size.height);

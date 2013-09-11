@@ -60,6 +60,7 @@
         self.activityLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);
     }
     self.activityLabel.backgroundColor = [UIColor clearColor];
+    [self.activityLabel sizeToFit];
 }
 
 @end
