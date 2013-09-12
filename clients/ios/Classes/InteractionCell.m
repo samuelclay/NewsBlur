@@ -75,9 +75,8 @@
     interactionLabelRect.size.height = 300;
 
     self.interactionLabel.frame = interactionLabelRect;
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     self.interactionLabel.numberOfLines = 0;
-//    UIImage *placeholder = [UIImage imageNamed:@"user_light"];
+    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
     // this is for the rare instance when the with_user doesn't return anything
     if ([[interaction objectForKey:@"with_user"] class] == [NSNull class]) {
@@ -142,9 +141,11 @@
     if (commentRange.location != NSNotFound) {
         commentRange.location -= 2;
         commentRange.length = 1;
-        [attrStr addAttribute:NSFontAttributeName
-                        value:[UIFont systemFontOfSize:4.0f]
-                        range:commentRange];
+        if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {
+            [attrStr addAttribute:NSFontAttributeName
+                            value:[UIFont systemFontOfSize:6.0f]
+                            range:commentRange];
+        }
     }
     
     NSRange dateRange = [txtWithTime rangeOfString:time];
@@ -152,18 +153,16 @@
         dateRange.location -= 2;
         dateRange.length = 1;
         [attrStr addAttribute:NSFontAttributeName
-                        value:[UIFont systemFontOfSize:4.0f]
+                        value:[UIFont systemFontOfSize:6.0f]
                         range:dateRange];
     }
     
     self.interactionLabel.attributedText = attrStr;
-    NSLog(@"Frame: %@", NSStringFromCGRect(self.interactionLabel.frame));
     [self.interactionLabel sizeToFit];
-    NSLog(@"Frame after: %@", NSStringFromCGRect(self.interactionLabel.frame));
     
     int height = self.interactionLabel.frame.size.height;
     
-    return height;
+    return height + topMargin + bottomMargin;
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

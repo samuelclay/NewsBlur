@@ -66,6 +66,7 @@
     // must set the height again for dynamic height in heightForRowAtIndexPath in
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
+    
     self.activityLabel.frame = activityLabelRect;
     self.activityLabel.numberOfLines = 0;
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
@@ -168,11 +169,14 @@
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];
     if (commentRange.location != NSNotFound) {
+        NSLog(@"Spacing: %@", comment);
         commentRange.location -= 2;
         commentRange.length = 1;
-        [attrStr addAttribute:NSFontAttributeName
-                        value:[UIFont systemFontOfSize:4.0f]
-                        range:commentRange];
+        if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {
+            [attrStr addAttribute:NSFontAttributeName
+                            value:[UIFont systemFontOfSize:4.0f]
+                            range:commentRange];
+        }
     }
     
     NSRange dateRange = [txtWithTime rangeOfString:time];
@@ -189,7 +193,7 @@
         
     int height = self.activityLabel.frame.size.height;
     
-    return MAX(height, self.faviconView.frame.size.height);
+    return MAX(height + topMargin + bottomMargin, self.faviconView.frame.size.height);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

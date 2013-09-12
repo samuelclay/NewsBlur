@@ -787,6 +787,7 @@
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
                 
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 // found the story, reset the two flags.
                 //                appDelegate.tryFeedStoryId = nil;
                 appDelegate.inFindingStoryMode = NO;
@@ -1070,48 +1071,7 @@
         [appDelegate calculateStoryLocations];
     }
     
-    for (int i=0; i < appDelegate.storyLocationsCount; i++) {
-        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        
-        if (previousLevel == -1) {
-            if (newLevel == 0 && score == -1) {
-                [deleteIndexPaths addObject:indexPath];
-            } else if (newLevel == 1 && score < 1) {
-                [deleteIndexPaths addObject:indexPath];
-            }
-        } else if (previousLevel == 0) {
-            if (newLevel == -1 && score == -1) {
-                [insertIndexPaths addObject:indexPath];
-            } else if (newLevel == 1 && score == 0) {
-                [deleteIndexPaths addObject:indexPath];
-            }
-        } else if (previousLevel == 1) {
-            if (newLevel == 0 && score == 0) {
-                [insertIndexPaths addObject:indexPath];
-            } else if (newLevel == -1 && score < 1) {
-                [insertIndexPaths addObject:indexPath];
-            }
-        }
-    }
-    
-    if (newLevel > previousLevel) {
-        [appDelegate setSelectedIntelligence:newLevel];
-        [appDelegate calculateStoryLocations];
-    }
-    
-    [self.storyTitlesTable beginUpdates];
-    if ([deleteIndexPaths count] > 0) {
-        [self.storyTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-    }
-    if ([insertIndexPaths count] > 0) {
-        [self.storyTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-    }
-    [self.storyTitlesTable endUpdates];
+    [self.storyTitlesTable reloadData];
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {

@@ -15,7 +15,7 @@
 #import "UserProfileViewController.h"
 
 #define MINIMUM_INTERACTION_HEIGHT_IPAD 78
-#define MINIMUM_INTERACTION_HEIGHT_IPHONE 48
+#define MINIMUM_INTERACTION_HEIGHT_IPHONE 54
 
 @implementation InteractionsModule
 
@@ -193,7 +193,7 @@
     } else {
         interactionCell = [[SmallInteractionCell alloc] init];
     }
-    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20] + 30;
+    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20];
     if (height < minimumHeight) {
         return minimumHeight;
     } else {
