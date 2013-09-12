@@ -238,7 +238,8 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+    int menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
+    [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
