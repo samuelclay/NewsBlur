@@ -245,7 +245,6 @@
         NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
     }
     
-    [self refreshPages];
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
