@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
+#import "DashboardViewController.h"
 
 #define MINIMUM_INTERACTION_HEIGHT_IPAD 78
 #define MINIMUM_INTERACTION_HEIGHT_IPHONE 54
@@ -148,6 +149,10 @@
     
     if (self.interactionsPage == 1) {
         appDelegate.userInteractionsArray = confirmedInteractions;
+        if (![confirmedInteractions count]) {
+            appDelegate.dashboardViewController.segmentedButton.selectedSegmentIndex = 1;
+            [appDelegate.dashboardViewController tapSegmentedButton:nil];
+        }
     } else {
         appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }

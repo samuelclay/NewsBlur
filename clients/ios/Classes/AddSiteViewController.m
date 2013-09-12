@@ -368,7 +368,7 @@
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView
 numberOfRowsInComponent:(NSInteger)component {
-    return [[self folders] count];
+    return [[self folders] count] + 1;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView
@@ -377,7 +377,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         return @"— Top Level —";
     } else {
-        return [[self folders] objectAtIndex:row];
+        return [[self folders] objectAtIndex:row-1];
     }
 }
 
@@ -388,15 +388,24 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         folder_title = @"— Top Level —";
     } else {
-        folder_title = [[self folders] objectAtIndex:row];
+        folder_title = [[self folders] objectAtIndex:row-1];
     }
     [inFolderInput setText:folder_title];
 }
 
 - (void)showFolderPicker {
+    if (![[self folders] count]) return;
+    
     [siteAddressInput resignFirstResponder];
     [addFolderInput resignFirstResponder];
     [inFolderInput setInputView:folderPicker];
+    [folderPicker selectRow:0 inComponent:0 animated:NO];
+    for (int i=0; i < [[self folders] count]; i++) {
+        if ([[[self folders] objectAtIndex:i] isEqualToString:inFolderInput.text]) {
+            [folderPicker selectRow:i+1 inComponent:0 animated:NO];
+            break;
+        }
+    }
     if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
         folderPicker.hidden = NO;
         [UIView animateWithDuration:.35 animations:^{

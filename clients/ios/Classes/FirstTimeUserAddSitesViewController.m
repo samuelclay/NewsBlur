@@ -56,7 +56,7 @@
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
-    self.nextButton.enabled = NO;
+    self.nextButton.enabled = YES;
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"Add Sites";
@@ -85,9 +85,9 @@
     [self.categoriesTable reloadData];
     [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 300)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);        
+        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 300)/2, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
     } else {
-        self.categoriesTable.frame = CGRectMake(10, 60, self.categoriesTable.frame.size.width, self.tableViewHeight); 
+        self.categoriesTable.frame = CGRectMake(10, 30, self.categoriesTable.frame.size.width, self.tableViewHeight);
     }
     
     NSLog(@"%f height", self.tableViewHeight);
@@ -221,33 +221,28 @@
 #pragma mark Add Categories
 
 - (void)addCategory:(id)sender {
-    NSInteger tag = ((UIControl *) sender).tag;
-
     // set the currentButton
     self.currentButton_ = (UIButton *)sender;
-    if (tag == 1000) {
-        [self tapGoogleReaderButton];
+    UIButton *button = (UIButton *)sender;
+    NSLog(@"self.currentButton_.titleLabel.text is %@", self.currentButton_.titleLabel.text);
+    if (button.selected) {
+        [self.selectedCategories_ removeObject:self.currentButton_.titleLabel.text];
+        
+        self.nextButton.enabled = YES;
+        button.selected = NO;
+        UIImageView *imageView = (UIImageView*)[button viewWithTag:100];
+        [imageView removeFromSuperview];
     } else {
-        UIButton *button = (UIButton *)sender;
-        NSLog(@"self.currentButton_.titleLabel.text is %@", self.currentButton_.titleLabel.text);
-        if (button.selected) {
-            [self.selectedCategories_ removeObject:self.currentButton_.titleLabel.text];
-            
-            self.nextButton.enabled = YES;
-            button.selected = NO;
-            UIImageView *imageView = (UIImageView*)[button viewWithTag:100];
-            [imageView removeFromSuperview];
-        } else {
-            [self.selectedCategories_ addObject:self.currentButton_.titleLabel.text];
-            button.selected = YES;
-        }
+        [self.selectedCategories_ addObject:self.currentButton_.titleLabel.text];
+        button.selected = YES;
     }
+
     if (self.googleImportSuccess_) {
         self.nextButton.enabled = YES;
     } else if (self.selectedCategories_.count) {
         self.nextButton.enabled = YES;
     } else {
-        self.nextButton.enabled = NO;
+        self.nextButton.enabled = YES;
     }
     
     [self.categoriesTable reloadData];
@@ -285,7 +280,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return appDelegate.categories.count + 2;
+    return appDelegate.categories.count + 1;
 }
 
 //- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -296,11 +291,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
     if (section == 0) {
-        return 1;
-    } else if (section == 1) {
         return 0;
     } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 2];
+        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
         NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
         return categorySiteList.count;
     }
@@ -312,16 +305,20 @@
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (section == 0) {
+        return 28.0;
+    }
     return 54.0;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (section == 1) {
+    if (section == 0) {
         UIView* categoryTitleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 20.0, 300.0, 34.0)];
         UILabel *categoryTitleLabel = [[UILabel alloc] initWithFrame:categoryTitleView.frame];
-        categoryTitleLabel.text = @"Choose categories to subscribe to:";
-        categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:19];
+        categoryTitleLabel.text = @"You can always add your own individual sites.";
+        categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
         [categoryTitleView addSubview:categoryTitleLabel];
+        categoryTitleLabel.textColor = [UIColor darkGrayColor];
         categoryTitleLabel.backgroundColor = [UIColor clearColor];
         categoryTitleView.backgroundColor = [UIColor clearColor];
         categoryTitleLabel.textAlignment = NSTextAlignmentCenter;
@@ -343,25 +340,21 @@
     headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
     headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);
     NSString *categoryTitle;
-    if (section == 0) {
-        categoryTitle = @"Google Reader";
-    } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 2];
-        categoryTitle = [category objectForKey:@"title"];
-        
-        BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
-        NSLog(@"inselected %i", inSelect);
-        if (inSelect) {
-            headerBtn.selected = YES;
-            UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
-            UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-            checkmarkView.frame = CGRectMake(headerBtn.frame.origin.x + headerBtn.frame.size.width - 24,
-                                             8,
-                                             16,
-                                             16);
-            checkmarkView.tag = 100;
-            [headerBtn addSubview:checkmarkView];
-        }
+    NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
+    categoryTitle = [category objectForKey:@"title"];
+    
+    BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
+    NSLog(@"inselected %i", inSelect);
+    if (inSelect) {
+        headerBtn.selected = YES;
+        UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+        UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+        checkmarkView.frame = CGRectMake(headerBtn.frame.origin.x + headerBtn.frame.size.width - 24,
+                                         8,
+                                         16,
+                                         16);
+        checkmarkView.tag = 100;
+        [headerBtn addSubview:checkmarkView];
     }
     
     [headerBtn setTitle:categoryTitle forState:UIControlStateNormal];
@@ -383,57 +376,50 @@
 
     NSString *siteTitle;
 
-    if (indexPath.section == 0 ) {
-        siteTitle = @"Import your sites from Google Reader";
-        cell.siteFavicon = nil;
-        cell.feedColorBar = nil;
-        cell.feedColorBarTopBorder = nil;
+    NSDictionary *category = [appDelegate.categories objectAtIndex:indexPath.section - 1];
+    NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
+    NSString * feedId = [NSString stringWithFormat:@"%@", [categorySiteList objectAtIndex:indexPath.row ]];
+    
+    NSDictionary *feed = [appDelegate.categoryFeeds objectForKey:feedId];
+    siteTitle = [feed objectForKey:@"feed_title"];
+    
+    BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
+
+    if (inSelect) {
+        cell.isRead = NO;
     } else {
-        NSDictionary *category = [appDelegate.categories objectAtIndex:indexPath.section - 2];
-        NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
-        NSString * feedId = [NSString stringWithFormat:@"%@", [categorySiteList objectAtIndex:indexPath.row ]];
-        
-        NSDictionary *feed = [appDelegate.categoryFeeds objectForKey:feedId];
-        siteTitle = [feed objectForKey:@"feed_title"];
-        
-        BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
-
-        if (inSelect) {
-            cell.isRead = NO;
-        } else {
-            cell.isRead = YES;
-        }
-
-        // feed color bar border
-        unsigned int colorBorder = 0;
-        NSString *faviconColor = [feed valueForKey:@"favicon_color"];
-        
-        if ([faviconColor class] == [NSNull class]) {
-            faviconColor = @"505050";
-        }    
-        NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
-        [scannerBorder scanHexInt:&colorBorder];
-        
-        cell.feedColorBar = UIColorFromRGB(colorBorder);
-        
-        // feed color bar border
-        NSString *faviconFade = [feed valueForKey:@"favicon_border"];
-        if ([faviconFade class] == [NSNull class]) {
-            faviconFade = @"505050";
-        }    
-        scannerBorder = [NSScanner scannerWithString:faviconFade];
-        [scannerBorder scanHexInt:&colorBorder];
-        cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
-        
-        // favicon
-        
-        NSString *faviconStr = [NSString stringWithFormat:@"%@", [feed valueForKey:@"favicon"]];
-        NSData *imageData = [NSData dataWithBase64EncodedString:faviconStr];
-        UIImage *faviconImage = [UIImage imageWithData:imageData];
-        
-
-        cell.siteFavicon = faviconImage;
+        cell.isRead = YES;
     }
+
+    // feed color bar border
+    unsigned int colorBorder = 0;
+    NSString *faviconColor = [feed valueForKey:@"favicon_color"];
+    
+    if ([faviconColor class] == [NSNull class]) {
+        faviconColor = @"505050";
+    }    
+    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
+    [scannerBorder scanHexInt:&colorBorder];
+    
+    cell.feedColorBar = UIColorFromRGB(colorBorder);
+    
+    // feed color bar border
+    NSString *faviconFade = [feed valueForKey:@"favicon_border"];
+    if ([faviconFade class] == [NSNull class]) {
+        faviconFade = @"505050";
+    }    
+    scannerBorder = [NSScanner scannerWithString:faviconFade];
+    [scannerBorder scanHexInt:&colorBorder];
+    cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
+    
+    // favicon
+    
+    NSString *faviconStr = [NSString stringWithFormat:@"%@", [feed valueForKey:@"favicon"]];
+    NSData *imageData = [NSData dataWithBase64EncodedString:faviconStr];
+    UIImage *faviconImage = [UIImage imageWithData:imageData];
+    
+
+    cell.siteFavicon = faviconImage;
 
     cell.opaque = NO;
     cell.siteTitle = siteTitle; 

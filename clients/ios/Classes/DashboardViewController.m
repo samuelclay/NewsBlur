@@ -110,7 +110,7 @@
     appDelegate.userInteractionsArray = nil;
     [self.interactionsModule.interactionsTable reloadData];
     [self.interactionsModule.interactionsTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-    [self.interactionsModule fetchInteractionsDetail:1];    
+    [self.interactionsModule fetchInteractionsDetail:1];
 }
 
 # pragma mark
