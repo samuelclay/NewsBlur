@@ -24,7 +24,8 @@
 @synthesize pageFinished;
 @synthesize activitiesPage;
 
-#define MINIMUM_ACTIVITY_HEIGHT 48 + 30
+#define MINIMUM_ACTIVITY_HEIGHT_IPAD 78
+#define MINIMUM_ACTIVITY_HEIGHT_IPHONE 54
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -173,7 +174,11 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     int activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row >= activitiesCount) {
-        return MINIMUM_ACTIVITY_HEIGHT;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            return MINIMUM_ACTIVITY_HEIGHT_IPAD;
+        } else {
+            return MINIMUM_ACTIVITY_HEIGHT_IPHONE;
+        }
     }
     
     id activityCell;
@@ -189,7 +194,7 @@
     int height = [activityCell setActivity:[appDelegate.userActivitiesArray 
                                             objectAtIndex:(indexPath.row)] 
                            withUserProfile:userProfile
-                                 withWidth:self.frame.size.width - 20] + 30;
+                                 withWidth:self.frame.size.width - 20];
     
     return height;
 
@@ -223,8 +228,7 @@
         NSString *category = [activitiy objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
             cell.accessoryType = UITableViewCellAccessoryNone;
-        } else if ([category isEqualToString:@"star"] ||
-                   [category isEqualToString:@"signup"]){
+        } else if ([category isEqualToString:@"signup"]){
             cell.accessoryType = UITableViewCellAccessoryNone;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else {
@@ -283,6 +287,12 @@
                                       withUser:[activity objectForKey:@"with_user"]
                               showFindingStory:YES];
             appDelegate.tryFeedCategory = category;
+        } else if ([category isEqualToString:@"star"]) {
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@",
+                                      [activity objectForKey:@"content_id"]];
+            [appDelegate loadStarredDetailViewWithStory:contentIdStr
+                                       showFindingStory:YES];
+            appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"feedsub"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [activity objectForKey:@"feed_id"]];
@@ -310,7 +320,12 @@
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
-        int height = MINIMUM_ACTIVITY_HEIGHT;
+        int height;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            height = MINIMUM_ACTIVITY_HEIGHT_IPAD;
+        } else {
+            height = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
+        }
         
         fleuron.frame = CGRectMake(0, 0, self.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;

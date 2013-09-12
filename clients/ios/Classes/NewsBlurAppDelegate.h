@@ -270,6 +270,7 @@
 - (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
+- (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
