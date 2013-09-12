@@ -1057,8 +1057,6 @@
 
 - (void)changeIntelligence:(NSInteger)newLevel {
     NSInteger previousLevel = [appDelegate selectedIntelligence];
-    NSMutableArray *insertIndexPaths = [NSMutableArray array];
-    NSMutableArray *deleteIndexPaths = [NSMutableArray array];
     
     if (newLevel == previousLevel) return;
     
