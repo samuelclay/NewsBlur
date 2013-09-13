@@ -8,17 +8,18 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     flags: {},
     
     events: {
-        "dblclick .feed_counts"             : "mark_feed_as_read",
-        "dblclick"                          : "open_feed_link",
-        "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
-        "click .NB-feedbar-train-feed"      : "open_trainer",
-        "click .NB-feedbar-statistics"      : "open_statistics",
-        "click .NB-feedlist-manage-icon"    : "show_manage_menu",
-        "click .NB-feedbar-options"         : "open_options_popover",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
-        "click"                             : "open",
-        "mouseenter"                        : "add_hover_inverse",
-        "mouseleave"                        : "remove_hover_inverse"
+        "dblclick .feed_counts"                     : "mark_feed_as_read",
+        "dblclick"                                  : "open_feed_link",
+        "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
+        "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
+        "click .NB-feedbar-train-feed"              : "open_trainer",
+        "click .NB-feedbar-statistics"              : "open_statistics",
+        "click .NB-feedlist-manage-icon"            : "show_manage_menu",
+        "click .NB-feedbar-options"                 : "open_options_popover",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
+        "click"                                     : "open",
+        "mouseenter"                                : "add_hover_inverse",
+        "mouseleave"                                : "remove_hover_inverse"
     },
     
     initialize: function() {
@@ -66,6 +67,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
+              <div class="NB-feedbar-mark-feed-read-container">\
+                   <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                   <div class="NB-feedbar-mark-feed-read-time NB-1d">1d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time NB-3d">3d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time NB-7d">7d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time NB-14d">14d</div>\
+                   <div class="NB-feedbar-mark-feed-read-expand"></div>\
+              </div>\
               <div class="NB-story-title-indicator">\
                   <div class="NB-story-title-indicator-count"></div>\
                   <span class="NB-story-title-indicator-text">show hidden stories</span>\
@@ -74,9 +83,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
-            <% if (type == "story") { %>\
-                <div class="NB-feedbar-mark-feed-read"></div>\
-            <% } %>\
           </span>\
           <% if (type == "story") { %>\
               <div class="NB-feedbar-options-container">\
@@ -289,10 +295,43 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             this.flags.double_click = false;
         }, this), 500);
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
-        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
         if (e) {
             return false;
         }
+    },
+    
+    expand_mark_read: function() {
+        var $container = this.$(".NB-feedbar-mark-feed-read-container");
+        var $markread = this.$(".NB-feedbar-mark-feed-read");
+        var $hidden = this.$(".NB-story-title-indicator");
+        var $expand = this.$(".NB-feedbar-mark-feed-read-expand");
+        var $times = this.$(".NB-feedbar-mark-feed-read-time");
+        var times_count = $times.length;
+        
+        $hidden.hide();
+        $markread.css('z-index', times_count+1);
+        $container.css('margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
+        $expand.animate({
+            right: 0,
+            opacity: 0
+        }, {
+            queue: false,
+            easing: 'easeInQuint',
+            duration: 180,
+            complete: function() {
+                $times.each(function(i) {
+                    $(this).css('z-index', times_count - i);
+                    $(this).animate({
+                        right: (32 * (i + 1)) + 6
+                    }, {
+                        queue: false,
+                        easing: 'easeOutBack',
+                        duration: 280 + 100 * (Math.pow(i, 0.5))
+                    });
+                });
+            }
+        });
     },
     
     show_manage_menu_rightclick: function(e) {
