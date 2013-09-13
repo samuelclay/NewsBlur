@@ -87,6 +87,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
             // feed list until we have a better understanding of how to prevent this.
             Log.w(this.getClass().getName(), "Feed not found in DB, can't create item list.");
             getActivity().finish();
+            return v;
         }
 
         feedCursor.moveToFirst();

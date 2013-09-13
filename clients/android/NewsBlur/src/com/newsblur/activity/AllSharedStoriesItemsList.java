@@ -83,10 +83,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	@Override
 	public void markItemListAsRead() { }
 
-	@Override
-	public void closeAfterUpdate() { }
-
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
