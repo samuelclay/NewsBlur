@@ -432,10 +432,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').removeClass('NB-modal-submit-green').val('Saving...');
         
-        NEWSBLUR.reader.flags['adding_url'] = true;
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
-            NEWSBLUR.reader.flags['adding_url'] = false;
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
             NEWSBLUR.reader.hide_feed_chooser_button();
             NEWSBLUR.assets.load_feeds();
             $.modal.close();

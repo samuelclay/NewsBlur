@@ -1102,7 +1102,7 @@
                 'social_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
-                'adding_url': false
+                'reloading_feeds': false
             });
             
             $.extend(this.cache, {
@@ -4002,7 +4002,7 @@
                         var feeds = message.replace('refresh:', '').split(",");
                         this.force_feeds_refresh(null, false, feeds);
                     } else if (_.string.startsWith(message, "reload:")) {
-                        if (!NEWSBLUR.reader.flags['adding_url']) {
+                        if (!NEWSBLUR.reader.flags['reloading_feeds']) {
                             NEWSBLUR.assets.load_feeds();
                         }
                     }

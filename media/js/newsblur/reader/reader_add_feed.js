@@ -217,7 +217,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         $loading.addClass('NB-active');
         $submit.addClass('NB-disabled').text('Adding...');
         
-        NEWSBLUR.reader.flags['adding_url'] = true;
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
         this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this), $.rescope(this.error, this));
     },
     
@@ -226,7 +226,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         var $submit = this.$('.NB-add-url-submit');
         var $loading = this.$('.NB-add-site .NB-loading');
         $loading.removeClass('NB-active');
-        NEWSBLUR.reader.flags['adding_url'] = false;
+        NEWSBLUR.reader.flags['reloading_feeds'] = false;
         
         if (data.code > 0) {
             NEWSBLUR.assets.load_feeds(function() {
@@ -253,7 +253,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         $(".NB-error-message", $error).text(data.message || "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened.");
         $error.slideDown(300);
         $submit.text('Add Site');
-        NEWSBLUR.reader.flags['adding_url'] = false;
+        NEWSBLUR.reader.flags['reloading_feeds'] = false;
     },
     
     open_add_folder: function() {

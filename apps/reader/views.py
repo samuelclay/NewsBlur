@@ -1391,6 +1391,9 @@ def delete_feed(request):
     if feed:
         feed[0].count_subscribers()
     
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     return dict(code=1, message="Removed %s from '%s'." % (feed, in_folder))
 
 @ajax_login_required
@@ -1429,6 +1432,9 @@ def delete_folder(request):
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
 
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     return dict(code=1)
     
 @ajax_login_required
@@ -1474,6 +1480,9 @@ def move_feed_to_folder(request):
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
@@ -1486,6 +1495,9 @@ def move_folder_to_folder(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
