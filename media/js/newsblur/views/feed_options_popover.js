@@ -5,12 +5,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     options: {
         'width': 264,
         'anchor': '.NB-feedbar-options',
-        'placement': 'bottom right',
+        'placement': 'top right',
         'offset': {
-            top: 16,
+            top: 10,
             left: -100
         },
-        'overlay_top': true,
+        'overlay_top': false,
         'popover_class': 'NB-filter-popover-container'
     },
     
@@ -21,16 +21,6 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     initialize: function(options) {
-        if (NEWSBLUR.assets.preference('story_layout') == 'split' &&
-            NEWSBLUR.assets.preference('story_pane_anchor') == 'south') {
-            this.options.placement = 'top right';
-            this.options.offset = {
-                top: 10,
-                left: -100
-            };
-            this.options.overlay_top = false;
-        }
-        
         this.options = _.extend({}, this.options, options);
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;

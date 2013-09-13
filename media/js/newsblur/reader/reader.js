@@ -22,6 +22,7 @@
                 $feed_list: $('#feed_list'),
                 $social_feeds: $('.NB-socialfeeds-folder'),
                 $story_titles: $('#story_titles'),
+                $story_titles_header: $('.NB-story-titles-header'),
                 $content_pane: $('.content-pane'),
                 $story_taskbar: $('#story_taskbar'),
                 $story_pane: $('#story_pane .NB-story-pane-container'),
@@ -324,7 +325,9 @@
                     fxSettings_close:       { duration: 560, easing: "easeInOutQuint" },
                     fxSettings_open:        { duration: 0, easing: "easeInOutQuint" },
                     north__paneSelector:    ".content-north",
-                    north__size:            37
+                    north__size:            37,
+                    south__paneSelector:    ".content-south",
+                    south__size:            31
                 };
 
                 this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
@@ -364,7 +367,9 @@
                     fxName:                 "slideOffscreen",
                     fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                     north__paneSelector:    ".content-north",
-                    north__size:            37
+                    north__size:            37,
+                    south__paneSelector:    ".content-south",
+                    south__size:            31
                     
                 };
                 this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 

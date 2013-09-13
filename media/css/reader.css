@@ -1111,22 +1111,27 @@ background: transparent;
     margin-left: 220px;
 }
 
+.NB-story-titles-header {
+    
+}
+
 .NB-feedbar {
     font-weight: bold;
     font-size: 16px;
-    padding: 2px 208px 2px 4px;
+    padding: 2px 228px 4px 8px;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
     background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
-    border-bottom: 1px solid #C2C5BE;
+    border-top: 1px solid #C2C5BE;
+    background-color: #F3F3EE;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
+    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
+    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
     position: relative;
     overflow: hidden;
 }
-.NB-story-pane-west .NB-feedbar {
-    padding-right: 4px;
-}
 .NB-feedbar .feed .feed_favicon {
-    margin: 2px 4px 0 2px;
+    margin: 4px 4px 0 6px;
     vertical-align: top;
     float: left;
     width: 16px;
@@ -1138,31 +1143,23 @@ background: transparent;
 .NB-feedbar .feed .feed_title,
 .NB-feedbar .folder_title_text {
 /*    float: left;*/
-  display: block;
-  margin-left: 24px;
-  color: #40413E;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    display: block;
+    margin-left: 26px;
+    color: #40413E;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    height: 24px;
+    overflow: hidden;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
 }
 .NB-feedbar .NB-feedbar-options-container {
     position: absolute;
     right: 0;
-    width: 206px;
+    width: 226px;
     top: 2px;
-}
-.NB-story-pane-west .NB-feedbar .NB-feedbar-options-container {
-    position: static;
-    margin: 4px 0 5px 24px;
-    overflow: hidden;
-    float: left;
-    width: auto;
-}
-.NB-story-pane-west .NB-feedbar .NB-story-title-search {
-    position: relative;
-    margin: 2px 0 8px 28px; /* 24+4 takes the border into account */
-    float: left;
-}
-.NB-story-pane-west .NB-feedbar .NB-story-title-search input {
-    float: left;
 }
 .NB-feedbar .NB-feedbar-options {
     cursor: pointer;
@@ -1174,7 +1171,7 @@ background: transparent;
     font-size: 10px;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 1px 0 0;
+    margin: 4px 0 0;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -1240,8 +1237,8 @@ background: transparent;
     opacity: 0;
     display: none;
     position: absolute;
-    left: 7px;
-    top: 1px;
+    left: 12px;
+    top: 4px;
     width: 20px;
     height: 22px;
     cursor: pointer;
@@ -1254,7 +1251,7 @@ background: transparent;
 }
 
 .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 5px 7px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 3px 6px;
     background-size: 8px;
 }
 
@@ -1266,9 +1263,6 @@ background: transparent;
 .NB-feedbar:hover .feed_favicon,
 .NB-feedbar:hover :not(.NB-no-hover) .NB-folder-icon {
   display: none;
-}
-.NB-feedbar .folder_title .NB-feedlist-manage-icon {
-    background-position: 3px 5px;
 }
 
 
@@ -1335,8 +1329,8 @@ background: transparent;
     width: 16px;
     height: 16px;
     position: absolute;
-    left: 4px;
-    top: 4px;
+    left: 12px;
+    top: 6px;
 }
 .NB-feedbar .NB-folder .NB-starred-icon {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
@@ -1360,18 +1354,16 @@ background: transparent;
 
 .NB-feedbar .NB-story-title-indicator {
     display: none;
-    position: absolute;
-    right: 206px;
-    top: 2px;
+    float: right;
     cursor: pointer;
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 0 8px;
+    padding: 1px 8px;
     line-height: 14px;
-    margin: 2px 12px 0;
+    margin: 4px 12px 0;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -1380,11 +1372,6 @@ background: transparent;
 }
 .NB-feedbar .NB-story-title-indicator:hover {
     background-color: rgba(0, 0, 0, .1);
-}
-.NB-story-pane-west .NB-feedbar .NB-story-title-indicator {
-    position: static;
-    float: left;
-    margin: 5px 0px 4px 24px;
 }
 .NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count {
     float: left;
@@ -3811,12 +3798,6 @@ background: transparent;
     background-color: #F7F8F5;
     border-top: 1px solid #C2C5BE;
     border-bottom: 1px solid #C2C5BE;
-}
-
-.NB-story-pane-north .NB-taskbar-container,
-.NB-story-pane-west .NB-taskbar-container {
-    border-top: none;
-    border-bottom: 1px solid #777D86;
 }
 
 /* ==================== */
@@ -9960,8 +9941,8 @@ form.opml_import_form input {
 }
 .NB-story-title-search {
     position: absolute;
-    top: 3px;
-    right: 4px;
+    top: 6px;
+    right: 24px;
 }
 .NB-story-title-search-input {
     -webkit-transition: all .22s ease-in-out;

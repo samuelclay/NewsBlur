@@ -51,13 +51,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (!_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) return;
         
         var collection = this.collection;
-        var stories = this.collection.map(function(story) {
-            if (story.story_view) return;
+        var stories = _.compact(this.collection.map(function(story) {
+            // if (story.story_view) return story;
             return new NEWSBLUR.Views.StoryDetailView({
                 model: story,
                 collection: collection
             }).render();
-        });
+        }));
         
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             this.show_correct_explainer();
@@ -610,7 +610,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var story_view = NEWSBLUR.reader.story_view;
         var offset = this.cache.offset || 0;
         if (NEWSBLUR.assets.preference('story_layout') == 'full' && !this.cache.offset) {
-            offset = this.cache.offset = $(".NB-feed-story-view-header").outerHeight();
+            // offset = this.cache.offset = $(".NB-feed-story-view-header").outerHeight();
         }
         
         if ((story_view == 'feed' ||

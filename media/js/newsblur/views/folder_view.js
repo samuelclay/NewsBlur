@@ -102,6 +102,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
+                <% if (feedbar) { %>\
+                    <div class="NB-story-title-indicator">\
+                        <div class="NB-story-title-indicator-count"></div>\
+                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                    </div>\
+                <% } %>\
                 <div class="NB-folder-icon"></div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon"></div>\
@@ -119,10 +125,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         </span>\
                     </div>\
                     <div class="NB-search-container"></div>\
-                    <div class="NB-story-title-indicator">\
-                        <div class="NB-story-title-indicator-count"></div>\
-                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
-                    </div>\
               <% } %>\
             </div>\
         <% } %>\

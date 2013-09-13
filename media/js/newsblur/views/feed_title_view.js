@@ -65,6 +65,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
+          <% if (type == "story") { %>\
+              <div class="NB-story-title-indicator">\
+                  <div class="NB-story-title-indicator-count"></div>\
+                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
+              </div>\
+          <% } %>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
@@ -82,10 +88,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                   </span>\
               </div>\
               <div class="NB-search-container"></div>\
-              <div class="NB-story-title-indicator">\
-                  <div class="NB-story-title-indicator-count"></div>\
-                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
-              </div>\
           <% } %>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
