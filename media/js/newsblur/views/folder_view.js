@@ -363,7 +363,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     mark_folder_as_read: function(days_back) {
         NEWSBLUR.reader.mark_folder_as_read(this.model, days_back);
-        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
     },
 
     mark_folder_as_read_days: function(e) {

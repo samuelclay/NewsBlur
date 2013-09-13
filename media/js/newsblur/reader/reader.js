@@ -1101,7 +1101,8 @@
                 'river_view': false,
                 'social_view': false,
                 'select_story_in_feed': null,
-                'global_blurblogs': false
+                'global_blurblogs': false,
+                'adding_url': false
             });
             
             $.extend(this.cache, {
@@ -1947,7 +1948,9 @@
             }
             
             this.model.mark_feed_as_read(feeds, cutoff_timestamp, folder == this.active_folder, _.bind(function() {
-                this.feeds_unread_count(feeds);
+                if (!this.socket || !this.socket.socket || !this.socket.socket.connected) {
+                    this.force_feeds_refresh(null, false, feeds);
+                }
             }, this));
         },
         
@@ -3995,6 +3998,13 @@
                         }
                     } else if (message == "interaction:new") {
                         this.update_interactions_count();
+                    } else if (_.string.startsWith(message, "refresh:")) {
+                        var feeds = message.replace('refresh:', '').split(",");
+                        this.force_feeds_refresh(null, false, feeds);
+                    } else if (_.string.startsWith(message, "reload:")) {
+                        if (!NEWSBLUR.reader.flags['adding_url']) {
+                            NEWSBLUR.assets.load_feeds();
+                        }
                     }
                 }, this));
 

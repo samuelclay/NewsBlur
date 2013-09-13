@@ -1303,7 +1303,7 @@ def mark_feed_as_read(request):
         
         try:
             marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
-            if marked_read:
+            if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError, e:
             errors.append("Could not mark feed as read: %s" % e)
@@ -1311,6 +1311,7 @@ def mark_feed_as_read(request):
             
     if multiple:
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
+        r.publish(request.user.username, 'refresh:%s' % ','.join(feed_ids))
         
     return dict(code=code, errors=errors)
 
@@ -1347,6 +1348,10 @@ def add_url(request):
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
         feed = us and us.feed
+        if feed:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(request.user.username, 'reload:%s' % feed.pk)
+        
         
     return dict(code=code, message=message, feed=feed)
 
@@ -1363,6 +1368,8 @@ def add_folder(request):
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         user_sub_folders_object.add_folder(parent_folder, folder)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'reload:feeds')
     else:
         code = -1
         message = "Gotta write in a folder name."
@@ -1582,7 +1589,10 @@ def save_feed_chooser(request):
             
     request.user.profile.queue_new_feeds()
     request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
