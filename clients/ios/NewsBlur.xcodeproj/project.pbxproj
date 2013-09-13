@@ -427,6 +427,7 @@
 		FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */; };
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
 		FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AA17E280BD008AF4B0 /* ftux_tree.png */; };
+		FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AC17E29D71008AF4B0 /* big_world_white.png */; };
 		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
 		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
 		FFF1E4B9177504CA00BF59D3 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1E49B177504CA00BF59D3 /* IASKAppSettingsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1031,6 +1032,7 @@
 		FFE5322D144C8AC300ACFDE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
 		FFE816AA17E280BD008AF4B0 /* ftux_tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ftux_tree.png; sourceTree = "<group>"; };
+		FFE816AC17E29D71008AF4B0 /* big_world_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world_white.png; sourceTree = "<group>"; };
 		FFECD017172B105800D45A62 /* UIActivitySafari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UIActivitySafari.png; sourceTree = "<group>"; };
 		FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UIActivitySafari@2x.png"; sourceTree = "<group>"; };
 		FFF1E49A177504CA00BF59D3 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
@@ -1332,6 +1334,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFE816AC17E29D71008AF4B0 /* big_world_white.png */,
 				FFE816AA17E280BD008AF4B0 /* ftux_tree.png */,
 				FF855B541794A53A0098D48A /* checkmark.png */,
 				FF855B551794A53A0098D48A /* checkmark@2x.png */,
@@ -2453,6 +2456,7 @@
 				FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */,
 				FF5D401C179A03E700349659 /* traverse_previous_off@2x.png in Resources */,
 				FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */,
+				FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2644,8 +2648,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2668,8 +2672,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "954389F4-8E6B-4312-9C44-7DCD5EAD40A5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "954389F4-8E6B-4312-9C44-7DCD5EAD40A5";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2683,8 +2687,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2704,8 +2708,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "954389F4-8E6B-4312-9C44-7DCD5EAD40A5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "954389F4-8E6B-4312-9C44-7DCD5EAD40A5";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = armv7;

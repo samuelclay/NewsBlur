@@ -33,12 +33,14 @@
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
+@property (nonatomic) IBOutlet UIImageView *noStorySelectedImage;
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
 
 - (void)initStory;
+- (void)hideNoStoryMessage;
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)showStory;

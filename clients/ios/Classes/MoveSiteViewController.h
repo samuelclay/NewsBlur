@@ -12,6 +12,10 @@
 
 @class NewsBlurAppDelegate;
 
+@interface FolderTextField : UITextField
+
+@end
+
 @interface MoveSiteViewController : UIViewController 
 <UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -25,8 +29,8 @@
 - (NSArray *)pickerFolders;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UITextField *fromFolderInput;
-@property (nonatomic) IBOutlet UITextField *toFolderInput;
+@property (nonatomic) IBOutlet FolderTextField *fromFolderInput;
+@property (nonatomic) IBOutlet FolderTextField *toFolderInput;
 @property (nonatomic) IBOutlet UILabel *titleLabel;
 
 @property (nonatomic) IBOutlet UIBarButtonItem *moveButton;
@@ -41,3 +45,4 @@
 @property (nonatomic) NSMutableArray *folders;
 
 @end
+

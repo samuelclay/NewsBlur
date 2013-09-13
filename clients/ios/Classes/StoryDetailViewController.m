@@ -33,6 +33,7 @@
 @synthesize webView;
 @synthesize feedTitleGradient;
 @synthesize noStorySelectedLabel;
+@synthesize noStorySelectedImage;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
@@ -75,6 +76,7 @@
 - (void)viewDidUnload {
     [self setInnerView:nil];
     [self setNoStorySelectedLabel:nil];
+    
     [super viewDidUnload];
 }
 
@@ -98,11 +100,17 @@
     
     appDelegate.inStoryDetail = YES;
     self.noStorySelectedLabel.hidden = YES;
+    self.noStorySelectedImage.hidden = YES;
     appDelegate.shareViewController.commentField.text = nil;
     self.webView.hidden = NO;
 
     [appDelegate hideShareView:YES];
     [appDelegate resetShareComments];
+}
+
+- (void)hideNoStoryMessage {
+    self.noStorySelectedLabel.hidden = YES;
+    self.noStorySelectedImage.hidden = YES;
 }
 
 - (void)drawStory {
@@ -278,6 +286,7 @@
     self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStorySelectedLabel.hidden = NO;
+    self.noStorySelectedImage.hidden = NO;
 }
 
 #pragma mark -
