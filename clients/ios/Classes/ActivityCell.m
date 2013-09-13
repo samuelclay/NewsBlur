@@ -193,7 +193,7 @@
         
     int height = self.activityLabel.frame.size.height;
     
-    return MAX(height + topMargin + bottomMargin, self.faviconView.frame.size.height);
+    return MAX(height + topMargin + bottomMargin, self.faviconView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

@@ -566,6 +566,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         var pre_callback = function(data) {
+            if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
+                if (first_load) {
+                    data.stories = data.stories.splice(0, 5);
+                } else {
+                    data.stories = [];
+                }
+            }
             self.load_feed_precallback(data, feed_id, callback, first_load);
         };
         

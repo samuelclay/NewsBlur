@@ -162,7 +162,7 @@
     
     int height = self.interactionLabel.frame.size.height;
     
-    return height + topMargin + bottomMargin;
+    return MAX(height + topMargin + bottomMargin, self.avatarView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

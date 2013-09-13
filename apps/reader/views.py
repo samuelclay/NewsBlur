@@ -840,6 +840,7 @@ def load_river_stories__redis(request):
     query             = request.REQUEST.get('query')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
+    code              = 1
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -951,10 +952,11 @@ def load_river_stories__redis(request):
     
     if not user.profile.is_premium:
         message = "The full River of News is a premium feature."
-        if page > 1:
-            stories = []
-        else:
-            stories = stories[:5]
+        code = 0
+        # if page > 1:
+        #     stories = []
+        # else:
+        #     stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -965,7 +967,8 @@ def load_river_stories__redis(request):
     #     import random
     #     time.sleep(random.randint(0, 6))
     
-    return dict(message=message,
+    return dict(code=code,
+                message=message,
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 

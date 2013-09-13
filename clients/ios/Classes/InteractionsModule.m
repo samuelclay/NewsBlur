@@ -199,12 +199,8 @@
         interactionCell = [[SmallInteractionCell alloc] init];
     }
     int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20];
-    if (height < minimumHeight) {
-        return minimumHeight;
-    } else {
-        return height;
-    }
 
+    return height;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {

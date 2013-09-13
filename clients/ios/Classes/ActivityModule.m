@@ -198,11 +198,7 @@
                                             objectAtIndex:(indexPath.row)] 
                            withUserProfile:userProfile
                                  withWidth:self.frame.size.width - 20];
-    if (height < minimumHeight) {
-        return minimumHeight;
-    } else {
-        return height;
-    }
+    return height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
