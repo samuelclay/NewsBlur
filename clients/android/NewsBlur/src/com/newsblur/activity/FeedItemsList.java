@@ -138,11 +138,6 @@ public class FeedItemsList extends ItemsList {
 		}
 	}
 
-	@Override
-	public void closeAfterUpdate() {
-		finish();
-	}
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFeed(this, feedId);

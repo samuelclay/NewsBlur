@@ -13,7 +13,6 @@ import com.newsblur.service.SyncService;
 public class SavedStoriesReading extends Reading {
 
 	private int currentPage;
-	private boolean stopLoading = false;
 	private boolean requestedPage = false;
 
 	@Override
@@ -29,11 +28,6 @@ public class SavedStoriesReading extends Reading {
 		setupPager();
 	}
     
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
 	@Override
 	public void checkStoryCount(int position) {
 		if (position == stories.getCount() - 1 && !stopLoading && !requestedPage) {
@@ -62,13 +56,5 @@ public class SavedStoriesReading extends Reading {
 		requestedPage = false;
         super.updateAfterSync();
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
 }

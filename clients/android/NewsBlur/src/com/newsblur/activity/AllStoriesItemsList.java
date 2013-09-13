@@ -114,10 +114,6 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		return true;
 	}
 
-	@Override
-	public void closeAfterUpdate() { }
-
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);

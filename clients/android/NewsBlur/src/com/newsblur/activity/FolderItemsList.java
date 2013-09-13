@@ -106,10 +106,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 	    dialog.show(fragmentManager, "dialog");
 	}
 
-	@Override
-	public void closeAfterUpdate() { }
-
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFolder(this, folderName);
