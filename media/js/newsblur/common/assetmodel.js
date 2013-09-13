@@ -245,18 +245,21 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback);
     },
     
-    mark_feed_as_read: function(feed_id, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, mark_active, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
                        : [feed_id];
         
         this.make_request('/reader/mark_feed_as_read', {
-            feed_id: feed_ids
+            feed_id: feed_ids,
+            cutoff_timestamp: cutoff_timestamp
         }, callback);
 
-        if (feed_id == NEWSBLUR.reader.active_feed) {
+        if (mark_active) {
             this.stories.each(function(story) {
+                if (cutoff_timestamp && 
+                    parseInt(story.get('story_timestamp'), 10) > cutoff_timestamp) return;
                 story.set('read_status', true);
             });
         }

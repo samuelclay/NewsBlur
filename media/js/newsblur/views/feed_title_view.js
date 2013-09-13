@@ -11,6 +11,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "dblclick .feed_counts"                     : "mark_feed_as_read",
         "dblclick"                                  : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_feed_as_read_days",
         "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
         "click .NB-feedbar-train-feed"              : "open_trainer",
         "click .NB-feedbar-statistics"              : "open_statistics",
@@ -69,10 +70,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <% if (type == "story") { %>\
               <div class="NB-feedbar-mark-feed-read-container">\
                    <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
-                   <div class="NB-feedbar-mark-feed-read-time NB-1d">1d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time NB-3d">3d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time NB-7d">7d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time NB-14d">14d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
                    <div class="NB-feedbar-mark-feed-read-expand"></div>\
               </div>\
               <div class="NB-story-title-indicator">\
@@ -285,7 +286,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         return false;
     },
     
-    mark_feed_as_read: function(e) {
+    mark_feed_as_read: function(e, days) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -294,11 +295,16 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         _.delay(_.bind(function() {
             this.flags.double_click = false;
         }, this), 500);
-        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id, days);
         this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
         if (e) {
             return false;
         }
+    },
+    
+    mark_feed_as_read_days: function(e) {
+        var days = parseInt($(e.target).data('days'), 10);
+        this.mark_feed_as_read(e, days);
     },
     
     expand_mark_read: function() {
