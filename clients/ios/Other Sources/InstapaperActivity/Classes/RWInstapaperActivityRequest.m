@@ -111,11 +111,14 @@
     self.connection             = nil;
 	
     if ([responseString compare:RESPONSE_SUCCESS] == NSOrderedSame) {
-        [self.delegate instapaperAddRequestSucceded:self];
+        if ([self.delegate respondsToSelector:@selector(instapaperAddRequestSucceded:)])
+            [self.delegate instapaperAddRequestSucceded:self];
     } else if ([responseString compare:RESPONSE_PASSWORD_INCORRECT] == NSOrderedSame) {
-        [self.delegate instapaperAddRequestIncorrectPassword:self];
+        if ([self.delegate respondsToSelector:@selector(instapaperAddRequestIncorrectPassword:)])
+            [self.delegate instapaperAddRequestIncorrectPassword:self];
     } else {
-        [self.delegate instapaperAddRequestFailed:self];
+        if ([self.delegate respondsToSelector:@selector(instapaperAddRequestFailed:)])
+            [self.delegate instapaperAddRequestFailed:self];
     }
 }
 
