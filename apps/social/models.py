@@ -867,7 +867,7 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, hashes_only=False):
+                    withscores=False, hashes_only=False, cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -892,6 +892,9 @@ class MSocialSubscription(mongo.Document):
         
         current_time    = int(time.time() + 60*60*24)
         mark_read_time  = int(time.mktime(self.mark_read_date.timetuple())) + 1
+        if cutoff_date:
+            mark_read_time  = int(time.mktime(cutoff_date.timetuple())) + 1
+            
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
@@ -1058,29 +1061,39 @@ class MSocialSubscription(mongo.Document):
                 # XXX TODO: Real-time notification, just for this user
         return data
     
-    def mark_feed_read(self):
-        latest_story_date = datetime.datetime.utcnow()
+    def mark_feed_read(self, cutoff_date=None):
         UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
-        # Use the latest story to get last read time.
-        latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
-                                                   shared_date__gte=UNREAD_CUTOFF
-                              ).order_by('shared_date').only('shared_date').first()
-        if latest_shared_story:
-            latest_story_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
-                
-        self.last_read_date = latest_story_date
-        self.mark_read_date = latest_story_date
-        self.unread_count_negative = 0
-        self.unread_count_positive = 0
-        self.unread_count_neutral = 0
-        self.unread_count_updated = datetime.datetime.utcnow()
-        self.oldest_unread_story_date = latest_story_date
+        recount = True
+        
+        if cutoff_date:
+            cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
+        else:
+            # Use the latest story to get last read time.
+            latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
+                                                       shared_date__gte=UNREAD_CUTOFF
+                                  ).order_by('shared_date').only('shared_date').first()
+            if latest_shared_story:
+                cutoff_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
+            else:
+                cutoff_date = datetime.datetime.utcnow()
+                recount = False
+        
+        self.last_read_date = cutoff_date
+        self.mark_read_date = cutoff_date
+        self.oldest_unread_story_date = cutoff_date
+        if not recount:
+            self.unread_count_negative = 0
+            self.unread_count_positive = 0
+            self.unread_count_neutral = 0
+            self.unread_count_updated = datetime.datetime.utcnow()
+            self.needs_unread_recalc = False
+        else:
+            self.needs_unread_recalc = True
         
         # Manually mark all shared stories as read.
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                               cutoff_date=cutoff_date)
         self.mark_story_ids_as_read(unread_story_hashes, mark_all_read=True)
-        self.needs_unread_recalc = False
         
         self.save()
     

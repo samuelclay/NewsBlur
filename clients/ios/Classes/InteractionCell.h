@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OHAttributedLabel.h"
 
 @interface InteractionCell : UITableViewCell {
-    OHAttributedLabel *interactionLabel;
+    UILabel *interactionLabel;
     UIImageView *avatarView;
     int topMargin;
     int bottomMargin;
@@ -19,7 +18,7 @@
     int avatarSize;
 }
 
-@property (retain, nonatomic) OHAttributedLabel *interactionLabel;
+@property (retain, nonatomic) UILabel *interactionLabel;
 @property (retain, nonatomic) UIImageView *avatarView;
 @property (readwrite) int topMargin;
 @property (readwrite) int bottomMargin;

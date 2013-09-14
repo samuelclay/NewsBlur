@@ -676,7 +676,43 @@
     [self loadFeedDetailView];
     
     if (showHUD) {
-        [self.storyPageControl showShareHUD:@"Finding story..."];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.storyPageControl showShareHUD:@"Finding story..."];
+        } else {
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
+            HUD.labelText = @"Finding story...";
+        }        
+    }
+}
+
+- (void)loadStarredDetailViewWithStory:(NSString *)contentId
+                      showFindingStory:(BOOL)showHUD {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
+        }
+    }
+
+    self.isSocialRiverView = NO;
+    self.isRiverView = YES;
+    self.inFindingStoryMode = YES;
+    self.isSocialView = NO;
+    
+    self.tryFeedStoryId = contentId;
+    self.activeFeed = nil;
+    self.activeFolder = @"saved_stories";
+    
+    [self loadRiverFeedDetailView];
+    
+    if (showHUD) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.storyPageControl showShareHUD:@"Finding story..."];
+        } else {
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
+            HUD.labelText = @"Finding story...";
+        }
     }
 }
 
@@ -968,6 +1004,7 @@
         navController.navigationItem.hidesBackButton = YES;
     }
     
+    [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
 }
 
 - (void)navigationController:(UINavigationController *)navController 

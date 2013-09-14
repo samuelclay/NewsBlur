@@ -296,7 +296,7 @@
 }
 
 - (IBAction)doOpenActionSheet:(id)sender {
-//    NSURL *url = [NSURL URLWithString:appDele\0mg ate.activeOriginalStoryURL];
+//    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

@@ -48,6 +48,8 @@
 @property (readwrite) BOOL isSharingStory;
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
+@property (readwrite) BOOL keyboardIsShown;
+@property (readwrite) UIDeviceOrientation rotatingToOrientation;
 
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
@@ -65,6 +67,7 @@
 @synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
+@synthesize keyboardIsShown;
 @synthesize storyNavigationController;
 @synthesize storyTitlesYCoordinate;
 @synthesize storyTitlesOnLeft;
@@ -166,7 +169,12 @@
 	return YES;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    self.rotatingToOrientation = toInterfaceOrientation;
+}
+
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    self.rotatingToOrientation = UIDeviceOrientationUnknown;
     if (!self.feedDetailIsVisible) {
         [self adjustDashboardScreen];
     } else {
@@ -238,7 +246,8 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     [popoverController setDelegate:self];
-    [popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+    int menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
+    [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -567,7 +576,7 @@
         // CASE: story titles on bottom
         self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
         self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-        
+
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
         float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
 
@@ -638,6 +647,9 @@
                                            self.shareNavigationController.view.frame.size.height - 44);
     [self.shareNavigationController.view setNeedsDisplay];
     [self.shareViewController.commentField becomeFirstResponder];
+
+    if (!self.keyboardIsShown)
+        [self keyboardWillShowOrHide:nil];
 }
 
 - (void)transitionFromShareView {
@@ -649,7 +661,7 @@
     CGRect vb = [self.view bounds];
     self.isSharingStory = NO;
     
-    if ([self.shareViewController.commentField isFirstResponder]) {
+    if ([self.shareViewController.commentField isFirstResponder] && self.keyboardIsShown) {
         self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
         [self.shareViewController.commentField resignFirstResponder];
     } else {
@@ -727,13 +739,20 @@
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
-    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"] && !self.isSharingStory) {
+    if (self.rotatingToOrientation != UIDeviceOrientationUnknown) {
+        return; // don't animate changes in the old orientation
+    }
+
+    if (notification.name == UIKeyboardWillShowNotification) {
+        self.keyboardIsShown = YES;
+    } else if (notification.name == UIKeyboardWillHideNotification) {
+        self.keyboardIsShown = NO;
+    }
+
+    if (self.keyboardIsShown && !self.isSharingStory) {
         return;
     }
-    if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && !self.isHidingStory) {
-        return;
-    }
-    
+
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
@@ -741,15 +760,14 @@
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;
-    
+
     self.shareNavigationController.view.frame = CGRectMake(storyNavigationFrame.origin.x,
                                                            vb.size.height,
                                                            storyNavigationFrame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
     CGRect shareViewFrame = self.shareNavigationController.view.frame;
     
-    
-    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+    if (self.keyboardIsShown) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
@@ -768,10 +786,10 @@
     }
 
     // CASE: when dismissing the keyboard but not dismissing the share view
-    if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && !self.isHidingStory) {
+    if (!self.keyboardIsShown && !self.isHidingStory) {
         self.storyNavigationController.view.frame = storyNavigationFrame;
     // CASE: when dismissing the keyboard AND dismissing the share view
-    } else if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && self.isHidingStory) {
+    } else if (!self.keyboardIsShown && self.isHidingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
             self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                    0,
@@ -819,7 +837,7 @@
          }
          
      } completion:^(BOOL finished) {
-         if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+         if (self.keyboardIsShown) {
              self.storyNavigationController.view.frame = storyNavigationFrame;
              [self.storyPageControl.currentPage scrolltoComment];
              [self.storyPageControl resizeScrollView];

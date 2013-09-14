@@ -245,7 +245,6 @@
         NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
     }
     
-    [self refreshPages];
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
@@ -253,7 +252,9 @@
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];
-        previousPage.view.hidden = YES;
+        if (currentPage.pageIndex == 0) {
+            previousPage.view.hidden = YES;
+        }
     }
 }
 
@@ -521,7 +522,10 @@
     frame.origin.y = 0;
 
     self.scrollingToPage = pageIndex;
-
+    [self.currentPage hideNoStoryMessage];
+    [self.nextPage hideNoStoryMessage];
+    [self.previousPage hideNoStoryMessage];
+    
     // Check if already on the selected page
     if (self.scrollView.contentOffset.x == frame.origin.x) {
         [self applyNewIndex:pageIndex pageController:currentPage];

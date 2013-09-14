@@ -856,6 +856,7 @@ def load_river_stories__redis(request):
     query             = request.REQUEST.get('query')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
+    code              = 1
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -969,10 +970,11 @@ def load_river_stories__redis(request):
     
     if not user.profile.is_premium:
         message = "The full River of News is a premium feature."
-        if page > 1:
-            stories = []
-        else:
-            stories = stories[:5]
+        code = 0
+        # if page > 1:
+        #     stories = []
+        # else:
+        #     stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -983,7 +985,8 @@ def load_river_stories__redis(request):
     #     import random
     #     time.sleep(random.randint(0, 6))
     
-    return dict(message=message,
+    return dict(code=code,
+                message=message,
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
@@ -1286,9 +1289,11 @@ def mark_story_as_unread(request):
 def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
+    cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
+    cutoff_date = datetime.datetime.fromtimestamp(cutoff_timestamp) if cutoff_timestamp else None
     
     for feed_id in feed_ids:
         if 'social:' in feed_id:
@@ -1315,8 +1320,8 @@ def mark_feed_as_read(request):
             continue
         
         try:
-            marked_read = sub.mark_feed_read()
-            if marked_read:
+            marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError, e:
             errors.append("Could not mark feed as read: %s" % e)
@@ -1324,6 +1329,7 @@ def mark_feed_as_read(request):
             
     if multiple:
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
+        r.publish(request.user.username, 'refresh:%s' % ','.join(feed_ids))
         
     return dict(code=code, errors=errors)
 
@@ -1360,6 +1366,10 @@ def add_url(request):
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
         feed = us and us.feed
+        if feed:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(request.user.username, 'reload:%s' % feed.pk)
+        
         
     return dict(code=code, message=message, feed=feed)
 
@@ -1376,6 +1386,8 @@ def add_folder(request):
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         user_sub_folders_object.add_folder(parent_folder, folder)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'reload:feeds')
     else:
         code = -1
         message = "Gotta write in a folder name."
@@ -1396,6 +1408,9 @@ def delete_feed(request):
     feed = Feed.objects.filter(pk=feed_id)
     if feed:
         feed[0].count_subscribers()
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
     
     return dict(code=1, message="Removed %s from '%s'." % (feed, in_folder))
 
@@ -1435,6 +1450,9 @@ def delete_folder(request):
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
 
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     return dict(code=1)
     
 @ajax_login_required
@@ -1480,6 +1498,9 @@ def move_feed_to_folder(request):
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
@@ -1492,6 +1513,9 @@ def move_folder_to_folder(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
@@ -1595,7 +1619,10 @@ def save_feed_chooser(request):
             
     request.user.profile.queue_new_feeds()
     request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()

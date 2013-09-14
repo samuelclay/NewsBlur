@@ -36,14 +36,14 @@
 
 - (void)viewDidLoad {    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
-    folderImage.frame = CGRectMake(0, 0, 16, 16);
+    folderImage.frame = CGRectMake(-6, 0, 16, 16);
     [toFolderInput setLeftView:folderImage];
     [toFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
-    folderImage2.frame = CGRectMake(0, 0, 16, 16);
+    folderImage2.frame = CGRectMake(-6, 0, 16, 16);
     [fromFolderInput setLeftView:folderImage2];
     [fromFolderInput setLeftViewMode:UITextFieldViewModeAlways];
-        
+    
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
@@ -287,6 +287,23 @@ numberOfRowsInComponent:(NSInteger)component {
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     return YES;
+}
+
+@end
+
+
+@implementation FolderTextField
+
+- (CGRect)textRectForBounds:(CGRect)bounds {
+    int margin = 18;
+    CGRect inset = CGRectMake(bounds.origin.x + margin, bounds.origin.y, bounds.size.width - margin, bounds.size.height);
+    return inset;
+}
+
+- (CGRect)editingRectForBounds:(CGRect)bounds {
+    int margin = 18;
+    CGRect inset = CGRectMake(bounds.origin.x + margin, bounds.origin.y, bounds.size.width - margin, bounds.size.height);
+    return inset;
 }
 
 @end

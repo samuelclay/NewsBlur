@@ -404,31 +404,37 @@ class UserSubscription(models.Model):
         r.srem(read_stories_key, *stale_story_hashes)
         r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
     
-    def mark_feed_read(self):
+    def mark_feed_read(self, cutoff_date=None):
         if (self.unread_count_negative == 0
             and self.unread_count_neutral == 0
             and self.unread_count_positive == 0
             and not self.needs_unread_recalc):
             return
         
-        now = datetime.datetime.utcnow()
-        
+        recount = True
         # Use the latest story to get last read time.
-        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
-        if latest_story and len(latest_story) >= 1:
-            latest_story_date = latest_story[0]['story_date']\
-                                + datetime.timedelta(seconds=1)
+        if cutoff_date:
+            cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story_date = now
+            latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+            if latest_story and len(latest_story) >= 1:
+                cutoff_date = (latest_story[0]['story_date']
+                               + datetime.timedelta(seconds=1))
+            else:
+                cutoff_date = datetime.datetime.utcnow()
+                recount = False
         
-        self.last_read_date = latest_story_date
-        self.mark_read_date = latest_story_date
-        self.unread_count_negative = 0
-        self.unread_count_positive = 0
-        self.unread_count_neutral = 0
-        self.unread_count_updated = now
-        self.oldest_unread_story_date = now
-        self.needs_unread_recalc = False
+        self.last_read_date = cutoff_date
+        self.mark_read_date = cutoff_date
+        self.oldest_unread_story_date = cutoff_date
+        if not recount:
+            self.unread_count_negative = 0
+            self.unread_count_positive = 0
+            self.unread_count_neutral = 0
+            self.unread_count_updated = datetime.datetime.utcnow()
+            self.needs_unread_recalc = False
+        else:
+            self.needs_unread_recalc = True
         
         self.save()
         

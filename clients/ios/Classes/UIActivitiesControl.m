@@ -67,13 +67,12 @@
                                             applicationActivities:appActivities];
     
     [shareSheet setValue:[appDelegate.activeStory objectForKey:@"story_title"] forKey:@"subject"];
-    
     [shareSheet setCompletionHandler:^(NSString *activityType, BOOL completed) {
         if (completed) {
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(keyboardDidHide:)
-                                                         name:UIKeyboardDidHideNotification
-                                                       object:nil];
+//            [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                     selector:@selector(keyboardDidHide:)
+//                                                         name:UIKeyboardDidHideNotification
+//                                                       object:nil];
             
             NSString *_completedString;
             if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {

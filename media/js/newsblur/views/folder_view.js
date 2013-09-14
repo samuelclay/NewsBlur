@@ -12,14 +12,16 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     events: {
-        "click .NB-feedlist-manage-icon"    : "show_manage_menu",
-        "click .folder_title"               : "open",
-        "click .NB-feedlist-collapse-icon"  : "collapse_folder",
-        "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
-        "click .NB-feedbar-options"         : "open_options_popover",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
-        "mouseenter"                        : "add_hover_inverse",
-        "mouseleave"                        : "remove_hover_inverse"
+        "click .NB-feedlist-manage-icon"            : "show_manage_menu",
+        "click .folder_title"                       : "open",
+        "click .NB-feedlist-collapse-icon"          : "collapse_folder",
+        "click .NB-feedbar-mark-feed-read"          : "mark_folder_as_read",
+        "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_folder_as_read_days",
+        "click .NB-feedbar-options"                 : "open_options_popover",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
+        "mouseenter"                                : "add_hover_inverse",
+        "mouseleave"                                : "remove_hover_inverse"
     },
     
     initialize: function() {
@@ -102,14 +104,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
-                <div class="NB-folder-icon"></div>\
-                <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
-                <div class="NB-feedlist-manage-icon"></div>\
-                <span class="folder_title_text">\
-                    <span><%= folder_title %></span>\
-                    <div class="NB-feedbar-mark-feed-read"></div>\
-                </span>\
                 <% if (feedbar) { %>\
+                    <div class="NB-search-container"></div>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
@@ -118,12 +114,25 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-search-container"></div>\
+                    <div class="NB-feedbar-mark-feed-read-container">\
+                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
+                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
+                    </div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-              <% } %>\
+                <% } %>\
+                <div class="NB-folder-icon"></div>\
+                <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
+                <div class="NB-feedlist-manage-icon"></div>\
+                <span class="folder_title_text">\
+                    <span><%= folder_title %></span>\
+                </span>\
             </div>\
         <% } %>\
         <% if (!feedbar) { %>\
@@ -350,9 +359,18 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         }
     },
     
-    mark_folder_as_read: function() {
-        NEWSBLUR.reader.mark_folder_as_read();
-        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+    mark_folder_as_read: function(e, days_back) {
+        NEWSBLUR.reader.mark_folder_as_read(this.model, days_back);
+        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
+    },
+
+    mark_folder_as_read_days: function(e) {
+        var days = parseInt($(e.target).data('days'), 10);
+        this.mark_folder_as_read(e, days);
+    },
+    
+    expand_mark_read: function() {
+        NEWSBLUR.Views.FeedTitleView.prototype.expand_mark_read.call(this);
     },
     
     open_options_popover: function() {

@@ -7,8 +7,8 @@
 //
 
 #import "InteractionCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
+#import <CoreText/CoreText.h>
 
 @implementation InteractionCell
 
@@ -31,9 +31,9 @@
         self.avatarView = avatar;
         [self.contentView addSubview:avatar];
         
-        OHAttributedLabel *interaction = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *interaction = [[UILabel alloc] initWithFrame:CGRectZero];
         interaction.backgroundColor = [UIColor whiteColor];
-        interaction.automaticallyAddLinksForType = NO;
+//        interaction.automaticallyAddLinksForType = NO;
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
         
@@ -64,6 +64,7 @@
     labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
     labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
     self.interactionLabel.frame = labelRect;
+    [self.interactionLabel sizeToFit];
 }
 
 
@@ -74,9 +75,8 @@
     interactionLabelRect.size.height = 300;
 
     self.interactionLabel.frame = interactionLabelRect;
+    self.interactionLabel.numberOfLines = 0;
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-    
-//    UIImage *placeholder = [UIImage imageNamed:@"user_light"];
     
     // this is for the rare instance when the with_user doesn't return anything
     if ([[interaction objectForKey:@"with_user"] class] == [NSNull class]) {
@@ -84,7 +84,7 @@
     }
     
     [self.avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
-        placeholderImage:nil];
+        placeholderImage:nil ];
         
     NSString *category = [interaction objectForKey:@"category"];
     NSString *content = [interaction objectForKey:@"content"];
@@ -97,50 +97,72 @@
     if ([category isEqualToString:@"follow"]) {        
         txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n%@", username, title, comment];          
+        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n \n%@", username, title, comment];          
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n%@", username, title, comment];  
+        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n \n%@", username, title, comment];  
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n%@", username, title, comment];
+            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n%@", username, title, comment]; 
+        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n \n%@", username, title, comment]; 
     }
     
-    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
-    NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txtWithTime];
+    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
+    NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    // for those calls we don't specify a range so it affects the whole string
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+    NSMutableParagraphStyle* style = [NSMutableParagraphStyle new];
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    style.alignment = NSTextAlignmentLeft;
+    style.lineSpacing = 1.0f;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
-        [attrStr setTextColor:UIColorFromRGB(0xffffff)];        
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
-        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
 
     }
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
+        [attrStr addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13]} range:[txtWithTime rangeOfString:username]];
+    }
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
+
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
+    
+    NSRange commentRange = [txtWithTime rangeOfString:comment];
+    if (commentRange.location != NSNotFound) {
+        commentRange.location -= 2;
+        commentRange.length = 1;
+        if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {
+            [attrStr addAttribute:NSFontAttributeName
+                            value:[UIFont systemFontOfSize:6.0f]
+                            range:commentRange];
+        }
     }
     
-    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:title]];
-    [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txtWithTime rangeOfString:comment]]; 
-        
-    [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
+    NSRange dateRange = [txtWithTime rangeOfString:time];
+    if (dateRange.location != NSNotFound) {
+        dateRange.location -= 2;
+        dateRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:6.0f]
+                        range:dateRange];
+    }
     
-    self.interactionLabel.attributedText = attrStr; 
-    
+    self.interactionLabel.attributedText = attrStr;
     [self.interactionLabel sizeToFit];
     
     int height = self.interactionLabel.frame.size.height;
     
-    return height;
+    return MAX(height + topMargin + bottomMargin, self.avatarView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {
