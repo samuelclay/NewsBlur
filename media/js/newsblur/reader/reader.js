@@ -409,9 +409,9 @@
                     gravity: 's',
                     delayIn: 375
                 }).tipsy('enable');
-                $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
-                    gravity: 'n',
-                    delayIn: 375,
+                $('.NB-narrow .NB-taskbar-button.NB-tipsy, .NB-task-layout-split').tipsy({
+                    gravity: 's',
+                    delayIn: 175,
                     title: 'tipsy-title'
                 }).each(function() {
                     $(this).tipsy('enable');
