@@ -105,6 +105,15 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <% if (feedbar) { %>\
+                    <div class="NB-search-container"></div>\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
+                            &middot;\
+                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                        </span>\
+                    </div>\
                     <div class="NB-feedbar-mark-feed-read-container">\
                         <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
                         <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
@@ -124,17 +133,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 <span class="folder_title_text">\
                     <span><%= folder_title %></span>\
                 </span>\
-                <% if (feedbar) { %>\
-                    <div class="NB-feedbar-options-container">\
-                        <span class="NB-feedbar-options">\
-                            <div class="NB-icon"></div>\
-                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
-                            &middot;\
-                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
-                        </span>\
-                    </div>\
-                    <div class="NB-search-container"></div>\
-              <% } %>\
             </div>\
         <% } %>\
         <% if (!feedbar) { %>\

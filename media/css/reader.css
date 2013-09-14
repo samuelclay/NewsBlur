@@ -1112,24 +1112,24 @@ background: transparent;
 }
 
 .NB-story-titles-header {
-    
+    font-weight: bold;
+    font-size: 16px;
+    padding: 6px 24px 0px 8px;    
+    position: relative;
+    overflow: hidden;
 }
 
 .NB-feedbar {
-    font-weight: bold;
-    font-size: 16px;
-    padding: 3px 228px 3px 8px;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
     background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
-    border-top: 1px solid #C2C5BE;
+    border-bottom: 1px solid #C2C5BE;
     background-color: #F3F3EE;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
     background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
     background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
-    position: relative;
-    overflow: hidden;
 }
+
 .NB-feedbar .feed .feed_favicon {
     margin: 4px 4px 0 6px;
     vertical-align: top;
@@ -1156,14 +1156,11 @@ background: transparent;
     display: -webkit-box;
 }
 .NB-feedbar .NB-feedbar-options-container {
-    position: absolute;
-    right: 0;
-    width: 226px;
-    top: 2px;
+    float: right;
 }
 .NB-feedbar .NB-feedbar-options {
     cursor: pointer;
-    float: left;
+    float: right;
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
@@ -1171,7 +1168,7 @@ background: transparent;
     font-size: 10px;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 4px 0 0;
+    margin: 3px 0 0;
 }
 .NB-feedbar .NB-feedbar-options:hover,
 .NB-feedbar .NB-feedbar-options.NB-active {
@@ -1273,8 +1270,8 @@ background: transparent;
     opacity: 0;
     display: none;
     position: absolute;
-    left: 12px;
-    top: 4px;
+    left: 10px;
+    top: 7px;
     width: 20px;
     height: 22px;
     cursor: pointer;
@@ -1286,8 +1283,8 @@ background: transparent;
     background-size: 8px;
 }
 .NB-feedbar .NB-folder .NB-feedlist-manage-icon {
-    top: 4px;
-    left: 10px;
+    top: 7px;
+    left: 8px;
 }
 .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 5px;
@@ -1372,7 +1369,7 @@ background: transparent;
     height: 16px;
     position: absolute;
     left: 12px;
-    top: 7px;
+    top: 10px;
 }
 .NB-feedbar .NB-folder .NB-starred-icon {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
@@ -1381,7 +1378,7 @@ background: transparent;
     height: 16px;
     position: absolute;
     left: 12px;
-    top: 7px;
+    top: 10px;
 }
 
 .NB-feedbar .folder ul.folder,
@@ -3185,7 +3182,7 @@ background: transparent;
 /* ====================== */
 
 #story_taskbar .NB-river-progress {
-  margin: 6px 12px 0;
+  margin: 3px 12px 0;
   width: 150px;
   height: 20px;
 }
@@ -3213,7 +3210,7 @@ background: transparent;
 /* ============== */
 
 #story_taskbar .NB-feed-error {
-  margin: 6px 12px 0;
+  margin: 2px 12px 0;
   height: 20px;
 }
 
@@ -3242,12 +3239,12 @@ background: transparent;
 
 #story_taskbar .feed_counts_floater {
     position: absolute;
-    bottom: 1px;
+    bottom: 2px;
     left: 350px;
-    height: 30px;
+    height: 27px;
     z-index: 10;
     display: block;
-    font-size: 20px;
+    font-size: 19px;
 }
 .NB-is-anonymous #story_taskbar .feed_counts_floater {
     display: none;
@@ -3533,7 +3530,6 @@ background: transparent;
 /* ============ */
 
 .NB-taskbar-container {
-    border-bottom: 1px solid #C2C5BE;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
     background-color: #F3F3EE;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
@@ -3621,17 +3617,27 @@ background: transparent;
 #story_taskbar {
   overflow: hidden;
     display: none;
+    border-top: 1px solid #C2C5BE;
 }
 #story_taskbar .feed_counts_floater .unread_count {
     margin-top: 1px;
     text-shadow: none;
 }
 #story_taskbar .NB-taskbar {
-    margin: 5px 0 0 0;
+    margin: 3px 0 0 0;    
+}
+.NB-feedbar .NB-taskbar {
+    margin: 2px 0 0 0;
 }
 #story_taskbar .NB-taskbar .NB-taskbar-button {
     font-size: 11px;
-    padding: 4px 8px 3px;
+    padding: 2px 8px 2px;
+    line-height: 18px;
+    position: relative;
+}
+.NB-feedbar .NB-taskbar .NB-taskbar-button {
+    font-size: 11px;
+    padding: 3px 8px;
     line-height: 18px;
     position: relative;
 }
@@ -3641,9 +3647,10 @@ background: transparent;
     margin-left: 6px;
 }
 
-#story_taskbar .NB-taskbar-nav {
+.NB-feedbar .NB-taskbar-nav {
     float: right;
-    margin-right: 18px;
+    margin: 6px 18px 0 0;
+    font-weight: normal;
 }
 #story_taskbar .NB-taskbar-layout {
     float: right;
@@ -9952,7 +9959,7 @@ form.opml_import_form input {
     display: none;
     position: absolute;
     right: 2px;
-    top: 4px;
+    top: 7px;
     z-index: 1;
     width: 12px;
     height: 12px;
@@ -9972,10 +9979,12 @@ form.opml_import_form input {
 .NB-searching .NB-search-close {
     display: block;
 }
+.NB-search-container {
+    position: relative;
+}
 .NB-story-title-search {
-    position: absolute;
-    top: 6px;
-    right: 24px;
+    float: right;
+    margin: 3px 0 0 12px;
 }
 .NB-story-title-search-input {
     -webkit-transition: all .22s ease-in-out;
@@ -10025,11 +10034,13 @@ form.opml_import_form input {
     margin-left: 200px;
 }
 
-<<<<<<< HEAD
 /* ======================== */
 /* = Feed Options Popover = */
 /* ======================== */
 
+.NB-filter-popover-container.popover.bottom-left .arrow {
+    left: 20%;
+}
 .NB-filter-popover-container .popover-content {
     padding: 0;
 }

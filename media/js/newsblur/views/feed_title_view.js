@@ -68,6 +68,15 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
+              <div class="NB-search-container"></div>\
+              <div class="NB-feedbar-options-container">\
+                  <span class="NB-feedbar-options">\
+                      <div class="NB-icon"></div>\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                      &middot;\
+                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                  </span>\
+              </div>\
               <div class="NB-feedbar-mark-feed-read-container">\
                    <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
                    <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
@@ -85,17 +94,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
           </span>\
-          <% if (type == "story") { %>\
-              <div class="NB-feedbar-options-container">\
-                  <span class="NB-feedbar-options">\
-                      <div class="NB-icon"></div>\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
-                      &middot;\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
-                  </span>\
-              </div>\
-              <div class="NB-search-container"></div>\
-          <% } %>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
           <div class="NB-feedlist-manage-icon"></div>\

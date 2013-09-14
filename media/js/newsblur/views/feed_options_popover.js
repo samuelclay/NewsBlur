@@ -5,12 +5,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     options: {
         'width': 264,
         'anchor': '.NB-feedbar-options',
-        'placement': 'top right',
+        'placement': 'bottom -left',
         'offset': {
-            top: 10,
-            left: -100
+            top: 18,
+            left: 0
         },
-        'overlay_top': false,
+        'overlay_top': true,
         'popover_class': 'NB-filter-popover-container'
     },
     

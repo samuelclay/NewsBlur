@@ -157,7 +157,8 @@
           $('.NB-javascript').removeClass('NB-javascript');
         },
         
-        resize_window: function() {
+        resize_window: function(e, a, f) {
+            console.log(["resize", e, a, f]);
             var flag;
             var view = this.story_view;
             
