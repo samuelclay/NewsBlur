@@ -431,7 +431,7 @@ class UserSubscription(models.Model):
             self.unread_count_negative = 0
             self.unread_count_positive = 0
             self.unread_count_neutral = 0
-            self.unread_count_updated = cutoff_date
+            self.unread_count_updated = datetime.datetime.utcnow()
             self.needs_unread_recalc = False
         else:
             self.needs_unread_recalc = True
