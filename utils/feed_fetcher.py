@@ -435,8 +435,6 @@ class Dispatcher:
                     feed_code = 500
                 elif ret_feed == FEED_ERRPARSE:
                     feed_code = 550
-                elif ret_feed == FEED_ERRPARSE:
-                    feed_code = 550
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
