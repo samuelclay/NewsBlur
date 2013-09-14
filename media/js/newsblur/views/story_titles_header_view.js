@@ -45,13 +45,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
-                    <div class="NB-story-title-indicator">\
-                        <div class="NB-story-title-indicator-count"></div>\
-                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
-                    </div>\
-                    <div class="NB-folder-icon"></div>\
-                    <div class="NB-feedlist-manage-icon"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
                     <% if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
                             <span class="NB-feedbar-options">\
@@ -62,6 +55,13 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             </span>\
                         </div>\
                     <% } %>\
+                    <div class="NB-story-title-indicator">\
+                        <div class="NB-story-title-indicator-count"></div>\
+                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                    </div>\
+                    <div class="NB-folder-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: this.fake_folder_title(),
