@@ -1118,7 +1118,7 @@ background: transparent;
 .NB-feedbar {
     font-weight: bold;
     font-size: 16px;
-    padding: 2px 228px 4px 8px;
+    padding: 3px 228px 3px 8px;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
     background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
@@ -1206,7 +1206,7 @@ background: transparent;
 
 .NB-feedbar .NB-feedbar-mark-feed-read-container {
     position: relative;
-    margin: 0 12px 0 2px;
+    margin: 0 10px 0 6px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
@@ -1224,7 +1224,7 @@ background: transparent;
     width: 26px;
     height: 14px;
     z-index: 1;
-    margin: 4px 0 0 8px;
+    margin: 3px 0 0 8px;
     
     background-color: #F0F1EC;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F0F1EC), to(#EBEDE7));
@@ -1274,7 +1274,7 @@ background: transparent;
     display: none;
     position: absolute;
     left: 12px;
-    top: 3px;
+    top: 4px;
     width: 20px;
     height: 22px;
     cursor: pointer;
@@ -1286,7 +1286,7 @@ background: transparent;
     background-size: 8px;
 }
 .NB-feedbar .NB-folder .NB-feedlist-manage-icon {
-    top: 3px;
+    top: 4px;
     left: 10px;
 }
 .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
@@ -1372,7 +1372,7 @@ background: transparent;
     height: 16px;
     position: absolute;
     left: 12px;
-    top: 6px;
+    top: 7px;
 }
 .NB-feedbar .NB-folder .NB-starred-icon {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
@@ -1380,8 +1380,8 @@ background: transparent;
     width: 16px;
     height: 16px;
     position: absolute;
-    left: 4px;
-    top: 4px;
+    left: 12px;
+    top: 7px;
 }
 
 .NB-feedbar .folder ul.folder,
@@ -1405,7 +1405,7 @@ background: transparent;
     font-size: 10px;
     padding: 1px 8px;
     line-height: 14px;
-    margin: 4px 12px 0;
+    margin: 3px 12px 0;
 }
 .NB-feedbar .NB-story-title-indicator:hover {
     background-color: rgba(0, 0, 0, .1);

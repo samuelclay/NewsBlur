@@ -1447,9 +1447,11 @@
             this.switch_to_correct_view();
             this.make_feed_title_in_stories();
             
+            
             _.defer(function() {
                 NEWSBLUR.app.story_titles.scroll_to_selected_story();
                 NEWSBLUR.app.story_list.scroll_to_selected_story();
+                NEWSBLUR.app.feed_list.scroll_to_selected();
                 if (_.contains(['split', 'list'], NEWSBLUR.assets.preference('story_layout'))) {
                     NEWSBLUR.app.story_titles.fill_out();
                 } else {
