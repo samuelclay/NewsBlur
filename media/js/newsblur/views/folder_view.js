@@ -361,14 +361,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         }
     },
     
-    mark_folder_as_read: function(days_back) {
+    mark_folder_as_read: function(e, days_back) {
         NEWSBLUR.reader.mark_folder_as_read(this.model, days_back);
         this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
     },
 
     mark_folder_as_read_days: function(e) {
         var days = parseInt($(e.target).data('days'), 10);
-        this.mark_folder_as_read(days);
+        this.mark_folder_as_read(e, days);
     },
     
     expand_mark_read: function() {
