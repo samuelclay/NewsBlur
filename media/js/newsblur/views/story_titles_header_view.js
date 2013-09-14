@@ -41,7 +41,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
-            $view.append(this.search_view.$el);
+            $view.prepend(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\

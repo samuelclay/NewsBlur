@@ -9959,7 +9959,7 @@ form.opml_import_form input {
     display: none;
     position: absolute;
     right: 2px;
-    top: 7px;
+    top: 4px;
     z-index: 1;
     width: 12px;
     height: 12px;
@@ -9985,6 +9985,7 @@ form.opml_import_form input {
 .NB-story-title-search {
     float: right;
     margin: 3px 0 0 12px;
+    position: relative;
 }
 .NB-story-title-search-input {
     -webkit-transition: all .22s ease-in-out;
