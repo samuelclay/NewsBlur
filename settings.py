@@ -46,7 +46,7 @@ ADMINS       = (
 
 SERVER_NAME  = 'newszeit'
 SERVER_EMAIL = 'server@newszeit.com'
-HELLO_EMAIL  = 'hello@newsblur.com'
+HELLO_EMAIL  = 'hello@newszeit.com'
 NEWSBLUR_URL = 'http://www.newszeit.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 
