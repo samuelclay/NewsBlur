@@ -155,19 +155,19 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     $.make('div', { className: 'NB-modal-section'}, [
                         $.make('div', { className: 'NB-preference NB-preference-permalinkdirect' }, [
                             $.make('label', { className: 'NB-preference-label'}, [
-                                'Blurblog permalinks'
+                                'Zeitblog 永久链接'
                             ]),
                             $.make('div', { className: 'NB-preference-options' }, [
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-permalinkdirect-0', type: 'radio', name: 'bb_permalink_direct', value: 'false', checked: true }),
                                     $.make('label', { 'for': 'NB-preference-permalinkdirect-0' }, [
-                                        'Link to my blurblog and shared comments'
+                                        '指向我的 Zeitblog 和评论'
                                     ])
                                 ]),
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-permalinkdirect-1', type: 'radio', name: 'bb_permalink_direct', value: 'true' }),
                                     $.make('label', { 'for': 'NB-preference-permalinkdirect-1' }, [
-                                        'Link directly to the original story'
+                                        '直接指向原始文章'
                                     ])
                                 ])
                             ])
@@ -639,13 +639,13 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Saved!');
+            .text('已保存！');
     },
     
     disable_save_blurblog: function() {
         $('.NB-blurblog-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Saved!');
+            .text('已保存！');
     }
     
 });
