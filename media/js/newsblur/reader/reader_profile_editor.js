@@ -151,7 +151,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     ])
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Blurblog Options'),
+                    $.make('legend', 'Zeitblog 选项'),
                     $.make('div', { className: 'NB-modal-section'}, [
                         $.make('div', { className: 'NB-preference NB-preference-permalinkdirect' }, [
                             $.make('label', { className: 'NB-preference-label'}, [
