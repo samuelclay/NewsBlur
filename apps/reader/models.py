@@ -245,9 +245,14 @@ class UserSubscription(models.Model):
             range_func = r.zrange
         else:
             range_func = r.zrevrange
-            
-        ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
-        unread_ranked_stories_keys  = 'zhU:%s:feeds' % (user_id)
+        
+        if not feed_ids:
+            feed_ids = []
+        
+        # feeds_string = ""
+        feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
+        ranked_stories_keys  = 'zU:%s:feeds:%s' % (user_id, feeds_string)
+        unread_ranked_stories_keys  = 'zhU:%s:feeds:%s' % (user_id, feeds_string)
         stories_cached = r.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else r.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
@@ -399,31 +404,37 @@ class UserSubscription(models.Model):
         r.srem(read_stories_key, *stale_story_hashes)
         r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
     
-    def mark_feed_read(self):
+    def mark_feed_read(self, cutoff_date=None):
         if (self.unread_count_negative == 0
             and self.unread_count_neutral == 0
             and self.unread_count_positive == 0
             and not self.needs_unread_recalc):
             return
         
-        now = datetime.datetime.utcnow()
-        
+        recount = True
         # Use the latest story to get last read time.
-        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
-        if latest_story and len(latest_story) >= 1:
-            latest_story_date = latest_story[0]['story_date']\
-                                + datetime.timedelta(seconds=1)
+        if cutoff_date:
+            cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story_date = now
+            latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+            if latest_story and len(latest_story) >= 1:
+                cutoff_date = (latest_story[0]['story_date']
+                               + datetime.timedelta(seconds=1))
+            else:
+                cutoff_date = datetime.datetime.utcnow()
+                recount = False
         
-        self.last_read_date = latest_story_date
-        self.mark_read_date = latest_story_date
-        self.unread_count_negative = 0
-        self.unread_count_positive = 0
-        self.unread_count_neutral = 0
-        self.unread_count_updated = now
-        self.oldest_unread_story_date = now
-        self.needs_unread_recalc = False
+        self.last_read_date = cutoff_date
+        self.mark_read_date = cutoff_date
+        self.oldest_unread_story_date = cutoff_date
+        if not recount:
+            self.unread_count_negative = 0
+            self.unread_count_positive = 0
+            self.unread_count_neutral = 0
+            self.unread_count_updated = datetime.datetime.utcnow()
+            self.needs_unread_recalc = False
+        else:
+            self.needs_unread_recalc = True
         
         self.save()
         
@@ -653,9 +664,11 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_story_hashes_read(cls, user_id, story_hashes, r=None):
+    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, s=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not s:
+            s = redis.Redis(connection_pool=settings.REDIS_POOL)
         # if not r2:
         #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
@@ -674,7 +687,7 @@ class RUserStory:
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (user_id)
             share_key = "S:%s" % (story_hash)
-            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            friends_with_shares = [int(f) for f in s.sinter(share_key, friend_key)]
             friend_ids.update(friends_with_shares)
             cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p)
         

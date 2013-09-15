@@ -1337,9 +1337,12 @@ class Feed(models.Model):
         #     print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
     
-    def get_next_scheduled_update(self, force=False, verbose=True):
-        if self.min_to_decay and not force:
+    def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False):
+        if self.min_to_decay and not force and not premium_speed:
             return self.min_to_decay
+        
+        if premium_speed:
+            self.active_premium_subscribers += 1
         
         upd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 

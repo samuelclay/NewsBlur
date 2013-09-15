@@ -198,7 +198,7 @@
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
         int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
                                withUserProfile:self.userProfile
-                                     withWidth:width] + 20;
+                                     withWidth:width];
         return height;
     }
 }

@@ -355,6 +355,11 @@ class Dispatcher:
                     rand = random.random()
                     if random_weight < 100 and rand < quick:
                         skip = True
+                # elif feed.feed_address.startswith("http://news.google.com/news"):
+                #     skip = True
+                #     weight = "-"
+                #     quick = "-"
+                #     rand = "-"
                 if skip:
                     logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)...' % (
                         feed.title[:30],
@@ -430,8 +435,6 @@ class Dispatcher:
                     feed_code = 500
                 elif ret_feed == FEED_ERRPARSE:
                     feed_code = 550
-                elif ret_feed == FEED_ERRPARSE:
-                    feed_code = 550
                 
             if not feed: continue
             feed = self.refresh_feed(feed.pk)
@@ -467,7 +470,10 @@ class Dispatcher:
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
-                icon_importer = IconImporter(feed, page_data=page_data, force=self.options['force'])
+                force = self.options['force']
+                if random.random() > .99:
+                    force = True
+                icon_importer = IconImporter(feed, page_data=page_data, force=force)
                 try:
                     icon_importer.save()
                     icon_duration = time.time() - start_duration

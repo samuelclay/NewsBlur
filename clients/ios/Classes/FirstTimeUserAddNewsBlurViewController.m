@@ -33,7 +33,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"All Done!";
+    self.navigationItem.title = @"All Done";
 }
 
 - (void)viewDidUnload
@@ -50,7 +50,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    
+    [self addSite:@"http://blog.newsblur.com/rss"];
+    [self addPopular];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

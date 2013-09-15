@@ -136,19 +136,13 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         
         this.read_story_delay = _.delay(_.bind(function() {
             if (!delay || (delay && this.active_story.id == story.id)) {
-                var mark_read_fn = NEWSBLUR.assets.mark_story_as_read;
                 var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
                 if (!feed) {
                     feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
                 }
-                if ((feed && feed.is_social()) ||
-                    _.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
-                    mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
-                }
-                mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {
+                NEWSBLUR.assets.mark_story_hash_as_read(story, _.bind(function(read) {
                     this.update_read_count(story, {previously_read: read});
                 }, this));
-                story.set('read_status', 1);
             }
         }, this), delay * 1000);
     },

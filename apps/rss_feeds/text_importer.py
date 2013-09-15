@@ -34,6 +34,9 @@ class TextImporter:
         except TimeoutError:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: timed out")
             resp = None
+        except requests.exceptions.TooManyRedirects:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: too many redirects")
+            resp = None
         
         if not resp:
             return

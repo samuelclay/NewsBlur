@@ -34,15 +34,16 @@
     }
     
     
-    if (![[[NSUserDefaults standardUserDefaults]
-           objectForKey:@"offline_allowed"] boolValue]) {
+    BOOL offlineAllowed = [[[NSUserDefaults standardUserDefaults]
+                            objectForKey:@"offline_allowed"] boolValue];
+    if (!offlineAllowed ||
+        ![appDelegate isReachabileForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
-//    NSLog(@"Fetching Stories...");
     
     NSArray *hashes = [self unfetchedStoryHashes];
     
@@ -60,16 +61,24 @@
             }
         });
         return NO;
+    } else {
+        NSLog(@"Fetching Stories: %@", [hashes objectAtIndex:0]);
     }
     
+    __block NSCondition *lock = [NSCondition new];
+    [lock lock];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/reader/river_stories?page=0&h=%@",
                                        NEWSBLUR_URL, [hashes componentsJoinedByString:@"&h="]]];
     AFJSONRequestOperation *request = [AFJSONRequestOperation
                                        JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                                            [self storeAllUnreadStories:JSON withHashes:hashes];
+                                           
+                                           NSLog(@"Done Storing Stories: %@", [hashes objectAtIndex:0]);
+                                           [lock signal];
                                        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                            NSLog(@"Failed fetch all unreads.");
+                                           [lock signal];
                                        }];
     request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                              (unsigned long)NULL);
@@ -77,13 +86,17 @@
     [request start];
     [request waitUntilFinished];
     
+    [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+    [lock unlock];
+    
+    NSLog(@"Completed Fetching Stories: %@", [hashes objectAtIndex:0]);
     return YES;
 }
 
 - (NSArray *)unfetchedStoryHashes {
     NSMutableArray *hashes = [NSMutableArray array];
     
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *commonQuery = @"FROM unread_hashes u "
         "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
         "WHERE s.story_hash IS NULL";
@@ -128,13 +141,15 @@
                           (float)appDelegate.totalUnfetchedStoryCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
     NSMutableArray *storyHashes = [hashes mutableCopy];
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    NSLog(@"storing hashes: %@", [storyHashes objectAtIndex:0]);
+    [appDelegate.database inDatabase:^(FMDatabase *db) {
         BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
             NSString *storyTimestamp = [story objectForKey:@"story_timestamp"];
@@ -187,7 +202,12 @@
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_hash IN (\"%@\")",
                                [storyHashes componentsJoinedByString:@"\",\" "]]];
         }
+        NSLog(@"Done inserting stories (in transaction)");
     }];
+    
+    NSLog(@"Done inserting stories");
+    
+    [appDelegate storeUserProfiles:[results objectForKey:@"user_profiles"]];
 }
 
 

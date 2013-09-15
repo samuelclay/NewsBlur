@@ -7,7 +7,6 @@
 //
 
 #import "ActivityCell.h"
-#import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
 
 @implementation ActivityCell
@@ -31,9 +30,8 @@
         self.faviconView = favicon;
         [self.contentView addSubview:favicon];
         
-        OHAttributedLabel *activity = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
         activity.backgroundColor = [UIColor whiteColor];
-        activity.automaticallyAddLinksForType = NO;
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
         
@@ -61,13 +59,16 @@
     labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
     labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
     self.activityLabel.frame = labelRect;
+    [self.activityLabel sizeToFit];
 }
 
 - (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
-    // must set the height again for dynamic height in heightForRowAtIndexPath in 
+    // must set the height again for dynamic height in heightForRowAtIndexPath in
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
+    
     self.activityLabel.frame = activityLabelRect;
+    self.activityLabel.numberOfLines = 0;
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 
     NSString *category = [activity objectForKey:@"category"];
@@ -120,15 +121,15 @@
         txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ replied to %@: \n%@", username, withUserUsername, comment];  
+        txt = [NSString stringWithFormat:@"%@ replied to %@: \n \n%@", username, withUserUsername, comment];  
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n%@", username, withUserUsername, title, comment];
+        txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n \n%@", username, withUserUsername, title, comment];
     } else if ([category isEqualToString:@"sharedstory"]) {
         if ([content class] == [NSNull class] || [content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ shared %@.", username, title]; 
         } else {
-            txt = [NSString stringWithFormat:@"%@ shared %@:\n%@", username, title, comment];      
+            txt = [NSString stringWithFormat:@"%@ shared %@:\n \n%@", username, title, comment];
         }
         
     } else if ([category isEqualToString:@"star"]) {
@@ -139,38 +140,60 @@
         txt = [NSString stringWithFormat:@"You signed up for NewsBlur."];
     }
 
-    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
-    NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txtWithTime];
+    NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
+    NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    // for those calls we don't specify a range so it affects the whole string
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
-    [attrStr setTextColor:UIColorFromRGB(0x333333)];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
+    if (self.highlighted) {
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
+    } else {
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x333333)} range:NSMakeRange(0, [txtWithTime length])];
+    }
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:username]];
+        [attrStr addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13]} range:[txtWithTime rangeOfString:username]];
+    }
+    if (withUserUsername.length) {
+        [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:withUserUsername]];
+        [attrStr addAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:13]} range:[txtWithTime rangeOfString:withUserUsername]];
+    }
+
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
+    [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
+    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
+    style.lineBreakMode = NSLineBreakByWordWrapping;
+    [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    
+    NSRange commentRange = [txtWithTime rangeOfString:comment];
+    if (commentRange.location != NSNotFound) {
+        NSLog(@"Spacing: %@", comment);
+        commentRange.location -= 2;
+        commentRange.length = 1;
+        if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {
+            [attrStr addAttribute:NSFontAttributeName
+                            value:[UIFont systemFontOfSize:4.0f]
+                            range:commentRange];
+        }
     }
     
-    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:title]];
-    
-    if(withUserUsername.length) {
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:withUserUsername]];
-        [attrStr setTextBold:YES range:[txtWithTime rangeOfString:withUserUsername]]; 
+    NSRange dateRange = [txtWithTime rangeOfString:time];
+    if (dateRange.location != NSNotFound) {
+        dateRange.location -= 2;
+        dateRange.length = 1;
+        [attrStr addAttribute:NSFontAttributeName
+                        value:[UIFont systemFontOfSize:4.0f]
+                        range:dateRange];
     }
-    
-    [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txtWithTime rangeOfString:comment]];
-    
-    [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
-    [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
     
     self.activityLabel.attributedText = attrStr;
-    
     [self.activityLabel sizeToFit];
-    
+        
     int height = self.activityLabel.frame.size.height;
     
-    return MAX(height, self.faviconView.frame.size.height);
+    return MAX(height + topMargin + bottomMargin, self.faviconView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

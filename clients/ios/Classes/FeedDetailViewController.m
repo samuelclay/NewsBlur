@@ -59,6 +59,7 @@
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
 @synthesize isOffline;
+@synthesize isShowingOffline;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -115,7 +116,6 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self checkScroll];
-    [appDelegate.storyPageControl refreshPages];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -262,6 +262,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.isOffline = NO;
+    self.isShowingOffline = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
@@ -294,6 +295,7 @@
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!appDelegate.storyLocationsCount && self.feedPage == 1) {
+            self.isShowingOffline = YES;
             self.isOffline = YES;
             [self showLoadingNotifier];
             [self loadOfflineStories];
@@ -337,7 +339,9 @@
         
         if (self.isOffline) {
             [self loadOfflineStories];
-            [self showOfflineNotifier];
+            if (!self.isShowingOffline) {
+                [self showOfflineNotifier];
+            }
             return;
         }
         
@@ -446,12 +450,12 @@
             if (self.feedPage == 1) {
                 unreadStoryHashes = [NSMutableDictionary dictionary];
             } else {
-                unreadStoryHashes = self.unreadStoryHashes;
+                unreadStoryHashes = appDelegate.unreadStoryHashes;
             }
             while ([unreadHashCursor next]) {
                 [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
             }
-            self.unreadStoryHashes = unreadStoryHashes;            
+            appDelegate.unreadStoryHashes = unreadStoryHashes;
         }
         
         dispatch_sync(dispatch_get_main_queue(), ^{
@@ -465,7 +469,9 @@
             } else {
                 [self renderStories:offlineStories];
             }
-            [self showOfflineNotifier];
+            if (!self.isShowingOffline) {
+                [self showOfflineNotifier];
+            }
         });
     }];
     });
@@ -561,6 +567,7 @@
                 return;
             } else if (self.feedPage == 1) {
                 self.isOffline = YES;
+                self.isShowingOffline = NO;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
             } else {
@@ -590,6 +597,7 @@
     } else if ([request responseStatusCode] >= 500) {
         if (self.feedPage == 1) {
             self.isOffline = YES;
+            self.isShowingOffline = NO;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         }
@@ -606,6 +614,7 @@
     
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOffline = NO;
+    self.isShowingOffline = NO;
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -727,7 +736,7 @@
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
-    NSInteger existingStoriesCount = appDelegate.storyLocationsCount;
+
     NSInteger newStoriesCount = [newStories count];
     
     if (newStoriesCount > 0) {
@@ -736,16 +745,12 @@
         } else {
             [appDelegate addStories:newStories];
         }
-    }
-        
-    [self.storyTitlesTable reloadData];
-    if (newStoriesCount == 0 ||
-        (self.feedPage > 25 &&
-         existingStoriesCount >= [appDelegate unreadCount])) {
+    } else {
         self.pageFinished = YES;
-        [self.storyTitlesTable reloadData];
     }
-        
+    
+    [self.storyTitlesTable reloadData];
+    
     self.pageFetching = NO;
         
     if (self.finishedAnimatingIn) {
@@ -781,6 +786,7 @@
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
                 
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 // found the story, reset the two flags.
                 //                appDelegate.tryFeedStoryId = nil;
                 appDelegate.inFindingStoryMode = NO;
@@ -928,9 +934,9 @@
     
     if (!appDelegate.hasLoadedFeedDetail) {
         cell.isRead = ([appDelegate.activeReadFilter isEqualToString:@"all"] &&
-                       ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
+                       ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
                       [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[self.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
+//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
         cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
                       [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
@@ -1036,6 +1042,8 @@
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
+    if (![self.appDelegate.activeFeedStories count]) return;
+    
     if (maximumOffset - currentOffset <= 60.0 || 
         (appDelegate.inFindingStoryMode)) {
         if (appDelegate.isRiverView) {
@@ -1048,8 +1056,6 @@
 
 - (void)changeIntelligence:(NSInteger)newLevel {
     NSInteger previousLevel = [appDelegate selectedIntelligence];
-    NSMutableArray *insertIndexPaths = [NSMutableArray array];
-    NSMutableArray *deleteIndexPaths = [NSMutableArray array];
     
     if (newLevel == previousLevel) return;
     
@@ -1062,48 +1068,7 @@
         [appDelegate calculateStoryLocations];
     }
     
-    for (int i=0; i < appDelegate.storyLocationsCount; i++) {
-        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        
-        if (previousLevel == -1) {
-            if (newLevel == 0 && score == -1) {
-                [deleteIndexPaths addObject:indexPath];
-            } else if (newLevel == 1 && score < 1) {
-                [deleteIndexPaths addObject:indexPath];
-            }
-        } else if (previousLevel == 0) {
-            if (newLevel == -1 && score == -1) {
-                [insertIndexPaths addObject:indexPath];
-            } else if (newLevel == 1 && score == 0) {
-                [deleteIndexPaths addObject:indexPath];
-            }
-        } else if (previousLevel == 1) {
-            if (newLevel == 0 && score == 0) {
-                [insertIndexPaths addObject:indexPath];
-            } else if (newLevel == -1 && score < 1) {
-                [insertIndexPaths addObject:indexPath];
-            }
-        }
-    }
-    
-    if (newLevel > previousLevel) {
-        [appDelegate setSelectedIntelligence:newLevel];
-        [appDelegate calculateStoryLocations];
-    }
-    
-    [self.storyTitlesTable beginUpdates];
-    if ([deleteIndexPaths count] > 0) {
-        [self.storyTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-    }
-    if ([insertIndexPaths count] > 0) {
-        [self.storyTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-    }
-    [self.storyTitlesTable endUpdates];
+    [self.storyTitlesTable reloadData];
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {

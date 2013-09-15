@@ -39,7 +39,7 @@ io.configure 'development', ->
 #     redisClient : rclient
 
 io.sockets.on 'connection', (socket) ->
-    ip = socket.handshake.headers['x-real-ip'] || socket.handshake.address.address
+    ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address.address
     
     socket.on 'subscribe:feeds', (@feeds, @username) ->
         log.info @username, "Connecting (#{feeds.length} feeds, #{ip})," +

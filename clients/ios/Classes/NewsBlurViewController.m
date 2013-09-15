@@ -31,6 +31,7 @@
 #import "FMDatabaseAdditions.h"
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
+#import "UIImageView+AFNetworking.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -425,6 +426,8 @@ static const CGFloat kFolderTitleHeight = 28;
 -(void)fetchFeedList:(BOOL)showLoader {
     NSURL *urlFeedList;
     
+    [appDelegate cancelOfflineQueue];
+    
     if (self.inPullToRefresh_) {
         urlFeedList = [NSURL URLWithString:
                       [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
@@ -448,7 +451,6 @@ static const CGFloat kFolderTitleHeight = 28;
 
     self.lastUpdate = [NSDate date];
     [self showRefreshNotifier];
-    [appDelegate cancelOfflineQueue];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -549,18 +551,23 @@ static const CGFloat kFolderTitleHeight = 28;
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
     NSURL * imageURL = [NSURL URLWithString:url];
-    NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
-    UIImage * userAvatarImage = [UIImage imageWithData:imageData];
-    userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
     userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-    [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
     UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
                                           initWithCustomView:userAvatarButton];
     
+    
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
+    [avatarRequest setHTTPShouldHandleCookies:NO];
+    [avatarRequest setHTTPShouldUsePipelining:YES];
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
+    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        image = [Utilities roundCorneredImage:image radius:3];
+        [userAvatarButton setImage:image forState:UIControlStateNormal];
+    } failure:nil];
     self.navigationItem.leftBarButtonItem = userInfoBarButton;
     [self setUserAvatarLayout:orientation];
     
@@ -952,7 +959,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (appDelegate.hasNoSites) {
-        return 3;
+        return 0;
     }
     return [appDelegate.dictFoldersArray count];
 }
@@ -973,24 +980,6 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    // messaging when there are no sites
-    if (appDelegate.hasNoSites) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];    
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:nil];
-        }
-        cell.textLabel.font=[UIFont systemFontOfSize:14.0];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if (indexPath.section == 0) {
-            cell.textLabel.text = @"Tap the settings to find friends.";
-        } else {
-            cell.textLabel.text = @"Tap + to add sites.";
-        }
-        
-        return cell;
-    }
-    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];

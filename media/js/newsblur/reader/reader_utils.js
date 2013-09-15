@@ -210,6 +210,13 @@ NEWSBLUR.utils = {
         }
         
         return interval;
+    },
+    
+    days_back_to_timestamp: function(days_back) {
+        days_back = days_back || 0;
+        var now = Math.round((new Date()).getTime() / 1000);
+
+        return now - (days_back * 60*60*24);
     }
     
 

@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OHAttributedLabel.h"
 
 @interface ActivityCell : UITableViewCell {
-    OHAttributedLabel *activityLabel;
+    UILabel *activityLabel;
     UIImageView *faviconView;
     int topMargin;
     int bottomMargin;
@@ -19,7 +18,7 @@
     int avatarSize;
 }
 
-@property (nonatomic, strong) OHAttributedLabel *activityLabel;
+@property (nonatomic, strong) UILabel *activityLabel;
 @property (nonatomic, strong) UIImageView *faviconView;
 @property (readwrite) int topMargin;
 @property (readwrite) int bottomMargin;

@@ -19,7 +19,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         _.defer(_.bind(function() { this.open_modal(); }, this));
         if (!this.options.premium_only) {
             this.find_feeds_in_feed_list();
-            this.initial_load_feeds(true);
+            this.initial_load_feeds();
         }
         this.choose_dollar_amount(2);
         
@@ -379,7 +379,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var self = this;
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
-
+        
         if (!feeds.size()) {
             _.defer(_.bind(function() {
                 var $info = $('.NB-feedchooser-info', this.$modal);
@@ -474,8 +474,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').removeClass('NB-modal-submit-green').val('Saving...');
         
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
             NEWSBLUR.reader.hide_feed_chooser_button();
             NEWSBLUR.assets.load_feeds();
             $.modal.close();

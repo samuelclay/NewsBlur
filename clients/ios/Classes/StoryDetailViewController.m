@@ -33,6 +33,7 @@
 @synthesize webView;
 @synthesize feedTitleGradient;
 @synthesize noStorySelectedLabel;
+@synthesize noStorySelectedImage;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
@@ -75,6 +76,7 @@
 - (void)viewDidUnload {
     [self setInnerView:nil];
     [self setNoStorySelectedLabel:nil];
+    
     [super viewDidUnload];
 }
 
@@ -98,15 +100,17 @@
     
     appDelegate.inStoryDetail = YES;
     self.noStorySelectedLabel.hidden = YES;
+    self.noStorySelectedImage.hidden = YES;
     appDelegate.shareViewController.commentField.text = nil;
     self.webView.hidden = NO;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromShareView];
-    }
-    
     [appDelegate hideShareView:YES];
     [appDelegate resetShareComments];
+}
+
+- (void)hideNoStoryMessage {
+    self.noStorySelectedLabel.hidden = YES;
+    self.noStorySelectedImage.hidden = YES;
 }
 
 - (void)drawStory {
@@ -282,6 +286,7 @@
     self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStorySelectedLabel.hidden = NO;
+    self.noStorySelectedImage.hidden = NO;
 }
 
 #pragma mark -
@@ -370,7 +375,7 @@
     NSArray *shareUserIds = [self.activeStory objectForKey:key];
     
     for (int i = 0; i < shareUserIds.count; i++) {
-        NSDictionary *user = [self getUser:[[shareUserIds objectAtIndex:i] intValue]];
+        NSDictionary *user = [appDelegate getUser:[[shareUserIds objectAtIndex:i] intValue]];
         NSString *avatarClass = @"NB-user-avatar";
         if ([key isEqualToString:@"commented_by_public"] ||
             [key isEqualToString:@"shared_by_public"]) {
@@ -520,7 +525,7 @@
 
 - (NSString *)getComment:(NSDictionary *)commentDict {
     
-    NSDictionary *user = [self getUser:[[commentDict objectForKey:@"user_id"] intValue]];
+    NSDictionary *user = [appDelegate getUser:[[commentDict objectForKey:@"user_id"] intValue]];
     NSString *userAvatarClass = @"NB-user-avatar";
     NSString *userReshareString = @"";
     NSString *userEditButton = @"";
@@ -533,7 +538,7 @@
     if ([likingUsersArray count]) {
         likingUsers = @"<div class=\"NB-story-comment-likes-icon\"></div>";
         for (NSNumber *likingUser in likingUsersArray) {
-            NSDictionary *sourceUser = [self getUser:[likingUser intValue]];
+            NSDictionary *sourceUser = [appDelegate getUser:[likingUser intValue]];
             NSString *likingUserString = [NSString stringWithFormat:@
                                           "<div class=\"NB-story-comment-likes-user\">"
                                           "    <div class=\"NB-user-avatar\"><img src=\"%@\"></div>"
@@ -583,7 +588,7 @@
     if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
         userAvatarClass = @"NB-user-avatar NB-story-comment-reshare";
 
-        NSDictionary *sourceUser = [self getUser:[[commentDict objectForKey:@"source_user_id"] intValue]];
+        NSDictionary *sourceUser = [appDelegate getUser:[[commentDict objectForKey:@"source_user_id"] intValue]];
         userReshareString = [NSString stringWithFormat:@
                              "<div class=\"NB-story-comment-reshares\">"
                              "    <div class=\"NB-story-share-profile\">"
@@ -599,7 +604,7 @@
     NSString *locationHtml = @"";
     NSString *location = [NSString stringWithFormat:@"%@", [user objectForKey:@"location"]];
     
-    if (location.length) {
+    if (location.length && ![[user objectForKey:@"location"] isKindOfClass:[NSNull class]]) {
         locationHtml = [NSString stringWithFormat:@"<div class=\"NB-story-comment-location\">%@</div>", location];
     }
     
@@ -701,7 +706,7 @@
         repliesString = [repliesString stringByAppendingString:@"<div class=\"NB-story-comment-replies\">"];
         for (int i = 0; i < replies.count; i++) {
             NSDictionary *replyDict = [replies objectAtIndex:i];
-            NSDictionary *user = [self getUser:[[replyDict objectForKey:@"user_id"] intValue]];
+            NSDictionary *user = [appDelegate getUser:[[replyDict objectForKey:@"user_id"] intValue]];
 
             NSString *userEditButton = @"";
             NSString *replyUserId = [NSString stringWithFormat:@"%@", [replyDict objectForKey:@"user_id"]];
@@ -786,15 +791,6 @@
         repliesString = [repliesString stringByAppendingString:@"</div>"];
     }
     return repliesString;
-}
-
-- (NSDictionary *)getUser:(int)user_id {
-    for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
-        if ([[[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == user_id) {
-            return [appDelegate.activeFeedUserProfiles objectAtIndex:i];
-        }
-    }
-    return nil;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -1176,6 +1172,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                              options:kNilOptions 
                              error:&error];
     
+    if (request.responseStatusCode != 200) {
+        return [self requestFailed:request];
+    }
+    
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
 
@@ -1206,6 +1206,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)requestFailed:(ASIHTTPRequest *)request {    
     NSLog(@"Error in story detail: %@", [request error]);
     NSString *error;
+    
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    
     if ([request error]) {
         error = [NSString stringWithFormat:@"%@", [request error]];
     } else {

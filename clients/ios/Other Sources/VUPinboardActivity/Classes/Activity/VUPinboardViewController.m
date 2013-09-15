@@ -104,7 +104,7 @@ static NSString* const kServiceName = @"pinboard.in";
                 [sself.activity activityDidFinish:success];
                 
                 if (!success) {
-                    [self.activity presentError:error];
+                    [sself.activity presentError:error];
                 }
             }];
 }
