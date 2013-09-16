@@ -21,7 +21,6 @@ public class FeedReading extends Reading {
 	String feedId;
 	private Feed feed;
 	private int currentPage;
-	private boolean stopLoading = false;
 	private boolean requestedPage = false;
 
 	@Override
@@ -77,11 +76,6 @@ public class FeedReading extends Reading {
 	}
 
 	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
-	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
@@ -97,13 +91,5 @@ public class FeedReading extends Reading {
 			startService(intent);
 		}
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
 }

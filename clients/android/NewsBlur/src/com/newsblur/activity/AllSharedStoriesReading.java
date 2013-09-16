@@ -38,11 +38,6 @@ public class AllSharedStoriesReading extends Reading {
 	}
 
 	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
-	@Override
 	public void checkStoryCount(int position) {
 		if (position == stories.getCount() - 1 && !stopLoading && !requestingPage) {
 			currentPage += 1;
@@ -75,13 +70,5 @@ public class AllSharedStoriesReading extends Reading {
 		requestingPage = false;
         super.updateAfterSync();
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
 }

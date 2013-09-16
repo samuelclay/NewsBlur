@@ -50,7 +50,6 @@ public class SyncService extends IntentService {
         STATUS_RUNNING,
         STATUS_FINISHED,
         STATUS_NO_MORE_UPDATES,
-        STATUS_FINISHED_CLOSE,
         NOT_RUNNING,
         STATUS_PARTIAL_PROGRESS,
     };

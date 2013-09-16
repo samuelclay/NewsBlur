@@ -181,8 +181,4 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	@Override
 	public void setNothingMoreToUpdate() { }
 
-	@Override
-	public void closeAfterUpdate() {
-		updateAfterSync();
-	}			
 }

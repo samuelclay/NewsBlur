@@ -14,7 +14,7 @@ public class FolderReading extends Reading {
 
 	private String[] feedIds;
 	private String folderName;
-	private boolean stopLoading = false;
+	private boolean stopLoading = false; // will go high iff we are out of pages
 	private boolean requestedPage;
 	private int currentPage;
 
@@ -35,11 +35,6 @@ public class FolderReading extends Reading {
 		setupPager();
 
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-	}
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
@@ -73,13 +68,5 @@ public class FolderReading extends Reading {
 			triggerRefresh(currentPage);
 		}
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
 }
