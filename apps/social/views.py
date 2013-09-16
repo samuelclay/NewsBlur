@@ -51,7 +51,6 @@ def load_social_stories(request, user_id, username=None):
     
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     social_profile = MSocialProfile.get_user(social_user.pk)
     try:
@@ -68,7 +67,7 @@ def load_social_stories(request, user_id, username=None):
             stories = []
             message = "You must be a premium subscriber to search."
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
-        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=user.profile.unread_cutoff)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
         if story_hashes:
             mstories = MSharedStory.objects(user_id=social_user.pk,
@@ -89,7 +88,7 @@ def load_social_stories(request, user_id, username=None):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
-    date_delta = UNREAD_CUTOFF
+    date_delta = user.profile.unread_cutoff
     if socialsub and date_delta < socialsub.mark_read_date:
         date_delta = socialsub.mark_read_date
     
@@ -106,7 +105,7 @@ def load_social_stories(request, user_id, username=None):
 
     unread_story_hashes = []
     if (read_filter == 'all' or query) and socialsub:
-        unread_story_hashes = socialsub.get_stories(read_filter='unread', limit=500)
+        unread_story_hashes = socialsub.get_stories(read_filter='unread', limit=500, cutoff_date=user.profile.unread_cutoff)
     story_hashes = [story['story_hash'] for story in stories]
 
     starred_stories = MStarredStory.objects(user_id=user.pk, 
@@ -188,7 +187,6 @@ def load_river_blurblog(request):
     relative_user_id  = request.REQUEST.get('relative_user_id', None)
     global_feed       = request.REQUEST.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
     if global_feed:
         global_user = User.objects.get(username='popular')
@@ -208,7 +206,8 @@ def load_river_blurblog(request):
                                                             user.pk, social_user_ids, 
                                                             offset=offset, limit=limit,
                                                             order=order, read_filter=read_filter,
-                                                            relative_user_id=relative_user_id)
+                                                            relative_user_id=relative_user_id,
+                                                            cutoff_date=user.profile.unread_cutoff)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(zip(story_hashes, story_dates))
     def sort_stories_by_hash(a, b):
@@ -296,7 +295,7 @@ def load_river_blurblog(request):
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
-            if (shared_stories[story['story_hash']]['shared_date'] < UNREAD_CUTOFF or 
+            if (shared_stories[story['story_hash']]['shared_date'] < user.profile.unread_cutoff or 
                 story['story_hash'] in read_feed_story_hashes):
                 story['read_status'] = 1
 
@@ -367,7 +366,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                  offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
-                                                 cache=request.user.is_authenticated())
+                                                 cache=request.user.is_authenticated(),
+                                                 cutoff_date=user.profile.unread_cutoff)
         if len(story_ids) > limit:
             has_next_page = True
             story_ids = story_ids[:-1]

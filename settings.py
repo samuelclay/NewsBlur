@@ -187,7 +187,11 @@ LOGGING = {
 # ==========================
 
 DAYS_OF_UNREAD          = 30
-DAYS_OF_UNREAD_NEW      = 30
+DAYS_OF_UNREAD_FREE     = 14
+# DoSH can be more, since you can up this value by N, and after N days, 
+# you can then up the DAYS_OF_UNREAD value with no impact.
+DAYS_OF_STORY_HASHES    = 30
+
 SUBSCRIBER_EXPIRE       = 2
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'

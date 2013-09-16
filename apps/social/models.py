@@ -832,15 +832,13 @@ class MSocialSubscription(mongo.Document):
             profiles = MSocialProfile.objects.filter(user_id__in=social_user_ids)
             profiles = dict((p.user_id, p) for p in profiles)
         
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
         for i, sub in enumerate(user_subs):
             # Count unreads if subscription is stale.
             if (sub.needs_unread_recalc or 
                 (sub.unread_count_updated and
-                 sub.unread_count_updated < UNREAD_CUTOFF) or 
+                 sub.unread_count_updated < user.profile.unread_cutoff) or 
                 (sub.oldest_unread_story_date and
-                 sub.oldest_unread_story_date < UNREAD_CUTOFF)):
+                 sub.oldest_unread_story_date < user.profile.unread_cutoff)):
                 sub = sub.calculate_feed_scores(force=True, silent=True)
 
             feed_id = "social:%s" % sub.subscription_user_id
@@ -899,12 +897,14 @@ class MSocialSubscription(mongo.Document):
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
             max_score = current_time
-        else:
+        else: # newest
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
             now = datetime.datetime.now()
-            unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-            max_score = int(time.mktime(unread_cutoff.timetuple()))-1000
+            unread_cutoff = cutoff_date
+            if not unread_cutoff:
+                unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            max_score = int(time.mktime(unread_cutoff.timetuple()))-1
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -920,7 +920,9 @@ class MSocialSubscription(mongo.Document):
         return story_ids
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, cache=True):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, 
+                     order='newest', read_filter='all', relative_user_id=None, cache=True,
+                     cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not relative_user_id:
@@ -954,7 +956,7 @@ class MSocialSubscription(mongo.Document):
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_hashes = us.get_stories(offset=0, limit=100,
                                           order=order, read_filter=read_filter, 
-                                          withscores=True)
+                                          withscores=True, cutoff_date=cutoff_date)
             if story_hashes:
                 r.zadd(ranked_stories_keys, **dict(story_hashes))
         
@@ -1062,7 +1064,7 @@ class MSocialSubscription(mongo.Document):
         return data
     
     def mark_feed_read(self, cutoff_date=None):
-        UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        user_profile = Profile.objects.get(user_id=self.user_id)
         recount = True
         
         if cutoff_date:
@@ -1070,7 +1072,7 @@ class MSocialSubscription(mongo.Document):
         else:
             # Use the latest story to get last read time.
             latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
-                                                       shared_date__gte=UNREAD_CUTOFF
+                                                       shared_date__gte=user_profile.unread_cutoff
                                   ).order_by('shared_date').only('shared_date').first()
             if latest_shared_story:
                 cutoff_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
@@ -1102,10 +1104,9 @@ class MSocialSubscription(mongo.Document):
             return self
             
         now = datetime.datetime.now()
-        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        user = User.objects.get(pk=self.user_id)
+        user_profile = Profile.objects.get(user_id=self.user_id)
 
-        if user.profile.last_seen_on < UNREAD_CUTOFF:
+        if user_profile.last_seen_on < user_profile.unread_cutoff:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return self
@@ -1113,13 +1114,14 @@ class MSocialSubscription(mongo.Document):
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = UNREAD_CUTOFF
+        date_delta = user_profile.unread_cutoff
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
             self.mark_read_date = date_delta
 
-        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
+        unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                               cutoff_date=user_profile.unread_cutoff)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           story_hash__in=unread_story_hashes)
         story_feed_ids = set()
@@ -1199,7 +1201,7 @@ class MSocialSubscription(mongo.Document):
             self.mark_feed_read()
         
         if not silent:
-            logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (user.username, self.subscription_user_id, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+            logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (user_profile, self.subscription_user_id, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return self
     
@@ -1601,10 +1603,10 @@ class MSharedStory(mongo.Document):
                time.mktime(self.shared_date.timetuple()))
         # r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
         #        time.mktime(self.shared_date.timetuple()))
-        r.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        # r2.expire('B:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        # r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        # r2.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        r.expire('zB:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        # r2.expire('zB:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)

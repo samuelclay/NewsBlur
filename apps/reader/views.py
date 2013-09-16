@@ -548,7 +548,8 @@ def load_single_feed(request, feed_id):
             stories = []
             message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
+                                      cutoff_date=user.profile.unread_cutoff)
     else:
         stories = feed.get_stories(offset, limit)
     
@@ -583,7 +584,8 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == 'all' or query) and usersub:
-            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True)
+            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                                      cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
@@ -875,7 +877,8 @@ def load_river_stories__redis(request):
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
-                                                                     group_by_feed=False)
+                                                                     group_by_feed=False, 
+                                                                     cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -892,6 +895,7 @@ def load_river_stories__redis(request):
                 "order": order,
                 "read_filter": read_filter,
                 "usersubs": usersubs,
+                "cutoff_date": user.profile.unread_cutoff,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -1023,7 +1027,8 @@ def unread_story_hashes__old(request):
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            withscores=include_timestamps,
-                                                           hashes_only=True)
+                                                           hashes_only=True,
+                                                           cutoff_date=user.profile.unread_cutoff)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
@@ -1041,7 +1046,8 @@ def unread_story_hashes(request):
     
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
-                                                 include_timestamps=include_timestamps)
+                                                 include_timestamps=include_timestamps,
+                                                 cutoff_date=user.profile.unread_cutoff)
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
     return dict(unread_feed_story_hashes=story_hashes)
@@ -1261,12 +1267,11 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
 
-    UNREAD_CUTOFF = (datetime.datetime.utcnow() -
-                     datetime.timedelta(days=settings.DAYS_OF_UNREAD))
-    if story.story_date < UNREAD_CUTOFF:
+    if story.story_date < request.user.profile.unread_cutoff:
         data['code'] = -1
         data['message'] = "Story is more than %s days old, cannot mark as unread." % (
-                            settings.DAYS_OF_UNREAD)
+                            settings.DAYS_OF_UNREAD if request.user.profile.is_premium else
+                            settings.DAYS_OF_UNREAD_FREE)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
