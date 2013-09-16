@@ -548,10 +548,20 @@ class Dispatcher:
                 sub.save()
 
         if self.options['compute_scores']:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
             stories = MStory.objects(story_feed_id=feed.pk,
-                                     story_date__gte=UNREAD_CUTOFF)\
-                            .read_preference(pymongo.ReadPreference.PRIMARY)
+                                     story_date__gte=UNREAD_CUTOFF)
             stories = Feed.format_stories(stories, feed.pk)
+            story_hashes = r.zrangebyscore('zF:%s' % feed.pk, int(UNREAD_CUTOFF.strftime('%s')),
+                                           int(time.time() + 60*60*24))
+            missing_story_hashes = set(story_hashes) - set([s['story_hash'] for s in stories])
+            if missing_story_hashes:
+                missing_stories = MStory.objects(story_feed_id=feed.pk,
+                                                 story_hash__in=missing_story_hashes)\
+                                        .read_preference(pymongo.ReadPreference.PRIMARY)
+                missing_stories = Feed.format_stories(missing_stories, feed.pk)
+                stories = missing_stories + stories
+                logging.debug(u'   ---> [%-30s] ~FYFound ~SB~FC%s/%s~FY~SN un-secondaried stories while computing scores' % (len(missing_stories), len(stories)))
             cache.set("S:%s" % feed.pk, stories, 60)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                           feed.title[:30], len(stories), user_subs.count(),
