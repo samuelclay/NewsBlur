@@ -86,9 +86,6 @@ public class SavedStoriesItemsList extends ItemsList {
 		return false;
 	}
 
-	@Override
-	public void closeAfterUpdate() { }
-
     // Note: the following four methods are required by our parent spec but are not
     // relevant since saved stories have no read/unread status nor ordering.
 
