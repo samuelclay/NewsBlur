@@ -130,8 +130,6 @@ class ProcessFeed:
         
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
-        # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
-
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 if self.fpf.bozo and self.fpf.status != 304:
@@ -507,7 +505,7 @@ class Dispatcher:
                 self.publish_to_subscribers(feed)
                 
             done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FM~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
-                identity, feed.feed_title[:30], delta,
+                identity, feed.title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
             total_duration = time.time() - start_duration
@@ -533,10 +531,9 @@ class Dispatcher:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30],))
         
     def count_unreads_for_subscribers(self, feed):
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         user_subs = UserSubscription.objects.filter(feed=feed, 
                                                     active=True,
-                                                    user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
+                                                    user__profile__last_seen_on__gte=feed.unread_cutoff)\
                                             .order_by('-last_read_date')
         
         if not user_subs.count():
@@ -550,9 +547,9 @@ class Dispatcher:
         if self.options['compute_scores']:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
             stories = MStory.objects(story_feed_id=feed.pk,
-                                     story_date__gte=UNREAD_CUTOFF)
+                                     story_date__gte=feed.unread_cutoff)
             stories = Feed.format_stories(stories, feed.pk)
-            story_hashes = r.zrangebyscore('zF:%s' % feed.pk, int(UNREAD_CUTOFF.strftime('%s')),
+            story_hashes = r.zrangebyscore('zF:%s' % feed.pk, int(feed.unread_cutoff.strftime('%s')),
                                            int(time.time() + 60*60*24))
             missing_story_hashes = set(story_hashes) - set([s['story_hash'] for s in stories])
             if missing_story_hashes:

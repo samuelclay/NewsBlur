@@ -80,7 +80,7 @@ def colorize(msg):
         r'\*\*\*>'        : '~FB~SB~BB--->~BT~FW',
         r'\['             : '~SB~FB[~SN~FM',
         r'AnonymousUser'  : '~FBAnonymousUser',
-        r'\*\]'           : '~SN~FR*]',
+        r'\*(\s*)~FB~SB\]'           : r'~SN~FR*\1~FB~SB]',
         r'\]'             : '~FB~SB]~FW~SN',
     }
     colors = {
