@@ -186,7 +186,7 @@ LOGGING = {
 # = Miscellaneous Settings =
 # ==========================
 
-DAYS_OF_UNREAD          = 14
+DAYS_OF_UNREAD          = 30
 DAYS_OF_UNREAD_NEW      = 30
 SUBSCRIBER_EXPIRE       = 2
 
