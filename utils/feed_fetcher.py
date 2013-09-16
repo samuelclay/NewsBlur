@@ -561,7 +561,7 @@ class Dispatcher:
                                         .read_preference(pymongo.ReadPreference.PRIMARY)
                 missing_stories = Feed.format_stories(missing_stories, feed.pk)
                 stories = missing_stories + stories
-                logging.debug(u'   ---> [%-30s] ~FYFound ~SB~FC%s/%s~FY~SN un-secondaried stories while computing scores' % (len(missing_stories), len(stories)))
+                logging.debug(u'   ---> [%-30s] ~FYFound ~SB~FC%s/%s~FY~SN un-secondaried stories while computing scores' % (feed.title[:30], len(missing_stories), len(stories)))
             cache.set("S:%s" % feed.pk, stories, 60)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                           feed.title[:30], len(stories), user_subs.count(),
