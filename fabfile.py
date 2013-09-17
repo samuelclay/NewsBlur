@@ -477,6 +477,10 @@ def config_monit_app():
     sudo('/etc/init.d/monit restart')
 
 def config_monit_redis():
+    sudo('chown root.root /etc/init.d/redis')
+    sudo('chmod a+x /etc/init.d/redis')
+    put('config/monit_debug.sh', '/etc/monit/monit_debug.sh', use_sudo=True)
+    sudo('chmod a+x /etc/monit/monit_debug.sh')
     put('config/monit_redis.conf', '/etc/monit/conf.d/redis.conf', use_sudo=True)
     sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
@@ -863,7 +867,7 @@ def setup_mongo_mms():
 
 
 def setup_redis(slave=False):
-    redis_version = '2.6.14'
+    redis_version = '2.6.16'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
@@ -887,6 +891,7 @@ def setup_redis(slave=False):
     sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
     setup_syncookies()
+    config_monit_redis()
 
 def setup_munin():
     # sudo('apt-get update')

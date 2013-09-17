@@ -2000,7 +2000,7 @@ class MStarredStory(mongo.Document):
         return stories
 
     @classmethod
-    def trim_old_stories(cls, stories=10, days=30, dryrun=False):
+    def trim_old_stories(cls, stories=10, days=60, dryrun=False):
         print " ---> Fetching starred story counts..."
         stats = settings.MONGODB.newsblur.starred_stories.aggregate([{
             "$group": {
