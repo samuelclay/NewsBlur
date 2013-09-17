@@ -1294,14 +1294,23 @@ background: transparent;
     background-position: 4px 7px;
 }
 
-.NB-feedbar:hover :not(.NB-no-hover) .NB-feedlist-manage-icon {
+.NB-feedbar:hover .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
-.NB-feedbar:hover .feed_favicon,
-.NB-feedbar:hover :not(.NB-no-hover) .NB-folder-icon {
+.NB-feedbar:hover .NB-no-hover .NB-feedlist-manage-icon {
   display: none;
+  opacity: 0;
+}
+
+.NB-feedbar:hover .feed_favicon,
+.NB-feedbar:hover .NB-folder-icon {
+  display: none;
+}
+
+.NB-feedbar:hover .NB-no-hover .NB-folder-icon {
+  display: block;
 }
 
 
