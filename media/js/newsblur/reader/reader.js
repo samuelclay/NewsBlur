@@ -1945,7 +1945,7 @@
             var cutoff_timestamp = NEWSBLUR.utils.days_back_to_timestamp(days_back);
             if (!days_back && this.model.stories.length && 
                 _.contains(feeds, this.model.stories.first().get('story_feed_id')) &&
-                NEWSBLUR.assets.view_setting(folder.id, 'order') == 'newest') {
+                folder.view_setting('order') == 'newest') {
                 cutoff_timestamp = this.model.stories.first().get('story_timestamp');
             }
             

@@ -118,6 +118,14 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         }
         
         return this.folders.has_unreads(options);
+    },
+    
+    view_setting: function(setting) {
+        if (this.is_folder()) {
+            return NEWSBLUR.assets.view_setting('river:' + this.get('folder_title'), setting);
+        } else {
+            return NEWSBLUR.assets.view_setting(this.id, setting);
+        }
     }
     
 });
