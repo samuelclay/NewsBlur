@@ -1,5 +1,7 @@
 NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
+    el: ".NB-story-titles-header",
+    
     options: {
         'layout': 'split'
     },
@@ -13,13 +15,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         this.$story_titles_feedbar = $(".NB-story-titles-header");
         this.$feed_view_feedbar = $(".NB-feed-story-view-header");
         
-        this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
-            NEWSBLUR.reader.active_folder && 
-            (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         // if (this.options.layout == 'split' || this.options.layout == 'list') {
             this.$story_titles_feedbar.show();
             this.$feed_view_feedbar.hide();
-            this.setElement(this.$story_titles_feedbar);
         // } else if (this.options.layout == 'full') {
         //     this.$story_titles_feedbar.hide();
         //     this.$feed_view_feedbar.show();
@@ -27,8 +25,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         // }
     },
     
-    render: function() {
+    render: function(options) {
         var $view;
+        this.options = _.extend({}, this.options, options);
+        this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
+            NEWSBLUR.reader.active_folder && 
+            (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         
         if (NEWSBLUR.reader.active_feed == 'starred') {
             $view = $(_.template('\
@@ -189,7 +191,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
     },
     
-    open_options_popover: function() {
+    open_options_popover: function(e) {
         if (!this.showing_fake_folder) return;
         
         NEWSBLUR.FeedOptionsPopover.create({
