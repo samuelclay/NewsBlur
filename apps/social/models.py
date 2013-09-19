@@ -865,7 +865,8 @@ class MSocialSubscription(mongo.Document):
         }
     
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
-                    withscores=False, hashes_only=False, cutoff_date=None):
+                    withscores=False, hashes_only=False, cutoff_date=None, 
+                    mark_read_complement=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -888,11 +889,12 @@ class MSocialSubscription(mongo.Document):
                                                        self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
+        now             = datetime.datetime.now()
         current_time    = int(time.time() + 60*60*24)
         mark_read_time  = int(time.mktime(self.mark_read_date.timetuple())) + 1
         if cutoff_date:
             mark_read_time  = int(time.mktime(cutoff_date.timetuple())) + 1
-            
+        
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
@@ -900,11 +902,15 @@ class MSocialSubscription(mongo.Document):
         else: # newest
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
+            if mark_read_complement:
+                min_score = mark_read_time
+                byscorefunc = r.zrangebyscore
             now = datetime.datetime.now()
             unread_cutoff = cutoff_date
             if not unread_cutoff:
                 unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
             max_score = int(time.mktime(unread_cutoff.timetuple()))-1
+
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -1094,7 +1100,7 @@ class MSocialSubscription(mongo.Document):
         
         # Manually mark all shared stories as read.
         unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
-                                               cutoff_date=cutoff_date)
+                                               mark_read_complement=True)
         self.mark_story_ids_as_read(unread_story_hashes, mark_all_read=True)
         
         self.save()
