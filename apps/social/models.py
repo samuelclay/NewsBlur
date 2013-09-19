@@ -903,7 +903,6 @@ class MSocialSubscription(mongo.Document):
             min_score = current_time
             if mark_read_complement:
                 min_score = mark_read_time
-                byscorefunc = r.zrangebyscore
             now = datetime.datetime.now()
             unread_cutoff = cutoff_date
             if not unread_cutoff:
