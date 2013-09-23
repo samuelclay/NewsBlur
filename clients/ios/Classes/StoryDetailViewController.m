@@ -97,15 +97,12 @@
 #pragma mark Story setup
 
 - (void)initStory {
-    
     appDelegate.inStoryDetail = YES;
     self.noStorySelectedLabel.hidden = YES;
     self.noStorySelectedImage.hidden = YES;
-    appDelegate.shareViewController.commentField.text = nil;
     self.webView.hidden = NO;
 
-    [appDelegate hideShareView:YES];
-    [appDelegate resetShareComments];
+    [appDelegate hideShareView:NO];
 }
 
 - (void)hideNoStoryMessage {
@@ -275,6 +272,7 @@
 - (void)showStory {
     id storyId = [self.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
+    [appDelegate resetShareComments];
 }
 
 - (void)clearStory {
@@ -1227,6 +1225,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
         if([userId isEqualToString:currentUserId]){
             appDelegate.activeComment = [friendComments objectAtIndex:i];
+            break;
+        } else {
+            appDelegate.activeComment = nil;
         }
     }
     

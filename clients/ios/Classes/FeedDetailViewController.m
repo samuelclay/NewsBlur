@@ -201,6 +201,7 @@
     }
     
     [self.notifier setNeedsLayout];
+    [appDelegate hideShareView:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

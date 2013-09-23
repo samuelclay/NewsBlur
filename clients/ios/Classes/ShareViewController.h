@@ -22,6 +22,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
 @property (nonatomic) IBOutlet UILabel *storyTitle;
 @property (nonatomic) NSString * activeReplyId;
+@property (nonatomic) NSString * activeCommentId;
 @property (nonatomic) NSString* currentType;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight;
 
