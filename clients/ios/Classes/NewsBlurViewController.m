@@ -113,7 +113,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
     
-    if (SYSTEM_VERSION_LESS_THAN(@"7")) {
+    if (YES || SYSTEM_VERSION_LESS_THAN(@"7")) {
         UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
                                               resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
         [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
