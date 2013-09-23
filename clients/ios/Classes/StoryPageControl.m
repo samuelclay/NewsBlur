@@ -599,6 +599,12 @@
 }
 
 - (void)updatePageWithActiveStory:(int)location {
+    if (self.currentPage.pageIndex == location &&
+        self.nextPage.pageIndex == location+1 &&
+        self.previousPage.pageIndex == location-1) {
+        return;
+    }
+    
     [self markStoryAsRead];
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
