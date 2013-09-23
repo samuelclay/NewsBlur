@@ -2356,7 +2356,7 @@
                 $gettingstarted.animate({
                 'opacity': 0
               }, {
-                'duration': 500,
+                'duration': 380,
                 'complete': function() {
                   $gettingstarted.slideUp(350);
                 }
@@ -2831,13 +2831,13 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-feed-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Change folders')
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-feed-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
-                            $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders())
+                            $.make('div', { className: 'NB-add-folders' })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
@@ -3460,51 +3460,104 @@
             var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
             var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
+            var $add = $(".NB-add-folders", $confirm);
             var $select = $('select', $confirm);
+            
             if (_.isNumber(feed_id)) {
                 var feed      = this.model.get_feed(feed_id);
                 var feed_view = feed.get_view($feed, true);
                 var in_folder = feed_view.options.folder_title;
+                var $folders = this.make_folders_multiselect(feed);
+                $add.html($folders);
             } else {
                 folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
                               this.active_folder.folder_view;
                 var in_folder = folder_view.collection.options.title;
             }
-
+            
             $move.addClass('NB-menu-manage-feed-move-cancel');
             $('.NB-menu-manage-title', $move).text('Cancel move');
             $position.css('position', 'relative');
             var height = $confirm.height();
             $position.css('position', 'absolute');
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
-                'duration': 500, 
+                'duration': 380, 
                 'easing': 'easeOutQuart'
             });
-            $('select', $confirm).focus().select();
             this.flags['showing_confirm_input_on_manage_menu'] = true;
+            
+            if (!_.isNumber(feed_id)) {
+                $('select', $confirm).focus().select();
+                $('option', $select).each(function() {
+                    if ($(this).attr('value') == in_folder) {
+                        $(this).attr('selected', 'selected');
+                        return false;
+                    }
+                });
+            }
+        },
+        
+        make_folders_multiselect: function(feed) {
+            var folders = NEWSBLUR.assets.get_folders();
+            var in_folders = _.pluck(_.pluck(NEWSBLUR.assets.active_feed.folders, 'options'), 'title');
+            var $options = $.make('div', { className: 'NB-folders' });
+            var $option = this.make_folder_selectable('Top Level', '', 0, _.any(in_folders, function(folder) {
+                return !folder;
+            }));
+            $options.append($option);
+            
+            $options = this.make_folders_multiselect_options($options, folders, 0, in_folders);
 
-            $('option', $select).each(function() {
-                if ($(this).attr('value') == in_folder) {
-                    $(this).attr('selected', 'selected');
-                    return false;
+            return $options;
+        },
+        
+        make_folders_multiselect_options: function($options, items, depth, in_folders) {
+            var self = this;
+            items.each(function(item) {
+                if (item.is_folder()) {
+                    var title = item.get('folder_title');
+                    var $option = self.make_folder_selectable(title, title, _.contains(in_folders, title));
+                    $options.append($option);
+                    $options = self.make_folders_multiselect_options($options, item.folders, depth+1, in_folders);
                 }
             });
+    
+            return $options;
+        },
+        
+        make_folder_selectable: function(folder_title, folder_value, depth, selected) {
+            return $.make('div', { 
+                className: "NB-folder-option " + (selected ? "NB-folder-option-active" : ""),
+                style: 'padding-left: ' + depth*12 + 'px;'
+            }, [
+                $.make('div', { className: 'NB-icon' }),
+                $.make('div', { className: 'NB-folder-option-title' }, folder_title)
+            ]).data('folder', folder_value);
         },
         
         hide_confirm_move_menu_item: function(moved) {
-            var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
-            var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
+            var $move_folder = $('.NB-menu-manage-folder-move');
+            var $move_feed = $('.NB-menu-manage-feed-move');
+            var $confirm_folder = $('.NB-menu-manage-folder-move-confirm');
+            var $confirm_feed = $('.NB-menu-manage-feed-move-confirm');
             
-            $move.removeClass('NB-menu-manage-feed-move-cancel');
-            var text = 'Move to folder';
+            $move_folder.removeClass('NB-menu-manage-feed-move-cancel');
+            $move_feed.removeClass('NB-menu-manage-feed-move-cancel');
+            var text_folder = 'Move to folder';
+            var text_feed = 'Change folders';
             if (moved) {
-                text = 'Moved';
-                $move.addClass('NB-active');
+                text_folder = 'Moved';
+                text_feed = 'Moved';
+                $move_folder.addClass('NB-active');
+                $move_feed.addClass('NB-active');
             } else {
-                $move.removeClass('NB-active');
+                $move_folder.removeClass('NB-active');
+                $move_feed.removeClass('NB-active');
             }
-            $('.NB-menu-manage-title', $move).text(text);
-            $confirm.slideUp(500);
+            $('.NB-menu-manage-title', $move_folder).text(text_folder);
+            $('.NB-menu-manage-title', $move_feed).text(text_feed);
+            $confirm_feed.slideUp(500);
+            $confirm_folder.slideUp(500);
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
@@ -3564,7 +3617,7 @@
             var height = $confirm.height();
             $position.css('position', 'absolute');
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
-                'duration': 500, 
+                'duration': 380, 
                 'easing': 'easeOutQuart'
             });
             $('input', $confirm).focus().select();
@@ -3642,7 +3695,7 @@
             var height = $story_share.height();
             $position.css('position', 'absolute');
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
-                'duration': 500, 
+                'duration': 380, 
                 'easing': 'easeOutQuart'
             });
             $('textarea', $confirm).focus().select();

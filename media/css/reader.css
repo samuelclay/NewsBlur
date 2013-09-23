@@ -6017,6 +6017,8 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-confirm .NB-add-folders {
     float: left;
+    max-height: 84px;
+    overflow-y: auto;
 }
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share {
     overflow: hidden;
@@ -10361,6 +10363,15 @@ form.opml_import_form input {
 }
 .NB-module-search .NB-module-search-results {
     padding: 12px;
+}
+.NB-module-search .NB-friends-search-badges-empty {
+    clear: both;
+    font-size: 14px;
+    font-weight: 100;
+}
+.NB-module-search .NB-friends-search-badges-empty .NB-raquo {
+    float: left;
+    padding: 2px 6px;
 }
 
 .NB-module-search-input.NB-active input {
