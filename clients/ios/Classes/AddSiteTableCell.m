@@ -72,9 +72,7 @@ static UIFont *indicatorFont = nil;
      lineBreakMode:NSLineBreakByTruncatingTail 
      alignment:NSTextAlignmentLeft];
     
-    textColor = UIColorFromRGB(0x333333);
-    font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
-    
+    textColor = UIColorFromRGB(0x333333);    
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
