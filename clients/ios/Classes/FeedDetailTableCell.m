@@ -58,16 +58,14 @@ static UIFont *indicatorFont = nil;
     CGRect rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    if (!highlighted) {
-        UIColor *backgroundColor;
-        backgroundColor = UIColorFromRGB(0xf4f4f4);
-        [backgroundColor set];
-    }
+    UIColor *backgroundColor;
+    backgroundColor = highlighted ? UIColorFromRGB(0xFFFDEF) : UIColorFromRGB(0xf4f4f4);
+    [backgroundColor set];
     
     CGContextFillRect(context, r);
     
     if (highlighted) {
-        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFDEF) endColor:UIColorFromRGB(0xFFFDDF)];
+//        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFDEF) endColor:UIColorFromRGB(0xFFFDDF)];
     }
     
     UIColor *textColor;

@@ -3,7 +3,7 @@
     #import <UIKit/UIKit.h>
     #import "Underscore.h"
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifdef DEBUG
     #define BACKGROUND_REFRESH_SECONDS -5

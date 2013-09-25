@@ -188,29 +188,10 @@
 
     [self.feedsViewController fetchFeedList:YES];
         
-    [[UINavigationBar appearance]
-     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
-     forBarMetrics:UIBarMetricsDefault];
-    [[UINavigationBar appearance]
-     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
-     forBarMetrics:UIBarMetricsLandscapePhone];
-    [[UIToolbar appearance]
-     setBackgroundImage:[UIImage imageNamed:@"toolbar_background.png"]
-     forToolbarPosition:UIToolbarPositionBottom barMetrics:UIBarMetricsDefault];
-    [[UIToolbar appearance]
-     setBackgroundImage:[UIImage imageNamed:@"navbar_background.png"]
-     forToolbarPosition:UIToolbarPositionTop barMetrics:UIBarMetricsDefault];
-    [[UIToolbar appearance]
-     setBackgroundImage:[UIImage imageNamed:@"navbar_landscape_background.png"]
-     forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsLandscapePhone];
-
-    [[UINavigationBar appearance]
-     setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                             UIColorFromRGB(0x404040), UITextAttributeTextColor,
-                             UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                             [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
-                             UITextAttributeTextShadowOffset,
-                             nil]];
+    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
+    [[UIToolbar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
+    [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
+//    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
     [self createDatabaseConnection];
     
@@ -996,7 +977,10 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
+        if ([feedTitle length] >= 12) {
+            feedTitle = [NSString stringWithFormat:@"%@...", [feedTitle substringToIndex:MIN(9, [feedTitle length])]];
+        }
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStylePlain target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:storyPageControl animated:YES];
@@ -1034,16 +1018,20 @@
 
 - (void)showOriginalStory:(NSURL *)url {
     self.activeOriginalStoryURL = url;
+    self.originalStoryViewNavController = [[UINavigationController alloc]
+                                           initWithRootViewController:originalStoryViewController];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:originalStoryViewController animated:YES completion:nil];
+        [self.masterContainerViewController presentViewController:originalStoryViewNavController
+                                                         animated:YES completion:nil];
     } else {
-        [self.navigationController presentViewController:originalStoryViewController animated:YES completion:nil];
+        [self.navigationController presentViewController:self.originalStoryViewNavController
+                                                animated:YES completion:nil];
     }
 }
 
 - (void)closeOriginalStory {
     if (![self.presentedViewController isBeingDismissed]) {
-        [originalStoryViewController dismissViewControllerAnimated:YES completion:nil];
+        [originalStoryViewNavController dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -1139,7 +1127,7 @@
     return -1;
 }
 
-- (int)indexFromLocation:(int)location {
+- (int)indexFromLocation:(NSInteger)location {
     if (location == -1) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
@@ -1990,11 +1978,11 @@
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
-    titleLabel.textColor = UIColorFromRGB(0x404040);
+    titleLabel.textColor = UIColorFromRGB(0x4D4C4A);
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     titleLabel.numberOfLines = 1;
-    titleLabel.shadowColor = UIColorFromRGB(0xF5F5F5);
-    titleLabel.shadowOffset = CGSizeMake(0, -1);
+    titleLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.center = CGPointMake(0, -2);
     [titleLabel sizeToFit];
     
@@ -2022,14 +2010,14 @@
     return titleLabel;
 }
 
-- (UIButton *)makeRightFeedTitle:(NSDictionary *)feed {
+- (NBBarButtonItem *)makeRightFeedTitle:(NSDictionary *)feed {
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     UIImage *titleImage  = [Utilities getImage:feedIdStr];
 
     titleImage = [Utilities roundCorneredImage:titleImage radius:6];
     
-    UIButton *titleImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *titleImageButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     titleImageButton.bounds = CGRectMake(0, 0, 32, 32);
 
     [titleImageButton setImage:titleImage forState:UIControlStateNormal];

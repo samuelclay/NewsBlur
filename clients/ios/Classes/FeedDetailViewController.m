@@ -29,6 +29,7 @@
 #import "NBNotifier.h"
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
+#import "NBBarButtonItem.h"
 
 #define kTableViewRowHeight 61;
 #define kTableViewRiverRowHeight 81;
@@ -130,7 +131,7 @@
     
     // set right avatar title image
     if (appDelegate.isSocialView) {
-        UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
+        NBBarButtonItem *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
         [titleImageButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
         titleImageBarButton.customView = titleImageButton;
         [rightToolbar setItems: [NSArray arrayWithObjects:
@@ -241,12 +242,12 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && appDelegate.isSocialView) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            UIButton *avatar = (UIButton *)titleImageBarButton.customView;
+            NBBarButtonItem *avatar = (NBBarButtonItem *)titleImageBarButton.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(32, 32);
             avatar.frame = buttonFrame;
         } else {
-            UIButton *avatar = (UIButton *)titleImageBarButton.customView;
+            NBBarButtonItem *avatar = (NBBarButtonItem *)titleImageBarButton.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(28, 28);
             avatar.frame = buttonFrame;
@@ -831,6 +832,7 @@
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
+        cell.backgroundColor = [UIColor clearColor];
         return cell;
     } else {//if ([appDelegate.storyLocationsCount]) {
         NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
@@ -965,7 +967,7 @@
 	return cell;
 }
 
-- (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
+- (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
     int storyIndex = [appDelegate indexFromLocation:row];
@@ -1034,7 +1036,10 @@
         return height;
     }
 }
-
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    // This will create a "invisible" footer
+    return 0.01f;
+}
 - (void)scrollViewDidScroll: (UIScrollView *)scroll {
     [self checkScroll];
 }
