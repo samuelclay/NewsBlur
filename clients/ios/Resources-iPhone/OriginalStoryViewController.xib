@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="back" destination="6" id="26"/>
                 <outlet property="forward" destination="14" id="23"/>
+                <outlet property="navBar" destination="wB4-Cq-a4Y" id="NzG-e5-D83"/>
                 <outlet property="pageAction" destination="17" id="22"/>
                 <outlet property="refresh" destination="52" id="60"/>
                 <outlet property="toolbar" destination="5" id="45"/>
@@ -22,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <webView multipleTouchEnabled="YES" contentMode="scaleToFill" scalesPageToFit="YES" id="4">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                    <rect key="frame" x="0.0" y="56" width="320" height="380"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                     <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
@@ -30,6 +31,11 @@
                         <outlet property="delegate" destination="-1" id="7"/>
                     </connections>
                 </webView>
+                <view contentMode="scaleToFill" id="wB4-Cq-a4Y">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="58"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                </view>
                 <toolbar clipsSubviews="YES" contentMode="scaleToFill" id="5">
                     <rect key="frame" x="0.0" y="436" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

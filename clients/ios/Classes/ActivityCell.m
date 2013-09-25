@@ -24,6 +24,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         activityLabel = nil;
         faviconView = nil;
+        self.separatorInset = UIEdgeInsetsMake(0, 90, 0, 0);
         
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -34,6 +35,7 @@
         activity.backgroundColor = [UIColor whiteColor];
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
+
         
         topMargin = 15;
         bottomMargin = 15;

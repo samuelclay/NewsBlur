@@ -21,6 +21,7 @@
         self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
         self.textLabel.shadowOffset = CGSizeMake(0, 1);
         self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+        [self setSeparatorInset:UIEdgeInsetsMake(0, 38, 0, 0)];
         UIView *background = [[UIView alloc] init];
         [background setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
         [self setBackgroundView:background];

@@ -89,7 +89,7 @@
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
-- (void)updatePageWithActiveStory:(int)location;
+- (void)updatePageWithActiveStory:(NSInteger)location;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
