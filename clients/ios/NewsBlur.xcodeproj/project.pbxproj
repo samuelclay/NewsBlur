@@ -267,7 +267,6 @@
 		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
-		FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */; };
 		FF67D3BB168A70630057A7DA /* trainer.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BA168A70630057A7DA /* trainer.css */; };
 		FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BD168A708D0057A7DA /* storyDetailView.css */; };
 		FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
@@ -791,7 +790,6 @@
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
 		FF67D3B1168924C40057A7DA /* TrainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerViewController.m; sourceTree = "<group>"; };
 		FF67D3B6168977690057A7DA /* TrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrainerViewController.xib; sourceTree = "<group>"; };
-		FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "TrainerViewController~ipad.xib"; path = "Resources-iPad/Classes/TrainerViewController~ipad.xib"; sourceTree = "<group>"; };
 		FF67D3BA168A70630057A7DA /* trainer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = trainer.css; path = ../static/trainer.css; sourceTree = "<group>"; };
 		FF67D3BD168A708D0057A7DA /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../static/storyDetailView.css; sourceTree = "<group>"; };
 		FF67D3BE168A708D0057A7DA /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../static/storyDetailView.js; sourceTree = "<group>"; };
@@ -1616,7 +1614,6 @@
 				FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
-				FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
 			);
@@ -2232,7 +2229,6 @@
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
 				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
-				FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */,
 				FF67D3BB168A70630057A7DA /* trainer.css in Resources */,
 				FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */,
 				FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */,

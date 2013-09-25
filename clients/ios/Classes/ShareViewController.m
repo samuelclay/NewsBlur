@@ -26,6 +26,7 @@
 @synthesize appDelegate;
 @synthesize activeReplyId;
 @synthesize activeCommentId;
+@synthesize activeStoryId;
 @synthesize currentType;
 @synthesize storyTitle;
 
@@ -178,6 +179,8 @@
     self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
     self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
     self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
+    
+    [self onTextChange:nil];
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -270,8 +273,10 @@
         
         // Don't bother to reset comment field for replies while on the same story.
         // It'll get cleared out on a new story and when posting a reply.
-        if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId]) {
+        if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId] ||
+            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
             self.activeCommentId = userId;
+            self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {
@@ -282,7 +287,7 @@
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
-        [submitButton setTitle:@"Save your comments"];
+        [submitButton setTitle:@"Share with comments"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
@@ -483,8 +488,8 @@
 
 -(void)onTextChange:(NSNotification*)notification {
     NSString *text = self.commentField.text;
-    if ([self.submitButton.title isEqualToString:@"Share this story"] || 
-        [self.submitButton.title isEqualToString:@"Share with comments"]) {
+    if ([self.currentType isEqualToString: @"share"] ||
+        [self.currentType isEqualToString:@"edit-share"]) {
         if (text.length) {
             self.submitButton.title = @"Share with comments";
         } else {

@@ -351,6 +351,7 @@
     self.userProfileViewController = newUserProfile; 
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
+    self.userProfileNavigationController.navigationBar.translucent = NO;
 
     
     // adding Done button
@@ -422,6 +423,7 @@
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
+    self.modalNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -437,6 +439,7 @@
     
     self.friendsListViewController = friendsBVC;
     self.modalNavigationController = friendsNav;
+    self.modalNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -460,6 +463,7 @@
             UINavigationController *shareNav = [[UINavigationController alloc]
                                                 initWithRootViewController:self.shareViewController];
             self.shareNavigationController = shareNav;
+            self.shareNavigationController.navigationBar.translucent = NO;
         }
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
         [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:nil];
@@ -522,6 +526,7 @@
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
     self.ftuxNavigationController = ftux;
+    self.ftuxNavigationController.navigationBar.translucent = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -565,6 +570,7 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
+        self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
@@ -580,6 +586,7 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
+        self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
@@ -752,6 +759,7 @@
                                               initWithRootViewController:serviceVC];
         self.modalNavigationController = connectNav;
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        self.modalNavigationController.navigationBar.translucent = NO;
         [self.masterContainerViewController presentViewController:modalNavigationController
                                                               animated:YES completion:nil];
     } else {
@@ -1024,6 +1032,7 @@
     } else {
         self.originalStoryViewNavController = [[UINavigationController alloc]
                                                initWithRootViewController:originalStoryViewController];
+        self.originalStoryViewNavController.navigationBar.translucent = NO;
         [self.navigationController presentViewController:self.originalStoryViewNavController
                                                 animated:YES completion:nil];
     }
