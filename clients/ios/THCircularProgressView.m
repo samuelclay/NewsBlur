@@ -9,7 +9,7 @@
 
 @interface THCircularProgressView ()
 
-@property CGPoint center;
+@property CGPoint centerPoint;
 @property CGFloat radius;
 
 @end
@@ -26,12 +26,11 @@ progressBackgroundColor:(UIColor *)progressBackgroundColor
           percentage:(CGFloat)percentage
 {
     CGRect rect = CGRectMake(center.x - radius, center.y - radius, 2 * radius, 2 * radius);
-    
     self = [super initWithFrame:rect];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
  
-        self.center = CGPointMake(radius, radius);
+        self.centerPoint = CGPointMake(radius, radius);
         self.radius = radius;
         self.lineWidth = lineWidth;
         
@@ -49,7 +48,7 @@ progressBackgroundColor:(UIColor *)progressBackgroundColor
         
         [self addSubview:self.centerLabel];
     }
-    
+
     return self;
 }
 
@@ -71,7 +70,7 @@ progressBackgroundColor:(UIColor *)progressBackgroundColor
         }
         case THProgressBackgroundModeCircumference: {
             CGFloat radiusMinusLineWidth = self.radius - self.lineWidth / 2;
-            UIBezierPath *progressCircle = [UIBezierPath bezierPathWithArcCenter:self.center
+            UIBezierPath *progressCircle = [UIBezierPath bezierPathWithArcCenter:self.centerPoint
                                                                           radius:radiusMinusLineWidth
                                                                       startAngle:0
                                                                         endAngle:2 * M_PI
@@ -105,7 +104,7 @@ progressBackgroundColor:(UIColor *)progressBackgroundColor
 
 - (void)drawProgressArcWithStartAngle:(CGFloat)startAngle endAngle:(CGFloat)endAngle radius:(CGFloat)radius
 {
-    UIBezierPath *progressCircle = [UIBezierPath bezierPathWithArcCenter:self.center
+    UIBezierPath *progressCircle = [UIBezierPath bezierPathWithArcCenter:self.centerPoint
                                                                   radius:radius
                                                               startAngle:startAngle
                                                                 endAngle:endAngle
