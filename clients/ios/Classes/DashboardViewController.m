@@ -47,6 +47,11 @@
     // preload feedback
     self.feedbackWebView.scalesPageToFit = YES;
     
+    [self.segmentedButton
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    
     NSString *urlAddress = FEEDBACK_URL;
     //Create a URL object.
     NSURL *url = [NSURL URLWithString:urlAddress];

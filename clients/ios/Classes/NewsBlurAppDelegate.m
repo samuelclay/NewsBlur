@@ -1018,12 +1018,12 @@
 
 - (void)showOriginalStory:(NSURL *)url {
     self.activeOriginalStoryURL = url;
-    self.originalStoryViewNavController = [[UINavigationController alloc]
-                                           initWithRootViewController:originalStoryViewController];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:originalStoryViewNavController
+        [self.masterContainerViewController presentViewController:originalStoryViewController
                                                          animated:YES completion:nil];
     } else {
+        self.originalStoryViewNavController = [[UINavigationController alloc]
+                                               initWithRootViewController:originalStoryViewController];
         [self.navigationController presentViewController:self.originalStoryViewNavController
                                                 animated:YES completion:nil];
     }

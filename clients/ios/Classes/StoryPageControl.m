@@ -227,6 +227,11 @@
     }
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+    previousPage.view.hidden = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    previousPage.view.hidden = YES;
 }
 
 - (void)transitionFromFeedDetail {
@@ -601,7 +606,7 @@
     [self doNextUnreadStory];
 }
 
-- (void)updatePageWithActiveStory:(int)location {
+- (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     self.bottomPlaceholderToolbar.hidden = YES;
@@ -643,11 +648,14 @@
     NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
     NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
     
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
-        [db executeUpdate:@"INSERT INTO queued_read_hashes "
-                           "(story_feed_id, story_hash) VALUES "
-                           "(?, ?)", storyFeedId, storyHash];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inDatabase:^(FMDatabase *db) {
+            [db executeUpdate:@"INSERT INTO queued_read_hashes "
+                               "(story_feed_id, story_hash) VALUES "
+                               "(?, ?)", storyFeedId, storyHash];
+        }];
+    });
     
     appDelegate.hasQueuedReadStories = YES;
 }
@@ -658,7 +666,7 @@
 
 - (void)setNextPreviousButtons {
     // setting up the PREV BUTTON
-    int readStoryCount = [appDelegate.readStories count];
+    NSInteger readStoryCount = [appDelegate.readStories count];
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
@@ -673,8 +681,8 @@
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
-    int nextIndex = [appDelegate indexOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
+    NSInteger nextIndex = [appDelegate indexOfNextUnreadStory];
+    NSInteger unreadCount = [appDelegate unreadCount];
     if ((nextIndex == -1 && unreadCount > 0) ||
         nextIndex != -1) {
         [buttonNext setTitle:@"NEXT" forState:UIControlStateNormal];
@@ -717,6 +725,8 @@
 }
 
 - (void)markStoryAsRead {
+    if (!appDelegate.activeStory) return;
+    
     //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
         [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
