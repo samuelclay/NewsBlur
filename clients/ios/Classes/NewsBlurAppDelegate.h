@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
+#import "NBBarButtonItem.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -75,6 +76,7 @@
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
+    UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
     
@@ -155,6 +157,7 @@
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
+@property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
@@ -301,7 +304,7 @@
 - (int)indexOfActiveStory;
 - (int)indexOfStoryId:(id)storyId;
 - (int)locationOfActiveStory;
-- (int)indexFromLocation:(int)location;
+- (int)indexFromLocation:(NSInteger)location;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 - (int)locationOfStoryId:(id)storyId;
@@ -341,7 +344,7 @@
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
-- (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
+- (NBBarButtonItem *)makeRightFeedTitle:(NSDictionary *)feed;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

@@ -65,13 +65,13 @@ static UIFont *textFont = nil;
 
 
 - (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
-    
+    NSLog(@"Draw feed: %@ - %@", feedTitle, NSStringFromCGRect(r));
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *backgroundColor;
     
     backgroundColor = highlighted ?
-                      UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
+                      UIColorFromRGB(0xFFFFD2) :
                       self.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       UIColorFromRGB(0xF7F8F5);
 
@@ -79,7 +79,7 @@ static UIFont *textFont = nil;
     CGContextFillRect(context, r);
     
     if (highlighted) {
-        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
+//        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         
         // top border
         UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
@@ -113,39 +113,34 @@ static UIFont *textFont = nil;
     } else {
         font = [UIFont fontWithName:@"Helvetica" size:12.6];
     }
-
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    
     if (isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail
-             alignment:NSTextAlignmentLeft];
+            [feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         }
 
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         }
     }
     

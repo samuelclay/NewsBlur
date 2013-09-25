@@ -17,7 +17,7 @@ static const CGFloat kMargin        = 6.0f;
 static const CGFloat kSpacer        = 2.0f;
 static const CGFloat kLabelFontSize = 12.0f;
 static const CGFloat kAddressHeight = 30.0f;
-static const CGFloat kButtonWidth   = 48.0f;
+static const CGFloat kButtonWidth   = 68.0f;
 
 @interface OriginalStoryViewController : BaseViewController
 <UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate> {
@@ -37,6 +37,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+//@property (nonatomic) IBOutlet UINavigationBar *navBar;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIBarButtonItem* back;
