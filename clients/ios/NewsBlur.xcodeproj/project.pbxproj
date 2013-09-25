@@ -119,7 +119,6 @@
 		43A4C49A15B00A26008787B5 /* warning.gif in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C43F15B00A26008787B5 /* warning.gif */; };
 		43A4C49B15B00A26008787B5 /* warning.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C44015B00A26008787B5 /* warning.png */; };
 		43A4C49C15B00A26008787B5 /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C44115B00A26008787B5 /* world.png */; };
-		43A4C49E15B00CD3008787B5 /* Entitlements.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C49D15B00CD3008787B5 /* Entitlements.entitlements */; };
 		43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43ABBCA915B53A1400EA3111 /* InteractionCell.m */; };
 		43AF417715C30B1600758366 /* 37x-Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AF417515C30B1600758366 /* 37x-Checkmark.png */; };
 		43AF417815C30B1600758366 /* 37x-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AF417615C30B1600758366 /* 37x-Checkmark@2x.png */; };
@@ -236,14 +235,6 @@
 		FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C216DEDF9D0013E84B /* markread@2x.png */; };
 		FF4151C716DEF1A80013E84B /* original_button.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C516DEF1A80013E84B /* original_button.png */; };
 		FF4151C816DEF1A80013E84B /* original_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151C616DEF1A80013E84B /* original_button@2x.png */; };
-		FF4151E916DEF9960013E84B /* back_button_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E116DEF9960013E84B /* back_button_background.png */; };
-		FF4151EA16DEF9960013E84B /* back_button_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E216DEF9960013E84B /* back_button_background@2x.png */; };
-		FF4151EB16DEF9960013E84B /* back_button_landscape_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E316DEF9960013E84B /* back_button_landscape_background.png */; };
-		FF4151EC16DEF9960013E84B /* back_button_landscape_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */; };
-		FF4151ED16DEF9960013E84B /* back_button_landscape_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */; };
-		FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */; };
-		FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E716DEF9960013E84B /* back_button_selected_background.png */; };
-		FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */; };
 		FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */; };
 		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
 		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
@@ -317,6 +308,7 @@
 		FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7016D6A90D002D334D /* ak-icon-global.png */; };
 		FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
 		FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */; };
+		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAF53661799D18B00C7FCCB /* RWInstapaperActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAF53461799D18B00C7FCCB /* RWInstapaperActivity.m */; };
 		FFAF53671799D18B00C7FCCB /* RWInstapaperActivityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAF53481799D18B00C7FCCB /* RWInstapaperActivityRequest.m */; };
@@ -360,21 +352,7 @@
 		FFC5F31416E2D2C2007AC72C /* story_share_twitter_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30816E2D2C2007AC72C /* story_share_twitter_active@2x.png */; };
 		FFC5F31516E2D2C2007AC72C /* story_share_twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30916E2D2C2007AC72C /* story_share_twitter.png */; };
 		FFC5F31616E2D2C2007AC72C /* story_share_twitter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30A16E2D2C2007AC72C /* story_share_twitter@2x.png */; };
-		FFC5F31B16E2E9FB007AC72C /* toolbar_button_landscape_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F31716E2E9FB007AC72C /* toolbar_button_landscape_selected.png */; };
-		FFC5F31C16E2E9FB007AC72C /* toolbar_button_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F31816E2E9FB007AC72C /* toolbar_button_landscape.png */; };
-		FFC5F31D16E2E9FB007AC72C /* toolbar_button_landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F31916E2E9FB007AC72C /* toolbar_button_landscape@2x.png */; };
-		FFC5F31E16E2E9FB007AC72C /* toolbar_button_selected_landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F31A16E2E9FB007AC72C /* toolbar_button_selected_landscape@2x.png */; };
 		FFC5F32016E2F24B007AC72C /* white_spacer.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F31F16E2F24B007AC72C /* white_spacer.png */; };
-		FFCF51A316E020DD008C7C42 /* toolbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A116E020DD008C7C42 /* toolbar_background.png */; };
-		FFCF51A416E020DD008C7C42 /* toolbar_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */; };
-		FFCF51A716E028B0008C7C42 /* navbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A516E028B0008C7C42 /* navbar_background.png */; };
-		FFCF51A816E028B0008C7C42 /* navbar_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */; };
-		FFCF51AB16E029E6008C7C42 /* navbar_landscape_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */; };
-		FFCF51AC16E029E6008C7C42 /* navbar_landscape_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */; };
-		FFCF51C516E0300F008C7C42 /* button_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C116E0300F008C7C42 /* button_selected.png */; };
-		FFCF51C616E0300F008C7C42 /* button_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C216E0300F008C7C42 /* button_selected@2x.png */; };
-		FFCF51C716E0300F008C7C42 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C316E0300F008C7C42 /* button.png */; };
-		FFCF51C816E0300F008C7C42 /* button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCF51C416E0300F008C7C42 /* button@2x.png */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
 		FFDCA0AF16E80866000D8E0C /* DEComposeRuledView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */; };
@@ -603,7 +581,6 @@
 		43A4C43F15B00A26008787B5 /* warning.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = warning.gif; sourceTree = "<group>"; };
 		43A4C44015B00A26008787B5 /* warning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = warning.png; sourceTree = "<group>"; };
 		43A4C44115B00A26008787B5 /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
-		43A4C49D15B00CD3008787B5 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Entitlements.entitlements; sourceTree = "<group>"; };
 		43ABBCA815B53A1400EA3111 /* InteractionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractionCell.h; sourceTree = "<group>"; };
 		43ABBCA915B53A1400EA3111 /* InteractionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InteractionCell.m; sourceTree = "<group>"; };
 		43AF417515C30B1600758366 /* 37x-Checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "37x-Checkmark.png"; sourceTree = "<group>"; };
@@ -769,14 +746,6 @@
 		FF4151C216DEDF9D0013E84B /* markread@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markread@2x.png"; sourceTree = "<group>"; };
 		FF4151C516DEF1A80013E84B /* original_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = original_button.png; sourceTree = "<group>"; };
 		FF4151C616DEF1A80013E84B /* original_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "original_button@2x.png"; sourceTree = "<group>"; };
-		FF4151E116DEF9960013E84B /* back_button_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_background.png; sourceTree = "<group>"; };
-		FF4151E216DEF9960013E84B /* back_button_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_background@2x.png"; sourceTree = "<group>"; };
-		FF4151E316DEF9960013E84B /* back_button_landscape_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_landscape_background.png; sourceTree = "<group>"; };
-		FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_landscape_background@2x.png"; sourceTree = "<group>"; };
-		FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_landscape_selected_background.png; sourceTree = "<group>"; };
-		FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_landscape_selected_background@2x.png"; sourceTree = "<group>"; };
-		FF4151E716DEF9960013E84B /* back_button_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_button_selected_background.png; sourceTree = "<group>"; };
-		FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back_button_selected_background@2x.png"; sourceTree = "<group>"; };
 		FF4EE9A3175EC9CF005891B5 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
@@ -875,6 +844,8 @@
 		FF85BF7016D6A90D002D334D /* ak-icon-global.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-global.png"; sourceTree = "<group>"; };
 		FF85BF7216D6A972002D334D /* ak-icon-allstories.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-allstories.png"; sourceTree = "<group>"; };
 		FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-blurblogs.png"; sourceTree = "<group>"; };
+		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
+		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFAF53451799D18B00C7FCCB /* RWInstapaperActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RWInstapaperActivity.h; sourceTree = "<group>"; };
 		FFAF53461799D18B00C7FCCB /* RWInstapaperActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RWInstapaperActivity.m; sourceTree = "<group>"; };
@@ -951,21 +922,7 @@
 		FFC5F30816E2D2C2007AC72C /* story_share_twitter_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_twitter_active@2x.png"; sourceTree = "<group>"; };
 		FFC5F30916E2D2C2007AC72C /* story_share_twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_twitter.png; sourceTree = "<group>"; };
 		FFC5F30A16E2D2C2007AC72C /* story_share_twitter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_twitter@2x.png"; sourceTree = "<group>"; };
-		FFC5F31716E2E9FB007AC72C /* toolbar_button_landscape_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toolbar_button_landscape_selected.png; sourceTree = "<group>"; };
-		FFC5F31816E2E9FB007AC72C /* toolbar_button_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toolbar_button_landscape.png; sourceTree = "<group>"; };
-		FFC5F31916E2E9FB007AC72C /* toolbar_button_landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_button_landscape@2x.png"; sourceTree = "<group>"; };
-		FFC5F31A16E2E9FB007AC72C /* toolbar_button_selected_landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_button_selected_landscape@2x.png"; sourceTree = "<group>"; };
 		FFC5F31F16E2F24B007AC72C /* white_spacer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = white_spacer.png; sourceTree = "<group>"; };
-		FFCF51A116E020DD008C7C42 /* toolbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toolbar_background.png; sourceTree = "<group>"; };
-		FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_background@2x.png"; sourceTree = "<group>"; };
-		FFCF51A516E028B0008C7C42 /* navbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbar_background.png; sourceTree = "<group>"; };
-		FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_background@2x.png"; sourceTree = "<group>"; };
-		FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbar_landscape_background.png; sourceTree = "<group>"; };
-		FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_landscape_background@2x.png"; sourceTree = "<group>"; };
-		FFCF51C116E0300F008C7C42 /* button_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button_selected.png; sourceTree = "<group>"; };
-		FFCF51C216E0300F008C7C42 /* button_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button_selected@2x.png"; sourceTree = "<group>"; };
-		FFCF51C316E0300F008C7C42 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
-		FFCF51C416E0300F008C7C42 /* button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button@2x.png"; sourceTree = "<group>"; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		FFD1D7301459B63500E46F89 /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
@@ -1133,7 +1090,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */,
-				43A4C49D15B00CD3008787B5 /* Entitlements.entitlements */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1403,10 +1359,6 @@
 				FF22FE4816E413C30046165A /* disclosure_border@2x.png */,
 				FF22FE4916E413C30046165A /* disclosure@2x.png */,
 				FFC5F31F16E2F24B007AC72C /* white_spacer.png */,
-				FFC5F31716E2E9FB007AC72C /* toolbar_button_landscape_selected.png */,
-				FFC5F31816E2E9FB007AC72C /* toolbar_button_landscape.png */,
-				FFC5F31916E2E9FB007AC72C /* toolbar_button_landscape@2x.png */,
-				FFC5F31A16E2E9FB007AC72C /* toolbar_button_selected_landscape@2x.png */,
 				FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */,
 				FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */,
 				FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */,
@@ -1419,24 +1371,6 @@
 				FFC5F30816E2D2C2007AC72C /* story_share_twitter_active@2x.png */,
 				FFC5F30916E2D2C2007AC72C /* story_share_twitter.png */,
 				FFC5F30A16E2D2C2007AC72C /* story_share_twitter@2x.png */,
-				FFCF51C116E0300F008C7C42 /* button_selected.png */,
-				FFCF51C216E0300F008C7C42 /* button_selected@2x.png */,
-				FFCF51C316E0300F008C7C42 /* button.png */,
-				FFCF51C416E0300F008C7C42 /* button@2x.png */,
-				FFCF51A916E029E6008C7C42 /* navbar_landscape_background.png */,
-				FFCF51AA16E029E6008C7C42 /* navbar_landscape_background@2x.png */,
-				FFCF51A516E028B0008C7C42 /* navbar_background.png */,
-				FFCF51A616E028B0008C7C42 /* navbar_background@2x.png */,
-				FFCF51A116E020DD008C7C42 /* toolbar_background.png */,
-				FFCF51A216E020DD008C7C42 /* toolbar_background@2x.png */,
-				FF4151E116DEF9960013E84B /* back_button_background.png */,
-				FF4151E216DEF9960013E84B /* back_button_background@2x.png */,
-				FF4151E316DEF9960013E84B /* back_button_landscape_background.png */,
-				FF4151E416DEF9960013E84B /* back_button_landscape_background@2x.png */,
-				FF4151E516DEF9960013E84B /* back_button_landscape_selected_background.png */,
-				FF4151E616DEF9960013E84B /* back_button_landscape_selected_background@2x.png */,
-				FF4151E716DEF9960013E84B /* back_button_selected_background.png */,
-				FF4151E816DEF9960013E84B /* back_button_selected_background@2x.png */,
 				FF4151C516DEF1A80013E84B /* original_button.png */,
 				FF4151C616DEF1A80013E84B /* original_button@2x.png */,
 				FF4151C116DEDF9D0013E84B /* markread.png */,
@@ -1763,6 +1697,8 @@
 				FF6618C7176184560039913B /* NBNotifier.m */,
 				FF11045D176950F900502C29 /* NBLoadingCell.h */,
 				FF11045E176950F900502C29 /* NBLoadingCell.m */,
+				FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */,
+				FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2127,6 +2063,11 @@
 			attributes = {
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = NewsBlur;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = U92APKK285;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "NewsBlur" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2229,7 +2170,6 @@
 				43A4C49A15B00A26008787B5 /* warning.gif in Resources */,
 				43A4C49B15B00A26008787B5 /* warning.png in Resources */,
 				43A4C49C15B00A26008787B5 /* world.png in Resources */,
-				43A4C49E15B00CD3008787B5 /* Entitlements.entitlements in Resources */,
 				43C1680B15B3D99B00428BA3 /* 7-location-place.png in Resources */,
 				43B6A27515B6952F00CEA2E6 /* group.png in Resources */,
 				43B6A27615B6952F00CEA2E6 /* group@2x.png in Resources */,
@@ -2318,24 +2258,6 @@
 				FF4151C416DEDF9D0013E84B /* markread@2x.png in Resources */,
 				FF4151C716DEF1A80013E84B /* original_button.png in Resources */,
 				FF4151C816DEF1A80013E84B /* original_button@2x.png in Resources */,
-				FF4151E916DEF9960013E84B /* back_button_background.png in Resources */,
-				FF4151EA16DEF9960013E84B /* back_button_background@2x.png in Resources */,
-				FF4151EB16DEF9960013E84B /* back_button_landscape_background.png in Resources */,
-				FF4151EC16DEF9960013E84B /* back_button_landscape_background@2x.png in Resources */,
-				FF4151ED16DEF9960013E84B /* back_button_landscape_selected_background.png in Resources */,
-				FF4151EE16DEF9960013E84B /* back_button_landscape_selected_background@2x.png in Resources */,
-				FF4151EF16DEF9960013E84B /* back_button_selected_background.png in Resources */,
-				FF4151F016DEF9960013E84B /* back_button_selected_background@2x.png in Resources */,
-				FFCF51A316E020DD008C7C42 /* toolbar_background.png in Resources */,
-				FFCF51A416E020DD008C7C42 /* toolbar_background@2x.png in Resources */,
-				FFCF51A716E028B0008C7C42 /* navbar_background.png in Resources */,
-				FFCF51A816E028B0008C7C42 /* navbar_background@2x.png in Resources */,
-				FFCF51AB16E029E6008C7C42 /* navbar_landscape_background.png in Resources */,
-				FFCF51AC16E029E6008C7C42 /* navbar_landscape_background@2x.png in Resources */,
-				FFCF51C516E0300F008C7C42 /* button_selected.png in Resources */,
-				FFCF51C616E0300F008C7C42 /* button_selected@2x.png in Resources */,
-				FFCF51C716E0300F008C7C42 /* button.png in Resources */,
-				FFCF51C816E0300F008C7C42 /* button@2x.png in Resources */,
 				FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */,
 				FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */,
 				FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */,
@@ -2348,10 +2270,6 @@
 				FFC5F31416E2D2C2007AC72C /* story_share_twitter_active@2x.png in Resources */,
 				FFC5F31516E2D2C2007AC72C /* story_share_twitter.png in Resources */,
 				FFC5F31616E2D2C2007AC72C /* story_share_twitter@2x.png in Resources */,
-				FFC5F31B16E2E9FB007AC72C /* toolbar_button_landscape_selected.png in Resources */,
-				FFC5F31C16E2E9FB007AC72C /* toolbar_button_landscape.png in Resources */,
-				FFC5F31D16E2E9FB007AC72C /* toolbar_button_landscape@2x.png in Resources */,
-				FFC5F31E16E2E9FB007AC72C /* toolbar_button_selected_landscape@2x.png in Resources */,
 				FFC5F32016E2F24B007AC72C /* white_spacer.png in Resources */,
 				FF22FE4616E410A60046165A /* folder_collapse.png in Resources */,
 				FF22FE4716E410A60046165A /* folder_expand.png in Resources */,
@@ -2495,6 +2413,7 @@
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
+				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
 				FF2D8CAF1488633A00057B80 /* Reachability.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
@@ -2645,20 +2564,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -2671,10 +2590,9 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
 			name = Debug;
@@ -2683,18 +2601,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -2706,19 +2624,18 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2726,22 +2643,22 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos7.0;
 				STRIP_INSTALLED_PRODUCT = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (3PN8E5365D)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Samuel Clay (3PN8E5365D)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -2749,13 +2666,14 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				PROVISIONING_PROFILE = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
+				SDKROOT = iphoneos7.0;
 				STRIP_INSTALLED_PRODUCT = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Release;
 		};

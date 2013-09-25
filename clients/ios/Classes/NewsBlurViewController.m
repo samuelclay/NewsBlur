@@ -32,6 +32,7 @@
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 #import "UIImageView+AFNetworking.h"
+#import "NBBarButtonItem.h"
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
@@ -108,145 +109,29 @@ static const CGFloat kFolderTitleHeight = 28;
      name:kIASKAppSettingChanged
      object:nil];
     
-    [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
+    self.intelligenceControl.center = self.feedViewToolbar.center;
     self.intelligenceControl.hidden = YES;
     
-    if (YES || SYSTEM_VERSION_LESS_THAN(@"7")) {
-        UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
-                                              resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
-                                                   forState:UIControlStateNormal
-                                                 barMetrics:UIBarMetricsDefault];
-        UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
-                                            resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
-                                                   forState:UIControlStateSelected
-                                                 barMetrics:UIBarMetricsDefault];
-        UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
-                                        resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
-                                     forLeftSegmentState:UIControlStateNormal
-                                       rightSegmentState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
-                                      resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
-                                     forLeftSegmentState:UIControlStateSelected
-                                       rightSegmentState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
-                                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
-                                     forLeftSegmentState:UIControlStateNormal
-                                       rightSegmentState:UIControlStateSelected
-                                              barMetrics:UIBarMetricsDefault];
-        [[UISegmentedControl appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                                 UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateNormal];
-        [[UISegmentedControl appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                                 UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateSelected];
-        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
-        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
-
-        
-        UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
-                                                          forState:UIControlStateNormal
-                                                        barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
-
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
-                                                          forState:UIControlStateNormal
-                                                        barMetrics:UIBarMetricsLandscapePhone];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
-                                                          forState:UIControlStateHighlighted
-                                                        barMetrics:UIBarMetricsDefault];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
-                                                          forState:UIControlStateHighlighted 
-                                                        barMetrics:UIBarMetricsLandscapePhone];
-        
-        UIImage *b1 = [[UIImage imageNamed:@"button.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        
-        [[UIBarButtonItem appearance] setBackgroundImage:b1
-                                                forState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:b2
-                                                forState:UIControlStateHighlighted
-                                              barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:b3
-                                                forState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsLandscapePhone];
-        [[UIBarButtonItem appearance] setBackgroundImage:b4
-                                                forState:UIControlStateHighlighted
-                                              barMetrics:UIBarMetricsLandscapePhone];
-
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0x404040), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateNormal];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateSelected];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateHighlighted];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateDisabled];
-    }
-    
+    [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
+                                                               UIColorFromRGB(0x8F918B)}
+                                                forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
+                                                               UIColorFromRGB(0x4C4D4A)}
+                                                forState:UIControlStateHighlighted];
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
+                                               inView:self.view
+                                           withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
 }
 
@@ -256,7 +141,7 @@ static const CGFloat kFolderTitleHeight = 28;
     } 
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self setUserAvatarLayout:orientation];
+//    [self setUserAvatarLayout:orientation];
     
     [super viewWillAppear:animated];
     
@@ -351,12 +236,12 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
+            NBBarButtonItem *avatar = (NBBarButtonItem *)self.navigationItem.leftBarButtonItem.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(32, 32);
             avatar.frame = buttonFrame;
         } else {
-            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
+            NBBarButtonItem *avatar = (NBBarButtonItem *)self.navigationItem.leftBarButtonItem.customView;
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(28, 28);
             avatar.frame = buttonFrame;
@@ -551,7 +436,7 @@ static const CGFloat kFolderTitleHeight = 28;
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
     NSURL * imageURL = [NSURL URLWithString:url];
-    UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *userAvatarButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
     userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
@@ -572,14 +457,15 @@ static const CGFloat kFolderTitleHeight = 28;
     [self setUserAvatarLayout:orientation];
     
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     addButton.bounds = CGRectMake(0, 0, 34, 44);
     [addButton setImage:addImage forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
     [addBarButton setCustomView:addButton];
 
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    settingsButton.onRightSide = YES;
     settingsButton.bounds = CGRectMake(0, 0, 34, 44);
     [settingsButton setImage:settingsImage forState:UIControlStateNormal];
     [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
@@ -591,7 +477,7 @@ static const CGFloat kFolderTitleHeight = 28;
                                            target:nil action:nil];
         spacer.width = 12;
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
-        UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         [activityButton setImage:activityImage forState:UIControlStateNormal];
         [activityButton sizeToFit];
         [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
@@ -1069,7 +955,6 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
@@ -1302,7 +1187,7 @@ heightForHeaderInSection:(NSInteger)section {
     if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
         topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
     }
-    int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
+    NSInteger selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -1712,11 +1597,14 @@ heightForHeaderInSection:(NSInteger)section {
     yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
+    NSNumberFormatter *formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    
     UILabel *neutralCount = [[UILabel alloc] init];
     neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
                                     yellow.frame.origin.y - 3, 100, 16);
-    neutralCount.text = [NSString stringWithFormat:@"%d", counts.nt];
-    neutralCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
+    neutralCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
     [neutralCount sizeToFit];
@@ -1730,8 +1618,8 @@ heightForHeaderInSection:(NSInteger)section {
     UILabel *positiveCount = [[UILabel alloc] init];
     positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x + 2,
                                      green.frame.origin.y - 3, 100, 16);
-    positiveCount.text = [NSString stringWithFormat:@"%d", counts.ps];
-    positiveCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
+    positiveCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [positiveCount sizeToFit];

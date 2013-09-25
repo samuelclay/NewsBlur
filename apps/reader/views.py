@@ -679,8 +679,6 @@ def load_single_feed(request, feed_id):
     
     # if page <= 1:
     #     import random
-    #     if random.random() < .5:
-    #         assert False
     #     time.sleep(random.randint(0, 3))
 
     return data
