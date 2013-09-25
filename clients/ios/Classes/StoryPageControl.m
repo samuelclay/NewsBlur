@@ -220,7 +220,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     // set the subscribeButton flag
-    if (appDelegate.isTryFeedView) {
+    if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@", [appDelegate.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
