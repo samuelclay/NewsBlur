@@ -217,14 +217,9 @@
     [self testForTryFeed];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
+- (void)viewDidDisappear:(BOOL)animated {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    
 }
 
 - (void)fadeSelectedCell {

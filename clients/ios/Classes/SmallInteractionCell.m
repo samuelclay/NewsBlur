@@ -17,6 +17,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         interactionLabel = nil;
         avatarView = nil;
+        self.separatorInset = UIEdgeInsetsMake(0, 52, 0, 0);
         
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];

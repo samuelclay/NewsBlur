@@ -65,7 +65,6 @@ static UIFont *textFont = nil;
 
 
 - (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
-    NSLog(@"Draw feed: %@ - %@", feedTitle, NSStringFromCGRect(r));
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *backgroundColor;

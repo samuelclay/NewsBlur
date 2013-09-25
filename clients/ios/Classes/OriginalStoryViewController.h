@@ -37,7 +37,7 @@ static const CGFloat kButtonWidth   = 68.0f;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-//@property (nonatomic) IBOutlet UINavigationBar *navBar;
+@property (nonatomic) IBOutlet UIView *navBar;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIBarButtonItem* back;
@@ -48,6 +48,7 @@ static const CGFloat kButtonWidth   = 68.0f;
 @property (nonatomic) IBOutlet UITextField *pageUrl;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 
+- (void)layoutNavBar;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (IBAction) doCloseOriginalStoryViewController;
 - (IBAction) doOpenActionSheet:(id)sender;

@@ -89,7 +89,7 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)viewDidLoad {
     [super viewDidLoad];
     popoverClass = [WEPopoverController class];
-    
+
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -112,7 +112,11 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
     [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-    self.intelligenceControl.center = self.feedViewToolbar.center;
+    [self.intelligenceControl sizeToFit];
+    CGRect intelFrame = self.intelligenceControl.frame;
+    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) -
+                          (intelFrame.size.width / 2) + 20;
+    self.intelligenceControl.frame = intelFrame;
     self.intelligenceControl.hidden = YES;
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
@@ -141,7 +145,7 @@ static const CGFloat kFolderTitleHeight = 28;
     } 
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-//    [self setUserAvatarLayout:orientation];
+    [self setUserAvatarLayout:orientation];
     
     [super viewWillAppear:animated];
     
@@ -167,11 +171,6 @@ static const CGFloat kFolderTitleHeight = 28;
     
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
-    // reset all feed detail specific data
-    appDelegate.activeFeed = nil; 
-    appDelegate.isSocialView = NO;
-    appDelegate.isRiverView = NO;
-    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
@@ -185,7 +184,7 @@ static const CGFloat kFolderTitleHeight = 28;
             [self redrawUnreadCounts];
         }
     }
-    
+
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
@@ -209,6 +208,12 @@ static const CGFloat kFolderTitleHeight = 28;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
     self.navigationController.navigationBar.backItem.title = @"All Sites";
+    
+    // reset all feed detail specific data
+    appDelegate.activeFeed = nil;
+    appDelegate.isSocialView = NO;
+    appDelegate.isRiverView = NO;
+    appDelegate.inFindingStoryMode = NO;
 }
 
 - (void)fadeSelectedCell {

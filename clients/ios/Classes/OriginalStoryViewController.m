@@ -28,7 +28,7 @@
 @synthesize pageTitle;
 @synthesize pageUrl;
 @synthesize toolbar;
-//@synthesize navBar;
+@synthesize navBar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -39,14 +39,50 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
-    UINavigationBar *navBar = appDelegate.originalStoryViewNavController.navigationBar;
-    navBar.translucent = NO;
-    CGRect navBarFrame = navBar.frame;
+    appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
+
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
+    [self updateAddress:request];
+    [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self layoutForInterfaceOrientation:orientation];
+    
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"On its way...";
+    [HUD hide:YES afterDelay:2];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self layoutNavBar];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self layoutForInterfaceOrientation:toInterfaceOrientation];
+}
+
+- (void)viewDidLoad {
+    CGRect navBarFrame = self.view.bounds;
     navBarFrame.size.height = kNavBarHeight;
-    navBar.frame = navBarFrame;
+    navBarFrame.origin.y += 20;
+    navBar = [[UINavigationBar alloc] initWithFrame:navBarFrame];
+    [self.view addSubview:navBar];
+    
     CGRect labelFrame = CGRectMake(kMargin, kSpacer,
                                    navBar.bounds.size.width - 2*kMargin,
                                    kLabelHeight);
+    
     UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
@@ -97,42 +133,6 @@
     [navBar addSubview:address];
     self.pageUrl = address;
 
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
-    [self updateAddress:request];
-    [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    
-    [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-    HUD.labelText = @"On its way...";
-    [HUD hide:YES afterDelay:2];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    UINavigationBar *navBar = appDelegate.originalStoryViewNavController.navigationBar;
-    navBar.translucent = NO;
-    CGRect navBarFrame = navBar.frame;
-    navBarFrame.size.height = kNavBarHeight;
-    navBar.frame = navBarFrame;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    if ([self.webView isLoading]) {
-        [self.webView stopLoading];
-    }
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self layoutForInterfaceOrientation:toInterfaceOrientation];
-}
-
-- (void)viewDidLoad {
     UIImage *backImage = [UIImage imageNamed:@"barbutton_back.png"];
     NBBarButtonItem *backButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     backButton.bounds = CGRectMake(0, 0, 44, 44);
@@ -162,6 +162,13 @@
     [pageAction setCustomView:sendtoButton];
 }
 
+- (void)layoutNavBar {
+    CGRect navBarFrame = self.view.bounds;
+    navBarFrame.size.height = kNavBarHeight;
+    navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    navBar.frame = navBarFrame;
+}
+
 - (IBAction)webViewGoBack:(id)sender {
     [webView goBack];
 }
@@ -175,6 +182,8 @@
 }
 
 - (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    [self layoutNavBar];
+    
     CGSize toolbarSize = [self.toolbar sizeThatFits:self.view.bounds.size];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.toolbar.frame = CGRectMake(-10.0f,
@@ -183,7 +192,7 @@
     } else {
         self.toolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) -
                                                   toolbarSize.height), toolbarSize};
-        self.webView.frame = (CGRect){CGPointMake(0, 0), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame))};
+        self.webView.frame = (CGRect){CGPointMake(0, kNavBarHeight), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame) - kNavBarHeight)};
     }
 }
 
