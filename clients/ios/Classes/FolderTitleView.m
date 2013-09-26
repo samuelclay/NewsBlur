@@ -98,7 +98,6 @@
     
     // Folder title
     UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    [textColor set];
     UIFont *font = [UIFont boldSystemFontOfSize:11];
     NSString *folderTitle;
     if (section == 0) {
@@ -121,6 +120,7 @@
     [folderTitle
      drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
      withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
         
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
