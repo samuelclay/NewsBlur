@@ -437,29 +437,6 @@ static const CGFloat kFolderTitleHeight = 28;
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
 //        [appDelegate setTitle:[results objectForKey:@"user"]];
 //    }
-
-    // adding user avatar to left
-    NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
-    NSURL * imageURL = [NSURL URLWithString:url];
-    NBBarButtonItem *userAvatarButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
-    userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
-    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
-                                          initWithCustomView:userAvatarButton];
-    
-    
-    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [avatarRequest setHTTPShouldHandleCookies:NO];
-    [avatarRequest setHTTPShouldUsePipelining:YES];
-    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
-    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        image = [Utilities roundCorneredImage:image radius:3];
-        [userAvatarButton setImage:image forState:UIControlStateNormal];
-    } failure:nil];
-    self.navigationItem.leftBarButtonItem = userInfoBarButton;
-    [self setUserAvatarLayout:orientation];
     
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
     NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
@@ -1588,7 +1565,32 @@ heightForHeaderInSection:(NSInteger)section {
         UIInterfaceOrientationIsLandscape(orientation)) {
         yOffset = 0;
     }
-    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
+    
+    // adding user avatar to left
+    NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
+                                            [appDelegate.dictSocialProfile
+                                             objectForKey:@"photo_url"]]];
+    NBBarButtonItem *userAvatarButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    userAvatarButton.bounds = CGRectMake(-10, yOffset+1, 30, 30);
+    userAvatarButton.frame = CGRectMake(-10, yOffset+1, 30, 30);
+    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
+    [avatarRequest setHTTPShouldHandleCookies:NO];
+    [avatarRequest setHTTPShouldUsePipelining:YES];
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
+    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        image = [Utilities roundCorneredImage:image radius:3];
+        [userAvatarButton setImage:image forState:UIControlStateNormal];
+    } failure:nil];
+    //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
+    [self setUserAvatarLayout:orientation];
+    
+    [userInfoView addSubview:userAvatarButton];
+    
+    int xOffset = CGRectGetMaxX(userAvatarButton.frame) + 6;
+    
+    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -1599,7 +1601,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
+    yellow.frame = CGRectMake(xOffset, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
     NSNumberFormatter *formatter = [NSNumberFormatter new];
@@ -1629,9 +1631,11 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.backgroundColor = [UIColor clearColor];
     [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
-    
-    
-    self.navigationItem.titleView = userInfoView;
+
+    UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
+                                          initWithCustomView:userInfoView];
+
+    self.navigationItem.leftBarButtonItem = userInfoBarButton;
 }
 
 - (void)showRefreshNotifier {

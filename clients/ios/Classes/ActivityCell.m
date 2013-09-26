@@ -165,9 +165,9 @@
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
-    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    [attrStr addAttributes:@{NSParagraphStyleAttributeName: paragraphStyle} range:NSMakeRange(0, [txtWithTime length])];
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];
     if (commentRange.location != NSNotFound) {

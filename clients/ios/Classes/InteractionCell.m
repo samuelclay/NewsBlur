@@ -114,11 +114,12 @@
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    NSMutableParagraphStyle* style = [NSMutableParagraphStyle new];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    style.alignment = NSTextAlignmentLeft;
-    style.lineSpacing = 1.0f;
-    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    paragraphStyle.lineSpacing = 1.0f;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
+                     range:NSMakeRange(0, [txtWithTime length])];
     
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {

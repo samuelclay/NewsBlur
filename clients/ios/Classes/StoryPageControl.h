@@ -74,7 +74,7 @@
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
-@property (nonatomic) int scrollingToPage;
+@property (nonatomic) NSInteger scrollingToPage;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 

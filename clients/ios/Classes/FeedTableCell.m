@@ -104,8 +104,6 @@ static UIFont *textFont = nil;
     UIColor *textColor = highlighted ? 
                          [UIColor blackColor]:
                          UIColorFromRGB(0x3a3a3a);
-
-    [textColor set];
     UIFont *font;
     if (self.negativeCount || self.neutralCount || self.positiveCount) {
         font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
@@ -121,11 +119,13 @@ static UIFont *textFont = nil;
             [self.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
             [feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
             [feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
 
@@ -134,11 +134,13 @@ static UIFont *textFont = nil;
             [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
             [feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
     }

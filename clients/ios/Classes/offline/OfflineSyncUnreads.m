@@ -80,13 +80,13 @@
             order = @"DESC";
             orderComp = @"<";
         }
-        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT story_timestamp FROM unread_hashes ORDER BY story_timestamp %@ LIMIT 1 OFFSET %d", order, offlineLimit]];
+        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT story_timestamp FROM unread_hashes ORDER BY story_timestamp %@ LIMIT 1 OFFSET %ld", order, (long)offlineLimit]];
         int offlineLimitTimestamp = 0;
         while ([cursor next]) {
             offlineLimitTimestamp = [cursor intForColumn:@"story_timestamp"];
             break;
         }
-        NSLog(@"Deleting stories over limit: %d - %d", offlineLimit, offlineLimitTimestamp);
+        NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
     }];
