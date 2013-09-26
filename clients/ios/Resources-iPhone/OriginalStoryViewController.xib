@@ -23,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <webView multipleTouchEnabled="YES" contentMode="scaleToFill" scalesPageToFit="YES" id="4">
-                    <rect key="frame" x="0.0" y="56" width="320" height="380"/>
+                    <rect key="frame" x="0.0" y="76" width="320" height="360"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                     <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
@@ -31,10 +31,9 @@
                         <outlet property="delegate" destination="-1" id="7"/>
                     </connections>
                 </webView>
-                <view contentMode="scaleToFill" id="wB4-Cq-a4Y">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="58"/>
+                <view contentMode="scaleToFill" id="wB4-Cq-a4Y" customClass="UINavigationBar">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="78"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
                 <toolbar clipsSubviews="YES" contentMode="scaleToFill" id="5">
                     <rect key="frame" x="0.0" y="436" width="320" height="44"/>

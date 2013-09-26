@@ -1026,13 +1026,15 @@
 
 - (void)showOriginalStory:(NSURL *)url {
     self.activeOriginalStoryURL = url;
+    UINavigationController *navController = [[UINavigationController alloc]
+                                             initWithRootViewController:self.originalStoryViewController];
+    navController.navigationBar.translucent = NO;
+    self.originalStoryViewNavController = navController;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:originalStoryViewController
+        [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
                                                          animated:YES completion:nil];
     } else {
-        self.originalStoryViewNavController = [[UINavigationController alloc]
-                                               initWithRootViewController:originalStoryViewController];
-        self.originalStoryViewNavController.navigationBar.translucent = NO;
         [self.navigationController presentViewController:self.originalStoryViewNavController
                                                 animated:YES completion:nil];
     }

@@ -99,6 +99,8 @@
                                                object:nil];
     
     self.view.backgroundColor = UIColorFromRGB(0xC2C5BE);
+    self.navigationController.navigationBar.translucent = NO;
+    self.masterNavigationController.navigationBar.translucent = NO;
     
     self.masterNavigationController = appDelegate.navigationController;
     self.feedsViewController = appDelegate.feedsViewController;
@@ -120,9 +122,11 @@
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyPageControl];
     self.storyNavigationController = nav;
+    self.storyNavigationController.navigationBar.translucent = NO;
     
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
     self.shareNavigationController = shareNav;
+    self.shareNavigationController.navigationBar.translucent = NO;
     
     // set default y coordinate for feedDetailY from saved preferences
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
