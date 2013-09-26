@@ -19,7 +19,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://www.newsblur.com/media/ios/Resources/logo_512.png</string>
+					<string>http://www.newsblur.com/media/ios/Resources/logos/logo_512.png</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -27,7 +27,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://www.newsblur.com/media/ios/Resources/logo_57.png</string>
+					<string>http://www.newsblur.com/media/ios/Resources/logos/logo_58.png</string>
 				</dict>
 			</array>
 			<key>metadata</key>
