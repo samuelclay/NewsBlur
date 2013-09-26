@@ -167,12 +167,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int activitesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitesCount = [appDelegate.userActivitiesArray count];
     return activitesCount + 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-    int activitiesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     int minimumHeight;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
@@ -249,7 +249,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int activitiesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row < activitiesCount) {
         NSDictionary *activity = [appDelegate.userActivitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];

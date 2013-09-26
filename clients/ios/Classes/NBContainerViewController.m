@@ -246,7 +246,7 @@
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     [popoverController setDelegate:self];
-    int menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
+    NSInteger menuCount = [appDelegate.feedsMenuViewController.menuOptions count];
     [popoverController setPopoverContentSize:CGSizeMake(200, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
@@ -266,7 +266,7 @@
     [appDelegate.feedDetailMenuViewController buildMenuOptions];
     popoverController.delegate = self;
     
-    int menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
     [popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
@@ -491,7 +491,7 @@
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     [self.storyPageControl resetPages];
-    int unreadCount = appDelegate.unreadCount;
+    NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         self.storyPageControl.circularProgressView.percentage = 1;
     } else {

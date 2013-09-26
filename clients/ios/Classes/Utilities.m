@@ -144,7 +144,7 @@ static NSMutableDictionary *imageCache;
 + (NSString *)md5:(NSString *)string {
     const char *cStr = [string UTF8String];
     unsigned char result[16];
-    CC_MD5( cStr, strlen(cStr), result ); // This is the md5 call
+    CC_MD5( cStr, (CC_LONG)strlen(cStr), result ); // This is the md5 call
     return [NSString stringWithFormat:
             @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             result[0], result[1], result[2], result[3],

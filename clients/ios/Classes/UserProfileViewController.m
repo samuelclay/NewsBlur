@@ -41,7 +41,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
     self.view.frame = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
 
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     
@@ -70,7 +70,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     CGRect vb = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
     self.view.frame = vb;
     self.profileTable.frame = vb;
     self.profileBadge.frame = CGRectMake(0, 0, vb.size.width, 140);
@@ -90,7 +90,7 @@
 
 - (void)getUserProfile {
     self.view.frame = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
 
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -258,7 +258,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int activitiesCount = [self.activitiesArray count];
+    NSInteger activitiesCount = [self.activitiesArray count];
     
     // badge is not tappable
     if (indexPath.section == 0 || indexPath.section == 2) {

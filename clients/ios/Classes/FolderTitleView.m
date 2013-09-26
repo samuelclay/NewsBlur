@@ -114,12 +114,14 @@
     }
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
-    
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
     [folderTitle
      drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail
-     alignment:NSTextAlignmentLeft];
+     withAttributes:@{NSFontAttributeName: font,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
         
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);

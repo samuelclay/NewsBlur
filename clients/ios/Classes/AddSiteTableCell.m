@@ -65,12 +65,15 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x686868); //0x686868 
     }
     [textColor set];
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
     
-    [self.siteTitle 
+    [self.siteTitle
      drawInRect:CGRectMake(leftMargin, 6, rect.size.width - rightMargin, 21) 
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentLeft];
+     withAttributes:@{NSFontAttributeName: font,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     
     textColor = UIColorFromRGB(0x333333);    
     if (highlighted) {
@@ -91,11 +94,11 @@ static UIFont *indicatorFont = nil;
     }
     [textColor set];
     
+    paragraphStyle.alignment = NSTextAlignmentRight;
     [self.siteSubscribers 
      drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentRight];
+     withAttributes:@{NSFontAttributeName: font,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));

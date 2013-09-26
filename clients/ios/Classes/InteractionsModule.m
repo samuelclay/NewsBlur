@@ -180,7 +180,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    int userInteractions = [appDelegate.userInteractionsArray count];
+    NSInteger userInteractions = [appDelegate.userInteractionsArray count];
     int minimumHeight;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         minimumHeight = MINIMUM_INTERACTION_HEIGHT_IPAD;
@@ -210,7 +210,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int userInteractionsCount = [appDelegate.userInteractionsArray count];
+    NSInteger userInteractionsCount = [appDelegate.userInteractionsArray count];
     return userInteractionsCount + 1;
 }
 
@@ -246,7 +246,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int userInteractions = [appDelegate.userInteractionsArray count];
+    NSInteger userInteractions = [appDelegate.userInteractionsArray count];
     if (indexPath.row < userInteractions) {
         NSDictionary *interaction = [appDelegate.userInteractionsArray objectAtIndex:indexPath.row];
         NSString *category = [interaction objectForKey:@"category"];
