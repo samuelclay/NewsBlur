@@ -241,7 +241,6 @@
         UIInterfaceOrientationIsLandscape(orientation)) {
         splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
         splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
-        NSLog(@"Window frame; %@", NSStringFromCGRect(self.view.frame));
     } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         splashView.frame = self.view.frame;
         splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
