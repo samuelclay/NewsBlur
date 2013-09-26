@@ -193,7 +193,7 @@
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.storyTitlesTable reloadData];
-        int location = appDelegate.locationOfActiveStory;
+        NSInteger location = appDelegate.locationOfActiveStory;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
         if (indexPath && location >= 0) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
@@ -224,7 +224,7 @@
 
 - (void)fadeSelectedCell {
     // have the selected cell deselect
-    int location = appDelegate.locationOfActiveStory;
+    NSInteger location = appDelegate.locationOfActiveStory;
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
     if (indexPath) {
@@ -320,7 +320,7 @@
     
         self.feedPage = page;
         self.pageFetching = YES;
-        int storyCount = appDelegate.storyCount;
+        NSInteger storyCount = appDelegate.storyCount;
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
@@ -400,8 +400,8 @@
                                              (unsigned long)NULL), ^(void) {
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSArray *feedIds;
-        int limit = 12;
-        int offset = (self.feedPage - 1) * limit;
+        NSInteger limit = 12;
+        NSInteger offset = (self.feedPage - 1) * limit;
         
         if (appDelegate.isRiverView) {
             feedIds = appDelegate.activeFolderFeeds;
@@ -423,11 +423,11 @@
         } else {
             readFilterSql = @"";
         }
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT %d OFFSET %d",
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT %ld OFFSET %ld",
                          readFilterSql,
                          [feedIds componentsJoinedByString:@","],
                          orderSql,
-                         limit, offset];
+                         (long)limit, (long)offset];
         FMResultSet *cursor = [db executeQuery:sql];
         NSMutableArray *offlineStories = [NSMutableArray array];
         
@@ -495,7 +495,7 @@
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
-        int storyCount = appDelegate.storyCount;
+        NSInteger storyCount = appDelegate.storyCount;
         if (storyCount == 0) {
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
@@ -770,12 +770,12 @@
             if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
                 NSDictionary *feed = [appDelegate.activeFeedStories objectAtIndex:i];
                 
-                int score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
+                NSInteger score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
                 
                 if (score < appDelegate.selectedIntelligence) {
                     [self changeIntelligence:score];
                 }
-                int locationOfStoryId = [appDelegate locationOfStoryId:storyIdStr];
+                NSInteger locationOfStoryId = [appDelegate locationOfStoryId:storyIdStr];
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
                 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
@@ -807,7 +807,7 @@
 }
 
 - (UITableViewCell *)makeLoadingCell {
-    int height = 40;
+    NSInteger height = 40;
     UITableViewCell *cell = [[UITableViewCell alloc]
                              initWithStyle:UITableViewCellStyleSubtitle
                              reuseIdentifier:@"NoReuse"];
@@ -841,7 +841,7 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
-    int storyCount = appDelegate.storyLocationsCount;
+    NSInteger storyCount = appDelegate.storyLocationsCount;
 
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
@@ -927,7 +927,7 @@
     
     // undread indicator
     
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
     if (!appDelegate.hasLoadedFeedDetail) {
@@ -953,7 +953,7 @@
     }
 
     if (UI_USER_INTERFACE_IDIOM() ==  UIUserInterfaceIdiomPad) {
-        int rowIndex = [appDelegate locationOfActiveStory];
+        NSInteger rowIndex = [appDelegate locationOfActiveStory];
         if (rowIndex == indexPath.row) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
@@ -965,13 +965,13 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
-    int storyIndex = [appDelegate indexFromLocation:row];
+    NSInteger storyIndex = [appDelegate indexFromLocation:row];
     appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
     [appDelegate loadStoryDetailView];
 }
 
 - (void)redrawUnreadStory {
-    int rowIndex = [appDelegate locationOfActiveStory];
+    NSInteger rowIndex = [appDelegate locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
@@ -981,7 +981,7 @@
 }
 
 - (void)changeActiveStoryTitleCellLayout {
-    int rowIndex = [appDelegate locationOfActiveStory];
+    NSInteger rowIndex = [appDelegate locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = YES;
@@ -1009,12 +1009,12 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    int storyCount = appDelegate.storyLocationsCount;
+    NSInteger storyCount = appDelegate.storyLocationsCount;
     
     if (storyCount && indexPath.row == storyCount) {
         return 40;
     } else if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-        int height = kTableViewRiverRowHeight;
+        NSInteger height = kTableViewRiverRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
             && !appDelegate.masterContainerViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1022,7 +1022,7 @@
         }
         return height;
     } else {
-        int height = kTableViewRowHeight;
+        NSInteger height = kTableViewRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
             && !appDelegate.masterContainerViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1073,7 +1073,7 @@
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
-    int row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
+    NSInteger row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
 
@@ -1228,8 +1228,8 @@
     
     self.actionSheet_ = options;
     [appDelegate calculateStoryLocations];
-    int visibleUnreadCount = appDelegate.visibleUnreadCount;
-    int totalUnreadCount = [appDelegate unreadCount];
+    NSInteger visibleUnreadCount = appDelegate.visibleUnreadCount;
+    NSInteger totalUnreadCount = [appDelegate unreadCount];
     NSArray *buttonTitles = nil;
     BOOL showVisible = YES;
     BOOL showEntire = YES;
@@ -1243,8 +1243,8 @@
                             @"this site"];
     NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
                              visibleUnreadCount == 1 ? @"this story as" : 
-                                [NSString stringWithFormat:@"these %d stories", 
-                                 visibleUnreadCount]];
+                                [NSString stringWithFormat:@"these %ld stories", 
+                                 (long)visibleUnreadCount]];
     if (showVisible && showEntire) {
         buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
         options.destructiveButtonIndex = 1;
@@ -1272,8 +1272,8 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 //    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
     if (actionSheet.tag == 1) {
-        int visibleUnreadCount = appDelegate.visibleUnreadCount;
-        int totalUnreadCount = [appDelegate unreadCount];
+        NSInteger visibleUnreadCount = appDelegate.visibleUnreadCount;
+        NSInteger totalUnreadCount = [appDelegate unreadCount];
         BOOL showVisible = YES;
         BOOL showEntire = YES;
 //        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
@@ -1328,7 +1328,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        int menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+        NSInteger menuCount = [appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
         [self.popoverController setPopoverContentSize:CGSizeMake(260, 38 * menuCount)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionUp
@@ -1433,7 +1433,7 @@
 }
 
 - (void)changeActiveFeedDetailRow {
-    int rowIndex = [appDelegate locationOfActiveStory];
+    NSInteger rowIndex = [appDelegate locationOfActiveStory];
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];

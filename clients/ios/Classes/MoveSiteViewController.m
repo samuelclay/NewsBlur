@@ -89,7 +89,7 @@
 - (void)reload {
     BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] ||
                       [appDelegate.activeFolder isEqual:@"everything"];
-    int row = 0;
+    NSInteger row = 0;
     [toFolderInput setText:@""];
     
     if (appDelegate.isRiverView) {

@@ -79,6 +79,7 @@
 @synthesize moveSiteViewController;
 @synthesize trainerViewController;
 @synthesize originalStoryViewController;
+@synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
 
@@ -322,7 +323,7 @@
 #pragma mark -
 #pragma mark Social Views
 
-- (NSDictionary *)getUser:(int)userId {
+- (NSDictionary *)getUser:(NSInteger)userId {
     for (int i = 0; i < self.activeFeedUserProfiles.count; i++) {
         if ([[[self.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == userId) {
             return [self.activeFeedUserProfiles objectAtIndex:i];
@@ -332,7 +333,7 @@
     // Check DB if not found in active feed
     __block NSDictionary *user;
     [self.database inDatabase:^(FMDatabase *db) {
-        NSString *userSql = [NSString stringWithFormat:@"SELECT * FROM users WHERE user_id = %d", userId];
+        NSString *userSql = [NSString stringWithFormat:@"SELECT * FROM users WHERE user_id = %ld", (long)userId];
         FMResultSet *cursor = [db executeQuery:userSql];
         while ([cursor next]) {
             user = [NSJSONSerialization
@@ -881,7 +882,7 @@
         NSMutableDictionary *newStory = [story mutableCopy];
 
         // If the story is visible, mark it as sticky so it doesn;t go away on page loads.
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         if (score >= self.selectedIntelligence) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
         }
@@ -976,7 +977,7 @@
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
     
-    int activeStoryLocation = [self locationOfActiveStory];
+    NSInteger activeStoryLocation = [self locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
@@ -1054,16 +1055,16 @@
 
 #pragma mark - Story Traversal
 
-- (int)indexOfNextUnreadStory {
-    int location = [self locationOfNextUnreadStory];
+- (NSInteger)indexOfNextUnreadStory {
+    NSInteger location = [self locationOfNextUnreadStory];
     return [self indexFromLocation:location];
 }
 
-- (int)locationOfNextUnreadStory {
-    int activeLocation = [self locationOfActiveStory];
-    int readStatus = -1;
-    for (int i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
-        int storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
+- (NSInteger)locationOfNextUnreadStory {
+    NSInteger activeLocation = [self locationOfActiveStory];
+    NSInteger readStatus = -1;
+    for (NSInteger i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
+        NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
         NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
         readStatus = [[story objectForKey:@"read_status"] intValue];
         if (readStatus == 0) {
@@ -1071,8 +1072,8 @@
         }
     }
     if (activeLocation > 0) {
-        for (int i=activeLocation-1; i >= 0; i--) {
-            int storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
+        for (NSInteger i=activeLocation-1; i >= 0; i--) {
+            NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
             NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
             readStatus = [[story objectForKey:@"read_status"] intValue];
             if (readStatus == 0) {
@@ -1083,22 +1084,22 @@
     return -1;
 }
 
-- (int)indexOfNextStory {
-    int location = [self locationOfNextStory];
+- (NSInteger)indexOfNextStory {
+    NSInteger location = [self locationOfNextStory];
     return [self indexFromLocation:location];
 }
 
-- (int)locationOfNextStory {
-    int activeLocation = [self locationOfActiveStory];
-    int nextStoryLocation = activeLocation + 1;
+- (NSInteger)locationOfNextStory {
+    NSInteger activeLocation = [self locationOfActiveStory];
+    NSInteger nextStoryLocation = activeLocation + 1;
     if (nextStoryLocation < [self.activeFeedStoryLocations count]) {
         return nextStoryLocation;
     }
     return -1;
 }
 
-- (int)indexOfActiveStory {
-    for (int i=0; i < self.storyCount; i++) {
+- (NSInteger)indexOfActiveStory {
+    for (NSInteger i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
         if ([activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
             return i;
@@ -1107,7 +1108,7 @@
     return -1;
 }
 
-- (int)indexOfStoryId:(id)storyId {
+- (NSInteger)indexOfStoryId:(id)storyId {
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
         if ([story objectForKey:@"id"] == storyId) {
@@ -1117,7 +1118,7 @@
     return -1;
 }
 
-- (int)locationOfStoryId:(id)storyId {
+- (NSInteger)locationOfStoryId:(id)storyId {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
         if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
             return i;
@@ -1126,7 +1127,7 @@
     return -1;
 }
 
-- (int)locationOfActiveStory {
+- (NSInteger)locationOfActiveStory {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
         if ([[activeFeedStoryLocationIds objectAtIndex:i]
              isEqualToString:[self.activeStory objectForKey:@"id"]]) {
@@ -1136,7 +1137,7 @@
     return -1;
 }
 
-- (int)indexFromLocation:(NSInteger)location {
+- (NSInteger)indexFromLocation:(NSInteger)location {
     if (location == -1) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
@@ -1209,7 +1210,7 @@
     }];
 }
 
-- (int)unreadCount {
+- (NSInteger)unreadCount {
     if (self.isRiverView || self.isSocialRiverView) {
         return [self unreadCountForFolder:nil];
     } else { 
@@ -1217,14 +1218,14 @@
     }
 }
 
-- (int)allUnreadCount {
-    int total = 0;
+- (NSInteger)allUnreadCount {
+    NSInteger total = 0;
     for (id key in self.dictSocialFeeds) {
         NSDictionary *feed = [self.dictSocialFeeds objectForKey:key];
-        total += [[feed objectForKey:@"ps"] intValue];
-        total += [[feed objectForKey:@"nt"] intValue];
+        total += [[feed objectForKey:@"ps"] integerValue];
+        total += [[feed objectForKey:@"nt"] integerValue];
         NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
-        NSLog(@"total is %i", total);
+        NSLog(@"total is %ld", (long)total);
     }
     
     for (id key in self.dictUnreadCounts) {
@@ -1238,8 +1239,8 @@
     return total;
 }
 
-- (int)unreadCountForFeed:(NSString *)feedId {
-    int total = 0;
+- (NSInteger)unreadCountForFeed:(NSString *)feedId {
+    NSInteger total = 0;
     NSDictionary *feed;
 
     if (feedId) {
@@ -1266,8 +1267,8 @@
     return total;
 }
 
-- (int)unreadCountForFolder:(NSString *)folderName {
-    int total = 0;
+- (NSInteger)unreadCountForFolder:(NSString *)folderName {
+    NSInteger total = 0;
     NSArray *folder;
     
     if ([folderName isEqual:@"river_blurblogs"] ||
@@ -1391,7 +1392,7 @@
 }
 
 - (void)markActiveStoryRead {
-    int activeLocation = [self locationOfActiveStory];
+    NSInteger activeLocation = [self locationOfActiveStory];
     if (activeLocation == -1) {
         return;
     }
@@ -1399,7 +1400,7 @@
     // changes the story layout in story feed detail
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
  
-    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
+    NSInteger activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
     NSDictionary *friendFeed;
@@ -1461,13 +1462,13 @@
 
     [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
                                  forKey:[self.activeStory objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:activeLocation]];
     [self markStoryRead:story feed:feed];
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
 }
 
 - (void)markActiveStoryUnread {
-    int activeLocation = [self locationOfActiveStory];
+    NSInteger activeLocation = [self locationOfActiveStory];
     if (activeLocation == -1) {
         return;
     }
@@ -1475,7 +1476,7 @@
     // changes the story layout in story feed detail
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
     
-    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
+    NSInteger activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
     NSDictionary *friendFeed;
@@ -1536,7 +1537,7 @@
     }
     
     [self.recentlyReadStories removeObjectForKey:[self.activeStory objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInt:activeLocation]];
+    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:activeLocation]];
     [self markStoryUnread:story feed:feed];
 
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
@@ -1605,7 +1606,7 @@
     
     NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
         int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] - 1);
         [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
@@ -1676,7 +1677,7 @@
     
     NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
         int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] + 1);
         [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
@@ -1766,7 +1767,7 @@
     self.activeFeedStoryLocationIds = [NSMutableArray array];
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         if (score >= self.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
@@ -1778,8 +1779,8 @@
     }
 }
 
-+ (int)computeStoryScore:(NSDictionary *)intelligence {
-    int score = 0;
++ (NSInteger)computeStoryScore:(NSDictionary *)intelligence {
+    NSInteger score = 0;
     int title = [[intelligence objectForKey:@"title"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
@@ -1805,7 +1806,8 @@
     }
     
     if ([folderName containsString:@" - "]) {
-        int lastFolderLoc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        NSInteger lastFolderLoc = [folderName rangeOfString:@" - "
+                                                    options:NSBackwardsSearch].location;
         folderName = [folderName substringToIndex:lastFolderLoc];
     } else {
         folderName = @"— Top Level —";
@@ -1820,7 +1822,8 @@
         folderName = @"";
     }
     if ([folderName containsString:@" - "]) {
-        int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        NSInteger folder_loc = [folderName rangeOfString:@" - "
+                                                 options:NSBackwardsSearch].location;
         folderName = [folderName substringFromIndex:(folder_loc + 3)];
     }
     
@@ -2129,11 +2132,11 @@
     [self.feedDetailViewController.storyTitlesTable reloadData];
 }
 
-- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score {
-    NSLog(@"toggle Title: %@ (%@) / %d", title, feedId, score);
-    int titleScore = [[[[self.activeClassifiers objectForKey:feedId]
-                        objectForKey:@"titles"]
-                       objectForKey:title] intValue];
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
+    NSLog(@"toggle Title: %@ (%@) / %ld", title, feedId, (long)score);
+    NSInteger titleScore = [[[[self.activeClassifiers objectForKey:feedId]
+                              objectForKey:@"titles"]
+                             objectForKey:title] intValue];
     
     if (score) {
         titleScore = score;
@@ -2152,7 +2155,7 @@
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *titles = [[feedClassifiers objectForKey:@"titles"] mutableCopy];
     if (!titles) titles = [NSMutableDictionary dictionary];
-    [titles setObject:[NSNumber numberWithInt:titleScore] forKey:title];
+    [titles setObject:[NSNumber numberWithInteger:titleScore] forKey:title];
     [feedClassifiers setObject:titles forKey:@"titles"];
     [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPageControl refreshHeaders];
@@ -2252,7 +2255,7 @@
 #pragma mark -
 #pragma mark Storing Stories for Offline
 
-- (int)databaseSchemaVersion:(FMDatabase *)db {
+- (NSInteger)databaseSchemaVersion:(FMDatabase *)db {
     int version = 0;
     FMResultSet *resultSet = [db executeQuery:@"PRAGMA user_version"];
     if ([resultSet next]) {
@@ -2401,7 +2404,7 @@
         offlineQueue = [NSOperationQueue new];
     }
     offlineQueue.name = @"Offline Queue";
-    NSLog(@"Operation queue: %d", offlineQueue.operationCount);
+    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
     [offlineQueue cancelAllOperations];
     [offlineQueue setMaxConcurrentOperationCount:1];
     OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];

@@ -261,7 +261,7 @@
 - (void)setupReachability;
 
 // social
-- (NSDictionary *)getUser:(int)userId;
+- (NSDictionary *)getUser:(NSInteger)userId;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
@@ -297,17 +297,17 @@
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
 
-- (int)indexOfNextUnreadStory;
-- (int)locationOfNextUnreadStory;
-- (int)indexOfNextStory;
-- (int)locationOfNextStory;
-- (int)indexOfActiveStory;
-- (int)indexOfStoryId:(id)storyId;
-- (int)locationOfActiveStory;
-- (int)indexFromLocation:(NSInteger)location;
+- (NSInteger)indexOfNextUnreadStory;
+- (NSInteger)locationOfNextUnreadStory;
+- (NSInteger)indexOfNextStory;
+- (NSInteger)locationOfNextStory;
+- (NSInteger)indexOfActiveStory;
+- (NSInteger)indexOfStoryId:(id)storyId;
+- (NSInteger)locationOfActiveStory;
+- (NSInteger)indexFromLocation:(NSInteger)location;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
-- (int)locationOfStoryId:(id)storyId;
+- (NSInteger)locationOfStoryId:(id)storyId;
 - (NSString *)activeOrder;
 - (NSString *)activeReadFilter;
 
@@ -317,10 +317,10 @@
 - (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 
 - (void)populateDictUnreadCounts;
-- (int)unreadCount;
-- (int)allUnreadCount;
-- (int)unreadCountForFeed:(NSString *)feedId;
-- (int)unreadCountForFolder:(NSString *)folderName;
+- (NSInteger)unreadCount;
+- (NSInteger)allUnreadCount;
+- (NSInteger)unreadCountForFeed:(NSString *)feedId;
+- (NSInteger)unreadCountForFolder:(NSString *)folderName;
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
@@ -335,7 +335,7 @@
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
 - (void)calculateStoryLocations;
-+ (int)computeStoryScore:(NSDictionary *)intelligence;
++ (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
@@ -348,11 +348,11 @@
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
-- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 - (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
-- (int)databaseSchemaVersion:(FMDatabase *)db;
+- (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
 - (void)cancelOfflineQueue;

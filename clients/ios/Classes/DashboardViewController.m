@@ -91,7 +91,7 @@
 # pragma mark Navigation
 
 - (IBAction)tapSegmentedButton:(id)sender {
-    int selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
+    NSInteger selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
     
     if (selectedSegmentIndex == 0) {
         self.interactionsModule.hidden = NO;

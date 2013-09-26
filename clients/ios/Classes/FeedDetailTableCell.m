@@ -82,14 +82,16 @@ static UIFont *indicatorFont = nil;
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868); 
     }
-    [textColor set];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
     
     if (self.isRiverOrSocial) {
-        [self.siteTitle 
-         drawInRect:CGRectMake(leftMargin + 20, 7, rect.size.width - 20, 21)
-         withFont:font
-         lineBreakMode:NSLineBreakByTruncatingTail 
-         alignment:NSTextAlignmentLeft];
+        [self.siteTitle drawInRect:CGRectMake(leftMargin + 20, 7, rect.size.width - 20, 21)
+                    withAttributes:@{NSFontAttributeName: font,
+                                     NSForegroundColorAttributeName: textColor,
+                                     NSParagraphStyleAttributeName: paragraphStyle}];
         
         if (self.isRead) {
             font = [UIFont fontWithName:@"Helvetica" size:12];
@@ -102,12 +104,15 @@ static UIFont *indicatorFont = nil;
         if (highlighted) {
             textColor = UIColorFromRGB(0x686868);
         }
-        [textColor set];
     }
     
-    // story title 
-
-    CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width, 30.0) lineBreakMode:NSLineBreakByTruncatingTail];
+    // story title
+    CGSize theSize = [self.storyTitle
+                      boundingRectWithSize:CGSizeMake(rect.size.width, 30.0)
+                      options:nil
+                      attributes:@{NSFontAttributeName: font,
+                                   NSParagraphStyleAttributeName: paragraphStyle}
+                      context:nil].size;
     
     int storyTitleY = 7 + adjustForSocial + ((30 - theSize.height)/2);
     if (self.isShort) {
@@ -124,11 +129,10 @@ static UIFont *indicatorFont = nil;
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;
     }
-    [self.storyTitle
-     drawInRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentLeft];
+    [self.storyTitle drawInRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
+                 withAttributes:@{NSFontAttributeName: font,
+                                  NSForegroundColorAttributeName: textColor,
+                                  NSParagraphStyleAttributeName: paragraphStyle}];
 
     int storyAuthorDateY = 41 + adjustForSocial;
     if (self.isShort) {
@@ -137,23 +141,21 @@ static UIFont *indicatorFont = nil;
 
     // story author style
     if (self.isRead) {
-        textColor = UIColorFromRGB(0x808080);
+        textColor = UIColorFromRGB(0x959595);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
-        textColor = UIColorFromRGB(0x959595);
+        textColor = UIColorFromRGB(0xA6A8A2);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
-    [textColor set];
-        
+    
     [self.storyAuthor
      drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width) / 2 - 10, 15.0)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail
-     alignment:NSTextAlignmentLeft];
-
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     // story date
     if (self.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
@@ -166,14 +168,13 @@ static UIFont *indicatorFont = nil;
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
-    [textColor set];
     
+    paragraphStyle.alignment = NSTextAlignmentRight;
     [self.storyDate 
          drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0) 
-         withFont:font
-         lineBreakMode:NSLineBreakByTruncatingTail 
-         alignment:NSTextAlignmentRight];
-    
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     // feed bar
     
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBarTopBorder CGColor]));

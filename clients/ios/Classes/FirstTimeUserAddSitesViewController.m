@@ -200,7 +200,7 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = [NSString stringWithFormat:@"You are subscribed to %d sites", [[appDelegate.dictFeeds allKeys] count]];
+    self.instructionLabel.text = [NSString stringWithFormat:@"You are subscribed to %lu sites", (unsigned long)[[appDelegate.dictFeeds allKeys] count]];
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];

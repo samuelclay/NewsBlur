@@ -287,7 +287,7 @@
 }
 
 - (void)refreshPages {
-    int pageIndex = currentPage.pageIndex;
+    NSInteger pageIndex = currentPage.pageIndex;
     [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
     currentPage.pageIndex = -2;
@@ -385,12 +385,12 @@
             [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
-        int location = [appDelegate indexFromLocation:pageController.pageIndex];
+        NSInteger location = [appDelegate indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
-            abs(newIndex - self.scrollingToPage) <= 1) {
+            ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
         } else {
@@ -416,7 +416,7 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	NSInteger previousNumber = lowerNumber - 1;
 	
-    int storyCount = [appDelegate.activeFeedStoryLocations count];
+    NSInteger storyCount = [appDelegate.activeFeedStoryLocations count];
     if (storyCount == 0 || lowerNumber > storyCount) return;
     
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
@@ -505,7 +505,7 @@
         
         if (![appDelegate.activeFeedStories count]) return;
         
-        int storyIndex = [appDelegate indexFromLocation:nearestNumber];
+        NSInteger storyIndex = [appDelegate indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate indexOfActiveStory]) {
             appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
@@ -590,7 +590,7 @@
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
-        int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
+        NSInteger storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
         appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
         [self markStoryAsRead];
@@ -938,13 +938,13 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
-    int unreadCount = appDelegate.unreadCount;
+    NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         hud.labelText = @"No unread stories";
     } else if (unreadCount == 1) {
         hud.labelText = @"1 story left";
     } else {
-        hud.labelText = [NSString stringWithFormat:@"%i stories left", unreadCount];
+        hud.labelText = [NSString stringWithFormat:@"%li stories left", (long)unreadCount];
     }
 	[hud hide:YES afterDelay:0.8];
 }
@@ -1019,8 +1019,8 @@
 
 - (IBAction)doNextUnreadStory {
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
-    int nextLocation = [appDelegate locationOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
+    NSInteger nextLocation = [appDelegate locationOfNextUnreadStory];
+    NSInteger unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
@@ -1055,7 +1055,7 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        int previousLocation = [appDelegate locationOfStoryId:previousStoryId];
+        NSInteger previousLocation = [appDelegate locationOfStoryId:previousStoryId];
         if (previousLocation == -1) {
             return [self doPreviousStory];
         }

@@ -59,12 +59,13 @@ static UIFont *indicatorFont = nil;
     font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     textColor = UIColorFromRGB(0x606060);
     [textColor set];
-    
-    [self.siteTitle 
-     drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21) 
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentLeft];
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    [self.siteTitle drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21)
+                withAttributes:@{NSFontAttributeName: font,
+                                 NSParagraphStyleAttributeName: paragraphStyle}];
     
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder

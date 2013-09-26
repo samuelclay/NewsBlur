@@ -1,17 +1,17 @@
 // AFPropertyListRequestOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,19 +22,20 @@
 
 #import "AFPropertyListRequestOperation.h"
 
-static dispatch_queue_t af_property_list_request_operation_processing_queue;
 static dispatch_queue_t property_list_request_operation_processing_queue() {
-    if (af_property_list_request_operation_processing_queue == NULL) {
-        af_property_list_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.property-list-request.processing", 0);
-    }
-    
+    static dispatch_queue_t af_property_list_request_operation_processing_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        af_property_list_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.property-list-request.processing", DISPATCH_QUEUE_CONCURRENT);
+    });
+
     return af_property_list_request_operation_processing_queue;
 }
 
 @interface AFPropertyListRequestOperation ()
-@property (readwrite, nonatomic, retain) id responsePropertyList;
+@property (readwrite, nonatomic) id responsePropertyList;
 @property (readwrite, nonatomic, assign) NSPropertyListFormat propertyListFormat;
-@property (readwrite, nonatomic, retain) NSError *propertyListError;
+@property (readwrite, nonatomic) NSError *propertyListError;
 @end
 
 @implementation AFPropertyListRequestOperation
@@ -43,11 +44,11 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
 @synthesize propertyListFormat = _propertyListFormat;
 @synthesize propertyListError = _propertyListError;
 
-+ (AFPropertyListRequestOperation *)propertyListRequestOperationWithRequest:(NSURLRequest *)request
-                                                                    success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id propertyList))success
-                                                                    failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id propertyList))failure
++ (instancetype)propertyListRequestOperationWithRequest:(NSURLRequest *)request
+												success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id propertyList))success
+												failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id propertyList))failure
 {
-    AFPropertyListRequestOperation *requestOperation = [[[self alloc] initWithRequest:request] autorelease];
+    AFPropertyListRequestOperation *requestOperation = [(AFPropertyListRequestOperation *)[self alloc] initWithRequest:request];
     [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
             success(operation.request, operation.response, responseObject);
@@ -57,7 +58,7 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
             failure(operation.request, operation.response, error, [(AFPropertyListRequestOperation *)operation responsePropertyList]);
         }
     }];
-    
+
     return requestOperation;
 }
 
@@ -66,17 +67,12 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
     if (!self) {
         return nil;
     }
-        
+
     self.propertyListReadOptions = NSPropertyListImmutable;
-    
+
     return self;
 }
 
-- (void)dealloc {
-    [_responsePropertyList release];
-    [_propertyListError release];
-    [super dealloc];
-}
 
 - (id)responsePropertyList {
     if (!_responsePropertyList && [self.responseData length] > 0 && [self isFinished]) {
@@ -86,7 +82,7 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
         self.propertyListFormat = format;
         self.propertyListError = error;
     }
-    
+
     return _responsePropertyList;
 }
 
@@ -111,37 +107,37 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
 - (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                               failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
+#pragma clang diagnostic ignored "-Wgnu"
     self.completionBlock = ^ {
-        if ([self isCancelled]) {
-            return;
-        }
-        
         if (self.error) {
             if (failure) {
-                dispatch_async(self.failureCallbackQueue ? self.failureCallbackQueue : dispatch_get_main_queue(), ^{
+                dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
                     failure(self, self.error);
                 });
             }
         } else {
             dispatch_async(property_list_request_operation_processing_queue(), ^(void) {
                 id propertyList = self.responsePropertyList;
-                
+
                 if (self.propertyListError) {
                     if (failure) {
-                        dispatch_async(self.failureCallbackQueue ? self.failureCallbackQueue : dispatch_get_main_queue(), ^{
+                        dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
                             failure(self, self.error);
                         });
                     }
                 } else {
                     if (success) {
-                        dispatch_async(self.successCallbackQueue ? self.successCallbackQueue : dispatch_get_main_queue(), ^{
+                        dispatch_async(self.successCallbackQueue ?: dispatch_get_main_queue(), ^{
                             success(self, propertyList);
                         });
-                    } 
+                    }
                 }
             });
         }
-    };    
+    };
+#pragma clang diagnostic pop
 }
 
 @end
