@@ -72,14 +72,8 @@
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
-- (void)viewDidLoad {
-    CGRect navBarFrame = self.view.bounds;
-    navBarFrame.size.height = kNavBarHeight;
-    navBarFrame.origin.y += 20;
-    navBar = [[UINavigationBar alloc] initWithFrame:navBarFrame];
-    [self.view addSubview:navBar];
-    
-    CGRect labelFrame = CGRectMake(kMargin, kSpacer,
+- (void)viewDidLoad {    
+    CGRect labelFrame = CGRectMake(kMargin, kSpacer + 20,
                                    navBar.bounds.size.width - 2*kMargin,
                                    kLabelHeight);
     
@@ -102,7 +96,7 @@
                               action:@selector(doCloseOriginalStoryViewController)];
     close.width = kButtonWidth;
     CGRect closeButtonFrame = CGRectMake(-20,
-                                         kSpacer*2.0 + kLabelHeight - 7.0f,
+                                         kSpacer*2.0 + kLabelHeight - 7.0f + 20,
                                          kButtonWidth + kMargin,
                                          44.0);
     TransparentToolbar* tools = [[TransparentToolbar alloc]
@@ -114,7 +108,7 @@
     CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x +
                                      closeButtonFrame.size.width +
                                      kMargin,
-                                     kSpacer*2.0 + kLabelHeight,
+                                     kSpacer*2.0 + kLabelHeight + 20,
                                      labelFrame.size.width
                                      - kButtonWidth - kMargin*2 + 20,
                                      kAddressHeight);
@@ -167,6 +161,8 @@
     navBarFrame.size.height = kNavBarHeight;
     navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     navBar.frame = navBarFrame;
+    navBar.translucent = NO;
+    toolbar.translucent = NO;
 }
 
 - (IBAction)webViewGoBack:(id)sender {

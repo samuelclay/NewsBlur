@@ -11,7 +11,7 @@
 
 @class NewsBlurAppDelegate;
 
-static const CGFloat kNavBarHeight  = 58.0f;
+static const CGFloat kNavBarHeight  = 78.0f;
 static const CGFloat kLabelHeight   = 18.0f;
 static const CGFloat kMargin        = 6.0f;
 static const CGFloat kSpacer        = 2.0f;
@@ -37,7 +37,7 @@ static const CGFloat kButtonWidth   = 68.0f;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UIView *navBar;
+@property (nonatomic) IBOutlet UINavigationBar *navBar;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIBarButtonItem* back;

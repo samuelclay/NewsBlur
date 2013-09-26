@@ -58,13 +58,13 @@ static UIFont *indicatorFont = nil;
     
     font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     textColor = UIColorFromRGB(0x606060);
-    [textColor set];
 
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     [self.siteTitle drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21)
                 withAttributes:@{NSFontAttributeName: font,
+                                 NSForegroundColorAttributeName: textColor,
                                  NSParagraphStyleAttributeName: paragraphStyle}];
     
     // feed bar
