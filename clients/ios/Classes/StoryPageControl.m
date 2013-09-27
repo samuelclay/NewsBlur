@@ -279,7 +279,6 @@
     }
     
     self.scrollView.frame = scrollViewFrame;
-    NSLog(@"Frames: %@ and %@", NSStringFromCGRect(self.view.frame), NSStringFromCGRect(self.traverseView.frame));
     traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
     self.traverseView.frame = traverseViewFrame;
 }

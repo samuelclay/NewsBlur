@@ -400,6 +400,7 @@
 
 - (void)adjustFeedDetailScreenForStoryTitles {
     CGRect vb = [self.view bounds];
+    
     if (!self.storyTitlesOnLeft) {
         if (self.storyTitlesYCoordinate > 890) {
             NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
@@ -699,11 +700,12 @@
 
     CGRect vb = [self.view bounds];
     // account for top toolbar and status bar
-    yCoordinate = yCoordinate + 44 + 20;
+    yCoordinate = yCoordinate + 64 + 20;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
     
-    if (yCoordinate > 384 && yCoordinate <= (vb.size.height)) {
+    if (yCoordinate <= (vb.size.height)) {
+        yCoordinate = MAX(yCoordinate, 384);
         self.storyTitlesYCoordinate = yCoordinate;
         [userPreferences setInteger:yCoordinate forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];
