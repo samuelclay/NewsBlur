@@ -171,7 +171,6 @@
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];
     if (commentRange.location != NSNotFound) {
-        NSLog(@"Spacing: %@", comment);
         commentRange.location -= 2;
         commentRange.length = 1;
         if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {

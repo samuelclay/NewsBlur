@@ -24,6 +24,7 @@
 @synthesize activitiesArray;
 @synthesize activitiesUsername;
 @synthesize userProfile;
+@synthesize request;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -34,6 +35,12 @@
     return self;
 }
 
+- (void)dealloc {
+    self.profileTable.dataSource = nil;
+    self.profileTable.delegate = nil;
+    request.delegate = nil;
+    [request cancel];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -104,7 +111,7 @@
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request = [ASIHTTPRequest requestWithURL:url];
 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
