@@ -32,8 +32,7 @@
 @property (nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
-@property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
-@property (nonatomic) IBOutlet UIImageView *noStorySelectedImage;
+@property (nonatomic) IBOutlet UIView *noStoryMessage;
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
 @property NSInteger pageIndex;

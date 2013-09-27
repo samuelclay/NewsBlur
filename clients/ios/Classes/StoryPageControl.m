@@ -45,7 +45,7 @@
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
 @synthesize buttonBack;
-@synthesize bottomPlaceholderToolbar;
+@synthesize bottomSize;
 @synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
@@ -168,7 +168,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
             UIImage *titleImage;
@@ -216,6 +216,7 @@
     self.traverseView.alpha = 1;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -251,6 +252,7 @@
     }
     
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
+    [self adjustDragBar:toInterfaceOrientation];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -261,6 +263,25 @@
             previousPage.view.hidden = YES;
         }
     }
+}
+
+- (void)adjustDragBar:(UIInterfaceOrientation)orientation {
+    CGRect scrollViewFrame = self.scrollView.frame;
+    CGRect traverseViewFrame = self.traverseView.frame;
+
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        scrollViewFrame.size.height = self.view.frame.size.height;
+        self.bottomSize.hidden = YES;
+    } else {
+        scrollViewFrame.size.height = self.view.frame.size.height - 12;
+        self.bottomSize.hidden = NO;
+    }
+    
+    self.scrollView.frame = scrollViewFrame;
+    NSLog(@"Frames: %@ and %@", NSStringFromCGRect(self.view.frame), NSStringFromCGRect(self.traverseView.frame));
+    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
+    self.traverseView.frame = traverseViewFrame;
 }
 
 - (void)resetPages {
@@ -320,9 +341,9 @@
         UITouch *theTouch = [touches anyObject];
         if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
             self.inTouchMove = YES;
-//            CGPoint touchLocation = [theTouch locationInView:self.view];
-//            CGFloat y = touchLocation.y;
-//            [appDelegate.masterContainerViewController dragStoryToolbar:y];
+            CGPoint touchLocation = [theTouch locationInView:self.view];
+            CGFloat y = touchLocation.y;
+            [appDelegate.masterContainerViewController dragStoryToolbar:y];
         }
     }
 }
@@ -609,7 +630,8 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
-    self.bottomPlaceholderToolbar.hidden = YES;
+//    self.bottomSize.hidden = YES;
+    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [rightToolbar setItems: [NSArray arrayWithObjects:
@@ -1005,9 +1027,7 @@
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
-    self.currentPage.noStorySelectedLabel.hidden = YES;
-    self.nextPage.noStorySelectedLabel.hidden = YES;
-    self.previousPage.noStorySelectedLabel.hidden = YES;
+    self.currentPage.noStoryMessage.hidden = YES;
 }
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
