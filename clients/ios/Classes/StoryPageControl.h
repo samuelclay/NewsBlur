@@ -17,7 +17,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, WEPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate, WEPopoverControllerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 
@@ -26,7 +26,6 @@
     UIButton *buttonNext;
     UIButton *buttonText;
     UIActivityIndicatorView *loadingIndicator;
-    UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
     TransparentToolbar * rightToolbar;
     UIView *traverseView;
@@ -56,7 +55,7 @@
 @property (nonatomic) IBOutlet UIButton *buttonSend;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
+@property (nonatomic) IBOutlet UIView *bottomSize;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
@@ -81,6 +80,7 @@
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;

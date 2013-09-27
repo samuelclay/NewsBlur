@@ -165,10 +165,10 @@
         }
     }
     if ([indexPaths count] > 0 && [self.storyTitlesTable numberOfRowsInSection:0]) {
-        [self.storyTitlesTable beginUpdates];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
-        [self.storyTitlesTable endUpdates];
-        //[self.storyTitlesTable reloadData];
+//        [self.storyTitlesTable beginUpdates];
+//        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+//        [self.storyTitlesTable endUpdates];
+        [self.storyTitlesTable reloadData];
     }
     
     appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
@@ -249,7 +249,6 @@
         }
     }
 }
-
 
 #pragma mark -
 #pragma mark Initialization

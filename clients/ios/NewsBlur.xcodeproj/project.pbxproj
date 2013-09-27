@@ -349,6 +349,7 @@
 		FFCDD8F617F4BCB4000C6483 /* Default-portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F017F4BCB4000C6483 /* Default-portrait.png */; };
 		FFCDD8F717F4BCB4000C6483 /* Default-portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F117F4BCB4000C6483 /* Default-portrait@2x.png */; };
 		FFCDD8F817F4BCB4000C6483 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F217F4BCB4000C6483 /* Default.png */; };
+		FFCDD8FA17F50C08000C6483 /* drag_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F917F50C08000C6483 /* drag_icon.png */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
 		FFDCA0AF16E80866000D8E0C /* DEComposeRuledView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */; };
@@ -915,6 +916,7 @@
 		FFCDD8F017F4BCB4000C6483 /* Default-portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-portrait.png"; sourceTree = "<group>"; };
 		FFCDD8F117F4BCB4000C6483 /* Default-portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-portrait@2x.png"; sourceTree = "<group>"; };
 		FFCDD8F217F4BCB4000C6483 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		FFCDD8F917F50C08000C6483 /* drag_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = drag_icon.png; sourceTree = "<group>"; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		FFD1D7301459B63500E46F89 /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
@@ -1282,6 +1284,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFCDD8F917F50C08000C6483 /* drag_icon.png */,
 				FFB9BE3F17F4B65B00FE0A36 /* logos */,
 				FFE816AC17E29D71008AF4B0 /* big_world_white.png */,
 				FFE816AA17E280BD008AF4B0 /* ftux_tree.png */,
@@ -2362,6 +2365,7 @@
 				FF5D40131799F70200349659 /* ARChromeActivity@2x~ipad.png in Resources */,
 				FF5D40141799F70200349659 /* ARChromeActivity~ipad.png in Resources */,
 				FF5D4017179A00B900349659 /* traverse_send.png in Resources */,
+				FFCDD8FA17F50C08000C6483 /* drag_icon.png in Resources */,
 				FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */,
 				FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */,
 				FF5D401C179A03E700349659 /* traverse_previous_off@2x.png in Resources */,
@@ -2582,8 +2586,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -2616,8 +2620,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				PROVISIONING_PROFILE = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EB97D956-BB90-4F2F-9919-F71949B04B3F";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

@@ -32,8 +32,7 @@
 @synthesize innerView;
 @synthesize webView;
 @synthesize feedTitleGradient;
-@synthesize noStorySelectedLabel;
-@synthesize noStorySelectedImage;
+@synthesize noStoryMessage;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
@@ -75,7 +74,6 @@
 
 - (void)viewDidUnload {
     [self setInnerView:nil];
-    [self setNoStorySelectedLabel:nil];
     
     [super viewDidUnload];
 }
@@ -98,16 +96,14 @@
 
 - (void)initStory {
     appDelegate.inStoryDetail = YES;
-    self.noStorySelectedLabel.hidden = YES;
-    self.noStorySelectedImage.hidden = YES;
+    self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
 
     [appDelegate hideShareView:NO];
 }
 
 - (void)hideNoStoryMessage {
-    self.noStorySelectedLabel.hidden = YES;
-    self.noStorySelectedImage.hidden = YES;
+    self.noStoryMessage.hidden = YES;
 }
 
 - (void)drawStory {
@@ -283,8 +279,7 @@
 - (void)hideStory {
     self.activeStoryId = nil;
     self.webView.hidden = YES;
-    self.noStorySelectedLabel.hidden = NO;
-    self.noStorySelectedImage.hidden = NO;
+    self.noStoryMessage.hidden = NO;
 }
 
 #pragma mark -
@@ -988,7 +983,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             return NO;
-        } else if ([action isEqualToString:@"train"]) {
+        } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
                                width:[[urlComponents objectAtIndex:4] intValue]
@@ -1002,7 +997,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTagClassifier:tag feedId:feedId];
             return NO;
-        } else if ([action isEqualToString:@"show-profile"]) {
+        } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
                         
             for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
