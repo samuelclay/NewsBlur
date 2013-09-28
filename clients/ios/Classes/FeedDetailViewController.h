@@ -14,15 +14,17 @@
 #import "WEPopoverController.h"
 #import "TransparentToolbar.h"
 #import "NBNotifier.h"
+#import "MCSwipeTableViewCell.h"
 
 @class NewsBlurAppDelegate;
 @class FeedDetailTableCell;
+@class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
- WEPopoverControllerDelegate> {
+ WEPopoverControllerDelegate, MCSwipeTableViewCellDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     int feedPage;

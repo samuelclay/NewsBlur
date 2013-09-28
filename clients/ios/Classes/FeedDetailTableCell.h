@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ABTableViewCell.h"
+#import "MCSwipeTableViewCell.h"
 
-@interface FeedDetailTableCell : ABTableViewCell {
+@interface FeedDetailTableCell : MCSwipeTableViewCell {
     NewsBlurAppDelegate *appDelegate;
     
     // All views
@@ -53,5 +53,12 @@
 @property (readwrite) BOOL hasAlpha;
 
 - (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha;
-    
+- (void)setupGestures;
+
+@end
+
+@interface FeedDetailTableCellView : UIView
+
+@property (nonatomic) FeedDetailTableCell *cell;
+
 @end
