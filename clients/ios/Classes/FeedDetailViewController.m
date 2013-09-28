@@ -852,23 +852,23 @@
     NSString *cellIdentifier;
     NSDictionary *feed ;
     
+    if (indexPath.row >= appDelegate.storyLocationsCount) {
+        return [self makeLoadingCell];
+    }
+    
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
     }
     
-    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
-                                                        dequeueReusableCellWithIdentifier:cellIdentifier]; 
+    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView
+                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:nil];
     }
-        
-    if (indexPath.row >= appDelegate.storyLocationsCount) {
-        return [self makeLoadingCell];
-    }
-        
+    
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     
     id feedId = [story objectForKey:@"story_feed_id"];
@@ -951,14 +951,21 @@
         cell.isRiverOrSocial = YES;
     }
 
-    if (UI_USER_INTERFACE_IDIOM() ==  UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         NSInteger rowIndex = [appDelegate locationOfActiveStory];
         if (rowIndex == indexPath.row) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
     }
+    
+    FeedDetailTableCellView *content = [[FeedDetailTableCellView alloc]
+                                        initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:self.storyTitlesTable heightForRowAtIndexPath:indexPath])];
+    content.cell = cell;
+    [cell.contentView addSubview:content];
+    [content sizeToFit];
+    [cell setupGestures];
 
-	return cell;
+    return cell;
 }
 
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row {
@@ -1074,6 +1081,29 @@
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
     NSInteger row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
     return [appDelegate.activeFeedStories objectAtIndex:row];
+}
+
+
+#pragma mark - MCSwipeTableViewCellDelegate
+
+// When the user starts swiping the cell this method is called
+- (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
+    NSLog(@"Did start swiping the cell!");
+}
+
+/*
+ // When the user is dragging, this method is called and return the dragged percentage from the border
+ - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+ NSLog(@"Did swipe with percentage : %f", percentage);
+ }
+ */
+
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
+    
+    if (mode == MCSwipeTableViewCellModeExit) {
+        [self.storyTitlesTable deleteRowsAtIndexPaths:@[[self.storyTitlesTable indexPathForCell:cell]] withRowAnimation:UITableViewRowAnimationFade];
+    }
 }
 
 #pragma mark -
