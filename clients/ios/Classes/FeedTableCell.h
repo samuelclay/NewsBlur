@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 #import "UnreadCountView.h"
-#import "ABTableViewCell.h"
+#import "NBSwipeableCell.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FeedTableCell : ABTableViewCell {    
+@interface FeedTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *feedTitle;
@@ -33,5 +33,13 @@
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) BOOL isSocial;
 @property (nonatomic) NSString *negativeCountStr;
+
+- (void)setupGestures;
+
+@end
+
+@interface FeedTableCellView : UIView
+
+@property (nonatomic) FeedTableCell *cell;
 
 @end

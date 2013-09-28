@@ -15,6 +15,7 @@
 #import "WEPopoverController.h"
 #import "NBNotifier.h"
 #import "IASKAppSettingsViewController.h"
+#import "MCSwipeTableViewCell.h"
 
 @class NewsBlurAppDelegate;
 
@@ -24,7 +25,8 @@ UIAlertViewDelegate, PullToRefreshViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
 WEPopoverControllerDelegate,
 UIPopoverControllerDelegate,
-IASKSettingsDelegate> {
+IASKSettingsDelegate,
+MCSwipeTableViewCellDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
