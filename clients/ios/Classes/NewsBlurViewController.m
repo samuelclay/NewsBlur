@@ -883,7 +883,13 @@ static const CGFloat kFolderTitleHeight = 28;
     cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
     
-    [cell setNeedsDisplay];
+    
+    FeedTableCellView *content = [[FeedTableCellView alloc]
+                                  initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:self.feedTitlesTable heightForRowAtIndexPath:indexPath])];
+    content.cell = cell;
+    [cell.contentView addSubview:content];
+    [content sizeToFit];
+    [cell setupGestures];
     
     return cell;
 }
@@ -1087,6 +1093,32 @@ heightForHeaderInSection:(NSInteger)section {
     
     [appDelegate loadRiverFeedDetailView];
 }
+
+
+
+#pragma mark - MCSwipeTableViewCellDelegate
+
+// When the user starts swiping the cell this method is called
+- (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
+    NSLog(@"Did start swiping the cell!");
+}
+
+/*
+ // When the user is dragging, this method is called and return the dragged percentage from the border
+ - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+ NSLog(@"Did swipe with percentage : %f", percentage);
+ }
+ */
+
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    //    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
+    
+    if (mode == MCSwipeTableViewCellModeExit) {
+        [self.feedTitlesTable deleteRowsAtIndexPaths:@[[self.feedTitlesTable indexPathForCell:cell]] withRowAnimation:UITableViewRowAnimationFade];
+    }
+}
+
+#pragma mark - Table Actions
 
 - (void)didCollapseFolder:(UIButton *)button {
     NSString *folderName;
