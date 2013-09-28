@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "MCSwipeTableViewCell.h"
+#import "NBSwipeableCell.h"
 
-@interface FeedDetailTableCell : MCSwipeTableViewCell {
+@interface FeedDetailTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
     
     // All views
@@ -52,7 +52,6 @@
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
 
-- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha;
 - (void)setupGestures;
 
 @end

@@ -1099,7 +1099,7 @@
  */
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
-    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
+//    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
     
     if (mode == MCSwipeTableViewCellModeExit) {
         [self.storyTitlesTable deleteRowsAtIndexPaths:@[[self.storyTitlesTable indexPathForCell:cell]] withRowAnimation:UITableViewRowAnimationFade];

@@ -351,6 +351,7 @@
 		FFCDD8F817F4BCB4000C6483 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F217F4BCB4000C6483 /* Default.png */; };
 		FFCDD8FA17F50C08000C6483 /* drag_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FFCDD8F917F50C08000C6483 /* drag_icon.png */; };
 		FFCDD8FE17F6368F000C6483 /* MCSwipeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCDD8FD17F6368F000C6483 /* MCSwipeTableViewCell.m */; };
+		FFCDD90117F65A71000C6483 /* NBSwipeableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */; };
 		FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1D7301459B63500E46F89 /* BaseViewController.m */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
 		FFDCA0AF16E80866000D8E0C /* DEComposeRuledView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDCA0A516E80866000D8E0C /* DEComposeRuledView.m */; };
@@ -920,6 +921,8 @@
 		FFCDD8F917F50C08000C6483 /* drag_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = drag_icon.png; sourceTree = "<group>"; };
 		FFCDD8FC17F6368F000C6483 /* MCSwipeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCSwipeTableViewCell.h; sourceTree = "<group>"; };
 		FFCDD8FD17F6368F000C6483 /* MCSwipeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCSwipeTableViewCell.m; sourceTree = "<group>"; };
+		FFCDD8FF17F65A71000C6483 /* NBSwipeableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBSwipeableCell.h; sourceTree = "<group>"; };
+		FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBSwipeableCell.m; sourceTree = "<group>"; };
 		FFD1D72F1459B63500E46F89 /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		FFD1D7301459B63500E46F89 /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
@@ -1682,6 +1685,8 @@
 				FF11045E176950F900502C29 /* NBLoadingCell.m */,
 				FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */,
 				FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */,
+				FFCDD8FF17F65A71000C6483 /* NBSwipeableCell.h */,
+				FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -2531,6 +2536,7 @@
 				FF5D3FFF1799F53C00349659 /* VUPinboardActivity.m in Sources */,
 				FF5D40001799F53C00349659 /* VUPinboardViewController.m in Sources */,
 				FF5D40011799F53C00349659 /* BBNetworkRequest.m in Sources */,
+				FFCDD90117F65A71000C6483 /* NBSwipeableCell.m in Sources */,
 				FF5D40021799F53C00349659 /* SSKeychain.m in Sources */,
 				FF5D40031799F53C00349659 /* VUDialogViewController.m in Sources */,
 				FF5D40041799F53C00349659 /* VUGradientButton.m in Sources */,
