@@ -1499,7 +1499,7 @@
         
         // make sure we set the active feed
         self.activeFeed = feed;
-    } else if (self.isSocialRiverView) {
+    } else if (self.isSocialRiverView && [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
         feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
@@ -1654,7 +1654,10 @@
 
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    
+    if (!feed) {
+        feedIdStr = @"0";
+    }
+
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
     
@@ -1670,7 +1673,10 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
-    
+
+    // If not a feed, then don't bother updating local feed.
+    if (!feed) return;
+
     self.visibleUnreadCount += 1;
 //    if ([self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
         [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
