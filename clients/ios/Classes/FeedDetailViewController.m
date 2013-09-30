@@ -957,13 +957,6 @@
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
     }
-    
-    FeedDetailTableCellView *content = [[FeedDetailTableCellView alloc]
-                                        initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:self.storyTitlesTable heightForRowAtIndexPath:indexPath])];
-    content.cell = cell;
-    [cell.contentView addSubview:content];
-    [content sizeToFit];
-    [cell setupGestures];
 
     return cell;
 }

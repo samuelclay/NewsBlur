@@ -34,11 +34,11 @@
 #import "UIImageView+AFNetworking.h"
 #import "NBBarButtonItem.h"
 
-#define kPhoneTableViewRowHeight 31;
-#define kTableViewRowHeight 31;
-#define kBlurblogTableViewRowHeight 32;
-#define kPhoneBlurblogTableViewRowHeight 32;
-static const CGFloat kFolderTitleHeight = 28;
+static const CGFloat kPhoneTableViewRowHeight = 31.0f;
+static const CGFloat kTableViewRowHeight = 31.0f;
+static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
+static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
+static const CGFloat kFolderTitleHeight = 28.0f;
 
 @interface NewsBlurViewController () 
 
@@ -882,14 +882,6 @@ static const CGFloat kFolderTitleHeight = 28;
     cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
     cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
-    
-    
-    FeedTableCellView *content = [[FeedTableCellView alloc]
-                                  initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:self.feedTitlesTable heightForRowAtIndexPath:indexPath])];
-    content.cell = cell;
-    [cell.contentView addSubview:content];
-    [content sizeToFit];
-    [cell setupGestures];
     
     return cell;
 }

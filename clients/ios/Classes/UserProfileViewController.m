@@ -119,9 +119,9 @@
     [request startAsynchronous];
 }
 
-- (void)requestFinished:(ASIHTTPRequest *)request {
+- (void)requestFinished:(ASIHTTPRequest *)_request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [request responseString];
+    NSString *responseString = [_request responseString];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
@@ -156,8 +156,8 @@
     [self.view addSubview:self.profileTable];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(ASIHTTPRequest *)_request {
+    NSError *error = [_request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }

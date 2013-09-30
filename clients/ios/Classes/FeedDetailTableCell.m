@@ -47,6 +47,24 @@ static UIFont *indicatorFont = nil;
     }
 }
 
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
+        cellContent.opaque = YES;
+        [self.contentView addSubview:cellContent];
+        [self setupGestures];
+    }
+    
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    ((FeedDetailTableCellView *)cellContent).cell = self;
+    cellContent.frame = rect;
+    [self setUnreadSwipeIcon];
+    [cellContent setNeedsDisplay];
+}
+
 - (void)setupGestures {
     NSString *unreadIcon;
     if (storyScore == -1) {
@@ -58,7 +76,7 @@ static UIFont *indicatorFont = nil;
     }
 
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [self setDelegate:appDelegate.feedDetailViewController];
+    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
     [self setFirstStateIconName:@"clock.png"
                      firstColor:[UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
             secondStateIconName:nil
@@ -78,6 +96,19 @@ static UIFont *indicatorFont = nil;
     
     self.mode = MCSwipeTableViewCellModeSwitch;
     self.shouldAnimatesIcons = NO;
+}
+
+- (void)setUnreadSwipeIcon {
+    NSString *unreadIcon;
+    if (storyScore == -1) {
+        unreadIcon = @"g_icn_hidden.png";
+    } else if (storyScore == 1) {
+        unreadIcon = @"g_icn_focus.png";
+    } else {
+        unreadIcon = @"g_icn_unread.png";
+    }
+    
+    [self setThirdIconName:unreadIcon];
 }
 
 @end
