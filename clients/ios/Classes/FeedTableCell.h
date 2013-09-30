@@ -12,6 +12,7 @@
 #import "NBSwipeableCell.h"
 
 @class NewsBlurAppDelegate;
+@class FeedTableCellView;
 
 @interface FeedTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
@@ -23,6 +24,7 @@
     int _negativeCount;
     NSString *_negativeCountStr;
     BOOL isSocial;
+    UIView *cellContent;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;

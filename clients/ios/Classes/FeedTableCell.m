@@ -27,32 +27,42 @@ static UIFont *textFont = nil;
 + (void) initialize{
     if (self == [FeedTableCell class]) {
         textFont = [UIFont boldSystemFontOfSize:18];
-//        UIColor *psGrad = UIColorFromRGB(0x559F4D);
-//        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
-//        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
-//        const CGFloat* psTop = CGColorGetComponents(ps.CGColor);
-//        const CGFloat* psBot = CGColorGetComponents(psGrad.CGColor);
-//        CGFloat psGradient[] = {
-//            psTop[0], psTop[1], psTop[2], psTop[3],
-//            psBot[0], psBot[1], psBot[2], psBot[3]
-//        };
-//        psColors = psGradient;
     }
 }
 
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
+        cellContent.opaque = YES;
+        [self.contentView addSubview:cellContent];
+        [self setupGestures];
+    }
+
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    ((FeedTableCellView *)cellContent).cell = self;
+    cellContent.frame = rect;
+    [cellContent setNeedsDisplay];
+}
+
+- (void)prepareForReuse {
+    [super prepareForReuse];
+}
 
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
     _positiveCount = ps;
-    [self setNeedsDisplay];
+    [cellContent setNeedsDisplay];
 }
 
 - (void) setNeutralCount:(int)nt {
     if (nt == _neutralCount) return;
     
     _neutralCount = nt;
-    [self setNeedsDisplay];
+    [cellContent setNeedsDisplay];
 }
 
 - (void) setNegativeCount:(int)ng {
@@ -60,16 +70,16 @@ static UIFont *textFont = nil;
     
     _negativeCount = ng;
     _negativeCountStr = [NSString stringWithFormat:@"%d", ng];
-    [self setNeedsDisplay];
+    [cellContent setNeedsDisplay];
 }
 
 - (void)setupGestures {
-    [self setDelegate:appDelegate.feedsViewController];
-    [self setFirstStateIconName:@"clock.png"
+    [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
+    [self setFirstStateIconName:@"train.png"
                      firstColor:[UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
             secondStateIconName:nil
                     secondColor:nil
-                  thirdIconName:@"clock.png"
+                  thirdIconName:@"g_icn_unread.png"
                      thirdColor:[UIColor colorWithRed:254.0 / 255.0 green:217.0 / 255.0 blue:56.0 / 255.0 alpha:1.0]
                  fourthIconName:nil
                     fourthColor:nil];

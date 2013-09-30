@@ -31,6 +31,7 @@
 
     UIColor *feedColorBar;
     UIColor *feedColorBarTopBorder;
+    UIView *cellContent;
 }
 
 @property (nonatomic) NSString *siteTitle;
