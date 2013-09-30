@@ -87,6 +87,8 @@ MCSwipeTableViewCellDelegate> {
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
+- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)didCollapseFolder:(UIButton *)button;
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;

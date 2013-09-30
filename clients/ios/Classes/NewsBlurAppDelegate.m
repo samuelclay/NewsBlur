@@ -1726,10 +1726,8 @@
     }
 }
 
-- (void)markActiveFeedAllRead {
-    id feedId = [self.activeFeed objectForKey:@"id"];
-    [self markFeedAllRead:feedId];
-}
+#pragma mark -
+#pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
     if ([self.activeFolder isEqual:@"everything"]) {
@@ -1754,13 +1752,77 @@
     [unreadCounts setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
     
     [self.dictUnreadCounts setObject:unreadCounts forKey:feedIdStr];
-    
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db executeUpdate:@"UPDATE unread_counts SET ps = 0, nt = 0, ng = 0 WHERE feed_id = ?",
-         feedIdStr];
-        [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_feed_id = ?", feedIdStr];
-    }];
 }
+
+- (void)markFeedReadInCache:(NSArray *)feedIds {
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_async(queue, ^{
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:[NSString
+                               stringWithFormat:@"UPDATE unread_counts SET ps = 0, nt = 0, ng = 0 "
+                               "WHERE feed_id IN (\"%@\")",
+                               [feedIds componentsJoinedByString:@"\",\""]]];
+            [db executeUpdate:[NSString
+                               stringWithFormat:@"DELETE FROM unread_hashes "
+                               "WHERE story_feed_id IN (\"%@\")",
+                               [feedIds componentsJoinedByString:@"\",\""]]];
+        }];
+    });
+}
+
+- (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds {
+    // Must be offline and marking all as read, so load all stories.
+
+    if (stories && [[stories allKeys] count]) {
+        [self queueReadStories:stories];
+    }
+    
+    if ([feeds count]) {
+        NSMutableDictionary *feedsStories = [NSMutableDictionary dictionary];
+        
+        [self.database inDatabase:^(FMDatabase *db) {
+            NSString *sql = [NSString stringWithFormat:@"SELECT u.story_feed_id, u.story_hash "
+                             "FROM unread_hashes u WHERE u.story_feed_id IN (\"%@\")",
+                             [feeds componentsJoinedByString:@"\",\""]];
+            FMResultSet *cursor = [db executeQuery:sql];
+            
+            while ([cursor next]) {
+                NSDictionary *story = [cursor resultDictionary];
+                NSString *feedIdStr = [story objectForKey:@"story_feed_id"];
+                NSString *storyHash = [story objectForKey:@"story_hash"];
+                
+                if (![feedsStories objectForKey:feedIdStr]) {
+                    [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
+                }
+                
+                NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
+                [stories addObject:storyHash];
+            }
+        }];
+        [self queueReadStories:feedsStories];
+        for (NSString *feedId in [feedsStories allKeys]) {
+            [self markFeedAllRead:feedId];
+        }
+        [self markFeedReadInCache:[feedsStories allKeys]];
+    }
+}
+
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    //    [self informError:@"Failed to mark story as read"];
+    NSArray *feedIds = [request.userInfo objectForKey:@"feeds"];
+    NSDictionary *stories = [request.userInfo objectForKey:@"stories"];
+    
+    [self markStoriesRead:stories inFeeds:feedIds];
+}
+
+- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailedMarkStoryRead:request];
+    }
+}
+
+#pragma mark -
+#pragma mark Story functions
 
 - (void)calculateStoryLocations {
     self.visibleUnreadCount = 0;
@@ -2555,8 +2617,8 @@
         feedIds = @[[activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (%@)",
-                     [feedIds componentsJoinedByString:@","]];
+                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (\"%@\")",
+                     [feedIds componentsJoinedByString:@"\",\""]];
     FMResultSet *cursor = [db executeQuery:sql];
     
     while ([cursor next]) {

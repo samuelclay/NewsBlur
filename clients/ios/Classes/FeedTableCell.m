@@ -74,6 +74,7 @@ static UIFont *textFont = nil;
 }
 
 - (void)setupGestures {
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:@"train.png"
                      firstColor:[UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]

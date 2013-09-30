@@ -956,12 +956,12 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     
     if (isFolderCollapsed) {
-        return 0;
+        return 0.01f;
     }
     
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     if (![self isFeedVisible:feedId]) {
-        return 0;
+        return 0.01f;
     }
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
@@ -1092,23 +1092,60 @@ heightForHeaderInSection:(NSInteger)section {
 
 // When the user starts swiping the cell this method is called
 - (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
-    NSLog(@"Did start swiping the cell!");
+//    NSLog(@"Did start swiping the cell!");
 }
 
-/*
- // When the user is dragging, this method is called and return the dragged percentage from the border
- - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
- NSLog(@"Did swipe with percentage : %f", percentage);
- }
- */
+// When the user is dragging, this method is called and return the dragged percentage from the border
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+//    NSLog(@"Did swipe with percentage : %f", percentage);
+}
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
-    //    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
-    
-    if (mode == MCSwipeTableViewCellModeExit) {
-        [self.feedTitlesTable deleteRowsAtIndexPaths:@[[self.feedTitlesTable indexPathForCell:cell]] withRowAnimation:UITableViewRowAnimationFade];
+    if (state == MCSwipeTableViewCellState1) {
+        // Train
+
+    } else if (state == MCSwipeTableViewCellState3) {
+        // Mark read
+        NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+        NSString *feedId = [NSString stringWithFormat:@"%@",
+                            [[appDelegate.dictFolders objectForKey:folderName]
+                             objectAtIndex:indexPath.row]];
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:feedId forKey:@"feed_id"];
+        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+        [request setUserInfo:@{@"feeds": @[feedId]}];
+        [request setDelegate:self];
+        [request startAsynchronous];
+        
+        [appDelegate markFeedAllRead:feedId];
+
+        [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                    withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
     }
 }
+
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    [appDelegate markStoriesRead:nil
+                         inFeeds:[request.userInfo objectForKey:@"feeds"]];
+}
+
+- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailedMarkStoryRead:request];
+        return;
+    }
+    
+    [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
+}
+
 
 #pragma mark - Table Actions
 
