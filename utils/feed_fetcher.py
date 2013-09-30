@@ -353,7 +353,7 @@ class Dispatcher:
                     rand = random.random()
                     if random_weight < 100 and rand < quick:
                         skip = True
-                elif feed.feed_address.startswith("http://news.google.com/news"):
+                elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True
                     weight = "-"
                     quick = "-"
