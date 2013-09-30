@@ -219,39 +219,48 @@ static UIFont *indicatorFont = nil;
     }
     CGContextSetLineWidth(context, 4.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 2.0f, 1.0f);
-    CGContextAddLineToPoint(context, 2.0f, cell.frame.size.height - 1);
+    CGContextMoveToPoint(context, 2.0f, 0);
+    CGContextAddLineToPoint(context, 2.0f, cell.frame.size.height);
     CGContextStrokePath(context);
     
     CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBar CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 6.0f, 1.0f);
-    CGContextAddLineToPoint(context, 6.0, cell.frame.size.height - 1);
+    CGContextMoveToPoint(context, 6.0f, 0);
+    CGContextAddLineToPoint(context, 6.0, cell.frame.size.height);
     CGContextStrokePath(context);
     
     // reset for borders
-    
+    UIColor *white = UIColorFromRGB(0xffffff);
     CGContextSetAlpha(context, 1.0);
-    CGContextSetLineWidth(context, 1.0f);
     if (cell.highlighted || cell.selected) {
         // top border
-        UIColor *blue = UIColorFromRGB(0xF9F8F4);
+        CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
         
-        CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
-        
+        CGContextSetLineWidth(context, 1.0f);
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, 0.5f);
         CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
         
+        CGFloat lineWidth = 0.5f;
+        CGContextSetLineWidth(context, lineWidth);
+        UIColor *blue = UIColorFromRGB(0xDFDDCF);
+        
+        CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
+        
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, 1.0f + 0.5f*lineWidth);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, 1.0f + 0.5f*lineWidth);
+        CGContextStrokePath(context);
+        
         // bottom border
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, cell.bounds.size.height - .5f);
-        CGContextAddLineToPoint(context, cell.bounds.size.width, cell.bounds.size.height - .5f);
+        CGContextMoveToPoint(context, 0, cell.bounds.size.height - .5f*lineWidth);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, cell.bounds.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     } else {
         // top border
-        UIColor *white = UIColorFromRGB(0xffffff);
+        CGContextSetLineWidth(context, 1.0f);
         
         CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
         

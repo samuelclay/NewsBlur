@@ -110,16 +110,19 @@ static UIFont *textFont = nil;
         
         // top border
         UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
+        CGFloat lineWidth = 0.5f;
         CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
+        CGContextSetLineWidth(context, lineWidth);
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, 0.5f);
+        CGContextMoveToPoint(context, 0, lineWidth*0.5f);
         CGContextAddLineToPoint(context, r.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, r.size.height - .5f);
-        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f);
+        CGContextSetLineWidth(context, lineWidth);
+        CGContextMoveToPoint(context, 0, r.size.height - .5f*lineWidth);
+        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     }
     
