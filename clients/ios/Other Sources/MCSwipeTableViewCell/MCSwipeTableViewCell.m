@@ -173,7 +173,6 @@ secondStateIconName:(NSString *)secondIconName
         _isDragging = YES;
         
         CGPoint center = {self.contentView.center.x + translation.x, self.contentView.center.y};
-        NSLog(@"Center: %@", NSStringFromCGPoint(center));
         [self.contentView setCenter:center];
         [self animateWithOffset:CGRectGetMinX(self.contentView.frame)];
         [gesture setTranslation:CGPointZero inView:self];

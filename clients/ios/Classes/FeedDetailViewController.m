@@ -1081,22 +1081,16 @@
 
 // When the user starts swiping the cell this method is called
 - (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
-    NSLog(@"Did start swiping the cell!");
+//    NSLog(@"Did start swiping the cell!");
 }
 
-/*
- // When the user is dragging, this method is called and return the dragged percentage from the border
- - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
- NSLog(@"Did swipe with percentage : %f", percentage);
- }
- */
+// When the user is dragging, this method is called and return the dragged percentage from the border
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+//    NSLog(@"Did swipe with percentage : %f", percentage);
+}
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
-//    NSLog(@"Did end swipping with IndexPath : %@ - MCSwipeTableViewCellState : %d - MCSwipeTableViewCellMode : %d", [self.storyTitlesTable indexPathForCell:cell], state, mode);
-    
-    if (mode == MCSwipeTableViewCellModeExit) {
-        [self.storyTitlesTable deleteRowsAtIndexPaths:@[[self.storyTitlesTable indexPathForCell:cell]] withRowAnimation:UITableViewRowAnimationFade];
-    }
+
 }
 
 #pragma mark -
@@ -1104,7 +1098,7 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    if (!self.isOffline && appDelegate.isRiverView && includeHidden &&
+    if (appDelegate.isRiverView && includeHidden &&
         [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
@@ -1115,7 +1109,7 @@
         [request startAsynchronous];
         
         [appDelegate markActiveFolderAllRead];
-    } else if (!self.isOffline && appDelegate.isRiverView && includeHidden) {
+    } else if (appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
@@ -1124,11 +1118,14 @@
         for (id feed_id in [appDelegate.dictFolders objectForKey:appDelegate.activeFolder]) {
             [request addPostValue:feed_id forKey:@"feed_id"];
         }
-        [request setDelegate:nil];
+        [request setUserInfo:@{@"feeds": appDelegate.activeFolderFeeds}];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
         [request startAsynchronous];
         
         [appDelegate markActiveFolderAllRead];
-    } else if (!self.isOffline && !appDelegate.isRiverView && includeHidden) {
+    } else if (!appDelegate.isRiverView && includeHidden) {
         // Mark feed as read
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
@@ -1137,6 +1134,7 @@
         [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
         [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
         [request setDidFailSelector:@selector(requestFailed:)];
+        [request setUserInfo:@{@"feeds": @[[appDelegate.activeFeed objectForKey:@"id"]]}];
         [request setDelegate:self];
         [request startAsynchronous];
         [appDelegate markFeedAllRead:[appDelegate.activeFeed objectForKey:@"id"]];
@@ -1149,49 +1147,12 @@
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
         [request setDelegate:self];
-        [request setUserInfo:feedsStories];
+        [request setUserInfo:@{@"stories": feedsStories}];
         [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
         [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
         [request startAsynchronous];
-    } else {
-        // Must be offline and marking all as read, so load all stories.
-        NSMutableDictionary *feedsStories = [NSMutableDictionary dictionary];
-        
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
-            NSArray *feedIds;
-            
-            if (appDelegate.isRiverView) {
-                feedIds = appDelegate.activeFolderFeeds;
-            } else if (appDelegate.activeFeed) {
-                feedIds = @[[appDelegate.activeFeed objectForKey:@"id"]];
-            } else {
-                return;
-            }
-            
-            NSString *sql = [NSString stringWithFormat:@"SELECT u.story_feed_id, u.story_hash "
-                             "FROM unread_hashes u WHERE u.story_feed_id IN (%@)",
-                             [feedIds componentsJoinedByString:@","]];
-            FMResultSet *cursor = [db executeQuery:sql];
-            
-            while ([cursor next]) {
-                NSDictionary *story = [cursor resultDictionary];
-                NSString *feedIdStr = [story objectForKey:@"story_feed_id"];
-                NSString *storyHash = [story objectForKey:@"story_hash"];
-
-                if (![feedsStories objectForKey:feedIdStr]) {
-                    [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
-                }
-                
-                NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
-                [stories addObject:storyHash];
-            }
-        }];
-
-        for (NSString *feedId in [feedsStories allKeys]) {
-            [appDelegate markFeedAllRead:feedId];
-        }
-        [appDelegate queueReadStories:feedsStories];
     }
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.navigationController popToRootViewControllerAnimated:YES];
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
@@ -1205,23 +1166,17 @@
 
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
     //    [self informError:@"Failed to mark story as read"];
-    NSDictionary *feedsStories = request.userInfo;
-    [appDelegate queueReadStories:feedsStories];
+    [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
+                         inFeeds:[request.userInfo objectForKey:@"feeds"]];
 }
 
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
     if (request.responseStatusCode != 200) {
         [self requestFailedMarkStoryRead:request];
+        return;
     }
-//    NSString *responseString = [request responseString];
-//    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-//    NSError *error;
-//    NSDictionary *results = [NSJSONSerialization 
-//                             JSONObjectWithData:responseData
-//                             options:kNilOptions 
-//                             error:&error];
     
-
+    [appDelegate markFeedReadInCache:@[[appDelegate.activeFeed objectForKey:@"id"]]];
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
