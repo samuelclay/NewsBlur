@@ -8,5 +8,7 @@
           android:title="@string/menu_mark_previous_stories_as_read" />
 
     <!--  TODO: Share/Unshare, Save/Unsave, mark unread -->
+    <item android:id="@+id/menu_shared"
+        android:title="@string/menu_share"/>
     
 </menu>
