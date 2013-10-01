@@ -1461,9 +1461,6 @@
         }
     }
 
-    [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
-                                 forKey:[self.activeStory objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:activeLocation]];
     [self markStoryRead:story feed:feed];
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
 }
@@ -1537,8 +1534,6 @@
         }
     }
     
-    [self.recentlyReadStories removeObjectForKey:[self.activeStory objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:activeLocation]];
     [self markStoryUnread:story feed:feed];
 
     self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
@@ -1636,6 +1631,12 @@
              feedIdStr];
         }];
     });
+    
+    NSInteger location = [self locationOfStoryId:[story objectForKey:@"id"]];
+    [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
+                                 forKey:[story objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:location]];
+
 }
 
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
@@ -1703,6 +1704,10 @@
          [newUnreadCounts objectForKey:@"ng"],
          feedIdStr];
     }];
+    
+    NSInteger location = [self locationOfStoryId:[story objectForKey:@"id"]];
+    [self.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
+    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:location]];
 }
 
 #pragma mark -
