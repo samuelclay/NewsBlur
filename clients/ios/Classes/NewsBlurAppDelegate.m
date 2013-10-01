@@ -1706,32 +1706,6 @@
     }];
 }
 
-- (void)markActiveStorySaved:(BOOL)saved {
-    NSMutableDictionary *newStory = [self.activeStory mutableCopy];
-    [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
-    
-    self.activeStory = newStory;
-    
-    // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
-    
-    if (saved) {
-        self.savedStoriesCount += 1;
-    } else {
-        self.savedStoriesCount -= 1;
-    }
-}
-
 #pragma mark -
 #pragma mark Mark as read
 
@@ -1824,6 +1798,43 @@
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
     if (request.responseStatusCode != 200) {
         [self requestFailedMarkStoryRead:request];
+    }
+}
+
+#pragma mark -
+#pragma mark Story Saving
+
+- (void)markStory:story asSaved:(BOOL)saved {
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
+    if (saved) {
+        [newStory setValue:[Utilities formatDateFromTimestamp:nil] forKey:@"starred_date"];
+    } else {
+        [newStory removeObjectForKey:@"starred_date"];
+    }
+    
+    if ([[newStory objectForKey:@"story_hash"]
+         isEqualToString:[self.activeStory objectForKey:@"story_hash"]]) {
+        self.activeStory = newStory;
+    }
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+    
+    if (saved) {
+        self.savedStoriesCount += 1;
+    } else {
+        self.savedStoriesCount -= 1;
     }
 }
 

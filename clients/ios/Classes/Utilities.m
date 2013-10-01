@@ -154,4 +154,14 @@ static NSMutableDictionary *imageCache;
             ];  
 }
 
++ (NSString *)formatDateFromTimestamp:(NSInteger)timestamp {
+    if (!timestamp) timestamp = [[NSDate date] timeIntervalSince1970];
+
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:(double)timestamp];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"LLLL, d Y h:mma"];
+
+    return [formatter stringFromDate:date];
+}
+
 @end

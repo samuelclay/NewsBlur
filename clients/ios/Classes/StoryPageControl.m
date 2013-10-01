@@ -319,6 +319,10 @@
 }
 
 - (void)refreshHeaders {
+    [currentPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:currentPage.activeStoryId]];
+    [nextPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:nextPage.activeStoryId]];
+    [previousPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:previousPage.activeStoryId]];
+
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
@@ -867,7 +871,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markActiveStorySaved:YES];
+    [appDelegate markStory:appDelegate.activeStory asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
@@ -899,7 +903,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markActiveStorySaved:NO];
+    [appDelegate markStory:appDelegate.activeStory asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];

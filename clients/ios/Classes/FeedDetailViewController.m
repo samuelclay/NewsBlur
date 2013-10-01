@@ -891,8 +891,8 @@
     cell.storyTitle = [title stringByDecodingHTMLEntities];
 
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
-    cell.isStarred = [story objectForKey:@"starred"];
-    cell.isShared = [story objectForKey:@"shared"];
+    cell.isStarred = [[story objectForKey:@"starred"] boolValue];
+    cell.isShared = [[story objectForKey:@"shared"] boolValue];
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
@@ -1090,12 +1090,27 @@
 }
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+    NSInteger storyIndex = [appDelegate indexFromLocation:indexPath.row];
+    NSDictionary *story = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
 
+    if (state == MCSwipeTableViewCellState1) {
+        // Saved
+        if ([[story objectForKey:@"starred"] boolValue]) {
+            [self markStoryAsUnsaved:story];
+        } else {
+            [self markStoryAsSaved:story];
+        }
+        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                     withRowAnimation:UITableViewRowAnimationFade];
+    } else if (state == MCSwipeTableViewCellState3) {
+        // Read
+        
+    }
 }
 
 #pragma mark -
 #pragma mark Feed Actions
-
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
     if (appDelegate.isRiverView && includeHidden &&
@@ -1176,7 +1191,7 @@
         return;
     }
     
-    [appDelegate markFeedReadInCache:@[[appDelegate.activeFeed objectForKey:@"id"]]];
+    [appDelegate markFeedReadInCache:@[[request.userInfo objectForKey:@"feeds"]]];
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
@@ -1432,6 +1447,79 @@
     }
 }
 
+#pragma mark -
+#pragma mark Story Actions
+
+- (void)markStoryAsSaved:(NSDictionary *)story {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[story objectForKey:@"story_hash"]
+                   forKey:@"story_id"];
+    [request setPostValue:[story objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
+    [request setDidFailSelector:@selector(failedMarkAsSaved:)];
+    [request setDelegate:self];
+    [request setUserInfo:story];
+    [request startAsynchronous];
+
+    [appDelegate markStory:story asSaved:YES];
+}
+
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self failedMarkAsSaved:request];
+    }
+    
+    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+    [appDelegate.storyPageControl refreshHeaders];
+}
+
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
+    [self informError:@"Failed to save story"];
+    
+    [appDelegate markStory:request.userInfo asSaved:NO];
+    [self.storyTitlesTable reloadData];
+}
+
+- (void)markStoryAsUnsaved:(NSDictionary *)story {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[story objectForKey:@"story_hash"]
+                   forKey:@"story_id"];
+    [request setPostValue:[story objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
+    [request setDidFailSelector:@selector(failedMarkAsUnsaved:)];
+    [request setDelegate:self];
+    [request setUserInfo:story];
+    [request startAsynchronous];
+
+    [appDelegate markStory:story asSaved:NO];
+}
+
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self failedMarkAsUnsaved:request];
+    }
+    
+    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+    [appDelegate.storyPageControl refreshHeaders];
+}
+
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+    [self informError:@"Failed to unsave story"];
+    [appDelegate markStory:request.userInfo asSaved:YES];
+    [self.storyTitlesTable reloadData];
+}
 
 #pragma mark -
 #pragma mark instafetchFeed
