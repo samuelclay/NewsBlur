@@ -668,24 +668,6 @@
     [self informError:@"The server barfed!"];
 }
 
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    //    [self informError:@"Failed to mark story as read"];
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
-            [db executeUpdate:@"INSERT INTO queued_read_hashes "
-                               "(story_feed_id, story_hash) VALUES "
-                               "(?, ?)", storyFeedId, storyHash];
-        }];
-    });
-    
-    appDelegate.hasQueuedReadStories = YES;
-}
-
-
 #pragma mark -
 #pragma mark Actions
 
@@ -754,77 +736,28 @@
     
     //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
-        [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
+        [[appDelegate.unreadStoryHashes
+          objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]]
+         boolValue]) {
         
         [appDelegate markActiveStoryRead];
         
-        NSString *urlString;
-        if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-            urlString = [NSString stringWithFormat:@"%@/reader/mark_social_stories_as_read",
-                         NEWSBLUR_URL];
-        } else {
-            urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_read",
-                         NEWSBLUR_URL];
-        }
-        
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
+                               NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        if (appDelegate.isSocialRiverView) {
-            // grab the user id from the shared_by_friends
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSString *friendUserId;
-            
-            if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"shared_by_friends"] objectAtIndex:0]];
-            } else if ([[appDelegate.activeStory objectForKey:@"commented_by_friends"] count]) {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"commented_by_friends"] objectAtIndex:0]];
-            } else {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"share_user_ids"] objectAtIndex:0]];
-            }
-            
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId
-                                                                  forKey:[NSString stringWithFormat:@"%@",
-                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-            
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory
-                                                                          forKey:friendUserId];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"];
-        } else if (appDelegate.isSocialView) {
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId
-                                                                  forKey:[NSString stringWithFormat:@"%@",
-                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-            
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory
-                                                                          forKey:[NSString stringWithFormat:@"%@",
-                                                                                  [appDelegate.activeStory objectForKey:@"social_user_id"]]];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"];
-        } else {
-            [request setPostValue:[appDelegate.activeStory
-                                   objectForKey:@"story_hash"]
-                           forKey:@"story_id"];
-            [request setPostValue:[appDelegate.activeStory
-                                   objectForKey:@"story_feed_id"]
-                           forKey:@"feed_id"];
-            [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
-                                                     objectForKey:@"story_feed_id"],
-                                    @"story_hash":[appDelegate.activeStory
-                                                   objectForKey:@"story_hash"]}];
-        }
-        
+        [request setPostValue:[appDelegate.activeStory objectForKey:@"story_hash"]
+                       forKey:@"story_hash"];
+        [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
+                                                 objectForKey:@"story_feed_id"],
+                                @"story_hash":[appDelegate.activeStory
+                                               objectForKey:@"story_hash"]}];
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
         [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
 }
-
 
 - (void)finishMarkAsRead:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
@@ -835,6 +768,14 @@
     //    NSDictionary *results = [[NSDictionary alloc]
     //                             initWithDictionary:[responseString JSONValue]];
     //    NSLog(@"results in mark as read is %@", results);
+}
+
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    //    [self informError:@"Failed to mark story as read"];
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
 }
 
 - (IBAction)openSendToDialog:(id)sender {
