@@ -47,22 +47,18 @@ static UIFont *textFont = nil;
     [cellContent setNeedsDisplay];
 }
 
-- (void)prepareForReuse {
-    [super prepareForReuse];
-}
-
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
     _positiveCount = ps;
-    [cellContent setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
 - (void) setNeutralCount:(int)nt {
     if (nt == _neutralCount) return;
     
     _neutralCount = nt;
-    [cellContent setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
 - (void) setNegativeCount:(int)ng {
@@ -70,28 +66,20 @@ static UIFont *textFont = nil;
     
     _negativeCount = ng;
     _negativeCountStr = [NSString stringWithFormat:@"%d", ng];
-    [cellContent setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
 - (void)setupGestures {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:@"train.png"
-                     firstColor:[UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
+                     firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil
                   thirdIconName:@"g_icn_unread.png"
-                     thirdColor:[UIColor colorWithRed:254.0 / 255.0 green:217.0 / 255.0 blue:56.0 / 255.0 alpha:1.0]
+                     thirdColor:UIColorFromRGB(0xFFFFD2)
                  fourthIconName:nil
                     fourthColor:nil];
-    
-    //    [self.contentView setBackgroundColor:[UIColor whiteColor]];
-    
-    // Setting the default inactive state color to the tableView background color
-    //    [self setDefaultColor:self.tableView.backgroundView.backgroundColor];
-    
-    //
-    [self setSelectionStyle:UITableViewCellSelectionStyleGray];
     
     self.mode = MCSwipeTableViewCellModeSwitch;
     self.shouldAnimatesIcons = NO;

@@ -27,8 +27,8 @@ static UIFont *indicatorFont = nil;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
-@synthesize isStarred;
 @synthesize isShared;
+@synthesize isStarred;
 @synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
@@ -52,7 +52,6 @@ static UIFont *indicatorFont = nil;
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         [self.contentView addSubview:cellContent];
-        [self setupGestures];
     }
     
     return self;
@@ -61,7 +60,6 @@ static UIFont *indicatorFont = nil;
 - (void)drawRect:(CGRect)rect {
     ((FeedDetailTableCellView *)cellContent).cell = self;
     cellContent.frame = rect;
-    [self setUnreadSwipeIcon];
     [cellContent setNeedsDisplay];
 }
 
@@ -74,41 +72,27 @@ static UIFont *indicatorFont = nil;
     } else {
         unreadIcon = @"g_icn_unread.png";
     }
-
+    
+    UIColor *shareColor = self.isStarred ?
+                            UIColorFromRGB(0xF69E89) :
+                            UIColorFromRGB(0xA4D97B);
+    UIColor *readColor = self.isRead ?
+                            UIColorFromRGB(0xBED49F) :
+                            UIColorFromRGB(0xFFFFD2);
+    
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
     [self setFirstStateIconName:@"clock.png"
-                     firstColor:[UIColor colorWithRed:85.0 / 255.0 green:213.0 / 255.0 blue:80.0 / 255.0 alpha:1.0]
+                     firstColor:shareColor
             secondStateIconName:nil
                     secondColor:nil
                   thirdIconName:unreadIcon
-                     thirdColor:[UIColor colorWithRed:254.0 / 255.0 green:217.0 / 255.0 blue:56.0 / 255.0 alpha:1.0]
+                     thirdColor:readColor
                  fourthIconName:nil
                     fourthColor:nil];
-    
-//    [self.contentView setBackgroundColor:[UIColor whiteColor]];
-    
-    // Setting the default inactive state color to the tableView background color
-//    [self setDefaultColor:self.tableView.backgroundView.backgroundColor];
-    
-    //
-    [self setSelectionStyle:UITableViewCellSelectionStyleGray];
-    
+
     self.mode = MCSwipeTableViewCellModeSwitch;
     self.shouldAnimatesIcons = NO;
-}
-
-- (void)setUnreadSwipeIcon {
-    NSString *unreadIcon;
-    if (storyScore == -1) {
-        unreadIcon = @"g_icn_hidden.png";
-    } else if (storyScore == 1) {
-        unreadIcon = @"g_icn_focus.png";
-    } else {
-        unreadIcon = @"g_icn_unread.png";
-    }
-    
-    [self setThirdIconName:unreadIcon];
 }
 
 @end

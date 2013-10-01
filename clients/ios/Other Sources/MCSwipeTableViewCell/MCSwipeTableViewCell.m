@@ -147,7 +147,7 @@ secondStateIconName:(NSString *)secondIconName
     
     // Before reuse we need to reset it's state
     _shouldDrag = YES;
-    _shouldAnimatesIcons = YES;
+    _shouldAnimatesIcons = NO;
     _mode = MCSwipeTableViewCellModeNone;
     _modeForState1 = MCSwipeTableViewCellModeNone;
     _modeForState2 = MCSwipeTableViewCellModeNone;

@@ -11,9 +11,6 @@
 #import "UnreadCountView.h"
 #import "NBSwipeableCell.h"
 
-@class NewsBlurAppDelegate;
-@class FeedTableCellView;
-
 @interface FeedTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
     

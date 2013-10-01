@@ -957,6 +957,8 @@
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
     }
+    
+    [cell setupGestures];
 
     return cell;
 }
@@ -1105,7 +1107,13 @@
                                      withRowAnimation:UITableViewRowAnimationFade];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
-        
+        if ([[story objectForKey:@"starred"] boolValue]) {
+//            [self markStoryAsRead:story];
+        } else {
+//            [self markStoryAsUnread:story];
+        }
+        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                     withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -1448,7 +1456,11 @@
 }
 
 #pragma mark -
-#pragma mark Story Actions
+#pragma mark Story Actions - read
+
+
+#pragma mark -
+#pragma mark Story Actions - save
 
 - (void)markStoryAsSaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",

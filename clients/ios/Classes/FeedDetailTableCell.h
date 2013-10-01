@@ -38,7 +38,7 @@
 @property (nonatomic) UIImage *siteFavicon;
 
 @property (readwrite) int storyScore;
-@property (readwrite) BOOL isStarred;
+@property (nonatomic, readwrite) BOOL isStarred;
 @property (readwrite) BOOL isShared;
 
 @property (nonatomic) NSString *storyTitle;
