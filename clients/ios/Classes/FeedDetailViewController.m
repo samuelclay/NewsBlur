@@ -1107,10 +1107,10 @@
                                      withRowAnimation:UITableViewRowAnimationFade];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
-        if ([[story objectForKey:@"starred"] boolValue]) {
-//            [self markStoryAsRead:story];
+        if ([[story objectForKey:@"read_status"] boolValue]) {
+            [self markStoryAsUnread:story];
         } else {
-//            [self markStoryAsUnread:story];
+            [self markStoryAsRead:story];
         }
         [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                      withRowAnimation:UITableViewRowAnimationFade];
@@ -1458,6 +1458,74 @@
 #pragma mark -
 #pragma mark Story Actions - read
 
+- (void)markStoryAsRead:(NSDictionary *)story {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[story objectForKey:@"story_hash"]
+                   forKey:@"story_hash"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsRead:)];
+    [request setDidFailSelector:@selector(failedMarkAsRead:)];
+    [request setDelegate:self];
+    [request setUserInfo:story];
+    [request startAsynchronous];
+    
+    [appDelegate markStoryRead:[story objectForKey:@"story_hash"]
+                        feedId:[story objectForKey:@"story_feed_id"]];
+}
+
+- (void)finishMarkAsRead:(ASIFormDataRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self failedMarkAsRead:request];
+    }
+    
+    [appDelegate.storyPageControl refreshHeaders];
+}
+
+- (void)failedMarkAsRead:(ASIFormDataRequest *)request {
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
+}
+
+- (void)markStoryAsUnread:(NSDictionary *)story {
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[story objectForKey:@"story_hash"]
+                   forKey:@"story_id"];
+    [request setPostValue:[story objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
+    [request setDidFailSelector:@selector(failedMarkAsUnread:)];
+    [request setDelegate:self];
+    [request setUserInfo:story];
+    [request startAsynchronous];
+    
+    [appDelegate markStoryUnread:[story objectForKey:@"story_hash"]
+                          feedId:[story objectForKey:@"story_feed_id"]];
+}
+
+- (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self failedMarkAsUnread:request];
+    }
+    
+    [appDelegate.storyPageControl refreshHeaders];
+}
+
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    [self informError:@"Failed to unread story"];
+//    [appDelegate markStory:request.userInfo asRead:YES];
+    [self.storyTitlesTable reloadData];
+}
 
 #pragma mark -
 #pragma mark Story Actions - save
@@ -1487,7 +1555,6 @@
         return [self failedMarkAsSaved:request];
     }
     
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl refreshHeaders];
 }
 
@@ -1523,7 +1590,6 @@
         return [self failedMarkAsUnsaved:request];
     }
     
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl refreshHeaders];
 }
 

@@ -1638,7 +1638,6 @@
     });
 }
 
-
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
