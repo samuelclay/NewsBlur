@@ -7,10 +7,8 @@
 //
 
 #import "LoginViewController.h"
-#import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import <QuartzCore/QuartzCore.h>
+//#import <QuartzCore/QuartzCore.h>
 
 @implementation LoginViewController
 
