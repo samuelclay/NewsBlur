@@ -956,12 +956,12 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     
     if (isFolderCollapsed) {
-        return 0.01f;
+        return 0;
     }
     
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     if (![self isFeedVisible:feedId]) {
-        return 0.01f;
+        return 0;
     }
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
