@@ -33,6 +33,7 @@
 @synthesize webView;
 @synthesize feedTitleGradient;
 @synthesize noStorySelectedLabel;
+@synthesize noStorySelectedImage;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
@@ -75,6 +76,7 @@
 - (void)viewDidUnload {
     [self setInnerView:nil];
     [self setNoStorySelectedLabel:nil];
+    
     [super viewDidUnload];
 }
 
@@ -95,18 +97,17 @@
 #pragma mark Story setup
 
 - (void)initStory {
-    
     appDelegate.inStoryDetail = YES;
     self.noStorySelectedLabel.hidden = YES;
-    appDelegate.shareViewController.commentField.text = nil;
+    self.noStorySelectedImage.hidden = YES;
     self.webView.hidden = NO;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromShareView];
-    }
-    
-    [appDelegate hideShareView:YES];
-    [appDelegate resetShareComments];
+    [appDelegate hideShareView:NO];
+}
+
+- (void)hideNoStoryMessage {
+    self.noStorySelectedLabel.hidden = YES;
+    self.noStorySelectedImage.hidden = YES;
 }
 
 - (void)drawStory {
@@ -271,6 +272,7 @@
 - (void)showStory {
     id storyId = [self.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
+    [appDelegate resetShareComments];
 }
 
 - (void)clearStory {
@@ -282,6 +284,7 @@
     self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStorySelectedLabel.hidden = NO;
+    self.noStorySelectedImage.hidden = NO;
 }
 
 #pragma mark -
@@ -1222,6 +1225,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
         if([userId isEqualToString:currentUserId]){
             appDelegate.activeComment = [friendComments objectAtIndex:i];
+            break;
+        } else {
+            appDelegate.activeComment = nil;
         }
     }
     

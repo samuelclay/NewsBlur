@@ -547,7 +547,8 @@ def load_single_feed(request, feed_id):
             stories = []
             message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
+                                      cutoff_date=user.profile.unread_cutoff)
     else:
         stories = feed.get_stories(offset, limit)
     
@@ -582,7 +583,8 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == 'all' or query) and usersub:
-            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True)
+            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                                      cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
@@ -840,6 +842,7 @@ def load_river_stories__redis(request):
     query             = request.REQUEST.get('query')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
+    code              = 1
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -858,7 +861,8 @@ def load_river_stories__redis(request):
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
-                                                                     group_by_feed=False)
+                                                                     group_by_feed=False, 
+                                                                     cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -875,6 +879,7 @@ def load_river_stories__redis(request):
                 "order": order,
                 "read_filter": read_filter,
                 "usersubs": usersubs,
+                "cutoff_date": user.profile.unread_cutoff,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -951,10 +956,11 @@ def load_river_stories__redis(request):
     
     if not user.profile.is_premium:
         message = "The full River of News is a premium feature."
-        if page > 1:
-            stories = []
-        else:
-            stories = stories[:5]
+        code = 0
+        # if page > 1:
+        #     stories = []
+        # else:
+        #     stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
     logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
@@ -965,7 +971,8 @@ def load_river_stories__redis(request):
     #     import random
     #     time.sleep(random.randint(0, 6))
     
-    return dict(message=message,
+    return dict(code=code,
+                message=message,
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
@@ -1002,7 +1009,8 @@ def unread_story_hashes__old(request):
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            withscores=include_timestamps,
-                                                           hashes_only=True)
+                                                           hashes_only=True,
+                                                           cutoff_date=user.profile.unread_cutoff)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
@@ -1020,7 +1028,8 @@ def unread_story_hashes(request):
     
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
-                                                 include_timestamps=include_timestamps)
+                                                 include_timestamps=include_timestamps,
+                                                 cutoff_date=user.profile.unread_cutoff)
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
     return dict(unread_feed_story_hashes=story_hashes)
@@ -1240,12 +1249,11 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
 
-    UNREAD_CUTOFF = (datetime.datetime.utcnow() -
-                     datetime.timedelta(days=settings.DAYS_OF_UNREAD))
-    if story.story_date < UNREAD_CUTOFF:
+    if story.story_date < request.user.profile.unread_cutoff:
         data['code'] = -1
         data['message'] = "Story is more than %s days old, cannot mark as unread." % (
-                            settings.DAYS_OF_UNREAD)
+                            settings.DAYS_OF_UNREAD if request.user.profile.is_premium else
+                            settings.DAYS_OF_UNREAD_FREE)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
@@ -1268,9 +1276,11 @@ def mark_story_as_unread(request):
 def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
+    cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
+    cutoff_date = datetime.datetime.fromtimestamp(cutoff_timestamp) if cutoff_timestamp else None
     
     for feed_id in feed_ids:
         if 'social:' in feed_id:
@@ -1297,8 +1307,8 @@ def mark_feed_as_read(request):
             continue
         
         try:
-            marked_read = sub.mark_feed_read()
-            if marked_read:
+            marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError, e:
             errors.append("Could not mark feed as read: %s" % e)
@@ -1306,6 +1316,7 @@ def mark_feed_as_read(request):
             
     if multiple:
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
+        r.publish(request.user.username, 'refresh:%s' % ','.join(feed_ids))
         
     return dict(code=code, errors=errors)
 
@@ -1342,6 +1353,10 @@ def add_url(request):
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
         feed = us and us.feed
+        if feed:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(request.user.username, 'reload:%s' % feed.pk)
+        
         
     return dict(code=code, message=message, feed=feed)
 
@@ -1358,6 +1373,8 @@ def add_folder(request):
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         user_sub_folders_object.add_folder(parent_folder, folder)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, 'reload:feeds')
     else:
         code = -1
         message = "Gotta write in a folder name."
@@ -1378,6 +1395,9 @@ def delete_feed(request):
     feed = Feed.objects.filter(pk=feed_id)
     if feed:
         feed[0].count_subscribers()
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
     
     return dict(code=1, message="Removed %s from '%s'." % (feed, in_folder))
 
@@ -1417,6 +1437,9 @@ def delete_folder(request):
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
 
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     return dict(code=1)
     
 @ajax_login_required
@@ -1462,6 +1485,9 @@ def move_feed_to_folder(request):
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
@@ -1474,6 +1500,9 @@ def move_folder_to_folder(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
@@ -1577,7 +1606,10 @@ def save_feed_chooser(request):
             
     request.user.profile.queue_new_feeds()
     request.user.profile.refresh_stale_feeds(exclude_new=True)
-
+    
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, 'reload:feeds')
+    
     logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()

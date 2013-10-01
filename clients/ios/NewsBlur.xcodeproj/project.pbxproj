@@ -426,6 +426,8 @@
 		FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */; };
 		FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */; };
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
+		FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AA17E280BD008AF4B0 /* ftux_tree.png */; };
+		FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */ = {isa = PBXBuildFile; fileRef = FFE816AC17E29D71008AF4B0 /* big_world_white.png */; };
 		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
 		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
 		FFF1E4B9177504CA00BF59D3 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1E49B177504CA00BF59D3 /* IASKAppSettingsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1029,6 +1031,8 @@
 		FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailMenuViewController.xib; sourceTree = "<group>"; };
 		FFE5322D144C8AC300ACFDE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
+		FFE816AA17E280BD008AF4B0 /* ftux_tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ftux_tree.png; sourceTree = "<group>"; };
+		FFE816AC17E29D71008AF4B0 /* big_world_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world_white.png; sourceTree = "<group>"; };
 		FFECD017172B105800D45A62 /* UIActivitySafari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UIActivitySafari.png; sourceTree = "<group>"; };
 		FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UIActivitySafari@2x.png"; sourceTree = "<group>"; };
 		FFF1E49A177504CA00BF59D3 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
@@ -1330,6 +1334,8 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFE816AC17E29D71008AF4B0 /* big_world_white.png */,
+				FFE816AA17E280BD008AF4B0 /* ftux_tree.png */,
 				FF855B541794A53A0098D48A /* checkmark.png */,
 				FF855B551794A53A0098D48A /* checkmark@2x.png */,
 				FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */,
@@ -2119,7 +2125,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = NewsBlur;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "NewsBlur" */;
@@ -2449,6 +2455,8 @@
 				FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */,
 				FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */,
 				FF5D401C179A03E700349659 /* traverse_previous_off@2x.png in Resources */,
+				FFE816AB17E280BD008AF4B0 /* ftux_tree.png in Resources */,
+				FFE816AD17E29D71008AF4B0 /* big_world_white.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2637,11 +2645,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2664,8 +2671,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0156932-124B-4F8E-8B93-EE6598D778F0";
+				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2676,11 +2683,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc. (HR7P97SD72)";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2700,8 +2706,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0156932-124B-4F8E-8B93-EE6598D778F0";
+				PROVISIONING_PROFILE = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BF7FE540-5E58-4C3F-88D5-AD73981C42C0";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = armv7;
@@ -2711,34 +2717,33 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0156932-124B-4F8E-8B93-EE6598D778F0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
-				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = armv7;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -2746,11 +2751,11 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0156932-124B-4F8E-8B93-EE6598D778F0";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
-				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = armv7;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};

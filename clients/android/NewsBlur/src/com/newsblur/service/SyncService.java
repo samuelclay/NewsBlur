@@ -50,7 +50,6 @@ public class SyncService extends IntentService {
         STATUS_RUNNING,
         STATUS_FINISHED,
         STATUS_NO_MORE_UPDATES,
-        STATUS_FINISHED_CLOSE,
         NOT_RUNNING,
         STATUS_PARTIAL_PROGRESS,
     };
@@ -175,7 +174,7 @@ public class SyncService extends IntentService {
             Log.d( this.getClass().getName(), "Sync Intent complete");
 
 		} catch (Exception e) {
-			Log.e(this.getClass().getName(), "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
+			Log.e(this.getClass().getName(), "Couldn't synchronise with NewsBlur servers: " + e.getMessage(), e.getCause());
 			e.printStackTrace();
 		} finally {
              if (receiver != null) {

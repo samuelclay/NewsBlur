@@ -98,10 +98,6 @@ public class SocialFeedItemsList extends ItemsList {
 		}.execute(userId);
 	}
 
-	@Override
-	public void closeAfterUpdate() { }
-
-
     @Override
     protected StoryOrder getStoryOrder() {
         return PrefsUtils.getStoryOrderForFeed(this, userId);

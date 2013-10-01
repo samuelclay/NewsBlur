@@ -245,7 +245,6 @@
         NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
     }
     
-    [self refreshPages];
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
@@ -253,7 +252,9 @@
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];
-        previousPage.view.hidden = YES;
+        if (currentPage.pageIndex == 0) {
+            previousPage.view.hidden = YES;
+        }
     }
 }
 
@@ -521,7 +522,10 @@
     frame.origin.y = 0;
 
     self.scrollingToPage = pageIndex;
-
+    [self.currentPage hideNoStoryMessage];
+    [self.nextPage hideNoStoryMessage];
+    [self.previousPage hideNoStoryMessage];
+    
     // Check if already on the selected page
     if (self.scrollView.contentOffset.x == frame.origin.x) {
         [self applyNewIndex:pageIndex pageController:currentPage];
@@ -532,6 +536,8 @@
             [self setStoryFromScroll];
         }
     }
+    
+    [self markStoryAsRead];
 }
 
 - (void)setStoryFromScroll {
@@ -543,7 +549,7 @@
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     
-    if (!force && currentPage.pageIndex > 0 &&
+    if (!force && currentPage.pageIndex >= 0 &&
         currentPage.pageIndex == nearestNumber &&
         currentPage.pageIndex != self.scrollingToPage) {
 //        NSLog(@"Skipping setStoryFromScroll: currentPage is %d (%d, %d)", currentPage.pageIndex, nearestNumber, self.scrollingToPage);
@@ -582,6 +588,7 @@
         int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
         appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
+        [self markStoryAsRead];
     }
 }
 
@@ -595,7 +602,6 @@
 }
 
 - (void)updatePageWithActiveStory:(int)location {
-    [self markStoryAsRead];
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     self.bottomPlaceholderToolbar.hidden = YES;

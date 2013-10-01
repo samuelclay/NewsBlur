@@ -25,6 +25,7 @@
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
+@synthesize activeCommentId;
 @synthesize currentType;
 @synthesize storyTitle;
 
@@ -267,7 +268,12 @@
         appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
-        self.commentField.text = @"";
+        // Don't bother to reset comment field for replies while on the same story.
+        // It'll get cleared out on a new story and when posting a reply.
+        if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId]) {
+            self.activeCommentId = userId;
+            self.commentField.text = @"";
+        }
     } else if ([type isEqualToString: @"edit-share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
@@ -403,7 +409,7 @@
     [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
-    [appDelegate hideShareView:YES];
+    [appDelegate hideShareView:NO];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -465,7 +471,6 @@
     [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
-
 }
 
 

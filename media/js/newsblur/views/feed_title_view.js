@@ -8,17 +8,19 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     flags: {},
     
     events: {
-        "dblclick .feed_counts"             : "mark_feed_as_read",
-        "dblclick"                          : "open_feed_link",
-        "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
-        "click .NB-feedbar-train-feed"      : "open_trainer",
-        "click .NB-feedbar-statistics"      : "open_statistics",
-        "click .NB-feedlist-manage-icon"    : "show_manage_menu",
-        "click .NB-feedbar-options"         : "open_options_popover",
-        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
-        "click"                             : "open",
-        "mouseenter"                        : "add_hover_inverse",
-        "mouseleave"                        : "remove_hover_inverse"
+        "dblclick .feed_counts"                     : "mark_feed_as_read",
+        "dblclick"                                  : "open_feed_link",
+        "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
+        "click .NB-feedbar-mark-feed-read-time"     : "mark_feed_as_read_days",
+        "click .NB-feedbar-mark-feed-read-expand"   : "expand_mark_read",
+        "click .NB-feedbar-train-feed"              : "open_trainer",
+        "click .NB-feedbar-statistics"              : "open_statistics",
+        "click .NB-feedlist-manage-icon"            : "show_manage_menu",
+        "click .NB-feedbar-options"                 : "open_options_popover",
+        "click .NB-story-title-indicator"           : "show_hidden_story_titles",
+        "click"                                     : "open",
+        "mouseenter"                                : "add_hover_inverse",
+        "mouseleave"                                : "remove_hover_inverse"
     },
     
     initialize: function() {
@@ -65,14 +67,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
-          <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-          <span class="feed_title">\
-            <%= feed.get("feed_title") %>\
-            <% if (type == "story") { %>\
-                <div class="NB-feedbar-mark-feed-read"></div>\
-            <% } %>\
-          </span>\
           <% if (type == "story") { %>\
+              <div class="NB-search-container"></div>\
               <div class="NB-feedbar-options-container">\
                   <span class="NB-feedbar-options">\
                       <div class="NB-icon"></div>\
@@ -81,12 +77,23 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
                   </span>\
               </div>\
-              <div class="NB-search-container"></div>\
+              <div class="NB-feedbar-mark-feed-read-container">\
+                   <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
+                   <div class="NB-feedbar-mark-feed-read-expand"></div>\
+              </div>\
               <div class="NB-story-title-indicator">\
                   <div class="NB-story-title-indicator-count"></div>\
                   <span class="NB-story-title-indicator-text">show hidden stories</span>\
               </div>\
           <% } %>\
+          <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+          <span class="feed_title">\
+            <%= feed.get("feed_title") %>\
+          </span>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
           <div class="NB-feedlist-manage-icon"></div>\
@@ -277,7 +284,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         return false;
     },
     
-    mark_feed_as_read: function(e) {
+    mark_feed_as_read: function(e, days) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -286,11 +293,49 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         _.delay(_.bind(function() {
             this.flags.double_click = false;
         }, this), 500);
-        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
-        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id, days);
+        this.$('.NB-feedbar-mark-feed-read-container').fadeOut(400);
         if (e) {
             return false;
         }
+    },
+    
+    mark_feed_as_read_days: function(e) {
+        var days = parseInt($(e.target).data('days'), 10);
+        this.mark_feed_as_read(e, days);
+    },
+    
+    expand_mark_read: function() {
+        var $container = this.$(".NB-feedbar-mark-feed-read-container");
+        var $markread = this.$(".NB-feedbar-mark-feed-read");
+        var $hidden = this.$(".NB-story-title-indicator");
+        var $expand = this.$(".NB-feedbar-mark-feed-read-expand");
+        var $times = this.$(".NB-feedbar-mark-feed-read-time");
+        var times_count = $times.length;
+        
+        $hidden.hide();
+        $markread.css('z-index', times_count+1);
+        $container.css('margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
+        $expand.animate({
+            right: 0,
+            opacity: 0
+        }, {
+            queue: false,
+            easing: 'easeInQuint',
+            duration: 180,
+            complete: function() {
+                $times.each(function(i) {
+                    $(this).css('z-index', times_count - i);
+                    $(this).animate({
+                        right: (32 * (i + 1)) + 6
+                    }, {
+                        queue: false,
+                        easing: 'easeOutBack',
+                        duration: 280 + 100 * (Math.pow(i, 0.5))
+                    });
+                });
+            }
+        });
     },
     
     show_manage_menu_rightclick: function(e) {

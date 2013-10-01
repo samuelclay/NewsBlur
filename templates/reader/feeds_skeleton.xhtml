@@ -155,7 +155,26 @@
 
     <div class="right-pane">
 
-        <div id="story_taskbar" class="NB-taskbar-container content-north">
+        <div class="NB-feedbar content-north">
+            
+            <ul class="segmented-control NB-taskbar NB-taskbar-nav">
+                <li class="NB-taskbar-button NB-task-story-previous">
+                    <div class="NB-task-image"></div>
+                </li>
+                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
+                    <div class="NB-task-image"></div>
+                    <span class="NB-task-title">Next Unread</span>
+                </li>
+                <li class="NB-taskbar-button NB-task-story-next">
+                    <div class="NB-task-image"></div>
+                </li>
+            </ul>
+            
+            <div class="NB-story-titles-header"></div>
+            
+        </div>
+
+        <div id="story_taskbar" class="NB-taskbar-container content-south">
             <ul class="segmented-control NB-taskbar NB-taskbar-view">
                 <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="Original">
                     <div class="NB-task-image"></div>
@@ -179,19 +198,6 @@
                     <div class="NB-task-image"></div>
                     <span class="NB-task-title">Story</span>
                     <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
-                </li>
-            </ul>
-            
-            <ul class="segmented-control NB-taskbar NB-taskbar-nav">
-                <li class="NB-taskbar-button NB-task-story-previous">
-                    <div class="NB-task-image"></div>
-                </li>
-                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Next Unread</span>
-                </li>
-                <li class="NB-taskbar-button NB-task-story-next">
-                    <div class="NB-task-image"></div>
                 </li>
             </ul>
             
@@ -220,9 +226,8 @@
         </div>
 
         <div class="content-pane">
-            
+
             <div id="story_titles" class="right-north">
-                <div class="NB-story-titles-header NB-feedbar"></div>
                 <div class="NB-story-titles"></div>
             </div>
         

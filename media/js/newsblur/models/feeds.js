@@ -47,8 +47,11 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     delete_feed: function(options) {
         options = options || {};
         var view = options.view || this.get_view();
-        
-        NEWSBLUR.assets.delete_feed(this.id, view.options.folder_title);
+
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        NEWSBLUR.assets.delete_feed(this.id, view.options.folder_title, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+        });
         view.delete_feed();
     },
     
@@ -58,8 +61,10 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         var in_folder = view.options.folder_title;
         
         if (in_folder == to_folder) return false;
-        
+
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
         NEWSBLUR.assets.move_feed_to_folder(this.id, in_folder, to_folder, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
             _.delay(function() {
                 NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
                     'duration': 100, 

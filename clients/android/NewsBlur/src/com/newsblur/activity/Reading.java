@@ -63,6 +63,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
+    protected boolean stopLoading = false;
 	private Set<Story> storiesToMarkAsRead;
 
     // subclasses may set this to a nonzero value to enable the unread count overlay
@@ -111,6 +112,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	}
 
+    /**
+     * Sets up the local pager widget.  Should be called from onCreate() after both the cursor and
+     * adapter are created.
+     */
 	protected void setupPager() {
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
@@ -125,7 +130,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
-		readingAdapter.setCurrentItem(passedPosition);
         this.enableOverlays();
 	}
 
@@ -252,16 +256,25 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		setSupportProgressBarIndeterminateVisibility(false);
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
         this.enableOverlays();
+        checkStoryCount(pager.getCurrentItem());
 	}
 
 	@Override
 	public void updatePartialSync() {
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
         this.enableOverlays();
+        checkStoryCount(pager.getCurrentItem());
+	}
+
+    /**
+     * Lets us know that there are no more pages of stories to load, ever, and will cause
+     * us to stop requesting them.
+     */
+	@Override
+	public void setNothingMoreToUpdate() {
+		this.stopLoading = true;
 	}
 
 	public abstract void checkStoryCount(int position);
@@ -271,7 +284,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		setSupportProgressBarIndeterminateVisibility(syncRunning);
 	}
 
-	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
 
     @Override

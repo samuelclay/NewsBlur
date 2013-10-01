@@ -22,7 +22,6 @@ public class SocialFeedReading extends Reading {
 	private String username;
 	private SocialFeed socialFeed;
 	private boolean requestedPage;
-	private boolean stopLoading = false;
 	private int currentPage;
 
 	@Override
@@ -51,11 +50,6 @@ public class SocialFeedReading extends Reading {
 	}
 
 	@Override
-	public void triggerRefresh() {
-		triggerRefresh(0);
-	}
-
-	@Override
 	public void triggerRefresh(int page) {
 		setSupportProgressBarIndeterminateVisibility(true);
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
@@ -77,13 +71,5 @@ public class SocialFeedReading extends Reading {
 			triggerRefresh(currentPage);
 		}
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() {
-		stopLoading = true;
-	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
 }

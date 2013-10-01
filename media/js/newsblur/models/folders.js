@@ -75,7 +75,9 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         var folder_title = this.get('folder_title');
         if (in_folder == to_folder) return false;
         
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
         NEWSBLUR.assets.move_folder_to_folder(folder_title, in_folder, to_folder, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
             _.delay(function() {
                 NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
                     'duration': 100, 
@@ -100,7 +102,11 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         var folder_title = this.get('folder_title');
         var in_folder = this.collection.options.title;
         var feed_ids_in_folder = this.feed_ids_in_folder();
-        NEWSBLUR.assets.delete_folder(folder_title, in_folder, feed_ids_in_folder);
+        
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        NEWSBLUR.assets.delete_folder(folder_title, in_folder, feed_ids_in_folder, function() {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+        });
         this.trigger('delete');
     },
     
@@ -112,6 +118,14 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         }
         
         return this.folders.has_unreads(options);
+    },
+    
+    view_setting: function(setting) {
+        if (this.is_folder()) {
+            return NEWSBLUR.assets.view_setting('river:' + this.get('folder_title'), setting);
+        } else {
+            return NEWSBLUR.assets.view_setting(this.id, setting);
+        }
     }
     
 });

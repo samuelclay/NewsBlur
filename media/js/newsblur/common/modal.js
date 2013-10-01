@@ -34,7 +34,7 @@ NEWSBLUR.Modal.prototype = {
                         }
                     });
                     setTimeout(function() {
-                        $(window).resize();
+                        // $(window).resize();
                         self.flags.modal_loaded = true;
                     });
                 });
@@ -59,7 +59,7 @@ NEWSBLUR.Modal.prototype = {
     },
     
     resize: function() {
-      $(window).trigger('resize.simplemodal');
+      // $(window).trigger('resize.simplemodal');
     },
     
     close: function(callback) {

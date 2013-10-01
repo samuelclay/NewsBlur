@@ -173,12 +173,15 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     int activitiesCount = [appDelegate.userActivitiesArray count];
+    int minimumHeight;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
+    } else {
+        minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
+    }
+    
     if (indexPath.row >= activitiesCount) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return MINIMUM_ACTIVITY_HEIGHT_IPAD;
-        } else {
-            return MINIMUM_ACTIVITY_HEIGHT_IPHONE;
-        }
+        return minimumHeight;
     }
     
     id activityCell;
@@ -195,9 +198,7 @@
                                             objectAtIndex:(indexPath.row)] 
                            withUserProfile:userProfile
                                  withWidth:self.frame.size.width - 20];
-    
     return height;
-
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

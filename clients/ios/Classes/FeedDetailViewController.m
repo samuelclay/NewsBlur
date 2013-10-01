@@ -116,7 +116,6 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self checkScroll];
-    [appDelegate.storyPageControl refreshPages];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -202,6 +201,7 @@
     }
     
     [self.notifier setNeedsLayout];
+    [appDelegate hideShareView:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

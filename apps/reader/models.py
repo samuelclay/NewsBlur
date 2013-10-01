@@ -104,7 +104,7 @@ class UserSubscription(models.Model):
         
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
-                     include_timestamps=False, group_by_feed=True):
+                     include_timestamps=False, group_by_feed=True, cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
@@ -117,8 +117,9 @@ class UserSubscription(models.Model):
 
         read_dates = dict((us.feed_id, int(us.mark_read_date.strftime('%s'))) for us in usersubs)
         current_time = int(time.time() + 60*60*24)
-        unread_interval = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
-        unread_timestamp = int(time.mktime(unread_interval.timetuple()))-1000
+        if not cutoff_date:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
+        unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
         feed_counter = 0
 
         for feed_id_group in chunks(feed_ids, 20):
@@ -165,7 +166,8 @@ class UserSubscription(models.Model):
 
         return story_hashes
         
-    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False, hashes_only=False):
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False,
+                    hashes_only=False, cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         ignore_user_stories = False
         
@@ -191,14 +193,15 @@ class UserSubscription(models.Model):
             r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
+        if not cutoff_date:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             if read_filter == 'unread':
                 min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
-                now = datetime.datetime.now()
-                unread_cutoff = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
-                min_score = int(time.mktime(unread_cutoff.timetuple()))-1000
+                min_score = int(time.mktime(cutoff_date.timetuple()))-1000
             max_score = current_time
         else:
             byscorefunc = r.zrevrangebyscore
@@ -238,7 +241,7 @@ class UserSubscription(models.Model):
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
-                     order='newest', read_filter='all', usersubs=None):
+                     order='newest', read_filter='all', usersubs=None, cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
@@ -269,7 +272,8 @@ class UserSubscription(models.Model):
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
-                                        group_by_feed=False, usersubs=usersubs)
+                                        group_by_feed=False, usersubs=usersubs,
+                                        cutoff_date=cutoff_date)
         if not story_hashes:
             return [], []
         
@@ -283,7 +287,8 @@ class UserSubscription(models.Model):
             unread_story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                                    read_filter="unread", order=order, 
                                                    include_timestamps=True,
-                                                   group_by_feed=False)
+                                                   group_by_feed=False,
+                                                   cutoff_date=cutoff_date)
             if unread_story_hashes:
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
                     r.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
@@ -360,14 +365,12 @@ class UserSubscription(models.Model):
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
         for i, sub in enumerate(user_subs):
             # Count unreads if subscription is stale.
             if (force or 
                 sub.needs_unread_recalc or 
-                sub.unread_count_updated < UNREAD_CUTOFF or 
-                sub.oldest_unread_story_date < UNREAD_CUTOFF):
+                sub.unread_count_updated < user.profile.unread_cutoff or 
+                sub.oldest_unread_story_date < user.profile.unread_cutoff):
                 sub = sub.calculate_feed_scores(silent=True, force=force)
             if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
 
@@ -404,31 +407,37 @@ class UserSubscription(models.Model):
         r.srem(read_stories_key, *stale_story_hashes)
         r.srem("RS:%s" % self.feed_id, *stale_story_hashes)
     
-    def mark_feed_read(self):
+    def mark_feed_read(self, cutoff_date=None):
         if (self.unread_count_negative == 0
             and self.unread_count_neutral == 0
             and self.unread_count_positive == 0
             and not self.needs_unread_recalc):
             return
         
-        now = datetime.datetime.utcnow()
-        
+        recount = True
         # Use the latest story to get last read time.
-        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
-        if latest_story and len(latest_story) >= 1:
-            latest_story_date = latest_story[0]['story_date']\
-                                + datetime.timedelta(seconds=1)
+        if cutoff_date:
+            cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story_date = now
+            latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+            if latest_story and len(latest_story) >= 1:
+                cutoff_date = (latest_story[0]['story_date']
+                               + datetime.timedelta(seconds=1))
+            else:
+                cutoff_date = datetime.datetime.utcnow()
+                recount = False
         
-        self.last_read_date = latest_story_date
-        self.mark_read_date = latest_story_date
-        self.unread_count_negative = 0
-        self.unread_count_positive = 0
-        self.unread_count_neutral = 0
-        self.unread_count_updated = now
-        self.oldest_unread_story_date = now
-        self.needs_unread_recalc = False
+        self.last_read_date = cutoff_date
+        self.mark_read_date = cutoff_date
+        self.oldest_unread_story_date = cutoff_date
+        if not recount:
+            self.unread_count_negative = 0
+            self.unread_count_positive = 0
+            self.unread_count_neutral = 0
+            self.unread_count_updated = datetime.datetime.utcnow()
+            self.needs_unread_recalc = False
+        else:
+            self.needs_unread_recalc = True
         
         self.save()
         
@@ -457,10 +466,9 @@ class UserSubscription(models.Model):
     def calculate_feed_scores(self, silent=False, stories=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
-        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         oldest_unread_story_date = now
-
-        if self.user.profile.last_seen_on < UNREAD_CUTOFF and not force:
+        
+        if self.user.profile.last_seen_on < self.user.profile.unread_cutoff and not force:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return self
@@ -478,7 +486,7 @@ class UserSubscription(models.Model):
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = UNREAD_CUTOFF
+        date_delta = self.user.profile.unread_cutoff
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
@@ -488,7 +496,8 @@ class UserSubscription(models.Model):
             if not stories:
                 stories = cache.get('S:%s' % self.feed_id)
             
-            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True)
+            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                                   cutoff_date=self.user.profile.unread_cutoff)
         
             if not stories:
                 stories_db = MStory.objects(story_hash__in=unread_story_hashes)
@@ -545,7 +554,9 @@ class UserSubscription(models.Model):
                     else:
                         feed_scores['neutral'] += 1
         else:
-            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True, withscores=True)
+            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
+                                                   withscores=True,
+                                                   cutoff_date=self.user.profile.unread_cutoff)
             feed_scores['neutral'] = len(unread_story_hashes)
             if feed_scores['neutral']:
                 oldest_unread_story_date = datetime.datetime.fromtimestamp(unread_story_hashes[-1][1])
@@ -704,8 +715,8 @@ class RUserStory:
         def redis_commands(key):
             r.sadd(key, story_hash)
             # r2.sadd(key, story_hash)
-            r.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-            # r2.expire(key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+            # r2.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
 
         all_read_stories_key = 'RS:%s' % (user_id)
         redis_commands(all_read_stories_key)
@@ -760,14 +771,14 @@ class RUserStory:
             read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
             # p2.sadd(read_feed_key, new_story_hash)
-            p.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-            # p2.expire(read_feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            p.expire(read_feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+            # p2.expire(read_feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
 
             read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
             # p2.sadd(read_user_key, new_story_hash)
-            p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-            # p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            p.expire(read_user_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+            # p2.expire(read_user_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
         
         p.execute()
         # p2.execute()
@@ -781,7 +792,7 @@ class RUserStory:
         # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
         # p2 = r2.pipeline()
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         
         usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
@@ -791,14 +802,14 @@ class RUserStory:
             if read:
                 p.sadd(rs_key, new_hash)
                 # p2.sadd(rs_key, new_hash)
-                p.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-                # p2.expire(rs_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p.expire(rs_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+                # p2.expire(rs_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
                 
                 read_user_key = "RS:%s" % sub.user.pk
                 p.sadd(read_user_key, new_hash)
                 # p2.sadd(read_user_key, new_hash)
-                p.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-                # p2.expire(read_user_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+                p.expire(read_user_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+                # p2.expire(read_user_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
         
         p.execute()
         # p2.execute()
