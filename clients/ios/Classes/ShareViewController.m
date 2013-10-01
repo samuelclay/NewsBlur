@@ -338,9 +338,10 @@
     }
     
     if (appDelegate.isSocialRiverView) {
-        if ([appDelegate.activeStory objectForKey:@"friend_user_ids"] != nil) {
-            NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [[appDelegate.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0]];
-            [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+        if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
+            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
+        } else if ([[appDelegate.activeStory objectForKey:@"public_user_ids"] count] > 0) {
+            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"public_user_ids"][0]] forKey:@"source_user_id"];
         }
     } else {
         if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
