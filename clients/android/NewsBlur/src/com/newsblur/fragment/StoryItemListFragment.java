@@ -48,6 +48,9 @@ public abstract class StoryItemListFragment extends ItemListFragment implements 
             }
             FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
             refreshStories();
+        } else if (item.getItemId() == R.id.menu_shared) {
+            Story story = adapter.getStory(menuInfo.position);
+            FeedUtils.shareStory(story, getActivity());
         }
         return super.onContextItemSelected(item);
     }

@@ -234,5 +234,14 @@ public class FeedUtils {
         }
         return count;
     }
-        
+    
+    public static void shareStory(Story story, Context context) {
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
+        final String shareString = context.getResources().getString(R.string.share);
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
+        context.startActivity(Intent.createChooser(intent, "Share using"));
+    }
 }
