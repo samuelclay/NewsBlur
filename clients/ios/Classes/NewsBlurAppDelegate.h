@@ -330,7 +330,6 @@
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
-- (void)markActiveStorySaved:(BOOL)saved;
 
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
@@ -338,6 +337,8 @@
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
+
+- (void)markStory:story asSaved:(BOOL)saved;
 
 - (void)calculateStoryLocations;
 + (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
