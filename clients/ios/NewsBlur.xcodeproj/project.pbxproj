@@ -96,7 +96,6 @@
 		43A4C45215B00A26008787B5 /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C3F715B00A26008787B5 /* Background.png */; };
 		43A4C45315B00A26008787B5 /* Background@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C3F815B00A26008787B5 /* Background@2X.png */; };
 		43A4C46615B00A26008787B5 /* disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C40B15B00A26008787B5 /* disclosure.png */; };
-		43A4C46B15B00A26008787B5 /* feeds_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C41015B00A26008787B5 /* feeds_background.png */; };
 		43A4C46C15B00A26008787B5 /* fleuron.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C41115B00A26008787B5 /* fleuron.png */; };
 		43A4C47E15B00A26008787B5 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42315B00A26008787B5 /* logo_512.png */; };
 		43A4C47F15B00A26008787B5 /* logo_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4C42415B00A26008787B5 /* logo_background.png */; };
@@ -557,7 +556,6 @@
 		43A4C3F715B00A26008787B5 /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Background.png; sourceTree = "<group>"; };
 		43A4C3F815B00A26008787B5 /* Background@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Background@2X.png"; sourceTree = "<group>"; };
 		43A4C40B15B00A26008787B5 /* disclosure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = disclosure.png; sourceTree = "<group>"; };
-		43A4C41015B00A26008787B5 /* feeds_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = feeds_background.png; sourceTree = "<group>"; };
 		43A4C41115B00A26008787B5 /* fleuron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fleuron.png; sourceTree = "<group>"; };
 		43A4C42315B00A26008787B5 /* logo_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_512.png; sourceTree = "<group>"; };
 		43A4C42415B00A26008787B5 /* logo_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_background.png; sourceTree = "<group>"; };
@@ -1451,7 +1449,6 @@
 				43A4C3F715B00A26008787B5 /* Background.png */,
 				43A4C3F815B00A26008787B5 /* Background@2X.png */,
 				43A4C40B15B00A26008787B5 /* disclosure.png */,
-				43A4C41015B00A26008787B5 /* feeds_background.png */,
 				43A4C41115B00A26008787B5 /* fleuron.png */,
 				FF546DF8160298E500948020 /* fleuron@2x.png */,
 				43B6A26F15B6952F00CEA2E6 /* group.png */,
@@ -2165,7 +2162,6 @@
 				43A4C45215B00A26008787B5 /* Background.png in Resources */,
 				43A4C45315B00A26008787B5 /* Background@2X.png in Resources */,
 				43A4C46615B00A26008787B5 /* disclosure.png in Resources */,
-				43A4C46B15B00A26008787B5 /* feeds_background.png in Resources */,
 				43A4C46C15B00A26008787B5 /* fleuron.png in Resources */,
 				43A4C47E15B00A26008787B5 /* logo_512.png in Resources */,
 				43A4C47F15B00A26008787B5 /* logo_background.png in Resources */,

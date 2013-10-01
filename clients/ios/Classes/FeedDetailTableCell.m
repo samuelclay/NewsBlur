@@ -151,7 +151,7 @@ static UIFont *indicatorFont = nil;
     }
     
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     
     if (cell.isRiverOrSocial) {
@@ -176,7 +176,7 @@ static UIFont *indicatorFont = nil;
     // story title
     CGSize theSize = [cell.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, 30.0)
-                      options:nil
+                      options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
@@ -196,10 +196,12 @@ static UIFont *indicatorFont = nil;
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;
     }
-    [cell.storyTitle drawInRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
-                 withAttributes:@{NSFontAttributeName: font,
-                                  NSForegroundColorAttributeName: textColor,
-                                  NSParagraphStyleAttributeName: paragraphStyle}];
+    [cell.storyTitle drawWithRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
+                          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                       attributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}
+                          context:nil];
     
     int storyAuthorDateY = 41 + adjustForSocial;
     if (cell.isShort) {
