@@ -1078,7 +1078,7 @@ class MSocialSubscription(mongo.Document):
             # Use the latest story to get last read time.
             latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
                                                        shared_date__gte=user_profile.unread_cutoff
-                                  ).order_by('shared_date').only('shared_date').first()
+                                  ).order_by('-shared_date').only('shared_date').first()
             if latest_shared_story:
                 cutoff_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
             else:

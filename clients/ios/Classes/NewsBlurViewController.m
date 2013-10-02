@@ -1103,16 +1103,26 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
-    if (state == MCSwipeTableViewCellState1) {
-        // Train
+    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    NSString *feedId = [NSString stringWithFormat:@"%@",
+                        [[appDelegate.dictFolders objectForKey:folderName]
+                         objectAtIndex:indexPath.row]];
 
+    if (state == MCSwipeTableViewCellState1) {
+        if (indexPath.section == 1) {
+            // Profile
+            NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feedId];
+            appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
+            appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
+            [appDelegate showUserProfileModal:cell];
+        } else {
+            // Train
+            appDelegate.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
+            [appDelegate openTrainSiteWithFeedLoaded:NO];
+        }
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
-        NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
-        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-        NSString *feedId = [NSString stringWithFormat:@"%@",
-                            [[appDelegate.dictFolders objectForKey:folderName]
-                             objectAtIndex:indexPath.row]];
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];

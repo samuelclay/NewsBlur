@@ -35,7 +35,6 @@ static UIFont *textFont = nil;
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         [self.contentView addSubview:cellContent];
-        [self setupGestures];
     }
 
     return self;
@@ -45,6 +44,7 @@ static UIFont *textFont = nil;
     ((FeedTableCellView *)cellContent).cell = self;
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
+    [self setupGestures];
 }
 
 - (void) setPositiveCount:(int)ps {
@@ -72,7 +72,7 @@ static UIFont *textFont = nil;
 - (void)setupGestures {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:@"train.png"
+    [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil

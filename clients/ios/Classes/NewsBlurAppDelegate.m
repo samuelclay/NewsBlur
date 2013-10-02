@@ -557,9 +557,14 @@
 }
 
 - (void)openTrainSite {
+    [self openTrainSiteWithFeedLoaded:YES];
+}
+
+- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded {
     UINavigationController *navController = self.navigationController;
     trainerViewController.feedTrainer = YES;
     trainerViewController.storyTrainer = NO;
+    trainerViewController.feedLoaded = feedLoaded;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
@@ -1063,12 +1068,14 @@
 
 - (NSInteger)locationOfNextUnreadStory {
     NSInteger activeLocation = [self locationOfActiveStory];
-    NSInteger readStatus = -1;
+
     for (NSInteger i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
         NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
         NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-        readStatus = [[story objectForKey:@"read_status"] intValue];
-        if (readStatus == 0) {
+        BOOL unread = [[story objectForKey:@"read_status"] intValue] == 0 ||
+                      [[self.unreadStoryHashes
+                        objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+        if (unread) {
             return i;
         }
     }
@@ -1076,8 +1083,10 @@
         for (NSInteger i=activeLocation-1; i >= 0; i--) {
             NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
             NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-            readStatus = [[story objectForKey:@"read_status"] intValue];
-            if (readStatus == 0) {
+            BOOL unread = [[story objectForKey:@"read_status"] intValue] == 0 ||
+                          [[self.unreadStoryHashes
+                            objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+            if (unread) {
                 return i;
             }
         }

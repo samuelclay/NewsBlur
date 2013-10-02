@@ -422,7 +422,8 @@ class UserSubscription(models.Model):
         if cutoff_date:
             cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+            latest_story = MStory.objects(story_feed_id=self.feed.pk)\
+                           .order_by('-story_date').only('story_date').limit(1)
             if latest_story and len(latest_story) >= 1:
                 cutoff_date = (latest_story[0]['story_date']
                                + datetime.timedelta(seconds=1))

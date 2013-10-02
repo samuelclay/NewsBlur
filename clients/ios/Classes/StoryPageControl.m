@@ -692,10 +692,10 @@
     NSInteger unreadCount = [appDelegate unreadCount];
     if ((nextIndex == -1 && unreadCount > 0) ||
         nextIndex != -1) {
-        [buttonNext setTitle:@"NEXT" forState:UIControlStateNormal];
+        [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"] forState:UIControlStateNormal];
     } else {
-        [buttonNext setTitle:@"DONE" forState:UIControlStateNormal];
+        [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"] forState:UIControlStateNormal];
     }
     
