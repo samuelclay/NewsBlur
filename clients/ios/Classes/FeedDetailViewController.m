@@ -641,7 +641,7 @@
         for (id key in [newClassifiers allKeys]) {
             [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
-    } else {
+    } else if (newClassifiers) {
         [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedIdStr];
     }
     appDelegate.activePopularAuthors = [results objectForKey:@"feed_authors"];
@@ -1514,7 +1514,15 @@
 }
 
 - (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
+    NSString *responseString = [request responseString];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization
+                             JSONObjectWithData:responseData
+                             options:kNilOptions
+                             error:&error];
+    
+    if ([request responseStatusCode] != 200 || [[results objectForKey:@"code"] integerValue] < 0) {
         return [self failedMarkAsUnread:request];
     }
     
@@ -1523,7 +1531,8 @@
 
 - (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
     [self informError:@"Failed to unread story"];
-//    [appDelegate markStory:request.userInfo asRead:YES];
+    [appDelegate markStoryRead:[request.userInfo objectForKey:@"story_hash"]
+                        feedId:[request.userInfo objectForKey:@"story_feed_id"]];
     [self.storyTitlesTable reloadData];
 }
 

@@ -159,7 +159,7 @@ static UIFont *indicatorFont = nil;
     
     // story title
     CGSize theSize = [cell.storyTitle
-                      boundingRectWithSize:CGSizeMake(rect.size.width, 30.0)
+                      boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? 15.0 : 30.0)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
