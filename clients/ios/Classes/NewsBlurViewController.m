@@ -883,6 +883,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
     
+    [cell setNeedsDisplay];
+    
     return cell;
 }
 
