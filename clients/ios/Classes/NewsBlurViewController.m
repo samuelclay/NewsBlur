@@ -1119,7 +1119,7 @@ heightForHeaderInSection:(NSInteger)section {
         } else {
             // Train
             appDelegate.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
-            [appDelegate openTrainSiteWithFeedLoaded:NO];
+            [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
         }
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
