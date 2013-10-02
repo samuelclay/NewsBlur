@@ -359,6 +359,7 @@
             // Login
             usernameInput.frame = CGRectMake(20, 67, 280, 31); 
             usernameOrEmailLabel.alpha = 1.0;
+            usernameLabel.alpha = 0.0;
             
             passwordInput.frame = CGRectMake(20, 129, 280, 31);
             passwordLabel.frame = CGRectMake(21, 106, 212, 22);
@@ -377,6 +378,7 @@
             // Signup
             usernameInput.frame = CGRectMake(20, 67, 130, 31); 
             usernameOrEmailLabel.alpha = 0.0;
+            usernameLabel.alpha = 1.0;
             
             passwordInput.frame = CGRectMake(170, 67, 130, 31);
             passwordLabel.frame = CGRectMake(171, 44, 212, 22);
