@@ -557,10 +557,10 @@
 }
 
 - (void)openTrainSite {
-    [self openTrainSiteWithFeedLoaded:YES];
+    [self openTrainSiteWithFeedLoaded:YES from:self.feedDetailViewController.settingsBarButton];
 }
 
-- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded {
+- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {
     UINavigationController *navController = self.navigationController;
     trainerViewController.feedTrainer = YES;
     trainerViewController.storyTrainer = NO;
@@ -569,7 +569,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsBarButton];
+        [self.masterContainerViewController showTrainingPopover:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]

@@ -16,6 +16,7 @@
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
 #import "ActivityCell.h"
+#import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
@@ -206,10 +207,17 @@
         [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
         
-        [popoverController presentPopoverFromRect:cell.bounds 
-                                                inView:cell
-                              permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES];
+        [popoverController presentPopoverFromRect:cell.bounds
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
+    } else if ([sender class] == [FeedTableCell class]) {
+            FeedTableCell *cell = (FeedTableCell *)sender;
+            
+            [popoverController presentPopoverFromRect:cell.bounds
+                                               inView:cell
+                             permittedArrowDirections:UIPopoverArrowDirectionAny
+                                             animated:YES];
     } else if ([sender class] == [UIBarButtonItem class]) {
         [popoverController presentPopoverFromBarButtonItem:sender 
                                   permittedArrowDirections:UIPopoverArrowDirectionAny 
@@ -312,6 +320,12 @@
        [popoverController presentPopoverFromBarButtonItem:sender
                                  permittedArrowDirections:UIPopoverArrowDirectionAny
                                                  animated:NO];
+    } else if ([sender class] == [FeedTableCell class]) {
+        FeedTableCell *cell = (FeedTableCell *)sender;
+        [popoverController presentPopoverFromRect:cell.bounds
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
     } else {
        CGRect frame = [sender CGRectValue];
        [popoverController presentPopoverFromRect:frame
