@@ -27,6 +27,7 @@
     TrainerWebView *webView;
     IBOutlet UINavigationBar *navBar;
     
+    BOOL feedLoaded;
     BOOL feedTrainer;
     BOOL storyTrainer;
 }
@@ -37,6 +38,7 @@
 @property (nonatomic) IBOutlet UINavigationBar *navBar;
 @property (nonatomic, assign) BOOL feedTrainer;
 @property (nonatomic, assign) BOOL storyTrainer;
+@property (nonatomic, assign) BOOL feedLoaded;
 
 - (void)refresh;
 - (NSString *)makeTrainerHTML;

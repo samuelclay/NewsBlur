@@ -270,6 +270,7 @@
 
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded;
 - (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
