@@ -63,7 +63,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
-    protected boolean stopLoading = false;
+    private boolean noMoreApiPages;
+    protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
+    private int currentApiPage = 0;
 	private Set<Story> storiesToMarkAsRead;
 
     // subclasses may set this to a nonzero value to enable the unread count overlay
@@ -253,6 +255,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void updateAfterSync() {
+        this.requestedPage = false;
 		setSupportProgressBarIndeterminateVisibility(false);
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
@@ -274,10 +277,17 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
 	@Override
 	public void setNothingMoreToUpdate() {
-		this.stopLoading = true;
+		this.noMoreApiPages = true;
 	}
 
-	public abstract void checkStoryCount(int position);
+	private void checkStoryCount(int position) {
+        // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
+		if (((position + 1) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
+			currentApiPage += 1;
+			requestedPage = true;
+			triggerRefresh(currentApiPage);
+		}
+	}
 
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {

@@ -145,7 +145,7 @@ public class SyncService extends IntentService {
 
 			case STARRED_STORIES_UPDATE:
                 StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-                if (starredStories == null && starredStories.stories.length == 0) {
+                if (starredStories == null || starredStories.stories.length == 0) {
                     resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
                 }
 				break;
