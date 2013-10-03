@@ -128,6 +128,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                            <inset key="separatorInset" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <connections>
                                 <outlet property="dataSource" destination="-1" id="52"/>
                                 <outlet property="delegate" destination="-1" id="53"/>

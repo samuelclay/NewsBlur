@@ -22,7 +22,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" pagingEnabled="YES" bouncesZoom="NO" id="5">
+                <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" pagingEnabled="YES" delaysContentTouches="NO" bouncesZoom="NO" id="5">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="448"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -83,8 +83,8 @@
                             <rect key="frame" x="199.5" y="9" width="104" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
-                            <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                            <state key="normal" title="         NEXT" backgroundImage="traverse_next.png">
+                            <inset key="titleEdgeInsets" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="NEXT" backgroundImage="traverse_next.png">
                                 <color key="titleColor" red="0.58823531870000001" green="0.59607845540000004" blue="0.57254904510000004" alpha="1" colorSpace="deviceRGB"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
@@ -102,7 +102,7 @@
                             <rect key="frame" x="9" y="9.5" width="83" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
-                            <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="14" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="TEXT" backgroundImage="traverse_text.png">
                                 <color key="titleColor" red="0.58823531870000001" green="0.59607845540000004" blue="0.57254904510000004" alpha="1" colorSpace="deviceRGB"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
