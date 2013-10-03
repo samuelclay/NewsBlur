@@ -6,6 +6,7 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#import <AVFoundation/AVFoundation.h>
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
@@ -54,6 +55,10 @@
     [super viewDidLoad];
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback
+                        error:nil];
     
     self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
