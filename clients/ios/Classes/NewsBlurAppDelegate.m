@@ -557,7 +557,13 @@
 }
 
 - (void)openTrainSite {
-    [self openTrainSiteWithFeedLoaded:YES from:self.feedDetailViewController.settingsBarButton];
+    // Needs a delay because the menu will close the popover.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+                       [self
+                        openTrainSiteWithFeedLoaded:YES
+                        from:self.feedDetailViewController.settingsBarButton];
+                   });
 }
 
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {

@@ -80,7 +80,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 </activityIndicatorView>
                 <pickerView contentMode="scaleToFill" id="8">
-                    <rect key="frame" x="0.0" y="264" width="320" height="216"/>
+                    <rect key="frame" x="0.0" y="269" width="320" height="216"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="37"/>
