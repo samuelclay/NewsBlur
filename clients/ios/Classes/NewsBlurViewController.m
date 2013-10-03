@@ -144,9 +144,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
     } 
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self setUserAvatarLayout:orientation];
-    
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -232,26 +229,10 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self setUserAvatarLayout:toInterfaceOrientation];
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                         duration:(NSTimeInterval)duration {
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
     [self refreshHeaderCounts:toInterfaceOrientation];
-}
-
-- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            NBBarButtonItem *avatar = (NBBarButtonItem *)self.navigationItem.leftBarButtonItem.customView;
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(32, 32);
-            avatar.frame = buttonFrame;
-        } else {
-            NBBarButtonItem *avatar = (NBBarButtonItem *)self.navigationItem.leftBarButtonItem.customView;
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(28, 28);
-            avatar.frame = buttonFrame;
-        }
-    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -259,22 +240,13 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     [self.notifier setNeedsLayout];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 - (void)viewDidUnload {
     [self setToolbarLeftMargin:nil];
     [self setNoFocusMessage:nil];
     [self setInnerView:nil];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
-- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.feedViewToolbar.frame = CGRectMake(-10.0f,
@@ -297,7 +269,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
                                                 self.intelligenceControl.frame.size.width,
                                                 self.feedViewToolbar.frame.size.height -
                                                 height);
-    [self refreshHeaderCounts];
+    [self refreshHeaderCounts:interfaceOrientation];
 }
 
 
@@ -421,7 +393,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
-//    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
@@ -432,40 +403,45 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
         [userPreferences synchronize];
     }
-
-//    // set title only if on currestont controller
-//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
-//        [appDelegate setTitle:[results objectForKey:@"user"]];
-//    }
     
+    // Bottom toolbar
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
-    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    addButton.bounds = CGRectMake(0, 0, 34, 44);
-    [addButton setImage:addImage forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
-    [addBarButton setCustomView:addButton];
-
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    settingsButton.onRightSide = YES;
-    settingsButton.bounds = CGRectMake(0, 0, 34, 44);
-    [settingsButton setImage:settingsImage forState:UIControlStateNormal];
-    [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    [settingsBarButton setCustomView:settingsButton];
+    addBarButton.enabled = YES;
+    settingsBarButton.enabled = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [addBarButton setImage:addImage];
+        [settingsBarButton setImage:settingsImage];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        [addButton setImage:addImage forState:UIControlStateNormal];
+        [addButton sizeToFit];
+        [addButton addTarget:self action:@selector(tapAddSite:)
+            forControlEvents:UIControlEventTouchUpInside];
+        [addBarButton setCustomView:addButton];
+
+        NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        settingsButton.onRightSide = YES;
+        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+        [settingsButton sizeToFit];
+        [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+                 forControlEvents:UIControlEventTouchUpInside];
+        [settingsBarButton setCustomView:settingsButton];
+    }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
-                                           initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                           target:nil action:nil];
-        spacer.width = 12;
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         [activityButton setImage:activityImage forState:UIControlStateNormal];
         [activityButton sizeToFit];
-        [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
+        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
+        [activityButton setFrame:CGRectInset(activityButton.frame, -6, -6)];
+        [activityButton addTarget:self
+                           action:@selector(showInteractionsPopover:)
+                 forControlEvents:UIControlEventTouchUpInside];
         activitiesButton = [[UIBarButtonItem alloc]
                             initWithCustomView:activityButton];
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
+        self.navigationItem.rightBarButtonItem = activitiesButton;
     }
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -1628,24 +1604,24 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation {
     if (!appDelegate.activeUsername) return;
-    
-    UIView *userInfoView = [[UIView alloc]
-                            initWithFrame:CGRectMake(0, 0,
-                                                     self.view.bounds.size.width,
-                                                     self.navigationController.toolbar.frame.size.height)];
-    int yOffset = 6;
+
+    BOOL isShort = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(orientation)) {
-        yOffset = 0;
+        isShort = YES;
     }
-    
+
+    int yOffset = isShort ? 0 : 6;
+    UIView *userInfoView = [[UIView alloc]
+                            initWithFrame:CGRectMake(0, 0,
+                                                     self.navigationController.toolbar.frame.size.width,
+                                                     self.navigationController.toolbar.frame.size.height)];
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"photo_url"]]];
     NBBarButtonItem *userAvatarButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    userAvatarButton.bounds = CGRectMake(-10, yOffset+1, 30, 30);
-    userAvatarButton.frame = CGRectMake(-10, yOffset+1, 30, 30);
+    userAvatarButton.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
@@ -1657,8 +1633,7 @@ heightForHeaderInSection:(NSInteger)section {
         [userAvatarButton setImage:image forState:UIControlStateNormal];
     } failure:nil];
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
-    [self setUserAvatarLayout:orientation];
-    
+
     [userInfoView addSubview:userAvatarButton];
     
     int xOffset = CGRectGetMaxX(userAvatarButton.frame) + 6;
@@ -1705,9 +1680,10 @@ heightForHeaderInSection:(NSInteger)section {
     [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
 
+    [userInfoView setBounds:CGRectInset(userInfoView.bounds, 10, 0)];
+    
     UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
                                           initWithCustomView:userInfoView];
-
     self.navigationItem.leftBarButtonItem = userInfoBarButton;
 }
 
