@@ -107,8 +107,6 @@
 }
 
 - (void)renderTrainer {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     [self.webView loadHTMLString:[self makeTrainerHTML] baseURL:baseURL];
