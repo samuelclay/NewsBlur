@@ -107,7 +107,6 @@
     tapIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
-    self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
 
     rightToolbar = [[TransparentToolbar alloc]
                     initWithFrame:CGRectMake(0, 0, 80, 44)];
@@ -722,12 +721,12 @@
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
                               forState:nil];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -44);
+        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text.png"]
                               forState:nil];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -40);
+        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
 }
 

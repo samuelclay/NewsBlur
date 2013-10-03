@@ -29,7 +29,7 @@
 - (NSArray *)pickerFolders;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet FolderTextField *fromFolderInput;
+@property (nonatomic) IBOutlet UITextField *fromFolderInput;
 @property (nonatomic) IBOutlet FolderTextField *toFolderInput;
 @property (nonatomic) IBOutlet UILabel *titleLabel;
 

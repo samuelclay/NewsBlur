@@ -36,11 +36,14 @@
 
 - (void)viewDidLoad {    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
-    folderImage.frame = CGRectMake(-6, 0, 16, 16);
+    folderImage.frame = CGRectMake(0, 0, 24, 16);
+    [folderImage setContentMode:UIViewContentModeRight];
     [toFolderInput setLeftView:folderImage];
     [toFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
-    folderImage2.frame = CGRectMake(-6, 0, 16, 16);
+    folderImage2.frame = CGRectMake(0, 0, 24, 16);
+    [folderImage2 setContentMode:UIViewContentModeRight];
     [fromFolderInput setLeftView:folderImage2];
     [fromFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
@@ -71,7 +74,7 @@
         [subview removeFromSuperview];
     }
     UIView *label = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-    label.frame = CGRectMake(0, 
+    label.frame = CGRectMake(8,
                              0, 
                              200, 
                              20);
@@ -295,15 +298,11 @@ numberOfRowsInComponent:(NSInteger)component {
 @implementation FolderTextField
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
-    int margin = 18;
-    CGRect inset = CGRectMake(bounds.origin.x + margin, bounds.origin.y, bounds.size.width - margin, bounds.size.height);
-    return inset;
+    return CGRectInset(bounds, 24, 0);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds {
-    int margin = 18;
-    CGRect inset = CGRectMake(bounds.origin.x + margin, bounds.origin.y, bounds.size.width - margin, bounds.size.height);
-    return inset;
+    return CGRectInset(bounds, 24, 0);
 }
 
 @end
