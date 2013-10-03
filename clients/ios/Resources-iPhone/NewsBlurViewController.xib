@@ -36,7 +36,7 @@
                             </connections>
                         </tableView>
                         <view hidden="YES" opaque="NO" contentMode="scaleToFill" id="122">
-                            <rect key="frame" x="92.5" y="170.5" width="135" height="195"/>
+                            <rect key="frame" x="92.499999999999986" y="170.5" width="135" height="195"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="123">
@@ -67,7 +67,7 @@
                     <rect key="frame" x="0.0" y="524" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <items>
-                        <barButtonItem width="34" style="plain" id="106">
+                        <barButtonItem enabled="NO" width="34" style="plain" id="106">
                             <connections>
                                 <action selector="tapAddSite:" destination="-1" id="107"/>
                             </connections>
@@ -91,7 +91,11 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="79"/>
-                        <barButtonItem width="34" style="plain" id="82"/>
+                        <barButtonItem enabled="NO" width="34" style="plain" id="82">
+                            <connections>
+                                <action selector="showSettingsPopover:" destination="-1" id="pHA-3B-t4k"/>
+                            </connections>
+                        </barButtonItem>
                     </items>
                 </toolbar>
             </subviews>

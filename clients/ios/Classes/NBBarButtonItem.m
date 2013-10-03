@@ -15,9 +15,9 @@
 - (UIEdgeInsets)alignmentRectInsets {
     UIEdgeInsets insets;
     if (![self isLeftButton] || self.onRightSide) {
-        insets = UIEdgeInsetsMake(0, 0, 0, 9.0f);
+        insets = UIEdgeInsetsMake(0, 0, 0, 8.0f);
     } else {
-        insets = UIEdgeInsetsMake(0, 9.0f, 0, 0);
+        insets = UIEdgeInsetsMake(0, 8.0f, 0, 0);
     }
     return insets;
 }
