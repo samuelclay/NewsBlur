@@ -570,6 +570,7 @@ def mark_story_as_shared(request):
     story = stories[0]
     story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     story['shared_by_user'] = True
+    story['shared'] = True
     shared_date = localtime_for_timezone(shared_story['shared_date'], request.user.profile.timezone)
     story['short_parsed_date'] = format_story_link_date__short(shared_date)
     story['long_parsed_date'] = format_story_link_date__long(shared_date)
