@@ -813,10 +813,10 @@
         }
     } else {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 44;
+            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 64;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         } else {
-            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 44;
+            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 64;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         }
     }
@@ -851,7 +851,7 @@
                                                               vb.size.height,
                                                               self.storyNavigationController.view.frame.size.width,
                                                               NB_DEFAULT_SHARE_HEIGHT);
-             if (UIInterfaceOrientationIsPortrait(orientation)) {
+             if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
                  self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                         0,
                                                                         self.storyNavigationController.view.frame.size.width,

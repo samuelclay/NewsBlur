@@ -1075,9 +1075,9 @@
     BOOL recentlyRead = [[self.recentlyReadStories
                           objectForKey:[story objectForKey:@"story_hash"]] boolValue];
     
-    NSLog(@"isUnread: (%d || %d) && %d (%@ / %@)", readStatusUnread, storyHashUnread,
-          !recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
-          [story objectForKey:@"story_hash"]);
+//    NSLog(@"isUnread: (%d || %d) && %d (%@ / %@)", readStatusUnread, storyHashUnread,
+//          !recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
+//          [story objectForKey:@"story_hash"]);
 
     return (readStatusUnread || storyHashUnread) && !recentlyRead;
 }
