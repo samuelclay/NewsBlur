@@ -967,10 +967,12 @@
 }
 
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row {
-    cell.isRead = YES;
-    [cell setNeedsLayout];
     NSInteger storyIndex = [appDelegate indexFromLocation:row];
     appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
+    if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
+        [self markStoryAsRead:appDelegate.activeStory];
+    }
+    [self redrawUnreadStory];
     [appDelegate loadStoryDetailView];
 }
 
@@ -978,7 +980,7 @@
     NSInteger rowIndex = [appDelegate locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
-    cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+    cell.isRead = ![appDelegate isStoryUnread:appDelegate.activeStory];
     cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
     cell.isStarred = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];

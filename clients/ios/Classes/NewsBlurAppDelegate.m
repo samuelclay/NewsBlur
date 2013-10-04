@@ -1075,9 +1075,9 @@
     BOOL recentlyRead = [[self.recentlyReadStories
                           objectForKey:[story objectForKey:@"story_hash"]] boolValue];
     
-//    NSLog(@"isUnread: %d/%d/%d (%@ / %@)", readStatusUnread, storyHashUnread,
-//          recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
-//          [story objectForKey:@"story_hash"]);
+    NSLog(@"isUnread: (%d || %d) && %d (%@ / %@)", readStatusUnread, storyHashUnread,
+          !recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
+          [story objectForKey:@"story_hash"]);
 
     return (readStatusUnread || storyHashUnread) && !recentlyRead;
 }
@@ -1662,6 +1662,7 @@
     [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
                                  forKey:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:location]];
+    [self.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
 
 }
 
@@ -2407,6 +2408,7 @@
         [db executeUpdate:@"drop table if exists `cached_images`"];
         [db executeUpdate:@"drop table if exists `users`"];
         //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
+        //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
@@ -2461,6 +2463,14 @@
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
     [db executeUpdate:createReadTable];
+    
+    NSString *createSavedTable = [NSString stringWithFormat:@"create table if not exists queued_saved_hashes "
+                                 "("
+                                 " story_feed_id varchar(20),"
+                                 " story_hash varchar(24),"
+                                 " UNIQUE(story_hash) ON CONFLICT IGNORE"
+                                 ")"];
+    [db executeUpdate:createSavedTable];
     
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
