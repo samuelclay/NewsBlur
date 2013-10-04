@@ -605,8 +605,6 @@
             [self setStoryFromScroll];
         }
     }
-    
-    [self markStoryAsRead];
 }
 
 - (void)setStoryFromScroll {
@@ -776,11 +774,7 @@
 - (void)markStoryAsRead {
     if (!appDelegate.activeStory) return;
     
-    //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
-        [[appDelegate.unreadStoryHashes
-          objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]]
-         boolValue]) {
+    if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
         
         [appDelegate markActiveStoryRead];
         
@@ -907,15 +901,16 @@
                        forKey:@"feed_id"];
         
         [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDidFailSelector:@selector(failedMarkAsUnread:)];
         [request setDelegate:self];
+        [request setUserInfo:appDelegate.activeStory];
         [request startAsynchronous];
     }
 }
 
 - (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
+        return [self failedMarkAsUnread:request];
     }
     
     NSString *responseString = [request responseString];
@@ -932,6 +927,25 @@
     
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
+
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    if (!dequeued) {
+        [self informError:@"Failed to unread story"];
+        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
+    } else {
+        [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+        [appDelegate markActiveStoryUnread];
+        [appDelegate.feedDetailViewController redrawUnreadStory];
+        [self setNextPreviousButtons];
+        
+        [self.currentPage flashCheckmarkHud:@"unread"];
+    }
+}
+
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate.masterContainerViewController hidePopover];

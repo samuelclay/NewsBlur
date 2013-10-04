@@ -121,6 +121,7 @@
             [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
         }
         
+        [cursor close];
         [self updateProgress];
     }];
     
@@ -194,8 +195,16 @@
 
         }
         if (anyInserted) {
-            appDelegate.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
-                                                   objectForKey:@"story_timestamp"] intValue];
+            NSDictionary *lastStory;
+            if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"]
+                 isEqualToString:@"oldest"]) {
+                lastStory = [[results objectForKey:@"stories"] firstObject];
+            } else {
+                lastStory = [[results objectForKey:@"stories"] lastObject];
+            }
+            appDelegate.latestFetchedStoryDate = [[lastStory
+                                                   objectForKey:@"story_timestamp"]
+                                                  intValue];
         }
         if ([storyHashes count]) {
             NSLog(@"Failed to fetch stories: %@", storyHashes);

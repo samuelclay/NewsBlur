@@ -605,6 +605,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
             self.inPullToRefresh_ = NO;
             [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+                [self refreshFeedList];
                 [self.appDelegate startOfflineQueue];
             }];
         } else {
@@ -646,6 +647,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
                        options:nil error:nil];
             break;
         }
+        
+        [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [_self finishLoadingFeedListWithDict:results];

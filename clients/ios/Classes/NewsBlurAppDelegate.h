@@ -298,6 +298,7 @@
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
 
+- (BOOL)isStoryUnread:(NSDictionary *)story;
 - (NSInteger)indexOfNextUnreadStory;
 - (NSInteger)locationOfNextUnreadStory;
 - (NSInteger)indexOfNextStory;
@@ -369,6 +370,7 @@
 - (BOOL)isReachabileForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
+- (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;

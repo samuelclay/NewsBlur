@@ -51,7 +51,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 29
+#define CURRENT_DB_VERSION 30
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -341,6 +341,7 @@
                     options:nil error:nil];
             if (user) break;
         }
+        [cursor close];
     }];
     
     return user;
@@ -1067,6 +1068,20 @@
 
 #pragma mark - Story Traversal
 
+- (BOOL)isStoryUnread:(NSDictionary *)story {
+    BOOL readStatusUnread = [[story objectForKey:@"read_status"] intValue] == 0;
+    BOOL storyHashUnread = [[self.unreadStoryHashes
+                             objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+    BOOL recentlyRead = [[self.recentlyReadStories
+                          objectForKey:[story objectForKey:@"story_hash"]] boolValue];
+    
+//    NSLog(@"isUnread: %d/%d/%d (%@ / %@)", readStatusUnread, storyHashUnread,
+//          recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
+//          [story objectForKey:@"story_hash"]);
+
+    return (readStatusUnread || storyHashUnread) && !recentlyRead;
+}
+
 - (NSInteger)indexOfNextUnreadStory {
     NSInteger location = [self locationOfNextUnreadStory];
     return [self indexFromLocation:location];
@@ -1078,10 +1093,7 @@
     for (NSInteger i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
         NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
         NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-        BOOL unread = [[story objectForKey:@"read_status"] intValue] == 0 ||
-                      [[self.unreadStoryHashes
-                        objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        if (unread) {
+        if ([self isStoryUnread:story]) {
             return i;
         }
     }
@@ -1089,10 +1101,7 @@
         for (NSInteger i=activeLocation-1; i >= 0; i--) {
             NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
             NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-            BOOL unread = [[story objectForKey:@"read_status"] intValue] == 0 ||
-                          [[self.unreadStoryHashes
-                            objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-            if (unread) {
+            if ([self isStoryUnread:story]) {
                 return i;
             }
         }
@@ -1223,6 +1232,8 @@
             NSDictionary *unreadCounts = [cursor resultDictionary];
             [self.dictUnreadCounts setObject:unreadCounts forKey:[unreadCounts objectForKey:@"feed_id"]];
         }
+        
+        [cursor close];
     }];
 }
 
@@ -1713,6 +1724,13 @@
     [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
     
     [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *storyHash = [newStory objectForKey:@"story_hash"];
+        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+         [newStory JSONRepresentation],
+         storyHash];
+        [db executeUpdate:@"INSERT INTO unread_hashes "
+         "(story_hash, story_feed_id, story_timestamp) VALUES (?, ?, ?)",
+         storyHash, feedIdStr, [newStory objectForKey:@"story_timestamp"]];
         [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
          [newUnreadCounts objectForKey:@"ps"],
          [newUnreadCounts objectForKey:@"nt"],
@@ -1797,6 +1815,8 @@
                 NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
                 [stories addObject:storyHash];
             }
+            
+            [cursor close];
         }];
         [self queueReadStories:feedsStories];
         for (NSString *feedId in [feedsStories allKeys]) {
@@ -2360,6 +2380,7 @@
     if ([resultSet next]) {
         version = [resultSet intForColumnIndex:0];
     }
+    [resultSet close];
     return version;
 }
 
@@ -2410,7 +2431,7 @@
     
     NSString *createStoryTable = [NSString stringWithFormat:@"create table if not exists stories "
                                   "("
-                                  " story_feed_id number,"
+                                  " story_feed_id varchar(20),"
                                   " story_hash varchar(24),"
                                   " story_timestamp number,"
                                   " story_json text,"
@@ -2422,7 +2443,7 @@
     
     NSString *createUnreadHashTable = [NSString stringWithFormat:@"create table if not exists unread_hashes "
                                        "("
-                                       " story_feed_id number,"
+                                       " story_feed_id varchar(20),"
                                        " story_hash varchar(24),"
                                        " story_timestamp number,"
                                        " UNIQUE(story_hash) ON CONFLICT IGNORE"
@@ -2435,7 +2456,7 @@
     
     NSString *createReadTable = [NSString stringWithFormat:@"create table if not exists queued_read_hashes "
                                  "("
-                                 " story_feed_id number,"
+                                 " story_feed_id varchar(20),"
                                  " story_hash varchar(24),"
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
@@ -2443,7 +2464,7 @@
     
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
-                                   " story_feed_id number,"
+                                   " story_feed_id varchar(20),"
                                    " story_hash varchar(24),"
                                    " image_url varchar(1024),"
                                    " image_cached boolean,"
@@ -2575,6 +2596,28 @@
     self.hasQueuedReadStories = YES;
 }
 
+- (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId {
+    __block BOOL storyQueued = NO;
+    
+    [self.database inDatabase:^(FMDatabase *db) {
+        FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_read_hashes "
+                                "WHERE story_hash = ? AND story_feed_id = ? LIMIT 1",
+                                storyHash, storyFeedId];
+        while ([stories next]) {
+            storyQueued = YES;
+            break;
+        }
+        [stories close];
+        if (storyQueued) {
+            [db executeUpdate:@"DELETE FROM queued_read_hashes "
+             "WHERE story_hash = ? AND story_feed_id = ?",
+             storyHash, storyFeedId];
+        }
+    }];
+    
+    return storyQueued;
+}
+
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
         OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
@@ -2603,6 +2646,7 @@
                 } else {
                     if (callback) callback();
                 }
+                [stories close];
             }];
         });
     } else {
