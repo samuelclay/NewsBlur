@@ -366,8 +366,8 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SiteCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:@"ActivityCell"];
+    SiteCell *cell = [tableView
+                      dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
         cell = [[SiteCell alloc] 
                 initWithStyle:UITableViewCellStyleDefault 
