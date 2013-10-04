@@ -1617,6 +1617,10 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
+    if ([[self.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
+        self.activeStory = newStory;
+    }
     
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;

@@ -935,13 +935,12 @@
     NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
-    if (!appDelegate.hasLoadedFeedDetail) {
-        cell.isRead = ![appDelegate isStoryUnread:story];
+    cell.isRead = ![appDelegate isStoryUnread:story];
+//    if (!appDelegate.hasLoadedFeedDetail) {
 //        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
-    } else {
-        cell.isRead = ![appDelegate isStoryUnread:story];
+//    } else {
 //        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
-    }
+//    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -972,8 +971,8 @@
     if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
         [self markStoryAsRead:appDelegate.activeStory];
     }
-    [self redrawUnreadStory];
     [appDelegate loadStoryDetailView];
+    [self redrawUnreadStory];
 }
 
 - (void)redrawUnreadStory {

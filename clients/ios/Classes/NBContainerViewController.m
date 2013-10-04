@@ -26,8 +26,8 @@
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
-#define NB_DEFAULT_SLIDER_INTERVAL 0.35
-#define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.35
+#define NB_DEFAULT_SLIDER_INTERVAL 0.3
+#define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.3
 #define NB_DEFAULT_SHARE_HEIGHT 144
 #define NB_DEFAULT_STORY_TITLE_SNAP_THRESHOLD 60
 
@@ -145,12 +145,12 @@
     
     // set up story titles stub
     UIView * storyTitlesPlaceholder = [[UIView alloc] initWithFrame:CGRectZero];
-    storyTitlesPlaceholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;;
+    storyTitlesPlaceholder.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     storyTitlesPlaceholder.autoresizesSubviews = YES;
     storyTitlesPlaceholder.backgroundColor = [UIColor whiteColor];
         
     self.storyTitlesStub = storyTitlesPlaceholder;
-    [self.view addSubview:self.storyTitlesStub];
+    [self.view insertSubview:self.storyTitlesStub aboveSubview:self.storyNavigationController.view];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -803,7 +803,7 @@
                                                            NB_DEFAULT_SHARE_HEIGHT);
     CGRect shareViewFrame = self.shareNavigationController.view.frame;
     
-    if (self.keyboardIsShown) {
+    if (self.keyboardIsShown && self.isSharingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
@@ -811,7 +811,7 @@
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width + 44;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width;
         }
-    } else {
+    } else if (self.isSharingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 64;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
