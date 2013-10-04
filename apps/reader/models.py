@@ -241,7 +241,8 @@ class UserSubscription(models.Model):
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
-                     order='newest', read_filter='all', usersubs=None, cutoff_date=None):
+                     order='newest', read_filter='all', usersubs=None, cutoff_date=None,
+                     all_feed_ids=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if order == 'oldest':
@@ -251,10 +252,12 @@ class UserSubscription(models.Model):
         
         if not feed_ids:
             feed_ids = []
+        if not all_feed_ids:
+            all_feed_ids = [f for f in feed_ids]
         
         # feeds_string = ""
-        feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
-        ranked_stories_keys  = 'zU:%s:feeds:%s' % (user_id, feeds_string)
+        feeds_string = ','.join(str(f) for f in sorted(all_feed_ids))[:30]
+        ranked_stories_keys         = 'zU:%s:feeds:%s'  % (user_id, feeds_string)
         unread_ranked_stories_keys  = 'zhU:%s:feeds:%s' % (user_id, feeds_string)
         stories_cached = r.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else r.exists(unread_ranked_stories_keys)

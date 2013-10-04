@@ -12,8 +12,6 @@
 
 #define LANDSCAPE_MARGIN 128
 
-@class NewsBlurAppDelegate;
-
 @interface LoginViewController : UIViewController 
 <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;

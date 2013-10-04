@@ -867,11 +867,13 @@ def load_river_stories__redis(request):
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
+        all_feed_ids = [f for f in feed_ids]
         feed_ids = [sub.feed_id for sub in usersubs]
         if feed_ids:
             params = {
                 "user_id": user.pk, 
                 "feed_ids": feed_ids,
+                "all_feed_ids": all_feed_ids,
                 "offset": offset,
                 "limit": limit,
                 "order": order,
