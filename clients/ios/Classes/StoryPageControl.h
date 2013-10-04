@@ -105,6 +105,7 @@
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)markStoryAsUnsaved;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;

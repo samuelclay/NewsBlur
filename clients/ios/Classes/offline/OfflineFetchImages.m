@@ -119,6 +119,8 @@
              [cursor objectForColumnName:@"story_hash"],
              [cursor objectForColumnName:@"story_timestamp"]]];
         }
+        
+        [cursor close];
         [self updateProgress];
     }];
     

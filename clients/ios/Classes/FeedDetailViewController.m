@@ -294,7 +294,7 @@
 
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (!appDelegate.storyLocationsCount && self.feedPage == 1) {
+        if (!appDelegate.storyLocationsCount && self.feedPage == 1 && !self.isOffline) {
             self.isShowingOffline = YES;
             self.isOffline = YES;
             [self showLoadingNotifier];
@@ -441,6 +441,7 @@
                                                            dataUsingEncoding:NSUTF8StringEncoding]
                                        options:nil error:nil]];
         }
+        [cursor close];
         
         if ([appDelegate.activeReadFilter isEqualToString:@"all"]) {
             NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
@@ -456,6 +457,7 @@
                 [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
             }
             appDelegate.unreadStoryHashes = unreadStoryHashes;
+            [unreadHashCursor close];
         }
         
         dispatch_sync(dispatch_get_main_queue(), ^{
@@ -934,14 +936,11 @@
     cell.storyScore = score;
     
     if (!appDelegate.hasLoadedFeedDetail) {
-        cell.isRead = ([appDelegate.activeReadFilter isEqualToString:@"all"] &&
-                       ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue]) ||
-                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
+        cell.isRead = ![appDelegate isStoryUnread:story];
+//        NSLog(@"Offline: %d (%d/%d) - %@ - %@", cell.isRead, ![[appDelegate.unreadStoryHashes objectForKey:[story objectForKey:@"story_hash"]] boolValue], [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     } else {
-        cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1 ||
-                      [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
+        cell.isRead = ![appDelegate isStoryUnread:story];
+//        NSLog(@"Online: %d (%d/%d) - %@ - %@", cell.isRead, [[story objectForKey:@"read_status"] intValue] == 1, [[appDelegate.recentlyReadStories objectForKey:[story objectForKey:@"story_hash"]] boolValue], [story objectForKey:@"story_title"], [story objectForKey:@"story_hash"]);
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -1534,10 +1533,18 @@
 }
 
 - (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    [self informError:@"Failed to unread story"];
-    [appDelegate markStoryRead:[request.userInfo objectForKey:@"story_hash"]
-                        feedId:[request.userInfo objectForKey:@"story_feed_id"]];
-    [self.storyTitlesTable reloadData];
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    if (!dequeued) {
+        [self informError:@"Failed to unread story"];
+        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
+        [self.storyTitlesTable reloadData];
+    } else {
+        [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+        [self.storyTitlesTable reloadData];
+    }
 }
 
 #pragma mark -
