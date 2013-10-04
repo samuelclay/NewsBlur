@@ -30,29 +30,8 @@
                         <outlet property="delegate" destination="-1" id="27"/>
                     </connections>
                 </scrollView>
-                <view contentMode="scaleToFill" id="YKz-PZ-s0t">
-                    <rect key="frame" x="0.0" y="448" width="320" height="12"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <subviews>
-                        <view contentMode="scaleToFill" id="MK4-IV-OSa">
-                            <rect key="frame" x="0.0" y="-0.5" width="320" height="1"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
-                        </view>
-                        <view contentMode="scaleToFill" id="62E-7z-9mB">
-                            <rect key="frame" x="0.0" y="11.5" width="320" height="1"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
-                        </view>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" id="kYw-ba-fFD">
-                            <rect key="frame" x="0.0" y="1.5" width="320" height="9"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </imageView>
-                    </subviews>
-                    <color key="backgroundColor" red="0.90980398650000005" green="0.91764712329999998" blue="0.89411771299999998" alpha="1" colorSpace="deviceRGB"/>
-                </view>
                 <view contentMode="scaleToFill" id="75">
-                    <rect key="frame" x="4.5" y="396.5" width="315.5" height="51"/>
+                    <rect key="frame" x="4" y="397" width="315.5" height="51"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" id="71">
@@ -144,12 +123,34 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
+                <view contentMode="scaleToFill" id="YKz-PZ-s0t">
+                    <rect key="frame" x="0.0" y="448" width="320" height="12"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" id="MK4-IV-OSa">
+                            <rect key="frame" x="0.0" y="-0.5" width="320" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                        <view contentMode="scaleToFill" id="62E-7z-9mB">
+                            <rect key="frame" x="0.0" y="11.5" width="320" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" id="kYw-ba-fFD">
+                            <rect key="frame" x="0.0" y="1.5" width="320" height="9"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.90980398650000005" green="0.91764712329999998" blue="0.89411771299999998" alpha="1" colorSpace="deviceRGB"/>
+                </view>
             </subviews>
             <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
         </view>
     </objects>
     <resources>
         <image name="drag_icon.png" width="96" height="24"/>
+        <image name="traverse_background.png" width="113" height="46"/>
         <image name="traverse_background.png" width="113" height="46"/>
         <image name="traverse_next.png" width="208" height="68"/>
         <image name="traverse_previous.png" width="43" height="34"/>
