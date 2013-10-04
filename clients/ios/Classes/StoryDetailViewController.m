@@ -338,6 +338,13 @@
                         [self.activeStory objectForKey:@"starred_date"]];
     }
     
+    NSString *storyUnread = @"";
+    if ([appDelegate isStoryUnread:self.activeStory]) {
+        NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
+        storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
+                       score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
+    }
+    
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
     NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"titles"];
@@ -354,12 +361,16 @@
     
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-title\">%@</div>"
+                             "<div class=\"NB-story-title\">"
+                             "  %@"
+                             "  %@"
+                             "</div>"
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
                              "%@"
                              "</div></div>",
+                             storyUnread,
                              storyTitle,
                              [self.activeStory objectForKey:@"long_parsed_date"],
                              storyAuthor,

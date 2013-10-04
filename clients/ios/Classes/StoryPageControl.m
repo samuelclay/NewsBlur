@@ -777,6 +777,8 @@
     if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
         
         [appDelegate markActiveStoryRead];
+        [self.currentPage refreshHeader];
+        [appDelegate.feedDetailViewController redrawUnreadStory];
         
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                                NEWSBLUR_URL];
@@ -924,7 +926,7 @@
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self setNextPreviousButtons];
-    
+    [self refreshHeaders];    
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
 
@@ -941,9 +943,10 @@
         [appDelegate markActiveStoryUnread];
         [appDelegate.feedDetailViewController redrawUnreadStory];
         [self setNextPreviousButtons];
-        
         [self.currentPage flashCheckmarkHud:@"unread"];
     }
+    
+    [self refreshHeaders];
 }
 
 
