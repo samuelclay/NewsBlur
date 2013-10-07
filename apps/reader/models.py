@@ -433,7 +433,11 @@ class UserSubscription(models.Model):
         missing_rs = []
         feed_re = re.compile(r'(\d+):.*?')
         for rs in old_rs:
-            rs_feed_id = feed_re.search(rs).groups()[0]
+            found = feed_re.search(rs)
+            if not found:
+                print " ---> Not found: %s" % rs
+                continue
+            rs_feed_id = found.groups()[0]
             if int(rs_feed_id) not in feeds:
                 missing_rs.append(rs)
                 # r.sadd("RS:%s" % user_id, *missing_rs)
