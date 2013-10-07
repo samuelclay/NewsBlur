@@ -197,6 +197,7 @@ class UserSubscription(models.Model):
             
             dump = r.dump(unread_ranked_stories_key)
             if dump:
+                rt.delete(unread_ranked_stories_key)
                 rt.restore(unread_ranked_stories_key, 1*60*60, dump)
                 r.delete(unread_ranked_stories_key)
         
