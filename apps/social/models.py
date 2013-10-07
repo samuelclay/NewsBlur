@@ -1861,7 +1861,7 @@ class MSharedStory(mongo.Document):
                 for c, comment in enumerate(story[comment_set]):
                     if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
-                    if comment['source_user_id']:
+                    if comment['source_user_id'] and comment['source_user_id'] in profiles:
                         stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
                     for r, reply in enumerate(comment['replies']):
                         if reply['user_id'] not in profiles: continue
