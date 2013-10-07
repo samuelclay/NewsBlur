@@ -89,7 +89,7 @@ class RStats:
         
         for k, key in enumerate(keys):
             match = prefix_re.match(key)
-            if not match:
+            if not match or dump[k] is None:
                 errors.add(key)
                 continue
             prefix, rest = match.groups()

@@ -275,7 +275,8 @@ class UserSubscription(models.Model):
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
-                                        group_by_feed=False, usersubs=usersubs,
+                                        group_by_feed=False,
+                                        usersubs=usersubs,
                                         cutoff_date=cutoff_date)
         if not story_hashes:
             return [], []
