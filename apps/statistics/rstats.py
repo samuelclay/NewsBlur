@@ -89,7 +89,7 @@ class RStats:
         
         for k, key in enumerate(keys):
             match = prefix_re.match(key)
-            if not match:
+            if not match or dump[k] is None:
                 errors.add(key)
                 continue
             prefix, rest = match.groups()
@@ -102,16 +102,16 @@ class RStats:
                 prefixes_ttls[prefix]['X'] += 1
             elif ttl < 60*60: # 1 hour
                 prefixes_ttls[prefix]['1h'] += 1
-            elif ttl < 60*60*12:
-                prefixes_ttls[prefix]['12h'] += 1
             elif ttl < 60*60*24:
                 prefixes_ttls[prefix]['1d'] += 1
-            elif ttl < 60*60*168:
+            elif ttl < 60*60*24*7:
                 prefixes_ttls[prefix]['1w'] += 1
-            elif ttl < 60*60*336:
+            elif ttl < 60*60*24*14:
                 prefixes_ttls[prefix]['2w'] += 1
+            elif ttl < 60*60*24*30:
+                prefixes_ttls[prefix]['4w'] += 1
             else:
-                prefixes_ttls[prefix]['2w+'] += 1
+                prefixes_ttls[prefix]['4w+'] += 1
         
         keys_count = len(keys)
         total_size = float(sum([k for k in sizes.values()]))
