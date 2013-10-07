@@ -1033,6 +1033,8 @@ class MSocialSubscription(mongo.Document):
             rt.exists(ranked_stories_keys) and 
             rt.exists(unread_ranked_stories_keys)):
             story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
+            if not story_hashes_and_dates:
+                return [], [], []
             story_hashes, story_dates = zip(*story_hashes_and_dates)
             if read_filter == "unread":
                 unread_story_hashes = story_hashes

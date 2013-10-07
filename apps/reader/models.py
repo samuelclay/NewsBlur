@@ -196,8 +196,9 @@ class UserSubscription(models.Model):
                 r.delete(unread_stories_key)
             
             dump = r.dump(unread_ranked_stories_key)
-            rt.restore(unread_ranked_stories_key, 1*60*60, dump)
-            r.delete(unread_ranked_stories_key)
+            if dump:
+                rt.restore(unread_ranked_stories_key, 1*60*60, dump)
+                r.delete(unread_ranked_stories_key)
         
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
