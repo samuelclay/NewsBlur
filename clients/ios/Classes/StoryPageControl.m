@@ -644,6 +644,7 @@
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
+    currentPage.isRecentlyUnread = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
@@ -925,8 +926,9 @@
     
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+    currentPage.isRecentlyUnread = YES;
+    [currentPage refreshHeader];
     [self setNextPreviousButtons];
-    [self refreshHeaders];    
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
 

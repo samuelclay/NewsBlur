@@ -1530,6 +1530,7 @@
         return [self failedMarkAsUnread:request];
     }
     
+    appDelegate.storyPageControl.currentPage.isRecentlyUnread = YES;
     [appDelegate.storyPageControl refreshHeaders];
 }
 

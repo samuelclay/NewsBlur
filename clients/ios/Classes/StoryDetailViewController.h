@@ -18,7 +18,7 @@
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
-    NSDictionary *activeStory;
+    NSMutableDictionary *activeStory;
     UIView *innerView;
     UIWebView *webView;
     NSInteger pageIndex;
@@ -28,13 +28,15 @@
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *activeStoryId;
-@property (nonatomic, readwrite) NSDictionary *activeStory;
+@property (nonatomic, readwrite) NSMutableDictionary *activeStory;
 @property (nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property (nonatomic, assign) BOOL inTextView;
+@property (nonatomic, assign) BOOL isRecentlyUnread;
+
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
 
