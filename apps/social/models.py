@@ -1065,6 +1065,7 @@ class MSocialSubscription(mongo.Document):
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
+            rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
         else:
             unread_story_hashes = cls.story_hashes(user_id, relative_user_id, 
                                                    subscription_user_ids=social_user_ids, 
