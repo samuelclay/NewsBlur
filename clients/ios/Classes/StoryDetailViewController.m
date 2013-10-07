@@ -38,6 +38,7 @@
 @synthesize pageIndex;
 @synthesize storyHUD;
 @synthesize inTextView;
+@synthesize isRecentlyUnread;
 
 
 #pragma mark -
@@ -339,7 +340,7 @@
     }
     
     NSString *storyUnread = @"";
-    if ([appDelegate isStoryUnread:self.activeStory]) {
+    if (self.isRecentlyUnread && [appDelegate isStoryUnread:self.activeStory]) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
@@ -914,9 +915,9 @@
 
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex {
     if (activeStoryIndex >= 0) {
-        self.activeStory = [appDelegate.activeFeedStories objectAtIndex:activeStoryIndex];
+        self.activeStory = [[appDelegate.activeFeedStories objectAtIndex:activeStoryIndex] mutableCopy];
     } else {
-        self.activeStory = appDelegate.activeStory;
+        self.activeStory = [appDelegate.activeStory mutableCopy];
     }
 }
 

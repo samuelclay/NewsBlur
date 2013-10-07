@@ -57,11 +57,15 @@ class Profile(models.Model):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
     @property
-    def unread_cutoff(self):
-        if self.is_premium:
+    def unread_cutoff(self, force_premium=False):
+        if self.is_premium or force_premium:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
+
+    @property
+    def unread_cutoff_premium(self):
+        return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
     def canonical(self):
         return {

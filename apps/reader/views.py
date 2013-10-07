@@ -1269,9 +1269,16 @@ def mark_story_as_unread(request):
 
     if story.story_date < request.user.profile.unread_cutoff:
         data['code'] = -1
-        data['message'] = "Story is more than %s days old, cannot mark as unread." % (
-                            settings.DAYS_OF_UNREAD if request.user.profile.is_premium else
-                            settings.DAYS_OF_UNREAD_FREE)
+        if request.user.profile.is_premium:
+            data['message'] = "Story is more than %s days old, cannot mark as unread." % (
+                                settings.DAYS_OF_UNREAD)
+        elif story.story_date > request.user.profile.unread_cutoff_premium:
+            data['message'] = "Story is more than %s days old. Premiums can mark unread up to 30 days." % (
+                                settings.DAYS_OF_UNREAD_FREE)
+        else:
+            data['message'] = "Story is more than %s days old, cannot mark as unread." % (
+                                settings.DAYS_OF_UNREAD_FREE)
+        return data
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
