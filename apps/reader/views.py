@@ -584,7 +584,10 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == 'all' or query) and usersub:
-            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True,
+            unread_story_hashes = UserSubscription.story_hashes(user.pk, read_filter='unread',
+                                                      feed_ids=[usersub.feed_id],
+                                                      usersubs=[usersub],
+                                                      group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
