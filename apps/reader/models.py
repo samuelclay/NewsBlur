@@ -421,7 +421,7 @@ class UserSubscription(models.Model):
     @classmethod
     def trim_user_read_stories(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        subs = UserSubscription.objects.filter(user_id=13).only('feed')
+        subs = UserSubscription.objects.filter(user_id=user_id).only('feed')
         feeds = [f.feed_id for f in subs]
         old_rs = r.smembers("RS:%s" % user_id)
         # new_rs = r.sunionstore("RS:%s" % user_id, *["RS:%s:%s" % (user_id, f) for f in feeds])
