@@ -870,9 +870,10 @@ class MSocialSubscription(mongo.Document):
             socialsubs = socialsubs.filter(Q(unread_count_neutral__gt=0) |
                                            Q(unread_count_positive__gt=0))
         if not subscription_user_ids:
-            socialsubs = socialsubs.filter(user=user_id).only('feed', 'mark_read_date', 'is_trained')
+            socialsubs = socialsubs.filter(user_id=user_id)\
+                                   .only('subscription_user_id', 'mark_read_date', 'is_trained')
         else:
-            socialsubs = socialsubs.filter(user=user_id, 
+            socialsubs = socialsubs.filter(user_id=user_id, 
                                            subscription_user_id__in=subscription_user_ids)\
                                    .only('subscription_user_id', 'mark_read_date', 'is_trained')
         
