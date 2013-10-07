@@ -422,11 +422,15 @@ class UserSubscription(models.Model):
     def trim_user_read_stories(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only('feed')
+        if not subs: return
         feeds = [f.feed_id for f in subs]
         old_rs = r.smembers("RS:%s" % user_id)
+        old_count = len(old_rs)
         # new_rs = r.sunionstore("RS:%s" % user_id, *["RS:%s:%s" % (user_id, f) for f in feeds])
         new_rs = r.sunion(*["RS:%s:%s" % (user_id, f) for f in feeds])
 
+        if not old_count: return
+        
         r.sunionstore("RS:%s:backup" % user_id, "RS:%s" % user_id)
         r.expire("RS:%s:backup" % user_id, 60*60*24)
         
@@ -442,7 +446,6 @@ class UserSubscription(models.Model):
                 missing_rs.append(rs)
                 # r.sadd("RS:%s" % user_id, *missing_rs)
         
-        old_count = len(old_rs)
         new_count = len(new_rs)
         missing_count = len(missing_rs)
         new_total = new_count + missing_count
