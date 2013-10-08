@@ -197,8 +197,10 @@ class UserSubscription(models.Model):
             
             dump = r.dump(unread_ranked_stories_key)
             if dump:
-                rt.delete(unread_ranked_stories_key)
-                rt.restore(unread_ranked_stories_key, 1*60*60, dump)
+                pipeline = rt.pipeline()
+                pipeline.delete(unread_ranked_stories_key)
+                pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
+                pipeline.execute()
                 r.delete(unread_ranked_stories_key)
         
         current_time = int(time.time() + 60*60*24)
