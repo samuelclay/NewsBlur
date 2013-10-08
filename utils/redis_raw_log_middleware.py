@@ -49,7 +49,7 @@ class RedisDumpMiddleware(object):
         for a, arg in enumerate(args):
             if isinstance(arg, Connection):
                 continue
-            if args[1] == "RESTORE" and a == 4:
+            if len(str(arg)) > 100:
                 arg = "[%s bytes]" % len(arg)
             query.append(str(arg).replace('\n', ''))
         return { 'query': ' '.join(query) }
