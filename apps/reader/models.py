@@ -199,7 +199,7 @@ class UserSubscription(models.Model):
             if dump:
                 pipeline = rt.pipeline()
                 pipeline.delete(unread_ranked_stories_key)
-                pipeline.restore(unread_ranked_stories_key, 1*60*60, dump)
+                pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
                 pipeline.execute()
                 r.delete(unread_ranked_stories_key)
         
