@@ -29,7 +29,7 @@ from vendor import appdotnet
 from vendor import pynliner
 from utils import log as logging
 from utils import json_functions as json
-from utils.feed_functions import relative_timesince
+from utils.feed_functions import relative_timesince, chunks
 from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
@@ -862,7 +862,95 @@ class MSocialSubscription(mongo.Document):
             'is_trained': self.is_trained,
             'feed_opens': self.feed_opens,
         }
-    
+
+    @classmethod
+    def subs_for_users(cls, user_id, subscription_user_ids=None, read_filter="unread"):
+        socialsubs = cls.objects
+        if read_filter == "unread":
+            socialsubs = socialsubs.filter(Q(unread_count_neutral__gt=0) |
+                                           Q(unread_count_positive__gt=0))
+        if not subscription_user_ids:
+            socialsubs = socialsubs.filter(user_id=user_id)\
+                                   .only('subscription_user_id', 'mark_read_date', 'is_trained')
+        else:
+            socialsubs = socialsubs.filter(user_id=user_id, 
+                                           subscription_user_id__in=subscription_user_ids)\
+                                   .only('subscription_user_id', 'mark_read_date', 'is_trained')
+        
+        return socialsubs
+
+    @classmethod
+    def story_hashes(cls, user_id, relative_user_id, subscription_user_ids=None, socialsubs=None,
+                     read_filter="unread", order="newest", 
+                     include_timestamps=False, group_by_user=True, cutoff_date=None):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        pipeline = r.pipeline()
+        story_hashes = {} if group_by_user else []
+        
+        if not socialsubs:
+            socialsubs = cls.subs_for_users(relative_user_id, 
+                                            subscription_user_ids=subscription_user_ids,
+                                            read_filter=read_filter)
+            subscription_user_ids = [sub.subscription_user_id for sub in socialsubs]
+            if not subscription_user_ids:
+                return story_hashes
+
+        read_dates = dict((us.subscription_user_id, 
+                           int(us.mark_read_date.strftime('%s'))) for us in socialsubs)
+        current_time = int(time.time() + 60*60*24)
+        if not cutoff_date:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
+        unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
+        feed_counter = 0
+
+        for sub_user_id_group in chunks(subscription_user_ids, 20):
+            pipeline = r.pipeline()
+            for sub_user_id in sub_user_id_group:
+                stories_key                 = 'B:%s' % (sub_user_id)
+                sorted_stories_key          = 'zB:%s' % (sub_user_id)
+                read_stories_key            = 'RS:%s' % (user_id)
+                read_social_stories_key     = 'RS:%s:B:%s' % (user_id, sub_user_id)
+                unread_stories_key          = 'UB:%s:%s' % (user_id, sub_user_id)
+                sorted_stories_key          = 'zB:%s' % (sub_user_id)
+                unread_ranked_stories_key   = 'zUB:%s:%s' % (user_id, sub_user_id)
+                expire_unread_stories_key = False
+            
+                max_score = current_time
+                if read_filter == 'unread':
+                    # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                    min_score = read_dates[sub_user_id] + 1
+                    pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                    pipeline.sdiffstore(unread_stories_key, unread_stories_key, read_social_stories_key)
+                    expire_unread_stories_key = True
+                else:
+                    min_score = unread_timestamp
+                    unread_stories_key = stories_key
+
+                if order == 'oldest':
+                    byscorefunc = pipeline.zrangebyscore
+                else:
+                    byscorefunc = pipeline.zrevrangebyscore
+                    min_score, max_score = max_score, min_score
+            
+                pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
+                pipeline.delete(unread_ranked_stories_key)
+                if expire_unread_stories_key:
+                    pipeline.delete(unread_stories_key)
+
+        
+            results = pipeline.execute()
+        
+            for hashes in results:
+                if not isinstance(hashes, list): continue
+                if group_by_user:
+                    story_hashes[subscription_user_ids[feed_counter]] = hashes
+                    feed_counter += 1
+                else:
+                    story_hashes.extend(hashes)
+        
+        return story_hashes
+        
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
                     withscores=False, hashes_only=False, cutoff_date=None, 
                     mark_read_complement=False):
@@ -926,55 +1014,79 @@ class MSocialSubscription(mongo.Document):
     @classmethod
     def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, 
                      order='newest', read_filter='all', relative_user_id=None, cache=True,
-                     cutoff_date=None):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+                     socialsubs=None, cutoff_date=None):
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         
         if not relative_user_id:
             relative_user_id = user_id
             
         if order == 'oldest':
-            range_func = r.zrange
+            range_func = rt.zrange
         else:
-            range_func = r.zrevrange
+            range_func = rt.zrevrange
             
         if not isinstance(social_user_ids, list):
             social_user_ids = [social_user_ids]
 
         ranked_stories_keys  = 'zU:%s:social' % (user_id)
-        read_ranked_stories_keys  = 'zhU:%s:social' % (user_id)
+        unread_ranked_stories_keys  = 'zhU:%s:social' % (user_id)
         if (offset and cache and 
-            r.exists(ranked_stories_keys) and 
-            r.exists(read_ranked_stories_keys)):
-            story_hashes = range_func(ranked_stories_keys, offset, offset+limit, withscores=True)
-            read_story_hashes = range_func(read_ranked_stories_keys, 0, -1)
-            if story_hashes:
-                story_hashes, story_dates = zip(*story_hashes)
-                return story_hashes, story_dates, read_story_hashes
-            else:
+            rt.exists(ranked_stories_keys) and 
+            rt.exists(unread_ranked_stories_keys)):
+            story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
+            if not story_hashes_and_dates:
                 return [], [], []
+            story_hashes, story_dates = zip(*story_hashes_and_dates)
+            if read_filter == "unread":
+                unread_story_hashes = story_hashes
+            else:
+                unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset+limit)
+            return story_hashes, story_dates, unread_story_hashes
         else:
-            r.delete(ranked_stories_keys)
-            r.delete(read_ranked_stories_keys)
+            rt.delete(ranked_stories_keys)
+            rt.delete(unread_ranked_stories_keys)
         
-        for social_user_id in social_user_ids:
-            us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
-            story_hashes = us.get_stories(offset=0, limit=100,
-                                          order=order, read_filter=read_filter, 
-                                          withscores=True, cutoff_date=cutoff_date)
-            if story_hashes:
-                r.zadd(ranked_stories_keys, **dict(story_hashes))
-        
-        r.zinterstore(read_ranked_stories_keys, [ranked_stories_keys, "RS:%s" % user_id])
-        story_hashes = range_func(ranked_stories_keys, offset, limit, withscores=True)
-        read_story_hashes = range_func(read_ranked_stories_keys, offset, limit)
-        r.expire(ranked_stories_keys, 1*60*60)
-        r.expire(read_ranked_stories_keys, 1*60*60)
-
-        if story_hashes:
-            story_hashes, story_dates = zip(*story_hashes)
-            return story_hashes, story_dates, read_story_hashes
-        else:
+        story_hashes = cls.story_hashes(user_id, relative_user_id, 
+                                        subscription_user_ids=social_user_ids, 
+                                        read_filter=read_filter, order=order, 
+                                        include_timestamps=True,
+                                        group_by_user=False,
+                                        socialsubs=socialsubs,
+                                        cutoff_date=cutoff_date)
+        if not story_hashes:
             return [], [], []
+        
+        pipeline = rt.pipeline()
+        for story_hash_group in chunks(story_hashes, 100):
+            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+        pipeline.execute()
+        story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
+        if not story_hashes_and_dates:
+            return [], [], []
+        story_hashes, story_dates = zip(*story_hashes_and_dates)
+
+        if read_filter == "unread":
+            unread_feed_story_hashes = story_hashes
+            rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+        else:
+            unread_story_hashes = cls.story_hashes(user_id, relative_user_id, 
+                                                   subscription_user_ids=social_user_ids, 
+                                                   read_filter="unread", order=order, 
+                                                   include_timestamps=True,
+                                                   group_by_user=False,
+                                                   socialsubs=socialsubs,
+                                                   cutoff_date=cutoff_date)
+            if unread_story_hashes:
+                pipeline = rt.pipeline()
+                for unread_story_hash_group in chunks(unread_story_hashes, 100):
+                    pipeline.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                pipeline.execute()
+            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+        
+        rt.expire(ranked_stories_keys, 60*60)
+        rt.expire(unread_ranked_stories_keys, 60*60)
+        
+        return story_hashes, story_dates, unread_feed_story_hashes
         
     def mark_story_ids_as_read(self, story_hashes, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_hashes)
@@ -1077,7 +1189,7 @@ class MSocialSubscription(mongo.Document):
             # Use the latest story to get last read time.
             latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
                                                        shared_date__gte=user_profile.unread_cutoff
-                                  ).order_by('shared_date').only('shared_date').first()
+                                  ).order_by('-shared_date').only('shared_date').first()
             if latest_shared_story:
                 cutoff_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
             else:
@@ -1749,7 +1861,7 @@ class MSharedStory(mongo.Document):
                 for c, comment in enumerate(story[comment_set]):
                     if comment['user_id'] not in profiles: continue
                     stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
-                    if comment['source_user_id']:
+                    if comment['source_user_id'] and comment['source_user_id'] in profiles:
                         stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
                     for r, reply in enumerate(comment['replies']):
                         if reply['user_id'] not in profiles: continue

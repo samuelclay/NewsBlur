@@ -583,7 +583,10 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == 'all' or query) and usersub:
-            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True,
+            unread_story_hashes = UserSubscription.story_hashes(user.pk, read_filter='unread',
+                                                      feed_ids=[usersub.feed_id],
+                                                      usersubs=[usersub],
+                                                      group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
@@ -869,11 +872,13 @@ def load_river_stories__redis(request):
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
+        all_feed_ids = [f for f in feed_ids]
         feed_ids = [sub.feed_id for sub in usersubs]
         if feed_ids:
             params = {
                 "user_id": user.pk, 
                 "feed_ids": feed_ids,
+                "all_feed_ids": all_feed_ids,
                 "offset": offset,
                 "limit": limit,
                 "order": order,

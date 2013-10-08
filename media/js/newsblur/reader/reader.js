@@ -1659,7 +1659,8 @@
             this.active_folder = new Backbone.Model({
                 id: this.active_feed,
                 folder_title: options.global ? "Global Shared Stories" : "All Shared Stories",
-                fake: true
+                fake: true,
+                show_options: true
             });
             
             if (options.global) {
