@@ -31,6 +31,6 @@
  */
 - (id)initWithPath:(NSString*)path;
 
-@property (nonatomic, retain, readonly) NSString* filePath;
+@property (nonatomic, copy, readonly) NSString* filePath;
 
 @end

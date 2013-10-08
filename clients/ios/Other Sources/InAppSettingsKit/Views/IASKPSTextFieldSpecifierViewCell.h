@@ -18,10 +18,8 @@
 
 @class IASKTextField;
 
-@interface IASKPSTextFieldSpecifierViewCell : UITableViewCell {
-    IASKTextField *_textField;
-}
+@interface IASKPSTextFieldSpecifierViewCell : UITableViewCell
 
-@property (nonatomic, assign) IASKTextField *textField;
+@property (nonatomic, strong) IASKTextField *textField;
 
 @end

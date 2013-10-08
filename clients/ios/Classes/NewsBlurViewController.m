@@ -653,6 +653,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (![[results allKeys] count] && !failed) return;
             [_self finishLoadingFeedListWithDict:results];
         });
     }];
@@ -785,7 +786,9 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 	if ([specifier.key isEqualToString:@"offline_cache_empty_stories"]) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
         dispatch_async(queue, ^{
-            [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+            });
             [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 [db executeUpdate:@"DROP TABLE unread_hashes"];
                 [db executeUpdate:@"DROP TABLE unread_counts"];

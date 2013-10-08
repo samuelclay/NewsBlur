@@ -28,14 +28,14 @@
                applicationBundle:(NSBundle*) bundle {
     self = [super init];
     if (self) {
-        _applicationBundle = [bundle retain];
+        _applicationBundle = bundle;
         
         NSString* plistFilePath = [self locateSettingsFile: fileName];
-        _settingsDictionary = [[NSDictionary dictionaryWithContentsOfFile:plistFilePath] retain];
+        _settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:plistFilePath];
         
         //store the bundle which we'll need later for getting localizations
         NSString* settingsBundlePath = [plistFilePath stringByDeletingLastPathComponent];
-        _settingsBundle = [[NSBundle bundleWithPath:settingsBundlePath] retain];
+        _settingsBundle = [NSBundle bundleWithPath:settingsBundlePath];
         
         // Look for localization file
         self.localizationTable = [_settingsDictionary objectForKey:@"StringsTable"];
@@ -67,22 +67,9 @@
     return [self initWithFile:@"Root"];
 }
 
-- (void)dealloc {
-    [_localizationTable release], _localizationTable = nil;
-    [_settingsDictionary release], _settingsDictionary = nil;
-    [_dataSource release], _dataSource = nil;
-    [_settingsBundle release], _settingsBundle = nil;
-    [_hiddenKeys release], _hiddenKeys = nil;
-    
-    [super dealloc];
-}
-
-
 - (void)setHiddenKeys:(NSSet *)anHiddenKeys {
     if (_hiddenKeys != anHiddenKeys) {
-        id old = _hiddenKeys;
-        _hiddenKeys = [anHiddenKeys retain];
-        [old release];
+        _hiddenKeys = anHiddenKeys;
         
         if (self.settingsDictionary) {
             [self _reinterpretBundle:self.settingsDictionary];
@@ -94,7 +81,7 @@
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
     NSArray *preferenceSpecifiers	= [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
     NSInteger sectionCount			= -1;
-    NSMutableArray *dataSource		= [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *dataSource		= [NSMutableArray new];
     
     for (NSDictionary *specifier in preferenceSpecifiers) {
         if ([self.hiddenKeys containsObject:[specifier objectForKey:kIASKKey]]) {
@@ -105,20 +92,17 @@
             
             [newArray addObject:specifier];
             [dataSource addObject:newArray];
-            [newArray release];
             sectionCount++;
         }
         else {
             if (sectionCount == -1) {
                 NSMutableArray *newArray = [[NSMutableArray alloc] init];
                 [dataSource addObject:newArray];
-                [newArray release];
                 sectionCount++;
             }
             
             IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
             [(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
-            [newSpecifier release];
         }
     }
     [self setDataSource:dataSource];
