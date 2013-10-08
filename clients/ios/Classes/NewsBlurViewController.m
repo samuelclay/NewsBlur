@@ -313,6 +313,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 
     self.lastUpdate = [NSDate date];
     [self showRefreshNotifier];
+    
+    [self loadOfflineFeeds:NO];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -323,7 +325,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
     
-    [self loadOfflineFeeds];
+    [self loadOfflineFeeds:YES];
     [self showOfflineNotifier];
 }
 
@@ -341,7 +343,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
             [self informError:@"The server barfed!"];
         }
         
-        [self loadOfflineFeeds];
+        [self loadOfflineFeeds:YES];
         [self showOfflineNotifier];
         return;
     }
@@ -622,7 +624,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 }
 
 
-- (void)loadOfflineFeeds {
+- (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
 

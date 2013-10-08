@@ -1097,6 +1097,11 @@
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+    if (!indexPath) {
+        // This can happen if the user swipes on a cell that is being refreshed.
+        return;
+    }
+    
     NSInteger storyIndex = [appDelegate indexFromLocation:indexPath.row];
     NSDictionary *story = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
 
