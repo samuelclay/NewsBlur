@@ -212,14 +212,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
-    
-    // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
-    int width = 300 - 20;
-    if (vb.size.width == 480) {
-        width = 460 - 20;
-    } else if (vb.size.width == 540) {
-        width = 478 - 20;
-    }
 
     if (indexPath.section == 0) {
         ProfileBadge *cell = [tableView 
@@ -231,7 +223,7 @@
                     reuseIdentifier:nil];
         } 
         
-        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:width + 20];             
+        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:vb.size.width];
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
@@ -247,7 +239,7 @@
         cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile
-                withWidth:width];
+                withWidth:vb.size.width];
         
             return cell;
     } else {
@@ -259,7 +251,7 @@
                     reuseIdentifier:@"FollowGridCellIdentifier"];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [cell refreshWithWidth:width];
+        [cell refreshWithWidth:vb.size.width];
         return cell;
     }
 }

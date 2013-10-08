@@ -2567,7 +2567,7 @@
     NSString *connection = [[NSUserDefaults standardUserDefaults]
                             stringForKey:@"offline_download_connection"];
     
-    NSLog(@"Reachable via: %d / %d", remoteHostStatus == ReachableViaWWAN, remoteHostStatus == ReachableViaWiFi);
+//    NSLog(@"Reachable via: %d / %d", remoteHostStatus == ReachableViaWWAN, remoteHostStatus == ReachableViaWiFi);
     if ([connection isEqualToString:@"wifi"] && remoteHostStatus != ReachableViaWiFi) {
         return NO;
     }
