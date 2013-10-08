@@ -20,30 +20,26 @@
 
 @implementation IASKPSSliderSpecifierViewCell
 
-@synthesize slider=_slider, 
-            minImage=_minImage, 
-            maxImage=_maxImage;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Setting only frame data that will not be overwritten by layoutSubviews
         // Slider
-        _slider = [[[IASKSlider alloc] initWithFrame:CGRectMake(0, 0, 0, 23)] autorelease];
+        _slider = [[IASKSlider alloc] initWithFrame:CGRectMake(0, 0, 0, 23)];
         _slider.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
         UIViewAutoresizingFlexibleWidth;
         _slider.continuous = NO;
         [self.contentView addSubview:_slider];
 
         // MinImage
-        _minImage = [[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 21, 21)] autorelease];
+        _minImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 21, 21)];
         _minImage.autoresizingMask = UIViewAutoresizingFlexibleRightMargin |
         UIViewAutoresizingFlexibleBottomMargin;
         [self.contentView addSubview:_minImage];
 
         // MaxImage
-        _maxImage = [[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 21, 21)] autorelease];
+        _maxImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 21, 21)];
         _maxImage.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
         UIViewAutoresizingFlexibleBottomMargin;
         [self.contentView addSubview:_maxImage];
@@ -57,7 +53,7 @@
     [super layoutSubviews];
 	CGRect  sliderBounds    = _slider.bounds;
     CGPoint sliderCenter    = _slider.center;
-    const double superViewWidth = _slider.superview.frame.size.width;
+    const CGFloat superViewWidth = _slider.superview.frame.size.width;
     
     sliderCenter.x = superViewWidth / 2;
     sliderCenter.y = self.contentView.center.y;
@@ -86,12 +82,6 @@
 	_slider.bounds = sliderBounds;
     _slider.center = sliderCenter;
 }	
-
-- (void)dealloc {
-	_minImage.image = nil;
-	_maxImage.image = nil;
-    [super dealloc];
-}
 
 - (void)prepareForReuse {
 	_minImage.image = nil;

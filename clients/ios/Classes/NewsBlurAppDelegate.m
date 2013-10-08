@@ -51,7 +51,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 30
+#define CURRENT_DB_VERSION 31
 #define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
@@ -186,16 +186,15 @@
     
     [window makeKeyAndVisible];
 //    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
-
-    [self.feedsViewController fetchFeedList:YES];
-        
+    
     [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
     [[UIToolbar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
     [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
 //    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
     [self createDatabaseConnection];
-    
+    [self.feedsViewController fetchFeedList:YES];
+
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
 
 //    [self showFirstTimeUser];
@@ -420,7 +419,8 @@
      @"offline_download_connection",
      @"offline_store_limit",
      nil];
-    [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..." forKey:@"offline_cache_empty_stories"];
+    [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
+                                              forKey:@"offline_cache_empty_stories"];
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
     self.modalNavigationController = navController;
@@ -2390,10 +2390,33 @@
 }
 
 - (void)createDatabaseConnection {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docsPath = [paths objectAtIndex:0];
+    NSError *error;
+    
+    // Remove the deletion of old sqlite dbs past version 3.1, once everybody's
+    // upgraded and removed the old files.
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *oldDBPath = [documentPaths objectAtIndex:0];
+    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:oldDBPath error:&error];
+    int removed = 0;
+    
+    if (error == nil) {
+        for (NSString *path in directoryContents) {
+            NSString *fullPath = [oldDBPath stringByAppendingPathComponent:path];
+            if ([fullPath hasSuffix:@".sqlite"]) {
+                [fileManager removeItemAtPath:fullPath error:&error];
+                removed++;
+            }
+        }
+    }
+    if (removed) {
+        NSLog(@"Deleted %d sql dbs.", removed);
+    }
+    
+    NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *dbPath = [cachePaths objectAtIndex:0];
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", NEWSBLUR_HOST];
-    NSString *path = [docsPath stringByAppendingPathComponent:dbName];
+    NSString *path = [dbPath stringByAppendingPathComponent:dbName];
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
@@ -2634,12 +2657,6 @@
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
-        OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
-        if (!offlineCleaningQueue) {
-            offlineCleaningQueue = [NSOperationQueue new];
-        }
-        [offlineCleaningQueue addOperation:operationCleanImages];
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -2730,6 +2747,14 @@
     }
     
     NSLog(@"Pre-cached %d images", cached);
+}
+
+- (void)cleanImageCache {
+    OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
+    if (!offlineCleaningQueue) {
+        offlineCleaningQueue = [NSOperationQueue new];
+    }
+    [offlineCleaningQueue addOperation:operationCleanImages];
 }
 
 - (void)deleteAllCachedImages {

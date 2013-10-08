@@ -94,13 +94,17 @@
 #define kIASKMinLabelWidth                    97
 #define kIASKMaxLabelWidth                    240
 #define kIASKMinValueWidth                    35
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+#define kIASKPaddingLeft                      (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1 ? 14 : 9)
+#else
 #define kIASKPaddingLeft                      9
+#endif
 #define kIASKPaddingRight                     10
 #define kIASKHorizontalPaddingGroupTitles     19
 #define kIASKVerticalPaddingGroupTitles       15
 
 #define kIASKLabelFontSize                    17
-#define kIASKgrayBlueColor                    [UIColor colorWithRed:0.318 green:0.4 blue:0.569 alpha:1.0]
+#define kIASKgrayBlueColor                    [UIColor colorWithRed:0.318f green:0.4f blue:0.569f alpha:1.f]
 
 #define kIASKMinimumFontSize                  12.0f
 

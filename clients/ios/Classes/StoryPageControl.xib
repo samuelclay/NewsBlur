@@ -155,7 +155,6 @@
     <resources>
         <image name="drag_icon.png" width="96" height="24"/>
         <image name="traverse_background.png" width="113" height="46"/>
-        <image name="traverse_background.png" width="113" height="46"/>
         <image name="traverse_next.png" width="208" height="68"/>
         <image name="traverse_previous.png" width="43" height="34"/>
         <image name="traverse_previous_off.png" width="43" height="34"/>

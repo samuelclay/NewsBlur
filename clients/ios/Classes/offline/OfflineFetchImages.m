@@ -49,6 +49,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
+            [appDelegate cleanImageCache];
         });
         return NO;
     }

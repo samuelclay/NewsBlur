@@ -19,12 +19,4 @@
 
 @implementation IASKSlider
 
-@synthesize key=_key;
-
-- (void)dealloc {
-    [_key release], _key = nil;
-	
-    [super dealloc];
-}
-
 @end
