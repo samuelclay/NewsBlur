@@ -409,19 +409,22 @@ secondStateIconName:(NSString *)secondIconName
     
     position.y = CGRectGetHeight(self.bounds) / 2.0;
     
-    if (isDragging) {
-        if (percentage >= 0 && percentage < kMCStop1) {
-            position.x = [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
-        }
+    // I'm sorry, I just assaulted this function. If you ever need multiple
+    // types of gestures on a cell, go back in time.
+    
+    if (percentage > -kMCStop1 && percentage < kMCStop1) {
+//        if (percentage >= 0 && percentage < kMCStop1) {
+//            position.x = [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
+//        }
         
-        else if (percentage >= kMCStop1) {
+        if (percentage > 0 && percentage < kMCStop1) {
             position.x = [self offsetWithPercentage:percentage - (kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
         }
-        else if (percentage < 0 && percentage >= -kMCStop1) {
-            position.x = CGRectGetWidth(self.bounds) - [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
-        }
-        
-        else if (percentage < -kMCStop1) {
+//        else if (percentage < 0 && percentage >= -kMCStop1) {
+//            position.x = CGRectGetWidth(self.bounds) - [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
+//        }
+//        
+        else if (percentage < 0 && percentage > -kMCStop1) {
             position.x = CGRectGetWidth(self.bounds) + [self offsetWithPercentage:percentage + (kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
         }
     }

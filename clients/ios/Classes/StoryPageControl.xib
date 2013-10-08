@@ -55,7 +55,8 @@
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
-                                <action selector="doPreviousStory" destination="-1" eventType="touchUpInside" id="66"/>
+                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="RJl-ZC-yBr"/>
+                                <action selector="doPreviousStory:" destination="-1" eventType="touchUpInside" id="CGY-kv-b6L"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="62">
@@ -74,11 +75,12 @@
                                 <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
-                                <action selector="doNextUnreadStory" destination="-1" eventType="touchUpInside" id="63"/>
+                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="3p1-tq-Hxk"/>
+                                <action selector="doNextUnreadStory:" destination="-1" eventType="touchUpInside" id="56v-Nl-KaO"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="81">
-                            <rect key="frame" x="9" y="9.5" width="83" height="34"/>
+                            <rect key="frame" x="9" y="9" width="83" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                             <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -93,6 +95,7 @@
                                 <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
+                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="FZm-dS-Naz"/>
                                 <action selector="toggleView:" destination="-1" eventType="touchUpInside" id="83"/>
                             </connections>
                         </button>
@@ -112,6 +115,7 @@
                                 <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
+                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="mUs-yN-RKc"/>
                                 <action selector="openSendToDialog:" destination="-1" eventType="touchUpInside" id="87"/>
                             </connections>
                         </button>
@@ -150,6 +154,7 @@
     </objects>
     <resources>
         <image name="drag_icon.png" width="96" height="24"/>
+        <image name="traverse_background.png" width="113" height="46"/>
         <image name="traverse_background.png" width="113" height="46"/>
         <image name="traverse_next.png" width="208" height="68"/>
         <image name="traverse_previous.png" width="43" height="34"/>

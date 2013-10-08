@@ -118,8 +118,8 @@
 - (void)flashCheckmarkHud:(NSString *)messageType;
 
 - (IBAction)openSendToDialog:(id)sender;
-- (IBAction)doNextUnreadStory;
-- (IBAction)doPreviousStory;
+- (IBAction)doNextUnreadStory:(id)sender;
+- (IBAction)doPreviousStory:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
 - (IBAction)toggleView:(id)sender;
 

@@ -185,7 +185,7 @@
     
     
     [window makeKeyAndVisible];
-    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
+//    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
 
     [self.feedsViewController fetchFeedList:YES];
         

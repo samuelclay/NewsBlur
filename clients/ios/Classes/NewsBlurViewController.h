@@ -105,7 +105,7 @@ MCSwipeTableViewCellDelegate> {
 - (void)refreshFeedList;
 - (void)refreshFeedList:(id)feedId;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
-- (void)loadOfflineFeeds;
+- (void)loadOfflineFeeds:(BOOL)failed;
 - (void)showUserProfile;
 - (IBAction)showSettingsPopover:(id)sender;
 - (IBAction)showInteractionsPopover:(id)sender;

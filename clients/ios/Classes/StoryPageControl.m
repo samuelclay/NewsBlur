@@ -315,6 +315,23 @@
     self.traverseView.frame = traverseViewFrame;
 }
 
+- (void)highlightButton:(UIButton *)b {
+    [b setHighlighted:YES];
+}
+- (void)unhighlightButton:(UIButton *)b {
+    [b setHighlighted:NO];
+}
+
+- (IBAction)beginTouchDown:(UIButton *)sender {
+    [self performSelector:@selector(highlightButton:) withObject:sender afterDelay:0.0];
+}
+
+- (IBAction)endTouchDown:(UIButton *)sender {
+    if (!sender) return;
+    
+    [self performSelector:@selector(unhighlightButton:) withObject:sender afterDelay:0.2];
+}
+
 - (void)resetPages {
     [currentPage clearStory];
     [nextPage clearStory];
@@ -666,7 +683,7 @@
     }
     
     self.waitingForNextUnreadFromServer = NO;
-    [self doNextUnreadStory];
+    [self doNextUnreadStory:nil];
 }
 
 - (void)updatePageWithActiveStory:(NSInteger)location {
@@ -818,6 +835,8 @@
 }
 
 - (IBAction)openSendToDialog:(id)sender {
+    [self endTouchDown:sender];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
@@ -981,6 +1000,8 @@
 }
 
 - (IBAction)toggleView:(id)sender {
+    [self endTouchDown:sender];
+    
     [self.currentPage fetchTextView];
 }
 
@@ -1042,12 +1063,13 @@
 #pragma mark -
 #pragma mark Story Traversal
 
-- (IBAction)doNextUnreadStory {
+- (IBAction)doNextUnreadStory:(id)sender {
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
     NSInteger nextLocation = [appDelegate locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
+    [self endTouchDown:sender];
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
     if (nextLocation == -1 && unreadCount > 0 &&
@@ -1069,7 +1091,8 @@
     }
 }
 
-- (IBAction)doPreviousStory {
+- (IBAction)doPreviousStory:(id)sender {
+    [self endTouchDown:sender];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate popReadStory];
@@ -1082,7 +1105,7 @@
     } else {
         NSInteger previousLocation = [appDelegate locationOfStoryId:previousStoryId];
         if (previousLocation == -1) {
-            return [self doPreviousStory];
+            return [self doPreviousStory:sender];
         }
 //        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
 //                                     objectAtIndex:previousIndex]];
