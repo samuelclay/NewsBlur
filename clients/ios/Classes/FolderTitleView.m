@@ -25,7 +25,7 @@
 
 - (void) drawRect:(CGRect)rect {
     
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     CGContextRef context = UIGraphicsGetCurrentContext();

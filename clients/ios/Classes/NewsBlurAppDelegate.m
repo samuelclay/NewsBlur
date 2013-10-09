@@ -2875,4 +2875,8 @@
     ng += counts.ng;
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"PS: %d, NT: %d, NG: %d", ps, nt, ng];
+}
+
 @end

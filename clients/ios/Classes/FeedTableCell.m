@@ -23,6 +23,7 @@ static UIFont *textFont = nil;
 @synthesize negativeCount = _negativeCount;
 @synthesize negativeCountStr;
 @synthesize isSocial;
+@synthesize unreadCount;
 
 + (void) initialize{
     if (self == [FeedTableCell class]) {
@@ -32,8 +33,15 @@ static UIFont *textFont = nil;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+        
+        unreadCount = [UnreadCountView alloc];
+        unreadCount.appDelegate = self.appDelegate;
+        self.unreadCount = unreadCount;
+
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
+        
         [self.contentView addSubview:cellContent];
     }
 
@@ -70,7 +78,6 @@ static UIFont *textFont = nil;
 }
 
 - (void)setupGestures {
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
                      firstColor:UIColorFromRGB(0xA4D97B)
@@ -125,10 +132,9 @@ static UIFont *textFont = nil;
         CGContextStrokePath(context);
     }
     
-    UnreadCountView *unreadCount = [UnreadCountView alloc];
-    unreadCount.appDelegate = cell.appDelegate;
-    [unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
-                   listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+    [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
+                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+
     
     UIColor *textColor = cell.highlighted || cell.selected ?
                          [UIColor blackColor]:
@@ -146,13 +152,13 @@ static UIFont *textFont = nil;
     if (cell.isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
-            [cell.feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
-            [cell.feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
@@ -161,13 +167,13 @@ static UIFont *textFont = nil;
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
-            [cell.feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
-            [cell.feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];

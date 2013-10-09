@@ -1021,8 +1021,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
-    
-    
     CGRect rect = CGRectMake(0.0, 0.0, tableView.bounds.size.width, kFolderTitleHeight);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = section;
@@ -1213,7 +1211,7 @@ heightForHeaderInSection:(NSInteger)section {
     if (!days) {
         [appDelegate markFeedAllRead:feedId];
     } else {
-        [self showRefreshNotifier];
+//        [self showRefreshNotifier];
     }
 }
 
@@ -1518,7 +1516,9 @@ heightForHeaderInSection:(NSInteger)section {
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
-    [self.appDelegate cancelOfflineQueue];
+    if (!feedId) {
+        [self.appDelegate cancelOfflineQueue];
+    }
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
@@ -1526,13 +1526,18 @@ heightForHeaderInSection:(NSInteger)section {
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    if (feedId) {
+        [request setUserInfo:@{@"feedId": [NSString stringWithFormat:@"%@", feedId]}];
+    }
     [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self showCountingNotifier];
+        if (!feedId) {
+            [self showCountingNotifier];
+        }
     });
     
 }
@@ -1613,7 +1618,9 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self refreshHeaderCounts];
-    [self.appDelegate startOfflineQueue];
+    if (![request.userInfo objectForKey:@"feedId"]) {
+        [self.appDelegate startOfflineQueue];
+    }
 }
 
 // called when the date shown needs to be updated, optional
