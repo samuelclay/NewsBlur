@@ -88,6 +88,8 @@ UIActionSheetDelegate> {
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
+- (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
+- (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)didCollapseFolder:(UIButton *)button;

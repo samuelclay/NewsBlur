@@ -13,12 +13,17 @@
 
 @class NewsBlurAppDelegate;
 
-@interface FolderTitleView : UIView {
+@interface FolderTitleView : UIView
+<UIGestureRecognizerDelegate,
+UIActionSheetDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
 @property (assign, nonatomic) int section;
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) UnreadCountView *unreadCount;
+@property (nonatomic) UIButton *invisibleHeaderButton;
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer;
 
 @end

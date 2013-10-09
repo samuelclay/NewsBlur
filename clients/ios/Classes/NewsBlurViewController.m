@@ -764,10 +764,13 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     CGPoint p = [gestureRecognizer locationInView:self.feedTitlesTable];
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForRowAtPoint:p];
-
+    
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (indexPath == nil) return;
 
+    FeedTableCell *cell = (FeedTableCell *)[self.feedTitlesTable cellForRowAtIndexPath:indexPath];
+    if (!cell.highlighted) return;
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -1168,6 +1171,44 @@ heightForHeaderInSection:(NSInteger)section {
     }
 }
 
+#pragma mark -
+#pragma mark Mark Feeds as read
+
+- (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days {
+    [self markFeedsRead:@[feedId] cutoffDays:days];
+}
+
+- (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
+    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
+    cutoffTimestamp -= (days * 60*60*24);
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    for (NSString *feedId in feedIds) {
+        [request addPostValue:feedId forKey:@"feed_id"];
+    }
+    if (days) {
+        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
+                       forKey:@"cutoff_timestamp"];
+    }
+    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+    [request setUserInfo:@{@"feeds": feedIds,
+                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    if (!days) {
+        for (NSString *feedId in feedIds) {
+            [appDelegate markFeedAllRead:feedId];
+        }
+    } else {
+        //        [self showRefreshNotifier];
+    }
+}
+
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
     [appDelegate markStoriesRead:nil
                          inFeeds:[request.userInfo objectForKey:@"feeds"]
@@ -1183,35 +1224,13 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
-        [self refreshFeedList:[[request.userInfo objectForKey:@"feeds"] objectAtIndex:0]];
-    }
-    [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
-}
-
-- (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days {
-    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
-    cutoffTimestamp -= (days * 60*60*24);
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:feedId forKey:@"feed_id"];
-    if (days) {
-        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
-                       forKey:@"cutoff_timestamp"];
-    }
-    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-    [request setUserInfo:@{@"feeds": @[feedId],
-                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
-    
-    if (!days) {
-        [appDelegate markFeedAllRead:feedId];
+        id feed;
+        if ([[request.userInfo objectForKey:@"feeds"] count] == 1) {
+            feed = [[request.userInfo objectForKey:@"feeds"] objectAtIndex:0];
+        }
+        [self refreshFeedList:feed];
     } else {
-//        [self showRefreshNotifier];
+        [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
     }
 }
 
