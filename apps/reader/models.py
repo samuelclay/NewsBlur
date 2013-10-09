@@ -548,8 +548,9 @@ class UserSubscription(models.Model):
             if not stories:
                 stories = cache.get('S:%s' % self.feed_id)
             
-            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
-                                                   cutoff_date=self.user.profile.unread_cutoff)
+            unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    read_filter='unread', group_by_feed=False,
+                                                    cutoff_date=self.user.profile.unread_cutoff)
         
             if not stories:
                 stories_db = MStory.objects(story_hash__in=unread_story_hashes)
@@ -606,9 +607,11 @@ class UserSubscription(models.Model):
                     else:
                         feed_scores['neutral'] += 1
         else:
-            unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
-                                                   withscores=True,
-                                                   cutoff_date=self.user.profile.unread_cutoff)
+            unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    read_filter='unread', group_by_feed=False,
+                                                    include_timestamps=True,
+                                                    cutoff_date=self.user.profile.unread_cutoff)
+
             feed_scores['neutral'] = len(unread_story_hashes)
             if feed_scores['neutral']:
                 oldest_unread_story_date = datetime.datetime.fromtimestamp(unread_story_hashes[-1][1])
