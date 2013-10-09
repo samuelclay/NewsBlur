@@ -163,6 +163,7 @@
     
     UIImage *folderImage;
     int folderImageViewX = 10;
+    BOOL allowLongPress = NO;
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
@@ -202,6 +203,7 @@
         } else {
             folderImageViewX = 7;
         }
+        allowLongPress = YES;
     }
     [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
     
@@ -213,11 +215,13 @@
         [self addSubview:customView];
     }
 
-    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
-                                               initWithTarget:self action:@selector(handleLongPress:)];
-    longpress.minimumPressDuration = 1.0;
-    longpress.delegate = self;
-    [self addGestureRecognizer:longpress];
+    if (allowLongPress) {
+        UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                                   initWithTarget:self action:@selector(handleLongPress:)];
+        longpress.minimumPressDuration = 1.0;
+        longpress.delegate = self;
+        [self addGestureRecognizer:longpress];
+    }
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
