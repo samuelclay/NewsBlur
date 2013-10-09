@@ -1199,7 +1199,8 @@
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
     //    [self informError:@"Failed to mark story as read"];
     [appDelegate markStoriesRead:[request.userInfo objectForKey:@"stories"]
-                         inFeeds:[request.userInfo objectForKey:@"feeds"]];
+                         inFeeds:[request.userInfo objectForKey:@"feeds"]
+                 cutoffTimestamp:nil];
 }
 
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
@@ -1312,7 +1313,7 @@
         } else if (buttonIndex == 2) {
             [self instafetchFeed];
         }
-    } 
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {

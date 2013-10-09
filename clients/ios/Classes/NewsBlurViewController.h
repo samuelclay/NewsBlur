@@ -26,7 +26,9 @@ ASIHTTPRequestDelegate, NSCacheDelegate,
 WEPopoverControllerDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
-MCSwipeTableViewCellDelegate> {
+MCSwipeTableViewCellDelegate,
+UIGestureRecognizerDelegate,
+UIActionSheetDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;

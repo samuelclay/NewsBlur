@@ -133,6 +133,12 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
+    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleLongPress:)];
+    longpress.minimumPressDuration = 1.0;
+    longpress.delegate = self;
+    [self.feedTitlesTable addGestureRecognizer:longpress];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                                inView:self.view
                                            withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
@@ -156,7 +162,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
         [appDelegate setSelectedIntelligence:0];
-    } else { // default state, ALL BLURBLOG STORIES
+    } else {
+        // default state, ALL BLURBLOG STORIES
         self.viewShowingAllFeeds = YES;
         [self.intelligenceControl setSelectedSegmentIndex:0];
         [appDelegate setSelectedIntelligence:0];
@@ -754,6 +761,52 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     }
 }
 
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    CGPoint p = [gestureRecognizer locationInView:self.feedTitlesTable];
+    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForRowAtPoint:p];
+
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    if (indexPath == nil) return;
+
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+    NSDictionary *feed = isSocial ?
+                        [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                        [appDelegate.dictFeeds objectForKey:feedIdStr];
+
+    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:[feed objectForKey:@"feed_title"]
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                 destructiveButtonTitle:@"Mark site as read"
+                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+    markReadSheet.accessibilityValue = feedIdStr;
+    [markReadSheet showInView:self.view];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSString *feedId = actionSheet.accessibilityValue;
+    
+    switch (buttonIndex) {
+        case 0:
+            [self markFeedRead:feedId cutoffDays:0];
+            break;
+        case 1:
+            [self markFeedRead:feedId cutoffDays:1];
+            break;
+        case 2:
+            [self markFeedRead:feedId cutoffDays:3];
+            break;
+        case 3:
+            [self markFeedRead:feedId cutoffDays:7];
+            break;
+        case 4:
+            [self markFeedRead:feedId cutoffDays:14];
+            break;
+    }
+}
+
 #pragma mark -
 #pragma mark Preferences
 
@@ -1107,19 +1160,8 @@ heightForHeaderInSection:(NSInteger)section {
         }
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:feedId forKey:@"feed_id"];
-        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
-        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-        [request setUserInfo:@{@"feeds": @[feedId]}];
-        [request setDelegate:self];
-        [request startAsynchronous];
+        [self markFeedRead:feedId cutoffDays:0];
         
-        [appDelegate markFeedAllRead:feedId];
-
         [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
@@ -1130,7 +1172,10 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
     [appDelegate markStoriesRead:nil
-                         inFeeds:[request.userInfo objectForKey:@"feeds"]];
+                         inFeeds:[request.userInfo objectForKey:@"feeds"]
+                 cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
+    [self showOfflineNotifier];
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
@@ -1139,9 +1184,38 @@ heightForHeaderInSection:(NSInteger)section {
         return;
     }
     
+    if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
+        [self refreshFeedList:[[request.userInfo objectForKey:@"feeds"] objectAtIndex:0]];
+    }
     [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
 }
 
+- (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days {
+    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
+    cutoffTimestamp -= (days * 60*60*24);
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:feedId forKey:@"feed_id"];
+    if (days) {
+        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
+                       forKey:@"cutoff_timestamp"];
+    }
+    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+    [request setUserInfo:@{@"feeds": @[feedId],
+                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    if (!days) {
+        [appDelegate markFeedAllRead:feedId];
+    } else {
+        [self showRefreshNotifier];
+    }
+}
 
 #pragma mark - Table Actions
 
