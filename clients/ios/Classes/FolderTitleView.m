@@ -8,6 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlurViewController.h"
 #import "FolderTitleView.h"
 #import "UnreadCountView.h"
 
@@ -16,6 +17,7 @@
 @synthesize appDelegate;
 @synthesize section;
 @synthesize unreadCount;
+@synthesize invisibleHeaderButton;
 
 - (void)setNeedsDisplay {
     [unreadCount setNeedsDisplay];
@@ -123,7 +125,7 @@
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
         
-    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
@@ -210,6 +212,53 @@
     } else {
         [self addSubview:customView];
     }
+
+    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleLongPress:)];
+    longpress.minimumPressDuration = 1.0;
+    longpress.delegate = self;
+    [self addGestureRecognizer:longpress];
 }
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    if (section < 2) return;
+    
+    NSString *folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
+    
+    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                 destructiveButtonTitle:@"Mark folder as read"
+                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+    markReadSheet.accessibilityValue = folderTitle;
+    [markReadSheet showInView:appDelegate.feedsViewController.view];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSString *folderTitle = actionSheet.accessibilityValue;
+    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
+
+    switch (buttonIndex) {
+        case 0:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+            break;
+        case 1:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:1];
+            break;
+        case 2:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:3];
+            break;
+        case 3:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:7];
+            break;
+        case 4:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:14];
+            break;
+    }
+    
+    [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
+}
+
 
 @end
