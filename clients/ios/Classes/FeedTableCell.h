@@ -22,6 +22,7 @@
     NSString *_negativeCountStr;
     BOOL isSocial;
     UIView *cellContent;
+    UnreadCountView *unreadCount;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -32,6 +33,7 @@
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) BOOL isSocial;
 @property (nonatomic) NSString *negativeCountStr;
+@property (nonatomic) UnreadCountView *unreadCount;
 
 - (void)setupGestures;
 

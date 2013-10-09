@@ -24,7 +24,8 @@
 <UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate,
  UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
- WEPopoverControllerDelegate, MCSwipeTableViewCellDelegate> {
+ WEPopoverControllerDelegate, MCSwipeTableViewCellDelegate,
+ UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     int feedPage;

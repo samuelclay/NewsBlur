@@ -30,6 +30,7 @@
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
 #import "NBBarButtonItem.h"
+#import "UIActivitiesControl.h"
 
 #define kTableViewRowHeight 61;
 #define kTableViewRiverRowHeight 81;
@@ -101,6 +102,12 @@
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 
     titleImageBarButton = [UIBarButtonItem alloc];
+
+    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleLongPress:)];
+    longpress.minimumPressDuration = 1.0;
+    longpress.delegate = self;
+    [self.storyTitlesTable addGestureRecognizer:longpress];
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
@@ -1128,6 +1135,27 @@
 
 #pragma mark -
 #pragma mark Feed Actions
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
+    FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+    
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    if (indexPath == nil) return;
+    
+    NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    appDelegate.activeStory = story;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController showSendToPopover:cell];
+    } else {
+        [self presentViewController:[UIActivitiesControl activityViewControllerForView:self]
+                           animated:YES
+                         completion:nil];
+    }
+
+}
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
     if (appDelegate.isRiverView && includeHidden &&

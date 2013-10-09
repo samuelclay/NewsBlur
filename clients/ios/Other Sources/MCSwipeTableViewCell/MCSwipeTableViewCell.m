@@ -411,20 +411,22 @@ secondStateIconName:(NSString *)secondIconName
     
     // I'm sorry, I just assaulted this function. If you ever need multiple
     // types of gestures on a cell, go back in time.
-    
+//    NSLog(@"Percentage: %f (%f)", percentage, kMCStop1);
     if (percentage > -kMCStop1 && percentage < kMCStop1) {
 //        if (percentage >= 0 && percentage < kMCStop1) {
 //            position.x = [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
 //        }
         
-        if (percentage > 0 && percentage < kMCStop1) {
+        if ((percentage > 0 && percentage < kMCStop1) ||
+            (percentage == 0 && _direction == MCSwipeTableViewCellDirectionRight)) {
             position.x = [self offsetWithPercentage:percentage - (kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
         }
 //        else if (percentage < 0 && percentage >= -kMCStop1) {
 //            position.x = CGRectGetWidth(self.bounds) - [self offsetWithPercentage:(kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
 //        }
 //        
-        else if (percentage < 0 && percentage > -kMCStop1) {
+        else if ((percentage < 0 && percentage > -kMCStop1) ||
+                 (percentage == 0 && _direction == MCSwipeTableViewCellDirectionLeft)) {
             position.x = CGRectGetWidth(self.bounds) + [self offsetWithPercentage:percentage + (kMCStop1 / 2) relativeToWidth:CGRectGetWidth(self.bounds)];
         }
     }
