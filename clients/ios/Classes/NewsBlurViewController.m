@@ -1518,6 +1518,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
+    [self.appDelegate cancelOfflineQueue];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
@@ -1534,7 +1535,6 @@ heightForHeaderInSection:(NSInteger)section {
         [self showCountingNotifier];
     });
     
-    [self.appDelegate cancelOfflineQueue];
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
