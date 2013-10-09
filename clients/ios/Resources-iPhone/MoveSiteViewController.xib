@@ -26,12 +26,12 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" id="31">
-                    <rect key="frame" x="87" y="67" width="219" height="26"/>
+                    <rect key="frame" x="86" y="77" width="220" height="23"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="MOVING" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="41">
-                    <rect key="frame" x="7" y="65" width="61" height="28"/>
+                    <rect key="frame" x="7" y="75" width="61" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -40,7 +40,7 @@
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="FROM" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="43">
-                    <rect key="frame" x="19" y="105" width="49" height="31"/>
+                    <rect key="frame" x="19" y="115" width="49" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -49,7 +49,7 @@
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="INTO" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="42">
-                    <rect key="frame" x="19" y="148" width="49" height="31"/>
+                    <rect key="frame" x="19" y="158" width="49" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -58,7 +58,7 @@
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
                 <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="Moving..." lineBreakMode="tailTruncation" minimumFontSize="10" id="15">
-                    <rect key="frame" x="111" y="184" width="189" height="52"/>
+                    <rect key="frame" x="111" y="194" width="189" height="52"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -67,7 +67,7 @@
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
                 <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" minimumFontSize="17" id="16">
-                    <rect key="frame" x="20" y="188" width="280" height="48"/>
+                    <rect key="frame" x="20" y="198" width="280" height="48"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                     <color key="textColor" red="0.92408370969999998" green="0.35912829639999999" blue="0.23267127570000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -76,7 +76,7 @@
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" style="gray" id="9">
-                    <rect key="frame" x="86" y="201" width="20" height="20"/>
+                    <rect key="frame" x="86" y="211" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 </activityIndicatorView>
                 <pickerView contentMode="scaleToFill" id="8">
@@ -88,7 +88,7 @@
                     </connections>
                 </pickerView>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Choose a folder" minimumFontSize="12" id="13">
-                    <rect key="frame" x="87" y="148" width="219" height="31"/>
+                    <rect key="frame" x="87" y="158" width="219" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>
@@ -100,7 +100,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="12" id="44">
-                    <rect key="frame" x="87" y="105" width="219" height="30"/>
+                    <rect key="frame" x="87" y="115" width="219" height="30"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" none="YES" button="YES" image="YES"/>

@@ -1792,7 +1792,70 @@
     });
 }
 
-- (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds {
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff {
+    for (NSString *feedId in feedIds) {
+        NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedId];
+        NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
+        NSMutableArray *stories = [NSMutableArray array];
+        
+        [self.database inDatabase:^(FMDatabase *db) {
+            NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
+                             "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
+                             "WHERE s.story_feed_id = %@ AND s.story_timestamp < %ld",
+                             feedId, (long)cutoff];
+            FMResultSet *cursor = [db executeQuery:sql];
+            
+            while ([cursor next]) {
+                NSDictionary *story = [cursor resultDictionary];
+                [stories addObject:[NSJSONSerialization
+                                    JSONObjectWithData:[[story objectForKey:@"story_json"]
+                                                        dataUsingEncoding:NSUTF8StringEncoding]
+                                    options:nil error:nil]];
+            }
+            
+            [cursor close];
+        }];
+        
+        for (NSDictionary *story in stories) {
+            NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+            if (score > 0) {
+                int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] - 1);
+                [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+            } else if (score == 0) {
+                int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] - 1);
+                [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+            } else if (score < 0) {
+                int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
+                [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+            }
+            [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedId];
+        }
+        
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            for (NSDictionary *story in stories) {
+                NSMutableDictionary *newStory = [story mutableCopy];
+                [newStory setObject:[NSNumber numberWithInt:1] forKey:@"read_status"];
+                NSString *storyHash = [newStory objectForKey:@"story_hash"];
+                [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+                 [newStory JSONRepresentation],
+                 storyHash];
+            }
+            NSString *deleteSql = [NSString
+                                   stringWithFormat:@"DELETE FROM unread_hashes "
+                                   "WHERE story_feed_id = \"%@\" "
+                                   "AND story_timestamp < %ld",
+                                   feedId, (long)cutoff];
+            [db executeUpdate:deleteSql];
+            [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+             [newUnreadCounts objectForKey:@"ps"],
+             [newUnreadCounts objectForKey:@"nt"],
+             [newUnreadCounts objectForKey:@"ng"],
+             feedId];
+        }];
+    }
+}
+
+- (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff {
     // Must be offline and marking all as read, so load all stories.
 
     if (stories && [[stories allKeys] count]) {
@@ -1806,6 +1869,9 @@
             NSString *sql = [NSString stringWithFormat:@"SELECT u.story_feed_id, u.story_hash "
                              "FROM unread_hashes u WHERE u.story_feed_id IN (\"%@\")",
                              [feeds componentsJoinedByString:@"\",\""]];
+            if (cutoff) {
+                sql = [NSString stringWithFormat:@"%@ AND u.story_timestamp < %ld", sql, (long)cutoff];
+            }
             FMResultSet *cursor = [db executeQuery:sql];
             
             while ([cursor next]) {
@@ -1824,10 +1890,14 @@
             [cursor close];
         }];
         [self queueReadStories:feedsStories];
-        for (NSString *feedId in [feedsStories allKeys]) {
-            [self markFeedAllRead:feedId];
+        if (cutoff) {
+            [self markFeedReadInCache:[feedsStories allKeys] cutoffTimestamp:cutoff];
+        } else {
+            for (NSString *feedId in [feedsStories allKeys]) {
+                [self markFeedAllRead:feedId];
+            }
+            [self markFeedReadInCache:[feedsStories allKeys]];
         }
-        [self markFeedReadInCache:[feedsStories allKeys]];
     }
 }
 
@@ -1836,7 +1906,7 @@
     NSArray *feedIds = [request.userInfo objectForKey:@"feeds"];
     NSDictionary *stories = [request.userInfo objectForKey:@"stories"];
     
-    [self markStoriesRead:stories inFeeds:feedIds];
+    [self markStoriesRead:stories inFeeds:feedIds cutoffTimestamp:nil];
 }
 
 - (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
