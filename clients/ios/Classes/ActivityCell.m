@@ -52,21 +52,21 @@
     [super layoutSubviews];
     
     // determine outer bounds
-    CGRect contentRect = self.contentView.bounds;
+    [self.activityLabel sizeToFit];
+    CGRect contentRect = self.frame;
+    CGRect labelFrame = self.activityLabel.frame;
     
     // position label to bounds
-    CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
-    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
-    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
-    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
-    self.activityLabel.frame = labelRect;
-    [self.activityLabel sizeToFit];
+    labelFrame.origin.x = leftMargin*2 + avatarSize;
+    labelFrame.origin.y = topMargin - 1;
+    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
+    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    self.activityLabel.frame = labelFrame;
 }
 
 - (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
     // must set the height again for dynamic height in heightForRowAtIndexPath in
-    CGRect activityLabelRect = self.activityLabel.bounds;
+    CGRect activityLabelRect = self.activityLabel.frame;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     
     self.activityLabel.frame = activityLabelRect;
