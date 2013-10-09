@@ -56,16 +56,19 @@
     [super layoutSubviews];
     
     // determine outer bounds
-    CGRect contentRect = self.contentView.bounds;
-
-    // position label to bounds
-    CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
-    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
-    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
-    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
-    self.interactionLabel.frame = labelRect;
     [self.interactionLabel sizeToFit];
+    CGRect contentRect = self.frame;
+    CGRect labelFrame = self.interactionLabel.frame;
+    
+    // position avatar to bounds
+    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    
+    // position label to bounds
+    labelFrame.origin.x = leftMargin*2 + avatarSize;
+    labelFrame.origin.y = topMargin - 1;
+    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
+    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    self.interactionLabel.frame = labelFrame;
 }
 
 
