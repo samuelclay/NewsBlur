@@ -786,6 +786,15 @@ static const CGFloat kFolderTitleHeight = 28.0f;
                                                       otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
     markReadSheet.accessibilityValue = feedIdStr;
     [markReadSheet showInView:self.view];
+    
+    [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
+}
+
+- (void)highlightCell:(FeedTableCell *)cell {
+    [cell setHighlighted:YES];
+}
+- (void)unhighlightCell:(FeedTableCell *)cell {
+    [cell setHighlighted:NO];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -807,6 +816,13 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         case 4:
             [self markFeedRead:feedId cutoffDays:14];
             break;
+    }
+    
+    for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
+        if (cell.highlighted) {
+            [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
+            break;
+        }
     }
 }
 
