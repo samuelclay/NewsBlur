@@ -316,9 +316,11 @@
 }
 
 - (void)highlightButton:(UIButton *)b {
+    if (![b isKindOfClass:[UIButton class]]) return;
     [b setHighlighted:YES];
 }
 - (void)unhighlightButton:(UIButton *)b {
+    if (![b isKindOfClass:[UIButton class]]) return;
     [b setHighlighted:NO];
 }
 
