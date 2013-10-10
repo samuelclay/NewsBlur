@@ -360,6 +360,9 @@
         }
     }
     
+    NSString *storyDate = [Utilities formatLongDateFromTimestamp:[[self.activeStory
+                                                                  objectForKey:@"story_timestamp"]
+                                                                  integerValue]];
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
                              "<div class=\"NB-story-title\">"
@@ -373,7 +376,7 @@
                              "</div></div>",
                              storyUnread,
                              storyTitle,
-                             [self.activeStory objectForKey:@"long_parsed_date"],
+                             storyDate,
                              storyAuthor,
                              storyTags,
                              storyStarred];

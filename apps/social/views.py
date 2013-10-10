@@ -123,8 +123,8 @@ def load_social_stories(request, user_id, username=None):
         story['social_user_id'] = social_user_id
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
-        story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(shared_date)
+        story['long_parsed_date'] = format_story_link_date__long(shared_date)
         
         story['read_status'] = 1
         if (read_filter == 'all' or query) and socialsub:
@@ -275,7 +275,7 @@ def load_river_blurblog(request):
         if story['story_hash'] not in unread_feed_story_hashes:
             story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         if story['story_hash'] in starred_stories:
             story['starred'] = True

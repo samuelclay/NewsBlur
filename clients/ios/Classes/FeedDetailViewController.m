@@ -301,7 +301,8 @@
 
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (!appDelegate.storyLocationsCount && self.feedPage == 1 && !self.isOffline) {
+        if (!appDelegate.storyLocationsCount && !self.pageFinished &&
+            self.feedPage == 1 && !self.isOffline) {
             self.isShowingOffline = YES;
             self.isOffline = YES;
             [self showLoadingNotifier];
@@ -381,13 +382,11 @@
             if (request.isCancelled) {
                 NSLog(@"Cancelled");
                 return;
-            } else if (self.feedPage == 1) {
+            } else {
                 self.isOffline = YES;
+                self.feedPage = 1;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
-            } else {
-                [self informError:[request error]];
-                self.pageFinished = YES;
             }
             [self.storyTitlesTable reloadData];
         }];
@@ -574,15 +573,12 @@
             if (request.isCancelled) {
                 NSLog(@"Cancelled");
                 return;
-            } else if (self.feedPage == 1) {
+            } else {
                 self.isOffline = YES;
                 self.isShowingOffline = NO;
+                self.feedPage = 1;
                 [self loadOfflineStories];
                 [self showOfflineNotifier];
-            } else {
-                [self informError:[request error]];
-                self.pageFinished = YES;
-                [self.storyTitlesTable reloadData];
             }
         }];
         [request setCompletionBlock:^(void) {
@@ -604,12 +600,11 @@
         NSLog(@"Cancelled");
         return;
     } else if ([request responseStatusCode] >= 500) {
-        if (self.feedPage == 1) {
-            self.isOffline = YES;
-            self.isShowingOffline = NO;
-            [self loadOfflineStories];
-            [self showOfflineNotifier];
-        }
+        self.isOffline = YES;
+        self.isShowingOffline = NO;
+        self.feedPage = 1;
+        [self loadOfflineStories];
+        [self showOfflineNotifier];
         if ([request responseStatusCode] == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
@@ -902,8 +897,9 @@
 
     NSString *title = [story objectForKey:@"story_title"];
     cell.storyTitle = [title stringByDecodingHTMLEntities];
-
+    
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
+    cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
     cell.isStarred = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
     
