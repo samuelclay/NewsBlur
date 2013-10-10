@@ -23,6 +23,7 @@ static UIFont *indicatorFont = nil;
 @synthesize storyTitle;
 @synthesize storyAuthor;
 @synthesize storyDate;
+@synthesize storyTimestamp;
 @synthesize storyScore;
 @synthesize siteTitle;
 @synthesize siteFavicon;
@@ -223,7 +224,8 @@ static UIFont *indicatorFont = nil;
     }
     
     paragraphStyle.alignment = NSTextAlignmentRight;
-    [cell.storyDate
+    NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
+    [date
      drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,

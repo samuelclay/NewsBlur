@@ -611,7 +611,7 @@ def load_single_feed(request, feed_id):
         if not include_story_content:
             del story['story_content']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         if usersub:
             story['read_status'] = 1
@@ -683,6 +683,9 @@ def load_single_feed(request, feed_id):
     # if page <= 1:
     #     import random
     #     time.sleep(random.randint(0, 3))
+    
+    # if page == 2:
+    #     assert False
 
     return data
 
@@ -797,7 +800,7 @@ def load_starred_stories(request):
 
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
         story['starred_date']      = format_story_link_date__long(starred_date, now)
@@ -960,7 +963,7 @@ def load_river_stories__redis(request):
                 story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         if story['story_hash'] in starred_stories:
             story['starred'] = True

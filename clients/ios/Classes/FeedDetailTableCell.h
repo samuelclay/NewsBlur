@@ -17,6 +17,7 @@
     NSString *storyTitle;
     NSString *storyAuthor;
     NSString *storyDate;
+    NSInteger storyTimestamp;
     int storyScore;
     BOOL isStarred;
     BOOL isShared;
@@ -44,6 +45,7 @@
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
+@property (nonatomic) NSInteger storyTimestamp;
 
 @property (nonatomic) UIColor *feedColorBar;
 @property (nonatomic) UIColor *feedColorBarTopBorder;

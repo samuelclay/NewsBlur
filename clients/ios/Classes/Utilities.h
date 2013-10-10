@@ -22,6 +22,7 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 + (void)saveimagesToDisk;
 + (UIImage *)roundCorneredImage:(UIImage *)orig radius:(CGFloat)r;
 + (NSString *)md5:(NSString *)string;
-+ (NSString *)formatDateFromTimestamp:(NSInteger)timestamp;
++ (NSString *)formatLongDateFromTimestamp:(NSInteger)timestamp;
++ (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp;
 
 @end

@@ -1922,7 +1922,7 @@
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     if (saved) {
-        [newStory setValue:[Utilities formatDateFromTimestamp:nil] forKey:@"starred_date"];
+        [newStory setValue:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
     } else {
         [newStory removeObjectForKey:@"starred_date"];
     }
