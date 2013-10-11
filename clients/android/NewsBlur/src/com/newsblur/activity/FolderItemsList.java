@@ -52,12 +52,12 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
 
-		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 

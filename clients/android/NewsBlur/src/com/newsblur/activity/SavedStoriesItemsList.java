@@ -40,12 +40,12 @@ public class SavedStoriesItemsList extends ItemsList {
 		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 		
-		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = SavedStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 

@@ -36,12 +36,12 @@ public class AllSharedStoriesItemsList extends ItemsList {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}
 
-		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
