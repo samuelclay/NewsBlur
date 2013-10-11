@@ -32,8 +32,6 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
-	private static final String TAG = "socialfeedListFragment";
-	public static final String FRAGMENT_TAG = "socialfeedListFragment";
 	private ContentResolver contentResolver;
 	private String userId, username;
 	private SimpleCursorAdapter adapter;
@@ -43,7 +41,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private boolean requestedPage;
 	
 	public static int ITEMLIST_LOADER = 0x01;
-	private int READING_RETURNED = 0x02;
 	private Uri socialFeedUri;
 	private String[] groupFroms;
 	private int[] groupTos;
@@ -147,7 +144,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		i.putExtra(Reading.EXTRA_USERNAME, username);
 		i.putExtra(Reading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-		startActivityForResult(i, READING_RETURNED );
+		startActivity(i);
 	}
 
 	public void changeState(int state) {

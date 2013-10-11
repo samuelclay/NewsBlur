@@ -45,12 +45,12 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		resolver = getContentResolver();
 		
 
-		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
