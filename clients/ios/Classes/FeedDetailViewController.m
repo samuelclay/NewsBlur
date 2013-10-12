@@ -158,9 +158,9 @@
     }
     
     // set center title
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.navigationItem.titleView = titleLabel;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+        !self.navigationItem.titleView) {
+        self.navigationItem.titleView = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     }
     
     NSMutableArray *indexPaths = [NSMutableArray array];
@@ -261,6 +261,7 @@
 
 - (void)resetFeedDetail {
     appDelegate.hasLoadedFeedDetail = NO;
+    self.navigationItem.titleView = nil;
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.isOffline = NO;
