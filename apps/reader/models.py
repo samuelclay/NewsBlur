@@ -548,6 +548,7 @@ class UserSubscription(models.Model):
                 stories = cache.get('S:%s' % self.feed_id)
             
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     cutoff_date=self.user.profile.unread_cutoff)
         
@@ -607,6 +608,7 @@ class UserSubscription(models.Model):
                         feed_scores['neutral'] += 1
         else:
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     include_timestamps=True,
                                                     cutoff_date=self.user.profile.unread_cutoff)
