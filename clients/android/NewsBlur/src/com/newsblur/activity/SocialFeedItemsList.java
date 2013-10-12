@@ -48,7 +48,7 @@ public class SocialFeedItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 	}
 	
@@ -61,11 +61,6 @@ public class SocialFeedItemsList extends ItemsList {
 		return true;
 	}
 	
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {

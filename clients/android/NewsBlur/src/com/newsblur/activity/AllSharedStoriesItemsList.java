@@ -49,15 +49,9 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 		cursor.close();
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override

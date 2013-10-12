@@ -65,7 +65,7 @@ public class FeedItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 	}
 	
@@ -116,11 +116,6 @@ public class FeedItemsList extends ItemsList {
 		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
 		return true;
-	}
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
