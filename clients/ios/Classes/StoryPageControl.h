@@ -10,7 +10,6 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "WEPopoverController.h"
-#import "TransparentToolbar.h"
 #import "THCircularProgressView.h"
 
 @class NewsBlurAppDelegate;
@@ -27,7 +26,6 @@
     UIButton *buttonText;
     UIActivityIndicatorView *loadingIndicator;
     UIBarButtonItem *buttonBack;
-    TransparentToolbar * rightToolbar;
     UIView *traverseView;
     UIView *progressView;
     UIView *progressViewContainer;
@@ -60,7 +58,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
-@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIView *progressView;
 @property (nonatomic) IBOutlet UIView *progressViewContainer;
@@ -84,6 +81,7 @@
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;
+- (void)hidePages;
 - (void)refreshPages;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;

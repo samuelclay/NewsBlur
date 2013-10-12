@@ -24,7 +24,6 @@
 #import "UIBarButtonItem+WEPopover.h"
 #import "WEPopoverController.h"
 #import "UIBarButtonItem+Image.h"
-#import "TransparentToolbar.h"
 #import "FeedDetailMenuViewController.h"
 #import "NBNotifier.h"
 #import "NBLoadingCell.h"
@@ -51,8 +50,7 @@
 @synthesize settingsBarButton;
 @synthesize separatorBarButton;
 @synthesize titleImageBarButton;
-@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
-@synthesize rightToolbar;
+@synthesize spacerBarButton, spacer2BarButton;
 @synthesize appDelegate;
 @synthesize feedPage;
 @synthesize pageFetching;
@@ -77,19 +75,12 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     
-    rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 76, 44)];
-    rightToolbar.keepSpacing = YES;
-    
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacerBarButton.width = -10;
+    spacerBarButton.width = 0;
     spacer2BarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer2BarButton.width = -10;
-    spacer3BarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer3BarButton.width = -6;
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer2BarButton.width = 0;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
@@ -97,7 +88,7 @@
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsActionSheet:)];
-    
+
     UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadActionSheet:)];
 
@@ -131,42 +122,49 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    
+    // set right avatar title image
+    spacerBarButton.width = 0;
+    spacer2BarButton.width = 0;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        spacerBarButton.width = -6;
+        spacer2BarButton.width = 10;
+    }
+    if (appDelegate.isSocialView) {
+        spacerBarButton.width = -6;
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+        UIImage *titleImage  = [Utilities getImage:feedIdStr isSocial:YES];
+        titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+        [((UIButton *)titleImageBarButton.customView).imageView removeFromSuperview];
+        titleImageBarButton = [UIBarButtonItem barItemWithImage:titleImage
+                                                         target:self
+                                                         action:@selector(showUserProfile)];
+        titleImageBarButton.customView.frame = CGRectMake(0, 0, 32, 32);
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   spacerBarButton,
+                                                   titleImageBarButton,
+                                                   spacer2BarButton,
+                                                   separatorBarButton,
+                                                   feedMarkReadButton, nil];
+    } else {
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   spacerBarButton,
+                                                   settingsBarButton,
+                                                   spacer2BarButton,
+                                                   separatorBarButton,
+                                                   feedMarkReadButton,
+                                                   nil];
+    }
     
     // set center title
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
         self.navigationItem.titleView = titleLabel;
     }
-
-    // set right avatar title image
-    if (appDelegate.isSocialView) {
-        NBBarButtonItem *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
-        [titleImageButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-        titleImageBarButton.customView = titleImageButton;
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 feedMarkReadButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 titleImageBarButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
-        titleImageBarButton.enabled = YES;
-    } else {
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 feedMarkReadButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 settingsBarButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
-    }
-    
     
     NSMutableArray *indexPaths = [NSMutableArray array];
-    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
+//    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
     for (id i in appDelegate.recentlyReadStoryLocations) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                     inSection:0];
@@ -185,8 +183,6 @@
     appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     appDelegate.originalStoryCount = [appDelegate unreadCount];
     
-	[super viewWillAppear:animated];
-        
     if ((appDelegate.isSocialRiverView ||
          appDelegate.isSocialView ||
          [appDelegate.activeFolder isEqualToString:@"saved_stories"])) {
@@ -220,7 +216,6 @@
     [super viewDidAppear:animated];
     if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
-        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
     
@@ -1463,7 +1458,7 @@
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"username"]];
-    [appDelegate showUserProfileModal:self.navigationItem.rightBarButtonItem];
+    [appDelegate showUserProfileModal:titleImageBarButton];
 }
 
 - (void)changeActiveFeedDetailRow {

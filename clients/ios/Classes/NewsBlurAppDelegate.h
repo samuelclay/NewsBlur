@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
-#import "NBBarButtonItem.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -353,7 +352,6 @@
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
-- (NBBarButtonItem *)makeRightFeedTitle:(NSDictionary *)feed;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

@@ -48,7 +48,12 @@
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
+    [self.loginControl
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
 
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
             self.logInView.frame = CGRectMake(134, 180, 500, 300); 
@@ -218,6 +223,7 @@
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
         [appDelegate reloadFeedsView:YES];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     
 }
@@ -278,7 +284,7 @@
         [self.signUpPasswordInput setText:@""];
 //        [appDelegate showFirstTimeUser];
         [appDelegate reloadFeedsView:YES];
-        [self dismissViewControllerAnimated:NO completion:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     
 }

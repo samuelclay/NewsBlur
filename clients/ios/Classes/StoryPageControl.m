@@ -22,7 +22,6 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
@@ -35,7 +34,6 @@
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
-@synthesize rightToolbar;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -122,9 +120,6 @@
     [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
 
-    rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 86, 44)];
-    
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                        target:nil action:nil];
@@ -173,15 +168,10 @@
     
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 fontSettingsButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 originalStoryButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                                  initWithCustomView:rightToolbar];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   separatorBarButton,
+                                                   fontSettingsButton, nil];
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -194,6 +184,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
@@ -264,6 +255,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     previousPage.view.hidden = YES;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
 }
 
 - (void)transitionFromFeedDetail {
@@ -339,10 +332,6 @@
     [nextPage clearStory];
     [previousPage clearStory];
 
-    [currentPage hideStory];
-    [nextPage hideStory];
-    [previousPage hideStory];
-    
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
@@ -354,7 +343,12 @@
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
-    
+}
+
+- (void)hidePages {
+    [currentPage hideStory];
+    [nextPage hideStory];
+    [previousPage hideStory];
 }
 
 - (void)refreshPages {
@@ -695,14 +689,10 @@
     [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 fontSettingsButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 originalStoryButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   separatorBarButton,
+                                                   fontSettingsButton, nil];
     }
     
     [self setNextPreviousButtons];

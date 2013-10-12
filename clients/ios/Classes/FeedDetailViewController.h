@@ -12,7 +12,6 @@
 #import "BaseViewController.h"
 #import "Utilities.h"
 #import "WEPopoverController.h"
-#import "TransparentToolbar.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
@@ -48,10 +47,8 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
-@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
 
