@@ -449,7 +449,7 @@ def config_pgbouncer():
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
-        sudo('pkill -9 pgbouncer')
+        sudo('pkill -9 pgbouncer -e')
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
@@ -457,7 +457,7 @@ def bounce_pgbouncer():
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     run('sleep 2')
     with settings(warn_only=True):
-        sudo('pkill pgbouncer')
+        sudo('pkill -9 pgbouncer -e')
         run('sleep 2')
     run('sudo /etc/init.d/pgbouncer start', pty=False)
 
@@ -1156,6 +1156,11 @@ def deploy_full(fast=False):
     deploy_code(copy_assets=True, fast=fast, full=True)
 
 @parallel
+def kill_gunicorn():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('pkill -9 -u %s -f gunicorn_django -e' % env.user)
+                
+@parallel
 def deploy_code(copy_assets=False, full=False, fast=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -1166,11 +1171,7 @@ def deploy_code(copy_assets=False, full=False, fast=False):
             transfer_assets()
         sudo('supervisorctl reload')
         if fast:
-            with settings(warn_only=True):
-                if env.user == 'ubuntu':
-                    sudo('./utils/kill_gunicorn.sh')
-                else:
-                    run('./utils/kill_gunicorn.sh')
+            kill_gunicorn()
 
 @parallel
 def kill():
