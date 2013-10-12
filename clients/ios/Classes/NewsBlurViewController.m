@@ -320,6 +320,9 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
+    if (showLoader) {
+        [self.notifier hide];
+    }
     [self showRefreshNotifier];
 }
 
@@ -636,9 +639,18 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
-        if (!appDelegate.activeUsername) return;
+        if (!appDelegate.activeUsername) {
+            if (failed) {
+                return;
+            } else {
+                [self fetchFeedList:YES];
+                return;
+            }
+        }
     }
-    
+
+    [self showRefreshNotifier];
+
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSDictionary *results;
 
@@ -1823,7 +1835,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showRefreshNotifier {
-    [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"On its way...";
     [self.notifier setProgress:0];
