@@ -26,6 +26,7 @@
 #import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
+#import "UIBarButtonItem+Image.h"
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
@@ -287,7 +288,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
-        [self fetchFeedList:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
 }
@@ -320,8 +321,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 
     self.lastUpdate = [NSDate date];
     [self showRefreshNotifier];
-    
-    [self loadOfflineFeeds:NO];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -332,7 +331,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
     
-    [self loadOfflineFeeds:YES];
     [self showOfflineNotifier];
 }
 
@@ -350,7 +348,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
             [self informError:@"The server barfed!"];
         }
         
-        [self loadOfflineFeeds:YES];
         [self showOfflineNotifier];
         return;
     }
@@ -483,6 +480,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
                        forKey:userKey];
     }
     
+    NSLog(@"Setting dictSocialFeeds");
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
     
@@ -660,8 +658,12 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (![[results allKeys] count] && !failed) return;
+            if (![[results allKeys] count] && !failed) {
+                NSLog(@"Fetched feeds before offline came in. Skipping offline loading.");
+                return;
+            }
             [_self finishLoadingFeedListWithDict:results];
+            [_self fetchFeedList:NO];
         });
     }];
 }
@@ -670,7 +672,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
-    [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
+    [appDelegate showUserProfileModal:[self.navigationItem.leftBarButtonItems
+                                       objectAtIndex:1]];
 }
 
 - (IBAction)tapAddSite:(id)sender {
@@ -1532,7 +1535,7 @@ heightForHeaderInSection:(NSInteger)section {
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
     self.inPullToRefresh_ = YES;
-    [self fetchFeedList:NO];
+    [appDelegate reloadFeedsView:NO];
 }
 
 - (void)refreshFeedList {
@@ -1744,36 +1747,36 @@ heightForHeaderInSection:(NSInteger)section {
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"photo_url"]]];
-    NBBarButtonItem *userAvatarButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    userAvatarButton.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
-    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
+                                                                   target:self
+                                                                   action:@selector(showUserProfile)];
+    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
     [avatarRequest setHTTPShouldHandleCookies:NO];
     [avatarRequest setHTTPShouldUsePipelining:YES];
-    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         image = [Utilities roundCorneredImage:image radius:3];
-        [userAvatarButton setImage:image forState:UIControlStateNormal];
+        [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
     } failure:nil];
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
 
-    [userInfoView addSubview:userAvatarButton];
+//    [userInfoView addSubview:userAvatarButton];
     
-    int xOffset = CGRectGetMaxX(userAvatarButton.frame) + 6;
-    
-    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, userInfoView.frame.size.width, 16)];
+    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
+    [userLabel sizeToFit];
     [userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    yellow.frame = CGRectMake(xOffset, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
+    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
     NSNumberFormatter *formatter = [NSNumberFormatter new];
@@ -1804,11 +1807,19 @@ heightForHeaderInSection:(NSInteger)section {
     [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
 
-    [userInfoView setBounds:CGRectInset(userInfoView.bounds, 10, 0)];
+    [userInfoView sizeToFit];
     
     UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
                                           initWithCustomView:userInfoView];
-    self.navigationItem.leftBarButtonItem = userInfoBarButton;
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                               target:nil
+                               action:nil];
+    spacer.width = -8;
+    self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:
+                                              spacer,
+                                              userAvatarButton,
+                                              userInfoBarButton, nil];
 }
 
 - (void)showRefreshNotifier {

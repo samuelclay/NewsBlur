@@ -506,7 +506,7 @@
     self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomSize.hidden = NO;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
-    [self.storyPageControl resetPages];
+    [self.storyPageControl hidePages];
     NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         self.storyPageControl.circularProgressView.percentage = 1;
@@ -521,8 +521,7 @@
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
         self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
-        self.storyPageControl.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                                                   initWithCustomView:self.feedDetailViewController.rightToolbar];
+        self.storyPageControl.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
 
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
         self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 

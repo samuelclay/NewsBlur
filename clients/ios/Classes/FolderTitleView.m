@@ -86,16 +86,16 @@
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, 0.5f);
-    CGContextAddLineToPoint(context, rect.size.width, 0.5f);
+    CGContextMoveToPoint(context, 0, 0.25f);
+    CGContextAddLineToPoint(context, rect.size.width, 0.25f);
     CGContextStrokePath(context);
     
     // bottom border
     UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, rect.size.height - .5f);
-    CGContextAddLineToPoint(context, rect.size.width, rect.size.height - .5f);
+    CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
+    CGContextAddLineToPoint(context, rect.size.width, rect.size.height-0.25f);
     CGContextStrokePath(context);
     
     // Folder title

@@ -70,6 +70,7 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+    
     self.pageIndex = -2;
     self.inTextView = NO;
 }

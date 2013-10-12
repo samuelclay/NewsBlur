@@ -193,7 +193,7 @@
 //    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
     [self createDatabaseConnection];
-    [self.feedsViewController fetchFeedList:YES];
+    [self.feedsViewController loadOfflineFeeds:NO];
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
 
@@ -605,7 +605,6 @@
 
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
-    [loginViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)loadFeedDetailView {
@@ -2190,8 +2189,6 @@
     titleLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.center = CGPointMake(0, -2);
-    [titleLabel sizeToFit];
-    
     if (!self.isSocialView) {
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
@@ -2213,21 +2210,9 @@
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
     }
+    [titleLabel sizeToFit];
+
     return titleLabel;
-}
-
-- (NBBarButtonItem *)makeRightFeedTitle:(NSDictionary *)feed {
-    
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    UIImage *titleImage  = [Utilities getImage:feedIdStr];
-
-    titleImage = [Utilities roundCorneredImage:titleImage radius:6];
-    
-    NBBarButtonItem *titleImageButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    titleImageButton.bounds = CGRectMake(0, 0, 32, 32);
-
-    [titleImageButton setImage:titleImage forState:UIControlStateNormal];
-    return titleImageButton;
 }
 
 #pragma mark -
