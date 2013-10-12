@@ -42,7 +42,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
-		setResult(RESULT_OK);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
@@ -60,7 +59,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
         itemListFragment.hasUpdated();
     }
 
-	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
 	public abstract void markItemListAsRead();
 	
@@ -132,7 +130,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
         stopLoading = false;
-        triggerRefresh();
+        triggerRefresh(1);
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
@@ -141,7 +139,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
         stopLoading = false;
-        triggerRefresh();
+        triggerRefresh(1);
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

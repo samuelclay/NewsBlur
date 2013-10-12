@@ -58,14 +58,8 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
