@@ -117,7 +117,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), SavedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
-		startActivityForResult(i, READING_RETURNED );
+		startActivity(i);
 	}
 
 	@Override
