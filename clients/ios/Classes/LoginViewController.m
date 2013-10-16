@@ -173,6 +173,13 @@
 }
 
 - (void)checkPassword {
+    
+    if ([[usernameInput text] length] == 0) {
+        [self.errorLabel setHidden:NO];
+        [self.errorLabel setText:@"Username/email is required field"];
+        return;
+    }
+    
     [self.errorLabel setHidden:YES];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -224,6 +231,17 @@
 
 
 - (void)registerAccount {
+    
+    if ([[usernameInput text] length] == 0 || [[emailInput text] length] == 0) {
+        [self.errorLabel setHidden:NO];
+        [self.errorLabel setText:@"Username/email is required field"];
+        return;
+    } else if (![self _validateEmail:[emailInput text]]) {
+        [self.errorLabel setHidden:NO];
+        [self.errorLabel setText:@"Enter a valid email address."];
+        return;
+    }
+    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Registering...";
@@ -388,6 +406,16 @@
         [usernameInput resignFirstResponder];
         [usernameInput becomeFirstResponder];
     }
+}
+
+#pragma mark - 
+#pragma mark - private methods
+
+- (BOOL) _validateEmail: (NSString *) candidate {
+    NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    
+    return [emailTest evaluateWithObject:candidate];
 }
 
 @end
