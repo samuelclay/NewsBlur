@@ -492,6 +492,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinboard', name: 'story_share_pinboard' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-pinboard' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Pinterest' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinterest', name: 'story_share_pinterest' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-pinterest' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Buffer' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-buffer', name: 'story_share_buffer' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-buffer' })
