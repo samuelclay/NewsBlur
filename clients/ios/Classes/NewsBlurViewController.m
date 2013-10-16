@@ -670,10 +670,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (![[results allKeys] count] && !failed) {
-                NSLog(@"Fetched feeds before offline came in. Skipping offline loading.");
-                return;
-            }
             [_self finishLoadingFeedListWithDict:results];
             [_self fetchFeedList:NO];
         });
