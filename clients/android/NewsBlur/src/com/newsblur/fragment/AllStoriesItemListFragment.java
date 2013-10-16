@@ -137,7 +137,7 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 		Intent i = new Intent(getActivity(), AllStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-		startActivityForResult(i, READING_RETURNED );
+		startActivity(i);
 	}
 
 	@Override

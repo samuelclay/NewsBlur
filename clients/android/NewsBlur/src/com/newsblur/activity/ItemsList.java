@@ -25,7 +25,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
 	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";
 	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
-	public static final String RESULT_EXTRA_READ_STORIES = "storiesToMarkAsRead";
 	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
@@ -33,7 +32,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected SyncUpdateFragment syncFragment;
-	protected String TAG = "ItemsList";
 	protected int currentState;
 	private Menu menu;
 	
@@ -44,7 +42,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
-		setResult(RESULT_OK);
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
@@ -55,14 +52,13 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 
 	}
 
+    protected void onResume() {
+        super.onResume();
+        // Reading activities almost certainly changed the read/unread state of some stories. Ensure
+        // we reflect those changes promptly.
+        itemListFragment.hasUpdated();
+    }
 
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK) {
-			itemListFragment.hasUpdated();
-		}
-	}
-
-	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
 	public abstract void markItemListAsRead();
 	
@@ -98,7 +94,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
 		} else {
-			Log.e(TAG, "Error updating list as it doesn't exist.");
+			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
 		}
 		setSupportProgressBarIndeterminateVisibility(false);
 	}
@@ -108,7 +104,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
 		} else {
-			Log.e(TAG, "Error updating list as it doesn't exist.");
+			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
 		}
 	}
 
@@ -134,17 +130,16 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
         stopLoading = false;
-        triggerRefresh();
+        triggerRefresh(1);
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
-
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
         stopLoading = false;
-        triggerRefresh();
+        triggerRefresh(1);
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);
