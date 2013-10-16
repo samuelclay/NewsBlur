@@ -216,6 +216,7 @@
     [super viewDidAppear:animated];
     if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
+        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
     
