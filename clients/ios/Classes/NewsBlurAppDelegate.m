@@ -158,6 +158,7 @@
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
+@synthesize backgroundCompletionHandler;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -200,6 +201,27 @@
 //    [self showFirstTimeUser];
 
 	return YES;
+}
+
+
+- (void)application:(UIApplication *)application
+    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [self createDatabaseConnection];
+    [self.feedsViewController fetchFeedList:NO];
+    backgroundCompletionHandler = completionHandler;
+}
+
+- (void)finishBackground {
+    if (!backgroundCompletionHandler) return;
+    
+    NSLog(@"Background fetch complete. Found data: %d/%d = %d",
+          self.totalUnfetchedStoryCount, self.totalUncachedImagesCount,
+          self.totalUnfetchedStoryCount || self.totalUncachedImagesCount);
+    if (self.totalUnfetchedStoryCount || self.totalUncachedImagesCount) {
+        backgroundCompletionHandler(UIBackgroundFetchResultNewData);
+    } else {
+        backgroundCompletionHandler(UIBackgroundFetchResultNoData);
+    }
 }
 
 - (void)registerDefaultsFromSettingsBundle {

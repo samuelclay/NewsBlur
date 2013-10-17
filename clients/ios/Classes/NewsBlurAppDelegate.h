@@ -251,9 +251,12 @@
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
+@property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
+
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 - (void)registerDefaultsFromSettingsBundle;
+- (void)finishBackground;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
