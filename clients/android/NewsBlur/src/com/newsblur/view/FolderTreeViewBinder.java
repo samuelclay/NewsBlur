@@ -21,7 +21,6 @@ import com.newsblur.util.ImageLoader;
 public class FolderTreeViewBinder implements ViewBinder {
 
 	private int currentState = AppConstants.STATE_SOME;
-	private int READING_RETURNED = 0x02;
 	private final ImageLoader imageLoader;
 	
 	public FolderTreeViewBinder(ImageLoader imageLoader) {
@@ -66,7 +65,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 					Intent i = new Intent(v.getContext(), FolderItemsList.class);
 					i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, folderName);
 					i.putExtra(FolderItemsList.EXTRA_STATE, currentState);
-					((Activity) v.getContext()).startActivityForResult(i, READING_RETURNED);
+					((Activity) v.getContext()).startActivity(i);
 				}
 			});
 			return true;

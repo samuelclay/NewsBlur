@@ -41,7 +41,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	private int currentPage = 0;
 
 	public static int ITEMLIST_LOADER = 0x01;
-	private static final String TAG = "AllSharedStoriesItemListFragment";
 	private Cursor countCursor;
 	private ListView itemList;
 	private String[] groupFrom;
@@ -135,7 +134,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-		startActivityForResult(i, READING_RETURNED );
+		startActivity(i);
 	}
 
 	@Override

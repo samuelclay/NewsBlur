@@ -131,7 +131,7 @@ public class FeedUtils {
                 }
                 @Override
                 protected void onPostExecute(NewsBlurResponse result) {
-                    if (!result.isError()) {
+                    if (result.isError()) {
                         Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
                     }
                 }

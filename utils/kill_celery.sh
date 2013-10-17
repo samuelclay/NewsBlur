@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pkill -9 -f celery
+pkill -9 -f celery -c
 
 # for i in `ps -o pid,command ax | grep celery | awk '!/awk/ && !/grep/ {print $1}'`
 # do
