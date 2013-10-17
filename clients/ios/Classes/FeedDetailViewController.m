@@ -1230,7 +1230,9 @@
         return;
     }
     
-    [appDelegate markFeedReadInCache:@[[request.userInfo objectForKey:@"feeds"]]];
+    if ([request.userInfo objectForKey:@"feeds"]) {
+        [appDelegate markFeedReadInCache:@[[request.userInfo objectForKey:@"feeds"]]];
+    }
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {

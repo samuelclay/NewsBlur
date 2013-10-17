@@ -281,6 +281,7 @@
 - (void)clearStory {
     self.activeStoryId = nil;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+    [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
 
 - (void)hideStory {
@@ -1453,6 +1454,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
     [request addPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [request addPostValue:[appDelegate.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    [request setUserInfo:@{@"storyId": [appDelegate.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
@@ -1472,6 +1474,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([[results objectForKey:@"failed"] boolValue]) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         [self informError:@"Could not fetch text"];
+        self.inTextView = NO;
+        [appDelegate.storyPageControl setTextButton];
+        return;
+    }
+    
+    if (![[request.userInfo objectForKey:@"storyId"]
+          isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton];
         return;
