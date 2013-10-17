@@ -726,12 +726,8 @@
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
         [buttonPrevious setEnabled:NO];
-//            buttonPrevious.alpha = 1.0f;
-//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous_off"]];
     } else {
         [buttonPrevious setEnabled:YES];
-//            buttonPrevious.alpha = 1.0f;
-//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous"]];
     }
     
     // setting up the NEXT UNREAD STORY BUTTON

@@ -431,7 +431,7 @@ def original_text(request):
     story_id = request.REQUEST.get('story_id')
     feed_id = request.REQUEST.get('feed_id')
     force = request.REQUEST.get('force', False)
-    
+
     story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
 
     if not story:
