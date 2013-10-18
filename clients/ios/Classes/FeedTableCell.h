@@ -36,11 +36,14 @@
 @property (nonatomic) UnreadCountView *unreadCount;
 
 - (void)setupGestures;
+- (void)redrawUnreadCounts;
 
 @end
 
 @interface FeedTableCellView : UIView
 
 @property (nonatomic) FeedTableCell *cell;
+
+- (void)redrawUnreadCounts;
 
 @end

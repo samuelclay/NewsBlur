@@ -20,3 +20,4 @@
 - (void)informLoadingMessage:(NSString *)message;
 
 @end
+
