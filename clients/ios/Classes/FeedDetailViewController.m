@@ -31,8 +31,8 @@
 #import "NBBarButtonItem.h"
 #import "UIActivitiesControl.h"
 
-#define kTableViewRowHeight 61;
-#define kTableViewRiverRowHeight 81;
+#define kTableViewRowHeight 38;
+#define kTableViewRiverRowHeight 60;
 #define kTableViewShortRowDifference 15;
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
@@ -70,7 +70,11 @@
  
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(preferredContentSizeChanged:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+
     popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
@@ -102,6 +106,10 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
+}
+
+- (void)preferredContentSizeChanged:(NSNotification *)aNotification {
+    [self.storyTitlesTable reloadData];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -1012,7 +1020,9 @@
         [(NBLoadingCell *)cell animate];
     }
 }
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
     NSInteger storyCount = appDelegate.storyLocationsCount;
     
@@ -1025,7 +1035,9 @@
             && UIInterfaceOrientationIsPortrait(orientation)) {
             height = height - kTableViewShortRowDifference;
         }
-        return height;
+        UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
+        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        return height + font.pointSize*2;
     } else {
         NSInteger height = kTableViewRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -1033,7 +1045,9 @@
             && UIInterfaceOrientationIsPortrait(orientation)) {
             height = height - kTableViewShortRowDifference;
         }
-        return height;
+        UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
+        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        return height + font.pointSize*2;
     }
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {

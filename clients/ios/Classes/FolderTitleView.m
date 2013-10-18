@@ -100,7 +100,10 @@
     
     // Folder title
     UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    UIFont *font = [UIFont boldSystemFontOfSize:11];
+    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleCaption1];
+    UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+    UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+    NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
     if (section == 0) {
         folderTitle = [@"Global Shared Stories" uppercaseString];
@@ -120,7 +123,7 @@
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     [folderTitle
-     drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
+     drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36 - countWidth, font.pointSize)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];

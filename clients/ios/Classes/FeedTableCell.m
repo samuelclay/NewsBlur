@@ -144,11 +144,14 @@ static UIFont *textFont = nil;
                          [UIColor blackColor]:
                          UIColorFromRGB(0x3a3a3a);
     UIFont *font;
+    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle: UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
+        UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+        font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     } else {
-        font = [UIFont fontWithName:@"Helvetica" size:12.6];
+        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     }
+    NSInteger titleOffsetY = ((r.size.height - font.pointSize) / 2) - 2;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
@@ -156,13 +159,13 @@ static UIFont *textFont = nil;
     if (cell.isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
-            [cell.feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
-            [cell.feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
@@ -171,13 +174,13 @@ static UIFont *textFont = nil;
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
-            [cell.feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             [cell.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
-            [cell.feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
+            [cell.feedTitle drawInRect:CGRectMake(34.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
