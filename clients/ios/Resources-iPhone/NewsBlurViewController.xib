@@ -36,7 +36,7 @@
                             </connections>
                         </tableView>
                         <view hidden="YES" opaque="NO" contentMode="scaleToFill" id="122">
-                            <rect key="frame" x="92.5" y="170.5" width="135" height="195"/>
+                            <rect key="frame" x="92.499999999999986" y="170.5" width="135" height="195"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="123">
@@ -80,7 +80,7 @@
                                 <segments>
                                     <segment title="" image="all.png"/>
                                     <segment title="" image="unread_yellow.png"/>
-                                    <segment title="" image="green_focus.png"/>
+                                    <segment title="" image="unread_green.png"/>
                                 </segments>
                                 <connections>
                                     <action selector="selectIntelligence" destination="-1" eventType="valueChanged" id="87"/>
@@ -104,9 +104,9 @@
         </view>
     </objects>
     <resources>
-        <image name="all.png" width="26" height="9"/>
+        <image name="all.png" width="20" height="10"/>
         <image name="big_world.png" width="128" height="128"/>
-        <image name="green_focus.png" width="54" height="10"/>
+        <image name="unread_green.png" width="49" height="10"/>
         <image name="unread_yellow.png" width="58" height="10"/>
     </resources>
 </document>
