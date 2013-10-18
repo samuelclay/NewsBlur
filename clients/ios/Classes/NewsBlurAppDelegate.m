@@ -194,7 +194,10 @@
 //    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
     [self createDatabaseConnection];
-    [self.feedsViewController loadOfflineFeeds:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.feedsViewController loadOfflineFeeds:NO];
+    });
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
 
@@ -668,10 +671,9 @@
         }
     }
     
-    NSDictionary *feed = nil;
+    NSDictionary *feed = [self getFeed:feedId];
     
     if (social) {
-        feed = [self.dictSocialFeeds objectForKey:feedId];
         self.isSocialView = YES;
         self.inFindingStoryMode = YES;
   
@@ -680,7 +682,6 @@
             self.isTryFeedView = YES;
         }
     } else {
-        feed = [self.dictFeeds objectForKey:feedId];
         if (feed == nil) {
             feed = user;
             self.isTryFeedView = YES;
@@ -1593,7 +1594,7 @@
             continue;
         }
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",[story objectForKey:@"story_feed_id"]];
-        NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+        NSDictionary *feed = [self getFeed:feedIdStr];
         if (![feedsStories objectForKey:feedIdStr]) {
             [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
         }
@@ -1606,7 +1607,7 @@
 
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *feed = [self getFeed:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
         if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
@@ -1693,7 +1694,7 @@
 
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *feed = [self getFeed:feedIdStr];
     NSDictionary *story = nil;
     for (NSDictionary *s in self.activeFeedStories) {
         if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {

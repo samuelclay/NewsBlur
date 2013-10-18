@@ -92,6 +92,10 @@ static UIFont *textFont = nil;
     self.shouldAnimatesIcons = NO;
 }
 
+- (void)redrawUnreadCounts {
+    [((FeedTableCellView *)cellContent) redrawUnreadCounts];
+}
+
 @end
 
 @implementation FeedTableCellView
@@ -182,6 +186,12 @@ static UIFont *textFont = nil;
     
 }
 
-
+- (void)redrawUnreadCounts {
+//    [cell.unreadCount drawInRect:self.frame ps:cell.positiveCount nt:cell.neutralCount
+//                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+    cell.unreadCount.psCount = cell.positiveCount;
+    cell.unreadCount.ntCount = cell.neutralCount;
+    [cell.unreadCount setNeedsLayout];
+}
 
 @end
