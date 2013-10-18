@@ -463,7 +463,7 @@
             [unreadHashCursor close];
         }
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             if (!self.isOffline) {
                 NSLog(@"Online before offline rendered. Tossing offline stories.");
                 return;
@@ -1506,8 +1506,10 @@
     [request setUserInfo:story];
     [request startAsynchronous];
     
-    [appDelegate markStoryRead:[story objectForKey:@"story_hash"]
-                        feedId:[story objectForKey:@"story_feed_id"]];
+    if ([appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", [story objectForKey:@"story_feed_id"]]]) {
+        [appDelegate markStoryRead:[story objectForKey:@"story_hash"]
+                            feedId:[story objectForKey:@"story_feed_id"]];
+    }
 }
 
 - (void)finishMarkAsRead:(ASIFormDataRequest *)request {

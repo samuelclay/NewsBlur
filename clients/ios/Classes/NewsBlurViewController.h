@@ -19,7 +19,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NewsBlurViewController : BaseViewController 
+@interface NewsBlurViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
 UIAlertViewDelegate, PullToRefreshViewDelegate,
 ASIHTTPRequestDelegate, NSCacheDelegate,
@@ -64,6 +64,12 @@ UIActionSheetDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *userInfoBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *userAvatarButton;
+@property (nonatomic) IBOutlet UILabel *neutralCount;
+@property (nonatomic) IBOutlet UILabel *positiveCount;
+@property (nonatomic) IBOutlet UILabel *userLabel;
+@property (nonatomic) IBOutlet UIImageView *greenIcon;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
@@ -75,6 +81,7 @@ UIActionSheetDelegate> {
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
+@property (nonatomic) NSInteger currentSection;
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
@@ -118,8 +125,8 @@ UIActionSheetDelegate> {
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)resetToolbar;
+- (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
-- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation;
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;

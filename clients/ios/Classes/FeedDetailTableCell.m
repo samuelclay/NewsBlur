@@ -202,7 +202,7 @@ static UIFont *indicatorFont = nil;
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x686868);
+        textColor = UIColorFromRGB(0x959595);
     }
     
     [cell.storyAuthor
@@ -220,7 +220,11 @@ static UIFont *indicatorFont = nil;
     }
     
     if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x686868);
+        if (cell.isRead) {
+            textColor = UIColorFromRGB(0xaaadc1);
+        } else {
+            textColor = UIColorFromRGB(0x5a5d91);
+        }
     }
     
     paragraphStyle.alignment = NSTextAlignmentRight;
