@@ -934,9 +934,19 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-
-    NSString *CellIdentifier;    
-    if (indexPath.section == 0 || indexPath.section == 1) {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    
+    NSString *CellIdentifier;
+    if (isFolderCollapsed || ![self isFeedVisible:feedIdStr]) {
+        CellIdentifier = @"BlankCellIdentifier";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        return cell;
+    } else if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
     } else {
         CellIdentifier = @"FeedCellIdentifier";
@@ -948,10 +958,6 @@ static const CGFloat kFolderTitleHeight = 28.0f;
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
         cell.appDelegate = appDelegate;
-    }
-    
-    if (![self isFeedVisible:feedId]) {
-        return cell;
     }
     
     NSDictionary *feed = isSocial ?
@@ -1326,10 +1332,12 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (BOOL)isFeedVisible:(id)feedId {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+    if (![feedId isKindOfClass:[NSString class]]) {
+        feedId = [NSString stringWithFormat:@"%@",feedId];
+    }
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
 
-    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedId];
     if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
         [[unreadCounts objectForKey:@"ps"] intValue] <= 0) {
@@ -1409,8 +1417,9 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable
      reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
      withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];
-    [self redrawUnreadCounts];
-
+    for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+        [cell setNeedsDisplay];
+    }
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
 }

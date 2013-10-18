@@ -56,7 +56,7 @@ static NSMutableDictionary *imageCache;
 
 + (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial {
     UIImage *image;
-    if (filename && [[imageCache allKeys] containsObject:filename]) {
+    if (filename && [imageCache objectForKey:filename]) {
         image = [imageCache objectForKey:filename];
     }
     

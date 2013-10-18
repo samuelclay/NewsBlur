@@ -42,7 +42,7 @@
 
 @interface FeedTableCellView : UIView
 
-@property (nonatomic) FeedTableCell *cell;
+@property (nonatomic, weak) FeedTableCell *cell;
 
 - (void)redrawUnreadCounts;
 
