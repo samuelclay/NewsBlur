@@ -98,6 +98,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://www.windowsphone.com/en-us/store/app/swift-reader/e1e672a1-dd3a-483d-8457-81d3ca4a13ef'
+              }, 'View in Windows Phone Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Swift Reader')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'http://projects.developer.nokia.com/feed_reader'
               }, 'View in Nokia Store'),
               $.make('div', { className: 'NB-goodies-nokia' }),
