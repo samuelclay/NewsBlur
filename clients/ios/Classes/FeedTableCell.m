@@ -186,7 +186,6 @@ static UIFont *textFont = nil;
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
     }
-    
 }
 
 - (void)redrawUnreadCounts {

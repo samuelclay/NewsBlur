@@ -40,6 +40,7 @@ static const CGFloat kTableViewRowHeight = 31.0f;
 static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
 static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
 static const CGFloat kFolderTitleHeight = 28.0f;
+static UIFont *userLabelFont;
 
 @interface NewsBlurViewController () 
 
@@ -101,6 +102,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
+
+    userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
@@ -1807,7 +1810,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
-    userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
