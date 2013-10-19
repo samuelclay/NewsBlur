@@ -130,10 +130,8 @@
 		43C1680B15B3D99B00428BA3 /* 7-location-place.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C1680A15B3D99B00428BA3 /* 7-location-place.png */; };
 		43C3D40415D44EA30066D36D /* user_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40215D44EA30066D36D /* user_light.png */; };
 		43C3D40515D44EA30066D36D /* user_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40315D44EA30066D36D /* user_light@2x.png */; };
-		43C3D40815D4680C0066D36D /* green_focus.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40715D4680C0066D36D /* green_focus.png */; };
 		43C3D40A15D468BA0066D36D /* all.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40915D468BA0066D36D /* all.png */; };
 		43C3D40C15D469010066D36D /* unread_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40B15D469010066D36D /* unread_yellow.png */; };
-		43C3D41015D46D2B0066D36D /* green_focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40F15D46D2B0066D36D /* green_focus@2x.png */; };
 		43C3D41215D46D330066D36D /* all@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D41115D46D330066D36D /* all@2x.png */; };
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43CE0F5F15DADB7F00608ED8 /* SiteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43CE0F5E15DADB7F00608ED8 /* SiteCell.m */; };
@@ -291,6 +289,8 @@
 		FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7016D6A90D002D334D /* ak-icon-global.png */; };
 		FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
 		FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */; };
+		FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */; };
+		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAF53661799D18B00C7FCCB /* RWInstapaperActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAF53461799D18B00C7FCCB /* RWInstapaperActivity.m */; };
@@ -593,10 +593,8 @@
 		43C1680A15B3D99B00428BA3 /* 7-location-place.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "7-location-place.png"; sourceTree = "<group>"; };
 		43C3D40215D44EA30066D36D /* user_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user_light.png; sourceTree = "<group>"; };
 		43C3D40315D44EA30066D36D /* user_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user_light@2x.png"; sourceTree = "<group>"; };
-		43C3D40715D4680C0066D36D /* green_focus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_focus.png; sourceTree = "<group>"; };
 		43C3D40915D468BA0066D36D /* all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = all.png; sourceTree = "<group>"; };
 		43C3D40B15D469010066D36D /* unread_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_yellow.png; sourceTree = "<group>"; };
-		43C3D40F15D46D2B0066D36D /* green_focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "green_focus@2x.png"; sourceTree = "<group>"; };
 		43C3D41115D46D330066D36D /* all@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@2x.png"; sourceTree = "<group>"; };
 		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43CE0F5D15DADB7E00608ED8 /* SiteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SiteCell.h; sourceTree = "<group>"; };
@@ -826,6 +824,8 @@
 		FF85BF7016D6A90D002D334D /* ak-icon-global.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-global.png"; sourceTree = "<group>"; };
 		FF85BF7216D6A972002D334D /* ak-icon-allstories.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-allstories.png"; sourceTree = "<group>"; };
 		FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-blurblogs.png"; sourceTree = "<group>"; };
+		FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@2x.png"; sourceTree = "<group>"; };
+		FF88F10C1811BAEC007FEE78 /* unread_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green.png; sourceTree = "<group>"; };
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1423,10 +1423,10 @@
 				43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */,
 				43C3D40B15D469010066D36D /* unread_yellow.png */,
 				FF29709316DD8CB000E92F85 /* unread_yellow@2x.png */,
+				FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */,
+				FF88F10C1811BAEC007FEE78 /* unread_green.png */,
 				43C3D40915D468BA0066D36D /* all.png */,
 				43C3D41115D46D330066D36D /* all@2x.png */,
-				43C3D40715D4680C0066D36D /* green_focus.png */,
-				43C3D40F15D46D2B0066D36D /* green_focus@2x.png */,
 				43C3D40215D44EA30066D36D /* user_light.png */,
 				43C3D40315D44EA30066D36D /* user_light@2x.png */,
 				43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */,
@@ -2160,6 +2160,7 @@
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
+				FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */,
 				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
 				43A4C44E15B00A26008787B5 /* arrow.png in Resources */,
 				43A4C44F15B00A26008787B5 /* arrow@2x.png in Resources */,
@@ -2197,6 +2198,7 @@
 				43A4BAE615C866FA00F3B8D4 /* popoverArrowUpSimple.png in Resources */,
 				43A4BAE715C866FA00F3B8D4 /* popoverBg.png in Resources */,
 				43A4BAE815C866FA00F3B8D4 /* popoverBg@2x.png in Resources */,
+				FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */,
 				43A4BAE915C866FA00F3B8D4 /* popoverBgSimple.png in Resources */,
 				43A4BAEB15C893E300F3B8D4 /* FriendsListViewController.xib in Resources */,
 				432EBD0E15D1A2B00000729D /* fountain_pen_on.png in Resources */,
@@ -2206,10 +2208,8 @@
 				432EBD1715D1A7800000729D /* user_on@2x.png in Resources */,
 				43C3D40415D44EA30066D36D /* user_light.png in Resources */,
 				43C3D40515D44EA30066D36D /* user_light@2x.png in Resources */,
-				43C3D40815D4680C0066D36D /* green_focus.png in Resources */,
 				43C3D40A15D468BA0066D36D /* all.png in Resources */,
 				43C3D40C15D469010066D36D /* unread_yellow.png in Resources */,
-				43C3D41015D46D2B0066D36D /* green_focus@2x.png in Resources */,
 				43C3D41215D46D330066D36D /* all@2x.png in Resources */,
 				43B232C115D5F61700D035B4 /* AuthorizeServicesViewController.xib in Resources */,
 				430C4BC015D7208600B9F63B /* facebook.png in Resources */,
