@@ -20,10 +20,8 @@
     UITextField *usernameInput;
     UITextField *passwordInput;
     UITextField *emailInput;
-    NSMutableData * jsonString;
+    NSMutableData *jsonString;
     
-    UIActivityIndicatorView *activityIndicator;
-    UILabel *authenticatingLabel;
     UILabel *errorLabel;
     UISegmentedControl *loginControl;
     
@@ -59,7 +57,7 @@
 @property (nonatomic) IBOutlet UIView *signUpView;
 @property (nonatomic) IBOutlet UIView *logInView;
 
-@property (nonatomic) NSMutableData * jsonString;
+@property (nonatomic) NSMutableData *jsonString;
 @property (nonatomic) IBOutlet UILabel *errorLabel;
 @property (nonatomic) IBOutlet UISegmentedControl *loginControl;
 
