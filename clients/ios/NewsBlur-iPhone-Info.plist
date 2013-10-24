@@ -9,31 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>logo_57.png</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>logo_144.png</string>
-		<string>logo_72.png</string>
-		<string>logo_57.png</string>
-		<string>logo_114.png</string>
-		<string>Default-Portrait@2x~ipad.png</string>
-		<string>Default-Landscape@2x~ipad.png</string>
-		<string>Default-Portrait~ipad.png</string>
-		<string>Default-Landscape~ipad.png</string>
-	</array>
-	<key>CFBundleIcons</key>
-	<dict>
-		<key>CFBundlePrimaryIcon</key>
-		<dict>
-			<key>CFBundleIconFiles</key>
-			<array>
-				<string>logo_58</string>
-				<string>logo_80</string>
-				<string>logo_120</string>
-				<string>logo_144</string>
-			</array>
-		</dict>
-	</dict>
+	<string>logo_120.png</string>
 	<key>CFBundleIcons~ipad</key>
 	<dict>
 		<key>CFBundlePrimaryIcon</key>
@@ -58,7 +34,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0.4</string>
+	<string>3.5</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -87,7 +63,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.0.4</string>
+	<string>3.5</string>
 	<key>FacebookAppID</key>
 	<string>230426707030569</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -98,6 +74,16 @@
 	<string>MainWindow~ipad</string>
 	<key>UILaunchImages</key>
 	<array>
+		<dict>
+			<key>UILaunchImageMinimumOSVersion</key>
+			<string>7.0</string>
+			<key>UILaunchImageName</key>
+			<string>Default</string>
+			<key>UILaunchImageOrientation</key>
+			<string>Portrait</string>
+			<key>UILaunchImageSize</key>
+			<string>{320, 480}</string>
+		</dict>
 		<dict>
 			<key>UILaunchImageMinimumOSVersion</key>
 			<string>7.0</string>
