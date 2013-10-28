@@ -61,8 +61,6 @@
             }
         });
         return NO;
-    } else {
-        NSLog(@"Fetching Stories: %@", [hashes objectAtIndex:0]);
     }
     
     __block NSCondition *lock = [NSCondition new];
@@ -74,7 +72,6 @@
                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                                            [self storeAllUnreadStories:JSON withHashes:hashes];
                                            
-                                           NSLog(@"Done Storing Stories: %@", [hashes objectAtIndex:0]);
                                            [lock signal];
                                        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                            NSLog(@"Failed fetch all unreads.");
@@ -89,7 +86,6 @@
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];
     
-    NSLog(@"Completed Fetching Stories: %@", [hashes objectAtIndex:0]);
     return YES;
 }
 
@@ -121,6 +117,7 @@
             [hashes addObject:[cursor objectForColumnName:@"story_hash"]];
         }
         
+        [cursor close];
         [self updateProgress];
     }];
     
@@ -141,14 +138,13 @@
                           (float)appDelegate.totalUnfetchedStoryCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
+//        NSLog(@"appDelegate.remainingUnfetchedStoryCount %d (%f)", appDelegate.remainingUnfetchedStoryCount, progress);
         [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
 
 - (void)storeAllUnreadStories:(NSDictionary *)results withHashes:(NSArray *)hashes {
     NSMutableArray *storyHashes = [hashes mutableCopy];
-    NSLog(@"storing hashes: %@", [storyHashes objectAtIndex:0]);
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         BOOL anyInserted = NO;
         for (NSDictionary *story in [results objectForKey:@"stories"]) {
@@ -194,18 +190,23 @@
 
         }
         if (anyInserted) {
-            appDelegate.latestFetchedStoryDate = [[[[results objectForKey:@"stories"] lastObject]
-                                                   objectForKey:@"story_timestamp"] intValue];
+            NSDictionary *lastStory;
+            if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"]
+                 isEqualToString:@"oldest"]) {
+                lastStory = [[results objectForKey:@"stories"] firstObject];
+            } else {
+                lastStory = [[results objectForKey:@"stories"] lastObject];
+            }
+            appDelegate.latestFetchedStoryDate = [[lastStory
+                                                   objectForKey:@"story_timestamp"]
+                                                  intValue];
         }
         if ([storyHashes count]) {
             NSLog(@"Failed to fetch stories: %@", storyHashes);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_hash IN (\"%@\")",
                                [storyHashes componentsJoinedByString:@"\",\" "]]];
         }
-        NSLog(@"Done inserting stories (in transaction)");
     }];
-    
-    NSLog(@"Done inserting stories");
     
     [appDelegate storeUserProfiles:[results objectForKey:@"user_profiles"]];
 }

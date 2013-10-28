@@ -58,13 +58,14 @@ static UIFont *indicatorFont = nil;
     
     font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     textColor = UIColorFromRGB(0x606060);
-    [textColor set];
-    
-    [self.siteTitle 
-     drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21) 
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentLeft];
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    [self.siteTitle drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21)
+                withAttributes:@{NSFontAttributeName: font,
+                                 NSForegroundColorAttributeName: textColor,
+                                 NSParagraphStyleAttributeName: paragraphStyle}];
     
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder
@@ -77,7 +78,7 @@ static UIFont *indicatorFont = nil;
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder
     CGContextSetLineWidth(context, 6.0f);
     CGContextBeginPath(context);
-    float width = self.bounds.size.width - 20.0f;
+    float width = self.bounds.size.width - 3.0f;
     CGContextMoveToPoint(context, width, 1.0f);
     CGContextAddLineToPoint(context, width, self.frame.size.height);
     CGContextStrokePath(context);

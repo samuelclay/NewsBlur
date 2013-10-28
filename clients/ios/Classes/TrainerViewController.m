@@ -11,6 +11,7 @@
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "Base64.h"
+#import "AFNetworking.h"
 
 @implementation TrainerViewController
 
@@ -20,6 +21,7 @@
 @synthesize appDelegate;
 @synthesize feedTrainer;
 @synthesize storyTrainer;
+@synthesize feedLoaded;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -64,8 +66,47 @@
                    nil]];
     
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
-    navBar.topItem.titleView = titleLabel;
+    self.navigationItem.titleView = titleLabel;
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
     
+    if (!feedLoaded) {
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Loading trainer...";
+        NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+
+        NSURL *url = [NSURL URLWithString:[NSString
+                                           stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
+                                           NEWSBLUR_URL, feedId]];
+        AFJSONRequestOperation *request = [AFJSONRequestOperation
+            JSONRequestOperationWithRequest:[NSURLRequest requestWithURL:url]
+            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                NSDictionary *results = [JSON objectAtIndex:0];
+                NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+                [appDelegate.activeClassifiers setObject:newClassifiers
+                                                  forKey:feedId];
+                appDelegate.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                appDelegate.activePopularTags = [results objectForKey:@"feed_tags"];
+                [self renderTrainer];
+            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                NSLog(@"Failed fetch trainer.");
+                [self informError:@"Could not load trainer"];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
+                               dispatch_get_main_queue(), ^{
+                    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                        [appDelegate.masterContainerViewController hidePopover];
+                    } else {
+                        [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                    }
+                });
+            }];
+        [request start];
+    } else {
+        [self renderTrainer];
+    }
+}
+
+- (void)renderTrainer {
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     [self.webView loadHTMLString:[self makeTrainerHTML] baseURL:baseURL];
@@ -93,7 +134,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.webView loadHTMLString:@"about:blank" baseURL:nil];
+    [self.webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@"about:blank"]];
     [[UIMenuController sharedMenuController] setMenuItems:nil];
 }
 

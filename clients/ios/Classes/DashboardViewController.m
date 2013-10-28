@@ -42,10 +42,13 @@
     self.feedbackWebView.delegate = self;
     self.segmentedButton.selectedSegmentIndex = 0;
     
-    self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
     // preload feedback
     self.feedbackWebView.scalesPageToFit = YES;
+    
+    [self.segmentedButton
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
     
     NSString *urlAddress = FEEDBACK_URL;
     //Create a URL object.
@@ -54,7 +57,10 @@
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     //Load the request in the UIWebView.
     [self.feedbackWebView loadRequest:requestObj];
-
+    
+    CGRect topToolbarFrame = self.topToolbar.frame;
+    topToolbarFrame.size.height += 20;
+    self.topToolbar.frame = topToolbarFrame;
 }
 
 - (void)viewDidUnload {
@@ -86,7 +92,7 @@
 # pragma mark Navigation
 
 - (IBAction)tapSegmentedButton:(id)sender {
-    int selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
+    NSInteger selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
     
     if (selectedSegmentIndex == 0) {
         self.interactionsModule.hidden = NO;

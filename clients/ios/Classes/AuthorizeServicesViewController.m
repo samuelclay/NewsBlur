@@ -66,7 +66,7 @@
                                          action: @selector(doCancelButton)];
         self.navigationItem.leftBarButtonItem = cancelButton;
         self.view.frame = CGRectMake(0, 0, 320, 416);
-        self.contentSizeForViewInPopover = self.view.frame.size;
+        self.preferredContentSize = self.view.frame.size;
     }
 }
 

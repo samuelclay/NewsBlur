@@ -6,6 +6,7 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#import <AVFoundation/AVFoundation.h>
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
@@ -32,12 +33,12 @@
 @synthesize innerView;
 @synthesize webView;
 @synthesize feedTitleGradient;
-@synthesize noStorySelectedLabel;
-@synthesize noStorySelectedImage;
+@synthesize noStoryMessage;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 @synthesize storyHUD;
 @synthesize inTextView;
+@synthesize isRecentlyUnread;
 
 
 #pragma mark -
@@ -56,6 +57,10 @@
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback
+                        error:nil];
+    
     self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
     
@@ -65,6 +70,7 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+    
     self.pageIndex = -2;
     self.inTextView = NO;
 }
@@ -75,7 +81,6 @@
 
 - (void)viewDidUnload {
     [self setInnerView:nil];
-    [self setNoStorySelectedLabel:nil];
     
     [super viewDidUnload];
 }
@@ -98,16 +103,14 @@
 
 - (void)initStory {
     appDelegate.inStoryDetail = YES;
-    self.noStorySelectedLabel.hidden = YES;
-    self.noStorySelectedImage.hidden = YES;
+    self.noStoryMessage.hidden = YES;
     self.webView.hidden = NO;
 
     [appDelegate hideShareView:NO];
 }
 
 - (void)hideNoStoryMessage {
-    self.noStorySelectedLabel.hidden = YES;
-    self.noStorySelectedImage.hidden = YES;
+    self.noStoryMessage.hidden = YES;
 }
 
 - (void)drawStory {
@@ -278,13 +281,13 @@
 - (void)clearStory {
     self.activeStoryId = nil;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+    [MBProgressHUD hideHUDForView:self.webView animated:NO];
 }
 
 - (void)hideStory {
     self.activeStoryId = nil;
     self.webView.hidden = YES;
-    self.noStorySelectedLabel.hidden = NO;
-    self.noStorySelectedImage.hidden = NO;
+    self.noStoryMessage.hidden = NO;
 }
 
 #pragma mark -
@@ -338,6 +341,13 @@
                         [self.activeStory objectForKey:@"starred_date"]];
     }
     
+    NSString *storyUnread = @"";
+    if (self.isRecentlyUnread && [appDelegate isStoryUnread:self.activeStory]) {
+        NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
+        storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
+                       score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
+    }
+    
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
     NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"titles"];
@@ -352,16 +362,23 @@
         }
     }
     
+    NSString *storyDate = [Utilities formatLongDateFromTimestamp:[[self.activeStory
+                                                                  objectForKey:@"story_timestamp"]
+                                                                  integerValue]];
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-title\">%@</div>"
+                             "<div class=\"NB-story-title\">"
+                             "  %@"
+                             "  %@"
+                             "</div>"
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
                              "%@"
                              "</div></div>",
+                             storyUnread,
                              storyTitle,
-                             [self.activeStory objectForKey:@"long_parsed_date"],
+                             storyDate,
                              storyAuthor,
                              storyTags,
                              storyStarred];
@@ -903,9 +920,9 @@
 
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex {
     if (activeStoryIndex >= 0) {
-        self.activeStory = [appDelegate.activeFeedStories objectAtIndex:activeStoryIndex];
+        self.activeStory = [[appDelegate.activeFeedStories objectAtIndex:activeStoryIndex] mutableCopy];
     } else {
-        self.activeStory = appDelegate.activeStory;
+        self.activeStory = [appDelegate.activeStory mutableCopy];
     }
 }
 
@@ -988,7 +1005,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             return NO;
-        } else if ([action isEqualToString:@"train"]) {
+        } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
                                width:[[urlComponents objectAtIndex:4] intValue]
@@ -1002,7 +1019,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTagClassifier:tag feedId:feedId];
             return NO;
-        } else if ([action isEqualToString:@"show-profile"]) {
+        } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
                         
             for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
@@ -1437,6 +1454,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     ASIFormDataRequest *request = [self formRequestWithURL:urlString];
     [request addPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [request addPostValue:[appDelegate.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    [request setUserInfo:@{@"storyId": [appDelegate.activeStory objectForKey:@"id"]}];
     [request setDidFinishSelector:@selector(finishFetchTextView:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
@@ -1456,6 +1474,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([[results objectForKey:@"failed"] boolValue]) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         [self informError:@"Could not fetch text"];
+        self.inTextView = NO;
+        [appDelegate.storyPageControl setTextButton];
+        return;
+    }
+    
+    if (![[request.userInfo objectForKey:@"storyId"]
+          isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton];
         return;

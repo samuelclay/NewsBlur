@@ -11,22 +11,25 @@
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "Utilities.h"
+#import "MCSwipeTableViewCell.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
 
+@class FeedDetailViewController;
 
 @implementation FeedDetailTableCell
 
 @synthesize storyTitle;
 @synthesize storyAuthor;
 @synthesize storyDate;
+@synthesize storyTimestamp;
 @synthesize storyScore;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
-@synthesize isStarred;
 @synthesize isShared;
+@synthesize isStarred;
 @synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
@@ -45,35 +48,82 @@ static UIFont *indicatorFont = nil;
     }
 }
 
-- (void)drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
-
-    
-    int adjustForSocial = 3;
-    if (self.isRiverOrSocial) {
-        adjustForSocial = 20; 
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
+        cellContent.opaque = YES;
+        [self.contentView addSubview:cellContent];
     }
+    
+    return self;
+}
 
+- (void)drawRect:(CGRect)rect {
+    ((FeedDetailTableCellView *)cellContent).cell = self;
+    cellContent.frame = rect;
+    [cellContent setNeedsDisplay];
+}
+
+- (void)setupGestures {
+    NSString *unreadIcon;
+    if (storyScore == -1) {
+        unreadIcon = @"g_icn_hidden.png";
+    } else if (storyScore == 1) {
+        unreadIcon = @"g_icn_focus.png";
+    } else {
+        unreadIcon = @"g_icn_unread.png";
+    }
+    
+    UIColor *shareColor = self.isStarred ?
+                            UIColorFromRGB(0xF69E89) :
+                            UIColorFromRGB(0xA4D97B);
+    UIColor *readColor = self.isRead ?
+                            UIColorFromRGB(0xBED49F) :
+                            UIColorFromRGB(0xFFFFD2);
+    
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    [self setFirstStateIconName:@"clock.png"
+                     firstColor:shareColor
+            secondStateIconName:nil
+                    secondColor:nil
+                  thirdIconName:unreadIcon
+                     thirdColor:readColor
+                 fourthIconName:nil
+                    fourthColor:nil];
+
+    self.mode = MCSwipeTableViewCellModeSwitch;
+    self.shouldAnimatesIcons = NO;
+}
+
+@end
+
+@implementation FeedDetailTableCellView
+
+@synthesize cell;
+
+- (void)drawRect:(CGRect)r {
+    int adjustForSocial = 3;
+    if (cell.isRiverOrSocial) {
+        adjustForSocial = 20;
+    }
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGRect rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    if (!highlighted) {
-        UIColor *backgroundColor;
-        backgroundColor = UIColorFromRGB(0xf4f4f4);
-        [backgroundColor set];
-    }
+    UIColor *backgroundColor;
+    backgroundColor = cell.highlighted || cell.selected ?
+                      UIColorFromRGB(0xFFFDEF) : UIColorFromRGB(0xf4f4f4);
+    [backgroundColor set];
     
     CGContextFillRect(context, r);
     
-    if (highlighted) {
-        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFDEF) endColor:UIColorFromRGB(0xFFFDDF)];
-    }
-    
     UIColor *textColor;
     UIFont *font;
-
-    if (self.isRead) {
+    
+    if (cell.isRead) {
         font = [UIFont fontWithName:@"Helvetica" size:11];
         textColor = UIColorFromRGB(0x808080);
     } else {
@@ -81,19 +131,21 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x606060);
         
     }
-    if (highlighted) {
-        textColor = UIColorFromRGB(0x686868); 
+    if (cell.highlighted || cell.selected) {
+        textColor = UIColorFromRGB(0x686868);
     }
-    [textColor set];
     
-    if (self.isRiverOrSocial) {
-        [self.siteTitle 
-         drawInRect:CGRectMake(leftMargin + 20, 7, rect.size.width - 20, 21)
-         withFont:font
-         lineBreakMode:NSLineBreakByTruncatingTail 
-         alignment:NSTextAlignmentLeft];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    
+    if (cell.isRiverOrSocial) {
+        [cell.siteTitle drawInRect:CGRectMake(leftMargin + 20, 7, rect.size.width - 20, 21)
+                    withAttributes:@{NSFontAttributeName: font,
+                                     NSForegroundColorAttributeName: textColor,
+                                     NSParagraphStyleAttributeName: paragraphStyle}];
         
-        if (self.isRead) {
+        if (cell.isRead) {
             font = [UIFont fontWithName:@"Helvetica" size:12];
             textColor = UIColorFromRGB(0x606060);
             
@@ -101,63 +153,65 @@ static UIFont *indicatorFont = nil;
             textColor = UIColorFromRGB(0x333333);
             font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
         }
-        if (highlighted) {
+        if (cell.highlighted || cell.selected) {
             textColor = UIColorFromRGB(0x686868);
         }
-        [textColor set];
     }
     
-    // story title 
-
-    CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width, 30.0) lineBreakMode:NSLineBreakByTruncatingTail];
+    // story title
+    CGSize theSize = [cell.storyTitle
+                      boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? 15.0 : 30.0)
+                      options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                      attributes:@{NSFontAttributeName: font,
+                                   NSParagraphStyleAttributeName: paragraphStyle}
+                      context:nil].size;
     
     int storyTitleY = 7 + adjustForSocial + ((30 - theSize.height)/2);
-    if (self.isShort) {
+    if (cell.isShort) {
         storyTitleY = 7 + adjustForSocial + 2;
     }
     int storyTitleX = leftMargin;
-    if (self.isStarred) {
+    if (cell.isStarred) {
         UIImage *savedIcon = [UIImage imageNamed:@"clock"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;
     }
-    if (self.isShared) {
+    if (cell.isShared) {
         UIImage *savedIcon = [UIImage imageNamed:@"menu_icn_share"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;
     }
-    [self.storyTitle
-     drawInRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail 
-     alignment:NSTextAlignmentLeft];
-
+    [cell.storyTitle drawWithRect:CGRectMake(storyTitleX, storyTitleY, rect.size.width - storyTitleX + leftMargin, theSize.height)
+                          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                       attributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}
+                          context:nil];
+    
     int storyAuthorDateY = 41 + adjustForSocial;
-    if (self.isShort) {
+    if (cell.isShort) {
         storyAuthorDateY -= 13;
     }
-
+    
     // story author style
-    if (self.isRead) {
-        textColor = UIColorFromRGB(0x808080);
+    if (cell.isRead) {
+        textColor = UIColorFromRGB(0x959595);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
-        textColor = UIColorFromRGB(0x959595);
+        textColor = UIColorFromRGB(0xA6A8A2);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
-    if (highlighted) {
-        textColor = UIColorFromRGB(0x686868);
+    if (cell.highlighted || cell.selected) {
+        textColor = UIColorFromRGB(0x959595);
     }
-    [textColor set];
-        
-    [self.storyAuthor
+    
+    [cell.storyAuthor
      drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width) / 2 - 10, 15.0)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail
-     alignment:NSTextAlignmentLeft];
-
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     // story date
-    if (self.isRead) {
+    if (cell.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
         font = [UIFont fontWithName:@"Helvetica" size:10];
     } else {
@@ -165,118 +219,108 @@ static UIFont *indicatorFont = nil;
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     
-    if (highlighted) {
-        textColor = UIColorFromRGB(0x686868);
+    if (cell.highlighted || cell.selected) {
+        if (cell.isRead) {
+            textColor = UIColorFromRGB(0xaaadc1);
+        } else {
+            textColor = UIColorFromRGB(0x5a5d91);
+        }
     }
-    [textColor set];
     
-    [self.storyDate 
-         drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0) 
-         withFont:font
-         lineBreakMode:NSLineBreakByTruncatingTail 
-         alignment:NSTextAlignmentRight];
-    
+    paragraphStyle.alignment = NSTextAlignmentRight;
+    NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
+    [date
+     drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0)
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
     // feed bar
     
-    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBarTopBorder CGColor]));
-    if (self.isRead) {
+    CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBarTopBorder CGColor]));
+    if (cell.isRead) {
         CGContextSetAlpha(context, 0.15);
     }
     CGContextSetLineWidth(context, 4.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 2.0f, 1.0f);
-    CGContextAddLineToPoint(context, 2.0f, self.frame.size.height - 1);
+    CGContextMoveToPoint(context, 2.0f, 0);
+    CGContextAddLineToPoint(context, 2.0f, cell.frame.size.height);
     CGContextStrokePath(context);
-
-    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
+    
+    CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBar CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 6.0f, 1.0f);
-    CGContextAddLineToPoint(context, 6.0, self.frame.size.height - 1);
+    CGContextMoveToPoint(context, 6.0f, 0);
+    CGContextAddLineToPoint(context, 6.0, cell.frame.size.height);
     CGContextStrokePath(context);
     
     // reset for borders
-    
+    UIColor *white = UIColorFromRGB(0xffffff);
     CGContextSetAlpha(context, 1.0);
-    CGContextSetLineWidth(context, 1.0f);
-    if (highlighted) {
+    if (cell.highlighted || cell.selected) {
         // top border
-        UIColor *blue = UIColorFromRGB(0xF9F8F4);
+        CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
+        
+        CGContextSetLineWidth(context, 1.0f);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, 0.5f);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
+        CGContextStrokePath(context);
+        
+        CGFloat lineWidth = 0.5f;
+        CGContextSetLineWidth(context, lineWidth);
+        UIColor *blue = UIColorFromRGB(0xDFDDCF);
         
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
+        CGContextMoveToPoint(context, 0, 1.0f + 0.5f*lineWidth);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, 1.0f + 0.5f*lineWidth);
         CGContextStrokePath(context);
         
-        // bottom border    
+        // bottom border
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, self.bounds.size.height - 1.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height - 1.5f);
+        CGContextMoveToPoint(context, 0, cell.bounds.size.height - .5f*lineWidth);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, cell.bounds.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     } else {
         // top border
-        UIColor *white = UIColorFromRGB(0xffffff);
+        CGContextSetLineWidth(context, 1.0f);
         
         CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
         
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0.0f, 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
+        CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
     }
     
     // site favicon
-    if (self.isRead && !self.hasAlpha) {
-        if (self.isRiverOrSocial) {
-            self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
+    if (cell.isRead && !cell.hasAlpha) {
+        if (cell.isRiverOrSocial) {
+            cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
         }
-        self.hasAlpha = YES;
+        cell.hasAlpha = YES;
     }
     
-    if (self.isRiverOrSocial) {
-        [self.siteFavicon drawInRect:CGRectMake(leftMargin, 6.0, 16.0, 16.0)];
+    if (cell.isRiverOrSocial) {
+        [cell.siteFavicon drawInRect:CGRectMake(leftMargin, 6.0, 16.0, 16.0)];
     }
-
-    // story indicator 
+    
+    // story indicator
     int storyIndicatorY = 4 + adjustForSocial;
-    if (self.isShort){
+    if (cell.isShort){
         storyIndicatorY = 4 + adjustForSocial - 5 ;
     }
-
+    
     UIImage *unreadIcon;
-    if (storyScore == -1) {
+    if (cell.storyScore == -1) {
         unreadIcon = [UIImage imageNamed:@"g_icn_hidden"];
-    } else if (storyScore == 1) {
+    } else if (cell.storyScore == 1) {
         unreadIcon = [UIImage imageNamed:@"g_icn_focus"];
     } else {
         unreadIcon = [UIImage imageNamed:@"g_icn_unread"];
     }
     
-    [unreadIcon drawInRect:CGRectMake(15, storyIndicatorY + 14, 8, 8) blendMode:nil alpha:(self.isRead ? .15 : 1)];
+    [unreadIcon drawInRect:CGRectMake(15, storyIndicatorY + 14, 8, 8) blendMode:nil alpha:(cell.isRead ? .15 : 1)];
 }
-
-- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha {
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0f);
-    
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGRect area = CGRectMake(0, 0, image.size.width, image.size.height);
-    
-    CGContextScaleCTM(ctx, 1, -1);
-    CGContextTranslateCTM(ctx, 0, -area.size.height);
-    
-    CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
-
-    CGContextSetAlpha(ctx, alpha);
-    
-    CGContextDrawImage(ctx, area, image.CGImage);
-    
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-    
-    return newImage;
-}
-
 
 @end

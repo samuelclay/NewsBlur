@@ -24,6 +24,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         activityLabel = nil;
         faviconView = nil;
+        self.separatorInset = UIEdgeInsetsMake(0, 90, 0, 0);
         
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -34,6 +35,7 @@
         activity.backgroundColor = [UIColor whiteColor];
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
+
         
         topMargin = 15;
         bottomMargin = 15;
@@ -50,21 +52,21 @@
     [super layoutSubviews];
     
     // determine outer bounds
-    CGRect contentRect = self.contentView.bounds;
+    [self.activityLabel sizeToFit];
+    CGRect contentRect = self.frame;
+    CGRect labelFrame = self.activityLabel.frame;
     
     // position label to bounds
-    CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
-    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
-    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
-    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
-    self.activityLabel.frame = labelRect;
-    [self.activityLabel sizeToFit];
+    labelFrame.origin.x = leftMargin*2 + avatarSize;
+    labelFrame.origin.y = topMargin - 1;
+    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
+    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    self.activityLabel.frame = labelFrame;
 }
 
 - (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
     // must set the height again for dynamic height in heightForRowAtIndexPath in
-    CGRect activityLabelRect = self.activityLabel.bounds;
+    CGRect activityLabelRect = self.activityLabel.frame;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     
     self.activityLabel.frame = activityLabelRect;
@@ -163,13 +165,12 @@
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
-    NSMutableParagraphStyle* style= [NSMutableParagraphStyle new];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    [attrStr addAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    [attrStr addAttributes:@{NSParagraphStyleAttributeName: paragraphStyle} range:NSMakeRange(0, [txtWithTime length])];
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];
     if (commentRange.location != NSNotFound) {
-        NSLog(@"Spacing: %@", comment);
         commentRange.location -= 2;
         commentRange.length = 1;
         if ([[txtWithTime substringWithRange:commentRange] isEqualToString:@" "]) {

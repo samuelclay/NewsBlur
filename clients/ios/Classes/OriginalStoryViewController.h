@@ -11,13 +11,13 @@
 
 @class NewsBlurAppDelegate;
 
-static const CGFloat kNavBarHeight  = 58.0f;
+static const CGFloat kNavBarHeight  = 78.0f;
 static const CGFloat kLabelHeight   = 18.0f;
 static const CGFloat kMargin        = 6.0f;
 static const CGFloat kSpacer        = 2.0f;
 static const CGFloat kLabelFontSize = 12.0f;
 static const CGFloat kAddressHeight = 30.0f;
-static const CGFloat kButtonWidth   = 48.0f;
+static const CGFloat kButtonWidth   = 68.0f;
 
 @interface OriginalStoryViewController : BaseViewController
 <UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate> {
@@ -37,6 +37,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UINavigationBar *navBar;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIBarButtonItem* back;
@@ -47,6 +48,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 @property (nonatomic) IBOutlet UITextField *pageUrl;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 
+- (void)layoutNavBar;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (IBAction) doCloseOriginalStoryViewController;
 - (IBAction) doOpenActionSheet:(id)sender;

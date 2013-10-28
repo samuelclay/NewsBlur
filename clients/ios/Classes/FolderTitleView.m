@@ -8,6 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlurViewController.h"
 #import "FolderTitleView.h"
 #import "UnreadCountView.h"
 
@@ -16,6 +17,7 @@
 @synthesize appDelegate;
 @synthesize section;
 @synthesize unreadCount;
+@synthesize invisibleHeaderButton;
 
 - (void)setNeedsDisplay {
     [unreadCount setNeedsDisplay];
@@ -25,7 +27,7 @@
 
 - (void) drawRect:(CGRect)rect {
     
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -84,21 +86,20 @@
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, 0.5f);
-    CGContextAddLineToPoint(context, rect.size.width, 0.5f);
+    CGContextMoveToPoint(context, 0, 0.25f);
+    CGContextAddLineToPoint(context, rect.size.width, 0.25f);
     CGContextStrokePath(context);
     
     // bottom border
     UIColor *bottomColor = UIColorFromRGB(0xB7BBAA);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, rect.size.height - .5f);
-    CGContextAddLineToPoint(context, rect.size.width, rect.size.height - .5f);
+    CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
+    CGContextAddLineToPoint(context, rect.size.width, rect.size.height-0.25f);
     CGContextStrokePath(context);
     
     // Folder title
     UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    [textColor set];
     UIFont *font = [UIFont boldSystemFontOfSize:11];
     NSString *folderTitle;
     if (section == 0) {
@@ -114,14 +115,17 @@
     }
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
-    
+
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
     [folderTitle
      drawInRect:CGRectMake(36.0, 10, rect.size.width - 36 - 36 - countWidth, 14)
-     withFont:font
-     lineBreakMode:NSLineBreakByTruncatingTail
-     alignment:NSTextAlignmentLeft];
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
         
-    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
@@ -159,6 +163,7 @@
     
     UIImage *folderImage;
     int folderImageViewX = 10;
+    BOOL allowLongPress = NO;
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
@@ -198,6 +203,7 @@
         } else {
             folderImageViewX = 7;
         }
+        allowLongPress = YES;
     }
     [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
     
@@ -208,6 +214,55 @@
     } else {
         [self addSubview:customView];
     }
+
+    if (allowLongPress) {
+        UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                                   initWithTarget:self action:@selector(handleLongPress:)];
+        longpress.minimumPressDuration = 1.0;
+        longpress.delegate = self;
+        [self addGestureRecognizer:longpress];
+    }
 }
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    if (section < 2) return;
+    
+    NSString *folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
+    
+    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                 destructiveButtonTitle:@"Mark folder as read"
+                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+    markReadSheet.accessibilityValue = folderTitle;
+    [markReadSheet showInView:appDelegate.feedsViewController.view];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSString *folderTitle = actionSheet.accessibilityValue;
+    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
+
+    switch (buttonIndex) {
+        case 0:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+            break;
+        case 1:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:1];
+            break;
+        case 2:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:3];
+            break;
+        case 3:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:7];
+            break;
+        case 4:
+            [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:14];
+            break;
+    }
+    
+    [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
+}
+
 
 @end
