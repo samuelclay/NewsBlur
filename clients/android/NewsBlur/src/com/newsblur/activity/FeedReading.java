@@ -42,7 +42,9 @@ public class FeedReading extends Reading {
         feed = Feed.fromCursor(feedCursor);
         setTitle(feed.title);
 
-        this.unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
+        int unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
+        this.startingUnreadCount = unreadCount;
+        this.currentUnreadCount = unreadCount;
 
         readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories, classifier);
 
