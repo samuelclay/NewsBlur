@@ -12,11 +12,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -56,7 +57,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	protected ViewPager pager;
     protected Button overlayLeft, overlayRight;
-    protected TextView overlayCount;
+    protected ProgressBar overlayProgress;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -68,8 +69,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private int currentApiPage = 0;
 	private Set<Story> storiesToMarkAsRead;
 
-    // subclasses may set this to a nonzero value to enable the unread count overlay
-    protected int unreadCount = 0;
+    // unread counts for the circular progress overlay. set to nonzero to activate the progress indicator overlay
+    protected int startingUnreadCount = 0;
+    protected int currentUnreadCount = 0;
 
     // keep a local cache of stories we have viewed within this activity cycle.  We need
     // this to track unread counts since it would be too costly to query and update the DB
@@ -89,7 +91,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		setContentView(R.layout.activity_reading);
         this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
         this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
-        this.overlayCount = (TextView) findViewById(R.id.reading_overlay_count);
+        this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -106,11 +108,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
         this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
-
-        // the unread count overlay defaults to neutral colour.  set it to positive if we are in focus mode
-        if (this.currentState == AppConstants.STATE_BEST) {
-            ViewUtils.setViewBackground(this.overlayCount, R.drawable.positive_count_rect);
-        }
 
 	}
 
@@ -231,12 +228,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private void setOverlayAlpha(float a) {
         UIUtils.setViewAlpha(this.overlayLeft, a);
         UIUtils.setViewAlpha(this.overlayRight, a);
-
-        if (this.unreadCount > 0) {
-            UIUtils.setViewAlpha(this.overlayCount, a);
-        } else {
-            UIUtils.setViewAlpha(this.overlayCount, 0.0f);
-        }
+        UIUtils.setViewAlpha(this.overlayProgress, a);
     }
 
     /**
@@ -249,7 +241,17 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlayRight.setEnabled(page < (this.readingAdapter.getCount()-1));
         this.overlayRight.setText((page < (this.readingAdapter.getCount()-1)) ? R.string.overlay_next : R.string.overlay_done);
 
-        this.overlayCount.setText(Integer.toString(this.unreadCount));
+        if (this.startingUnreadCount == 0 ) {
+            // sessions with no unreads just show a full progress bar
+            this.overlayProgress.setMax(1);
+            this.overlayProgress.setProgress(1);
+        } else {
+            int unreadProgress = this.startingUnreadCount - this.currentUnreadCount;
+            this.overlayProgress.setMax(this.startingUnreadCount);
+            this.overlayProgress.setProgress(unreadProgress);
+        }
+        this.overlayProgress.invalidate();
+
         this.setOverlayAlpha(1.0f);
     }
 
@@ -318,7 +320,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         }
         if (this.storiesAlreadySeen.add(story)) {
             // only decrement the cached story count if the story wasn't already read
-            this.unreadCount--;
+            this.currentUnreadCount--;
         }
         this.enableOverlays();
     }
@@ -341,12 +343,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // operation, or it was read long before now.
         FeedUtils.markStoryUnread(story, Reading.this, this.apiManager);
 
-        this.unreadCount++;
+        this.currentUnreadCount++;
         this.storiesAlreadySeen.remove(story);
 
         this.enableOverlays();
     }
 
+    // NB: this callback is for the text size slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR).commit();

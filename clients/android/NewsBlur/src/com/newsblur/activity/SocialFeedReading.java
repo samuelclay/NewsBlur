@@ -34,7 +34,9 @@ public class SocialFeedReading extends Reading {
         stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        this.unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
+        int unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
+        this.startingUnreadCount = unreadCount;
+        this.currentUnreadCount = unreadCount;
 
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
