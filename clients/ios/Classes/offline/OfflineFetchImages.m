@@ -49,6 +49,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
+            [appDelegate cleanImageCache];
         });
         return NO;
     }
@@ -119,6 +120,8 @@
              [cursor objectForColumnName:@"story_hash"],
              [cursor objectForColumnName:@"story_timestamp"]]];
         }
+        
+        [cursor close];
         [self updateProgress];
     }];
     

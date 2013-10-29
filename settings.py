@@ -585,15 +585,16 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 # = Redis =
 # =========
 
-REDIS_POOL               = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
-REDIS_ANALYTICS_POOL     = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
-REDIS_STATISTICS_POOL    = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
-REDIS_FEED_POOL          = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
-REDIS_SESSION_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
-# REDIS_CACHE_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_PUBSUB_POOL        = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
-REDIS_STORY_HASH_POOL    = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
-# REDIS_STORY_HASH_POOL2 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
+REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3)
+REDIS_FEED_POOL            = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=5)
+# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
+REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
+REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
+# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8)
+REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=10)
 
 # ==========
 # = Assets =

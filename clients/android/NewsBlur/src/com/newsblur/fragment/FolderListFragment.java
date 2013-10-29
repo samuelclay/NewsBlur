@@ -55,7 +55,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private FolderTreeViewBinder groupViewBinder;
 	private APIManager apiManager;
 	private int currentState = AppConstants.STATE_SOME;
-	private int FEEDCHECK = 0x01;
 	private SocialFeedViewBinder blogViewBinder;
 	private SharedPreferences sharedPreferences;
 
@@ -88,6 +87,12 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 		super.onAttach(activity);
 	}
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        hasUpdated();
+    }
 
 	public void hasUpdated() {
 		folderAdapter.notifyDataSetChanged();
@@ -281,7 +286,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
         if (folderAdapter.isFolderRoot(groupPosition)) {
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
 			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
-			startActivityForResult(i, FEEDCHECK);
+			startActivity(i);
 			return true;
         } else if (folderAdapter.isRowSavedStories(groupPosition)) {
             Intent i = new Intent(getActivity(), SavedStoriesItemsList.class);
@@ -315,7 +320,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_TITLE, blurblogTitle);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, userId);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
-			getActivity().startActivityForResult(intent, FEEDCHECK );
+			getActivity().startActivity(intent);
 		} else {
 			final Intent intent = new Intent(getActivity(), FeedItemsList.class);
 			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
@@ -327,7 +332,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			intent.putExtra(FeedItemsList.EXTRA_FEED_TITLE, feedTitle);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
-			getActivity().startActivityForResult(intent, FEEDCHECK );
+			getActivity().startActivity(intent);
 		}
 		return true;
 	}

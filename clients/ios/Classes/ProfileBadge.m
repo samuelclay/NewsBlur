@@ -181,10 +181,14 @@
         
         // Calculate the expected size based on the font and linebreak mode of your label
         CGSize maximumLabelSize = CGSizeMake(width - kTopBadgeTextXCoordinate - 10, 60);
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineBreakMode = bio.lineBreakMode;
         CGSize expectedLabelSize = [bio.text
-                                    sizeWithFont:bio.font 
-                                    constrainedToSize:maximumLabelSize 
-                                    lineBreakMode:bio.lineBreakMode];
+                                    boundingRectWithSize:maximumLabelSize
+                                    options:nil
+                                    attributes:@{NSFontAttributeName: bio.font,
+                                                 NSParagraphStyleAttributeName: paragraphStyle}
+                                    context:nil].size;
         CGRect newFrame = bio.frame;
         newFrame.size.height = expectedLabelSize.height;
         bio.frame = newFrame;

@@ -26,18 +26,20 @@
 #import "NBNotifier.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+WEPopover.h"
+#import "UIBarButtonItem+Image.h"
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 #import "UIImageView+AFNetworking.h"
+#import "NBBarButtonItem.h"
 
-#define kPhoneTableViewRowHeight 31;
-#define kTableViewRowHeight 31;
-#define kBlurblogTableViewRowHeight 32;
-#define kPhoneBlurblogTableViewRowHeight 32;
-static const CGFloat kFolderTitleHeight = 28;
+static const CGFloat kPhoneTableViewRowHeight = 31.0f;
+static const CGFloat kTableViewRowHeight = 31.0f;
+static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
+static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
+static const CGFloat kFolderTitleHeight = 28.0f;
 
 @interface NewsBlurViewController () 
 
@@ -65,6 +67,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize imageCache;
 @synthesize popoverController;
 @synthesize currentRowAtIndexPath;
+@synthesize currentSection;
 @synthesize noFocusMessage;
 @synthesize toolbarLeftMargin;
 @synthesize updatedDictFeeds_;
@@ -73,6 +76,12 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize addBarButton;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
+@synthesize userAvatarButton;
+@synthesize userInfoBarButton;
+@synthesize neutralCount;
+@synthesize positiveCount;
+@synthesize userLabel;
+@synthesize greenIcon;
 @synthesize notifier;
 @synthesize isOffline;
 
@@ -88,7 +97,7 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)viewDidLoad {
     [super viewDidLoad];
     popoverClass = [WEPopoverController class];
-    
+
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -108,156 +117,57 @@ static const CGFloat kFolderTitleHeight = 28;
      name:kIASKAppSettingChanged
      object:nil];
     
-    [self.intelligenceControl setWidth:36 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:64 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
+    [self.intelligenceControl sizeToFit];
+    CGRect intelFrame = self.intelligenceControl.frame;
+    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) -
+                          (intelFrame.size.width / 2) + 20;
+    self.intelligenceControl.frame = intelFrame;
     self.intelligenceControl.hidden = YES;
     
-    if (SYSTEM_VERSION_LESS_THAN(@"7")) {
-        UIImage *unselectedBackgroundImage = [[UIImage imageNamed:@"segment_inactive"]
-                                              resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setBackgroundImage:unselectedBackgroundImage
-                                                   forState:UIControlStateNormal
-                                                 barMetrics:UIBarMetricsDefault];
-        UIImage *selectedBackgroundImage = [[UIImage imageNamed:@"segment_active"]
-                                            resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setBackgroundImage:selectedBackgroundImage
-                                                   forState:UIControlStateSelected
-                                                 barMetrics:UIBarMetricsDefault];
-        UIImage *bothUnselectedImage = [[UIImage imageNamed:@"segment_unselected"]
-                                        resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:bothUnselectedImage
-                                     forLeftSegmentState:UIControlStateNormal
-                                       rightSegmentState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        UIImage *leftSelectedImage = [[UIImage imageNamed:@"segment_left_selected"]
-                                      resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:leftSelectedImage
-                                     forLeftSegmentState:UIControlStateSelected
-                                       rightSegmentState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        UIImage *rightSelectedImage = [[UIImage imageNamed:@"segment_right_selected"]
-                                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        [[UISegmentedControl appearance] setDividerImage:rightSelectedImage
-                                     forLeftSegmentState:UIControlStateNormal
-                                       rightSegmentState:UIControlStateSelected
-                                              barMetrics:UIBarMetricsDefault];
-        [[UISegmentedControl appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                                 UIColorFromRGB(0x7B7D77), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateNormal];
-        [[UISegmentedControl appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 [UIFont fontWithName:@"Helvetica-Bold" size:11.0f], UITextAttributeFont,
-                                 UIColorFromRGB(0x5B5D57), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateSelected];
-        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(4, 0) forSegmentType:UISegmentedControlSegmentLeft barMetrics:UIBarMetricsDefault];
-        [[UISegmentedControl appearance] setContentPositionAdjustment:UIOffsetMake(-4, 0) forSegmentType:UISegmentedControlSegmentRight barMetrics:UIBarMetricsDefault];
-
-        
-        UIImage *i1 = [[UIImage imageNamed:@"back_button_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i2 = [[UIImage imageNamed:@"back_button_landscape_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i3 = [[UIImage imageNamed:@"back_button_selected_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        UIImage *i4 = [[UIImage imageNamed:@"back_button_landscape_selected_background.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(0, 18, 0, 6)];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i1
-                                                          forState:UIControlStateNormal
-                                                        barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x404040)];
-
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i2
-                                                          forState:UIControlStateNormal
-                                                        barMetrics:UIBarMetricsLandscapePhone];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i3
-                                                          forState:UIControlStateHighlighted
-                                                        barMetrics:UIBarMetricsDefault];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:i4
-                                                          forState:UIControlStateHighlighted 
-                                                        barMetrics:UIBarMetricsLandscapePhone];
-        
-        UIImage *b1 = [[UIImage imageNamed:@"button.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b2 = [[UIImage imageNamed:@"button_selected.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b3 = [[UIImage imageNamed:@"toolbar_button_landscape.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        UIImage *b4 = [[UIImage imageNamed:@"toolbar_button_landscape_selected.png"]
-                       resizableImageWithCapInsets:UIEdgeInsetsMake(6, 6, 6, 6)];
-        
-        [[UIBarButtonItem appearance] setBackgroundImage:b1
-                                                forState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:b2
-                                                forState:UIControlStateHighlighted
-                                              barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:b3
-                                                forState:UIControlStateNormal
-                                              barMetrics:UIBarMetricsLandscapePhone];
-        [[UIBarButtonItem appearance] setBackgroundImage:b4
-                                                forState:UIControlStateHighlighted
-                                              barMetrics:UIBarMetricsLandscapePhone];
-
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0x404040), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateNormal];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateSelected];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xF0F0F0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0x202020), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateHighlighted];
-        [[UIBarButtonItem appearance]
-         setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                 UIColorFromRGB(0xB0B0B0), UITextAttributeTextColor,
-                                 UIColorFromRGB(0xFAFAFA), UITextAttributeTextShadowColor,
-                                 [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset,
-                                 nil]
-         forState:UIControlStateDisabled];
-    }
-    
+    [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
+                                                               UIColorFromRGB(0x8F918B)}
+                                                forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
+                                                               UIColorFromRGB(0x4C4D4A)}
+                                                forState:UIControlStateHighlighted];
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
 
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+    UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(handleLongPress:)];
+    longpress.minimumPressDuration = 1.0;
+    longpress.delegate = self;
+    [self.feedTitlesTable addGestureRecognizer:longpress];
+    
+    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
+                                               inView:self.view
+                                           withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
+    
+    UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+    self.feedTitlesTable.backgroundColor = bgColor;
+    self.feedTitlesTable.separatorColor = [UIColor clearColor];
+    
+    [self layoutHeaderCounts:nil];
+    
+    userAvatarButton.customView.hidden = YES;
+    userInfoBarButton.customView.hidden = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
     } 
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self setUserAvatarLayout:orientation];
-    
+    NSDate *start = [NSDate date];
+    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -270,50 +180,35 @@ static const CGFloat kFolderTitleHeight = 28;
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
         [appDelegate setSelectedIntelligence:0];
-    } else { // default state, ALL BLURBLOG STORIES
+    } else {
+        // default state, ALL BLURBLOG STORIES
         self.viewShowingAllFeeds = YES;
         [self.intelligenceControl setSelectedSegmentIndex:0];
         [appDelegate setSelectedIntelligence:0];
     }
     
-//    self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone; // DO NOT USE. THIS BREAKS SHIT.
-    UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    self.feedTitlesTable.backgroundColor = bgColor;
-    
-    self.feedTitlesTable.separatorColor = [UIColor clearColor];
-    
-    // reset all feed detail specific data
-    appDelegate.activeFeed = nil; 
-    appDelegate.isSocialView = NO;
-    appDelegate.isRiverView = NO;
-    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
-    if (appDelegate.activeFeed || appDelegate.isRiverView) {        
-        NSInteger previousLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-        NSInteger newLevel = [appDelegate selectedIntelligence];
-        if (newLevel != previousLevel) {
-            [appDelegate setSelectedIntelligence:newLevel];
-            [self calculateFeedLocations];
-            [self.feedTitlesTable beginUpdates];
-            [self.feedTitlesTable endUpdates];
-            [self redrawUnreadCounts];
-        }
-    }
-    
+    NSLog(@"Feed List timing 1: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
-        [self.feedTitlesTable reloadData];
+//        [self.feedTitlesTable reloadData];
+        NSLog(@"Feed List timing 1a: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self refreshHeaderCounts];
+        NSLog(@"Feed List timing 1b: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self redrawUnreadCounts];
-        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
-                                          animated:NO 
-                                    scrollPosition:UITableViewScrollPositionNone];
+        NSLog(@"Feed List timing 1c: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+//        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
+//                                          animated:NO 
+//                                    scrollPosition:UITableViewScrollPositionNone];
+        NSLog(@"Feed List timing 1d: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self.notifier setNeedsLayout];
+        NSLog(@"Feed List timing 1e: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     }
     
+    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -324,6 +219,12 @@ static const CGFloat kFolderTitleHeight = 28;
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
     self.navigationController.navigationBar.backItem.title = @"All Sites";
+    
+    // reset all feed detail specific data
+    appDelegate.activeFeed = nil;
+    appDelegate.isSocialView = NO;
+    appDelegate.isRiverView = NO;
+    appDelegate.inFindingStoryMode = NO;
 }
 
 - (void)fadeSelectedCell {
@@ -342,26 +243,9 @@ static const CGFloat kFolderTitleHeight = 28;
     return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self setUserAvatarLayout:toInterfaceOrientation];
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                         duration:(NSTimeInterval)duration {
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
-    [self refreshHeaderCounts:toInterfaceOrientation];
-}
-
-- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(32, 32);
-            avatar.frame = buttonFrame;
-        } else {
-            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
-            CGRect buttonFrame = avatar.frame;
-            buttonFrame.size = CGSizeMake(28, 28);
-            avatar.frame = buttonFrame;
-        }
-    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -369,31 +253,22 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.notifier setNeedsLayout];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 - (void)viewDidUnload {
     [self setToolbarLeftMargin:nil];
     [self setNoFocusMessage:nil];
     [self setInnerView:nil];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
-- (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.bounds.size];
+- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.feedViewToolbar.frame = CGRectMake(-10.0f,
-                                                CGRectGetHeight(self.view.bounds) - toolbarSize.height,
+                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
                                                 toolbarSize.width + 20, toolbarSize.height);
     } else {
-        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) - toolbarSize.height), toolbarSize};
+        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
     }
-    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.feedViewToolbar.frame))};
+    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
     
     int height = 16;
@@ -407,6 +282,7 @@ static const CGFloat kFolderTitleHeight = 28;
                                                 self.intelligenceControl.frame.size.width,
                                                 self.feedViewToolbar.frame.size.height -
                                                 height);
+    [self layoutHeaderCounts:interfaceOrientation];
     [self refreshHeaderCounts];
 }
 
@@ -418,7 +294,7 @@ static const CGFloat kFolderTitleHeight = 28;
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
-        [self fetchFeedList:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
 }
@@ -450,6 +326,9 @@ static const CGFloat kFolderTitleHeight = 28;
     [request startAsynchronous];
 
     self.lastUpdate = [NSDate date];
+    if (showLoader) {
+        [self.notifier hide];
+    }
     [self showRefreshNotifier];
 }
 
@@ -461,7 +340,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
     
-    [self loadOfflineFeeds];
     [self showOfflineNotifier];
 }
 
@@ -479,7 +357,6 @@ static const CGFloat kFolderTitleHeight = 28;
             [self informError:@"The server barfed!"];
         }
         
-        [self loadOfflineFeeds];
         [self showOfflineNotifier];
         return;
     }
@@ -496,42 +373,46 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
-        [db executeUpdate:@"INSERT INTO accounts"
-         "(username, download_date, feeds_json) VALUES "
-         "(?, ?, ?)",
-         appDelegate.activeUsername,
-         [NSDate date],
-         [results JSONRepresentation]
-         ];
-        for (NSDictionary *feed in [results objectForKey:@"social_feeds"]) {
-            [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
-             "(?, ?, ?, ?)",
-             [feed objectForKey:@"id"],
-             [feed objectForKey:@"ps"],
-             [feed objectForKey:@"nt"],
-             [feed objectForKey:@"ng"]];
-        }
-        for (NSString *feedId in [results objectForKey:@"feeds"]) {
-            NSDictionary *feed = [[results objectForKey:@"feeds"] objectForKey:feedId];
-            [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
-             "(?, ?, ?, ?)",
-             [feed objectForKey:@"id"],
-             [feed objectForKey:@"ps"],
-             [feed objectForKey:@"nt"],
-             [feed objectForKey:@"ng"]];
-        }
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
+            [db executeUpdate:@"INSERT INTO accounts"
+             "(username, download_date, feeds_json) VALUES "
+             "(?, ?, ?)",
+             appDelegate.activeUsername,
+             [NSDate date],
+             [results JSONRepresentation]
+             ];
+            for (NSDictionary *feed in [results objectForKey:@"social_feeds"]) {
+                [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
+                 "(?, ?, ?, ?)",
+                 [feed objectForKey:@"id"],
+                 [feed objectForKey:@"ps"],
+                 [feed objectForKey:@"nt"],
+                 [feed objectForKey:@"ng"]];
+            }
+            for (NSString *feedId in [results objectForKey:@"feeds"]) {
+                NSDictionary *feed = [[results objectForKey:@"feeds"] objectForKey:feedId];
+                [db executeUpdate:@"INSERT INTO unread_counts (feed_id, ps, nt, ng) VALUES "
+                 "(?, ?, ?, ?)",
+                 [feed objectForKey:@"id"],
+                 [feed objectForKey:@"ps"],
+                 [feed objectForKey:@"nt"],
+                 [feed objectForKey:@"ng"]];
+            }
+        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self finishLoadingFeedListWithDict:results];
+        });
+    });
 
-    [self finishLoadingFeedListWithDict:results];
 }
 
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
-//    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
@@ -542,62 +423,45 @@ static const CGFloat kFolderTitleHeight = 28;
         [userPreferences setObject:appDelegate.activeUsername forKey:@"active_username"];
         [userPreferences synchronize];
     }
-
-//    // set title only if on currestont controller
-//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
-//        [appDelegate setTitle:[results objectForKey:@"user"]];
-//    }
-
-    // adding user avatar to left
-    NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
-    NSURL * imageURL = [NSURL URLWithString:url];
-    UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
-    userAvatarButton.frame = CGRectMake(0, 0, 32, 32);
-    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *userInfoBarButton = [[UIBarButtonItem alloc]
-                                          initWithCustomView:userAvatarButton];
     
-    
-    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [avatarRequest setHTTPShouldHandleCookies:NO];
-    [avatarRequest setHTTPShouldUsePipelining:YES];
-    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
-    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        image = [Utilities roundCorneredImage:image radius:3];
-        [userAvatarButton setImage:image forState:UIControlStateNormal];
-    } failure:nil];
-    self.navigationItem.leftBarButtonItem = userInfoBarButton;
-    [self setUserAvatarLayout:orientation];
-    
+    // Bottom toolbar
     UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    addButton.bounds = CGRectMake(0, 0, 34, 44);
-    [addButton setImage:addImage forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(tapAddSite:) forControlEvents:UIControlEventTouchUpInside];
-    [addBarButton setCustomView:addButton];
-
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    settingsButton.bounds = CGRectMake(0, 0, 34, 44);
-    [settingsButton setImage:settingsImage forState:UIControlStateNormal];
-    [settingsButton addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    [settingsBarButton setCustomView:settingsButton];
+    addBarButton.enabled = YES;
+    settingsBarButton.enabled = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [addBarButton setImage:addImage];
+        [settingsBarButton setImage:settingsImage];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        [addButton setImage:addImage forState:UIControlStateNormal];
+        [addButton sizeToFit];
+        [addButton addTarget:self action:@selector(tapAddSite:)
+            forControlEvents:UIControlEventTouchUpInside];
+        [addBarButton setCustomView:addButton];
+
+        NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        settingsButton.onRightSide = YES;
+        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+        [settingsButton sizeToFit];
+        [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+                 forControlEvents:UIControlEventTouchUpInside];
+        [settingsBarButton setCustomView:settingsButton];
+    }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
-                                           initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                           target:nil action:nil];
-        spacer.width = 12;
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
-        UIButton *activityButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         [activityButton setImage:activityImage forState:UIControlStateNormal];
         [activityButton sizeToFit];
-        [activityButton addTarget:self action:@selector(showInteractionsPopover:) forControlEvents:UIControlEventTouchUpInside];
+        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
+        [activityButton setFrame:CGRectInset(activityButton.frame, -6, -6)];
+        [activityButton addTarget:self
+                           action:@selector(showInteractionsPopover:)
+                 forControlEvents:UIControlEventTouchUpInside];
         activitiesButton = [[UIBarButtonItem alloc]
                             initWithCustomView:activityButton];
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:spacer, activitiesButton, nil];
+        self.navigationItem.rightBarButtonItem = activitiesButton;
     }
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -630,6 +494,7 @@ static const CGFloat kFolderTitleHeight = 28;
                        forKey:userKey];
     }
     
+    NSLog(@"Setting dictSocialFeeds");
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
     
@@ -761,7 +626,8 @@ static const CGFloat kFolderTitleHeight = 28;
             self.inPullToRefresh_ = NO;
             [self showSyncingNotifier];
             [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-                [self.appDelegate startOfflineQueue];
+                [self refreshFeedList];
+//                [self.appDelegate startOfflineQueue];
             }];
         } else {
             [self showSyncingNotifier];
@@ -774,19 +640,32 @@ static const CGFloat kFolderTitleHeight = 28;
     self.intelligenceControl.hidden = NO;
     
     [self showExplainerOnEmptyFeedlist];
+    [self layoutHeaderCounts:nil];
+    [self refreshHeaderCounts];
 }
 
 
-- (void)loadOfflineFeeds {
+- (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
-        if (!appDelegate.activeUsername) return;
+        if (!appDelegate.activeUsername) {
+            if (failed) {
+                return;
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self fetchFeedList:YES];
+                });
+                return;
+            }
+        }
     }
-    
+
+    [self showRefreshNotifier];
+
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSDictionary *results;
 
@@ -803,8 +682,11 @@ static const CGFloat kFolderTitleHeight = 28;
             break;
         }
         
+        [cursor close];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [_self finishLoadingFeedListWithDict:results];
+            [_self fetchFeedList:NO];
         });
     }];
 }
@@ -813,7 +695,8 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
-    [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
+    [appDelegate showUserProfileModal:[self.navigationItem.leftBarButtonItems
+                                       objectAtIndex:1]];
 }
 
 - (IBAction)tapAddSite:(id)sender {
@@ -904,6 +787,71 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 }
 
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    CGPoint p = [gestureRecognizer locationInView:self.feedTitlesTable];
+    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForRowAtPoint:p];
+    
+    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+    if (indexPath == nil) return;
+
+    FeedTableCell *cell = (FeedTableCell *)[self.feedTitlesTable cellForRowAtIndexPath:indexPath];
+    if (!cell.highlighted) return;
+    
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+    NSDictionary *feed = isSocial ?
+                        [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                        [appDelegate.dictFeeds objectForKey:feedIdStr];
+
+    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:[feed objectForKey:@"feed_title"]
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Cancel"
+                                                 destructiveButtonTitle:@"Mark site as read"
+                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+    markReadSheet.accessibilityValue = feedIdStr;
+    [markReadSheet showInView:self.view];
+    
+    [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
+}
+
+- (void)highlightCell:(FeedTableCell *)cell {
+    [cell setHighlighted:YES];
+}
+- (void)unhighlightCell:(FeedTableCell *)cell {
+    [cell setHighlighted:NO];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSString *feedId = actionSheet.accessibilityValue;
+    
+    switch (buttonIndex) {
+        case 0:
+            [self markFeedRead:feedId cutoffDays:0];
+            break;
+        case 1:
+            [self markFeedRead:feedId cutoffDays:1];
+            break;
+        case 2:
+            [self markFeedRead:feedId cutoffDays:3];
+            break;
+        case 3:
+            [self markFeedRead:feedId cutoffDays:7];
+            break;
+        case 4:
+            [self markFeedRead:feedId cutoffDays:14];
+            break;
+    }
+    
+    for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
+        if (cell.highlighted) {
+            [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
+            break;
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark Preferences
 
@@ -936,7 +884,9 @@ static const CGFloat kFolderTitleHeight = 28;
 	if ([specifier.key isEqualToString:@"offline_cache_empty_stories"]) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
         dispatch_async(queue, ^{
-            [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+            });
             [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 [db executeUpdate:@"DROP TABLE unread_hashes"];
                 [db executeUpdate:@"DROP TABLE unread_counts"];
@@ -984,9 +934,19 @@ static const CGFloat kFolderTitleHeight = 28;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-
-    NSString *CellIdentifier;    
-    if (indexPath.section == 0 || indexPath.section == 1) {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    
+    NSString *CellIdentifier;
+    if (isFolderCollapsed || ![self isFeedVisible:feedIdStr]) {
+        CellIdentifier = @"BlankCellIdentifier";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        return cell;
+    } else if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
     } else {
         CellIdentifier = @"FeedCellIdentifier";
@@ -998,10 +958,6 @@ static const CGFloat kFolderTitleHeight = 28;
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
         cell.appDelegate = appDelegate;
-    }
-    
-    if (![self isFeedVisible:feedId]) {
-        return cell;
     }
     
     NSDictionary *feed = isSocial ?
@@ -1029,6 +985,7 @@ static const CGFloat kFolderTitleHeight = 28;
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
+    self.currentSection = nil;
     
     NSString *folderName;
     if (indexPath.section == 0) {
@@ -1069,7 +1026,6 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
@@ -1117,9 +1073,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
-    
-    
-    CGRect rect = CGRectMake(0.0, 0.0, tableView.bounds.size.width, kFolderTitleHeight);
+    CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, kFolderTitleHeight);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = section;
     
@@ -1158,6 +1112,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)didSelectSectionHeader:(UIButton *)button {
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
+    self.currentSection = button.tag;
     
     appDelegate.readStories = [NSMutableArray array];
     
@@ -1221,6 +1176,116 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate loadRiverFeedDetailView];
 }
 
+
+
+#pragma mark - MCSwipeTableViewCellDelegate
+
+// When the user starts swiping the cell this method is called
+- (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
+//    NSLog(@"Did start swiping the cell!");
+}
+
+// When the user is dragging, this method is called and return the dragged percentage from the border
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+//    NSLog(@"Did swipe with percentage : %f", percentage);
+}
+
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    NSString *feedId = [NSString stringWithFormat:@"%@",
+                        [[appDelegate.dictFolders objectForKey:folderName]
+                         objectAtIndex:indexPath.row]];
+
+    if (state == MCSwipeTableViewCellState1) {
+        if (indexPath.section == 1) {
+            // Profile
+            NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feedId];
+            appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
+            appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
+            [appDelegate showUserProfileModal:cell];
+        } else {
+            // Train
+            appDelegate.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
+            [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
+        }
+    } else if (state == MCSwipeTableViewCellState3) {
+        // Mark read
+        [self markFeedRead:feedId cutoffDays:0];
+        
+        [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                    withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
+    }
+}
+
+#pragma mark -
+#pragma mark Mark Feeds as read
+
+- (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days {
+    [self markFeedsRead:@[feedId] cutoffDays:days];
+}
+
+- (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
+    NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
+    cutoffTimestamp -= (days * 60*60*24);
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    for (NSString *feedId in feedIds) {
+        [request addPostValue:feedId forKey:@"feed_id"];
+    }
+    if (days) {
+        [request setPostValue:[NSNumber numberWithInteger:cutoffTimestamp]
+                       forKey:@"cutoff_timestamp"];
+    }
+    [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+    [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
+    [request setUserInfo:@{@"feeds": feedIds,
+                           @"cutoffTimestamp": [NSNumber numberWithInteger:cutoffTimestamp]}];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    if (!days) {
+        for (NSString *feedId in feedIds) {
+            [appDelegate markFeedAllRead:feedId];
+        }
+    } else {
+        //        [self showRefreshNotifier];
+    }
+}
+
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    [appDelegate markStoriesRead:nil
+                         inFeeds:[request.userInfo objectForKey:@"feeds"]
+                 cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
+    [self showOfflineNotifier];
+    [self.feedTitlesTable reloadData];
+}
+
+- (void)finishMarkAllAsRead:(ASIFormDataRequest *)request {
+    if (request.responseStatusCode != 200) {
+        [self requestFailedMarkStoryRead:request];
+        return;
+    }
+    
+    if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
+        id feed;
+        if ([[request.userInfo objectForKey:@"feeds"] count] == 1) {
+            feed = [[request.userInfo objectForKey:@"feeds"] objectAtIndex:0];
+        }
+        [self refreshFeedList:feed];
+    } else {
+        [appDelegate markFeedReadInCache:[request.userInfo objectForKey:@"feeds"]];
+    }
+}
+
+#pragma mark - Table Actions
+
 - (void)didCollapseFolder:(UIButton *)button {
     NSString *folderName;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -1267,10 +1332,12 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (BOOL)isFeedVisible:(id)feedId {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+    if (![feedId isKindOfClass:[NSString class]]) {
+        feedId = [NSString stringWithFormat:@"%@",feedId];
+    }
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
 
-    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedId];
     if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
         [[unreadCounts objectForKey:@"ps"] intValue] <= 0) {
@@ -1302,7 +1369,7 @@ heightForHeaderInSection:(NSInteger)section {
     if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
         topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
     }
-    int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
+    NSInteger selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -1350,8 +1417,9 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable
      reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
      withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];
-    [self redrawUnreadCounts];
-
+    for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+        [cell setNeedsDisplay];
+    }
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
 }
@@ -1378,13 +1446,18 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)redrawUnreadCounts {
-    for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
-        [cell setNeedsDisplay];
-    }
-    for (UIView *view in self.feedTitlesTable.subviews) {
-        if ([view class] == [FolderTitleView class]) {
-            [view setNeedsDisplay];
-        }
+    FeedTableCell *cell = (FeedTableCell *)[self.feedTitlesTable
+                           cellForRowAtIndexPath:self.currentRowAtIndexPath];
+    if (cell) {
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:self.currentRowAtIndexPath.section];
+        id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:self.currentRowAtIndexPath.row];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+        cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
+        cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
+        cell.negativeCount  = [[unreadCounts objectForKey:@"ng"] intValue];
+    } else {
+        [self.feedTitlesTable reloadData];
     }
 }
 
@@ -1501,7 +1574,7 @@ heightForHeaderInSection:(NSInteger)section {
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
     self.inPullToRefresh_ = YES;
-    [self fetchFeedList:NO];
+    [appDelegate reloadFeedsView:NO];
 }
 
 - (void)refreshFeedList {
@@ -1520,6 +1593,9 @@ heightForHeaderInSection:(NSInteger)section {
     }
     NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
+    if (!feedId) {
+        [self.appDelegate cancelOfflineQueue];
+    }
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
@@ -1527,16 +1603,20 @@ heightForHeaderInSection:(NSInteger)section {
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    if (feedId) {
+        [request setUserInfo:@{@"feedId": [NSString stringWithFormat:@"%@", feedId]}];
+    }
     [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self showCountingNotifier];
+        if (!feedId) {
+            [self showCountingNotifier];
+        }
     });
     
-    [self.appDelegate cancelOfflineQueue];
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
@@ -1549,73 +1629,80 @@ heightForHeaderInSection:(NSInteger)section {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
-
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
     
-    NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
-    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
-    for (id feed in newFeedCounts) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-        NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
-        NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        NSString *responseString = [request responseString];
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions 
+                                 error:&error];
+        
+        NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
+        NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+        for (id feed in newFeedCounts) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
+            NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
+            NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
-        if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
+            if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
 
-        // Check if a feed goes from visible to hidden, but doesn't disappear.
-        if ((intelligenceLevel > 0 &&
-             [[unreadCount objectForKey:@"ps"] intValue] > 0 &&
-             [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
-            (intelligenceLevel == 0 &&
-             ([[unreadCount objectForKey:@"ps"] intValue] > 0 ||
-              [[unreadCount objectForKey:@"nt"] intValue] > 0) &&
-             [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
-             [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
-            NSIndexPath *indexPath;
-            for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-                NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
-                NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-                for (int l=0; l < [activeFolderFeeds count]; l++) {
-                    if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
-                        indexPath = [NSIndexPath indexPathForRow:l inSection:s];
-                        break;
+            // Check if a feed goes from visible to hidden, but doesn't disappear.
+            if ((intelligenceLevel > 0 &&
+                 [[unreadCount objectForKey:@"ps"] intValue] > 0 &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
+                (intelligenceLevel == 0 &&
+                 ([[unreadCount objectForKey:@"ps"] intValue] > 0 ||
+                  [[unreadCount objectForKey:@"nt"] intValue] > 0) &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
+                 [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
+                NSIndexPath *indexPath;
+                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                    for (int l=0; l < [activeFolderFeeds count]; l++) {
+                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                            indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                            break;
+                        }
                     }
+                    if (indexPath) break;
                 }
-                if (indexPath) break;
+                if (indexPath) {
+                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+                }
             }
-            if (indexPath) {
-                [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-            }
+            [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+            [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+            [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+            [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
         }
-        [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-        [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-        [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-        [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
-    }
-    
-    NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
-    for (id feed in newSocialFeedCounts) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-        NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
-        NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
+        
+        NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
+        for (id feed in newSocialFeedCounts) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
+            NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
+            NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
 
-        if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
-        [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-        [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-        [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-        [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
-    }
-    
-    [appDelegate.folderCountCache removeAllObjects];
-    [self.feedTitlesTable reloadData];
-    [self refreshHeaderCounts];
-    [self.appDelegate startOfflineQueue];
+            if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
+            [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+            [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+            [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+            [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [appDelegate.folderCountCache removeAllObjects];
+            [self.feedTitlesTable reloadData];
+            [self refreshHeaderCounts];
+            if (![request.userInfo objectForKey:@"feedId"]) {
+                [self.appDelegate startOfflineQueue];
+            }
+        });
+    });
 }
 
 // called when the date shown needs to be updated, optional
@@ -1681,68 +1768,128 @@ heightForHeaderInSection:(NSInteger)section {
     self.navigationItem.rightBarButtonItem = nil;
 }
 
-- (void)refreshHeaderCounts {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self refreshHeaderCounts:orientation];
-}
-
-- (void)refreshHeaderCounts:(UIInterfaceOrientation)orientation {
-    if (!appDelegate.activeUsername) return;
+- (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
+    if (!orientation) {
+        orientation = [UIApplication sharedApplication].statusBarOrientation;
+    }
     
-    UIView *userInfoView = [[UIView alloc]
-                            initWithFrame:CGRectMake(0, 0,
-                                                     self.view.bounds.size.width,
-                                                     self.navigationController.toolbar.frame.size.height)];
-    int yOffset = 6;
+    BOOL isShort = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(orientation)) {
-        yOffset = 0;
+        isShort = YES;
     }
-    UILabel *userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
+    
+    int yOffset = isShort ? 0 : 6;
+    UIView *userInfoView = [[UIView alloc]
+                            initWithFrame:CGRectMake(0, 0,
+                                                     self.navigationController.toolbar.frame.size.width,
+                                                     self.navigationController.toolbar.frame.size.height)];
+    // adding user avatar to left
+    NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
+                                            [appDelegate.dictSocialProfile
+                                             objectForKey:@"photo_url"]]];
+    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
+                                                  target:self
+                                                  action:@selector(showUserProfile)];
+    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
+    
+    NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
+    [avatarRequest setHTTPShouldHandleCookies:NO];
+    [avatarRequest setHTTPShouldUsePipelining:YES];
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+    [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        image = [Utilities roundCorneredImage:image radius:3];
+        [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+    } failure:nil];
+    //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
+    
+    //    [userInfoView addSubview:userAvatarButton];
+    
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);
+    [userLabel sizeToFit];
     [userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
     yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
-    UILabel *neutralCount = [[UILabel alloc] init];
+    neutralCount = [[UILabel alloc] init];
     neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
                                     yellow.frame.origin.y - 3, 100, 16);
-    neutralCount.text = [NSString stringWithFormat:@"%d", counts.nt];
-    neutralCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    neutralCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
     [neutralCount sizeToFit];
     [userInfoView addSubview:neutralCount];
     
-    UIImageView *green = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
-    green.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
+    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
+    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
                              yellow.frame.origin.y, 8, 8);
-    [userInfoView addSubview:green];
+    [userInfoView addSubview:greenIcon];
     
-    UILabel *positiveCount = [[UILabel alloc] init];
-    positiveCount.frame = CGRectMake(green.frame.size.width + green.frame.origin.x + 2,
-                                     green.frame.origin.y - 3, 100, 16);
-    positiveCount.text = [NSString stringWithFormat:@"%d", counts.ps];
-    positiveCount.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    positiveCount = [[UILabel alloc] init];
+    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
+                                     greenIcon.frame.origin.y - 3, 100, 16);
+    positiveCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
     
+    [userInfoView sizeToFit];
     
-    self.navigationItem.titleView = userInfoView;
+    userInfoBarButton = [[UIBarButtonItem alloc]
+                         initWithCustomView:userInfoView];
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
+                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                               target:nil
+                               action:nil];
+    spacer.width = -8;
+    self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:
+                                              spacer,
+                                              userAvatarButton,
+                                              userInfoBarButton, nil];
+}
+
+- (void)refreshHeaderCounts {
+    if (!appDelegate.activeUsername) {
+        userAvatarButton.customView.hidden = YES;
+        userInfoBarButton.customView.hidden = YES;
+        return;
+    }
+    
+    userAvatarButton.customView.hidden = NO;
+    userInfoBarButton.customView.hidden = NO;
+    [appDelegate.folderCountCache removeObjectForKey:@"everything"];
+
+    NSNumberFormatter *formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
+    
+    positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
+    
+    CGRect yellow = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
+    neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
+    neutralCount.frame = CGRectMake(yellow.size.width + yellow.origin.x + 2,
+                                    yellow.origin.y - 3, 100, 16);
+    [neutralCount sizeToFit];
+    
+    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
+                                 yellow.origin.y, 8, 8);
+    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
+                                     greenIcon.frame.origin.y - 3, 100, 16);
+    [positiveCount sizeToFit];
+    
+    [userInfoBarButton.customView sizeToFit];
 }
 
 - (void)showRefreshNotifier {
-    [self.notifier hide];
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"On its way...";
     [self.notifier setProgress:0];

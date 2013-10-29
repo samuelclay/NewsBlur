@@ -25,6 +25,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         interactionLabel = nil;
         avatarView = nil;
+        self.separatorInset = UIEdgeInsetsMake(0, 90, 0, 0);
         
         // create the label and the avatar
         UIImageView *avatar = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -55,16 +56,19 @@
     [super layoutSubviews];
     
     // determine outer bounds
-    CGRect contentRect = self.contentView.bounds;
-
-    // position label to bounds
-    CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
-    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
-    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
-    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
-    self.interactionLabel.frame = labelRect;
     [self.interactionLabel sizeToFit];
+    CGRect contentRect = self.frame;
+    CGRect labelFrame = self.interactionLabel.frame;
+    
+    // position avatar to bounds
+    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    
+    // position label to bounds
+    labelFrame.origin.x = leftMargin*2 + avatarSize;
+    labelFrame.origin.y = topMargin - 1;
+    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
+    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    self.interactionLabel.frame = labelFrame;
 }
 
 
@@ -113,11 +117,12 @@
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    NSMutableParagraphStyle* style = [NSMutableParagraphStyle new];
-    style.lineBreakMode = NSLineBreakByWordWrapping;
-    style.alignment = NSTextAlignmentLeft;
-    style.lineSpacing = 1.0f;
-    [attrStr setAttributes:@{NSParagraphStyleAttributeName: style} range:NSMakeRange(0, [txtWithTime length])];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    paragraphStyle.lineSpacing = 1.0f;
+    [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
+                     range:NSMakeRange(0, [txtWithTime length])];
     
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {

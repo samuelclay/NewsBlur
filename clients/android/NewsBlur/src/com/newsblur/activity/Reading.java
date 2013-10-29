@@ -12,7 +12,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -35,8 +34,6 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -66,7 +63,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private APIManager apiManager;
 	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
-    protected boolean stopLoading = false;
+    private boolean noMoreApiPages;
+    protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
+    private int currentApiPage = 0;
 	private Set<Story> storiesToMarkAsRead;
 
     // subclasses may set this to a nonzero value to enable the unread count overlay
@@ -168,13 +167,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			}
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
-			Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-			intent.setType("text/plain");
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-			intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
-			final String shareString = getResources().getString(R.string.share);
-			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
-			startActivity(Intent.createChooser(intent, "Share using"));
+			FeedUtils.shareStory(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
@@ -262,6 +255,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void updateAfterSync() {
+        this.requestedPage = false;
 		setSupportProgressBarIndeterminateVisibility(false);
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
@@ -283,10 +277,17 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
 	@Override
 	public void setNothingMoreToUpdate() {
-		this.stopLoading = true;
+		this.noMoreApiPages = true;
 	}
 
-	public abstract void checkStoryCount(int position);
+	private void checkStoryCount(int position) {
+        // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
+		if (((position + 1) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
+			currentApiPage += 1;
+			requestedPage = true;
+			triggerRefresh(currentApiPage);
+		}
+	}
 
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {

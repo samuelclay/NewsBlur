@@ -17,25 +17,39 @@ from vendor import reseekfile
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile('\<!--.*?--\>')
 
-def format_story_link_date__short(date, now=None):
-    if not now: now = datetime.datetime.now()
-    diff = date.date() - now.date()
-    if diff.days == 0:
+def midnight_today():
+    return datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    
+def midnight_yesterday(midnight=None):
+    if not midnight:
+        midnight = midnight_today()
+    return midnight - datetime.timedelta(days=1)
+    
+def beginning_of_this_month():
+    return datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+def format_story_link_date__short(date):
+    date = date.replace(tzinfo=None)
+    midnight = midnight_today()
+    if date > midnight:
         return date.strftime('%I:%M%p').lstrip('0').lower()
-    elif diff.days == 1:
+    elif date > midnight_yesterday(midnight):
         return 'Yesterday, ' + date.strftime('%I:%M%p').lstrip('0').lower()
     else:
         return date.strftime('%d %b %Y, ') + date.strftime('%I:%M%p').lstrip('0').lower()
 
 def format_story_link_date__long(date, now=None):
-    if not now: now = datetime.datetime.utcnow()
-    diff = now.date() - date.date()
+    if not now:
+        now = datetime.datetime.now()
+    date = date.replace(tzinfo=None)
+    midnight = midnight_today()
     parsed_date = DateFormat(date)
-    if diff.days == 0:
+
+    if date > midnight:
         return 'Today, ' + parsed_date.format('F jS ') + date.strftime('%I:%M%p').lstrip('0').lower()
-    elif diff.days == 1:
+    elif date > midnight_yesterday(midnight):
         return 'Yesterday, ' + parsed_date.format('F jS g:ia').replace('.','')
-    elif date.date().timetuple()[7] == now.date().timetuple()[7]:
+    elif date > beginning_of_this_month():
         return parsed_date.format('l, F jS g:ia').replace('.','')
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')

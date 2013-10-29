@@ -45,5 +45,11 @@ class RedisDumpMiddleware(object):
         return instrumented_method
     
     def process_message(self, *args, **kwargs):
-        query = ' '.join([str(arg) for arg in args if not isinstance(arg, Connection)])
-        return { 'query': query, }
+        query = []
+        for a, arg in enumerate(args):
+            if isinstance(arg, Connection):
+                continue
+            if len(str(arg)) > 100:
+                arg = "[%s bytes]" % len(arg)
+            query.append(str(arg).replace('\n', ''))
+        return { 'query': ' '.join(query) }

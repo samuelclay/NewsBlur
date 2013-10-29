@@ -17,10 +17,8 @@
 #import <UIKit/UIKit.h>
 
 
-@interface IASKSwitch : UISwitch {
-    NSString *_key;
-}
+@interface IASKSwitch : UISwitch
 
-@property (nonatomic, retain) NSString *key;
+@property (nonatomic, copy) NSString *key;
 
 @end

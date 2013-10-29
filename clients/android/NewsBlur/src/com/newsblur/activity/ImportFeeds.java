@@ -6,6 +6,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.newsblur.R;
+import com.newsblur.network.APIConstants;
 
 public class ImportFeeds extends NbFragmentActivity {
 	
@@ -21,7 +22,7 @@ public class ImportFeeds extends NbFragmentActivity {
 		
 		webContainer.setWebViewClient(new WebViewClient() {
 		    public boolean shouldOverrideUrlLoading(WebView view, String url){
-		    	if (TextUtils.equals(url, "http://www.newsblur.com/")) {
+		    	if (TextUtils.equals(url, APIConstants.NEWSBLUR_URL + "/")) {
 		    		ImportFeeds.this.setResult(RESULT_OK);
 		    		ImportFeeds.this.finish();
 		    		return true;
@@ -31,7 +32,7 @@ public class ImportFeeds extends NbFragmentActivity {
 		   }
 		});
 		
-		webContainer.loadUrl("http://www.newsblur.com/import/authorize/");
+		webContainer.loadUrl(APIConstants.URL_IMPORT_AUTHORIZATION);
 		
 	}
 

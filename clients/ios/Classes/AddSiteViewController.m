@@ -53,18 +53,24 @@
 }
 
 - (void)viewDidLoad {    
-    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
-    folderImage.frame = CGRectMake(0, 0, 16, 16);
+    UIImageView *folderImage = [[UIImageView alloc]
+                                initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+    folderImage.frame = CGRectMake(0, 0, 24, 16);
+    [folderImage setContentMode:UIViewContentModeRight];
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
-    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
-    folderImage2.frame = CGRectMake(0, 0, 16, 16);
+    UIImageView *folderImage2 = [[UIImageView alloc]
+                                 initWithImage:[UIImage imageNamed:@"g_icn_folder_rss.png"]];
+    folderImage2.frame = CGRectMake(0, 0, 24, 16);
+    [folderImage2 setContentMode:UIViewContentModeRight];
     [addFolderInput setLeftView:folderImage2];
     [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
-    UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
-    urlImage.frame = CGRectMake(0, 0, 16, 16);
+    UIImageView *urlImage = [[UIImageView alloc]
+                             initWithImage:[UIImage imageNamed:@"world.png"]];
+    urlImage.frame = CGRectMake(0, 0, 24, 16);
+    [urlImage setContentMode:UIViewContentModeRight];
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
@@ -185,7 +191,7 @@
         return;
     }
     
-    int periodLoc = [phrase rangeOfString:@"."].location;
+    NSInteger periodLoc = [phrase rangeOfString:@"."].location;
     if (periodLoc != NSNotFound && siteAddressInput.returnKeyType != UIReturnKeyDone) {
         // URL
         [siteAddressInput setReturnKeyType:UIReturnKeyDone];
@@ -302,11 +308,11 @@
 
 - (NSString *)extractParentFolder {
     NSString *parent_folder = [inFolderInput text];
-    int folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
+    NSInteger folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
     if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
     }
-    int top_level_loc = [parent_folder rangeOfString:@" Top Level " options:NSBackwardsSearch].location;
+    NSInteger top_level_loc = [parent_folder rangeOfString:@" Top Level " options:NSBackwardsSearch].location;
     if (parent_folder.length && top_level_loc != NSNotFound) {
         parent_folder = @"";
     }
@@ -425,7 +431,7 @@ numberOfRowsInComponent:(NSInteger)component {
 #pragma mark Autocomplete sites
 
 
-- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [autocompleteResults count];
 }
 

@@ -66,29 +66,38 @@
                  ];
             }
         }
-        
     }];
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         // Once all unread hashes are in, only keep under preference for offline limit
-        NSInteger offlineLimit = [[NSUserDefaults standardUserDefaults] integerForKey:@"offline_store_limit"];
+        NSInteger offlineLimit = [[NSUserDefaults standardUserDefaults]
+                                  integerForKey:@"offline_store_limit"];
         NSString *order;
         NSString *orderComp;
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"]
+             isEqualToString:@"oldest"]) {
             order = @"ASC";
             orderComp = @">";
         } else {
             order = @"DESC";
             orderComp = @"<";
         }
-        FMResultSet *cursor = [db executeQuery:[NSString stringWithFormat:@"SELECT story_timestamp FROM unread_hashes ORDER BY story_timestamp %@ LIMIT 1 OFFSET %d", order, offlineLimit]];
+        NSString *lastStorySql = [NSString stringWithFormat:
+                                  @"SELECT story_timestamp FROM unread_hashes "
+                                  "ORDER BY story_timestamp %@ LIMIT 1 OFFSET %ld",
+                                  order, (long)offlineLimit];
+        FMResultSet *cursor = [db executeQuery:lastStorySql];
         int offlineLimitTimestamp = 0;
         while ([cursor next]) {
             offlineLimitTimestamp = [cursor intForColumn:@"story_timestamp"];
             break;
         }
-        NSLog(@"Deleting stories over limit: %d - %d", offlineLimit, offlineLimitTimestamp);
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
-        [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
+        [cursor close];
+        
+        if (offlineLimitTimestamp) {
+            NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
+            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
+        }
     }];
     
     appDelegate.totalUnfetchedStoryCount = 0;

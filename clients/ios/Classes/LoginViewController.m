@@ -7,10 +7,8 @@
 //
 
 #import "LoginViewController.h"
-#import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import <QuartzCore/QuartzCore.h>
+//#import <QuartzCore/QuartzCore.h>
 
 @implementation LoginViewController
 
@@ -50,7 +48,12 @@
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
+    [self.loginControl
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
 
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
             self.logInView.frame = CGRectMake(134, 180, 500, 300); 
@@ -220,6 +223,7 @@
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
         [appDelegate reloadFeedsView:YES];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     
 }
@@ -280,7 +284,7 @@
         [self.signUpPasswordInput setText:@""];
 //        [appDelegate showFirstTimeUser];
         [appDelegate reloadFeedsView:YES];
-        [self dismissViewControllerAnimated:NO completion:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     
 }
@@ -359,6 +363,7 @@
             // Login
             usernameInput.frame = CGRectMake(20, 67, 280, 31); 
             usernameOrEmailLabel.alpha = 1.0;
+            usernameLabel.alpha = 0.0;
             
             passwordInput.frame = CGRectMake(20, 129, 280, 31);
             passwordLabel.frame = CGRectMake(21, 106, 212, 22);
@@ -377,6 +382,7 @@
             // Signup
             usernameInput.frame = CGRectMake(20, 67, 130, 31); 
             usernameOrEmailLabel.alpha = 0.0;
+            usernameLabel.alpha = 1.0;
             
             passwordInput.frame = CGRectMake(170, 67, 130, 31);
             passwordLabel.frame = CGRectMake(171, 44, 212, 22);

@@ -23,36 +23,50 @@ static UIFont *textFont = nil;
 @synthesize negativeCount = _negativeCount;
 @synthesize negativeCountStr;
 @synthesize isSocial;
+@synthesize unreadCount;
 
 + (void) initialize{
     if (self == [FeedTableCell class]) {
         textFont = [UIFont boldSystemFontOfSize:18];
-//        UIColor *psGrad = UIColorFromRGB(0x559F4D);
-//        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
-//        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
-//        const CGFloat* psTop = CGColorGetComponents(ps.CGColor);
-//        const CGFloat* psBot = CGColorGetComponents(psGrad.CGColor);
-//        CGFloat psGradient[] = {
-//            psTop[0], psTop[1], psTop[2], psTop[3],
-//            psBot[0], psBot[1], psBot[2], psBot[3]
-//        };
-//        psColors = psGradient;
     }
 }
 
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+        
+        unreadCount = [UnreadCountView alloc];
+        unreadCount.appDelegate = self.appDelegate;
+        self.unreadCount = unreadCount;
+
+        cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
+        cellContent.opaque = YES;
+        
+        [self.contentView addSubview:cellContent];
+    }
+
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    ((FeedTableCellView *)cellContent).cell = self;
+    cellContent.frame = rect;
+    [cellContent setNeedsDisplay];
+    [self setupGestures];
+}
 
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
     _positiveCount = ps;
-    [self setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
 - (void) setNeutralCount:(int)nt {
     if (nt == _neutralCount) return;
     
     _neutralCount = nt;
-    [self setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
 - (void) setNegativeCount:(int)ng {
@@ -60,97 +74,124 @@ static UIFont *textFont = nil;
     
     _negativeCount = ng;
     _negativeCountStr = [NSString stringWithFormat:@"%d", ng];
-    [self setNeedsDisplay];
+//    [cellContent setNeedsDisplay];
 }
 
-
-- (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
+- (void)setupGestures {
+    [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
+    [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
+                     firstColor:UIColorFromRGB(0xA4D97B)
+            secondStateIconName:nil
+                    secondColor:nil
+                  thirdIconName:@"g_icn_unread.png"
+                     thirdColor:UIColorFromRGB(0xFFFFD2)
+                 fourthIconName:nil
+                    fourthColor:nil];
     
+    self.mode = MCSwipeTableViewCellModeSwitch;
+    self.shouldAnimatesIcons = NO;
+}
+
+- (void)redrawUnreadCounts {
+    [((FeedTableCellView *)cellContent) redrawUnreadCounts];
+}
+
+@end
+
+@implementation FeedTableCellView
+
+@synthesize cell;
+
+- (void)drawRect:(CGRect)r {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *backgroundColor;
     
-    backgroundColor = highlighted ?
-                      UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
-                      self.isSocial ? UIColorFromRGB(0xE6ECE8) :
+    backgroundColor = cell.highlighted || cell.selected ?
+                      UIColorFromRGB(0xFFFFD2) :
+                      cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       UIColorFromRGB(0xF7F8F5);
 
     [backgroundColor set];
     CGContextFillRect(context, r);
     
-    if (highlighted) {
-        [NewsBlurAppDelegate fillGradient:r startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
+    if (cell.highlighted || cell.selected) {
+//        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         
         // top border
         UIColor *highlightBorderColor = UIColorFromRGB(0xE3D0AE);
+        CGFloat lineWidth = 0.5f;
         CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
-        
+        CGContextSetLineWidth(context, lineWidth);
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, 0.5f);
+        CGContextMoveToPoint(context, 0, lineWidth*0.5f);
         CGContextAddLineToPoint(context, r.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, r.size.height - .5f);
-        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f);
+        CGContextSetLineWidth(context, lineWidth);
+        CGContextMoveToPoint(context, 0, r.size.height - .5f*lineWidth);
+        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
     }
     
-    UnreadCountView *unreadCount = [UnreadCountView alloc];
-    unreadCount.appDelegate = appDelegate;
-    [unreadCount drawInRect:r ps:_positiveCount nt:_neutralCount
-                   listType:(isSocial ? NBFeedListSocial : NBFeedListFeed)];
+    [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
+                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+
     
-    UIColor *textColor = highlighted ? 
+    UIColor *textColor = cell.highlighted || cell.selected ?
                          [UIColor blackColor]:
                          UIColorFromRGB(0x3a3a3a);
-
-    [textColor set];
     UIFont *font;
-    if (self.negativeCount || self.neutralCount || self.positiveCount) {
+    if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
     } else {
         font = [UIFont fontWithName:@"Helvetica" size:12.6];
     }
-
-    if (isSocial) {
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    
+    if (cell.isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail
-             alignment:NSTextAlignmentLeft];
+            [cell.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
+            [cell.feedTitle drawInRect:CGRectMake(46, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [cell.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
+            [cell.feedTitle drawInRect:CGRectMake(42, 7, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         }
 
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [cell.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
+            [cell.feedTitle drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
-            [feedTitle 
-             drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
-             withFont:font
-             lineBreakMode:NSLineBreakByTruncatingTail 
-             alignment:NSTextAlignmentLeft];
+            [cell.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
+            [cell.feedTitle drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, 20.0)
+                   withAttributes:@{NSFontAttributeName: font,
+                                    NSForegroundColorAttributeName: textColor,
+                                    NSParagraphStyleAttributeName: paragraphStyle}];
         }
     }
     
 }
 
-
+- (void)redrawUnreadCounts {
+//    [cell.unreadCount drawInRect:self.frame ps:cell.positiveCount nt:cell.neutralCount
+//                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+    cell.unreadCount.psCount = cell.positiveCount;
+    cell.unreadCount.ntCount = cell.neutralCount;
+    [cell.unreadCount setNeedsLayout];
+}
 
 @end

@@ -10,14 +10,13 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "WEPopoverController.h"
-#import "TransparentToolbar.h"
 #import "THCircularProgressView.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
 @interface StoryPageControl : BaseViewController
-<UIScrollViewDelegate, UIPopoverControllerDelegate, WEPopoverControllerDelegate> {
+<UIScrollViewDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate, WEPopoverControllerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
 
@@ -26,9 +25,7 @@
     UIButton *buttonNext;
     UIButton *buttonText;
     UIActivityIndicatorView *loadingIndicator;
-    UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
-    TransparentToolbar * rightToolbar;
     UIView *traverseView;
     UIView *progressView;
     UIView *progressViewContainer;
@@ -56,12 +53,11 @@
 @property (nonatomic) IBOutlet UIButton *buttonSend;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
+@property (nonatomic) IBOutlet UIView *bottomSize;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
-@property (nonatomic) IBOutlet TransparentToolbar * rightToolbar;
 @property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIView *progressView;
 @property (nonatomic) IBOutlet UIView *progressViewContainer;
@@ -74,22 +70,24 @@
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
-@property (nonatomic) int scrollingToPage;
+@property (nonatomic) NSInteger scrollingToPage;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;
+- (void)hidePages;
 - (void)refreshPages;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
-- (void)updatePageWithActiveStory:(int)location;
+- (void)updatePageWithActiveStory:(NSInteger)location;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
@@ -105,6 +103,7 @@
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)markStoryAsUnsaved;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;
@@ -117,8 +116,8 @@
 - (void)flashCheckmarkHud:(NSString *)messageType;
 
 - (IBAction)openSendToDialog:(id)sender;
-- (IBAction)doNextUnreadStory;
-- (IBAction)doPreviousStory;
+- (IBAction)doNextUnreadStory:(id)sender;
+- (IBAction)doPreviousStory:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
 - (IBAction)toggleView:(id)sender;
 

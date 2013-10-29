@@ -123,8 +123,8 @@ def load_social_stories(request, user_id, username=None):
         story['social_user_id'] = social_user_id
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
-        story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(shared_date)
+        story['long_parsed_date'] = format_story_link_date__long(shared_date)
         
         story['read_status'] = 1
         if (read_filter == 'all' or query) and socialsub:
@@ -192,19 +192,23 @@ def load_river_blurblog(request):
     if not relative_user_id:
         relative_user_id = user.pk
 
+    socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id)
+    if social_user_ids:
+        socialsubs = socialsubs.filter(subscription_user_id__in=social_user_ids)
+
     if not social_user_ids:
-        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
         social_user_ids = [s.subscription_user_id for s in socialsubs]
         
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_hashes, story_dates, read_feed_story_hashes = MSocialSubscription.feed_stories(
-                                                            user.pk, social_user_ids, 
-                                                            offset=offset, limit=limit,
-                                                            order=order, read_filter=read_filter,
-                                                            relative_user_id=relative_user_id,
-                                                            cutoff_date=user.profile.unread_cutoff)
+    story_hashes, story_dates, unread_feed_story_hashes = MSocialSubscription.feed_stories(
+                                                    user.pk, social_user_ids, 
+                                                    offset=offset, limit=limit,
+                                                    order=order, read_filter=read_filter,
+                                                    relative_user_id=relative_user_id,
+                                                    socialsubs=socialsubs,
+                                                    cutoff_date=user.profile.unread_cutoff)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(zip(story_hashes, story_dates))
     def sort_stories_by_hash(a, b):
@@ -268,10 +272,10 @@ def load_river_blurblog(request):
     # Just need to format stories
     for story in stories:
         story['read_status'] = 0
-        if story['story_hash'] in read_feed_story_hashes:
+        if story['story_hash'] not in unread_feed_story_hashes:
             story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
@@ -291,7 +295,7 @@ def load_river_blurblog(request):
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
             if (shared_stories[story['story_hash']]['shared_date'] < user.profile.unread_cutoff or 
-                story['story_hash'] in read_feed_story_hashes):
+                story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
 
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
@@ -570,6 +574,7 @@ def mark_story_as_shared(request):
     story = stories[0]
     story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     story['shared_by_user'] = True
+    story['shared'] = True
     shared_date = localtime_for_timezone(shared_story['shared_date'], request.user.profile.timezone)
     story['short_parsed_date'] = format_story_link_date__short(shared_date)
     story['long_parsed_date'] = format_story_link_date__long(shared_date)
