@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -372,6 +373,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     public void overlayLeft(View v) {
         pager.setCurrentItem(pager.getCurrentItem()-1, true);
+    }
+
+    public void overlayCount(View v) {
+        String unreadText = getString((this.currentUnreadCount == 1) ? R.string.overlay_count_toast_1 : R.string.overlay_count_toast_N);
+        Toast.makeText(this, String.format(unreadText, this.currentUnreadCount), Toast.LENGTH_SHORT).show();
     }
 
 }

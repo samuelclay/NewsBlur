@@ -1,15 +1,19 @@
 package com.newsblur.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ProgressBar;
+
+import com.newsblur.R;
 
 /**
  * A determinate, circular progress indicator.
@@ -18,6 +22,9 @@ import android.widget.ProgressBar;
  *     even though this is circular.  The parent class disables determinate behaviour otherwise.
  */
 public class ProgressCircle extends ProgressBar {
+
+    /** The thickness of the circular ring, in DP. */
+    public static final int STROKE_THICKNESS = 5;
 
     public ProgressCircle(Context context) {
         super(context);
@@ -30,17 +37,44 @@ public class ProgressCircle extends ProgressBar {
 
     protected void onDraw(Canvas canvas) {
         
-        float angle = (360f * this.getProgress()) / this.getMax();
-        Log.d(this.getClass().getName(), "prog: " + this.getProgress());
-        Log.d(this.getClass().getName(), "max: " + this.getMax());
-        Log.d(this.getClass().getName(), "angle: " + angle);
-        Paint p = new Paint();
-        p.setColor( Color.GREEN );
-        p.setStyle( Style.FILL );
-        p.setAntiAlias(true);
+        // the outline of the view w.r.t the screen
         Rect r = new Rect();
         this.getDrawingRect(r);
-        canvas.drawArc(new RectF(r), -90f, (-90f+angle), true, p);
+
+        // a bitmap on which we will render so that clearing can be done
+        Bitmap bm = Bitmap.createBitmap(r.width(), r.height(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bm);
+
+        // the outline of the view w.r.t the bitmap
+        Rect cr = new Rect();
+        cr.top = 0;
+        cr.left = 0;
+        cr.bottom = r.width();
+        cr.right = r.height();
+
+        float angle = (360f * this.getProgress()) / this.getMax();
+
+        Paint p = new Paint();
+        p.setStyle( Paint.Style.FILL );
+        p.setAntiAlias(true);
+        // draw the "remaining" part of the arc as a background
+        p.setColor( getResources().getColor(R.color.progress_circle_remaining) );
+        c.drawArc(new RectF(cr), -90f, 360f, true, p);
+        // draw the "completed" part of the arc over that
+        p.setColor( getResources().getColor(R.color.progress_circle_complete) );
+        c.drawArc(new RectF(cr), -90f, angle, true, p);
+        // clear the centre to form a ring 
+        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        p.setAlpha(0xFF);
+        RectF innerR = new RectF(cr);
+        innerR.top += STROKE_THICKNESS;
+        innerR.left += STROKE_THICKNESS;
+        innerR.bottom -= STROKE_THICKNESS;
+        innerR.right -= STROKE_THICKNESS;
+        c.drawArc(innerR, -90f, 360f, true, p);
+
+        // apply the bitmap onto this view
+        canvas.drawBitmap(bm, r.left, r.top, null);
 
     }
 
