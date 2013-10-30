@@ -60,6 +60,8 @@
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
+    <string name="overlay_count_toast_N">%d unread stories</string>
+    <string name="overlay_count_toast_1">1 unread story</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
 	
