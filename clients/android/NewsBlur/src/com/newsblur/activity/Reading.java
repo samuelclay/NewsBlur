@@ -87,14 +87,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     protected int startingUnreadCount = 0;
     protected int currentUnreadCount = 0;
 
-    // a list of stories we have viewed within this activity cycle.  We need this to power the "back"
-    // overlay nav button, and also to help keep track of unread counts since it would be too costly
-    // to query and update the DB on every page change.
-    private List<Story> storiesAlreadySeen;
-
+    // A list of stories we have marked as read during this reading session. Needed to help keep track of unread
+    // counts since it would be too costly to query and update the DB on every page change.
+    private Set<Story> storiesAlreadySeen;
 
     private float overlayRangeTopPx;
     private float overlayRangeBotPx;
+
+    private List<Story> pageHistory;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -110,7 +110,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		fragmentManager = getSupportFragmentManager();
 		
         storiesToMarkAsRead = new HashSet<Story>();
-        storiesAlreadySeen = new ArrayList<Story>();
+        storiesAlreadySeen = new HashSet<Story>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -122,6 +122,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_TOP_DP);
         this.overlayRangeBotPx = (float) UIUtils.convertDPsToPixels(this, OVERLAY_RANGE_BOT_DP);
+
+        this.pageHistory = new ArrayList<Story>();
 
 	}
 
@@ -140,9 +142,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
 		pager.setPageMarginDrawable(R.drawable.divider_light);
 		pager.setOnPageChangeListener(this);
-
 		pager.setAdapter(readingAdapter);
+
 		pager.setCurrentItem(passedPosition);
+        // setCurrentItem sometimes fails to pass the first page to the callback, so call it manually
+        // for the first one.
+        this.onPageSelected(passedPosition); 
+
         this.enableOverlays();
 	}
 
@@ -208,12 +214,18 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void onPageSelected(int position) {
-        this.enableOverlays();
-
-		if (readingAdapter.getStory(position) != null) {
-			addStoryToMarkAsRead(readingAdapter.getStory(position));
+		Story story = readingAdapter.getStory(position);
+        if (story != null) {
+            synchronized (this.pageHistory) {
+                // if the history is just starting out or the last entry in it isn't this page, add this page
+                if ((this.pageHistory.size() < 1) || (!story.equals(this.pageHistory.get(this.pageHistory.size()-1)))) {
+                    this.pageHistory.add(story);
+                }
+            }
+			addStoryToMarkAsRead(story);
 			checkStoryCount(position);
 		}
+        this.enableOverlays();
 	}
 
     // interface ScrollChangeListener
@@ -247,10 +259,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     /**
      * Check and correct the display status of the overlays.  Call this any time
-     * an event happens that might change out list position.
+     * an event happens that might change our list position.
      */
     private void enableOverlays() {
-        this.overlayLeft.setEnabled(true);
+        this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
         this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.overlay_right_done);
 
@@ -311,7 +323,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
-        Log.d(this.getClass().getName(), String.format("position: %d, total: %d, request running: %b, no more: %b", position, stories.getCount(), requestedPage, noMoreApiPages));
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
 		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
 			currentApiPage += 1;
@@ -417,7 +428,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                     nextUnread();
                     return null;
                 }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }.execute();
+            //}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -431,8 +443,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             int candidate = 0;
             boolean unreadFound = false;
             unreadSearch:while (!unreadFound) {
-                Log.d(this.getClass().getName(), "candidate: " + candidate);
-                
+
                 Story story = readingAdapter.getStory(candidate);
 
                 if (story == null) {
@@ -441,14 +452,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                         Log.e(this.getClass().getName(), "Ran out of stories while looking for unreads.");
                         Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
                         break unreadSearch;
-                    } else {
-                        Log.d(this.getClass().getName(), "Waiting for stories to load.");
-                    }
+                    } 
                 } else {
-                    Log.d(this.getClass().getName(), String.format("story.id: %s, story.read: %b", story.storyHash, story.read));
                     if ((candidate == pager.getCurrentItem()) || (story.read) || (this.storiesAlreadySeen.contains(story))) {
                         candidate++;
-                        Log.d(this.getClass().getName(), "Passing read story.");
                         continue unreadSearch;
                     } else {
                         unreadFound = true;
@@ -490,7 +497,34 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * Click handler for the lefthand overlay nav button.
      */
     public void overlayLeft(View v) {
-        pager.setCurrentItem(pager.getCurrentItem()-1, true);
+        int targetPosition = this.getLastReadPosition(true);
+        if (targetPosition != -1) {
+            pager.setCurrentItem(targetPosition, true);
+        } else {
+            Log.e(this.getClass().getName(), "reading history contained item not found in cursor.");
+        }
+    }
+
+    /**
+     * Get the pager position of the last story read during this activity or -1 if there is nothing
+     * in the history.
+     *
+     * @param trimHistory optionally trim the history of the currently displayed page iff the
+     *        back button has been pressed.
+     */
+    private int getLastReadPosition(boolean trimHistory) {
+        synchronized (this.pageHistory) {
+            // the last item is always the currently shown page, do not count it
+            if (this.pageHistory.size() < 2) {
+                return -1;
+            }
+            Story targetStory = this.pageHistory.get(this.pageHistory.size()-2);
+            int targetPosition = this.readingAdapter.getPosition(targetStory);
+            if (trimHistory && (targetPosition != -1)) {
+                this.pageHistory.remove(this.pageHistory.size()-1);
+            }
+            return targetPosition;
+        }
     }
 
     /**
