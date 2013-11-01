@@ -41,6 +41,18 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 			return Story.fromCursor(stories);
 		}
 	}
+
+    public int getPosition(Story story) {
+        int pos = 0;
+        while (pos < stories.getCount()) {
+			stories.moveToPosition(pos);
+            if (Story.fromCursor(stories).equals(story)) {
+                return pos;
+            }
+            pos++;
+        }
+        return -1;
+    }
 	
 	@Override
 	public int getItemPosition(Object object) {
