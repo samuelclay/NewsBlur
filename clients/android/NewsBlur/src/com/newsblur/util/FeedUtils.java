@@ -138,6 +138,11 @@ public class FeedUtils {
             }.execute();
         }
 
+        // update the local object to show as read even before requeried
+        for (Story story : stories) {
+            story.read = true;
+        }
+
     }
 
 	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations) {
