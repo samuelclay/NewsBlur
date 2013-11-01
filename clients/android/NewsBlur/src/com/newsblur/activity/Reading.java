@@ -1,12 +1,17 @@
 package com.newsblur.activity;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +30,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
+import com.newsblur.activity.Main;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -50,8 +56,15 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
 
-    private static final int OVERLAY_RANGE_TOP_DP = 50;
+    private static final int OVERLAY_RANGE_TOP_DP = 45;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
+
+    /** The longest time (in seconds) the UI will wait for API pages to load while
+        searching for the next unread story. */
+    private static final long UNREAD_SEARCH_LOAD_WAIT_SECONDS = 30;
+
+    private final Object UNREAD_SEARCH_MUTEX = new Object();
+    private CountDownLatch unreadSearchLatch;
 
 	protected int passedPosition;
 	protected int currentState;
@@ -74,10 +87,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     protected int startingUnreadCount = 0;
     protected int currentUnreadCount = 0;
 
-    // keep a local cache of stories we have viewed within this activity cycle.  We need
-    // this to track unread counts since it would be too costly to query and update the DB
-    // on every page change.
-    private Set<Story> storiesAlreadySeen;
+    // a list of stories we have viewed within this activity cycle.  We need this to power the "back"
+    // overlay nav button, and also to help keep track of unread counts since it would be too costly
+    // to query and update the DB on every page change.
+    private List<Story> storiesAlreadySeen;
 
 
     private float overlayRangeTopPx;
@@ -97,7 +110,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		fragmentManager = getSupportFragmentManager();
 		
         storiesToMarkAsRead = new HashSet<Story>();
-        storiesAlreadySeen = new HashSet<Story>();
+        storiesAlreadySeen = new ArrayList<Story>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -237,10 +250,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * an event happens that might change out list position.
      */
     private void enableOverlays() {
-        int page = this.pager.getCurrentItem();
-        this.overlayLeft.setEnabled(page > 0);
-        this.overlayRight.setEnabled(page < (this.readingAdapter.getCount()-1));
-        this.overlayRight.setText((page < (this.readingAdapter.getCount()-1)) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayLeft.setEnabled(true);
+        this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.overlay_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
@@ -259,11 +271,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public void updateAfterSync() {
         this.requestedPage = false;
-		setSupportProgressBarIndeterminateVisibility(false);
+		updateSyncStatus(false);
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
         this.enableOverlays();
         checkStoryCount(pager.getCurrentItem());
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
 	}
 
 	@Override
@@ -272,6 +287,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		readingAdapter.notifyDataSetChanged();
         this.enableOverlays();
         checkStoryCount(pager.getCurrentItem());
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
 	}
 
     /**
@@ -281,11 +299,21 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public void setNothingMoreToUpdate() {
 		this.noMoreApiPages = true;
+        if (this.unreadSearchLatch !=null) {
+            this.unreadSearchLatch.countDown();
+        }
 	}
 
-	private void checkStoryCount(int position) {
+	/**
+     * While navigating the story list and at the specified position, see if it is possible
+     * and desirable to start loading more stories in the background.  Note that if a load
+     * is triggered, this method will be called again by the callback to ensure another
+     * load is not needed and all latches are tripped.
+     */
+    private void checkStoryCount(int position) {
+        Log.d(this.getClass().getName(), String.format("position: %d, total: %d, request running: %b, no more: %b", position, stories.getCount(), requestedPage, noMoreApiPages));
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + 1) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
+		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
 			currentApiPage += 1;
 			requestedPage = true;
 			triggerRefresh(currentApiPage);
@@ -293,8 +321,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	}
 
 	@Override
-	public void updateSyncStatus(boolean syncRunning) {
-		setSupportProgressBarIndeterminateVisibility(syncRunning);
+	public void updateSyncStatus(final boolean syncRunning) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                setSupportProgressBarIndeterminateVisibility(syncRunning);
+            }
+        });
 	}
 
 	public abstract void triggerRefresh(int page);
@@ -319,8 +351,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         if (this.storiesToMarkAsRead.size() >= AppConstants.MAX_MARK_READ_BATCH) {
             flushStoriesMarkedRead();
         }
-        if (this.storiesAlreadySeen.add(story)) {
+        if (!this.storiesAlreadySeen.contains(story)) {
             // only decrement the cached story count if the story wasn't already read
+            this.storiesAlreadySeen.add(story);
             this.currentUnreadCount--;
         }
         this.enableOverlays();
@@ -367,14 +400,102 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
+    /**
+     * Click handler for the righthand overlay nav button.
+     */
     public void overlayRight(View v) {
-        pager.setCurrentItem(pager.getCurrentItem()+1, true);
+        if (this.currentUnreadCount == 0) {
+            // if there are no unread stories, go back to the feed list
+            Intent i = new Intent(this, Main.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        } else {
+            // if there are unreads, go to the next one
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    nextUnread();
+                    return null;
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
+    /**
+     * Search our set of stories for the next unread one.  This requires some heavy
+     * cooperation with the way stories are automatically loaded in the background
+     * as we walk through the list.
+     */
+    private void nextUnread() {
+        synchronized (UNREAD_SEARCH_MUTEX) {
+            int candidate = 0;
+            boolean unreadFound = false;
+            unreadSearch:while (!unreadFound) {
+                Log.d(this.getClass().getName(), "candidate: " + candidate);
+                
+                Story story = readingAdapter.getStory(candidate);
+
+                if (story == null) {
+                    if (this.noMoreApiPages) {
+                        // this is odd. if there were no unreads, how was the button even enabled?
+                        Log.e(this.getClass().getName(), "Ran out of stories while looking for unreads.");
+                        Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
+                        break unreadSearch;
+                    } else {
+                        Log.d(this.getClass().getName(), "Waiting for stories to load.");
+                    }
+                } else {
+                    Log.d(this.getClass().getName(), String.format("story.id: %s, story.read: %b", story.storyHash, story.read));
+                    if ((candidate == pager.getCurrentItem()) || (story.read) || (this.storiesAlreadySeen.contains(story))) {
+                        candidate++;
+                        Log.d(this.getClass().getName(), "Passing read story.");
+                        continue unreadSearch;
+                    } else {
+                        unreadFound = true;
+                        break unreadSearch;
+                    }
+                }
+
+                // if we didn't find a story trigger a check to see if there are any more to search before proceeding
+                this.unreadSearchLatch = new CountDownLatch(1);
+                this.checkStoryCount(candidate+1);
+                try {
+                    boolean unlatched = this.unreadSearchLatch.await(UNREAD_SEARCH_LOAD_WAIT_SECONDS, TimeUnit.SECONDS);
+                    if (unlatched) {
+                        continue unreadSearch;
+                    } else {
+                        Log.e(this.getClass().getName(), "Timed out waiting for next API page while looking for unreads.");
+                        Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
+                        break unreadSearch;
+                    }
+                } catch (InterruptedException ie) {
+                    Log.e(this.getClass().getName(), "Interrupted waiting for next API page while looking for unreads.");
+                    Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
+                    break unreadSearch;
+                }
+
+            }
+            if (unreadFound) {
+                final int page = candidate;
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        pager.setCurrentItem(page, true);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Click handler for the lefthand overlay nav button.
+     */
     public void overlayLeft(View v) {
         pager.setCurrentItem(pager.getCurrentItem()-1, true);
     }
 
+    /**
+     * Click handler for the progress indicator on the righthand overlay nav button.
+     */
     public void overlayCount(View v) {
         String unreadText = getString((this.currentUnreadCount == 1) ? R.string.overlay_count_toast_1 : R.string.overlay_count_toast_N);
         Toast.makeText(this, String.format(unreadText, this.currentUnreadCount), Toast.LENGTH_SHORT).show();
