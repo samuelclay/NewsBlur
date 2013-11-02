@@ -336,7 +336,11 @@ public class FeedProvider extends ContentProvider {
                 Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
                 Log.d(LoggingDatabase.class.getName(), "selArgs : " + Arrays.toString(selectionArgs));
             }
-            return mdb.rawQuery(sql, selectionArgs);
+            Cursor cursor = mdb.rawQuery(sql, selectionArgs);
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(LoggingDatabase.class.getName(), "result rows: " + cursor.getCount());
+            }
+            return cursor;
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
             return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
