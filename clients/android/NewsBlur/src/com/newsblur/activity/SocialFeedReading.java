@@ -47,7 +47,7 @@ public class SocialFeedReading extends Reading {
 
     @Override
     public void triggerRefresh(int page) {
-        setSupportProgressBarIndeterminateVisibility(true);
+        updateSyncStatus(true);
         final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
         intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
         intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.SOCIALFEED_UPDATE);
