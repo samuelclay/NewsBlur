@@ -51,11 +51,23 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.menuTableView reloadData];
     
+    [orderSegmentedControl
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    [orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [orderSegmentedControl setSelectedSegmentIndex:0];
     if ([appDelegate.activeOrder isEqualToString:@"oldest"]) {
         [orderSegmentedControl setSelectedSegmentIndex:1];
     }
     
+    [readFilterSegmentedControl
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    [readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [readFilterSegmentedControl setSelectedSegmentIndex:0];
     if ([appDelegate.activeReadFilter isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
@@ -147,7 +159,7 @@
     return cell;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kMenuOptionHeight;
 }
 
@@ -185,6 +197,7 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
     
     orderSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                              kMenuOptionHeight - 7*2);
@@ -200,6 +213,8 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    
     readFilterSegmentedControl.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2,
                                                   kMenuOptionHeight - 7*2);
     [readFilterSegmentedControl setTitle:[@"All stories" uppercaseString] forSegmentAtIndex:0];

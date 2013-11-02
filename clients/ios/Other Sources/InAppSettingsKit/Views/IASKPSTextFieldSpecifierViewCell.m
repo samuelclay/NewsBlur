@@ -19,9 +19,6 @@
 #import "IASKSettingsReader.h"
 
 @implementation IASKPSTextFieldSpecifierViewCell
-
-@synthesize textField=_textField;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -29,7 +26,7 @@
 		self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
 
         // TextField
-        _textField = [[[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, 21)] autorelease];
+        _textField = [[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, 21)];
         _textField.autoresizingMask = UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleBottomMargin |
         UIViewAutoresizingFlexibleLeftMargin;
@@ -67,11 +64,5 @@
 	}
 	_textField.frame = textFieldFrame;
 }
-
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

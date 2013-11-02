@@ -470,7 +470,8 @@ class UserSubscription(models.Model):
         if cutoff_date:
             cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+            latest_story = MStory.objects(story_feed_id=self.feed.pk)\
+                           .order_by('-story_date').only('story_date').limit(1)
             if latest_story and len(latest_story) >= 1:
                 cutoff_date = (latest_story[0]['story_date']
                                + datetime.timedelta(seconds=1))
@@ -548,6 +549,7 @@ class UserSubscription(models.Model):
                 stories = cache.get('S:%s' % self.feed_id)
             
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     cutoff_date=self.user.profile.unread_cutoff)
         
@@ -607,6 +609,7 @@ class UserSubscription(models.Model):
                         feed_scores['neutral'] += 1
         else:
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
+                                                    usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     include_timestamps=True,
                                                     cutoff_date=self.user.profile.unread_cutoff)

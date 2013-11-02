@@ -2,6 +2,8 @@
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
     #import "Underscore.h"
+    #import <SystemConfiguration/SystemConfiguration.h>
+    #import <MobileCoreServices/MobileCoreServices.h>
 
 //#define DEBUG 1
 

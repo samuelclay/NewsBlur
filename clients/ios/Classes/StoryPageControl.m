@@ -22,7 +22,6 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
-#import "TransparentToolbar.h"
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
@@ -35,7 +34,6 @@
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
 @synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
-@synthesize rightToolbar;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -45,7 +43,7 @@
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
 @synthesize buttonBack;
-@synthesize bottomPlaceholderToolbar;
+@synthesize bottomSize;
 @synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
@@ -66,9 +64,15 @@
 }
 
 - (void)viewDidLoad {
-	currentPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
-	nextPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
-    previousPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
+	currentPage = [[StoryDetailViewController alloc]
+                   initWithNibName:@"StoryDetailViewController"
+                   bundle:nil];
+	nextPage = [[StoryDetailViewController alloc]
+                initWithNibName:@"StoryDetailViewController"
+                bundle:nil];
+    previousPage = [[StoryDetailViewController alloc]
+                    initWithNibName:@"StoryDetailViewController"
+                    bundle:nil];
     
     currentPage.appDelegate = appDelegate;
     nextPage.appDelegate = appDelegate;
@@ -101,36 +105,49 @@
                             percentage:20];
     circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView addSubview:circularProgressView];
-    UIView *tapIndicator = [[UIView alloc] initWithFrame:CGRectMake(circularProgressView.frame.origin.x - circularProgressView.frame.size.width / 2, circularProgressView.frame.origin.y - circularProgressView.frame.size.height / 2, circularProgressView.frame.size.width*2, circularProgressView.frame.size.height*2)];
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
+    UIView *tapIndicator = [[UIView alloc]
+                            initWithFrame:CGRectMake(circularProgressView.frame.origin.x -
+                                                     circularProgressView.frame.size.width / 2,
+                                                     circularProgressView.frame.origin.y -
+                                                     circularProgressView.frame.size.height / 2,
+                                                     circularProgressView.frame.size.width*2,
+                                                     circularProgressView.frame.size.height*2)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                   action:@selector(tapProgressBar:)];
     [tapIndicator addGestureRecognizer:tap];
     tapIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
-    self.buttonNext.titleEdgeInsets = UIEdgeInsetsMake(0, 24, 0, 0);
 
-    rightToolbar = [[TransparentToolbar alloc]
-                    initWithFrame:CGRectMake(0, 0, 80, 44)];
-    
     spacerBarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                       target:nil action:nil];
     spacerBarButton.width = -12;
     spacer2BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer2BarButton.width = -4;
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                        target:nil action:nil];
+    spacer2BarButton.width = -6;
     spacer3BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer3BarButton.width = -10;
+                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                        target:nil action:nil];
+    spacer3BarButton.width = -6;
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
+    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
+                                                    target:nil
+                                                    action:nil];
     [separatorBarButton setEnabled:NO];
     
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(toggleFontSize:)];
+    fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
+                                                    target:self
+                                                    action:@selector(toggleFontSize:)];
     
     UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
-    originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(showOriginalSubview:)];
+    originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
+                                                     target:self
+                                                     action:@selector(showOriginalSubview:)];
     
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
@@ -143,19 +160,18 @@
     
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"All Sites" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
+                                   initWithTitle:@"All Sites"
+                                   style:UIBarButtonItemStyleBordered
+                                   target:self
+                                   action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;
     
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {        
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 fontSettingsButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 originalStoryButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   separatorBarButton,
+                                                   fontSettingsButton, nil];
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -168,17 +184,22 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-    
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
             UIImage *titleImage;
-            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_global"]) {
+            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
+                                                  isEqualToString:@"river_global"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
-            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder isEqualToString:@"river_blurblogs"]) {
+            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
+                                                         isEqualToString:@"river_blurblogs"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
+                                                   isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
+                                                   isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
@@ -216,17 +237,26 @@
     self.traverseView.alpha = 1;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
+    [self adjustDragBar:orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     // set the subscribeButton flag
-    if (appDelegate.isTryFeedView) {
-        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@", [appDelegate.activeFeed objectForKey:@"username"]];
+    if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
+                                      [appDelegate.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
+    previousPage.view.hidden = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    previousPage.view.hidden = YES;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
 }
 
 - (void)transitionFromFeedDetail {
@@ -237,7 +267,8 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                         duration:(NSTimeInterval)duration {
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
         NSLog(@"Rotate: %f,%f",self.view.frame.size.width,self.view.frame.size.height);
         
@@ -246,6 +277,7 @@
     }
     
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
+    [self adjustDragBar:toInterfaceOrientation];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -258,15 +290,48 @@
     }
 }
 
+- (void)adjustDragBar:(UIInterfaceOrientation)orientation {
+    CGRect scrollViewFrame = self.scrollView.frame;
+    CGRect traverseViewFrame = self.traverseView.frame;
+
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ||
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        scrollViewFrame.size.height = self.view.frame.size.height;
+        self.bottomSize.hidden = YES;
+    } else {
+        scrollViewFrame.size.height = self.view.frame.size.height - 12;
+        self.bottomSize.hidden = NO;
+    }
+    
+    self.scrollView.frame = scrollViewFrame;
+    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
+    self.traverseView.frame = traverseViewFrame;
+}
+
+- (void)highlightButton:(UIButton *)b {
+    if (![b isKindOfClass:[UIButton class]]) return;
+    [b setHighlighted:YES];
+}
+- (void)unhighlightButton:(UIButton *)b {
+    if (![b isKindOfClass:[UIButton class]]) return;
+    [b setHighlighted:NO];
+}
+
+- (IBAction)beginTouchDown:(UIButton *)sender {
+    [self performSelector:@selector(highlightButton:) withObject:sender afterDelay:0.0];
+}
+
+- (IBAction)endTouchDown:(UIButton *)sender {
+    if (!sender) return;
+    
+    [self performSelector:@selector(unhighlightButton:) withObject:sender afterDelay:0.2];
+}
+
 - (void)resetPages {
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];
 
-    [currentPage hideStory];
-    [nextPage hideStory];
-    [previousPage hideStory];
-    
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
@@ -278,11 +343,16 @@
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
-    
+}
+
+- (void)hidePages {
+    [currentPage hideStory];
+    [nextPage hideStory];
+    [previousPage hideStory];
 }
 
 - (void)refreshPages {
-    int pageIndex = currentPage.pageIndex;
+    NSInteger pageIndex = currentPage.pageIndex;
     [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
     currentPage.pageIndex = -2;
@@ -294,6 +364,10 @@
 }
 
 - (void)refreshHeaders {
+    [currentPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:currentPage.activeStoryId]];
+    [nextPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:nextPage.activeStoryId]];
+    [previousPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:previousPage.activeStoryId]];
+
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
@@ -311,13 +385,15 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
+        if ([theTouch.view isKindOfClass: UIToolbar.class] ||
+            [theTouch.view isKindOfClass: UIView.class]) {
             self.inTouchMove = YES;
-//            CGPoint touchLocation = [theTouch locationInView:self.view];
-//            CGFloat y = touchLocation.y;
-//            [appDelegate.masterContainerViewController dragStoryToolbar:y];
+            CGPoint touchLocation = [theTouch locationInView:self.view];
+            CGFloat y = touchLocation.y;
+            [appDelegate.masterContainerViewController dragStoryToolbar:y];
         }
     }
 }
@@ -325,10 +401,12 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         
-        if (([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
+        if (([theTouch.view isKindOfClass: UIToolbar.class] ||
+             [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
         }
@@ -338,7 +416,8 @@
 #pragma mark -
 #pragma mark Side scroll view
 
-- (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController {
+- (void)applyNewIndex:(NSInteger)newIndex
+       pageController:(StoryDetailViewController *)pageController {
 	NSInteger pageCount = [[appDelegate activeFeedStoryLocations] count];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
@@ -380,12 +459,12 @@
             [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
-        int location = [appDelegate indexFromLocation:pageController.pageIndex];
+        NSInteger location = [appDelegate indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
-            abs(newIndex - self.scrollingToPage) <= 1) {
+            ABS(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
         } else {
@@ -411,7 +490,7 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	NSInteger previousNumber = lowerNumber - 1;
 	
-    int storyCount = [appDelegate.activeFeedStoryLocations count];
+    NSInteger storyCount = [appDelegate.activeFeedStoryLocations count];
     if (storyCount == 0 || lowerNumber > storyCount) return;
     
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
@@ -490,7 +569,10 @@
     [self setStoryFromScroll];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
@@ -500,7 +582,7 @@
         
         if (![appDelegate.activeFeedStories count]) return;
         
-        int storyIndex = [appDelegate indexFromLocation:nearestNumber];
+        NSInteger storyIndex = [appDelegate indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate indexOfActiveStory]) {
             appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
@@ -536,8 +618,6 @@
             [self setStoryFromScroll];
         }
     }
-    
-    [self markStoryAsRead];
 }
 
 - (void)setStoryFromScroll {
@@ -577,6 +657,7 @@
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
+    currentPage.isRecentlyUnread = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
@@ -585,7 +666,7 @@
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
-        int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
+        NSInteger storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
         appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
         [self markStoryAsRead];
@@ -598,23 +679,20 @@
     }
     
     self.waitingForNextUnreadFromServer = NO;
-    [self doNextUnreadStory];
+    [self doNextUnreadStory:nil];
 }
 
-- (void)updatePageWithActiveStory:(int)location {
+- (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
-    self.bottomPlaceholderToolbar.hidden = YES;
+//    self.bottomSize.hidden = YES;
+    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [rightToolbar setItems: [NSArray arrayWithObjects:
-                                 spacerBarButton,
-                                 fontSettingsButton,
-                                 spacer2BarButton,
-                                 separatorBarButton,
-                                 spacer3BarButton,
-                                 originalStoryButton, nil]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightToolbar];
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   separatorBarButton,
+                                                   fontSettingsButton, nil];
     }
     
     [self setNextPreviousButtons];
@@ -638,50 +716,33 @@
     [self informError:@"The server barfed!"];
 }
 
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    //    [self informError:@"Failed to mark story as read"];
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
-        [db executeUpdate:@"INSERT INTO queued_read_hashes "
-                           "(story_feed_id, story_hash) VALUES "
-                           "(?, ?)", storyFeedId, storyHash];
-    }];
-    
-    appDelegate.hasQueuedReadStories = YES;
-}
-
-
 #pragma mark -
 #pragma mark Actions
 
 - (void)setNextPreviousButtons {
     // setting up the PREV BUTTON
-    int readStoryCount = [appDelegate.readStories count];
+    NSInteger readStoryCount = [appDelegate.readStories count];
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
         [buttonPrevious setEnabled:NO];
-//            buttonPrevious.alpha = 1.0f;
-//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous_off"]];
     } else {
         [buttonPrevious setEnabled:YES];
-//            buttonPrevious.alpha = 1.0f;
-//            [buttonAction setImage:[UIImage imageNamed:@"traverse_previous"]];
     }
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
-    int nextIndex = [appDelegate indexOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
+    NSInteger nextIndex = [appDelegate indexOfNextUnreadStory];
+    NSInteger unreadCount = [appDelegate unreadCount];
     if ((nextIndex == -1 && unreadCount > 0) ||
         nextIndex != -1) {
-        [buttonNext setTitle:@"NEXT" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"] forState:UIControlStateNormal];
+        [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"]
+                              forState:UIControlStateNormal];
     } else {
-        [buttonNext setTitle:@"DONE" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"] forState:UIControlStateNormal];
+        [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
+        [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_done.png"]
+                              forState:UIControlStateNormal];
     }
     
     float unreads = (float)[appDelegate unreadCount];
@@ -707,89 +768,40 @@
         [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text_on.png"]
                               forState:nil];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -44);
+        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
         [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[UIImage imageNamed:@"traverse_text.png"]
                               forState:nil];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -40);
+        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
     }
 }
 
 - (void)markStoryAsRead {
-    //    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1 ||
-        [[appDelegate.unreadStoryHashes objectForKey:[appDelegate.activeStory objectForKey:@"story_hash"]] boolValue]) {
+    if (!appDelegate.activeStory) return;
+    
+    if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
         
         [appDelegate markActiveStoryRead];
+        [self.currentPage refreshHeader];
+        [appDelegate.feedDetailViewController redrawUnreadStory];
         
-        NSString *urlString;
-        if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-            urlString = [NSString stringWithFormat:@"%@/reader/mark_social_stories_as_read",
-                         NEWSBLUR_URL];
-        } else {
-            urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_read",
-                         NEWSBLUR_URL];
-        }
-        
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
+                               NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        if (appDelegate.isSocialRiverView) {
-            // grab the user id from the shared_by_friends
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSString *friendUserId;
-            
-            if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"shared_by_friends"] objectAtIndex:0]];
-            } else if ([[appDelegate.activeStory objectForKey:@"commented_by_friends"] count]) {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"commented_by_friends"] objectAtIndex:0]];
-            } else {
-                friendUserId = [NSString stringWithFormat:@"%@",
-                                [[appDelegate.activeStory objectForKey:@"share_user_ids"] objectAtIndex:0]];
-            }
-            
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId
-                                                                  forKey:[NSString stringWithFormat:@"%@",
-                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-            
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory
-                                                                          forKey:friendUserId];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"];
-        } else if (appDelegate.isSocialView) {
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId
-                                                                  forKey:[NSString stringWithFormat:@"%@",
-                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-            
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory
-                                                                          forKey:[NSString stringWithFormat:@"%@",
-                                                                                  [appDelegate.activeStory objectForKey:@"social_user_id"]]];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"];
-        } else {
-            [request setPostValue:[appDelegate.activeStory
-                                   objectForKey:@"story_hash"]
-                           forKey:@"story_id"];
-            [request setPostValue:[appDelegate.activeStory
-                                   objectForKey:@"story_feed_id"]
-                           forKey:@"feed_id"];
-            [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
-                                                     objectForKey:@"story_feed_id"],
-                                    @"story_hash":[appDelegate.activeStory
-                                                   objectForKey:@"story_hash"]}];
-        }
-        
+        [request setPostValue:[appDelegate.activeStory objectForKey:@"story_hash"]
+                       forKey:@"story_hash"];
+        [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
+                                                 objectForKey:@"story_feed_id"],
+                                @"story_hash":[appDelegate.activeStory
+                                               objectForKey:@"story_hash"]}];
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
         [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
 }
-
 
 - (void)finishMarkAsRead:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
@@ -802,7 +814,17 @@
     //    NSLog(@"results in mark as read is %@", results);
 }
 
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
+    //    [self informError:@"Failed to mark story as read"];
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
+}
+
 - (IBAction)openSendToDialog:(id)sender {
+    [self endTouchDown:sender];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
@@ -836,7 +858,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markActiveStorySaved:YES];
+    [appDelegate markStory:appDelegate.activeStory asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
@@ -868,7 +890,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markActiveStorySaved:NO];
+    [appDelegate markStory:appDelegate.activeStory asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
@@ -889,15 +911,16 @@
                        forKey:@"feed_id"];
         
         [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDidFailSelector:@selector(failedMarkAsUnread:)];
         [request setDelegate:self];
+        [request setUserInfo:appDelegate.activeStory];
         [request startAsynchronous];
     }
 }
 
 - (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
     if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
+        return [self failedMarkAsUnread:request];
     }
     
     NSString *responseString = [request responseString];
@@ -910,10 +933,31 @@
     
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+    currentPage.isRecentlyUnread = YES;
+    [currentPage refreshHeader];
     [self setNextPreviousButtons];
-    
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
+
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
+    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+    
+    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    if (!dequeued) {
+        [self informError:@"Failed to unread story"];
+        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
+    } else {
+        [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+        [appDelegate markActiveStoryUnread];
+        [appDelegate.feedDetailViewController redrawUnreadStory];
+        [self setNextPreviousButtons];
+        [self.currentPage flashCheckmarkHud:@"unread"];
+    }
+    
+    [self refreshHeaders];
+}
+
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate.masterContainerViewController hidePopover];
@@ -928,13 +972,13 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
-    int unreadCount = appDelegate.unreadCount;
+    NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         hud.labelText = @"No unread stories";
     } else if (unreadCount == 1) {
         hud.labelText = @"1 story left";
     } else {
-        hud.labelText = [NSString stringWithFormat:@"%i stories left", unreadCount];
+        hud.labelText = [NSString stringWithFormat:@"%li stories left", (long)unreadCount];
     }
 	[hud hide:YES afterDelay:0.8];
 }
@@ -944,6 +988,8 @@
 }
 
 - (IBAction)toggleView:(id)sender {
+    [self endTouchDown:sender];
+    
     [self.currentPage fetchTextView];
 }
 
@@ -995,9 +1041,7 @@
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
-    self.currentPage.noStorySelectedLabel.hidden = YES;
-    self.nextPage.noStorySelectedLabel.hidden = YES;
-    self.previousPage.noStorySelectedLabel.hidden = YES;
+    self.currentPage.noStoryMessage.hidden = YES;
 }
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
@@ -1007,12 +1051,13 @@
 #pragma mark -
 #pragma mark Story Traversal
 
-- (IBAction)doNextUnreadStory {
+- (IBAction)doNextUnreadStory:(id)sender {
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
-    int nextLocation = [appDelegate locationOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
+    NSInteger nextLocation = [appDelegate locationOfNextUnreadStory];
+    NSInteger unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
+    [self endTouchDown:sender];
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
     if (nextLocation == -1 && unreadCount > 0 &&
@@ -1034,7 +1079,8 @@
     }
 }
 
-- (IBAction)doPreviousStory {
+- (IBAction)doPreviousStory:(id)sender {
+    [self endTouchDown:sender];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate popReadStory];
@@ -1045,9 +1091,9 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        int previousLocation = [appDelegate locationOfStoryId:previousStoryId];
+        NSInteger previousLocation = [appDelegate locationOfStoryId:previousStoryId];
         if (previousLocation == -1) {
-            return [self doPreviousStory];
+            return [self doPreviousStory:sender];
         }
 //        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
 //                                     objectAtIndex:previousIndex]];

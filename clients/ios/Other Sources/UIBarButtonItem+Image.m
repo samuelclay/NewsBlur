@@ -13,11 +13,13 @@
 +(UIBarButtonItem *)barItemWithImage:(UIImage *)image target:(id)target action:(SEL)action
 {
     UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.bounds = CGRectMake(0, 0, image.size.width, image.size.height);
     [button setImage:image forState:UIControlStateNormal];
     [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
-    
+    [button sizeToFit];
+//    button.imageView.contentMode = UIViewContentModeCenter;
     UIBarButtonItem* item = [[self alloc] initWithCustomView:button];
+//    button.layer.borderColor = [[UIColor redColor] CGColor];
+//    button.layer.borderWidth = 0.5f;
     return item;
 }
 

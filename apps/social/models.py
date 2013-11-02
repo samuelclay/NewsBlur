@@ -1911,18 +1911,22 @@ class MSharedStory(mongo.Document):
             self.guid_hash[:6]
         )
     
-    def generate_post_to_service_message(self, include_url=True):
+    def generate_post_to_service_message(self, truncate=None, include_url=True):
         message = strip_tags(self.comments)
         if not message or len(message) < 1:
             message = self.story_title
-            if include_url:
-                message = truncate_chars(message, 92)
+            if include_url and truncate:
+                message = truncate_chars(message, truncate - 18 - 30)
             feed = Feed.get_by_id(self.story_feed_id)
-            message += " (%s)" % truncate_chars(feed.feed_title, 18)
+            if truncate:
+                message += " (%s)" % truncate_chars(feed.feed_title, 18)
+            else:
+                message += " (%s)" % truncate_chars(feed.feed_title, 30)
             if include_url:
                 message += " " + self.blurblog_permalink()
         elif include_url:
-            message = truncate_chars(message, 116)
+            if truncate:
+                message = truncate_chars(message, truncate - 14)
             message += " " + self.blurblog_permalink()
         
         return message
@@ -2521,7 +2525,7 @@ class MSocialServices(mongo.Document):
         return profile
     
     def post_to_twitter(self, shared_story):
-        message = shared_story.generate_post_to_service_message()
+        message = shared_story.generate_post_to_service_message(truncate=140)
         
         try:
             api = self.twitter_api()
@@ -2555,7 +2559,7 @@ class MSocialServices(mongo.Document):
         return True
 
     def post_to_appdotnet(self, shared_story):
-        message = shared_story.generate_post_to_service_message()
+        message = shared_story.generate_post_to_service_message(truncate=256)
         
         try:
             api = self.appdotnet_api()

@@ -24,6 +24,7 @@
 @synthesize activitiesArray;
 @synthesize activitiesUsername;
 @synthesize userProfile;
+@synthesize request;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -34,6 +35,12 @@
     return self;
 }
 
+- (void)dealloc {
+    self.profileTable.dataSource = nil;
+    self.profileTable.delegate = nil;
+    request.delegate = nil;
+    [request cancel];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -41,7 +48,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
     self.view.frame = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
 
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     
@@ -70,7 +77,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     CGRect vb = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
     self.view.frame = vb;
     self.profileTable.frame = vb;
     self.profileBadge.frame = CGRectMake(0, 0, vb.size.width, 140);
@@ -90,7 +97,7 @@
 
 - (void)getUserProfile {
     self.view.frame = self.view.bounds;
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
 
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -104,7 +111,7 @@
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request = [ASIHTTPRequest requestWithURL:url];
 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
@@ -112,9 +119,9 @@
     [request startAsynchronous];
 }
 
-- (void)requestFinished:(ASIHTTPRequest *)request {
+- (void)requestFinished:(ASIHTTPRequest *)_request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [request responseString];
+    NSString *responseString = [_request responseString];
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
@@ -149,8 +156,8 @@
     [self.view addSubview:self.profileTable];
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(ASIHTTPRequest *)_request {
+    NSError *error = [_request error];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
 }
@@ -205,14 +212,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
-    
-    // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
-    int width = 300 - 20;
-    if (vb.size.width == 480) {
-        width = 460 - 20;
-    } else if (vb.size.width == 540) {
-        width = 478 - 20;
-    }
 
     if (indexPath.section == 0) {
         ProfileBadge *cell = [tableView 
@@ -224,7 +223,7 @@
                     reuseIdentifier:nil];
         } 
         
-        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:width + 20];             
+        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:vb.size.width];
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
@@ -240,7 +239,7 @@
         cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile
-                withWidth:width];
+                withWidth:vb.size.width];
         
             return cell;
     } else {
@@ -252,13 +251,13 @@
                     reuseIdentifier:@"FollowGridCellIdentifier"];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [cell refreshWithWidth:width];
+        [cell refreshWithWidth:vb.size.width];
         return cell;
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int activitiesCount = [self.activitiesArray count];
+    NSInteger activitiesCount = [self.activitiesArray count];
     
     // badge is not tappable
     if (indexPath.section == 0 || indexPath.section == 2) {

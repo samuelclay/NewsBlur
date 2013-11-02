@@ -178,7 +178,7 @@
     return cell;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kMenuOptionHeight;
 }
 
@@ -231,11 +231,17 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
+    cell.separatorInset = UIEdgeInsetsZero;
     fontStyleSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
-    [fontStyleSegment setTitle:@"Helvetica" forSegmentAtIndex:0];
-    [fontStyleSegment setTitle:@"Georgia" forSegmentAtIndex:1];
+    [fontStyleSegment setTitle:[@"Helvetica" uppercaseString] forSegmentAtIndex:0];
+    [fontStyleSegment setTitle:[@"Georgia" uppercaseString] forSegmentAtIndex:1];
     [fontStyleSegment setTintColor:UIColorFromRGB(0x738570)];
+    [fontStyleSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    [fontStyleSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [fontStyleSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
     [cell addSubview:fontStyleSegment];
     
@@ -246,6 +252,7 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
     
     fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
     [fontSizeSegment setTitle:@"12pt" forSegmentAtIndex:0];
@@ -254,6 +261,15 @@
     [fontSizeSegment setTitle:@"15pt" forSegmentAtIndex:3];
     [fontSizeSegment setTitle:@"17pt" forSegmentAtIndex:4];
     [fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
+    [fontSizeSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    [fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    [fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
+    [fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
+    [fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
     
     [cell addSubview:fontSizeSegment];
     

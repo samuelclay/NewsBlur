@@ -19,7 +19,7 @@
     ActivityModule *activitiesModule;
     UIWebView *feedbackWebView;
     UIToolbar *toolbar;
-    UIToolbar *topToolbar;
+    UINavigationBar *topToolbar;
     UISegmentedControl *segmentedButton;
 }
 
@@ -28,7 +28,7 @@
 @property (nonatomic) IBOutlet ActivityModule *activitiesModule;
 @property (nonatomic) IBOutlet UIWebView *feedbackWebView;
 
-@property (nonatomic) IBOutlet UIToolbar *topToolbar;
+@property (nonatomic) IBOutlet UINavigationBar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
 

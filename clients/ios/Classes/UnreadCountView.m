@@ -108,24 +108,25 @@ const int COUNT_HEIGHT = 15;
         
         
         NSString *psStr = [NSString stringWithFormat:@"%d", ps];
-        CGSize size = [psStr sizeWithFont:indicatorFont];
+        CGSize size = [psStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
         
+        UIColor *psColor;
         if (blueCount) {
-            [indicatorBlackColor set];
+            psColor = indicatorBlackColor;
         } else {
-            [positiveBackgroundShadowColor set];
+            psColor = positiveBackgroundShadowColor;
         }
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
-         withFont:indicatorFont];
+         withAttributes:@{NSFontAttributeName: indicatorFont,
+                          NSForegroundColorAttributeName: psColor}];
         
-        [indicatorWhiteColor set];
         [psStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
-         withFont:indicatorFont];
-        
+         withAttributes:@{NSFontAttributeName: indicatorFont,
+                          NSForegroundColorAttributeName: indicatorWhiteColor}];
     }
     
     if (nt > 0 && appDelegate.selectedIntelligence <= 0) {        
@@ -151,19 +152,19 @@ const int COUNT_HEIGHT = 15;
         [UIView drawRoundRectangleInRect:rr withRadius:4];        
         
         NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
-        CGSize size = [ntStr sizeWithFont:indicatorFont];
+        CGSize size = [ntStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
         
-        [neutralBackgroundShadowColor set];
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos + 1)
-         withFont:indicatorFont];
+         withAttributes:@{NSFontAttributeName: indicatorFont,
+                          NSForegroundColorAttributeName: neutralBackgroundShadowColor}];
         
-        [indicatorWhiteColor set];
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
-         withFont:indicatorFont];
+         withAttributes:@{NSFontAttributeName: indicatorFont,
+                          NSForegroundColorAttributeName: indicatorWhiteColor}];
     }
 }
 

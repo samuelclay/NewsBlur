@@ -56,7 +56,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
     self.view.frame = CGRectMake(0, 0, 320, 416);
-    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.preferredContentSize = self.view.frame.size;
 }
 
 - (void)viewDidUnload
@@ -273,10 +273,10 @@ viewForHeaderInSection:(NSInteger)section {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
     if (self.inSearch_){
-        int userCount = [self.userProfiles count];
+        NSInteger userCount = [self.userProfiles count];
         return userCount;
     } else {
-        int userCount = [self.suggestedUserProfiles count];
+        NSInteger userCount = [self.suggestedUserProfiles count];
         if (!userCount) {
             return 3;
         }
@@ -304,7 +304,7 @@ viewForHeaderInSection:(NSInteger)section {
     
     
     if (self.inSearch_){
-        int userProfileCount = [self.userProfiles count];
+        NSInteger userProfileCount = [self.userProfiles count];
         
         if (userProfileCount) {
             if (userProfileCount > indexPath.row) {
@@ -379,7 +379,7 @@ viewForHeaderInSection:(NSInteger)section {
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     NSInteger currentRow = indexPath.row;
-    int row = currentRow;
+    NSInteger row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     appDelegate.activeUserProfileName = [[self.userProfiles objectAtIndex:row] objectForKey:@"username"];
     [self.friendSearchBar resignFirstResponder];
