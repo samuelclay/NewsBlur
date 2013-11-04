@@ -38,6 +38,7 @@ import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
@@ -72,6 +73,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected ViewPager pager;
     protected Button overlayLeft, overlayRight;
     protected ProgressBar overlayProgress;
+    protected Button overlayText, overlaySend;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
@@ -96,6 +98,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private List<Story> pageHistory;
 
+    private Boolean textMode = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -106,6 +110,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
         this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
         this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
+        this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
+        this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
 		fragmentManager = getSupportFragmentManager();
 		
@@ -255,6 +261,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         UIUtils.setViewAlpha(this.overlayLeft, a);
         UIUtils.setViewAlpha(this.overlayRight, a);
         UIUtils.setViewAlpha(this.overlayProgress, a);
+        UIUtils.setViewAlpha(this.overlayText, a);
+        UIUtils.setViewAlpha(this.overlaySend, a);
     }
 
     /**
@@ -276,6 +284,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             this.overlayProgress.setProgress(unreadProgress);
         }
         this.overlayProgress.invalidate();
+
+        // make sure we start in story mode and the ui reflects it
+        synchronized (textMode) {
+            enableStoryMode();
+        }
 
         this.setOverlayAlpha(1.0f);
     }
@@ -538,6 +551,53 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     public void overlayCount(View v) {
         String unreadText = getString((this.currentUnreadCount == 1) ? R.string.overlay_count_toast_1 : R.string.overlay_count_toast_N);
         Toast.makeText(this, String.format(unreadText, this.currentUnreadCount), Toast.LENGTH_SHORT).show();
+    }
+
+    public void overlaySend(View v) {
+		Story story = readingAdapter.getStory(pager.getCurrentItem());
+        FeedUtils.shareStory(story, this);
+    }
+
+    public void overlayText(View v) {
+        synchronized (textMode) {
+            // if we were already in text mode, switch back to story mode
+            if (textMode) {
+                enableStoryMode();
+            } else {
+                enableTextMode();
+            }
+        }
+    }
+
+    private void enableTextMode() {
+        final Story story = readingAdapter.getStory(pager.getCurrentItem());
+        if (story != null) {
+            new AsyncTask<Void, Void, StoryTextResponse>() {
+                @Override
+                protected StoryTextResponse doInBackground(Void... arg) {
+                    return apiManager.getStoryText(story.feedId, story.id);
+                }
+                @Override
+                protected void onPostExecute(StoryTextResponse result) {
+                    ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
+                    currentFragment.setupWebview(result.originalText);
+                }
+            }.execute();
+        }
+
+        this.overlayText.setBackgroundResource(R.drawable.overlay_story);
+        this.overlayText.setText(R.string.overlay_story);
+        this.textMode = true;
+    }
+
+    private void enableStoryMode() {    
+        Story story = readingAdapter.getStory(pager.getCurrentItem());
+        ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
+        currentFragment.setupWebview(story.content);
+
+        this.overlayText.setBackgroundResource(R.drawable.overlay_text);
+        this.overlayText.setText(R.string.overlay_text);
+        this.textMode = false;
     }
 
 }

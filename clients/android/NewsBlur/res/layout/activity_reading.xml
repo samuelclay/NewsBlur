@@ -19,6 +19,42 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <Button
+            android:id="@+id/reading_overlay_text"
+            android:layout_width="113dp"
+            android:layout_height="41dp"
+            android:background="@drawable/overlay_text"
+            android:text="@string/overlay_text"
+            android:textColor="@color/half_darkgray"
+            android:textSize="14sp"
+            android:gravity="left|center_vertical"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="46dp"
+            android:paddingRight="6dp"
+            android:onClick="overlayText" />
+
+        <Button
+            android:id="@+id/reading_overlay_send"
+            android:layout_width="53dp"
+            android:layout_height="41dp"
+            android:background="@drawable/overlay_send"
+            android:textSize="14sp"
+            android:padding="6dp"
+            android:layout_marginLeft="1dp"
+            android:onClick="overlaySend" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" >
