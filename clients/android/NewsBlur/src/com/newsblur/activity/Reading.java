@@ -442,6 +442,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         synchronized (UNREAD_SEARCH_MUTEX) {
             int candidate = 0;
             boolean unreadFound = false;
+            boolean error = false;
             unreadSearch:while (!unreadFound) {
 
                 Story story = readingAdapter.getStory(candidate);
@@ -450,7 +451,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                     if (this.noMoreApiPages) {
                         // this is odd. if there were no unreads, how was the button even enabled?
                         Log.e(this.getClass().getName(), "Ran out of stories while looking for unreads.");
-                        Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
                         break unreadSearch;
                     } 
                 } else {
@@ -472,15 +472,20 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                         continue unreadSearch;
                     } else {
                         Log.e(this.getClass().getName(), "Timed out waiting for next API page while looking for unreads.");
-                        Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
                         break unreadSearch;
                     }
                 } catch (InterruptedException ie) {
                     Log.e(this.getClass().getName(), "Interrupted waiting for next API page while looking for unreads.");
-                    Toast.makeText(this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
                     break unreadSearch;
                 }
 
+            }
+            if (error) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(Reading.this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
             if (unreadFound) {
                 final int page = candidate;
