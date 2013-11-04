@@ -3007,14 +3007,17 @@ class MActivity(mongo.Document):
 
     @classmethod
     def remove_shared_story(cls, user_id, story_feed_id, story_id):
+        params = dict(user_id=user_id,
+                      category='sharedstory',
+                      feed_id="social:%s" % user_id,
+                      story_feed_id=story_feed_id,
+                      content_id=story_id)
         try:
-            a = cls.objects.get(user_id=user_id,
-                                category='sharedstory',
-                                feed_id="social:%s" % user_id,
-                                story_feed_id=story_feed_id,
-                                content_id=story_id)
+            a = cls.objects.get(**params)
         except cls.DoesNotExist:
             return
+        except cls.MultipleObjectsReturned:
+            a = cls.objects.filter(**params)
         
         a.delete()
         
