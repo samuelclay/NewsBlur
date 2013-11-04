@@ -146,7 +146,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
-		setupWebview(web);
+		setupWebview(story.content);
 		setupItemMetadata();
 		setupShareButton();
 		setupSaveButton();
@@ -300,7 +300,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		
 	}
 
-	private void setupWebview(NewsblurWebview web) {
+	public void setupWebview(String storyText) {
+        if (getActivity() == null) {
+            // this method gets called by async UI bits that might hold stale fragment references with no assigned
+            // activity.  If this happens, just abort the call.
+            return;
+        }
 		final SharedPreferences preferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 
@@ -310,10 +315,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
-		builder.append(story.content);
+		builder.append(storyText);
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
-
 	}
 
 	private class TextSizeReceiver extends BroadcastReceiver {

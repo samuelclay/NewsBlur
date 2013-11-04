@@ -42,6 +42,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.util.AppConstants;
@@ -597,6 +598,19 @@ public class APIManager {
 		if (!response.isError()) {
 			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			return profileResponse;
+		} else {
+			return null;
+		}
+	}
+
+	public StoryTextResponse getStoryText(String feedId, String storyId) {
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = get(APIConstants.URL_STORY_TEXT, values);
+		if (!response.isError()) {
+			StoryTextResponse storyTextResponse = (StoryTextResponse) response.getResponse(gson, StoryTextResponse.class);
+			return storyTextResponse;
 		} else {
 			return null;
 		}
