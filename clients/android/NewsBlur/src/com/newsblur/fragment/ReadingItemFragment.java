@@ -67,6 +67,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
     private Reading activity;
+    private Boolean customContent = false;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -146,7 +147,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
-		setupWebview(story.content);
+		
+        synchronized (customContent) {
+            setupWebview(story.content);
+            customContent = false;
+        }
+
 		setupItemMetadata();
 		setupShareButton();
 		setupSaveButton();
@@ -300,7 +306,29 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		
 	}
 
-	public void setupWebview(String storyText) {
+    /**
+     * Set the webview to show the default story content.
+     */
+    public void setDefaultWebview() {
+        // if the default content hasn't been changed, don't reset it
+        synchronized (customContent) {
+            if (!customContent) return;
+            setupWebview(story.content);
+            customContent = false;
+        }
+    }
+
+    /**
+     * Set the webview to show non-default content, tracking the change.
+     */
+    public void setCustomWebview(String content) {
+        synchronized (customContent) {
+            setupWebview(content);
+            customContent = true;
+        }
+    }
+
+	private void setupWebview(String storyText) {
         if (getActivity() == null) {
             // this method gets called by async UI bits that might hold stale fragment references with no assigned
             // activity.  If this happens, just abort the call.

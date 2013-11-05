@@ -184,8 +184,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
 			if (story != null) {
-				ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, currentItem);
-				DialogFragment newFragment = ShareDialogFragment.newInstance(currentFragment, story, currentFragment.previouslySavedShareText);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;
@@ -579,8 +578,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 }
                 @Override
                 protected void onPostExecute(StoryTextResponse result) {
-                    ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
-                    currentFragment.setupWebview(result.originalText);
+                    getReadingFragment().setCustomWebview(result.originalText);
                 }
             }.execute();
         }
@@ -592,12 +590,15 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private void enableStoryMode() {    
         Story story = readingAdapter.getStory(pager.getCurrentItem());
-        ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
-        currentFragment.setupWebview(story.content);
+        getReadingFragment().setDefaultWebview();
 
         this.overlayText.setBackgroundResource(R.drawable.overlay_text);
         this.overlayText.setText(R.string.overlay_text);
         this.textMode = false;
+    }
+
+    private ReadingItemFragment getReadingFragment() {
+        return (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
     }
 
 }
