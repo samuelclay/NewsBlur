@@ -88,11 +88,6 @@ public class UIUtils {
      * that it may as well be.
      */
     public static void setViewAlpha(View v, float alpha) {
-        boolean newVis = (alpha > 0.001);
-        if ((v.getVisibility() == View.VISIBLE) && !newVis) {
-            v.setVisibility(View.INVISIBLE);
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             v.setAlpha(alpha);
         }
