@@ -41,6 +41,7 @@ public class APIConstants {
 	public static final String URL_ADD_FEED = NEWSBLUR_URL + "/reader/add_url";
 	public static final String URL_DELETE_FEED = NEWSBLUR_URL + "/reader/delete_feed";
 	public static final String URL_CLASSIFIER_SAVE = NEWSBLUR_URL + "/classifier/save";
+	public static final String URL_STORY_TEXT = NEWSBLUR_URL + "/rss_feeds/original_text";
 	
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_PASSWORD = "password";

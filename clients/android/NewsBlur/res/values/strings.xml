@@ -60,6 +60,10 @@
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
+    <string name="overlay_count_toast_N">%d unread stories</string>
+    <string name="overlay_count_toast_1">1 unread story</string>
+    <string name="overlay_text">TEXT</string>
+    <string name="overlay_story">STORY</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
 	
@@ -109,6 +113,8 @@
 
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_story_unread_error">Error marking story as unread</string>
+
+    <string name="toast_unread_search_error">Could not load next unread story</string>
 
     <string name="toast_feed_deleted">Feed deleted</string>
     <string name="toast_feed_delete_error">There was an error deleting the feed.</string>

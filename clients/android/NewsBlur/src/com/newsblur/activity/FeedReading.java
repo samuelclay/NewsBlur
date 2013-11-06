@@ -42,7 +42,9 @@ public class FeedReading extends Reading {
         feed = Feed.fromCursor(feedCursor);
         setTitle(feed.title);
 
-        this.unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
+        int unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
+        this.startingUnreadCount = unreadCount;
+        this.currentUnreadCount = unreadCount;
 
         readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories, classifier);
 
@@ -53,7 +55,7 @@ public class FeedReading extends Reading {
 
     @Override
     public void triggerRefresh(int page) {
-        setSupportProgressBarIndeterminateVisibility(true);
+        updateSyncStatus(true);
         final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
         intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
         intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FEED_UPDATE);

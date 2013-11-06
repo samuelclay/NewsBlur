@@ -12,6 +12,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -138,6 +139,11 @@ public class FeedUtils {
             }.execute();
         }
 
+        // update the local object to show as read even before requeried
+        for (Story story : stories) {
+            story.read = true;
+        }
+
     }
 
 	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations) {
@@ -231,6 +237,21 @@ public class FeedUtils {
         }
         if (currentState ==  AppConstants.STATE_ALL ) {
             count += feed.negativeCount;
+        }
+        return count;
+    }
+
+    public static int getCursorUnreadCount(Cursor cursor, int currentState) {
+        int count = 0;
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS));
+            if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
+                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT));
+            }
+            if (currentState ==  AppConstants.STATE_ALL ) {
+                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEG));
+            }
         }
         return count;
     }

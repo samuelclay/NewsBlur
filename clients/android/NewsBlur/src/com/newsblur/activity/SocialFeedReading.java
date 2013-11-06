@@ -34,7 +34,9 @@ public class SocialFeedReading extends Reading {
         stories = contentResolver.query(storiesURI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        this.unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
+        int unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
+        this.startingUnreadCount = unreadCount;
+        this.currentUnreadCount = unreadCount;
 
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
@@ -45,7 +47,7 @@ public class SocialFeedReading extends Reading {
 
     @Override
     public void triggerRefresh(int page) {
-        setSupportProgressBarIndeterminateVisibility(true);
+        updateSyncStatus(true);
         final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
         intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
         intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.SOCIALFEED_UPDATE);
