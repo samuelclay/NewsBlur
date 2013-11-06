@@ -6,7 +6,9 @@ from django.conf import settings
 from mongoengine.connection import connect, disconnect
 
 class ReaderTest(TestCase):
-    fixtures = ['subscriptions.json', 'stories.json', '../../rss_feeds/fixtures/gawker1.json']
+    fixtures = ['../../rss_feeds/fixtures/rss_feeds.json', 
+                'subscriptions.json', 'stories.json', 
+                '../../rss_feeds/fixtures/gawker1.json']
     
     
     def setUp(self):
@@ -23,16 +25,16 @@ class ReaderTest(TestCase):
         response = self.client.get(reverse('load-feeds'))
         content = json.decode(response.content)
         
-        self.assertEquals(len(content['feeds']), 1)
+        self.assertEquals(len(content['feeds']), 10)
         self.assertEquals(content['feeds']['1']['feed_title'], 'Gawker')
-        self.assertEquals(content['folders'], [1, {'Tech': [4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}])
+        self.assertEquals(content['folders'], [{'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}, 1])
         
     def test_delete_feed(self):
         self.client.login(username='conesus', password='test')
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [1, {'Tech': [4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}])
+        self.assertEquals(feeds['folders'], [{'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}, 1])
         
         # Delete feed
         response = self.client.post(reverse('delete-feed'), {'feed_id': 1, 'in_folder': ''})
@@ -41,7 +43,7 @@ class ReaderTest(TestCase):
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [{'Tech': [4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}])
+        self.assertEquals(feeds['folders'], [2, 3, 8, 9, {'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, {'Blogs': [8, 9]}])
         
         # Delete feed
         response = self.client.post(reverse('delete-feed'), {'feed_id': 9, 'in_folder': 'Blogs'})
@@ -50,7 +52,7 @@ class ReaderTest(TestCase):
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [{'Tech': [4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8]}])
+        self.assertEquals(feeds['folders'], [2, 3, 8, 9, {'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, {'Blogs': [8]}])
         
         # Delete feed
         response = self.client.post(reverse('delete-feed'), {'feed_id': 5, 'in_folder': 'Tech'})
@@ -59,7 +61,7 @@ class ReaderTest(TestCase):
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [{'Tech': [4, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8]}])
+        self.assertEquals(feeds['folders'], [2, 3, 8, 9, {'Tech': [1, 4, {'Deep Tech': [6, 7]}]}, {'Blogs': [8]}])
         
         # Delete feed
         response = self.client.post(reverse('delete-feed'), {'feed_id': 4, 'in_folder': 'Tech'})
@@ -68,7 +70,7 @@ class ReaderTest(TestCase):
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [{'Tech': [{'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8]}])
+        self.assertEquals(feeds['folders'], [2, 3, 8, 9, {'Tech': [1, {'Deep Tech': [6, 7]}]}, {'Blogs': [8]}])
         
         # Delete feed
         response = self.client.post(reverse('delete-feed'), {'feed_id': 8, 'in_folder': ''})
@@ -77,7 +79,23 @@ class ReaderTest(TestCase):
         
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
-        self.assertEquals(feeds['folders'], [{'Tech': [{'Deep Tech': [6, 7]}]}, 2, 3, 9, {'Blogs': [8]}])
+        self.assertEquals(feeds['folders'], [2, 3, 9, {'Tech': [1, {'Deep Tech': [6, 7]}]}, {'Blogs': [8]}])
+
+    def test_delete_feed__multiple_folders(self):
+        self.client.login(username='conesus', password='test')
+        
+        response = self.client.get(reverse('load-feeds'))
+        feeds = json.decode(response.content)
+        self.assertEquals(feeds['folders'], [{'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}, 1])
+        
+        # Delete feed
+        response = self.client.post(reverse('delete-feed'), {'feed_id': 1})
+        response = json.decode(response.content)
+        self.assertEquals(response['code'], 1)
+        
+        response = self.client.get(reverse('load-feeds'))
+        feeds = json.decode(response.content)
+        self.assertEquals(feeds['folders'], [2, 3, 8, 9, {'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, {'Blogs': [8, 9]}])
         
     def test_load_single_feed(self):
         # from django.conf import settings
