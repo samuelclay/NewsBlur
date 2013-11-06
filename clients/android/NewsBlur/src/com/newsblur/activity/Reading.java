@@ -60,6 +60,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private static final int OVERLAY_RANGE_TOP_DP = 45;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
+    /** The minimum screen width (in DP) needed to show all the overlay controls. */
+    private static final int OVERLAY_MIN_WIDTH_DP = 362;
+
     /** The longest time (in seconds) the UI will wait for API pages to load while
         searching for the next unread story. */
     private static final long UNREAD_SEARCH_LOAD_WAIT_SECONDS = 30;
@@ -269,6 +272,17 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * an event happens that might change our list position.
      */
     private void enableOverlays() {
+        // check to see if the device even has room for all the overlays, moving some to overflow if not
+        int widthPX = findViewById(android.R.id.content).getMeasuredWidth();
+        if (widthPX != 0) {
+            float widthDP = UIUtils.px2dp(this, widthPX);
+            if ( widthDP < OVERLAY_MIN_WIDTH_DP ){
+                this.overlaySend.setVisibility(View.GONE);
+            } else {
+                this.overlaySend.setVisibility(View.VISIBLE);
+            }
+        }
+
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
         this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.overlay_right_done);
@@ -290,6 +304,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         }
 
         this.setOverlayAlpha(1.0f);
+    }
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // this callback is a good API-level-independent way to tell when the root view size/layout changes
+        super.onWindowFocusChanged(hasFocus);
+        enableOverlays();
     }
 
 	@Override
@@ -578,7 +598,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 }
                 @Override
                 protected void onPostExecute(StoryTextResponse result) {
-                    getReadingFragment().setCustomWebview(result.originalText);
+                    ReadingItemFragment item = getReadingFragment();
+                    if (item != null) item.setCustomWebview(result.originalText);
                 }
             }.execute();
         }
@@ -589,8 +610,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void enableStoryMode() {    
-        Story story = readingAdapter.getStory(pager.getCurrentItem());
-        getReadingFragment().setDefaultWebview();
+        ReadingItemFragment item = getReadingFragment();
+        if (item != null) item.setDefaultWebview();
 
         this.overlayText.setBackgroundResource(R.drawable.overlay_text);
         this.overlayText.setText(R.string.overlay_text);
@@ -598,7 +619,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private ReadingItemFragment getReadingFragment() {
-        return (ReadingItemFragment) readingAdapter.instantiateItem(pager, pager.getCurrentItem());
+        Object o = readingAdapter.instantiateItem(pager, pager.getCurrentItem());
+        if (o instanceof ReadingItemFragment) {
+            return (ReadingItemFragment) o;
+        } else {
+            return null;
+        }
     }
 
 }
