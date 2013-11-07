@@ -15,8 +15,9 @@ public class UserProfile {
 	
 	@SerializedName("user_id")
 	public String userId;
-	
-	public String username;
+
+    public String username;
+    public String location;
 
 	public static UserProfile fromCursor(final Cursor c) {
 		if (c.isBeforeFirst()) {
@@ -26,7 +27,8 @@ public class UserProfile {
 		UserProfile profile = new UserProfile();
 		profile.userId = c.getString(c.getColumnIndex(DatabaseConstants.USER_USERID));
 		profile.photoUrl = c.getString(c.getColumnIndex(DatabaseConstants.USER_PHOTO_URL));
-		profile.username = c.getString(c.getColumnIndex(DatabaseConstants.USER_USERNAME));
+        profile.username = c.getString(c.getColumnIndex(DatabaseConstants.USER_USERNAME));
+        profile.location = c.getString(c.getColumnIndex(DatabaseConstants.USER_LOCATION));
 		
 		return profile;
 	}
@@ -35,7 +37,8 @@ public class UserProfile {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.USER_PHOTO_URL, photoUrl);
 		values.put(DatabaseConstants.USER_USERID, userId);
-		values.put(DatabaseConstants.USER_USERNAME, username);
+        values.put(DatabaseConstants.USER_USERNAME, username);
+        values.put(DatabaseConstants.USER_LOCATION, location);
 		return values;
 	}
 	
