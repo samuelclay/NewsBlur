@@ -66,7 +66,8 @@ public class DatabaseConstants {
 
 	public static final String USER_TABLE = "user_table";
 	public static final String USER_USERID = BaseColumns._ID;
-	public static final String USER_USERNAME = "username";
+    public static final String USER_USERNAME = "username";
+    public static final String USER_LOCATION = "location";
 	public static final String USER_PHOTO_URL = "photo_url";
 
 	public static final String STORY_TABLE = "stories";
