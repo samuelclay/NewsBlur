@@ -76,6 +76,12 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 		while (commentCursor.moveToNext()) {
 			final Comment comment = Comment.fromCursor(commentCursor);
+			
+			// skip public comments if they are disabled
+			if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
+			    continue;
+			}
+			
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
 
