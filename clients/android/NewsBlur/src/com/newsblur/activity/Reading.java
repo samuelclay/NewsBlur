@@ -61,7 +61,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
-    private static final int OVERLAY_MIN_WIDTH_DP = 362;
+    private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
     /** The longest time (in seconds) the UI will wait for API pages to load while
         searching for the next unread story. */
@@ -75,7 +75,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	protected ViewPager pager;
     protected Button overlayLeft, overlayRight;
-    protected ProgressBar overlayProgress;
+    protected ProgressBar overlayProgress, overlayProgressRight, overlayProgressLeft;
     protected Button overlayText, overlaySend;
 	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
@@ -113,6 +113,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlayLeft = (Button) findViewById(R.id.reading_overlay_left);
         this.overlayRight = (Button) findViewById(R.id.reading_overlay_right);
         this.overlayProgress = (ProgressBar) findViewById(R.id.reading_overlay_progress);
+        this.overlayProgressRight = (ProgressBar) findViewById(R.id.reading_overlay_progress_right);
+        this.overlayProgressLeft = (ProgressBar) findViewById(R.id.reading_overlay_progress_left);
         this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
         this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
@@ -134,6 +136,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.pageHistory = new ArrayList<Story>();
 
+        enableProgressCircle(overlayProgressLeft, false);
 	}
 
     /**
@@ -263,6 +266,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         UIUtils.setViewAlpha(this.overlayLeft, a);
         UIUtils.setViewAlpha(this.overlayRight, a);
         UIUtils.setViewAlpha(this.overlayProgress, a);
+        UIUtils.setViewAlpha(this.overlayProgressLeft, a);
+        UIUtils.setViewAlpha(this.overlayProgressRight, a);
         UIUtils.setViewAlpha(this.overlayText, a);
         UIUtils.setViewAlpha(this.overlaySend, a);
     }
@@ -285,7 +290,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.overlay_right_done);
+        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
@@ -365,13 +370,23 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void updateSyncStatus(final boolean syncRunning) {
+        enableProgressCircle(overlayProgressRight, syncRunning);
+	}
+
+    private void enableProgressCircle(final ProgressBar view, final boolean enabled) {
         runOnUiThread(new Runnable() {
             public void run() {
-                setSupportProgressBarIndeterminateVisibility(syncRunning);
+                if (enabled) {
+                    view.setProgress(0);
+                    view.setVisibility(View.VISIBLE);
+                } else {
+                    view.setProgress(100);
+                    view.setVisibility(View.GONE);
+                }
             }
         });
 	}
-
+        
 	public abstract void triggerRefresh(int page);
 
     @Override
@@ -593,6 +608,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         if (story != null) {
             new AsyncTask<Void, Void, StoryTextResponse>() {
                 @Override
+                protected void onPreExecute() {
+                    enableProgressCircle(overlayProgressLeft, true);
+                }
+                @Override
                 protected StoryTextResponse doInBackground(Void... arg) {
                     return apiManager.getStoryText(story.feedId, story.id);
                 }
@@ -600,11 +619,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 protected void onPostExecute(StoryTextResponse result) {
                     ReadingItemFragment item = getReadingFragment();
                     if (item != null) item.setCustomWebview(result.originalText);
+                    enableProgressCircle(overlayProgressLeft, false);
                 }
             }.execute();
         }
 
-        this.overlayText.setBackgroundResource(R.drawable.overlay_story);
+        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
         this.overlayText.setText(R.string.overlay_story);
         this.textMode = true;
     }
@@ -613,7 +633,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         ReadingItemFragment item = getReadingFragment();
         if (item != null) item.setDefaultWebview();
 
-        this.overlayText.setBackgroundResource(R.drawable.overlay_text);
+        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
         this.overlayText.setText(R.string.overlay_text);
         this.textMode = false;
     }
