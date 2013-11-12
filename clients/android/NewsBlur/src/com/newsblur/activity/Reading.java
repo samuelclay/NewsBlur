@@ -624,7 +624,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             }.execute();
         }
 
-        this.overlayText.setBackgroundResource(R.drawable.overlay_story);
+        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
         this.overlayText.setText(R.string.overlay_story);
         this.textMode = true;
     }
@@ -633,7 +633,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         ReadingItemFragment item = getReadingFragment();
         if (item != null) item.setDefaultWebview();
 
-        this.overlayText.setBackgroundResource(R.drawable.overlay_text);
+        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
         this.overlayText.setText(R.string.overlay_text);
         this.textMode = false;
     }
