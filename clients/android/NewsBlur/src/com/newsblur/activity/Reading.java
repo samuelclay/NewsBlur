@@ -290,7 +290,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.overlay_right_done);
+        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
