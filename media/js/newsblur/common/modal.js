@@ -35,6 +35,7 @@ NEWSBLUR.Modal.prototype = {
                     });
                     setTimeout(function() {
                         // $(window).resize();
+                        self.resize();
                         self.flags.modal_loaded = true;
                     });
                 });
@@ -60,6 +61,7 @@ NEWSBLUR.Modal.prototype = {
     
     resize: function() {
       // $(window).trigger('resize.simplemodal');
+      $.modal.resize();
     },
     
     close: function(callback) {

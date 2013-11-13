@@ -82,6 +82,9 @@
 		return $.modal.impl.init(data, options);
 	};
 
+	$.modal.resize = function (callback) {
+		$.modal.impl.resize(callback);
+	};
 	/*
 	 * Close the modal dialog.
 	 */
@@ -391,22 +394,24 @@
 			});
 
 			// update window size
-			$(window).bind('resize.simplemodal', function () {
-				// redetermine the window width/height
-				w = s.getDimensions();
+			$(window).bind('resize.simplemodal', _.bind(this.resize_modal, this));
+		},
+		
+		resize_modal: function () {
+			// redetermine the window width/height
+			w = this.getDimensions();
 
-				// reposition the dialog
-				s.o.autoResize ? s.setContainerDimensions() : s.o.autoPosition && s.setPosition();
+			// reposition the dialog
+			this.o.autoResize ? this.setContainerDimensions() : this.o.autoPosition && this.setPosition();
 
-				if (ie6 || ieQuirks) {
-					s.fixIE();
-				}
-				else if (s.o.modal) {
-					// update the iframe & overlay
-					s.d.iframe && s.d.iframe.css({height: w[0], width: w[1]});
-					s.d.overlay.css({height: w[0], width: w[1]});
-				}
-			});
+			if (ie6 || ieQuirks) {
+				this.fixIE();
+			}
+			else if (this.o.modal) {
+				// update the iframe & overlay
+				this.d.iframe && this.d.iframe.css({height: w[0], width: w[1]});
+				this.d.overlay.css({height: w[0], width: w[1]});
+			}
 		},
 		/*
 		 * Unbind events
