@@ -105,8 +105,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
