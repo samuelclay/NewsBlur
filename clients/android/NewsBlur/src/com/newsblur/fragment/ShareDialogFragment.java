@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -108,7 +109,7 @@ public class ShareDialogFragment extends DialogFragment {
 			public void onTextChanged(CharSequence s, int start, int before, int count) { }
 		});
 		
-		message.setText(String.format(shareString, story.title));
+		message.setText(String.format(shareString, Html.fromHtml(story.title)));
 
 		if (hasBeenShared) {
 			shareButton.setText(R.string.edit);

@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -253,7 +254,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(story.title);
+        itemTitle.setText(Html.fromHtml(story.title));
 		itemDate.setText(story.longDate);
 
         if (!TextUtils.isEmpty(story.authors)) {
