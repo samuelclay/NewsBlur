@@ -912,6 +912,7 @@ class Feed(models.Model):
                 story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
+            replace_story_date = False
             
             try:
                 existing_story, story_has_changed = _1(story, story_content, existing_stories)
@@ -937,11 +938,18 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
-                except (IntegrityError, OperationError), e:
+                except (IntegrityError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
-            elif existing_story and story_has_changed:
+                except OperationError, e:
+                    existing_story, _ = MStory.find_story(self.pk,
+                                                          story.get('guid'),
+                                                          original_only=True)
+                    story_has_changed = True
+                    replace_story_date = True
+                    
+            if existing_story and story_has_changed:
                 # update story
                 original_content = None
                 try:
@@ -993,7 +1001,8 @@ class Feed(models.Model):
                 existing_story.story_tags = story_tags
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
-                # existing_story.story_date = story.get('published') # No, don't
+                if replace_story_date:
+                    existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
                 
                 try:

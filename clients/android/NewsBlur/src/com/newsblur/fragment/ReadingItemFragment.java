@@ -11,11 +11,13 @@ import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,10 +172,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 	
 	private void setupSaveButton() {
-
 		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
 
-		saveButton.setOnClickListener(new OnClickListener() {
+        saveButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				FeedUtils.saveStory(story, getActivity(), apiManager);
@@ -253,7 +254,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(story.title);
+        itemTitle.setText(Html.fromHtml(story.title));
 		itemDate.setText(story.longDate);
 
         if (!TextUtils.isEmpty(story.authors)) {
@@ -409,11 +410,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				View commentView = inflater.inflate(R.layout.include_comment, null);
 				commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
 
-				TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-				commentText.setTag("commentBy" + user.id);
-				commentText.setText(sharedText);
+                TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+                commentText.setTag("commentBy" + user.id);
+                commentText.setText(sharedText);
 
-				if (PrefsUtils.getUserImage(getActivity()) != null) {
+                TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
+                if (!TextUtils.isEmpty(user.location)) {
+                    commentLocation.setText(user.location.toUpperCase());
+                } else {
+                    commentLocation.setVisibility(View.GONE);
+                }
+
+                if (PrefsUtils.getUserImage(getActivity()) != null) {
 					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 					commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
 				}
