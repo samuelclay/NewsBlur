@@ -937,11 +937,17 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
-                except (IntegrityError, OperationError), e:
+                except (OperationError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
-            elif existing_story and story_has_changed:
+                except IntegrityError, e:
+                    existing_story, _ = MStory.find_story(self.pk,
+                                                          story.get('guid'),
+                                                          original_only=True)
+                    story_has_changed = True
+                    
+            if existing_story and story_has_changed:
                 # update story
                 original_content = None
                 try:
