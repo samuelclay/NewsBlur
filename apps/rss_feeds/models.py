@@ -912,6 +912,7 @@ class Feed(models.Model):
                 story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
+            replace_story_date = False
             
             try:
                 existing_story, story_has_changed = _1(story, story_content, existing_stories)
@@ -946,6 +947,7 @@ class Feed(models.Model):
                                                           story.get('guid'),
                                                           original_only=True)
                     story_has_changed = True
+                    replace_story_date = True
                     
             if existing_story and story_has_changed:
                 # update story
@@ -999,7 +1001,8 @@ class Feed(models.Model):
                 existing_story.story_tags = story_tags
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
-                # existing_story.story_date = story.get('published') # No, don't
+                if replace_story_date:
+                    existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
                 
                 try:
