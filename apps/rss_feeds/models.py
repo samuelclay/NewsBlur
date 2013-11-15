@@ -938,11 +938,11 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
-                except (OperationError), e:
+                except (IntegrityError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
-                except IntegrityError, e:
+                except OperationError, e:
                     existing_story, _ = MStory.find_story(self.pk,
                                                           story.get('guid'),
                                                           original_only=True)
