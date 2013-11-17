@@ -21,11 +21,11 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_saved_icon"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="9dp"
+        android:paddingTop="9dp"
         android:text="@string/saved_stories_row_title"
         android:textColor="@color/folder_text"
-        android:textSize="14dp"
+        android:textSize="13dp"
         android:textStyle="bold" />
 
     <TextView
@@ -37,7 +37,10 @@
         android:layout_marginRight="12dp"
         android:background="@drawable/saved_count_rect"
         android:gravity="center"
-        android:padding="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="2dp"
         android:shadowColor="@color/saved_drop_shadow"
         android:shadowDy="1"
         android:shadowRadius="1"

@@ -108,6 +108,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_TAGS + TEXT + ", " +
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
 		DatabaseConstants.STORY_READ + INTEGER + ", " +
+		DatabaseConstants.STORY_STARRED + INTEGER + ", " +
 		DatabaseConstants.STORY_TITLE + TEXT;
 
 	private final String STORY_SQL = "CREATE TABLE " + DatabaseConstants.STORY_TABLE + " (" + STORY_TABLES_COLS + ")";

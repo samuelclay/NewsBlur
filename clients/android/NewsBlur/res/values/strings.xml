@@ -56,6 +56,7 @@
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
 	
 	<string name="save_this">SAVE THIS STORY</string>
+	<string name="unsave_this">UNSAVE THIS STORY</string>
     <string name="share_this">SHARE THIS STORY</string>
 
     <string name="overlay_next">NEXT</string>
@@ -98,6 +99,7 @@
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
     <string name="menu_save_story">Save this story</string>
+    <string name="menu_unsave_story">Unsave this story</string>
     <string name="menu_mark_previous_stories_as_read">Mark previous as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
@@ -110,6 +112,8 @@
 
     <string name="toast_story_saved">Story saved</string>
     <string name="toast_story_save_error">Error marking story as saved.</string>
+    <string name="toast_story_unsaved">Story unsaved</string>
+    <string name="toast_story_unsave_error">Error marking story as unsaved.</string>
 
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_story_unread_error">Error marking story as unread</string>

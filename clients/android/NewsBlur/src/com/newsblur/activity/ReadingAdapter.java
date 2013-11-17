@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
-import com.newsblur.fragment.ReadingItemFragment;
 
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
