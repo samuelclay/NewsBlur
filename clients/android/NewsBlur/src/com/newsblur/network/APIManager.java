@@ -136,6 +136,14 @@ public class APIManager {
 		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
+	
+    public NewsBlurResponse markStoryAsUnstarred(final String feedId, final String storyId) {
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+	}
 
     public NewsBlurResponse markStoryAsUnread( String feedId, String storyId ) {
 		final ValueMultimap values = new ValueMultimap();

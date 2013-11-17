@@ -19,6 +19,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -123,6 +124,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		receiver = new TextSizeReceiver();
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
 	}
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("story", story);
+    }
 
 	@Override
 	public void onDestroy() {
@@ -172,18 +177,31 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 	
 	private void setupSaveButton() {
-		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
 
         saveButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FeedUtils.saveStory(story, getActivity(), apiManager);
+                if (story.starred) {
+                    FeedUtils.unsaveStory(story, activity, apiManager, activity);
+                } else {
+				    FeedUtils.saveStory(story, activity, apiManager, activity);
+                }
 			}
 		});
 	}
 
-	private void setupShareButton() {
+    public void updateSaveButton() {
+		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
+    }
 
+    public void updateStory(Story story) {
+        this.story = story;
+    }
+    
+	private void setupShareButton() {
 		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
 
 		for (String userId : story.sharedUserIds) {
@@ -201,7 +219,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			}
 		});
 	}
-
 
 	public void changeTextSize(float newTextSize) {
 		if (web != null) {
