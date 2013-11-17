@@ -14,7 +14,6 @@ import com.newsblur.fragment.ReadingItemFragment;
 
 public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
-	private String TAG = "FeedReadingAdapter";
 	private LoadingFragment loadingFragment;
 	private final ContentResolver resolver; 
 
