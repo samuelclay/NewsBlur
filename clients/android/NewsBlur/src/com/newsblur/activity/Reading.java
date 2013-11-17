@@ -47,7 +47,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener {
+public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -170,6 +170,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		return true;
 	}
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        Story story = readingAdapter.getStory(pager.getCurrentItem());
+        menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
+        return true;
+    }
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
@@ -201,7 +209,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
-			FeedUtils.saveStory(story, Reading.this, apiManager);
+            if (story.starred) {
+			    FeedUtils.unsaveStory(story, Reading.this, apiManager, this);
+            } else {
+                FeedUtils.saveStory(story, Reading.this, apiManager, this);
+            }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
             this.markStoryUnread(story);
@@ -210,6 +222,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+    @Override
+    public void actionCompleteCallback() {
+        stories.requery();
+        ReadingItemFragment fragment = getReadingFragment();
+        fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
+        fragment.updateSaveButton();
+    }
 
     // interface OnPageChangeListener
 
