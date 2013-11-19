@@ -187,14 +187,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('story_layout') == 'list') {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
-            var last_story_height = 100;
+            var last_story_height = 280;
             endbar_height = pane_height - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
 
             var empty_space = pane_height - last_story_height - endbar_height;
             if (empty_space > 0) endbar_height += empty_space + 1;
-
+            
+            endbar_height /= 2; // Splitting padding between top and bottom
             $end_stories_line.css('paddingBottom', endbar_height);
+            $end_stories_line.css('paddingTop', endbar_height);
+            // console.log(["endbar height list", endbar_height, empty_space, pane_height, last_story_height]);
         }
 
         this.$el.append($end_stories_line);

@@ -3776,7 +3776,7 @@
                     $.make('br'),
                     unread_view >= 1 ? 'Switch to All or Unread.' : ""
                 ]);
-                $(".NB-sidebar.NB-feedlists").prepend($empty);
+                this.$s.$feed_list.after($empty);
             }
             // $focus.css('display', show_focus ? 'block' : 'none');
             // if (!show_focus) {

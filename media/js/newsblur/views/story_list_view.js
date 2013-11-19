@@ -232,15 +232,17 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var pane_height = NEWSBLUR.reader.$s.$story_pane.height();
         var indicator_position = NEWSBLUR.assets.preference('lock_mouse_indicator');
         var endbar_height = 20;
-        if (indicator_position) {
+        if (indicator_position && 
+            _.contains(['full', 'split'], NEWSBLUR.assets.preference('story_layout'))) {
             var last_visible_story = _.last(NEWSBLUR.assets.stories.visible());
             var last_story_height = last_visible_story && last_visible_story.story_view && last_visible_story.story_view.$el.height() || 100;
-            var last_story_offset = _.last(this.cache.feed_view_story_positions_keys);
+            var last_story_offset = _.last(this.cache.feed_view_story_positions_keys) || 0;
             endbar_height = pane_height - indicator_position - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
 
             var empty_space = pane_height - last_story_offset - last_story_height - endbar_height;
             if (empty_space > 0) endbar_height += empty_space + 1;
+            // console.log(["endbar height full/split", endbar_height, empty_space, pane_height, last_story_offset, last_story_height]);
         }
         
         this.$('.NB-end-line').remove();
@@ -248,11 +250,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var last_story = NEWSBLUR.assets.stories.last();
             if (!last_story.get('selected')) return;
         }
+
+        endbar_height /= 2; // Splitting padding between top and bottom
         var $end_stories_line = $.make('div', { 
             className: 'NB-end-line'
         }, [
             $.make('div', { className: 'NB-fleuron' })
-        ]).css('paddingBottom', endbar_height);
+        ]).css('paddingBottom', endbar_height).css('paddingTop', endbar_height);
         
         this.$el.append($end_stories_line);
     },
