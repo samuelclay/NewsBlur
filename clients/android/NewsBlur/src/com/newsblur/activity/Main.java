@@ -71,9 +71,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	private void triggerFirstSync() {
         PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
-		if (menu != null) {
-			menu.findItem(R.id.menu_refresh).setEnabled(false);
-		}
+        setRefreshEnabled(false);
 		
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
@@ -87,9 +85,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
     private void triggerRefresh() {
         PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
-		if (menu != null) {
-			menu.findItem(R.id.menu_refresh).setEnabled(false);
-		}
+        setRefreshEnabled(false);
 
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
@@ -154,9 +150,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	public void updateAfterSync() {
 		folderFeedList.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
-        
-        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
-        if (refreshItem != null) refreshItem.setEnabled(true);
+        setRefreshEnabled(true);
 	}
 
     /**
@@ -174,13 +168,21 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
         //       interface method may be redundant.
 		if (syncRunning) {
 			setSupportProgressBarIndeterminateVisibility(true);
-			if (menu != null) {
-				menu.findItem(R.id.menu_refresh).setEnabled(true);
-			}
+            setRefreshEnabled(false);
 		}
 	}
 
 	@Override
 	public void setNothingMoreToUpdate() { }
+
+    private void setRefreshEnabled(boolean enabled) {
+        if (menu != null) {
+            MenuItem item = menu.findItem(R.id.menu_refresh);
+            if (item != null) {
+                item.setEnabled(enabled);
+            }
+        }
+    }
+            
 
 }
