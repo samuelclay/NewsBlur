@@ -131,7 +131,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         var $indicator = this.$('.NB-story-title-indicator');
         var unread_hidden_stories;
         if (NEWSBLUR.reader.flags['river_view']) {
-            unread_hidden_stories = NEWSBLUR.reader.active_folder.folders &&
+            unread_hidden_stories = NEWSBLUR.reader.active_folder &&
+                                    NEWSBLUR.reader.active_folder.folders &&
                                     NEWSBLUR.reader.active_folder.folders.unread_counts &&
                                     NEWSBLUR.reader.active_folder.folders.unread_counts().ng;
         } else {
