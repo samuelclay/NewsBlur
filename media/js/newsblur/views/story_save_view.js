@@ -79,7 +79,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 fieldName: "tags",
                 availableTags: this.model.all_tags(),
                 autocomplete: {delay: 0, minLength: 0},
-                showAutocompleteOnFocus: true,
+                showAutocompleteOnFocus: false,
                 createTagOnBlur: false,
                 removeConfirmation: true,
                 caseSensitive: false,
