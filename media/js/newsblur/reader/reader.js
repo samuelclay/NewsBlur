@@ -3519,7 +3519,7 @@
         
         make_folders_multiselect: function(feed) {
             var folders = NEWSBLUR.assets.get_folders();
-            var in_folders = _.pluck(_.pluck(NEWSBLUR.assets.active_feed.folders, 'options'), 'title');
+            var in_folders = _.pluck(_.pluck(feed.folders, 'options'), 'title');
             var $options = $.make('div', { className: 'NB-folders' });
             var $option = this.make_folder_selectable('Top Level', '', 0, _.any(in_folders, function(folder) {
                 return !folder;
