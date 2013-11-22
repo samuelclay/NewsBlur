@@ -35,6 +35,7 @@
             readOnly          : false,  // Disables editing.
             removeConfirmation: false,  // Require confirmation to remove tags.
             tagLimit          : null,   // Max number of tags allowed (null for unlimited).
+            createTagOnBlur   : true,   // Create a tag when input loses focus.
 
             // Used for autocomplete, unless you override `autocomplete.source`.
             availableTags     : [],
@@ -266,14 +267,19 @@
                         }
 
                         // Autocomplete will create its own tag from a selection and close automatically.
-                        if (!that.tagInput.data('autocomplete-open')) {
+                        var menu = that.tagInput.autocomplete('widget').data('ui-menu');
+                        if (!(that.tagInput.data('autocomplete-open') &&
+                              that.tagInput.data('autocomplete-focus'))) {
                             that.createTag(that._cleanedInput());
                         }
                     }
                 }).blur(function(e){
                     // Create a tag when the element loses focus.
                     // If autocomplete is enabled and suggestion was clicked, don't add it.
-                    if (!that.tagInput.data('autocomplete-open')) {
+                    if (!this.createTagOnBlur) return;
+                    
+                    if (!(that.tagInput.data('autocomplete-open') &&
+                          that.tagInput.data('autocomplete-focus'))) {
                         that.createTag(that._cleanedInput());
                     }
                 });
@@ -295,6 +301,10 @@
                     that.tagInput.data('autocomplete-open', true);
                 }).bind('autocompleteclose', function(event, ui) {
                     that.tagInput.data('autocomplete-open', false);
+                }).bind('autocompletefocus', function(event, ui) {
+                    that.tagInput.data('autocomplete-focus', true);
+                }).bind('autocompletefocus', function(event, ui) {
+                    that.tagInput.data('autocomplete-focus', false);
                 });
             }
         },
@@ -392,6 +402,10 @@
             var that = this;
 
             value = $.trim(value);
+
+            if (this.tagInput.data('autocomplete-open')) {
+                this.tagInput.autocomplete('close');
+            }
 
             if(this.options.preprocessTag) {
                 value = this.options.preprocessTag(value);

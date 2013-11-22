@@ -79,7 +79,8 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 fieldName: "tags",
                 availableTags: this.model.all_tags(),
                 autocomplete: {delay: 0, minLength: 0},
-                showAutocompleteOnFocus: false,
+                showAutocompleteOnFocus: true,
+                createTagOnBlur: false,
                 removeConfirmation: true,
                 caseSensitive: false,
                 allowDuplicates: false,
@@ -91,7 +92,6 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 singleFieldNode: null,
                 tabIndex: null,
 
-                // Events
                 afterTagAdded: function(event, options) {
                     options = options || {};
                     self.resize();
@@ -108,6 +108,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 }
             });
             $tag_input.tagit('addClassAutocomplete', 'NB-tagging-autocomplete');
+            
             if (options.animate_scroll) {
                 var $scroll_container = NEWSBLUR.reader.$s.$story_titles;
                 if (_.contains(['split', 'full'], NEWSBLUR.assets.preference('story_layout'))) {
