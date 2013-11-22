@@ -64,7 +64,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
@@ -102,6 +102,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         ', {
           feed                : feed,
           type                : this.options.type,
+          disable_hover       : this.options.disable_hover,
           extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
@@ -275,6 +276,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         e.stopPropagation();
         
         if (this.options.type == "story") return;
+        if (this.options.starred_tag) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         this.flags.double_click = true;
@@ -283,17 +285,21 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }, this), 500);
 
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
-        window.open(this.model.get('feed_link'), '_blank');
-        window.focus();
+        if (this.model.get('feed_link')) {
+            window.open(this.model.get('feed_link'), '_blank');
+            window.focus();
+        }
         
         return false;
     },
     
     mark_feed_as_read: function(e, days) {
+        if (this.options.starred_tag) return;
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
+
         this.flags.double_click = true;
         _.delay(_.bind(function() {
             this.flags.double_click = false;

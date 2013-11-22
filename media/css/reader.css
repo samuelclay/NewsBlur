@@ -733,6 +733,10 @@ body {
     opacity: 1;
     display: block;
 }
+.NB-feedlist .feed.NB-no-hover .NB-feedlist-manage-icon,
+.NB-feedlist .folder_title.NB-no-hover .NB-feedlist-manage-icon {
+    display: none;
+}
 
 .NB-feedlists .folder .folder_title .feed_counts_floater,
 .NB-feeds-header .feed_counts_floater {
@@ -793,8 +797,14 @@ body {
 .NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
     display: none;
 }
+.NB-feedlist .feed.NB-toplevel.NB-no-hover .feed_favicon {
+    display: block;
+}
 .NB-feedlist .folder_title.NB-toplevel:hover {
     background: none;
+}
+.NB-feedlist .folder_title.NB-toplevel.NB-no-hover {
+    background: inherit;
 }
 
 .NB-feedlist .feed_counts {
