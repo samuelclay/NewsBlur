@@ -46,7 +46,7 @@ def format_story_link_date__long(date, now=None):
     if not now:
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
-    midnight = midnight_today()
+    midnight = midnight_today(now)
     parsed_date = DateFormat(date)
 
     if date > midnight:
