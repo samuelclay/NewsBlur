@@ -2079,11 +2079,11 @@ body {
     font-weight: bold;
 }
 .NB-feed-story-feed .NB-feed-story-header-title:hover {
-    color: #DFE2F3;
+    color: rgba(255, 255, 255, .8);
 }
 
 .NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
-    color: #274C63;
+    color: rgba(0, 0, 0, .6);
 }
 
 /* =============================== */
