@@ -917,7 +917,25 @@ class UserSubscriptionFolders(models.Model):
         user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
         self.folders = json.encode(user_sub_folders)
         self.save()
+    
+    def arranged_folders(self):
+        user_sub_folders = json.decode(self.folders)
+        def _arrange_folder(folder):
+            folder_feeds = []
+            folder_folders = []
+            for item in folder:
+                if isinstance(item, int):
+                    folder_feeds.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        arranged_folder = _arrange_folder(f_v)
+                        folder_folders.append({f_k: arranged_folder})
+
+            arranged_folder = folder_feeds + folder_folders
+            return arranged_folder
         
+        return _arrange_folder(user_sub_folders)
+    
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
             new_folders = []
@@ -944,7 +962,7 @@ class UserSubscriptionFolders(models.Model):
     
             return new_folders, multiples_found, deleted
 
-        user_sub_folders = json.decode(self.folders)
+        user_sub_folders = self.arranged_folders()
         user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
         self.folders = json.encode(user_sub_folders)
         self.save()

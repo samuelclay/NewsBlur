@@ -11,12 +11,15 @@ import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,6 +70,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
     private Reading activity;
+    private Boolean customContent = false;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -120,6 +124,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		receiver = new TextSizeReceiver();
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
 	}
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("story", story);
+    }
 
 	@Override
 	public void onDestroy() {
@@ -146,7 +154,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
-		setupWebview(web);
+		
+        synchronized (customContent) {
+            setupWebview(story.content);
+            customContent = false;
+        }
+
 		setupItemMetadata();
 		setupShareButton();
 		setupSaveButton();
@@ -164,19 +177,31 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 	
 	private void setupSaveButton() {
+		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
 
-		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
-
-		saveButton.setOnClickListener(new OnClickListener() {
+        saveButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FeedUtils.saveStory(story, getActivity(), apiManager);
+                if (story.starred) {
+                    FeedUtils.unsaveStory(story, activity, apiManager, activity);
+                } else {
+				    FeedUtils.saveStory(story, activity, apiManager, activity);
+                }
 			}
 		});
 	}
 
-	private void setupShareButton() {
+    public void updateSaveButton() {
+		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
+    }
 
+    public void updateStory(Story story) {
+        this.story = story;
+    }
+    
+	private void setupShareButton() {
 		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
 
 		for (String userId : story.sharedUserIds) {
@@ -194,7 +219,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			}
 		});
 	}
-
 
 	public void changeTextSize(float newTextSize) {
 		if (web != null) {
@@ -247,7 +271,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(story.title);
+        itemTitle.setText(Html.fromHtml(story.title));
 		itemDate.setText(story.longDate);
 
         if (!TextUtils.isEmpty(story.authors)) {
@@ -300,7 +324,34 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		
 	}
 
-	private void setupWebview(NewsblurWebview web) {
+    /**
+     * Set the webview to show the default story content.
+     */
+    public void setDefaultWebview() {
+        // if the default content hasn't been changed, don't reset it
+        synchronized (customContent) {
+            if (!customContent) return;
+            setupWebview(story.content);
+            customContent = false;
+        }
+    }
+
+    /**
+     * Set the webview to show non-default content, tracking the change.
+     */
+    public void setCustomWebview(String content) {
+        synchronized (customContent) {
+            setupWebview(content);
+            customContent = true;
+        }
+    }
+
+	private void setupWebview(String storyText) {
+        if (getActivity() == null) {
+            // this method gets called by async UI bits that might hold stale fragment references with no assigned
+            // activity.  If this happens, just abort the call.
+            return;
+        }
 		final SharedPreferences preferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 
@@ -310,10 +361,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
-		builder.append(story.content);
+		builder.append(storyText);
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
-
 	}
 
 	private class TextSizeReceiver extends BroadcastReceiver {
@@ -377,11 +427,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				View commentView = inflater.inflate(R.layout.include_comment, null);
 				commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
 
-				TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-				commentText.setTag("commentBy" + user.id);
-				commentText.setText(sharedText);
+                TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+                commentText.setTag("commentBy" + user.id);
+                commentText.setText(sharedText);
 
-				if (PrefsUtils.getUserImage(getActivity()) != null) {
+                TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
+                if (!TextUtils.isEmpty(user.location)) {
+                    commentLocation.setText(user.location.toUpperCase());
+                } else {
+                    commentLocation.setVisibility(View.GONE);
+                }
+
+                if (PrefsUtils.getUserImage(getActivity()) != null) {
 					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 					commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
 				}

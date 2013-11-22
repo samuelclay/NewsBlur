@@ -307,7 +307,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "3.0"
+    iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -607,8 +607,9 @@ def load_single_feed(request, feed_id):
         if not include_story_content:
             del story['story_content']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
+        nowtz = localtime_for_timezone(now, user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date'] = format_story_link_date__long(story_date, nowtz)
         if usersub:
             story['read_status'] = 1
             if (read_filter == 'all' or query) and usersub:
@@ -782,12 +783,13 @@ def load_starred_stories(request):
                                                    comments=story.comments))
                            for story in shared_stories])
 
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
-        story['starred_date']      = format_story_link_date__long(starred_date, now)
+        story['starred_date']      = format_story_link_date__long(starred_date, nowtz)
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -939,6 +941,7 @@ def load_river_stories__redis(request):
     
 
     # Just need to format stories
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['read_status'] = 0
         if read_filter == 'all':
@@ -946,8 +949,8 @@ def load_river_stories__redis(request):
                 story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
@@ -1399,7 +1402,7 @@ def add_folder(request):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', None)
-    if in_folder == ' ':
+    if not in_folder or in_folder == ' ':
         in_folder = ""
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)

@@ -119,12 +119,13 @@ def load_social_stories(request, user_id, username=None):
                                                    comments=story.comments))
                            for story in shared_stories])
     
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['social_user_id'] = social_user_id
         # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(shared_date)
-        story['long_parsed_date'] = format_story_link_date__long(shared_date)
+        story['short_parsed_date'] = format_story_link_date__short(shared_date, nowtz)
+        story['long_parsed_date'] = format_story_link_date__long(shared_date, nowtz)
         
         story['read_status'] = 1
         if (read_filter == 'all' or query) and socialsub:
@@ -270,13 +271,14 @@ def load_river_blurblog(request):
         classifier_tags = []
     
     # Just need to format stories
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['read_status'] = 0
         if story['story_hash'] not in unread_feed_story_hashes:
             story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
@@ -521,7 +523,9 @@ def mark_story_as_shared(request):
     source_user_id = request.POST.get('source_user_id')
     relative_user_id = request.POST.get('relative_user_id') or request.user.pk
     post_to_services = request.POST.getlist('post_to_services')
-    format = request.REQUEST.get('format', 'json')
+    format = request.REQUEST.get('format', 'json')    
+    now = datetime.datetime.now()
+    nowtz = localtime_for_timezone(now, request.user.profile.timezone)
     
     MSocialProfile.get_user(request.user.pk)
     
@@ -576,8 +580,8 @@ def mark_story_as_shared(request):
     story['shared_by_user'] = True
     story['shared'] = True
     shared_date = localtime_for_timezone(shared_story['shared_date'], request.user.profile.timezone)
-    story['short_parsed_date'] = format_story_link_date__short(shared_date)
-    story['long_parsed_date'] = format_story_link_date__long(shared_date)
+    story['short_parsed_date'] = format_story_link_date__short(shared_date, nowtz)
+    story['long_parsed_date'] = format_story_link_date__long(shared_date, nowtz)
             
     if post_to_services:
         for service in post_to_services:

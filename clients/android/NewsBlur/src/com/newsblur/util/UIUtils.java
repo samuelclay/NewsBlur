@@ -78,13 +78,16 @@ public class UIUtils {
 		return (int) (dps * scale + 0.5f);
 	}
 
+    public static float px2dp(Context context, int px) {
+        return ((float) px) / context.getResources().getDisplayMetrics().density;
+    }
+
     /**
      * Sets the alpha of a view in a manner that is safe to use before API version 11.
      * If alpha isn't supported, just make the view invisible if the alpha is so low
      * that it may as well be.
      */
     public static void setViewAlpha(View v, float alpha) {
-        v.setVisibility((alpha > 0.001) ? View.VISIBLE : View.INVISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             v.setAlpha(alpha);
         }

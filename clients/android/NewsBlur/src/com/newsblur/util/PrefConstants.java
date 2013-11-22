@@ -36,4 +36,6 @@ public class PrefConstants {
     
     public static final String DEFAULT_STORY_ORDER = "default_story_order";
     public static final String DEFAULT_READ_FILTER = "default_read_filter";
+    
+    public static final String SHOW_PUBLIC_COMMENTS = "show_public_comments";
 }
