@@ -76,6 +76,12 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 		while (commentCursor.moveToNext()) {
 			final Comment comment = Comment.fromCursor(commentCursor);
+			
+			// skip public comments if they are disabled
+			if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
+			    continue;
+			}
+			
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
 
@@ -87,7 +93,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-			commentSharedDate.setText(comment.sharedDate.toUpperCase() + " AGO");
+			commentSharedDate.setText(comment.sharedDate + " ago");
 			commentSharedDate.setTag(COMMENT_DATE_BY + comment.userId);
 
 			final FlowLayout favouriteContainer = (FlowLayout) commentView.findViewById(R.id.comment_favourite_avatars);
@@ -167,7 +173,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				}
 				
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
-				replySharedDate.setText(reply.shortDate.toUpperCase() + " AGO");
+				replySharedDate.setText(reply.shortDate + " ago");
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}
@@ -179,7 +185,14 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			commentUsername.setText(commentUser.username);
 			String userPhoto = commentUser.photoUrl;
 
-			if (!TextUtils.isEmpty(comment.sourceUserId)) {
+            TextView commentLocation = (TextView) commentView.findViewById(R.id.comment_location);
+            if (!TextUtils.isEmpty(commentUser.location)) {
+                commentLocation.setText(commentUser.location.toUpperCase());
+            } else {
+                commentLocation.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(comment.sourceUserId)) {
 				commentImage.setVisibility(View.INVISIBLE);
 				ImageView usershareImage = (ImageView) commentView.findViewById(R.id.comment_user_reshare_image);
 				ImageView sourceUserImage = (ImageView) commentView.findViewById(R.id.comment_sharesource_image);
@@ -270,7 +283,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					commentCount = commentCount.substring(0, commentCount.length() - 1);
 				}
 				publicCommentTotal.setText(String.format(commentCount, publicCommentViews.size()));
-			}
+                viewHolder.get().findViewById(R.id.reading_public_comment_header).setVisibility(View.VISIBLE);
+            }
 			
 			if (friendCommentViews.size() > 0) {
 				String commentCount = context.getString(R.string.friends_comments_count);
@@ -278,7 +292,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					commentCount = commentCount.substring(0, commentCount.length() - 1);
 				}
 				friendCommentTotal.setText(String.format(commentCount, friendCommentViews.size()));
-			}
+                viewHolder.get().findViewById(R.id.reading_friend_comment_header).setVisibility(View.VISIBLE);
+            }
 
 			for (int i = 0; i < publicCommentViews.size(); i++) {
 				if (i == publicCommentViews.size() - 1) {

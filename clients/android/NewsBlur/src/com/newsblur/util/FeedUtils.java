@@ -12,8 +12,10 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,26 +38,43 @@ public class FeedUtils {
 
     private static Gson gson = new Gson();
 
-	public static void saveStory(final Story story, final Context context, final APIManager apiManager) {
-		if (story != null) {
-            new AsyncTask<Void, Void, NewsBlurResponse>() {
-                @Override
-                protected NewsBlurResponse doInBackground(Void... arg) {
+	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                if (saved) {
                     return apiManager.markStoryAsStarred(story.feedId, story.storyHash);
+                } else {
+                    return apiManager.markStoryAsUnstarred(story.feedId, story.storyHash);
                 }
-                @Override
-                protected void onPostExecute(NewsBlurResponse result) {
-                    if (!result.isError()) {
-                        Toast.makeText(context, R.string.toast_story_saved, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_save_error)), Toast.LENGTH_LONG).show();
-                    }
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (!result.isError()) {
+                    Toast.makeText(context, (saved ? R.string.toast_story_saved : R.string.toast_story_unsaved), Toast.LENGTH_SHORT).show();
+                    story.starred = saved;
+                    Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.STORY_STARRED, saved);
+                    context.getContentResolver().update(storyUri, values, null, null);
+                } else {
+                    Toast.makeText(context, result.getErrorMessage(context.getString(saved ? R.string.toast_story_save_error : R.string.toast_story_unsave_error)), Toast.LENGTH_LONG).show();
                 }
-            }.execute();
-        } else {
-            Log.w(FeedUtils.class.getName(), "Couldn't save story, no selection found.");
-        }
+
+                if (receiver != null) {
+                    receiver.actionCompleteCallback();
+                }
+            }
+        }.execute();
 	}
+
+	public static void saveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
+        setStorySaved(story, true, context, apiManager, receiver);
+    }
+
+	public static void unsaveStory(final Story story, final Context context, final APIManager apiManager, ActionCompletionListener receiver) {
+        setStorySaved(story, false, context, apiManager, receiver);
+    }
 
     public static void deleteFeed( final long feedId, final String folderName, final Context context, final APIManager apiManager) {
 
@@ -136,6 +155,11 @@ public class FeedUtils {
                     }
                 }
             }.execute();
+        }
+
+        // update the local object to show as read even before requeried
+        for (Story story : stories) {
+            story.read = true;
         }
 
     }
@@ -234,14 +258,39 @@ public class FeedUtils {
         }
         return count;
     }
+
+    public static int getCursorUnreadCount(Cursor cursor, int currentState) {
+        int count = 0;
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_POS));
+            if ((currentState == AppConstants.STATE_ALL) || (currentState ==  AppConstants.STATE_SOME)) {
+                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEUT));
+            }
+            if (currentState ==  AppConstants.STATE_ALL ) {
+                count += cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.SUM_NEG));
+            }
+        }
+        return count;
+    }
     
     public static void shareStory(Story story, Context context) {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
+        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title));
         final String shareString = context.getResources().getString(R.string.share);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { Html.fromHtml(story.title),
+                                                                                       story.permalink }));
         context.startActivity(Intent.createChooser(intent, "Share using"));
+    }
+
+    /**
+     * An interface usable by callers of this utility class that allows them to receive
+     * notification that the async methods here have finihed and may have updated the DB
+     * as a result.
+     */
+    public interface ActionCompletionListener {
+        public abstract void actionCompleteCallback();
     }
 }

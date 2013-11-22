@@ -17,8 +17,10 @@ from vendor import reseekfile
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile('\<!--.*?--\>')
 
-def midnight_today():
-    return datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+def midnight_today(now=None):
+    if not now:
+        now = datetime.datetime.now()
+    return now.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
     
 def midnight_yesterday(midnight=None):
     if not midnight:
@@ -28,9 +30,11 @@ def midnight_yesterday(midnight=None):
 def beginning_of_this_month():
     return datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-def format_story_link_date__short(date):
+def format_story_link_date__short(date, now=None):
+    if not now:
+        now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
-    midnight = midnight_today()
+    midnight = midnight_today(now)
     if date > midnight:
         return date.strftime('%I:%M%p').lstrip('0').lower()
     elif date > midnight_yesterday(midnight):

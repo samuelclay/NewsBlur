@@ -6,16 +6,21 @@
     <color name="midgray">#898989</color>
     <color name="lightgray">#ccc</color>
 
-	<color name="folder_background_end">#E9EBE4</color>
-	<color name="folder_background_start">#DDE0D7</color>
-	<color name="folder_background_selected_end">#fdfcca</color>
-	<color name="folder_background_selected_start">#fbec8c</color>
+    <color name="folder_background_end">#E9EBE4</color>
+    <color name="folder_background_start">#DDE0D7</color>
+    <color name="folder_background_selected_end">#D9DBD4</color>
+    <color name="folder_background_selected_start">#CDD0C7</color>
     <color name="folder_text">#4C4C4C</color>
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
     <color name="feed_background">#F7F8F5</color>
     <color name="feed_background_end">#303030</color>
     <color name="feed_background_start">#505050</color>
+    <color name="feed_background_selected_end">#FFFFD2</color>
+    <color name="feed_background_selected_start">#E3D0AE</color>
+    <color name="story_background">#F7F8F5</color>
+    <color name="story_background_end">#FFFDEF</color>
+    <color name="story_background_start">#DFDDCF</color>
 
     <color name="story_title_unread">#333333</color>
     <color name="story_title_read">#808080</color>
@@ -69,6 +74,9 @@
     <color name="tag_gray_text">#949181</color>
 
     <color name="newsblur_blue">#0b445a</color>
+
+    <color name="progress_circle_complete">#9a9c96</color>
+    <color name="progress_circle_remaining">#dbe4e1</color>
 
     <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>
