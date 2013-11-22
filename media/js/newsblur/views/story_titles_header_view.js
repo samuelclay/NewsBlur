@@ -35,9 +35,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (NEWSBLUR.reader.flags['starred_view']) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
+                    <div class="NB-search-container"></div>\
                     <div class="NB-starred-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text">Saved Stories<% if (tag) { %> - <%= tag %><% } %></div>\
+                    <span class="folder_title_text">Saved Stories<% if (tag) { %> - <%= tag %><% } %></span>\
                 </div>\
             ', {
                 tag: NEWSBLUR.reader.flags['starred_tag']
@@ -46,7 +47,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 feedbar_view: this
             }).render();
             this.search_view.blur_search();
-            $view.prepend(this.search_view.$el);
+            $(".NB-search-container", $view).html(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
