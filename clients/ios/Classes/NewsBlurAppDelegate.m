@@ -438,12 +438,18 @@
     preferencesViewController.showDoneButton = YES;
     preferencesViewController.showCreditsFooter = NO;
     preferencesViewController.title = @"Preferences";
-    BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    preferencesViewController.hiddenKeys = enabled ? nil :
-    [NSSet setWithObjects:@"offline_image_download",
-     @"offline_download_connection",
-     @"offline_store_limit",
-     nil];
+    NSMutableSet *hiddenSet = [NSMutableSet set];
+    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+    if (offline_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
+                                         @"offline_download_connection",
+                                         @"offline_store_limit"]];
+    }
+    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
+    if (system_font_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
+    }
+    preferencesViewController.hiddenKeys = hiddenSet;
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
     

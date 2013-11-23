@@ -84,7 +84,7 @@
 			<key>Key</key>
 			<string>use_system_font_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

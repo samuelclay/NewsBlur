@@ -881,7 +881,12 @@ static UIFont *userLabelFont;
          [NSSet setWithObjects:@"instapaper_username",
           @"instapaper_password",
           nil] animated:YES];
-	}
+	} else if ([notification.object isEqual:@"use_system_font_size"]) {
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"use_system_font_size"] intValue];
+		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
+         [NSSet setWithObjects:@"feed_list_font_size",
+          nil] animated:YES];
+    }
 }
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
