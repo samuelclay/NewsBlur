@@ -345,6 +345,7 @@
     }
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
+    NSString *storyPermalink = [self.activeStory objectForKey:@"story_permalink"];
     NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"titles"];
     for (NSString *titleClassifier in titleClassifiers) {
@@ -365,7 +366,7 @@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
                              "<div class=\"NB-story-title\">"
                              "  %@"
-                             "  %@"
+                             "  <a href=\"%@\" class=\"NB-story-permalink\">%@</a>"
                              "</div>"
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
@@ -373,6 +374,7 @@
                              "%@"
                              "</div></div>",
                              storyUnread,
+                             storyPermalink,
                              storyTitle,
                              storyDate,
                              storyAuthor,
