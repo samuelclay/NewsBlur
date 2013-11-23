@@ -72,6 +72,74 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Text Size</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use system size</string>
+			<key>Key</key>
+			<string>use_system_font_size</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed and story list</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_font_size</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story detail</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>story_font_size</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Offline stories</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

@@ -864,6 +864,7 @@ static UIFont *userLabelFont;
     } else {
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)settingDidChange:(NSNotification*)notification {

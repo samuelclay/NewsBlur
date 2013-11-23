@@ -43,7 +43,8 @@
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 
-@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
+@interface NewsBlurAppDelegate : BaseViewController
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
