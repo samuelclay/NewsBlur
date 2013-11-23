@@ -52,12 +52,12 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
 
-		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
@@ -65,14 +65,8 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
@@ -105,10 +99,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 	    MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(folderName);
 	    dialog.show(fragmentManager, "dialog");
 	}
-
-	@Override
-	public void closeAfterUpdate() { }
-
 
     @Override
     protected StoryOrder getStoryOrder() {

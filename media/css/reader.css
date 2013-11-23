@@ -1294,14 +1294,23 @@ background: transparent;
     background-position: 4px 7px;
 }
 
-.NB-feedbar:hover :not(.NB-no-hover) .NB-feedlist-manage-icon {
+.NB-feedbar:hover .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
-.NB-feedbar:hover .feed_favicon,
-.NB-feedbar:hover :not(.NB-no-hover) .NB-folder-icon {
+.NB-feedbar:hover .NB-no-hover .NB-feedlist-manage-icon {
   display: none;
+  opacity: 0;
+}
+
+.NB-feedbar:hover .feed_favicon,
+.NB-feedbar:hover .NB-folder-icon {
+  display: none;
+}
+
+.NB-feedbar:hover .NB-no-hover .NB-folder-icon {
+  display: block;
 }
 
 
@@ -2552,7 +2561,7 @@ background: transparent;
     border-bottom: 1px solid #EAECE8;
     position: relative;
     padding: 0 0 2px 54px;
-    line-height: 20px;
+    line-height: 18px;
     overflow: hidden;
 }
 .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar,
@@ -3800,7 +3809,7 @@ background: transparent;
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow,
 #story_taskbar .NB-tryout-signup {
-    margin: 6px auto 0px;
+    margin: 2px auto 0px;
     width: 80px;
     height: 14px;
     text-align: center;
@@ -6093,6 +6102,11 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinterest {
+    background: transparent url('/media/embed/reader/pinterest.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-buffer {
     background: transparent url('/media/embed/reader/buffer.png') no-repeat 0 0;
@@ -6159,6 +6173,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinterest .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-email,
@@ -6184,6 +6199,9 @@ form.opml_import_form input {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-pinboard {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinterest .NB-menu-manage-thirdparty-pinterest {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-buffer {
@@ -8399,6 +8417,10 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinterest] {
+    background: transparent url('/media/embed/reader/pinterest.png') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-buffer] {
     background: transparent url('/media/embed/reader/buffer.png') no-repeat 0 0;

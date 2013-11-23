@@ -40,7 +40,7 @@ public class SocialFeedItemsList extends ItemsList {
 			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 		
@@ -48,7 +48,7 @@ public class SocialFeedItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 	}
 	
@@ -61,11 +61,6 @@ public class SocialFeedItemsList extends ItemsList {
 		return true;
 	}
 	
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
@@ -97,10 +92,6 @@ public class SocialFeedItemsList extends ItemsList {
 			}
 		}.execute(userId);
 	}
-
-	@Override
-	public void closeAfterUpdate() { }
-
 
     @Override
     protected StoryOrder getStoryOrder() {

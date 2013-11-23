@@ -9,14 +9,11 @@ import android.view.ViewGroup;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
-import com.newsblur.fragment.ReadingItemFragment;
 
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
-	private String TAG = "ReadingAdapter";
 	protected LoadingFragment loadingFragment;
-	private int currentPosition = 0;
 	
 	public ReadingAdapter(FragmentManager fm, Cursor stories) {
 		super(fm);
@@ -26,11 +23,6 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	@Override
 	public abstract Fragment getItem(int position);
 	
-	@Override
-	public void setPrimaryItem(ViewGroup container, int position, Object object) {
-		super.setPrimaryItem(container, position, object);
-	}
-
 	@Override
 	public int getCount() {
 		if (stories != null && stories.getCount() > 0) {
@@ -48,10 +40,18 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 			return Story.fromCursor(stories);
 		}
 	}
-	
-	public void setTextSize(float textSize) {
-		((ReadingItemFragment) getItem(currentPosition)).changeTextSize(textSize);
-	}
+
+    public int getPosition(Story story) {
+        int pos = 0;
+        while (pos < stories.getCount()) {
+			stories.moveToPosition(pos);
+            if (Story.fromCursor(stories).equals(story)) {
+                return pos;
+            }
+            pos++;
+        }
+        return -1;
+    }
 	
 	@Override
 	public int getItemPosition(Object object) {
@@ -60,10 +60,6 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		} else {
 			return POSITION_UNCHANGED;
 		}
-	}
-
-	public void setCurrentItem(int passedPosition) {
-		this.currentPosition = passedPosition;
 	}
 
 }

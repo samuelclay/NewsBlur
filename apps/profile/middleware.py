@@ -187,6 +187,7 @@ class UserAgentBanMiddleware:
         
         if 'profile' in request.path: return
         if 'haproxy' in request.path: return
+        if getattr(settings, 'TEST_DEBUG'): return
         
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
             data = {

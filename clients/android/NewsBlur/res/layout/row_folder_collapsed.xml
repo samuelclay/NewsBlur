@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_folder_background">
+    android:background="@drawable/selector_folder_background"
+    android:addStatesFromChildren="true" >
 
     <ImageView
         android:id="@+id/row_folder_icon"
@@ -86,7 +87,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:maxLines="1"
-        android:ellipsize="end"/>
+        android:ellipsize="end" />
     
     <View 
         android:layout_height="1dp"

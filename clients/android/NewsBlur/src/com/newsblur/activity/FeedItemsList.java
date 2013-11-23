@@ -52,12 +52,12 @@ public class FeedItemsList extends ItemsList {
             setTitle(feed.title);
         }
 
-		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
@@ -65,7 +65,7 @@ public class FeedItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 	}
 	
@@ -119,11 +119,6 @@ public class FeedItemsList extends ItemsList {
 	}
 
 	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
-	}
-
-	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
@@ -136,11 +131,6 @@ public class FeedItemsList extends ItemsList {
             intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, feedId));
 			startService(intent);
 		}
-	}
-
-	@Override
-	public void closeAfterUpdate() {
-		finish();
 	}
 
     @Override

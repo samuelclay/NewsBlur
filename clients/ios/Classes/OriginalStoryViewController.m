@@ -14,6 +14,7 @@
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
 #import "UIActivitiesControl.h"
+#import "NBBarButtonItem.h"
 
 @implementation OriginalStoryViewController
 
@@ -27,6 +28,7 @@
 @synthesize pageTitle;
 @synthesize pageUrl;
 @synthesize toolbar;
+@synthesize navBar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 
@@ -37,6 +39,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
+    appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
 
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
     [self updateAddress:request];
@@ -49,6 +52,10 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"On its way...";
     [HUD hide:YES afterDelay:2];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self layoutNavBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -65,19 +72,11 @@
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
 }
 
-- (void)viewDidLoad {
-    CGRect navBarFrame = self.view.bounds;
-    navBarFrame.size.height = kNavBarHeight;
-    UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:navBarFrame];
-    navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    toolbar.autoresizingMask = toolbar.autoresizingMask | UIViewAutoresizingFlexibleHeight | UIViewContentModeBottom;
-    [navBar
-     setBackgroundImage:[UIImage imageNamed:@"toolbar_tall_background.png"]
-     forBarMetrics:UIBarMetricsDefault];
-    
-    CGRect labelFrame = CGRectMake(kMargin, kSpacer,
-                                   navBar.bounds.size.width - 2*kMargin, 
+- (void)viewDidLoad {    
+    CGRect labelFrame = CGRectMake(kMargin, kSpacer + 20,
+                                   navBar.bounds.size.width - 2*kMargin,
                                    kLabelHeight);
+    
     UILabel *label = [[UILabel alloc] initWithFrame:labelFrame];
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
@@ -90,29 +89,28 @@
     [navBar addSubview:label];
     self.pageTitle = label;
     
-    
-    UIBarButtonItem *close = [[UIBarButtonItem alloc] 
-                              initWithTitle:@"Close" 
-                              style:UIBarButtonItemStyleBordered 
-                              target:self 
+    UIBarButtonItem *close = [[UIBarButtonItem alloc]
+                              initWithTitle:@"Close"
+                              style:UIBarButtonItemStyleBordered
+                              target:self
                               action:@selector(doCloseOriginalStoryViewController)];
     close.width = kButtonWidth;
-    CGRect closeButtonFrame = CGRectMake(0, 
-                                         kSpacer*2.0 + kLabelHeight - 7.0f, 
+    CGRect closeButtonFrame = CGRectMake(-20,
+                                         kSpacer*2.0 + kLabelHeight - 7.0f + 20,
                                          kButtonWidth + kMargin,
                                          44.0);
-    TransparentToolbar* tools = [[TransparentToolbar alloc] 
+    TransparentToolbar* tools = [[TransparentToolbar alloc]
                                  initWithFrame:closeButtonFrame];
     [tools setItems:[NSArray arrayWithObject:close] animated:NO];
     [tools setTintColor:UIColorFromRGB(0x183353)];
     [navBar addSubview:tools];
-
-    CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x + 
+    
+    CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x +
                                      closeButtonFrame.size.width +
-                                     kMargin, 
-                                     kSpacer*2.0 + kLabelHeight,
+                                     kMargin,
+                                     kSpacer*2.0 + kLabelHeight + 20,
                                      labelFrame.size.width
-                                     - kButtonWidth - kMargin*2,
+                                     - kButtonWidth - kMargin*2 + 20,
                                      kAddressHeight);
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -128,43 +126,43 @@
     address.delegate = self;
     [navBar addSubview:address];
     self.pageUrl = address;
-    
-    [self.view addSubview:navBar];
-    
+
     UIImage *backImage = [UIImage imageNamed:@"barbutton_back.png"];
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *backButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     backButton.bounds = CGRectMake(0, 0, 44, 44);
     [backButton setImage:backImage forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(webViewGoBack:) forControlEvents:UIControlEventTouchUpInside];
     [back setCustomView:backButton];
     
     UIImage *forwardImage = [UIImage imageNamed:@"barbutton_forward.png"];
-    UIButton *forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *forwardButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     forwardButton.bounds = CGRectMake(0, 0, 44, 44);
     [forwardButton setImage:forwardImage forState:UIControlStateNormal];
     [forwardButton addTarget:self action:@selector(webViewGoForward:) forControlEvents:UIControlEventTouchUpInside];
     [forward setCustomView:forwardButton];
     
     UIImage *refreshImage = [UIImage imageNamed:@"barbutton_refresh.png"];
-    UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *refreshButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     refreshButton.bounds = CGRectMake(0, 0, 44, 44);
     [refreshButton setImage:refreshImage forState:UIControlStateNormal];
     [refreshButton addTarget:self action:@selector(webViewRefresh:) forControlEvents:UIControlEventTouchUpInside];
     [refresh setCustomView:refreshButton];
     
     UIImage *sendtoImage = [UIImage imageNamed:@"barbutton_sendto.png"];
-    UIButton *sendtoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    NBBarButtonItem *sendtoButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     sendtoButton.bounds = CGRectMake(0, 0, 44, 44);
     [sendtoButton setImage:sendtoImage forState:UIControlStateNormal];
     [sendtoButton addTarget:self action:@selector(doOpenActionSheet:) forControlEvents:UIControlEventTouchUpInside];
     [pageAction setCustomView:sendtoButton];
-    
-    CGRect webViewFrame = CGRectMake(0,
-                                     navBarFrame.origin.y + 
-                                     navBarFrame.size.height, 
-                                     self.view.frame.size.width, 
-                                     self.view.frame.size.height - kNavBarHeight - 44);
-    self.webView.frame = webViewFrame;
+}
+
+- (void)layoutNavBar {
+    CGRect navBarFrame = self.view.bounds;
+    navBarFrame.size.height = kNavBarHeight;
+    navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    navBar.frame = navBarFrame;
+    navBar.translucent = NO;
+    toolbar.translucent = NO;
 }
 
 - (IBAction)webViewGoBack:(id)sender {
@@ -180,6 +178,8 @@
 }
 
 - (void) layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    [self layoutNavBar];
+    
     CGSize toolbarSize = [self.toolbar sizeThatFits:self.view.bounds.size];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.toolbar.frame = CGRectMake(-10.0f,

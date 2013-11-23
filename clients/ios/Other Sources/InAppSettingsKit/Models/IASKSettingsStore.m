@@ -53,8 +53,8 @@
 - (float)floatForKey:(NSString*)key {
     return [[self objectForKey:key] floatValue];
 }
-- (int)integerForKey:(NSString*)key {
-    return [[self objectForKey:key] intValue];
+- (NSInteger)integerForKey:(NSString*)key {
+    return [[self objectForKey:key] integerValue];
 }
 
 - (double)doubleForKey:(NSString*)key {

@@ -48,12 +48,6 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 					((SyncUpdateFragmentInterface) getActivity()).updatePartialSync();
 				}
 				break;
-			case STATUS_FINISHED_CLOSE:
-				syncRunning = false;
-				if (getActivity() != null) {
-					((SyncUpdateFragmentInterface) getActivity()).closeAfterUpdate();
-				}
-				break;	
 			case STATUS_RUNNING:
 				syncRunning = true;
 				break;
@@ -80,7 +74,6 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 		public interface SyncUpdateFragmentInterface {
 			public void updateAfterSync();
             public void updatePartialSync();
-			public void closeAfterUpdate();
 			public void setNothingMoreToUpdate();
 			public void updateSyncStatus(boolean syncRunning);
 		}

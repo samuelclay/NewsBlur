@@ -36,12 +36,12 @@ public class AllSharedStoriesItemsList extends ItemsList {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}
 
-		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
@@ -49,15 +49,9 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
 		cursor.close();
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
@@ -82,10 +76,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	// We don't allow All Shared Stories to be marked as read
 	@Override
 	public void markItemListAsRead() { }
-
-	@Override
-	public void closeAfterUpdate() { }
-
 
     @Override
     protected StoryOrder getStoryOrder() {

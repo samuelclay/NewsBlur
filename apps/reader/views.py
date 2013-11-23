@@ -173,7 +173,7 @@ def signup(request):
                 url = "https://%s%s" % (Site.objects.get_current().domain,
                                          reverse('stripe-form'))
                 return HttpResponseRedirect(url)
-
+    
     return index(request)
         
 @never_cache
@@ -548,7 +548,8 @@ def load_single_feed(request, feed_id):
             stories = []
             message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
+                                      cutoff_date=user.profile.unread_cutoff)
     else:
         stories = feed.get_stories(offset, limit)
     
@@ -583,7 +584,11 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == 'all' or query) and usersub:
-            unread_story_hashes = usersub.get_stories(read_filter='unread', limit=500, hashes_only=True)
+            unread_story_hashes = UserSubscription.story_hashes(user.pk, read_filter='unread',
+                                                      feed_ids=[usersub.feed_id],
+                                                      usersubs=[usersub],
+                                                      group_by_feed=False,
+                                                      cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
@@ -603,8 +608,9 @@ def load_single_feed(request, feed_id):
         if not include_story_content:
             del story['story_content']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
+        nowtz = localtime_for_timezone(now, user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date'] = format_story_link_date__long(story_date, nowtz)
         if usersub:
             story['read_status'] = 1
             if (read_filter == 'all' or query) and usersub:
@@ -673,9 +679,10 @@ def load_single_feed(request, feed_id):
     
     # if page <= 1:
     #     import random
-    #     if random.random() < .5:
-    #         assert False
     #     time.sleep(random.randint(0, 3))
+    
+    # if page == 2:
+    #     assert False
 
     return data
 
@@ -777,12 +784,13 @@ def load_starred_stories(request):
                                                    comments=story.comments))
                            for story in shared_stories])
 
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
-        story['starred_date']      = format_story_link_date__long(starred_date, now)
+        story['starred_date']      = format_story_link_date__long(starred_date, nowtz)
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -860,23 +868,27 @@ def load_river_stories__redis(request):
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
-                                                                     group_by_feed=False)
+                                                                     group_by_feed=False, 
+                                                                     cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
+        all_feed_ids = [f for f in feed_ids]
         feed_ids = [sub.feed_id for sub in usersubs]
         if feed_ids:
             params = {
                 "user_id": user.pk, 
                 "feed_ids": feed_ids,
+                "all_feed_ids": all_feed_ids,
                 "offset": offset,
                 "limit": limit,
                 "order": order,
                 "read_filter": read_filter,
                 "usersubs": usersubs,
+                "cutoff_date": user.profile.unread_cutoff,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -930,6 +942,7 @@ def load_river_stories__redis(request):
     
 
     # Just need to format stories
+    nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['read_status'] = 0
         if read_filter == 'all':
@@ -937,8 +950,8 @@ def load_river_stories__redis(request):
                 story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
@@ -1006,7 +1019,8 @@ def unread_story_hashes__old(request):
             continue
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            withscores=include_timestamps,
-                                                           hashes_only=True)
+                                                           hashes_only=True,
+                                                           cutoff_date=user.profile.unread_cutoff)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
@@ -1024,7 +1038,8 @@ def unread_story_hashes(request):
     
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
-                                                 include_timestamps=include_timestamps)
+                                                 include_timestamps=include_timestamps,
+                                                 cutoff_date=user.profile.unread_cutoff)
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
                            (len(feed_ids), len(story_hashes)))
     return dict(unread_feed_story_hashes=story_hashes)
@@ -1244,12 +1259,18 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
 
-    UNREAD_CUTOFF = (datetime.datetime.utcnow() -
-                     datetime.timedelta(days=settings.DAYS_OF_UNREAD))
-    if story.story_date < UNREAD_CUTOFF:
+    if story.story_date < request.user.profile.unread_cutoff:
         data['code'] = -1
-        data['message'] = "文章发布已超过 %s 天，不能标记为未读。" % (
-                            settings.DAYS_OF_UNREAD)
+        if request.user.profile.is_premium:
+            data['message'] = "文章已超过 %s 天，无法标记为未读。" % (
+                                settings.DAYS_OF_UNREAD)
+        elif story.story_date > request.user.profile.unread_cutoff_premium:
+            data['message'] = "文章已超过 %s 天。付费用户可以最多标记 30 天内的文章为未读。" % (
+                                settings.DAYS_OF_UNREAD_FREE)
+        else:
+            data['message'] = "文章已超过 %s 天，无法标记为未读。" % (
+                                settings.DAYS_OF_UNREAD_FREE)
+        return data
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
@@ -1382,7 +1403,7 @@ def add_folder(request):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', None)
-    if in_folder == ' ':
+    if not in_folder or in_folder == ' ':
         in_folder = ""
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)

@@ -56,7 +56,7 @@ static NSMutableDictionary *imageCache;
 
 + (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial {
     UIImage *image;
-    if (filename && [[imageCache allKeys] containsObject:filename]) {
+    if (filename && [imageCache objectForKey:filename]) {
         image = [imageCache objectForKey:filename];
     }
     
@@ -144,7 +144,7 @@ static NSMutableDictionary *imageCache;
 + (NSString *)md5:(NSString *)string {
     const char *cStr = [string UTF8String];
     unsigned char result[16];
-    CC_MD5( cStr, strlen(cStr), result ); // This is the md5 call
+    CC_MD5( cStr, (CC_LONG)strlen(cStr), result ); // This is the md5 call
     return [NSString stringWithFormat:
             @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             result[0], result[1], result[2], result[3],
@@ -152,6 +152,119 @@ static NSMutableDictionary *imageCache;
             result[8], result[9], result[10], result[11],
             result[12], result[13], result[14], result[15]
             ];  
+}
+
++ (NSString *)formatLongDateFromTimestamp:(NSInteger)timestamp {
+    if (!timestamp) timestamp = [[NSDate date] timeIntervalSince1970];
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:(double)timestamp];
+    static NSDateFormatter *dateFormatter = nil;
+    static NSDateFormatter *todayFormatter = nil;
+    static NSDateFormatter *yesterdayFormatter = nil;
+    static NSDateFormatter *formatterPeriod = nil;
+    
+    NSDate *today = [NSDate date];
+    NSDateComponents *components = [[NSCalendar currentCalendar]
+                                    components:NSIntegerMax
+                                    fromDate:today];
+    [components setHour:0];
+    [components setMinute:0];
+    [components setSecond:0];
+    NSDate *midnight = [[NSCalendar currentCalendar] dateFromComponents:components];
+    NSDate *yesterday = [NSDate dateWithTimeInterval:-60*60*24 sinceDate:midnight];
+    
+    if (!dateFormatter || !todayFormatter || !yesterdayFormatter || !formatterPeriod) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"EEEE, MMMM d'Sth', y h:mm"];
+        todayFormatter = [[NSDateFormatter alloc] init];
+        [todayFormatter setDateFormat:@"'Today', MMMM d'Sth' h:mm"];
+        yesterdayFormatter = [[NSDateFormatter alloc] init];
+        [yesterdayFormatter setDateFormat:@"'Yesterday', MMMM d'Sth' h:mm"];
+        formatterPeriod = [[NSDateFormatter alloc] init];
+        [formatterPeriod setDateFormat:@"a"];
+    }
+    
+    NSString *dateString;
+    if ([date compare:midnight] == NSOrderedDescending) {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [todayFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    } else if ([date compare:yesterday] == NSOrderedDescending) {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [yesterdayFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    } else {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [dateFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    }
+    dateString = [dateString stringByReplacingOccurrencesOfString:@"Sth"
+                                                       withString:[Utilities suffixForDayInDate:date]];
+
+    return dateString;
+}
+
++ (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp {
+    if (!timestamp) timestamp = [[NSDate date] timeIntervalSince1970];
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:(double)timestamp];
+    static NSDateFormatter *dateFormatter = nil;
+    static NSDateFormatter *todayFormatter = nil;
+    static NSDateFormatter *yesterdayFormatter = nil;
+    static NSDateFormatter *formatterPeriod = nil;
+    
+    NSDate *today = [NSDate date];
+    NSDateComponents *components = [[NSCalendar currentCalendar]
+                                    components:NSIntegerMax
+                                    fromDate:today];
+    [components setHour:0];
+    [components setMinute:0];
+    [components setSecond:0];
+    NSDate *midnight = [[NSCalendar currentCalendar] dateFromComponents:components];
+    NSDate *yesterday = [NSDate dateWithTimeInterval:-60*60*24 sinceDate:midnight];
+    
+    if (!dateFormatter || !todayFormatter || !yesterdayFormatter || !formatterPeriod) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"dd LLL y, h:mm"];
+        todayFormatter = [[NSDateFormatter alloc] init];
+        [todayFormatter setDateFormat:@"h:mm"];
+        yesterdayFormatter = [[NSDateFormatter alloc] init];
+        [yesterdayFormatter setDateFormat:@"'Yesterday', h:mm"];
+        formatterPeriod = [[NSDateFormatter alloc] init];
+        [formatterPeriod setDateFormat:@"a"];
+    }
+
+    NSString *dateString;
+    if ([date compare:midnight] == NSOrderedDescending) {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [todayFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    } else if ([date compare:yesterday] == NSOrderedDescending) {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [yesterdayFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    } else {
+        dateString = [NSString stringWithFormat:@"%@%@",
+                      [dateFormatter stringFromDate:date],
+                      [[formatterPeriod stringFromDate:date] lowercaseString]];
+    }
+    
+    return dateString;
+}
+
++ (NSString *)suffixForDayInDate:(NSDate *)date {
+    NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] components:NSDayCalendarUnit fromDate:date] day];
+    if (day == 11) {
+        return @"th";
+    } else if (day % 10 == 1) {
+        return @"st";
+    } else if (day % 10 == 2) {
+        return @"nd";
+    } else if (day % 10 == 3) {
+        return @"rd";
+    } else {
+        return @"th";
+    }
 }
 
 @end

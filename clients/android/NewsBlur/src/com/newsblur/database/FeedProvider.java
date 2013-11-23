@@ -336,7 +336,11 @@ public class FeedProvider extends ContentProvider {
                 Log.d(LoggingDatabase.class.getName(), "rawQuery: " + sql);
                 Log.d(LoggingDatabase.class.getName(), "selArgs : " + Arrays.toString(selectionArgs));
             }
-            return mdb.rawQuery(sql, selectionArgs);
+            Cursor cursor = mdb.rawQuery(sql, selectionArgs);
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(LoggingDatabase.class.getName(), "result rows: " + cursor.getCount());
+            }
+            return cursor;
         }
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
             return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
@@ -599,8 +603,11 @@ public class FeedProvider extends ContentProvider {
 		case SOCIALFEED_STORIES:
 			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case INDIVIDUAL_STORY:
-			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
-			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
+            int count = 0;
+            count += db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
+            count += db.update(DatabaseConstants.STARRED_STORIES_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
+            return count;            
+        // In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 0;

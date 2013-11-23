@@ -8,15 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ABTableViewCell.h"
+#import "NBSwipeableCell.h"
 
-@interface FeedDetailTableCell : ABTableViewCell {
+@interface FeedDetailTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
     
     // All views
     NSString *storyTitle;
     NSString *storyAuthor;
     NSString *storyDate;
+    NSInteger storyTimestamp;
     int storyScore;
     BOOL isStarred;
     BOOL isShared;
@@ -31,18 +32,20 @@
 
     UIColor *feedColorBar;
     UIColor *feedColorBarTopBorder;
+    UIView *cellContent;
 }
 
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
 
 @property (readwrite) int storyScore;
-@property (readwrite) BOOL isStarred;
+@property (nonatomic, readwrite) BOOL isStarred;
 @property (readwrite) BOOL isShared;
 
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
+@property (nonatomic) NSInteger storyTimestamp;
 
 @property (nonatomic) UIColor *feedColorBar;
 @property (nonatomic) UIColor *feedColorBarTopBorder;
@@ -52,6 +55,12 @@
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
 
-- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha;
-    
+- (void)setupGestures;
+
+@end
+
+@interface FeedDetailTableCellView : UIView
+
+@property (nonatomic) FeedDetailTableCell *cell;
+
 @end

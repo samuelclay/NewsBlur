@@ -19,7 +19,6 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.network.APIManager;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -28,7 +27,6 @@ import com.newsblur.util.StoryOrder;
 
 public class SavedStoriesItemsList extends ItemsList {
 
-	private APIManager apiManager;
 	private ContentResolver resolver;
 
 	@Override
@@ -37,15 +35,14 @@ public class SavedStoriesItemsList extends ItemsList {
 
 		setTitle(getResources().getString(R.string.saved_stories_title));
 
-		apiManager = new APIManager(this);
 		resolver = getContentResolver();
 		
-		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = SavedStoriesItemListFragment.newInstance();
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
@@ -53,14 +50,8 @@ public class SavedStoriesItemsList extends ItemsList {
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
@@ -85,9 +76,6 @@ public class SavedStoriesItemsList extends ItemsList {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return false;
 	}
-
-	@Override
-	public void closeAfterUpdate() { }
 
     // Note: the following four methods are required by our parent spec but are not
     // relevant since saved stories have no read/unread status nor ordering.

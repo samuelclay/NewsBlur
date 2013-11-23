@@ -234,4 +234,9 @@ public class PrefsUtils {
     private static ReadFilter getDefaultReadFilter(SharedPreferences prefs) {
         return ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString()));
     }
+
+    public static boolean showPublicComments(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true);
+    }
 }

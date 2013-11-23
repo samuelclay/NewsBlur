@@ -5,7 +5,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = true;
+    public static final boolean VERBOSE_LOG = false;
 
 	public static final int STATE_ALL = 0;
 	public static final int STATE_SOME = 1;
@@ -16,7 +16,6 @@ public class AppConstants {
 	public static final int REGISTRATION_COMPLETED = 1;
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
-	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
 	public static final float FONT_SIZE_LOWER_BOUND = 0.7f;
 	public static final float FONT_SIZE_INCREMENT_FACTOR = 8;
 	

@@ -17,6 +17,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         activityLabel = nil;
         faviconView = nil;
+        self.separatorInset = UIEdgeInsetsMake(0, 52, 0, 0);
         
         // create favicon and label in view
         UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -42,25 +43,26 @@
     [super layoutSubviews];
     
     // determine outer bounds
-    CGRect contentRect = self.contentView.bounds;
+    [self.activityLabel sizeToFit];
+    CGRect contentRect = self.frame;
+    CGRect labelFrame = self.activityLabel.frame;
     
     // position avatar to bounds
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
     // position label to bounds
-    CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
-    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
-    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
-    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
-    self.activityLabel.frame = labelRect;
+    labelFrame.origin.x = leftMargin*2 + avatarSize;
+    labelFrame.origin.y = topMargin - 1;
+    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
+    labelFrame.size.height = contentRect.size.height - topMargin - bottomMargin;
+    self.activityLabel.frame = labelFrame;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xd7dadf);
     } else {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);
     }
     self.activityLabel.backgroundColor = [UIColor clearColor];
-    [self.activityLabel sizeToFit];
 }
 
 @end

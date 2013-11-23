@@ -50,7 +50,6 @@ public class SyncService extends IntentService {
         STATUS_RUNNING,
         STATUS_FINISHED,
         STATUS_NO_MORE_UPDATES,
-        STATUS_FINISHED_CLOSE,
         NOT_RUNNING,
         STATUS_PARTIAL_PROGRESS,
     };
@@ -146,7 +145,7 @@ public class SyncService extends IntentService {
 
 			case STARRED_STORIES_UPDATE:
                 StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-                if (starredStories == null && starredStories.stories.length == 0) {
+                if (starredStories == null || starredStories.stories.length == 0) {
                     resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
                 }
 				break;

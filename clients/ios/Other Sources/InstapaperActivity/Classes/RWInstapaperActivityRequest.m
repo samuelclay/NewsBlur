@@ -109,7 +109,7 @@
 	DLog(@"%@", responseString);
     self.responseMutableData    = nil;
     self.connection             = nil;
-	
+	    
     if ([responseString compare:RESPONSE_SUCCESS] == NSOrderedSame) {
         if ([self.delegate respondsToSelector:@selector(instapaperAddRequestSucceded:)])
             [self.delegate instapaperAddRequestSucceded:self];

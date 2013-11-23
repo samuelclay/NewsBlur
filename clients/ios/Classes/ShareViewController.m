@@ -25,6 +25,8 @@
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
+@synthesize activeCommentId;
+@synthesize activeStoryId;
 @synthesize currentType;
 @synthesize storyTitle;
 
@@ -177,6 +179,8 @@
     self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
     self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
     self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
+    
+    [self onTextChange:nil];
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -267,7 +271,14 @@
         appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
-        self.commentField.text = @"";
+        // Don't bother to reset comment field for replies while on the same story.
+        // It'll get cleared out on a new story and when posting a reply.
+        if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId] ||
+            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+            self.activeCommentId = userId;
+            self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];
+            self.commentField.text = @"";
+        }
     } else if ([type isEqualToString: @"edit-share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
@@ -276,7 +287,7 @@
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
-        [submitButton setTitle:@"Save your comments"];
+        [submitButton setTitle:@"Share with comments"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
@@ -327,9 +338,10 @@
     }
     
     if (appDelegate.isSocialRiverView) {
-        if ([appDelegate.activeStory objectForKey:@"friend_user_ids"] != nil) {
-            NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [[appDelegate.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0]];
-            [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+        if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
+            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
+        } else if ([[appDelegate.activeStory objectForKey:@"public_user_ids"] count] > 0) {
+            [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"public_user_ids"][0]] forKey:@"source_user_id"];
         }
     } else {
         if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
@@ -367,8 +379,8 @@
     appDelegate.activeFeedUserProfiles = [DataUtilities 
                                           updateUserProfiles:appDelegate.activeFeedUserProfiles 
                                           withNewUserProfiles:userProfiles];
-    [appDelegate.feedDetailViewController redrawUnreadStory];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
 }
 
 # pragma mark
@@ -403,7 +415,7 @@
     [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
-    [appDelegate hideShareView:YES];
+    [appDelegate hideShareView:NO];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -465,7 +477,6 @@
     [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
-
 }
 
 
@@ -478,8 +489,8 @@
 
 -(void)onTextChange:(NSNotification*)notification {
     NSString *text = self.commentField.text;
-    if ([self.submitButton.title isEqualToString:@"Share this story"] || 
-        [self.submitButton.title isEqualToString:@"Share with comments"]) {
+    if ([self.currentType isEqualToString: @"share"] ||
+        [self.currentType isEqualToString:@"edit-share"]) {
         if (text.length) {
             self.submitButton.title = @"Share with comments";
         } else {

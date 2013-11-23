@@ -75,6 +75,7 @@
     MoveSiteViewController *moveSiteViewController;
     TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
+    UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
     
@@ -155,6 +156,7 @@
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
+@property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
@@ -258,7 +260,7 @@
 - (void)setupReachability;
 
 // social
-- (NSDictionary *)getUser:(int)userId;
+- (NSDictionary *)getUser:(NSInteger)userId;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
@@ -267,6 +269,7 @@
 
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
@@ -294,17 +297,18 @@
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
 
-- (int)indexOfNextUnreadStory;
-- (int)locationOfNextUnreadStory;
-- (int)indexOfNextStory;
-- (int)locationOfNextStory;
-- (int)indexOfActiveStory;
-- (int)indexOfStoryId:(id)storyId;
-- (int)locationOfActiveStory;
-- (int)indexFromLocation:(int)location;
+- (BOOL)isStoryUnread:(NSDictionary *)story;
+- (NSInteger)indexOfNextUnreadStory;
+- (NSInteger)locationOfNextUnreadStory;
+- (NSInteger)indexOfNextStory;
+- (NSInteger)locationOfNextStory;
+- (NSInteger)indexOfActiveStory;
+- (NSInteger)indexOfStoryId:(id)storyId;
+- (NSInteger)locationOfActiveStory;
+- (NSInteger)indexFromLocation:(NSInteger)location;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
-- (int)locationOfStoryId:(id)storyId;
+- (NSInteger)locationOfStoryId:(id)storyId;
 - (NSString *)activeOrder;
 - (NSString *)activeReadFilter;
 
@@ -314,10 +318,10 @@
 - (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 
 - (void)populateDictUnreadCounts;
-- (int)unreadCount;
-- (int)allUnreadCount;
-- (int)unreadCountForFeed:(NSString *)feedId;
-- (int)unreadCountForFolder:(NSString *)folderName;
+- (NSInteger)unreadCount;
+- (NSInteger)allUnreadCount;
+- (NSInteger)unreadCountForFeed:(NSString *)feedId;
+- (NSInteger)unreadCountForFolder:(NSString *)folderName;
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
@@ -327,12 +331,19 @@
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
-- (void)markActiveStorySaved:(BOOL)saved;
-- (void)markActiveFeedAllRead;
+
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
+- (void)markFeedReadInCache:(NSArray *)feedIds;
+- (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff;
+- (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
+- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
+- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
+
+- (void)markStory:story asSaved:(BOOL)saved;
+
 - (void)calculateStoryLocations;
-+ (int)computeStoryScore:(NSDictionary *)intelligence;
++ (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
@@ -341,15 +352,14 @@
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
-- (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
-- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 - (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
-- (int)databaseSchemaVersion:(FMDatabase *)db;
+- (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
 - (void)setupDatabase:(FMDatabase *)db;
 - (void)cancelOfflineQueue;
@@ -359,9 +369,11 @@
 - (BOOL)isReachabileForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
+- (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
+- (void)cleanImageCache;
 - (void)deleteAllCachedImages;
 
 @end

@@ -20,7 +20,6 @@ def getServerStatus():
     user = os.environ.get("user")
     password = os.environ.get("password")
     if user and password:
-        print user,password
         passwdmngr = urllib2.HTTPPasswordMgrWithDefaultRealm()
         passwdmngr.add_password(None, 'http://%s:%d' % (host, port), user, password)
         authhandler = urllib2.HTTPDigestAuthHandler(passwdmngr)
@@ -30,7 +29,7 @@ def getServerStatus():
     return json.loads( raw )["serverStatus"]
 
 def get():
-    return getServerStatus()["indexCounters"]["btree"]
+    return getServerStatus()["indexCounters"]
 
 def doData():
     for k,v in get().iteritems():

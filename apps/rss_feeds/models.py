@@ -100,7 +100,10 @@ class Feed(models.Model):
     
     @property
     def title(self):
-        return self.feed_title or "[Untitled]"
+        title = self.feed_title or "[Untitled]"
+        if self.active_premium_subscribers >= 1:
+            title = "%s*" % title[:29]
+        return title
     
     @property
     def permalink(self):
@@ -128,7 +131,14 @@ class Feed(models.Model):
     @property
     def s3_icons_key(self):
         return "%s.png" % self.pk
-        
+    
+    @property
+    def unread_cutoff(self):
+        if self.active_premium_subscribers > 0:
+            return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
+        return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
@@ -242,10 +252,10 @@ class Feed(models.Model):
         # if not r2:
             # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
-        r.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        # r2.expire('F:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        r.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
-        # r2.expire('zF:%s' % self.pk, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+        r.expire('F:%s' % self.pk, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        # r2.expire('F:%s' % self.pk, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        r.expire('zF:%s' % self.pk, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        # r2.expire('zF:%s' % self.pk, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
@@ -902,6 +912,7 @@ class Feed(models.Model):
                 story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
+            replace_story_date = False
             
             try:
                 existing_story, story_has_changed = _1(story, story_content, existing_stories)
@@ -983,7 +994,8 @@ class Feed(models.Model):
                 existing_story.story_tags = story_tags
                 # Do not allow publishers to change the story date once a story is published.
                 # Leads to incorrect unread story counts.
-                # existing_story.story_date = story.get('published') # No, don't
+                if replace_story_date:
+                    existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
                 
                 try:
@@ -1071,7 +1083,7 @@ class Feed(models.Model):
     @classmethod
     def trim_old_stories(cls, start=0, verbose=True, dryrun=False):
         now = datetime.datetime.now()
-        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         feed_count = Feed.objects.latest('pk').pk
         total = 0
         for feed_id in xrange(start, feed_count):
@@ -1795,19 +1807,19 @@ class MStory(mongo.Document):
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # if not r2:
             # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
 
         if self.id and self.story_date > UNREAD_CUTOFF:
             feed_key = 'F:%s' % self.story_feed_id
             r.sadd(feed_key, self.story_hash)
-            r.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            r.expire(feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
             # r2.sadd(feed_key, self.story_hash)
-            # r2.expire(feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.expire(feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
             
             r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            r.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            r.expire('z' + feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
             # r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
-            # r2.expire('z' + feed_key, settings.DAYS_OF_UNREAD_NEW*24*60*60)
+            # r2.expire('z' + feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     def remove_from_redis(self, r=None):
         if not r:
@@ -1824,7 +1836,7 @@ class MStory(mongo.Document):
     def sync_feed_redis(cls, story_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_NEW)
+        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=UNREAD_CUTOFF)
         r.delete('F:%s' % story_feed_id)
@@ -1967,7 +1979,7 @@ class MStarredStory(mongo.Document):
         return stories
 
     @classmethod
-    def trim_old_stories(cls, stories=10, days=30, dryrun=False):
+    def trim_old_stories(cls, stories=10, days=60, dryrun=False):
         print " ---> Fetching starred story counts..."
         stats = settings.MONGODB.newsblur.starred_stories.aggregate([{
             "$group": {

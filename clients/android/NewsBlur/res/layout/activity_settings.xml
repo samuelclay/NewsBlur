@@ -19,4 +19,13 @@
             android:defaultValue="@string/default_read_filter_value" />
 
     </PreferenceCategory>
+    <PreferenceCategory 
+        android:title="@string/settings_social">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_public_comments"
+            android:title="@string/settings_show_public_comments" >
+        </CheckBoxPreference>
+        
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -167,12 +167,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int activitesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitesCount = [appDelegate.userActivitiesArray count];
     return activitesCount + 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-    int activitiesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     int minimumHeight;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
@@ -193,9 +193,9 @@
     
     NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
     [userProfile setValue:@"You" forKey:@"username"];
-    
-    int height = [activityCell setActivity:[appDelegate.userActivitiesArray 
-                                            objectAtIndex:(indexPath.row)] 
+    NSDictionary *activity = [appDelegate.userActivitiesArray
+                              objectAtIndex:(indexPath.row)];
+    int height = [activityCell setActivity:activity
                            withUserProfile:userProfile
                                  withWidth:self.frame.size.width - 20];
     return height;
@@ -220,13 +220,17 @@
         // add in loading cell
         return [self makeLoadingCell];
     } else {
-
         NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
         [userProfile setValue:@"You" forKey:@"username"];
         
-        NSDictionary *activitiy = [appDelegate.userActivitiesArray 
+        NSDictionary *activity = [appDelegate.userActivitiesArray
                                    objectAtIndex:(indexPath.row)];
-        NSString *category = [activitiy objectForKey:@"category"];
+
+        [cell setActivity:activity
+          withUserProfile:userProfile
+                withWidth:self.frame.size.width - 20];
+        
+        NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
             cell.accessoryType = UITableViewCellAccessoryNone;
         } else if ([category isEqualToString:@"signup"]){
@@ -239,17 +243,13 @@
         UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         cell.selectedBackgroundView = myBackView;
-
-        // update the cell information
-        [cell setActivity: activitiy
-          withUserProfile:userProfile
-                withWidth:self.frame.size.width - 20];
     }
+    
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int activitiesCount = [appDelegate.userActivitiesArray count];
+    NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row < activitiesCount) {
         NSDictionary *activity = [appDelegate.userActivitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];

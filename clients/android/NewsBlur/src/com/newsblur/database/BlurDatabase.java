@@ -11,7 +11,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	private final String TEXT = " text";
 	private final String INTEGER = " integer";
 	public final static String DB_NAME = "blur.db";
-	private final static int VERSION = 1;
+	private final static int VERSION = 2;
 
 	public BlurDatabase(Context context) {
 		super(context, DB_NAME, null, VERSION);
@@ -44,7 +44,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	private final String USER_SQL = "CREATE TABLE " + DatabaseConstants.USER_TABLE + " (" + 
 		DatabaseConstants.USER_PHOTO_URL + TEXT + ", " + 
 		DatabaseConstants.USER_USERID + INTEGER + " PRIMARY KEY, " +
-		DatabaseConstants.USER_USERNAME + TEXT + ")";
+		DatabaseConstants.USER_USERNAME + TEXT + ", " +
+        DatabaseConstants.USER_LOCATION + TEXT + ")";
 	
 	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_TABLE + " (" +
 		DatabaseConstants.SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
@@ -107,6 +108,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_TAGS + TEXT + ", " +
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
 		DatabaseConstants.STORY_READ + INTEGER + ", " +
+		DatabaseConstants.STORY_STARRED + INTEGER + ", " +
 		DatabaseConstants.STORY_TITLE + TEXT;
 
 	private final String STORY_SQL = "CREATE TABLE " + DatabaseConstants.STORY_TABLE + " (" + STORY_TABLES_COLS + ")";

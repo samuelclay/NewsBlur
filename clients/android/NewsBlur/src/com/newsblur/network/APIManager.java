@@ -42,6 +42,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.util.AppConstants;
@@ -135,6 +136,14 @@ public class APIManager {
 		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_STARRED, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
+	
+    public NewsBlurResponse markStoryAsUnstarred(final String feedId, final String storyId) {
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = post(APIConstants.URL_MARK_STORY_AS_UNSTARRED, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+	}
 
     public NewsBlurResponse markStoryAsUnread( String feedId, String storyId ) {
 		final ValueMultimap values = new ValueMultimap();
@@ -167,7 +176,7 @@ public class APIManager {
 			CookieSyncManager.createInstance(context.getApplicationContext());
 			CookieManager cookieManager = CookieManager.getInstance();
 
-			cookieManager.setCookie(".newsblur.com", response.getCookie());
+			cookieManager.setCookie(APIConstants.COOKIE_DOMAIN, response.getCookie());
 			CookieSyncManager.getInstance().sync();
 		}
         return registerResponse;
@@ -597,6 +606,19 @@ public class APIManager {
 		if (!response.isError()) {
 			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
 			return profileResponse;
+		} else {
+			return null;
+		}
+	}
+
+	public StoryTextResponse getStoryText(String feedId, String storyId) {
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = get(APIConstants.URL_STORY_TEXT, values);
+		if (!response.isError()) {
+			StoryTextResponse storyTextResponse = (StoryTextResponse) response.getResponse(gson, StoryTextResponse.class);
+			return storyTextResponse;
 		} else {
 			return null;
 		}

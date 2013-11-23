@@ -18,14 +18,10 @@
 
 @class IASKSlider;
 
-@interface IASKPSSliderSpecifierViewCell : UITableViewCell {
-    IASKSlider *_slider;
-    UIImageView *_minImage;
-    UIImageView *_maxImage;
-}
+@interface IASKPSSliderSpecifierViewCell : UITableViewCell
 
-@property (nonatomic, assign) IASKSlider *slider;
-@property (nonatomic, assign) UIImageView *minImage;
-@property (nonatomic, assign) UIImageView *maxImage;
+@property (nonatomic, strong) IASKSlider *slider;
+@property (nonatomic, strong) UIImageView *minImage;
+@property (nonatomic, strong) UIImageView *maxImage;
 
 @end

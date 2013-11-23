@@ -154,7 +154,9 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	public void updateAfterSync() {
 		folderFeedList.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
-		menu.findItem(R.id.menu_refresh).setEnabled(true);
+        
+        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+        if (refreshItem != null) refreshItem.setEnabled(true);
 	}
 
     /**
@@ -181,8 +183,4 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	@Override
 	public void setNothingMoreToUpdate() { }
 
-	@Override
-	public void closeAfterUpdate() {
-		updateAfterSync();
-	}			
 }

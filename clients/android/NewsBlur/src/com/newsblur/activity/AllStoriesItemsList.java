@@ -45,12 +45,12 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		resolver = getContentResolver();
 		
 
-		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
 			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
 
@@ -58,14 +58,8 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerRefresh(1);
 		}
-	}
-
-
-	@Override
-	public void triggerRefresh() {
-		triggerRefresh(1);
 	}
 
 	@Override
@@ -113,10 +107,6 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 		inflater.inflate(R.menu.allstories_itemslist, menu);
 		return true;
 	}
-
-	@Override
-	public void closeAfterUpdate() { }
-
 
     @Override
     protected StoryOrder getStoryOrder() {

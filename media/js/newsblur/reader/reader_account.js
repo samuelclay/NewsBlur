@@ -20,6 +20,9 @@ NEWSBLUR.ReaderAccount.prototype.constructor = NEWSBLUR.ReaderAccount;
 _.extend(NEWSBLUR.ReaderAccount.prototype, {
     
     runner: function() {
+        this.options.onOpen = _.bind(function() {
+            // $(window).resize();
+        }, this);
         this.make_modal();
         this.open_modal();
 

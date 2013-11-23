@@ -10,6 +10,8 @@
 
 @implementation TransparentToolbar
 
+@synthesize onRightSide;
+
 // Override draw rect to avoid
 // background coloring
 - (void)drawRect:(CGRect)rect {
@@ -39,6 +41,22 @@
     self = [super initWithFrame:frame];
     [self applyTranslucentBackground];
     return self;
+}
+
+- (UIEdgeInsets)alignmentRectInsets {
+    UIEdgeInsets insets;
+    if (self.keepSpacing) return UIEdgeInsetsZero;
+    
+    if (![self isLeftButton] || self.onRightSide) {
+        insets = UIEdgeInsetsMake(0, 0, 0, 9.0f);
+    } else {
+        insets = UIEdgeInsetsMake(0, 9.0f, 0, 0);
+    }
+    return insets;
+}
+
+- (BOOL)isLeftButton {
+    return self.frame.origin.x < (self.window.frame.size.width / 2);
 }
 
 @end

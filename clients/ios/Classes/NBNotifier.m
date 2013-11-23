@@ -195,6 +195,9 @@
 
 - (void)showIn:(float)time {
     showing = YES;
+    CGRect frame = self.frame;
+    frame.size.width = self.view.frame.size.width;
+    self.frame = frame;
     
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:time];

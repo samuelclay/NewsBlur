@@ -35,8 +35,6 @@ import com.newsblur.view.FeedItemViewBinder;
 
 public class FolderItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
-	private static final String TAG = "itemListFragment";
-	public static final String FRAGMENT_TAG = "itemListFragment";
 	private ContentResolver contentResolver;
 	private String[] feedIds;
 	private MultipleFeedItemsAdapter adapter;
@@ -143,7 +141,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
-		startActivityForResult(i, READING_RETURNED );
+		startActivity(i);
 	}
 
 	public void changeState(int state) {
