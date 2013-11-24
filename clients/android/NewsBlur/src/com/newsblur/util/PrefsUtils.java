@@ -239,4 +239,16 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true);
     }
+    
+    public static float getTextSize(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
+    }
+
+    public static void setTextSize(Context context, float size) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size);
+        editor.commit();
+    }
 }
