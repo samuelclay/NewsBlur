@@ -50,9 +50,12 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
+
             // for our first sync, don't just trigger a heavyweight refresh, do it in two steps
             // so the UI appears more quickly (per the docs at newsblur.com/api)
-			triggerFirstSync();
+            if (PrefsUtils.isTimeToAutoSync(this)) {
+                triggerFirstSync();
+            }
 		}
 	}
 
