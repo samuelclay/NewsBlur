@@ -23,16 +23,9 @@ public class FeedReadingAdapter extends ReadingAdapter {
 	}
 
 	@Override
-	public Fragment getItem(int position)  {
-		if (stories == null || stories.getCount() == 0) {
-			loadingFragment = new LoadingFragment();
-			return loadingFragment;
-		} else {
-			stories.moveToPosition(position);
-			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false);
-		}
+	protected Fragment getReadingItemFragment(int position) {
+        stories.moveToPosition(position);
+        return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false);
 	}
-	
-	
 
 }
