@@ -287,14 +287,16 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
             startActivity(i);
             return true;
         } else {
-			String groupName = folderAdapter.getGroupName(groupPosition);
-			if (list.isGroupExpanded(groupPosition)) {
-				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
-			} else {
-				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
-			}
+            if ((group != null) && (group.findViewById(R.id.row_foldersums) != null)) {
+                String groupName = folderAdapter.getGroupName(groupPosition);
+                if (list.isGroupExpanded(groupPosition)) {
+                    group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
+                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
+                } else {
+                    group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
+                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
+                }
+            }
 			return false;
 		}
 	}
