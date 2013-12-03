@@ -94,9 +94,13 @@ def feed_autocomplete(request):
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
     
     query_params = query.split(' ')
-    while len(query_params):
+    tries_left = 5
+    while len(query_params) and tries_left:
+        tries_left -= 1
         feed_ids = Feed.autocomplete(' '.join(query_params))
-        if not feed_ids:
+        if feed_ids:
+            break
+        else:
             query_params = query_params[:-1]
     
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
