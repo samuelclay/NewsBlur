@@ -254,8 +254,7 @@ static NSMutableDictionary *imageCache;
 
 + (NSString *)suffixForDayInDate:(NSDate *)date {
     NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] components:NSDayCalendarUnit fromDate:date] day];
-    if (day == 11) {
-    if (day == 11 || day == 12) {
+    if (day == 11 || day == 12 || day == 13) {
         return @"th";
     } else if (day % 10 == 1) {
         return @"st";
