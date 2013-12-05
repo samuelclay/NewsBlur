@@ -169,7 +169,7 @@ class UserSubscription(models.Model):
         return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False,
-                    hashes_only=False, cutoff_date=None):
+                    hashes_only=False, cutoff_date=None, default_cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         ignore_user_stories = False
@@ -207,6 +207,8 @@ class UserSubscription(models.Model):
         if not cutoff_date:
             if read_filter == "unread":
                 cutoff_date = self.mark_read_date
+            elif default_cutoff_date:
+                cutoff_date = default_cutoff_date
             else:
                 cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
