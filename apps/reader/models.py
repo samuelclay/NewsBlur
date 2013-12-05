@@ -205,21 +205,24 @@ class UserSubscription(models.Model):
         
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            if read_filter == "unread":
+                cutoff_date = self.mark_read_date
+            else:
+                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if order == 'oldest':
             byscorefunc = rt.zrangebyscore
             if read_filter == 'unread':
-                min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+                min_score = int(time.mktime(cutoff_date.timetuple())) + 1
             else:
-                min_score = int(time.mktime(cutoff_date.timetuple()))-1000
+                min_score = int(time.mktime(cutoff_date.timetuple())) - 1000
             max_score = current_time
         else:
             byscorefunc = rt.zrevrangebyscore
             min_score = current_time
             if read_filter == 'unread':
                 # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-                max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+                max_score = int(time.mktime(cutoff_date.timetuple())) + 1
             else:
                 max_score = 0
                 
@@ -494,6 +497,20 @@ class UserSubscription(models.Model):
         self.save()
         
         return True
+        
+    def mark_newer_stories_read(self, cutoff_date):
+        if (self.unread_count_negative == 0
+            and self.unread_count_neutral == 0
+            and self.unread_count_positive == 0
+            and not self.needs_unread_recalc):
+            return
+        
+        cutoff_date = cutoff_date - datetime.timedelta(seconds=1)
+        story_hashes = self.get_stories(limit=500, order="newest", cutoff_date=cutoff_date,
+                                        read_filter="unread", hashes_only=True)
+        data = self.mark_story_ids_as_read(story_hashes)
+        return data
+        
         
     def mark_story_ids_as_read(self, story_hashes, request=None):
         data = dict(code=0, payload=story_hashes)

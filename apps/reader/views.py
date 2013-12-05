@@ -1293,6 +1293,7 @@ def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
     cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
+    direction = request.REQUEST.get('direction', 'older')
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
@@ -1323,7 +1324,10 @@ def mark_feed_as_read(request):
             continue
         
         try:
-            marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            if direction == "older":
+                marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            else:
+                marked_read = sub.mark_newer_stories_read(cutoff_date=cutoff_date)
             if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError, e:
