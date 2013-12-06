@@ -804,6 +804,11 @@ class RUserStory:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
+        
+        key = 'lRS:%s' % user_id
+        r.lpush(key, story_hash)
+        r.ltrim(key, 0, 100)
+        r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     @staticmethod
     def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None):
@@ -825,12 +830,21 @@ class RUserStory:
             for social_user_id in friends_with_shares:
                 h.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
                 # h2.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
-    
+        
+        key = 'lRS:%s' % user_id
+        r.lrem(key, story_hash)
+        
     @staticmethod
     def get_stories(user_id, feed_id, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         story_hashes = r.smembers("RS:%s:%s" % (user_id, feed_id))
+        return story_hashes
+    
+    @staticmethod
+    def get_read_stories(user_id, offset=0, limit=12):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        story_hashes = r.lrange("lRS:%s" % user_id, offset, offset+limit)
         return story_hashes
         
     @classmethod

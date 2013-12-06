@@ -1389,6 +1389,15 @@ background: transparent;
     left: 12px;
     top: 10px;
 }
+.NB-feedbar .NB-folder .NB-read-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background-size: 8px;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 12px;
+    top: 10px;
+}
 
 .NB-feedbar .folder ul.folder,
 .NB-feedbar .folder .NB-feedlist-collapse-icon,
@@ -3490,6 +3499,7 @@ background: transparent;
 .NB-feeds-header-river-container .NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
+.NB-feeds-header-read.NB-feeds-header,
 .NB-feeds-header-starred.NB-feeds-header {
     border-top: 1px solid #B7BBAA;
 }
@@ -3515,6 +3525,25 @@ background: transparent;
 }
 
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
+  display: none;
+}
+
+/* ========================= */
+/* = Header - Read Stories = */
+/* ========================= */
+
+.NB-feeds-header-read-container {
+    display: block;
+}
+.NB-feeds-header-read {
+    display: block;
+}
+.NB-feeds-header-read .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
+    background-size: 8px;
+}
+
+.NB-feeds-header-read.NB-empty .NB-feeds-header-count {
   display: none;
 }
 

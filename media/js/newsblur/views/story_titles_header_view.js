@@ -32,12 +32,24 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         
-        if (NEWSBLUR.reader.active_feed == 'starred') {
+        if (NEWSBLUR.reader.active_feed == "starred") {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-starred-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <div class="folder_title_text">Saved Stories</div>\
+                </div>\
+            ', {}));
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            $view.prepend(this.search_view.$el);
+        } else if (NEWSBLUR.reader.active_feed == "read") {
+            $view = $(_.template('\
+                <div class="NB-folder NB-no-hover">\
+                    <div class="NB-read-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="folder_title_text">Read Stories</div>\
                 </div>\
             ', {}));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
