@@ -631,7 +631,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 @Override
                 protected void onPostExecute(StoryTextResponse result) {
                     ReadingItemFragment item = getReadingFragment();
-                    if (item != null) item.setCustomWebview(result.originalText);
+                    if ((item != null) && (result != null) && (result.originalText != null)) {
+                        item.setCustomWebview(result.originalText);
+                    }
                     enableProgressCircle(overlayProgressLeft, false);
                 }
             }.execute();

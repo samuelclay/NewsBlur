@@ -13,7 +13,6 @@ import com.newsblur.fragment.LoadingFragment;
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
-	protected LoadingFragment loadingFragment;
 	
 	public ReadingAdapter(FragmentManager fm, Cursor stories) {
 		super(fm);
@@ -21,7 +20,15 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	}
 	
 	@Override
-	public abstract Fragment getItem(int position);
+	public Fragment getItem(int position) {
+		if (stories == null || stories.getCount() == 0 || position >= stories.getCount()) {
+			return new LoadingFragment();
+        } else {
+            return getReadingItemFragment(position);
+        }
+    }
+        
+	protected abstract Fragment getReadingItemFragment(int position);
 	
 	@Override
 	public int getCount() {
