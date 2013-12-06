@@ -88,11 +88,22 @@ def feed_autocomplete(request):
             if not parts.hostname and not query.startswith('http'):
                 parts = urlparse('http://%s' % query)
             if parts.hostname:
-                query = parts.hostname
+                query = [parts.hostname]
+                query.extend([p for p in parts.path.split('/') if p])
+                query = ' '.join(query)
         except:
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
-        
-    feed_ids = Feed.autocomplete(query)
+    
+    query_params = query.split(' ')
+    tries_left = 5
+    while len(query_params) and tries_left:
+        tries_left -= 1
+        feed_ids = Feed.autocomplete(' '.join(query_params))
+        if feed_ids:
+            break
+        else:
+            query_params = query_params[:-1]
+    
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     if format == 'autocomplete':

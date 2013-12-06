@@ -213,6 +213,11 @@ NEWSBLUR.utils = {
     },
     
     days_back_to_timestamp: function(days_back) {
+        if (days_back > 365) {
+            // It's a timestamp, not the number of days back
+            return days_back;
+        }
+        
         days_back = days_back || 0;
         var now = Math.round((new Date()).getTime() / 1000);
 

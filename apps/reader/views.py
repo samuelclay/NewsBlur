@@ -548,7 +548,7 @@ def load_single_feed(request, feed_id):
             message = "You must be a premium subscriber to search."
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
-                                      cutoff_date=user.profile.unread_cutoff)
+                                      default_cutoff_date=user.profile.unread_cutoff)
     else:
         stories = feed.get_stories(offset, limit)
     
@@ -1019,7 +1019,7 @@ def unread_story_hashes__old(request):
         unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
                                                            withscores=include_timestamps,
                                                            hashes_only=True,
-                                                           cutoff_date=user.profile.unread_cutoff)
+                                                           default_cutoff_date=user.profile.unread_cutoff)
         story_hash_count += len(unread_feed_story_hashes[feed_id])
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
@@ -1293,6 +1293,7 @@ def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.REQUEST.getlist('feed_id')
     cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
+    direction = request.REQUEST.get('direction', 'older')
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
@@ -1323,7 +1324,10 @@ def mark_feed_as_read(request):
             continue
         
         try:
-            marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            if direction == "older":
+                marked_read = sub.mark_feed_read(cutoff_date=cutoff_date)
+            else:
+                marked_read = sub.mark_newer_stories_read(cutoff_date=cutoff_date)
             if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
         except IntegrityError, e:
