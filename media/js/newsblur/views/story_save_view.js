@@ -62,7 +62,6 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var feed_id = this.model.get('story_feed_id');
         var $sideoption = this.$('.NB-sideoption.NB-feed-story-save');
         var $save_wrapper = this.$('.NB-sideoption-save-wrapper');
-        var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
         var $tag_input = this.$('.NB-sideoption-save-tag');
         
         if (options.close || !this.model.get('starred')) {
@@ -178,11 +177,10 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var comments_height     = $story_comments.height();
         var left_height         = content_height + comments_height;
         var original_height     = $story_content.data('original_height') || content_height;
-        
         if (!NEWSBLUR.reader.flags.narrow_content &&
-            !options.close && new_sideoptions_height >= original_height) {
+            !options.close && !options.force && new_sideoptions_height >= original_height) {
             // Sideoptions too big, embiggen left side
-            $story_content.animate({
+            $story_content.stop(true, true).animate({
                 'height': new_sideoptions_height
             }, {
                 'duration': 350,
@@ -200,7 +198,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         } else if (!NEWSBLUR.reader.flags.narrow_content) {
             // Content is bigger, move content back to normal
             if ($story_content.data('original_height') && !this.sideoptions_view.share_view.is_open) {
-                $story_content.animate({
+                $story_content.stop(true, true).animate({
                     'height': $story_content.data('original_height')
                 }, {
                     'duration': 300,
@@ -220,6 +218,16 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
+    },
+    
+    reset_height: function() {
+        var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
+
+        // Reset story content height to get an accurate height measurement.
+        $story_content.stop(true, true).css('height', 'auto');
+        $story_content.removeData('original_height');
+        
+        this.resize();
     },
     
     save_tags: function() {

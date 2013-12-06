@@ -101,6 +101,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
+    resize_starred_tags: function() {
+        if (this.model.get('starred')) {
+            this.save_view.reset_height();
+        }
+    },
+    
     render_header: function(model, value, options) {
         var params = this.get_render_params();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
@@ -416,6 +422,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     watch_images_for_story_height: function() {
+        this.model.on('change:images_loaded', _.bind(function() {
+            this.resize_starred_tags();
+        }, this));
+        
         if (!this.is_truncatable()) return;
         
         this.truncate_delay = 100;
