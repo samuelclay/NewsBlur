@@ -1796,7 +1796,7 @@ heightForHeaderInSection:(NSInteger)section {
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
-                                             objectForKey:@"photo_url"]]];
+                                             objectForKey:@"large_photo_url"]]];
     userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
                                                   target:self
                                                   action:@selector(showUserProfile)];
@@ -1806,8 +1806,10 @@ heightForHeaderInSection:(NSInteger)section {
     [avatarRequest setHTTPShouldHandleCookies:NO];
     [avatarRequest setHTTPShouldUsePipelining:YES];
     UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+    CGSize avatarSize = avatarImageView.frame.size;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        image = [Utilities roundCorneredImage:image radius:3];
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
+        image = [Utilities roundCorneredImage:image radius:6];
         [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
     } failure:nil];
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;

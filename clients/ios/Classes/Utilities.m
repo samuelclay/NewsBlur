@@ -141,6 +141,14 @@ static NSMutableDictionary *imageCache;
     return result;
 }
 
++ (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return destImage;
+}
+
 + (NSString *)md5:(NSString *)string {
     const char *cStr = [string UTF8String];
     unsigned char result[16];
