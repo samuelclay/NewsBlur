@@ -184,7 +184,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {

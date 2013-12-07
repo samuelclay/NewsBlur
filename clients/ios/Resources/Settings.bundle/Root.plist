@@ -312,9 +312,31 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Comments</string>
+			<string>Reading Stories</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Every other view uses a left edge swipe to return to the previous screen. But the story detail view has this option because you may wish to traverse stories and not accidentally jump to the previous screen.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe left edge</string>
+			<key>Titles</key>
+			<array>
+				<string>Go back to story list</string>
+				<string>Previous story</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>pop_to_story_list</string>
+			<key>Values</key>
+			<array>
+				<string>pop_to_story_list</string>
+				<string>previous_story</string>
+			</array>
+			<key>Key</key>
+			<string>story_detail_swipe_left_edge</string>
 		</dict>
 		<dict>
 			<key>Type</key>
