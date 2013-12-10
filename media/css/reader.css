@@ -1587,10 +1587,13 @@ background: transparent;
     text-decoration: none;
     color: #272727;
     display: block;
-    padding: 5px 0px 4px;
+    padding: 5px 4px 4px;
     float: left;
     position: relative;
     width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 #story_titles .NB-story-title.read a.story_title {
     color: #575757;
