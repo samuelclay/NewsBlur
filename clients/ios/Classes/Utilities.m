@@ -43,7 +43,8 @@ static NSMutableDictionary *imageCache;
     
     // Save image to memory-based cache, for performance when reading.
 //    NSLog(@"Saving %@", [imageCache allKeys]);
-    if (image && [filename class] != [NSNull class]) {
+    if (image && filename && ![image isKindOfClass:[NSNull class]] &&
+        [filename class] != [NSNull class]) {
         [imageCache setObject:image forKey:filename];
     } else {
 //        NSLog(@"%@ has no image!!!", filename);

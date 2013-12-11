@@ -487,47 +487,54 @@
 }
 
 - (void)transitionToFeedDetail {
+    [self transitionToFeedDetail:YES];
+}
+- (void)transitionToFeedDetail:(BOOL)resetLayout {
     [self hidePopover];
     self.feedDetailIsVisible = YES;
-    CGRect vb = [self.view bounds];
     
-    // adding feedDetailViewController 
-    [self addChildViewController:self.feedDetailViewController];
-    [self.view addSubview:self.feedDetailViewController.view];
-    [self.feedDetailViewController didMoveToParentViewController:self];
-    
-    // adding storyDetailViewController
-    [self addChildViewController:self.storyNavigationController];
-    [self.view addSubview:self.storyNavigationController.view];
-    [self.storyNavigationController didMoveToParentViewController:self];
-    
-    // reset the storyDetailViewController components
-    self.storyPageControl.currentPage.webView.hidden = YES;
-    self.storyPageControl.nextPage.webView.hidden = YES;
-    self.storyPageControl.bottomSize.hidden = NO;
-    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
-    [self.storyPageControl hidePages];
-    NSInteger unreadCount = appDelegate.unreadCount;
-    if (unreadCount == 0) {
-        self.storyPageControl.circularProgressView.percentage = 1;
-    } else {
-        self.storyPageControl.circularProgressView.percentage = 0;
+    if (resetLayout) {
+        // adding feedDetailViewController
+    //    [self addChildViewController:self.feedDetailViewController];
+        [self.view addSubview:self.feedDetailViewController.view];
+        [self.feedDetailViewController didMoveToParentViewController:self];
+        
+        // adding storyDetailViewController
+    //    [self addChildViewController:self.storyNavigationController];
+        [self.view addSubview:self.storyNavigationController.view];
+        [self.storyNavigationController didMoveToParentViewController:self];
+        
+        // reset the storyDetailViewController components
+        self.storyPageControl.currentPage.webView.hidden = YES;
+        self.storyPageControl.nextPage.webView.hidden = YES;
+        self.storyPageControl.bottomSize.hidden = NO;
+        self.storyPageControl.navigationItem.rightBarButtonItems = nil;
+        [self.storyPageControl hidePages];
+        NSInteger unreadCount = appDelegate.unreadCount;
+        if (unreadCount == 0) {
+            self.storyPageControl.circularProgressView.percentage = 1;
+        } else {
+            self.storyPageControl.circularProgressView.percentage = 0;
+        }
+
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        self.storyPageControl.navigationItem.titleView = titleLabel;
     }
-
-    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-    self.storyPageControl.navigationItem.titleView = titleLabel;
-
+    
+    CGRect vb = [self.view bounds];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
-        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
-        self.storyPageControl.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
+        if (resetLayout) {
+            self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
+            self.storyPageControl.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
 
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
-        self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
-                                                              self.storyTitlesYCoordinate, 
-                                                              vb.size.width, 
-                                                              vb.size.height - storyTitlesYCoordinate);
+            self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
+            self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
+                                                                  self.storyTitlesYCoordinate, 
+                                                                  vb.size.width, 
+                                                                  vb.size.height - storyTitlesYCoordinate);
+        }
         float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
         
@@ -542,28 +549,24 @@
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
                 self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            } completion:^(BOOL finished) {
-                [self.dashboardViewController.view removeFromSuperview];
-                [self.masterNavigationController.view removeFromSuperview];
-            }];
+            } completion:nil];
         }];
     } else {
         // CASE: story titles on left
-        [self.masterNavigationController
-         pushViewController:self.feedDetailViewController
-         animated:YES];
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
-                                                               vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
-                                                               vb.size.height);
-        
+        if (resetLayout) {
+            [self.masterNavigationController
+             pushViewController:self.feedDetailViewController
+             animated:YES];
+            self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
+                                                                   vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
+                                                                   vb.size.height);
+        }
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
                                                                    0, 
                                                                    vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, 
                                                                    vb.size.height);
-        } completion:^(BOOL finished) {
-            [self.dashboardViewController.view removeFromSuperview];
-        }];
+        } completion:nil];
 
 //        self.storyPageControl.navigationItem.titleView = nil;
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
@@ -571,7 +574,21 @@
     }
 }
 
+- (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage {
+    CGRect storyNavFrame = self.storyNavigationController.view.frame;
+    storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH + 1 + storyNavFrame.size.width * percentage;
+    self.storyNavigationController.view.frame = storyNavFrame;
+    
+    CGRect dashboardFrame = self.dashboardViewController.view.frame;
+    dashboardFrame.origin.x = NB_DEFAULT_MASTER_WIDTH + 1 + -1 * (1-percentage) * dashboardFrame.size.width;
+    self.dashboardViewController.view.frame = dashboardFrame;
+}
+
 - (void)transitionFromFeedDetail {
+    [self transitionFromFeedDetail:YES];
+}
+
+- (void)transitionFromFeedDetail:(BOOL)resetLayout {
     if (!self.feedDetailIsVisible) {
         return;
     }
@@ -586,15 +603,16 @@
     CGRect vb = [self.view bounds];
     
     // adding dashboardViewController and masterNavigationController
-    [self.view insertSubview:self.dashboardViewController.view atIndex:0];
-    [self.view addSubview:self.masterNavigationController.view];
+//    [self.view insertSubview:self.dashboardViewController.view atIndex:0];
+//    [self.view addSubview:self.masterNavigationController.view];
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
-        self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
-        self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-
+        if (resetLayout) {
+            self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+        }
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
         float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
 
@@ -615,10 +633,7 @@
                                                                       self.storyTitlesYCoordinate, 
                                                                       vb.size.width, 
                                                                       vb.size.height - storyTitlesYCoordinate);
-            } completion:^(BOOL finished) {
-                [self.storyNavigationController.view removeFromSuperview];
-                [self.feedDetailViewController.view removeFromSuperview];
-            }];
+            } completion:nil];
         }]; 
     } else {
         // CASE: story titles on left
@@ -627,14 +642,11 @@
                                                                    0, 
                                                                    self.storyNavigationController.view.frame.size.width, 
                                                                    self.storyNavigationController.view.frame.size.height);
-            self.dashboardViewController.view.frame = CGRectMake(0, 
+            self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1,
                                                                  0, 
                                                                  vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, 
                                                                  vb.size.height);
-        } completion:^(BOOL finished) {
-            [self.storyNavigationController.view removeFromSuperview];
-            [self.feedDetailViewController.view removeFromSuperview];
-        }];
+        } completion:nil];
     }
 }
 

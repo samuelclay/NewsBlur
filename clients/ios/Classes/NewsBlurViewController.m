@@ -85,6 +85,7 @@ static UIFont *userLabelFont;
 @synthesize greenIcon;
 @synthesize notifier;
 @synthesize isOffline;
+@synthesize interactiveFeedDetailTransition;
 
 #pragma mark -
 #pragma mark Globals
@@ -163,14 +164,17 @@ static UIFont *userLabelFont;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
+    
+    [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !self.interactiveFeedDetailTransition) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    } 
-    NSDate *start = [NSDate date];
-    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+    }
+//    NSDate *start = [NSDate date];
+//    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -192,26 +196,20 @@ static UIFont *userLabelFont;
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
-    NSLog(@"Feed List timing 1: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
 //        [self.feedTitlesTable reloadData];
-        NSLog(@"Feed List timing 1a: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self refreshHeaderCounts];
-        NSLog(@"Feed List timing 1b: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self redrawUnreadCounts];
-        NSLog(@"Feed List timing 1c: %f", (double)[start timeIntervalSinceNow] * -1000.0);
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
 //                                    scrollPosition:UITableViewScrollPositionNone];
-        NSLog(@"Feed List timing 1d: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self.notifier setNeedsLayout];
-        NSLog(@"Feed List timing 1e: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     }
     
-    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+//    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -228,6 +226,32 @@ static UIFont *userLabelFont;
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
+    self.interactiveFeedDetailTransition = NO;
+}
+
+- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) return;
+    
+    self.interactiveFeedDetailTransition = YES;
+    
+    CGPoint point = [gesture locationInView:self.view];
+    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
+    NSLog(@"back gesture: %d, %f - %f/%f", gesture.state, percentage, point.x, viewWidth);
+    
+    if (gesture.state == UIGestureRecognizerStateChanged) {
+        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
+    } else if (gesture.state == UIGestureRecognizerStateEnded) {
+//        CGPoint velocity = [gesture velocityInView:self.view];
+//        if (velocity.x > 0) {
+//            [appDelegate.masterContainerViewController transitionFromFeedDetail];
+//        } else {
+//            // Returning back to view, cancelling pop animation.
+//            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+//        }
+
+        self.interactiveFeedDetailTransition = NO;
+    }
 }
 
 - (void)fadeSelectedCell {

@@ -26,7 +26,10 @@
 - (void)adjustFeedDetailScreenForStoryTitles;
 
 - (void)transitionToFeedDetail;
+- (void)transitionToFeedDetail:(BOOL)resetLayout;
+- (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage;
 - (void)transitionFromFeedDetail;
+- (void)transitionFromFeedDetail:(BOOL)resetLayout;
 - (void)transitionToShareView;
 - (void)transitionFromShareView;
 
