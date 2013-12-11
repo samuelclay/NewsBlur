@@ -1,12 +1,12 @@
 package com.newsblur.view;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 
 import com.newsblur.util.AppConstants;
@@ -58,16 +58,13 @@ public class NewsblurWebview extends WebView {
         super.onResume();
     }
 
-	public void setHandler(Handler h) {
-		this.handler = h;
-		loadUrl("javascript:window.onload=webview.scroll(document.body.scrollHeight)");
+    public void setTextSize(float textSize) {
+        Log.d("Reading", "Setting textsize to " + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize));
+        String script = "javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            evaluateJavascript(script, null);
+        } else {
+            loadUrl(script);
+        }
 	}
-
-	public void setTextSize(float textSize) {
-		Log.d("Reading", "Setting textsize to " + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize));
-		loadUrl("javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';");
-	}
-	
-	
-	
 }
