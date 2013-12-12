@@ -510,12 +510,12 @@
     
     if (resetLayout) {
         // adding feedDetailViewController
-    //    [self addChildViewController:self.feedDetailViewController];
+        [self addChildViewController:self.feedDetailViewController];
         [self.view addSubview:self.feedDetailViewController.view];
         [self.feedDetailViewController didMoveToParentViewController:self];
         
         // adding storyDetailViewController
-    //    [self addChildViewController:self.storyNavigationController];
+        [self addChildViewController:self.storyNavigationController];
         [self.view addSubview:self.storyNavigationController.view];
         [self.storyNavigationController didMoveToParentViewController:self];
         
@@ -586,7 +586,8 @@
                          animations:^{
             [self interactiveTransitionFromFeedDetail:0];
         } completion:^(BOOL finished) {
-            [self.dashboardViewController.view removeFromSuperview];
+            NSLog(@"Finished hiding dashboard: %d", finished);
+//            [self.dashboardViewController.view removeFromSuperview];
         }];
 
         self.storyPageControl.navigationItem.titleView = nil;

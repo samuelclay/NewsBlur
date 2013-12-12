@@ -242,7 +242,8 @@
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        self.isMovingFromParentViewController) {
+        self.isMovingFromParentViewController &&
+        appDelegate.masterContainerViewController.storyTitlesOnLeft) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
     }
 }
