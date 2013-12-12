@@ -1065,18 +1065,40 @@
 }
 
 - (void)showOriginalStory:(NSURL *)url {
-    self.activeOriginalStoryURL = url;
-    UINavigationController *navController = [[UINavigationController alloc]
-                                             initWithRootViewController:self.originalStoryViewController];
-    navController.navigationBar.translucent = NO;
-    self.originalStoryViewNavController = navController;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
-                                                         animated:YES completion:nil];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"safari"]) {
+        [[UIApplication sharedApplication] openURL:url];
+        return;
+    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"chrome"] &&
+               [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
+        NSString *openingURL = [url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
+        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSURL *activityURL = [NSURL URLWithString:
+                              [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?url=%@&x-success=%@&x-source=%@",
+                               openingURL,
+                               callback,
+                               sourceName]];
+        
+        [[UIApplication sharedApplication] openURL:activityURL];
+            return;
     } else {
-        [self.navigationController presentViewController:self.originalStoryViewNavController
-                                                animated:YES completion:nil];
+        self.activeOriginalStoryURL = url;
+        UINavigationController *navController = [[UINavigationController alloc]
+                                                 initWithRootViewController:self.originalStoryViewController];
+        navController.navigationBar.translucent = NO;
+        self.originalStoryViewNavController = navController;
+
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
+                                                             animated:YES completion:nil];
+        } else {
+            [self.navigationController presentViewController:self.originalStoryViewNavController
+                                                    animated:YES completion:nil];
+        }
     }
 }
 

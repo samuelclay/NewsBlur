@@ -565,6 +565,8 @@
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
                 self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
             } completion:^(BOOL finished) {
+                self.feedDetailIsVisible = YES;
+
                 [self.dashboardViewController.view removeFromSuperview];
                 [self.masterNavigationController.view removeFromSuperview];
             }];
@@ -586,13 +588,12 @@
                          animations:^{
             [self interactiveTransitionFromFeedDetail:0];
         } completion:^(BOOL finished) {
-            NSLog(@"Finished hiding dashboard: %d", finished);
+            self.feedDetailIsVisible = YES;
+//            NSLog(@"Finished hiding dashboard: %d", finished);
 //            [self.dashboardViewController.view removeFromSuperview];
         }];
 
         self.storyPageControl.navigationItem.titleView = nil;
-        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
-        self.storyPageControl.navigationItem.rightBarButtonItem = nil;
     }
 }
 
