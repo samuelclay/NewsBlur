@@ -187,7 +187,7 @@ static UIFont *indicatorFont = nil;
     
     int storyTitleY = 12 + riverPadding + ((font.pointSize*2 - theSize.height)/2);
     if (cell.isShort) {
-        storyTitleY = 12 + riverPadding + 2;
+        storyTitleY = 12 + riverPadding - (theSize.height/font.pointSize*2);
     }
     int storyTitleX = leftMargin;
     if (cell.isStarred) {
@@ -211,7 +211,7 @@ static UIFont *indicatorFont = nil;
     
     int storyAuthorDateY = r.size.height - 18;
     if (cell.isShort) {
-        storyAuthorDateY -= 13;
+//        storyAuthorDateY += 13;
     }
     
     // story author style

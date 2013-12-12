@@ -133,6 +133,7 @@ static NSMutableDictionary *imageCache;
 }
 
 + (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
+    if (!orig) return nil;
     UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
     [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
                                 cornerRadius:r] addClip];

@@ -48,7 +48,7 @@ static const CGFloat kTextViewHeight    = 60.0;
 
 -(void)loadView {
     self.view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.view.backgroundColor = [UIColor underPageBackgroundColor];
+    self.view.backgroundColor = [UIColor lightGrayColor];
 }
 
 #pragma mark - Layout values
@@ -76,7 +76,7 @@ static const CGFloat kTextViewHeight    = 60.0;
 #pragma mark - UI Elements
 
 -(void)adjustLabelWidth:(UILabel*)label {
-    CGFloat labelWidth = [label.text sizeWithFont:label.font].width;
+    CGFloat labelWidth = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}].width;
     label.frame = CGRectMake(label.frame.origin.x, label.frame.origin.y, labelWidth, label.frame.size.height);
 }
 
@@ -138,7 +138,7 @@ static const CGFloat kTextViewHeight    = 60.0;
 }
 
 -(UILabel*)labelAtPoint:(CGPoint)point text:(NSString*)text {
-    CGFloat labelWidth = [text sizeWithFont:[UIFont systemFontOfSize:18.0]].width;
+    CGFloat labelWidth = [text sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:18.0f]}].width;
     return [self labelAtPoint:point width:labelWidth text:text];
 }
 

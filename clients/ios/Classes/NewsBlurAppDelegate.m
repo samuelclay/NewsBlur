@@ -24,7 +24,6 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
-#import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
 #import "ASINetworkQueue.h"
 #import "InteractionsModule.h"
@@ -177,6 +176,7 @@
                                                    currentiPhoneVersion]];
         [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
+        [self.masterContainerViewController didRotateFromInterfaceOrientation:nil];
     } else {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPhone App v%@",
                                                    currentiPhoneVersion]];

@@ -184,6 +184,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
+    [self setTextButton];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
@@ -260,7 +261,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    
 }
 
 - (void)transitionFromFeedDetail {

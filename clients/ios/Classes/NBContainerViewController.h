@@ -10,12 +10,14 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NBContainerViewController : UIViewController <UIPopoverControllerDelegate> {
+@interface NBContainerViewController : UIViewController
+<UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
 @property (readonly) BOOL storyTitlesOnLeft;
 @property (readonly) int storyTitlesYCoordinate;
+@property (nonatomic) CALayer *leftBorder;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 

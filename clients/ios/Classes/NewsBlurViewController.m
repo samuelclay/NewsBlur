@@ -166,6 +166,7 @@ static UIFont *userLabelFont;
     userInfoBarButton.customView.hidden = YES;
     
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -237,7 +238,7 @@ static UIFont *userLabelFont;
     CGPoint point = [gesture locationInView:self.view];
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-    NSLog(@"back gesture: %d, %f - %f/%f", gesture.state, percentage, point.x, viewWidth);
+    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
     
     if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
@@ -1547,7 +1548,9 @@ heightForHeaderInSection:(NSInteger)section {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            if (!imageData) continue;
             UIImage *faviconImage = [UIImage imageWithData:imageData];
+            if (!faviconImage) continue;
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
             [Utilities saveImage:faviconImage feedId:feed_id];

@@ -1432,6 +1432,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Text view
 
 - (void)fetchTextView {
+    if (!self.activeStoryId || !appDelegate.activeStory) return;
     if (self.inTextView) {
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton];
