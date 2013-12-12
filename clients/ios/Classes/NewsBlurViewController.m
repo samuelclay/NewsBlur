@@ -243,13 +243,13 @@ static UIFont *userLabelFont;
     if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
     } else if (gesture.state == UIGestureRecognizerStateEnded) {
-//        CGPoint velocity = [gesture velocityInView:self.view];
-//        if (velocity.x > 0) {
-//            [appDelegate.masterContainerViewController transitionFromFeedDetail];
-//        } else {
+        CGPoint velocity = [gesture velocityInView:self.view];
+        if (velocity.x > 0) {
+            [appDelegate.masterContainerViewController transitionFromFeedDetail];
+        } else {
 //            // Returning back to view, cancelling pop animation.
 //            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-//        }
+        }
 
         self.interactiveFeedDetailTransition = NO;
     }

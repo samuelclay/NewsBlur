@@ -653,6 +653,7 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
+            if (self.feedDetailIsVisible) return;
             [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
@@ -660,6 +661,7 @@
                                                                       vb.size.width, 
                                                                       vb.size.height - storyTitlesYCoordinate);
             } completion:^(BOOL finished) {
+                if (self.feedDetailIsVisible) return;
                 [self.feedDetailViewController.view removeFromSuperview];
                 [self.storyNavigationController.view removeFromSuperview];
             }];
@@ -676,6 +678,7 @@
                                                                  vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, 
                                                                  vb.size.height);
         } completion:^(BOOL finished) {
+            if (self.feedDetailIsVisible) return;
             [self.feedDetailViewController.view removeFromSuperview];
             [self.storyNavigationController.view removeFromSuperview];
         }];
