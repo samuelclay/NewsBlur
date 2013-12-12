@@ -218,6 +218,12 @@
     
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        !self.isMovingFromParentViewController) {
+        [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -237,7 +243,7 @@
     self.popoverController = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         self.isMovingFromParentViewController) {
-//        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
+        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
     }
 }
 
