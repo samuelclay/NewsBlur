@@ -55,6 +55,7 @@
                    objectForKey:@"offline_image_download"] boolValue]) {
                 [appDelegate.feedsViewController showDoneNotifier];
                 [appDelegate.feedsViewController hideNotifier];
+                [appDelegate finishBackground];
             } else {
                 [appDelegate.feedsViewController showCachingNotifier:0 hoursBack:1];
                 [appDelegate startOfflineFetchImages];

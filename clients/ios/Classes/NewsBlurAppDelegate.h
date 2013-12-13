@@ -43,7 +43,8 @@
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 
-@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
+@interface NewsBlurAppDelegate : BaseViewController
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
@@ -251,9 +252,12 @@
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
+@property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
+
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 - (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 - (void)registerDefaultsFromSettingsBundle;
+- (void)finishBackground;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -285,7 +289,6 @@
 - (void)closeOriginalStory;
 - (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;
-- (void)dragFeedDetailView:(float)y;
 - (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;

@@ -40,6 +40,7 @@ static const CGFloat kTableViewRowHeight = 31.0f;
 static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
 static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
 static const CGFloat kFolderTitleHeight = 28.0f;
+static UIFont *userLabelFont;
 
 @interface NewsBlurViewController () 
 
@@ -84,6 +85,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
 @synthesize greenIcon;
 @synthesize notifier;
 @synthesize isOffline;
+@synthesize interactiveFeedDetailTransition;
 
 #pragma mark -
 #pragma mark Globals
@@ -101,6 +103,8 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
+
+    userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
@@ -160,14 +164,18 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
+    
+    [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !self.interactiveFeedDetailTransition) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    } 
-    NSDate *start = [NSDate date];
-    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+    }
+//    NSDate *start = [NSDate date];
+//    NSLog(@"Feed List timing 0: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -189,26 +197,20 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
-    NSLog(@"Feed List timing 1: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
 //        [self.feedTitlesTable reloadData];
-        NSLog(@"Feed List timing 1a: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self refreshHeaderCounts];
-        NSLog(@"Feed List timing 1b: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self redrawUnreadCounts];
-        NSLog(@"Feed List timing 1c: %f", (double)[start timeIntervalSinceNow] * -1000.0);
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
 //                                    scrollPosition:UITableViewScrollPositionNone];
-        NSLog(@"Feed List timing 1d: %f", (double)[start timeIntervalSinceNow] * -1000.0);
         [self.notifier setNeedsLayout];
-        NSLog(@"Feed List timing 1e: %f", (double)[start timeIntervalSinceNow] * -1000.0);
     }
     
-    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
+//    NSLog(@"Feed List timing 2: %f", (double)[start timeIntervalSinceNow] * -1000.0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -225,6 +227,32 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
+    self.interactiveFeedDetailTransition = NO;
+}
+
+- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) return;
+    
+    self.interactiveFeedDetailTransition = YES;
+    
+    CGPoint point = [gesture locationInView:self.view];
+    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
+    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
+    
+    if (gesture.state == UIGestureRecognizerStateChanged) {
+        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
+    } else if (gesture.state == UIGestureRecognizerStateEnded) {
+        CGPoint velocity = [gesture velocityInView:self.view];
+        if (velocity.x > 0) {
+            [appDelegate.masterContainerViewController transitionFromFeedDetail];
+        } else {
+//            // Returning back to view, cancelling pop animation.
+//            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+        }
+
+        self.interactiveFeedDetailTransition = NO;
+    }
 }
 
 - (void)fadeSelectedCell {
@@ -861,6 +889,7 @@ static const CGFloat kFolderTitleHeight = 28.0f;
     } else {
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)settingDidChange:(NSNotification*)notification {
@@ -877,7 +906,12 @@ static const CGFloat kFolderTitleHeight = 28.0f;
          [NSSet setWithObjects:@"instapaper_username",
           @"instapaper_password",
           nil] animated:YES];
-	}
+	} else if ([notification.object isEqual:@"use_system_font_size"]) {
+		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"use_system_font_size"] intValue];
+		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
+         [NSSet setWithObjects:@"feed_list_font_size",
+          nil] animated:YES];
+    }
 }
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
@@ -1514,7 +1548,9 @@ heightForHeaderInSection:(NSInteger)section {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            if (!imageData) continue;
             UIImage *faviconImage = [UIImage imageWithData:imageData];
+            if (!faviconImage) continue;
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
             [Utilities saveImage:faviconImage feedId:feed_id];
@@ -1787,7 +1823,7 @@ heightForHeaderInSection:(NSInteger)section {
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
-                                             objectForKey:@"photo_url"]]];
+                                             objectForKey:@"large_photo_url"]]];
     userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
                                                   target:self
                                                   action:@selector(showUserProfile)];
@@ -1797,8 +1833,10 @@ heightForHeaderInSection:(NSInteger)section {
     [avatarRequest setHTTPShouldHandleCookies:NO];
     [avatarRequest setHTTPShouldUsePipelining:YES];
     UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+    CGSize avatarSize = avatarImageView.frame.size;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        image = [Utilities roundCorneredImage:image radius:3];
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
+        image = [Utilities roundCorneredImage:image radius:6];
         [(UIButton *)userAvatarButton.customView setImage:image forState:UIControlStateNormal];
     } failure:nil];
     //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
@@ -1807,7 +1845,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
-    userLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.shadowColor = UIColorFromRGB(0xFAFAFA);

@@ -37,6 +37,7 @@ UIActionSheetDelegate> {
     
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
+    BOOL interactiveFeedDetailTransition;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
     NSCache *imageCache;
@@ -74,6 +75,7 @@ UIActionSheetDelegate> {
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic) NSMutableDictionary *visibleFolders;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
+@property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic) PullToRefreshView *pull;
 @property (nonatomic) NSDate *lastUpdate;
