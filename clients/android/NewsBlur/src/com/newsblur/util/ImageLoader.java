@@ -44,7 +44,7 @@ public class ImageLoader {
 	public void displayImage(String url, ImageView imageView, boolean doRound) {
 		imageViews.put(imageView, url);
 		Bitmap bitmap = memoryCache.get(url);
-		if (bitmap == null) {
+		if ((bitmap == null) && (url != null)) {
 			File f = fileCache.getFile(url);
             try {
 			    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
@@ -69,7 +69,7 @@ public class ImageLoader {
 	public void displayImage(String url, ImageView imageView, float roundRadius) {
 		imageViews.put(imageView, url);
 		Bitmap bitmap = memoryCache.get(url);
-		if (bitmap == null) {
+		if ((bitmap == null) && (url != null)) {
 			File f = fileCache.getFile(url);
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		}
@@ -91,8 +91,10 @@ public class ImageLoader {
 			bitmap = UIUtils.roundCorners(bitmap, 5);
 			imageView.setImageBitmap(bitmap);
 		} else {
-			File f = fileCache.getFile(uid);
-			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+            if (uid != null ) {
+			    File f = fileCache.getFile(uid);
+			    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+            }
 			if (bitmap != null) {
 				memoryCache.put(uid, bitmap);
 				bitmap = UIUtils.roundCorners(bitmap, 5);
@@ -109,6 +111,7 @@ public class ImageLoader {
 	}
 	
 	public boolean hasImage(String uid) {
+        if (uid == null ) return false;
 		if (memoryCache.get(uid) == null) {
 			return (fileCache.getFile(uid) != null);
 		}
@@ -116,8 +119,9 @@ public class ImageLoader {
 	}
 
 	private Bitmap getBitmap(String url) {
-		File f = fileCache.getFile(url);
-		Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+        if (url == null) return null;
+        File f = fileCache.getFile(url);
+        Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		
 		if (bitmap != null) {
 			memoryCache.put(url, bitmap);			

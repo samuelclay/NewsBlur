@@ -24,7 +24,6 @@
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
-#import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
 #import "ASINetworkQueue.h"
 #import "InteractionsModule.h"
@@ -158,6 +157,7 @@
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
+@synthesize backgroundCompletionHandler;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -176,6 +176,7 @@
                                                    currentiPhoneVersion]];
         [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
+        [self.masterContainerViewController didRotateFromInterfaceOrientation:nil];
     } else {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPhone App v%@",
                                                    currentiPhoneVersion]];
@@ -203,6 +204,27 @@
 //    [self showFirstTimeUser];
 
 	return YES;
+}
+
+
+- (void)application:(UIApplication *)application
+    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [self createDatabaseConnection];
+    [self.feedsViewController fetchFeedList:NO];
+    backgroundCompletionHandler = completionHandler;
+}
+
+- (void)finishBackground {
+    if (!backgroundCompletionHandler) return;
+    
+    NSLog(@"Background fetch complete. Found data: %d/%d = %d",
+          self.totalUnfetchedStoryCount, self.totalUncachedImagesCount,
+          self.totalUnfetchedStoryCount || self.totalUncachedImagesCount);
+    if (self.totalUnfetchedStoryCount || self.totalUncachedImagesCount) {
+        backgroundCompletionHandler(UIBackgroundFetchResultNewData);
+    } else {
+        backgroundCompletionHandler(UIBackgroundFetchResultNoData);
+    }
 }
 
 - (void)registerDefaultsFromSettingsBundle {
@@ -416,12 +438,18 @@
     preferencesViewController.showDoneButton = YES;
     preferencesViewController.showCreditsFooter = NO;
     preferencesViewController.title = @"Preferences";
-    BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    preferencesViewController.hiddenKeys = enabled ? nil :
-    [NSSet setWithObjects:@"offline_image_download",
-     @"offline_download_connection",
-     @"offline_store_limit",
-     nil];
+    NSMutableSet *hiddenSet = [NSMutableSet set];
+    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+    if (!offline_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
+                                         @"offline_download_connection",
+                                         @"offline_store_limit"]];
+    }
+    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
+    if (system_font_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
+    }
+    preferencesViewController.hiddenKeys = hiddenSet;
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
     
@@ -948,24 +976,6 @@
     self.activeFeedStories = newFeedStories;
 }
 
-- (void)dragFeedDetailView:(float)y {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if (UIInterfaceOrientationIsPortrait(storyDetailViewController.interfaceOrientation)) {
-        y = y + 20;
-        
-        if(y > 955) {
-            self.feedDetailPortraitYCoordinate = 960;
-        } else if(y < 950 && y > 200) {
-            self.feedDetailPortraitYCoordinate = y;
-        }
-        
-        [userPreferences setInteger:self.feedDetailPortraitYCoordinate forKey:@"feedDetailPortraitYCoordinate"];
-        [userPreferences synchronize];
-        [self adjustStoryDetailWebView];        
-    }
-}
-
 - (void)changeActiveFeedDetailRow {
     [feedDetailViewController changeActiveFeedDetailRow];
 }
@@ -1037,18 +1047,40 @@
 }
 
 - (void)showOriginalStory:(NSURL *)url {
-    self.activeOriginalStoryURL = url;
-    UINavigationController *navController = [[UINavigationController alloc]
-                                             initWithRootViewController:self.originalStoryViewController];
-    navController.navigationBar.translucent = NO;
-    self.originalStoryViewNavController = navController;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
-                                                         animated:YES completion:nil];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"safari"]) {
+        [[UIApplication sharedApplication] openURL:url];
+        return;
+    } else if ([[preferences stringForKey:@"story_browser"] isEqualToString:@"chrome"] &&
+               [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
+        NSString *openingURL = [url.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSURL *callbackURL = [NSURL URLWithString:@"newsblur://"];
+        NSString *callback = [callbackURL.absoluteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *sourceName = [[[NSBundle mainBundle]objectForInfoDictionaryKey:@"CFBundleName"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSURL *activityURL = [NSURL URLWithString:
+                              [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?url=%@&x-success=%@&x-source=%@",
+                               openingURL,
+                               callback,
+                               sourceName]];
+        
+        [[UIApplication sharedApplication] openURL:activityURL];
+            return;
     } else {
-        [self.navigationController presentViewController:self.originalStoryViewNavController
-                                                animated:YES completion:nil];
+        self.activeOriginalStoryURL = url;
+        UINavigationController *navController = [[UINavigationController alloc]
+                                                 initWithRootViewController:self.originalStoryViewController];
+        navController.navigationBar.translucent = NO;
+        self.originalStoryViewNavController = navController;
+
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
+                                                             animated:YES completion:nil];
+        } else {
+            [self.navigationController presentViewController:self.originalStoryViewNavController
+                                                    animated:YES completion:nil];
+        }
     }
 }
 
@@ -2026,9 +2058,12 @@
 
 - (NSDictionary *)getFeed:(NSString *)feedId {
     NSDictionary *feed;
-    if (self.isSocialView || self.isSocialRiverView) {
+    if (self.isSocialView || self.isSocialRiverView || [feedId startsWith:@"social:"]) {
         feed = [self.dictActiveFeeds objectForKey:feedId];
         // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [self.dictSocialFeeds objectForKey:feedId];
+        }
         if (!feed) {
             feed = [self.dictFeeds objectForKey:feedId];
         }

@@ -130,7 +130,7 @@
     NSString *sharingHtmlString;
     NSString *footerString;
     NSString *fontStyleClass = @"";
-    NSString *fontSizeClass = @"";
+    NSString *fontSizeClass = @"NB-";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -139,11 +139,7 @@
     } else {
         fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
     }
-    if ([userPreferences stringForKey:@"fontSizing"]){
-        fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"fontSizing"]];
-    } else {
-        fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
-    }
+    fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
     
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
@@ -349,6 +345,7 @@
     }
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
+    NSString *storyPermalink = [self.activeStory objectForKey:@"story_permalink"];
     NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"titles"];
     for (NSString *titleClassifier in titleClassifiers) {
@@ -369,7 +366,7 @@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
                              "<div class=\"NB-story-title\">"
                              "  %@"
-                             "  %@"
+                             "  <a href=\"%@\" class=\"NB-story-permalink\">%@</a>"
                              "</div>"
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
@@ -377,6 +374,7 @@
                              "%@"
                              "</div></div>",
                              storyUnread,
+                             storyPermalink,
                              storyTitle,
                              storyDate,
                              storyAuthor,
@@ -1071,18 +1069,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences integerForKey:@"fontSizing"]){
-        [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
-    }
+    [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
 
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    if ([userPreferences integerForKey:@"fontSizing"]){
-        [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
-    }
+    [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     
     if ([appDelegate.activeFeedStories count] &&
         self.activeStoryId &&
@@ -1138,7 +1132,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeFontSize:(NSString *)fontSize {
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')",
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', 'NB-%@')",
                           fontSize];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
@@ -1438,6 +1432,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Text view
 
 - (void)fetchTextView {
+    if (!self.activeStoryId || !appDelegate.activeStory) return;
     if (self.inTextView) {
         self.inTextView = NO;
         [appDelegate.storyPageControl setTextButton];

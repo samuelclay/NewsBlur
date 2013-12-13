@@ -228,23 +228,17 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 					
 					@Override
 					protected Boolean doInBackground(Void... arg) {
-						Cursor cursor = resolver.query(FeedProvider.FEEDS_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-						while (cursor.moveToNext()) {
-							feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-						}
 						return apiManager.markAllAsRead();
 					}
 					
 					@Override
 					protected void onPostExecute(Boolean result) {
 						if (result) {
-							ContentValues values = new ContentValues();
-							values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
-							values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
-							values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
-							for (String feedId : feedIds) {
-								resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
-						  	}
+                            ContentValues values = new ContentValues();
+                            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
+                            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
+                            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
+                            resolver.update(FeedProvider.FEEDS_URI, values, null, null);
 							folderAdapter.notifyDataSetChanged();
 							UIUtils.safeToast(getActivity(), R.string.toast_marked_all_stories_as_read, Toast.LENGTH_SHORT);
 						} else {
@@ -293,14 +287,16 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
             startActivity(i);
             return true;
         } else {
-			String groupName = folderAdapter.getGroupName(groupPosition);
-			if (list.isGroupExpanded(groupPosition)) {
-				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
-			} else {
-				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
-			}
+            if ((group != null) && (group.findViewById(R.id.row_foldersums) != null)) {
+                String groupName = folderAdapter.getGroupName(groupPosition);
+                if (list.isGroupExpanded(groupPosition)) {
+                    group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
+                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, false).commit();
+                } else {
+                    group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
+                    sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true).commit();
+                }
+            }
 			return false;
 		}
 	}

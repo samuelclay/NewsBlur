@@ -30,6 +30,9 @@ cmd = 'tar -zcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
 print 'Uploading %s to S3...' % filename
-s3.save_file_in_s3(filename)
+try:
+    s3.save_file_in_s3(filename)
+except Exception, e:
+    print " ****> Exceptions: %s" % e
 shutil.rmtree(dir_name)
 os.remove(filename)

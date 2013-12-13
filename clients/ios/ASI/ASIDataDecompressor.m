@@ -158,7 +158,7 @@
 		readLength = [inputStream read:inputData maxLength:DATA_CHUNK_SIZE]; 
 		
 		// Make sure nothing went wrong
-		if ([inputStream streamStatus] == NSStreamEventErrorOccurred) {
+		if ([inputStream streamStatus] == NSStreamStatusError) {
 			if (err) {
 				*err = [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of %@ failed because we were unable to read from the source data file",sourcePath],NSLocalizedDescriptionKey,[inputStream streamError],NSUnderlyingErrorKey,nil]];
 			}
@@ -184,7 +184,7 @@
 		[outputStream write:(Bytef*)[outputData bytes] maxLength:[outputData length]];
 		
 		// Make sure nothing went wrong
-		if ([inputStream streamStatus] == NSStreamEventErrorOccurred) {
+		if ([inputStream streamStatus] == NSStreamStatusError) {
 			if (err) {
 				*err = [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of %@ failed because we were unable to write to the destination data file at %@",sourcePath,destinationPath],NSLocalizedDescriptionKey,[outputStream streamError],NSUnderlyingErrorKey,nil]];
             }
