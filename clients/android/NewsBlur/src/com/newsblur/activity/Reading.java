@@ -28,11 +28,9 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.activity.Main;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
@@ -44,7 +42,6 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
-import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
 public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener {
@@ -182,7 +179,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
-		UserDetails user = PrefsUtils.getUserDetails(this);
 
 		if (item.getItemId() == android.R.id.home) {
 			finish();
@@ -204,8 +200,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			FeedUtils.shareStory(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
-			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
@@ -462,7 +457,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     // NB: this callback is for the text size slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR).commit();
+	    PrefsUtils.setTextSize(this, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR);
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
 		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / AppConstants.FONT_SIZE_INCREMENT_FACTOR); 
 		sendBroadcast(data);
@@ -636,7 +631,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 @Override
                 protected void onPostExecute(StoryTextResponse result) {
                     ReadingItemFragment item = getReadingFragment();
-                    if (item != null) item.setCustomWebview(result.originalText);
+                    if ((item != null) && (result != null) && (result.originalText != null)) {
+                        item.setCustomWebview(result.originalText);
+                    }
                     enableProgressCircle(overlayProgressLeft, false);
                 }
             }.execute();

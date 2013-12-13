@@ -50,6 +50,7 @@
             [appDelegate.feedsViewController showDoneNotifier];
             [appDelegate.feedsViewController hideNotifier];
             [appDelegate cleanImageCache];
+            [appDelegate finishBackground];
         });
         return NO;
     }

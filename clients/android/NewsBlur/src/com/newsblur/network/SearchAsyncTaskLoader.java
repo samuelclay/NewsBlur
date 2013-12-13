@@ -25,9 +25,12 @@ public class SearchAsyncTaskLoader extends AsyncTaskLoader<SearchLoaderResponse>
 		SearchLoaderResponse response;
 		try {
 			ArrayList<FeedResult> list = new ArrayList<FeedResult>();
-			for (FeedResult result : apiManager.searchForFeed(searchTerm)) {
-				list.add(result);
-			}
+            FeedResult[] results = apiManager.searchForFeed(searchTerm);
+            if (results != null) {
+                for (FeedResult result : results) {
+                    list.add(result);
+                }
+            }
 			response = new SearchLoaderResponse(list);
 		} catch (ServerErrorException ex) {
 			response = new SearchLoaderResponse(ex.getMessage());

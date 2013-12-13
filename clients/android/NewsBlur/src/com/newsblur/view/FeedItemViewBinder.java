@@ -1,15 +1,11 @@
 package com.newsblur.view;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,7 +15,6 @@ import com.newsblur.domain.Story;
 
 public class FeedItemViewBinder implements ViewBinder {
 
-	private static final String TAG = "FeedItemViewBinder";
 	private final Context context;
 	private int darkGray;
 	private int lightGray;
@@ -71,15 +66,7 @@ public class FeedItemViewBinder implements ViewBinder {
 			((TextView) view).setText("");
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
-			try {
-				((TextView) view).setText(Html.fromHtml(URLDecoder.decode(cursor.getString(columnIndex), "UTF-8")));
-			} catch (UnsupportedEncodingException e) {
-				((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
-				Log.e(TAG, "Error decoding from title string");
-			}  catch (IllegalArgumentException e) {
-				((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
-				Log.d(TAG, "Title contained an unescaped character");
-			}
+            ((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
 		}
 		

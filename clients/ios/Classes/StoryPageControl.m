@@ -184,7 +184,12 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    [self setTextButton];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
@@ -256,7 +261,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    
 }
 
 - (void)transitionFromFeedDetail {
@@ -265,6 +269,7 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self changePage:currentPage.pageIndex animated:YES];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -388,8 +393,12 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class] ||
-            [theTouch.view isKindOfClass: UIView.class]) {
+        CGPoint tappedPt = [theTouch locationInView:self.view];
+        NSInteger fudge = appDelegate.masterContainerViewController.storyTitlesOnLeft ? -30 : -20;
+        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
+        BOOL attached = self.inTouchMove;
+        
+        if (theTouch.view == self.bottomSize || inside || attached) {
             self.inTouchMove = YES;
             CGPoint touchLocation = [theTouch locationInView:self.view];
             CGFloat y = touchLocation.y;
@@ -403,10 +412,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        
-        if (([theTouch.view isKindOfClass: UIToolbar.class] ||
-             [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
+        if (self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
         }
@@ -685,7 +691,6 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
-//    self.bottomSize.hidden = YES;
     [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

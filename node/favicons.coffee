@@ -2,7 +2,7 @@ express = require 'express'
 mongo = require 'mongodb'
 
 DEV = process.env.NODE_ENV == 'development'
-MONGODB_SERVER = if DEV then 'localhost' else 'db22'
+MONGODB_SERVER = if DEV then 'localhost' else 'db_mongo'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
 if DEV
