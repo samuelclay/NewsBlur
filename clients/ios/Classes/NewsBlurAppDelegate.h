@@ -289,7 +289,6 @@
 - (void)closeOriginalStory;
 - (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;
-- (void)dragFeedDetailView:(float)y;
 - (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;

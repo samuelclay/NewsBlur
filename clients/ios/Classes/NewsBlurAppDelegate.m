@@ -976,24 +976,6 @@
     self.activeFeedStories = newFeedStories;
 }
 
-- (void)dragFeedDetailView:(float)y {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if (UIInterfaceOrientationIsPortrait(storyDetailViewController.interfaceOrientation)) {
-        y = y + 20;
-        
-        if(y > 955) {
-            self.feedDetailPortraitYCoordinate = 960;
-        } else if(y < 950 && y > 200) {
-            self.feedDetailPortraitYCoordinate = y;
-        }
-        
-        [userPreferences setInteger:self.feedDetailPortraitYCoordinate forKey:@"feedDetailPortraitYCoordinate"];
-        [userPreferences synchronize];
-        [self adjustStoryDetailWebView];        
-    }
-}
-
 - (void)changeActiveFeedDetailRow {
     [feedDetailViewController changeActiveFeedDetailRow];
 }

@@ -563,6 +563,7 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
+            self.leftBorder.hidden = YES;
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
@@ -595,7 +596,7 @@
 //            NSLog(@"Finished hiding dashboard: %d", finished);
 //            [self.dashboardViewController.view removeFromSuperview];
         }];
-
+        
         self.storyPageControl.navigationItem.titleView = nil;
     }
 }
@@ -658,6 +659,8 @@
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             if (self.feedDetailIsVisible) return;
+            
+            self.leftBorder.hidden = NO;
             [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 

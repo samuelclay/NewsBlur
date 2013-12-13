@@ -393,8 +393,12 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class] ||
-            [theTouch.view isKindOfClass: UIView.class]) {
+        CGPoint tappedPt = [theTouch locationInView:self.view];
+        NSInteger fudge = appDelegate.masterContainerViewController.storyTitlesOnLeft ? -30 : -20;
+        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
+        BOOL attached = self.inTouchMove;
+        
+        if (theTouch.view == self.bottomSize || inside || attached) {
             self.inTouchMove = YES;
             CGPoint touchLocation = [theTouch locationInView:self.view];
             CGFloat y = touchLocation.y;
@@ -408,10 +412,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        
-        if (([theTouch.view isKindOfClass: UIToolbar.class] ||
-             [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
+        if (self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
         }
@@ -690,7 +691,6 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
-//    self.bottomSize.hidden = YES;
     [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
