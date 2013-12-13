@@ -186,7 +186,13 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     self.rotatingToOrientation = UIDeviceOrientationUnknown;
     leftBorder.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, 1, CGRectGetHeight(self.view.bounds));
-
+    
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) && !self.storyTitlesOnLeft) {
+        leftBorder.hidden = YES;
+    } else {
+        leftBorder.hidden = NO;
+    }
+    
     if (!self.feedDetailIsVisible) {
         [self adjustDashboardScreen];
     } else {
@@ -586,7 +592,8 @@
                                                                    vb.size.height);
             [self interactiveTransitionFromFeedDetail:1];
         }
-        
+        self.leftBorder.hidden = NO;
+
         [UIView animateWithDuration:.35 delay:0
                             options:UIViewAnimationOptionCurveEaseOut
                          animations:^{

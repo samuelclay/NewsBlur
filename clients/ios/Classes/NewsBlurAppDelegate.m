@@ -440,7 +440,7 @@
     preferencesViewController.title = @"Preferences";
     NSMutableSet *hiddenSet = [NSMutableSet set];
     BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    if (offline_enabled) {
+    if (!offline_enabled) {
         [hiddenSet addObjectsFromArray:@[@"offline_image_download",
                                          @"offline_download_connection",
                                          @"offline_store_limit"]];
