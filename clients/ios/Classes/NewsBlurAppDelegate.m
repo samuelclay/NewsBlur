@@ -2076,9 +2076,12 @@
 
 - (NSDictionary *)getFeed:(NSString *)feedId {
     NSDictionary *feed;
-    if (self.isSocialView || self.isSocialRiverView) {
+    if (self.isSocialView || self.isSocialRiverView || [feedId startsWith:@"social:"]) {
         feed = [self.dictActiveFeeds objectForKey:feedId];
         // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [self.dictSocialFeeds objectForKey:feedId];
+        }
         if (!feed) {
             feed = [self.dictFeeds objectForKey:feedId];
         }

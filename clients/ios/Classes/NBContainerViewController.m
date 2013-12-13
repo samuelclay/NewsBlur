@@ -441,6 +441,7 @@
             // slide to the left
             
             self.storyTitlesOnLeft = YES;
+            self.leftBorder.hidden = NO;
             
             // remove the back button
             self.storyPageControl.navigationItem.leftBarButtonItem = nil;
@@ -448,11 +449,12 @@
             // remove center title
             self.storyPageControl.navigationItem.titleView = nil;
             
+            [self.masterNavigationController popToRootViewControllerAnimated:NO];
             if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
-                [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
+                [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];
             }
-            
             [self.view addSubview:self.masterNavigationController.view];
+
             self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
             [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
@@ -463,7 +465,7 @@
                 [appDelegate adjustStoryDetailWebView];
                 [self.feedDetailViewController.storyTitlesTable reloadData];
             }];
-        } 
+        }
     } else if (self.storyTitlesOnLeft) {
         if (self.storyTitlesYCoordinate == 1004) {
             return;
@@ -475,6 +477,7 @@
             self.storyTitlesYCoordinate = 890;
         }
         self.storyTitlesOnLeft = NO;
+        self.leftBorder.hidden = YES;
         
         // add the back button
         self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
