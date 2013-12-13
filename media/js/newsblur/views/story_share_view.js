@@ -156,7 +156,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var content_height      = $story_content.height();
         var comments_height     = $story_comments.height();
         var left_height         = content_height + comments_height;
-        var container_offset    = $sideoption_container.position().top;
         var original_height     = $story_content.data('original_height') || content_height;
         
         if (!NEWSBLUR.reader.flags.narrow_content &&
@@ -192,7 +191,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                         }
                     }
                 });
-            } else if (this.sideoptions_view.save_view.is_open) {
+            } else if (this.sideoptions_view && 
+                       this.sideoptions_view.save_view && 
+                       this.sideoptions_view.save_view.is_open) {
                 this.sideoptions_view.save_view.resize();
             }
         }
