@@ -4884,6 +4884,14 @@
                     self.open_feed_intelligence_modal(1, feed_id, false);
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-train' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                    var story_id = $t.parents('.NB-menu-manage').data('story_id');
+                    self.open_story_trainer(story_id, feed_id);
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-recommend' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
