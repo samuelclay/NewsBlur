@@ -252,7 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $original_comments = this.$('.NB-feed-story-comments-container,.NB-feed-story-comments');
         var $original_shares = this.$('.NB-feed-story-shares-container,.NB-feed-story-shares');
         if (this.model.get("comment_count") || this.model.get("share_count")) {
-            this.comments_view = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
+            this.comments_view = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render();
             var $comments = this.comments_view.el;
             $original_comments.replaceWith($comments);
             var $shares = $('.NB-story-comments-shares-teaser-wrapper', $comments);
