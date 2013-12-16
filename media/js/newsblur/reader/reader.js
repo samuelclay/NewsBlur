@@ -2218,6 +2218,9 @@
             }
             
             if (feed) {
+                if (NEWSBLUR.app.story_unread_counter) {
+                    NEWSBLUR.app.story_unread_counter.destroy();
+                }
                 NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.UnreadCount({
                     model: feed
                 }).render();
@@ -2228,6 +2231,9 @@
                     collection = NEWSBLUR.assets.folders;
                 } else {
                     collection = folder.folder_view.collection;
+                }
+                if (NEWSBLUR.app.story_unread_counter) {
+                    NEWSBLUR.app.story_unread_counter.destroy();
                 }
                 NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.UnreadCount({
                     collection: collection

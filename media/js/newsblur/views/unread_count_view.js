@@ -48,6 +48,15 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         return this;
     },
     
+    destroy: function() {
+        if (this.model) {
+            this.model.unbind(null, null, this);
+        } else if (this.collection) {
+            this.collection.unbind(null, null, this);
+        }
+        this.remove();
+    },
+    
     template: _.template('\
         <div class="<%= unread_class %>">\
           <span class="unread_count unread_count_positive <% if (ps) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
