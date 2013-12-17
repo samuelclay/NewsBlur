@@ -217,6 +217,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             });
         }
         
+        if (this.folder_count) {
+            this.folder_count.destroy();
+        }
         this.folder_count = new NEWSBLUR.Views.UnreadCount({
             collection: this.collection
         }).render();
