@@ -171,6 +171,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     render_counts: function() {
+        if (this.counts_view) {
+            this.counts_view.destroy();
+        }
         this.counts_view = new NEWSBLUR.Views.UnreadCount({model: this.model}).render();
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {

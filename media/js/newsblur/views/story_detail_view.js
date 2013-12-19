@@ -252,7 +252,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $original_comments = this.$('.NB-feed-story-comments-container,.NB-feed-story-comments');
         var $original_shares = this.$('.NB-feed-story-shares-container,.NB-feed-story-shares');
         if (this.model.get("comment_count") || this.model.get("share_count")) {
-            var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
+            this.comments_view = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render();
+            var $comments = this.comments_view.el;
             $original_comments.replaceWith($comments);
             var $shares = $('.NB-story-comments-shares-teaser-wrapper', $comments);
             $original_shares.replaceWith($shares);
@@ -263,9 +264,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     destroy: function() {
+        // console.log(["destroy story detail", this.model.get('story_title')]);
         clearTimeout(this.truncate_delay_function);
         this.images_to_load = null;
         this.model.unbind(null, null, this);
+        if (this.collection) this.collection.unbind(null, null, this);
+        // this.sideoptions_view.destroy();
+        if (this.comments_view) this.comments_view.destroy();
         delete this.model.inline_story_detail_view;
         this.remove();
     },

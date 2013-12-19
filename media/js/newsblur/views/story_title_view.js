@@ -88,6 +88,19 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
     },
     
+    destroy: function() {
+        // console.log(["destroy story title", this.model.get('story_title')]);
+        if (this.text_view) {
+            this.text_view.destroy();
+        }
+        if (this.story_detail) {
+            this.story_detail.destroy();
+        }
+        this.model.unbind(null, null, this);
+        this.collection.unbind(null, null, this);
+        this.remove();
+    },
+    
     destroy_inline_story_detail: function() {
         if (this.story_detail) {
             this.story_detail.destroy();

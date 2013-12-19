@@ -24,6 +24,10 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         return this;
     },
     
+    destroy: function() {
+        this.remove();
+    },
+    
     render_teaser: function() {
         if (!this.model.get('share_count')) return;
         
