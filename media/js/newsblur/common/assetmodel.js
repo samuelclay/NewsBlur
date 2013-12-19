@@ -874,8 +874,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     get_feed: function(feed_id) {
         var self = this;
         
-        if (_.string.include(feed_id, 'social:')) {
+        if (_.string.startsWith(feed_id, 'social:')) {
             return this.social_feeds.get(feed_id);
+        } else if (_.string.startsWith(feed_id, 'starred:')) {
+            return this.starred_feeds.get(feed_id);
         } else {
             return this.feeds.get(feed_id);
         }
@@ -894,6 +896,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         return this.feeds;
+    },
+    
+    get_social_feeds: function() {
+        var self = this;
+        
+        return this.social_feeds;
+    },
+    
+    get_starred_feeds: function() {
+        var self = this;
+        
+        return this.starred_feeds;
     },
     
     get_folders: function() {

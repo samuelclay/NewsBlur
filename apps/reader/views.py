@@ -849,6 +849,67 @@ def starred_story_hashes(request):
 
     return dict(starred_story_hashes=story_hashes)
 
+def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404
+    
+    username = username and username.lower()
+    profile = MSocialProfile.get_user(user.pk)
+    params = {'username': profile.username_slug, 'user_id': user.pk}
+    if not username or profile.username_slug.lower() != username:
+        return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
+
+    social_profile = MSocialProfile.get_user(user_id)
+    current_site = Site.objects.get_current()
+    current_site = current_site and current_site.domain
+    
+    if social_profile.private:
+        return HttpResponseForbidden()
+    
+    data = {}
+    data['title'] = social_profile.title
+    data['link'] = social_profile.blurblog_url
+    data['description'] = "Stories shared by %s on NewsBlur." % user.username
+    data['lastBuildDate'] = datetime.datetime.utcnow()
+    data['generator'] = 'NewsBlur - http://www.newsblur.com'
+    data['docs'] = None
+    data['author_name'] = user.username
+    data['feed_url'] = "http://%s%s" % (
+        current_site,
+        reverse('shared-stories-rss-feed', kwargs=params),
+    )
+    rss = feedgenerator.Atom1Feed(**data)
+
+    shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[:25]
+    for shared_story in shared_stories:
+        feed = Feed.get_by_id(shared_story.story_feed_id)
+        content = render_to_string('social/rss_story.xhtml', {
+            'feed': feed,
+            'user': user,
+            'social_profile': social_profile,
+            'shared_story': shared_story,
+            'content': (shared_story.story_content_z and
+                        zlib.decompress(shared_story.story_content_z))
+        })
+        story_data = {
+            'title': shared_story.story_title,
+            'link': shared_story.story_permalink,
+            'description': content,
+            'author_name': shared_story.story_author_name,
+            'categories': shared_story.story_tags,
+            'unique_id': shared_story.story_guid,
+            'pubdate': shared_story.shared_date,
+        }
+        rss.add_item(**story_data)
+        
+    logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
+        user.username,
+        request.META.get('HTTP_USER_AGENT', "")[:24]
+    ))
+    return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
+
 @json.json_view
 def load_river_stories__redis(request):
     limit             = 12

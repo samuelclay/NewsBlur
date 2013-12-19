@@ -22,7 +22,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     },
     
     template: _.template('\
-    <div class="NB-sideoption-save-wrapper">\
+    <div class="NB-sideoption-save-wrapper <% if (story.get("starred")) { %>NB-active<% } %>">\
         <div class="NB-sideoption-save">\
             <% if (story_tags.length) { %>\
                 <div class="NB-sideoption-save-populate">\

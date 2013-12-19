@@ -169,8 +169,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                 model: feed, 
                 type: 'feed', 
                 depth: 0,
-                starred_tag: true,
-                disable_hover: true
+                starred_tag: true
             }).render();
             feed.views.push(feed_view);
             return feed_view.el;

@@ -2973,6 +2973,16 @@
                 if (feed_id && unread_count == 0) {
                     $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
                 }
+            } else if (type == 'starred') {
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
+                    $.make('li', { className: 'NB-menu-separator-inverse' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tag settings')
+                    ])
+                ]);
+                $manage_menu.data('feed_id', feed_id);
+                $manage_menu.data('$feed', $item);
             } else if (type == 'folder') {
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-folder' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
@@ -3235,6 +3245,9 @@
             } else if (type == 'socialfeed') {
                 feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
+            } else if (type == 'starred') {
+                feed_id = options.feed_id;
+                inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = options.story_id;
                 if ($item.hasClass('NB-hover-inverse')) inverse = true; 
@@ -3281,15 +3294,16 @@
                     $manage_menu_container.css('z-index', $("#simplemodal-container").css('z-index'));
                 }
                 $('.NB-task-manage').addClass('NB-hover');
-            } else if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
+            } else if (type == 'feed' || type == 'folder' || type == 'story' || 
+                       type == 'socialfeed' || type == 'starred') {
                 var left, top;
-                NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
+                // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
                     var $align = $item;
                     if (type == 'feed') {
                         left = toplevel ? 2 : -22;
                         top = toplevel ? 1 : 3;
-                    } else if (type == 'socialfeed') {
+                    } else if (type == 'socialfeed' || type == 'starred') {
                         left = 2;
                         top = 2;
                     } else if (type == 'folder') {
@@ -3319,7 +3333,7 @@
                         left = toplevel ? 0 : -2;
                         top = toplevel ? 20 : 19;
                         $align = $('.NB-feedlist-manage-icon', $item);
-                    } else if (type == 'socialfeed') {
+                    } else if (type == 'socialfeed' || type == 'starred') {
                         left = toplevel ? 0 : -18;
                         top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
@@ -3344,7 +3358,8 @@
             $manage_menu_container.stop().css({'display': 'block', 'opacity': 1});
             
             // Create and position the arrow tab
-            if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
+            if (type == 'feed' || type == 'folder' || type == 'story' || 
+                type == 'socialfeed' || type == 'starred') {
                 var $arrow = $.make('div', { className: 'NB-menu-manage-arrow' }, [
                     $.make('div', { className: 'NB-icon' })
                 ]);
@@ -3408,7 +3423,7 @@
             // Hide menu on scroll.
             var $scroll;
             this.flags['feed_list_showing_manage_menu'] = true;
-            if (type == 'feed' || type == 'socialfeed') {
+            if (type == 'feed' || type == 'socialfeed' || type == 'starred') {
                 $scroll = this.$s.$feed_list.parent();
             } else if (type == 'story') {
                 $scroll = this.$s.$story_titles.add(this.$s.$feed_scroll);

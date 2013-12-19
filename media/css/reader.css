@@ -3096,6 +3096,7 @@ body {
 
 .NB-sideoption-save-wrapper.NB-active {
     display: block;
+    height: auto;
 }
 
 .NB-narrow-content .NB-sideoption-save-wrapper {
@@ -7583,11 +7584,11 @@ form.opml_import_form input {
 }
 .NB-modal-feed-settings .NB-preference-options div {
     float: left;
-    margin: 0 12px;
+    margin: 0 6px 0 0;
 }
 .NB-modal-feed-settings .NB-preference-options input[type=radio] {
     float: left;
-    margin: 10px 4px;
+    margin: 2px 6px 0 0px;
 }
 
 .NB-modal-feed-settings .NB-preference-options label {
@@ -7595,6 +7596,9 @@ form.opml_import_form input {
     margin: 0 0 4px 0;
     float: left;
     cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #303030;
 }
 .NB-modal-feed-settings .NB-preference-options img {
     height: 31px;
@@ -7604,6 +7608,23 @@ form.opml_import_form input {
     font-weight: bold;
     text-transform: uppercase;
     opacity: 0;
+}
+.NB-modal-feed-settings .NB-view-settings label {
+    display: block;
+    padding: 4px 6px;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 3px;
+}
+.NB-modal-feed-settings .NB-view-settings img {
+    float: left;
+    width: 18px;
+    height: 15px;
+    padding: 1px 0 0 0;
+    margin: 0 4px 0 0;
+}
+.NB-modal-feed-settings .NB-view-title {
+    margin: 0;
+    padding: 1px 0 0 0;
 }
 
 /* ===================== */

@@ -103,7 +103,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     resize_starred_tags: function() {
         if (this.model.get('starred')) {
-            this.save_view.reset_height();
+            this.save_view.reset_height({immediate: true});
         }
     },
     

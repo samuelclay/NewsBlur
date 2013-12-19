@@ -360,11 +360,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     show_manage_menu: function(e) {
         if (this.options.feed_chooser) return;
-
+        
+        var feed_type = this.model.is_social() ? 'socialfeed' : 
+                        this.model.is_starred() ? 'starred' : 
+                        'feed';
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);
-        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
+
+        NEWSBLUR.reader.show_manage_menu(feed_type, this.$el, {
             feed_id: this.model.id,
             toplevel: this.options.depth == 0,
             rightclick: e.which >= 2

@@ -2062,6 +2062,7 @@ class MStarredStory(mongo.Document):
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
     tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    slug = mongo.StringField(max_length=128)
     count = mongo.IntField()
 
     meta = {
@@ -2070,15 +2071,25 @@ class MStarredStoryCounts(mongo.Document):
         'ordering': ['tag'],
         'allow_inheritance': False,
     }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+
+        return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, self.slug)
     
     @classmethod
     def user_counts(cls, user_id, include_total=False, try_counting=True):
-        counts = cls.objects.filter(user_id=user_id).only('tag', 'count')
-        counts = [{'tag': c.tag, 'count': c.count} for c in counts]
+        counts = cls.objects.filter(user_id=user_id)
+        counts = [{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts]
         
         if counts == [] and try_counting:
             cls.count_tags_for_user(user_id)
-            return cls.user_counts(user_id, include_total=include_total, try_counting=False)
+            return cls.user_counts(user_id, include_total=include_total,
+                                   try_counting=False)
         
         if include_total:
             for c in counts:
@@ -2098,13 +2109,13 @@ class MStarredStoryCounts(mongo.Document):
                            
         cls.objects(user_id=user_id).delete()
         for tag, count in dict(user_tags).items():
-            cls.objects.create(user_id=user_id, tag=tag, count=count)
+            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
         
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects.create(user_id=user_id, tag="", count=total_stories_count)
         
         return dict(total=total_stories_count, tags=user_tags)
-
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
