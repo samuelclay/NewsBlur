@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 import requests
+import zlib
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -20,6 +21,7 @@ from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
+from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -855,57 +857,50 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     except User.DoesNotExist:
         raise Http404
     
-    username = username and username.lower()
-    profile = MSocialProfile.get_user(user.pk)
-    params = {'username': profile.username_slug, 'user_id': user.pk}
-    if not username or profile.username_slug.lower() != username:
-        return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
-
-    social_profile = MSocialProfile.get_user(user_id)
-    current_site = Site.objects.get_current()
-    current_site = current_site and current_site.domain
-    
-    if social_profile.private:
-        return HttpResponseForbidden()
+    try:
+        tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
+    except MStarredStoryCounts.DoesNotExist:
+        raise Http404
     
     data = {}
-    data['title'] = social_profile.title
-    data['link'] = social_profile.blurblog_url
-    data['description'] = "Stories shared by %s on NewsBlur." % user.username
+    data['title'] = "Saved Stories - %s" % tag_counts.tag
+    data['link'] = "%s%s" % (
+        settings.NEWSBLUR_URL,
+        reverse('saved-stories-tag', kwargs=dict(tag_name=tag_slug)))
+    data['description'] = "Stories saved by %s on NewsBlur with the tag \"%s\"." % (user.username,
+                                                                                    tag_counts.tag)
     data['lastBuildDate'] = datetime.datetime.utcnow()
-    data['generator'] = 'NewsBlur - http://www.newsblur.com'
+    data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
-    data['feed_url'] = "http://%s%s" % (
-        current_site,
-        reverse('shared-stories-rss-feed', kwargs=params),
+    data['feed_url'] = "%s%s" % (
+        settings.NEWSBLUR_URL,
+        reverse('starred-stories-rss-feed', 
+                kwargs=dict(user_id=user_id, secret_token=secret_token, tag_slug=tag_slug)),
     )
     rss = feedgenerator.Atom1Feed(**data)
 
-    shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[:25]
-    for shared_story in shared_stories:
-        feed = Feed.get_by_id(shared_story.story_feed_id)
-        content = render_to_string('social/rss_story.xhtml', {
-            'feed': feed,
-            'user': user,
-            'social_profile': social_profile,
-            'shared_story': shared_story,
-            'content': (shared_story.story_content_z and
-                        zlib.decompress(shared_story.story_content_z))
-        })
+    starred_stories = MStarredStory.objects(
+        user_id=user.pk,
+        user_tags__contains=tag_counts.tag
+    ).order_by('-starred_date')[:25]
+    for starred_story in starred_stories:
         story_data = {
-            'title': shared_story.story_title,
-            'link': shared_story.story_permalink,
-            'description': content,
-            'author_name': shared_story.story_author_name,
-            'categories': shared_story.story_tags,
-            'unique_id': shared_story.story_guid,
-            'pubdate': shared_story.shared_date,
+            'title': starred_story.story_title,
+            'link': starred_story.story_permalink,
+            'description': (starred_story.story_content_z and
+                            zlib.decompress(starred_story.story_content_z)),
+            'author_name': starred_story.story_author_name,
+            'categories': starred_story.story_tags,
+            'unique_id': starred_story.story_guid,
+            'pubdate': starred_story.starred_date,
         }
         rss.add_item(**story_data)
         
-    logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
+    logging.user(request, "~FBGenerating ~SB%s~SN's saved story RSS feed (%s, %s stories): ~FM%s" % (
         user.username,
+        tag_counts.tag,
+        tag_counts.count,
         request.META.get('HTTP_USER_AGENT', "")[:24]
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')

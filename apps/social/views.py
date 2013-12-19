@@ -1222,7 +1222,7 @@ def shared_stories_rss_feed(request, user_id, username):
     data['link'] = social_profile.blurblog_url
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
     data['lastBuildDate'] = datetime.datetime.utcnow()
-    data['generator'] = 'NewsBlur - http://www.newsblur.com'
+    data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
     data['feed_url'] = "http://%s%s" % (
