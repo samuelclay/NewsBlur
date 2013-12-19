@@ -7573,6 +7573,13 @@ form.opml_import_form input {
 .NB-modal-exception .NB-fieldset-fields .NB-error {
     padding: 6px 0 6px 4px;
 }
+.NB-modal-feed-settings .NB-exception-option-status {
+    color: #3945C0;
+    font-weight: bold;
+    text-transform: uppercase;
+    opacity: 0;
+}
+
 .NB-modal-feed-settings .NB-preference-label {
     float: left;
     margin: 6px 0;
@@ -7582,50 +7589,7 @@ form.opml_import_form input {
     float: left;
     overflow: hidden;
 }
-.NB-modal-feed-settings .NB-preference-options div {
-    float: left;
-    margin: 0 6px 0 0;
-}
-.NB-modal-feed-settings .NB-preference-options input[type=radio] {
-    float: left;
-    margin: 2px 6px 0 0px;
-}
 
-.NB-modal-feed-settings .NB-preference-options label {
-    padding-left: 4px;
-    margin: 0 0 4px 0;
-    float: left;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 12px;
-    color: #303030;
-}
-.NB-modal-feed-settings .NB-preference-options img {
-    height: 31px;
-}
-.NB-modal-feed-settings .NB-exception-option-status {
-    color: #3945C0;
-    font-weight: bold;
-    text-transform: uppercase;
-    opacity: 0;
-}
-.NB-modal-feed-settings .NB-view-settings label {
-    display: block;
-    padding: 4px 6px;
-    border: 1px solid rgba(0,0,0,.2);
-    border-radius: 3px;
-}
-.NB-modal-feed-settings .NB-view-settings img {
-    float: left;
-    width: 18px;
-    height: 15px;
-    padding: 1px 0 0 0;
-    margin: 0 4px 0 0;
-}
-.NB-modal-feed-settings .NB-view-title {
-    margin: 0;
-    padding: 1px 0 0 0;
-}
 
 /* ===================== */
 /* = Feedchooser Modal = */
@@ -8342,16 +8306,6 @@ form.opml_import_form input {
     border-radius: 3px;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
-.NB-modal-preferences .NB-preference-view {
-  padding-bottom: 4px;
-}
-.NB-modal-preferences .NB-preference-view img {
-  height: 31px;
-  min-width: 50px;
-}
-.NB-modal-preferences .NB-preference-view .NB-preference-options input[type="radio"] {
-  margin-top: 10px;
-}
 .NB-modal-preferences .NB-preference-story-pane-position input {
   margin-top: 4px;
 }
@@ -8529,6 +8483,52 @@ form.opml_import_form input {
     font-size: 12px;
     width: 100px;
 }
+.NB-modal-preferences .NB-preference-autoopenfolder .NB-folders {
+    max-width: 240px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options.NB-view-settings input[type=radio] {
+    margin: 3px 6px 0 2px;
+}
+
+
+.NB-view-settings.NB-preference-options div {
+    float: left;
+    margin: 0 6px 0 0;
+}
+.NB-view-settings.NB-preference-options input[type=radio] {
+    float: left;
+    margin: 2px 6px 0 0px;
+}
+.NB-view-settings.NB-preference-options label {
+    margin: 0 0 4px 0;
+    float: left;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #303030;
+    display: block;
+    padding: 4px 6px;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 3px;
+}
+.NB-preference-options.NB-view-settings img {
+    float: left;
+    width: 18px;
+    height: 15px;
+    padding: 1px 0 0 0;
+    margin: 0 4px 0 0;
+}
+.NB-preference-options.NB-view-settings .NB-view-title {
+    margin: 0;
+    padding: 1px 0 0 0;
+    float: left;
+}
+
+.NB-preference-options.NB-view-settings div {
+    float: left;
+    margin: 0 6px 0 0;
+}
+
 
 /* ================== */
 /* = Account Dialog = */
