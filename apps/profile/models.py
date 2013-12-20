@@ -250,7 +250,7 @@ class Profile(models.Model):
         for payment in payment_history:
             if payment.payment_date > last_year:
                 recent_payments_count += 1
-                if payment.payment_date < oldest_recent_payment_date:
+                if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
                     oldest_recent_payment_date = payment.payment_date
         print " ---> %s payments" % len(payment_history)
         
