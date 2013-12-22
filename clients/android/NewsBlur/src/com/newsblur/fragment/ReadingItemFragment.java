@@ -191,7 +191,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     }
 
     public void updateStory(Story story) {
-        this.story = story;
+        if (story != null ) {
+            this.story = story;
+        }
     }
     
 	private void setupShareButton() {

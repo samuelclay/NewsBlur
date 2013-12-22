@@ -57,7 +57,6 @@ public class SyncService extends IntentService {
     public enum TaskType {
         FOLDER_UPDATE_TWO_STEP,
         FOLDER_UPDATE_WITH_COUNT,
-        FEED_UPDATE,
         SOCIALFEED_UPDATE,
         MULTIFEED_UPDATE,
         MULTISOCIALFEED_UPDATE,
@@ -109,17 +108,6 @@ public class SyncService extends IntentService {
 			case FOLDER_UPDATE_WITH_COUNT:
 				apiManager.getFolderFeedMapping(true);
 				break;	
-
-			case FEED_UPDATE:
-				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
-					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (storiesForFeed == null || storiesForFeed.stories.length == 0) {
-						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
-					}
-				} else {
-					Log.e(this.getClass().getName(), "No feed to refresh included in SyncRequest");
-				}
-				break;
 
 			case MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {

@@ -20,7 +20,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -31,12 +30,31 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    private static Gson gson = new Gson();
+    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, StoriesResponse>() {
+            @Override
+            protected StoriesResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStoriesForFeed(feedId, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(StoriesResponse result) {
+                if (result.isError()) {
+                    // TODO: we have always silently ignored feed fetch errors, but probably shouldn't
+                    return;
+                }
+                if (receiver != null) {
+                    receiver.actionCompleteCallback(result.stories.length == 0);
+                }
+            }
+        }.execute();
+    }
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
@@ -62,7 +80,7 @@ public class FeedUtils {
                 }
 
                 if (receiver != null) {
-                    receiver.actionCompleteCallback();
+                    receiver.actionCompleteCallback(false);
                 }
             }
         }.execute();
@@ -291,6 +309,6 @@ public class FeedUtils {
      * as a result.
      */
     public interface ActionCompletionListener {
-        public abstract void actionCompleteCallback();
+        public abstract void actionCompleteCallback(boolean noMoreData);
     }
 }

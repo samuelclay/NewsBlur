@@ -193,25 +193,24 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public StoriesResponse getStoriesForFeed(String feedId, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
+		values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
-		final APIResponse response = get(feedUri.toString(), values);
-		Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+		APIResponse response = get(feedUri.toString(), values);
+        StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber, "1")) {
-				contentResolver.delete(storyUri, null, null);
-			}
-			StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-
+            Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
+			if (pageNumber == 1) {
+				contentResolver.delete(storyUri, null, null);
+			}
 			contentResolver.delete(classifierUri, null, null);
 
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
@@ -226,11 +225,8 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-
-			return storiesResponse;
-		} else {
-			return null;
-		}
+		} 
+        return storiesResponse;
 	}
 
 	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
