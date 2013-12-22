@@ -476,6 +476,11 @@ def config_monit_app():
     sudo('echo "START=yes" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
 
+def config_monit_work():
+    put('config/monit_work.conf', '/etc/monit/conf.d/work.conf', use_sudo=True)
+    sudo('echo "START=yes" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+
 def config_monit_redis():
     sudo('chown root.root /etc/init.d/redis')
     sudo('chmod a+x /etc/init.d/redis')
