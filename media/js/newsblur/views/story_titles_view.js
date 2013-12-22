@@ -16,6 +16,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.collection.bind('no_more_stories', this.check_premium_river, this);
         this.collection.bind('no_more_stories', this.check_premium_search, this);
         NEWSBLUR.reader.$s.$story_titles.scroll(this.scroll);
+        this.stories = [];
     },
     
     // ==========
@@ -23,13 +24,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
     
     render: function() {
+        this.clear();
         NEWSBLUR.reader.$s.$story_titles.scrollTop(0);
         var collection = this.collection;
-        var $stories = this.collection.map(function(story) {
+        var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection
-            }).render().el;
+            }).render();
+        });
+        this.stories = stories;
+        var $stories = _.map(stories, function(story) {
+            return story.el;
         });
         this.$el.html($stories);
         this.end_loading();
@@ -39,19 +45,27 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     add: function(options) {
         var collection = this.collection;
         if (options.added) {
-            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection
-                }).render().el;
+                }).render();
             }));
+            this.stories = this.stories.concat(stories);
+            var $stories = _.map(stories, function(story) {
+                return story.el;
+            });
             this.$el.append($stories);
         }
         this.end_loading();
         this.fill_out();
     },
-    
+
+    clear: function() {
+        _.invoke(this.stories, 'destroy');
+    },
+
     append_river_premium_only_notification: function() {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text'}, [

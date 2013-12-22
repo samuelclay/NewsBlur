@@ -52,17 +52,17 @@
         }
     }
 
-    if([userPreferences stringForKey:@"fontSizing"]){
-        NSString *fontSize = [NSString stringWithFormat:@"%@", [userPreferences stringForKey:@"fontSizing"]];
-        if ([fontSize isEqualToString:@"NB-extra-small"]) {
+    if([userPreferences stringForKey:@"story_font_size"]){
+        NSString *fontSize = [userPreferences stringForKey:@"story_font_size"];
+        if ([fontSize isEqualToString:@"xs"]) {
             [fontSizeSegment setSelectedSegmentIndex:0]; 
-        } else if ([fontSize isEqualToString:@"NB-small"]) {
+        } else if ([fontSize isEqualToString:@"small"]) {
             [fontSizeSegment setSelectedSegmentIndex:1];
-        } else if ([fontSize isEqualToString:@"NB-medium"]) {
+        } else if ([fontSize isEqualToString:@"medium"]) {
             [fontSizeSegment setSelectedSegmentIndex:2];
-        } else if ([fontSize isEqualToString:@"NB-large"]) {
+        } else if ([fontSize isEqualToString:@"large"]) {
             [fontSizeSegment setSelectedSegmentIndex:3];
-        } else if ([fontSize isEqualToString:@"NB-extra-large"]) {
+        } else if ([fontSize isEqualToString:@"xl"]) {
             [fontSizeSegment setSelectedSegmentIndex:4];
         }
     }
@@ -94,20 +94,20 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [appDelegate.storyPageControl changeFontSize:@"NB-extra-small"];
-        [userPreferences setObject:@"NB-extra-small" forKey:@"fontSizing"];
+        [appDelegate.storyPageControl changeFontSize:@"xs"];
+        [userPreferences setObject:@"xs" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [appDelegate.storyPageControl changeFontSize:@"NB-small"];
-        [userPreferences setObject:@"NB-small" forKey:@"fontSizing"];
+        [appDelegate.storyPageControl changeFontSize:@"small"];
+        [userPreferences setObject:@"small" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [appDelegate.storyPageControl changeFontSize:@"NB-medium"];
-        [userPreferences setObject:@"NB-medium" forKey:@"fontSizing"];
+        [appDelegate.storyPageControl changeFontSize:@"medium"];
+        [userPreferences setObject:@"medium" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [appDelegate.storyPageControl changeFontSize:@"NB-large"];
-        [userPreferences setObject:@"NB-large" forKey:@"fontSizing"];
+        [appDelegate.storyPageControl changeFontSize:@"large"];
+        [userPreferences setObject:@"large" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [appDelegate.storyPageControl changeFontSize:@"NB-extra-large"];
-        [userPreferences setObject:@"NB-extra-large" forKey:@"fontSizing"];
+        [appDelegate.storyPageControl changeFontSize:@"xl"];
+        [userPreferences setObject:@"xl" forKey:@"story_font_size"];
     }
     [userPreferences synchronize];
 }

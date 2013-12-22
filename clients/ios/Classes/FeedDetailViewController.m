@@ -31,8 +31,8 @@
 #import "NBBarButtonItem.h"
 #import "UIActivitiesControl.h"
 
-#define kTableViewRowHeight 61;
-#define kTableViewRiverRowHeight 81;
+#define kTableViewRowHeight 38;
+#define kTableViewRiverRowHeight 60;
 #define kTableViewShortRowDifference 15;
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
@@ -70,7 +70,11 @@
  
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(preferredContentSizeChanged:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+
     popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
@@ -102,6 +106,10 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
+}
+
+- (void)preferredContentSizeChanged:(NSNotification *)aNotification {
+    [self.storyTitlesTable reloadData];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -210,6 +218,12 @@
     
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        !self.isMovingFromParentViewController) {
+        [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -227,6 +241,11 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        self.isMovingToParentViewController &&
+        appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
+    }
 }
 
 - (void)fadeSelectedCell {
@@ -1012,7 +1031,9 @@
         [(NBLoadingCell *)cell animate];
     }
 }
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
     NSInteger storyCount = appDelegate.storyLocationsCount;
     
@@ -1025,7 +1046,9 @@
             && UIInterfaceOrientationIsPortrait(orientation)) {
             height = height - kTableViewShortRowDifference;
         }
-        return height;
+        UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        return height + font.pointSize*2;
     } else {
         NSInteger height = kTableViewRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -1033,7 +1056,9 @@
             && UIInterfaceOrientationIsPortrait(orientation)) {
             height = height - kTableViewShortRowDifference;
         }
-        return height;
+        UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        return height + font.pointSize*2;
     }
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
@@ -1042,6 +1067,26 @@
 }
 - (void)scrollViewDidScroll: (UIScrollView *)scroll {
     [self checkScroll];
+}
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    UIFontDescriptor *fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
+        }
+    }
+    return fontDescriptor;
 }
 
 - (void)checkScroll {

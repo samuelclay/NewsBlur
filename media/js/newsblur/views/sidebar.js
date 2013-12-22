@@ -59,9 +59,13 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     
     show_counts: function(options) {
         var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
-        var $counts = new NEWSBLUR.Views.UnreadCount({
+        if (this.unread_count) {
+            this.unread_count.destroy();
+        }
+        this.unread_count = new NEWSBLUR.Views.UnreadCount({
             collection: NEWSBLUR.assets.social_feeds
-        }).render().$el;
+        }).render();
+        var $counts = this.unread_count.$el;
         
         if (this.options.feedbar) {
             this.$('.NB-story-title-indicator-count').html($counts.clone());
