@@ -186,7 +186,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 
     public void updateSaveButton() {
+        if (view == null) { return; }
 		Button saveButton = (Button) view.findViewById(R.id.save_story_button);
+        if (saveButton == null) { return; }
         saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
     }
 
