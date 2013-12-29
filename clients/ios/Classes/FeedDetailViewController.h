@@ -72,6 +72,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle;
 - (void)checkScroll;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 

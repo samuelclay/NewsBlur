@@ -20,6 +20,7 @@ public class FileCache {
 	}
 
 	public File getFile(String url){
+        if (url == null ) return null;
 		final String filename = String.valueOf(url.hashCode());
 		final File f = new File(cacheDir, filename);
 		return f;

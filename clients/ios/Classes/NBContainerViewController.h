@@ -10,12 +10,14 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NBContainerViewController : UIViewController <UIPopoverControllerDelegate> {
+@interface NBContainerViewController : UIViewController
+<UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
 @property (readonly) BOOL storyTitlesOnLeft;
 @property (readonly) int storyTitlesYCoordinate;
+@property (nonatomic) CALayer *leftBorder;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 
@@ -26,7 +28,10 @@
 - (void)adjustFeedDetailScreenForStoryTitles;
 
 - (void)transitionToFeedDetail;
+- (void)transitionToFeedDetail:(BOOL)resetLayout;
+- (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage;
 - (void)transitionFromFeedDetail;
+- (void)transitionFromFeedDetail:(BOOL)resetLayout;
 - (void)transitionToShareView;
 - (void)transitionFromShareView;
 
