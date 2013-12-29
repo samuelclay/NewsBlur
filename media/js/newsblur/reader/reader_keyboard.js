@@ -194,7 +194,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                     ])
                   ]),
                   $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Search feed'),
+                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '搜索站点'),
                     $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                         '/'
                     ])
@@ -274,7 +274,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ]),
                 $.make('div', { className: 'NB-keyboard-group' }, [
                   $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark older stories read'),
+                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '标记更早的文章为已读'),
                     $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                         'shift',
                         $.make('span', '+'),
@@ -282,7 +282,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                     ])
                   ]),
                   $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark newer stories read'),
+                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '标记更新的文章为已读'),
                     $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                         'shift',
                         $.make('span', '+'),
@@ -292,7 +292,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
                 ]),
                 $.make('div', { className: 'NB-keyboard-group' }, [
                   $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Save/Unsave story'),
+                    $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, '收藏/取消收藏文章'),
                     $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                         's'
                     ])
