@@ -57,7 +57,6 @@ public class SyncService extends IntentService {
     public enum TaskType {
         FOLDER_UPDATE_TWO_STEP,
         FOLDER_UPDATE_WITH_COUNT,
-        SOCIALFEED_UPDATE,
         MULTIFEED_UPDATE,
         MULTISOCIALFEED_UPDATE,
         STARRED_STORIES_UPDATE
@@ -136,17 +135,6 @@ public class SyncService extends IntentService {
                 if (starredStories == null || starredStories.stories.length == 0) {
                     resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
                 }
-				break;
-
-			case SOCIALFEED_UPDATE:
-				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
-					SocialFeedResponse storiesForSocialFeed = apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (storiesForSocialFeed == null || storiesForSocialFeed.stories.length == 0) {
-						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
-					}
-				} else {
-					Log.e(this.getClass().getName(), "Missing parameters for socialfeed SyncRequest");
-				}
 				break;
 
 			default:

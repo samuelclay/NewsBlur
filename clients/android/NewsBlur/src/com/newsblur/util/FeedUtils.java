@@ -30,6 +30,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
@@ -45,6 +46,26 @@ public class FeedUtils {
             }
             @Override
             protected void onPostExecute(StoriesResponse result) {
+                if (result.isError()) {
+                    // TODO: we have always silently ignored feed fetch errors, but probably shouldn't
+                    return;
+                }
+                if (receiver != null) {
+                    receiver.actionCompleteCallback(result.stories.length == 0);
+                }
+            }
+        }.execute();
+    }
+
+    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, SocialFeedResponse>() {
+            @Override
+            protected SocialFeedResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStoriesForSocialFeed(feedId, socialUsername, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(SocialFeedResponse result) {
                 if (result.isError()) {
                     // TODO: we have always silently ignored feed fetch errors, but probably shouldn't
                     return;

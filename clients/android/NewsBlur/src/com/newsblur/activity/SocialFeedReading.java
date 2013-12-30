@@ -48,17 +48,7 @@ public class SocialFeedReading extends Reading {
     @Override
     public void triggerRefresh(int page) {
         updateSyncStatus(true);
-        final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-        intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-        intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.SOCIALFEED_UPDATE);
-        intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
-        if (page > 1) {
-            intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-        }
-        intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
-        intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFeed(this, userId));
-        intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFeed(this, userId));
-        startService(intent);
+        FeedUtils.updateFeed(this, this, userId, username, page, PrefsUtils.getStoryOrderForFeed(this, userId), PrefsUtils.getReadFilterForFeed(this, userId));
     }
 
 }

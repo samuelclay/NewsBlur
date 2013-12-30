@@ -117,8 +117,10 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	
 	public void hasUpdated() {
 		setupSocialFeed();
-		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
 		requestedPage = false;
+        if (isAdded()) {
+		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+        }
 	}
 
 	@Override

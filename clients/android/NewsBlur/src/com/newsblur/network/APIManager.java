@@ -338,22 +338,20 @@ public class APIManager {
 		}
 	}
 
-	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
 		final APIResponse response = get(feedUri.toString(), values);
 		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
 			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-			if (TextUtils.equals(pageNumber, "1")) {
+			if (pageNumber == 1) {
 				contentResolver.delete(storySocialUri, null, null);
 			}
 
