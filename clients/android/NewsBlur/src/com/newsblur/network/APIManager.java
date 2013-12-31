@@ -229,21 +229,19 @@ public class APIManager {
         return storiesResponse;
 	}
 
-	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public StoriesResponse getStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		}
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 		final APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				contentResolver.delete(storyUri, null, null);
 			}
@@ -258,10 +256,8 @@ public class APIManager {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
 
-			return storiesResponse;
-		} else {
-			return null;
 		}
+        return storiesResponse;
 	}
 
 	public StoriesResponse getStarredStories(int pageNumber) {

@@ -23,6 +23,7 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
@@ -80,16 +81,10 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
-			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
+
 			String[] feeds = new String[feedIds.size()];
 			feedIds.toArray(feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-            intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
-            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, folderName));
-			startService(intent);
+            FeedUtils.updateFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, folderName));
 		}
 	}
 
