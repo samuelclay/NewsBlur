@@ -264,16 +264,14 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStarredStories(String pageNumber) {
-		final ValueMultimap values = new ValueMultimap();
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
-		final APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
+	public StoriesResponse getStarredStories(int pageNumber) {
+		ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
+		APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
 			}
 			for (Story story : storiesResponse.stories) {
@@ -283,10 +281,8 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-			return storiesResponse;
-		} else {
-			return null;
-		}
+        }
+        return storiesResponse;
 	}
 
 	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {

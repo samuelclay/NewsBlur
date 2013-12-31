@@ -65,6 +65,20 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void updateSavedStories(final Context context, final ActionCompletionListener receiver, final int pageNumber) {
+        new AsyncTask<Void, Void, StoriesResponse>() {
+            @Override
+            protected StoriesResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStarredStories(pageNumber);
+            }
+            @Override
+            protected void onPostExecute(StoriesResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
         if (response.isError()) {
             Log.e(FeedUtils.class.getName(), "Error response received loading stories.");

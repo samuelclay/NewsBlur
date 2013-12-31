@@ -58,8 +58,7 @@ public class SyncService extends IntentService {
         FOLDER_UPDATE_TWO_STEP,
         FOLDER_UPDATE_WITH_COUNT,
         MULTIFEED_UPDATE,
-        MULTISOCIALFEED_UPDATE,
-        STARRED_STORIES_UPDATE
+        MULTISOCIALFEED_UPDATE
     };
 
 	private APIManager apiManager;
@@ -128,13 +127,6 @@ public class SyncService extends IntentService {
 				} else {
 					Log.e(this.getClass().getName(), "No socialfeed ids to refresh included in SyncRequest");
 				}
-				break;
-
-			case STARRED_STORIES_UPDATE:
-                StoriesResponse starredStories = apiManager.getStarredStories(intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-                if (starredStories == null || starredStories.stories.length == 0) {
-                    resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
-                }
 				break;
 
 			default:
