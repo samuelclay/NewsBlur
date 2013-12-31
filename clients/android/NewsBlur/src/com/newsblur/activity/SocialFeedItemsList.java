@@ -66,7 +66,7 @@ public class SocialFeedItemsList extends ItemsList {
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
-            FeedUtils.updateFeed(this, this, userId, username, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, userId));
+            FeedUtils.updateSocialFeed(this, this, userId, username, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, userId));
 		}
 	}
 

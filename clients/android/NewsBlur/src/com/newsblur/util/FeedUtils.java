@@ -65,12 +65,26 @@ public class FeedUtils {
         }.execute();
     }
 
-    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+    public static void updateSocialFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
         new AsyncTask<Void, Void, SocialFeedResponse>() {
             @Override
             protected SocialFeedResponse doInBackground(Void... arg) {
                 APIManager apiManager = new APIManager(context);
                 return apiManager.getStoriesForSocialFeed(feedId, socialUsername, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(SocialFeedResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    public static void updateSocialFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, SocialFeedResponse>() {
+            @Override
+            protected SocialFeedResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getSharedStoriesForFeeds(feedIds, pageNumber, order, filter);
             }
             @Override
             protected void onPostExecute(SocialFeedResponse result) {

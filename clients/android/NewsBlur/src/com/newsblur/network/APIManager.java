@@ -281,14 +281,12 @@ public class APIManager {
         return storiesResponse;
 	}
 
-	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		}
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
@@ -296,8 +294,7 @@ public class APIManager {
 		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
-			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				contentResolver.delete(storyUri, null, null);
 			}
@@ -323,11 +320,9 @@ public class APIManager {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 				}
 			}
-
-			return storiesResponse;
-		} else {
-			return null;
 		}
+
+        return storiesResponse;
 	}
 
 	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, int pageNumber, StoryOrder order, ReadFilter filter) {

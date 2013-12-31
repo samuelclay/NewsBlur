@@ -34,17 +34,6 @@ public class SyncService extends IntentService {
 
     public static final String EXTRA_TASK_TYPE = "syncServiceTaskType";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
-	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
-	public static final String EXTRA_TASK_FOLDER_NAME = "taskFoldername";
-	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
-	public static final String EXTRA_TASK_STORIES = "stories";
-	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
-	public static final String EXTRA_TASK_SOCIALFEED_USERNAME = "username";
-	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
-	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
-	public static final String EXTRA_TASK_ORDER = "order";
-	public static final String EXTRA_TASK_READ_FILTER = "read_filter";
-	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
 
     public enum SyncStatus {
         STATUS_RUNNING,
@@ -56,8 +45,7 @@ public class SyncService extends IntentService {
 
     public enum TaskType {
         FOLDER_UPDATE_TWO_STEP,
-        FOLDER_UPDATE_WITH_COUNT,
-        MULTISOCIALFEED_UPDATE
+        FOLDER_UPDATE_WITH_COUNT
     };
 
 	private APIManager apiManager;
@@ -105,17 +93,6 @@ public class SyncService extends IntentService {
 			case FOLDER_UPDATE_WITH_COUNT:
 				apiManager.getFolderFeedMapping(true);
 				break;	
-
-			case MULTISOCIALFEED_UPDATE:
-				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
-					SocialFeedResponse sharedStoriesForFeeds = apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER), (StoryOrder) intent.getSerializableExtra(EXTRA_TASK_ORDER), (ReadFilter) intent.getSerializableExtra(EXTRA_TASK_READ_FILTER));
-					if (sharedStoriesForFeeds == null || sharedStoriesForFeeds.stories.length == 0) {
-						resultStatus = SyncStatus.STATUS_NO_MORE_UPDATES;
-					}
-				} else {
-					Log.e(this.getClass().getName(), "No socialfeed ids to refresh included in SyncRequest");
-				}
-				break;
 
 			default:
 				Log.e(this.getClass().getName(), "SyncService called without relevant task assignment");

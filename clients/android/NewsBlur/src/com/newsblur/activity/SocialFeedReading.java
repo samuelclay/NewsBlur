@@ -48,7 +48,7 @@ public class SocialFeedReading extends Reading {
     @Override
     public void triggerRefresh(int page) {
         updateSyncStatus(true);
-        FeedUtils.updateFeed(this, this, userId, username, page, PrefsUtils.getStoryOrderForFeed(this, userId), PrefsUtils.getReadFilterForFeed(this, userId));
+        FeedUtils.updateSocialFeed(this, this, userId, username, page, PrefsUtils.getStoryOrderForFeed(this, userId), PrefsUtils.getReadFilterForFeed(this, userId));
     }
 
 }
