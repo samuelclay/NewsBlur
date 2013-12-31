@@ -103,6 +103,8 @@
     <string name="menu_mark_previous_stories_as_read">Mark previous as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
+
+    <string name="toast_error_loading_stories">Error loading stories</string>
     
     <string name="toast_marked_folder_as_read">Folder marked as read</string>
     <string name="toast_marked_feed_as_read">Feed marked as read</string>

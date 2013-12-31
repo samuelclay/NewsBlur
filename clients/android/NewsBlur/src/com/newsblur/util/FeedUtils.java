@@ -46,13 +46,7 @@ public class FeedUtils {
             }
             @Override
             protected void onPostExecute(StoriesResponse result) {
-                if (result.isError()) {
-                    // TODO: we have always silently ignored feed fetch errors, but probably shouldn't
-                    return;
-                }
-                if (receiver != null) {
-                    receiver.actionCompleteCallback(result.stories.length == 0);
-                }
+                handleStoryResponse(context, result, result.stories, receiver);
             }
         }.execute();
     }
@@ -66,15 +60,27 @@ public class FeedUtils {
             }
             @Override
             protected void onPostExecute(SocialFeedResponse result) {
-                if (result.isError()) {
-                    // TODO: we have always silently ignored feed fetch errors, but probably shouldn't
-                    return;
-                }
-                if (receiver != null) {
-                    receiver.actionCompleteCallback(result.stories.length == 0);
-                }
+                handleStoryResponse(context, result, result.stories, receiver);
             }
         }.execute();
+    }
+
+    private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
+        if (response.isError()) {
+            Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
+            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
+            receiver.actionCompleteCallback(false); // it is reasonable to try to load again
+            return;
+        }
+        if (stories == null) {
+            Log.e(FeedUtils.class.getName(), "Null stories member received loading stories.");
+            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
+            receiver.actionCompleteCallback(true); // it is not reasonable to try to load again
+            return;
+        }
+        if (receiver != null) {
+            receiver.actionCompleteCallback(stories.length == 0); // only keep loading if there are more stories left
+        }
     }
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
