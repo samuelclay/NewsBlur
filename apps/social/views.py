@@ -1198,6 +1198,22 @@ def remove_like_comment(request):
             'user_profiles': profiles,
         })
         
+def shared_stories_rss_feed_noid(request):
+    index = HttpResponseRedirect('http://%s%s' % (
+                                 Site.objects.get_current().domain,
+                                 reverse('index')))
+    if request.subdomain:
+        username = request.subdomain
+        try:
+            if '.' in username:
+                username = username.split('.')[0]
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return index
+        return shared_stories_rss_feed(request, user_id=user.pk, username=request.subdomain)
+
+    return index
+
 def shared_stories_rss_feed(request, user_id, username):
     try:
         user = User.objects.get(pk=user_id)
@@ -1248,7 +1264,7 @@ def shared_stories_rss_feed(request, user_id, username):
             'description': content,
             'author_name': shared_story.story_author_name,
             'categories': shared_story.story_tags,
-            'unique_id': shared_story.story_guid,
+            'unique_id': shared_story.story_permalink,
             'pubdate': shared_story.shared_date,
         }
         rss.add_item(**story_data)
