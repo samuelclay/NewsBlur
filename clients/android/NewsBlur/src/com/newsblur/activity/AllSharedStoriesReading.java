@@ -40,16 +40,7 @@ public class AllSharedStoriesReading extends Reading {
     @Override
     public void triggerRefresh(int page) {
         updateSyncStatus(true);
-        final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-        intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-        intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTISOCIALFEED_UPDATE);
-        intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // query for all shared storis via wildcard
-        if (page > 1) {
-            intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-        }
-        intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
-        intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
-        startService(intent);
+        FeedUtils.updateSocialFeeds(this, this, new String[0], page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
     }
 
 }

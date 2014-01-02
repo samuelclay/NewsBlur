@@ -40,7 +40,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	}
 
 	public Story getStory(int position) {
-		if (stories == null || position >= stories.getCount()) {
+		if (stories == null || stories.getColumnCount() == 0 || position >= stories.getCount() || position < 0) {
 			return null;
 		} else {
 			stories.moveToPosition(position);

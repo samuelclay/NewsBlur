@@ -193,25 +193,24 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public StoriesResponse getStoriesForFeed(String feedId, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
+		values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
-		final APIResponse response = get(feedUri.toString(), values);
-		Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+		APIResponse response = get(feedUri.toString(), values);
+        StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber, "1")) {
-				contentResolver.delete(storyUri, null, null);
-			}
-			StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-
+            Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
+			if (pageNumber == 1) {
+				contentResolver.delete(storyUri, null, null);
+			}
 			contentResolver.delete(classifierUri, null, null);
 
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
@@ -226,28 +225,23 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-
-			return storiesResponse;
-		} else {
-			return null;
-		}
+		} 
+        return storiesResponse;
 	}
 
-	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public StoriesResponse getStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		}
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
 		values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 		final APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				contentResolver.delete(storyUri, null, null);
 			}
@@ -262,22 +256,18 @@ public class APIManager {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
 
-			return storiesResponse;
-		} else {
-			return null;
 		}
+        return storiesResponse;
 	}
 
-	public StoriesResponse getStarredStories(String pageNumber) {
-		final ValueMultimap values = new ValueMultimap();
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
-		final APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
+	public StoriesResponse getStarredStories(int pageNumber) {
+		ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
+		APIResponse response = get(APIConstants.URL_STARRED_STORIES, values);
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
 			}
 			for (Story story : storiesResponse.stories) {
@@ -287,20 +277,16 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-			return storiesResponse;
-		} else {
-			return null;
-		}
+        }
+        return storiesResponse;
 	}
 
-	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		}
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
 
@@ -308,8 +294,7 @@ public class APIManager {
 		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
-			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
-			if (TextUtils.equals(pageNumber,"1")) {
+			if (pageNumber == 1) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				contentResolver.delete(storyUri, null, null);
 			}
@@ -335,29 +320,25 @@ public class APIManager {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 				}
 			}
-
-			return storiesResponse;
-		} else {
-			return null;
 		}
+
+        return storiesResponse;
 	}
 
-	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber, StoryOrder order, ReadFilter filter) {
+	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_ORDER, order.getParameterValue());
         values.put(APIConstants.PARAMETER_READ_FILTER, filter.getParameterValue());
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
-		}
+        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
 		final APIResponse response = get(feedUri.toString(), values);
 		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
 			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-			if (TextUtils.equals(pageNumber, "1")) {
+			if (pageNumber == 1) {
 				contentResolver.delete(storySocialUri, null, null);
 			}
 

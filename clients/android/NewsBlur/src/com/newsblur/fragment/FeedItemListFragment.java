@@ -124,7 +124,9 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	}
 
 	public void hasUpdated() {
-		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+        if (isAdded()) {
+		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+        }
 		requestedPage = false;
 	}
 
