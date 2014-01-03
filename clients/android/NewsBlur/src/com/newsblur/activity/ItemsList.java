@@ -13,13 +13,15 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.util.FeedUtils;
+import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
+public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -118,6 +120,17 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	@Override
     public void setNothingMoreToUpdate() {
         stopLoading = true;
+    }
+
+    @Override
+    public void actionCompleteCallback(boolean noMoreData) {
+		if (itemListFragment != null) {
+			itemListFragment.hasUpdated();
+		}
+        setSupportProgressBarIndeterminateVisibility(false);
+        if (noMoreData) {
+            stopLoading = true;
+        }
     }
 
 	@Override

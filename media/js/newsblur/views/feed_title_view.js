@@ -8,7 +8,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     flags: {},
     
     events: {
-        "dblclick .feed_counts"                     : "mark_feed_as_read",
+        "dblclick .feed_counts"                     : "dblclick_mark_feed_as_read",
         "dblclick"                                  : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
         "click .NB-feedbar-mark-feed-read-time"     : "mark_feed_as_read_days",
@@ -277,7 +277,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     open_feed_link: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+        var dblclick_pref = NEWSBLUR.assets.preference('doubleclick_feed');
+        if (dblclick_pref == "ignore") return;
         if (this.options.type == "story") return;
         if (this.options.starred_tag) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
@@ -287,13 +288,22 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             this.flags.double_click = false;
         }, this), 500);
 
-        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        if (dblclick_pref == "open_and_read") {
+            NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        }
+
         if (this.model.get('feed_link')) {
             window.open(this.model.get('feed_link'), '_blank');
             window.focus();
         }
         
         return false;
+    },
+    
+    dblclick_mark_feed_as_read: function(e) {
+        if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
+        
+        return this.mark_feed_as_read(e);
     },
     
     mark_feed_as_read: function(e, days) {
@@ -316,7 +326,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     mark_feed_as_read_days: function(e) {
         var days = parseInt($(e.target).data('days'), 10);
-        this.mark_feed_as_read(e, days);
+        this.mark_feed_as_read(e, days, true);
     },
     
     expand_mark_read: function() {
