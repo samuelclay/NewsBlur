@@ -8,7 +8,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     flags: {},
     
     events: {
-        "dblclick .feed_counts"                     : "mark_feed_as_read",
+        "dblclick .feed_counts"                     : "dblclick_mark_feed_as_read",
         "dblclick"                                  : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
         "click .NB-feedbar-mark-feed-read-time"     : "mark_feed_as_read_days",
@@ -290,12 +290,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         return false;
     },
     
+    dblclick_mark_feed_as_read: function(e) {
+        if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
+        
+        return this.mark_feed_as_read(e);
+    },
+    
     mark_feed_as_read: function(e, days) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
         
         this.flags.double_click = true;
         _.delay(_.bind(function() {
@@ -310,7 +315,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     mark_feed_as_read_days: function(e) {
         var days = parseInt($(e.target).data('days'), 10);
-        this.mark_feed_as_read(e, days);
+        this.mark_feed_as_read(e, days, true);
     },
     
     expand_mark_read: function() {
