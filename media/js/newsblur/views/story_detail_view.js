@@ -87,7 +87,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
-        this.attach_audio_handler_to_stories();
+        this.attach_audio_handler();
+        this.attach_footnotes_handler();
+        this.attach_syntax_highlighter_handler();
+        this.attach_fitvid_handler();
 
         return this;
     },
@@ -510,7 +513,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
-    attach_audio_handler_to_stories: function() {
+    attach_audio_handler: function() {
         _.delay(_.bind(function() {
             var $audio = this.$('audio').filter(function() {
                 return !$(this).closest('.audiojs').length;
@@ -524,6 +527,33 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
             audiojs.events.ready(function() {
                 audiojs.createAll(audio_opts, $audio);
+            });
+        }, this), 500);
+    },
+    
+    attach_syntax_highlighter_handler: function() {
+        _.delay(_.bind(function() {
+            this.$('pre').each(function(i, e) {
+                hljs.highlightBlock(e);
+            });
+        }, this), 1000);
+    },
+    
+    attach_footnotes_handler: function() {
+        _.delay(_.bind(function() {
+            $.bigfoot({
+                scope: this.$el,
+                actionOriginalFN: 'ignore'
+            });
+        }, this), 500);
+
+    },
+    
+    attach_fitvid_handler: function() {
+        // Thanks to feedbin for the custom selector
+        _.delay(_.bind(function() {
+            this.$el.fitVids({
+                customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
             });
         }, this), 500);
     },
