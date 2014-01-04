@@ -2095,10 +2095,10 @@ background: transparent;
 }
 
 .NB-feed-story blockquote {
-    border-left: 5px solid #C2C5BE;
-    padding: 0 1.5em;
+    border-left: 2px solid #ECEFE9;
+    padding: .5em 1.5em;
     margin: 0px;
-    color: rgba(10, 12, 38, .6);
+    background-color: #F4F6F2;
 }
 
 .NB-feed-story .NB-feed-story-content iframe,
