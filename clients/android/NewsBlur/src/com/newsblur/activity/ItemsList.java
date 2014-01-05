@@ -126,6 +126,7 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
     public void actionCompleteCallback(boolean noMoreData) {
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
+            itemListFragment.setEmptyListView(R.string.empty_list_view_no_stories);
 		}
         setSupportProgressBarIndeterminateVisibility(false);
         if (noMoreData) {
