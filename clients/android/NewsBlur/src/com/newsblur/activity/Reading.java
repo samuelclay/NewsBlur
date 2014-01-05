@@ -33,7 +33,6 @@ import com.newsblur.activity.Main;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.StoryTextResponse;
@@ -44,7 +43,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener {
+public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -78,9 +77,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
     private APIManager apiManager;
-	protected SyncUpdateFragment syncFragment;
 	protected Cursor stories;
     private boolean noMoreApiPages;
+    private boolean stopLoading;
     protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
     private int currentApiPage = 0;
 	private Set<Story> storiesToMarkAsRead;
@@ -139,12 +138,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * adapter are created.
      */
 	protected void setupPager() {
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-		}
-
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
 		pager.setPageMarginDrawable(R.drawable.divider_light);
@@ -220,6 +213,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
+        if (this.stopLoading) { return; }
+
         this.requestedPage = false;
 		updateSyncStatus(false);
         if (noMoreData) {
@@ -343,42 +338,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         enableOverlays();
     }
 
-	@Override
-	public void updateAfterSync() {
-        this.requestedPage = false;
-		updateSyncStatus(false);
-		stories.requery();
-		readingAdapter.notifyDataSetChanged();
-        this.enableOverlays();
-        checkStoryCount(pager.getCurrentItem());
-        if (this.unreadSearchLatch != null) {
-            this.unreadSearchLatch.countDown();
-        }
-	}
-
-	@Override
-	public void updatePartialSync() {
-		stories.requery();
-		readingAdapter.notifyDataSetChanged();
-        this.enableOverlays();
-        checkStoryCount(pager.getCurrentItem());
-        if (this.unreadSearchLatch != null) {
-            this.unreadSearchLatch.countDown();
-        }
-	}
-
-    /**
-     * Lets us know that there are no more pages of stories to load, ever, and will cause
-     * us to stop requesting them.
-     */
-	@Override
-	public void setNothingMoreToUpdate() {
-		this.noMoreApiPages = true;
-        if (this.unreadSearchLatch !=null) {
-            this.unreadSearchLatch.countDown();
-        }
-	}
-
 	/**
      * While navigating the story list and at the specified position, see if it is possible
      * and desirable to start loading more stories in the background.  Note that if a load
@@ -387,14 +346,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
     private void checkStoryCount(int position) {
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage) {
+		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
 			requestedPage = true;
 			triggerRefresh(currentApiPage);
 		}
 	}
 
-	@Override
 	public void updateSyncStatus(final boolean syncRunning) {
         enableProgressCircle(overlayProgressRight, syncRunning);
 	}
@@ -419,6 +377,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     protected void onPause() {
         flushStoriesMarkedRead();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        this.stopLoading = true;
+        super.onStop();
     }
 
     /** 

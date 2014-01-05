@@ -20,10 +20,8 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.network.APIManager;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
@@ -54,12 +52,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 			listTransaction.commit();
 		}
 
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
-		}
+        triggerRefresh(1);
 	}
 
 	@Override
