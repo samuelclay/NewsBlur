@@ -87,12 +87,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
+        
+        return this;
+    },
+    
+    attach_handlers: function() {
+        this.watch_images_for_story_height();
         this.attach_audio_handler();
-        this.attach_footnotes_handler();
         this.attach_syntax_highlighter_handler();
         this.attach_fitvid_handler();
-
-        return this;
     },
     
     render_header: function(model, value, options) {
@@ -536,17 +539,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.$('pre').each(function(i, e) {
                 hljs.highlightBlock(e);
             });
-        }, this), 1000);
-    },
-    
-    attach_footnotes_handler: function() {
-        _.delay(_.bind(function() {
-            $.bigfoot({
-                scope: this.$el,
-                actionOriginalFN: 'ignore'
-            });
-        }, this), 500);
-
+        }, this), 100);
     },
     
     attach_fitvid_handler: function() {
@@ -555,7 +548,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.$el.fitVids({
                 customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
             });
-        }, this), 500);
+        }, this), 50);
     },
     
     // ==========
@@ -564,13 +557,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     click_link_in_story: function(e) {
         if (NEWSBLUR.hotkeys.shift) return;
+        var $target = $(e.currentTarget);
 
         e.preventDefault();
         e.stopPropagation();
         if (e.which >= 2) return;
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
-        var href = $(e.currentTarget).attr('href');
+        var href = $target.attr('href');
         
         if (NEWSBLUR.assets.preference('new_window') == 1) {
             window.open(href, '_blank');
