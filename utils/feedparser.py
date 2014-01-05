@@ -1,5 +1,3 @@
-# Broken: http://menu-mtv-quadhangout.blogspot.com/feeds/posts/default
-
 """Universal feed parser
 
 Handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds
@@ -11,9 +9,9 @@ Required: Python 2.4 or later
 Recommended: iconv_codec <http://cjkpython.i18n.org/>
 """
 
-__version__ = "5.1.2"
+__version__ = "5.1.3"
 __license__ = """
-Copyright (c) 2010-2012 Kurt McKee <contactme@kurtmckee.org>
+Copyright (c) 2010-2013 Kurt McKee <contactme@kurtmckee.org>
 Copyright (c) 2002-2008 Mark Pilgrim
 All rights reserved.
 
@@ -46,7 +44,8 @@ __contributors__ = ["Jason Diamond <http://injektilo.org/>",
                     "Sam Ruby <http://intertwingly.net/>",
                     "Ade Oshineye <http://blog.oshineye.com/>",
                     "Martin Pool <http://sourcefrog.net/>",
-                    "Kurt McKee <http://kurtmckee.org/>"]
+                    "Kurt McKee <http://kurtmckee.org/>",
+                    "Bernd Schlapsi <https://github.com/brot>",]
 
 # HTTP "User-Agent" header to send to servers when downloading feeds.
 # If you are embedding feedparser in a larger application, you should
@@ -62,15 +61,6 @@ ACCEPT_HEADER = "application/atom+xml,application/rdf+xml,application/rss+xml,ap
 # of pre-installed parsers until it finds one that supports everything we need.
 PREFERRED_XML_PARSERS = ["drv_libxml2"]
 
-# If you want feedparser to automatically run HTML markup through HTML Tidy, set
-# this to 1.  Requires mxTidy <http://www.egenix.com/files/python/mxTidy.html>
-# or utidylib <http://utidylib.berlios.de/>.
-TIDY_MARKUP = 0
-
-# List of Python interfaces for HTML Tidy, in order of preference.  Only useful
-# if TIDY_MARKUP = 1
-PREFERRED_TIDY_INTERFACES = ["uTidy", "mxTidy"]
-
 # If you want feedparser to automatically resolve all relative URIs, set this
 # to 1.
 RESOLVE_RELATIVE_URIS = 1
@@ -78,10 +68,6 @@ RESOLVE_RELATIVE_URIS = 1
 # If you want feedparser to automatically sanitize all potentially unsafe
 # HTML content, set this to 1.
 SANITIZE_HTML = 1
-
-# If you want feedparser to automatically parse microformat content embedded
-# in entry contents, set this to 1
-PARSE_MICROFORMATS = 1
 
 # ---------- Python 3 modules (make it work if possible) ----------
 try:
@@ -148,6 +134,7 @@ import cgi
 import codecs
 import copy
 import datetime
+import itertools
 import re
 import struct
 import time
@@ -204,8 +191,7 @@ else:
         _XML_AVAILABLE = 1
 
 # sgmllib is not available by default in Python 3; if the end user doesn't have
-# it available then we'll lose illformed XML parsing, content santizing, and
-# microformat support (at least while feedparser depends on BeautifulSoup).
+# it available then we'll lose illformed XML parsing and content santizing
 try:
     import sgmllib
 except ImportError:
@@ -276,15 +262,6 @@ try:
     import chardet
 except ImportError:
     chardet = None
-
-# BeautifulSoup is used to extract microformat content from HTML
-# feedparser is tested using BeautifulSoup 3.2.0
-# http://www.crummy.com/software/BeautifulSoup/
-try:
-    import BeautifulSoup
-except ImportError:
-    BeautifulSoup = None
-    PARSE_MICROFORMATS = False
 
 # ---------- don't touch these ----------
 class ThingsNobodyCaresAboutButMe(Exception): pass
@@ -452,16 +429,15 @@ _cp1252 = {
 _urifixer = re.compile('^([A-Za-z][A-Za-z0-9+-.]*://)(/*)(.*?)')
 def _urljoin(base, uri):
     uri = _urifixer.sub(r'\1\3', uri)
-    #try:
     if not isinstance(uri, unicode):
         uri = uri.decode('utf-8', 'ignore')
-    uri = urlparse.urljoin(base, uri)
+    try:
+        uri = urlparse.urljoin(base, uri)
+    except ValueError:
+        uri = u''
     if not isinstance(uri, unicode):
         return uri.decode('utf-8', 'ignore')
     return uri
-    #except:
-    #    uri = urlparse.urlunparse([urllib.quote(part) for part in urlparse.urlparse(uri)])
-    #    return urlparse.urljoin(base, uri)
 
 class _FeedParserMixin:
     namespaces = {
@@ -497,6 +473,8 @@ class _FeedParserMixin:
         'http://freshmeat.net/rss/fm/':                          'fm',
         'http://xmlns.com/foaf/0.1/':                            'foaf',
         'http://www.w3.org/2003/01/geo/wgs84_pos#':              'geo',
+        'http://www.georss.org/georss':                          'georss',
+        'http://www.opengis.net/gml':                            'gml',
         'http://postneo.com/icbm/':                              'icbm',
         'http://purl.org/rss/1.0/modules/image/':                'image',
         'http://www.itunes.com/DTDs/PodCast-1.0.dtd':            'itunes',
@@ -528,6 +506,7 @@ class _FeedParserMixin:
         'http://www.w3.org/1999/xhtml':                          'xhtml',
         'http://www.w3.org/1999/xlink':                          'xlink',
         'http://www.w3.org/XML/1998/namespace':                  'xml',
+        'http://podlove.org/simple-chapters':                    'psc',
     }
     _matchnamespaces = {}
 
@@ -557,6 +536,10 @@ class _FeedParserMixin:
         self.incontributor = 0
         self.inpublisher = 0
         self.insource = 0
+        
+        # georss
+        self.ingeometry = 0
+        
         self.sourcedata = FeedParserDict()
         self.contentparams = FeedParserDict()
         self._summaryKey = None
@@ -569,6 +552,11 @@ class _FeedParserMixin:
         self.svgOK = 0
         self.title_depth = -1
         self.depth = 0
+        # psc_chapters_flag prevents multiple psc_chapters from being
+        # captured in a single entry or item. The transition states are
+        # None -> True -> False. psc_chapter elements will only be
+        # captured while it is True.
+        self.psc_chapters_flag = None
         if baselang:
             self.feeddata['language'] = baselang.replace('_','-')
 
@@ -893,7 +881,9 @@ class _FeedParserMixin:
 
         # resolve relative URIs
         if (element in self.can_be_relative_uri) and output:
-            output = self.resolveURI(output)
+            # do not resolve guid elements with isPermalink="false"
+            if not element == 'id' or self.guidislink:
+                output = self.resolveURI(output)
 
         # decode entities within embedded markup
         if not self.contentparams.get('base64', 0):
@@ -920,22 +910,6 @@ class _FeedParserMixin:
         if is_htmlish and RESOLVE_RELATIVE_URIS:
             if element in self.can_contain_relative_uris:
                 output = _resolveRelativeURIs(output, self.baseuri, self.encoding, self.contentparams.get('type', u'text/html'))
-
-        # parse microformats
-        # (must do this before sanitizing because some microformats
-        # rely on elements that we sanitize)
-        if PARSE_MICROFORMATS and is_htmlish and element in ['content', 'description', 'summary']:
-            mfresults = _parseMicroformats(output, self.baseuri, self.encoding)
-            if mfresults:
-                for tag in mfresults.get('tags', []):
-                    self._addTag(tag['term'], tag['scheme'], tag['label'])
-                for enclosure in mfresults.get('enclosures', []):
-                    self._start_enclosure(enclosure)
-                for xfn in mfresults.get('xfn', []):
-                    self._addXFN(xfn['relationships'], xfn['href'], xfn['name'])
-                vcard = mfresults.get('vcard')
-                if vcard:
-                    self._getContext()['vcard'] = vcard
 
         # sanitize embedded markup
         if is_htmlish and SANITIZE_HTML:
@@ -1375,6 +1349,7 @@ class _FeedParserMixin:
         self.inentry = 1
         self.guidislink = 0
         self.title_depth = -1
+        self.psc_chapters_flag = None
         id = self._getAttribute(attrsD, 'rdf:about')
         if id:
             context = self._getContext()
@@ -1448,6 +1423,128 @@ class _FeedParserMixin:
     def _end_expirationdate(self):
         self._save('expired_parsed', _parse_date(self.pop('expired')), overwrite=True)
 
+    # geospatial location, or "where", from georss.org
+
+    def _start_georssgeom(self, attrsD):
+        self.push('geometry', 0)
+        context = self._getContext()
+        context['where'] = FeedParserDict()
+
+    _start_georss_point = _start_georssgeom
+    _start_georss_line = _start_georssgeom
+    _start_georss_polygon = _start_georssgeom
+    _start_georss_box = _start_georssgeom
+
+    def _save_where(self, geometry):
+        context = self._getContext()
+        context['where'].update(geometry)
+
+    def _end_georss_point(self):
+        geometry = _parse_georss_point(self.pop('geometry'))
+        if geometry:
+            self._save_where(geometry)
+
+    def _end_georss_line(self):
+        geometry = _parse_georss_line(self.pop('geometry'))
+        if geometry:
+            self._save_where(geometry)
+    
+    def _end_georss_polygon(self):
+        this = self.pop('geometry')
+        geometry = _parse_georss_polygon(this)
+        if geometry:
+            self._save_where(geometry)
+
+    def _end_georss_box(self):
+        geometry = _parse_georss_box(self.pop('geometry'))
+        if geometry:
+            self._save_where(geometry)
+
+    def _start_where(self, attrsD):
+        self.push('where', 0)
+        context = self._getContext()
+        context['where'] = FeedParserDict()
+    _start_georss_where = _start_where
+
+    def _parse_srs_attrs(self, attrsD):
+        srsName = attrsD.get('srsname')
+        try:
+            srsDimension = int(attrsD.get('srsdimension', '2'))
+        except ValueError:
+            srsDimension = 2
+        context = self._getContext()
+        context['where']['srsName'] = srsName
+        context['where']['srsDimension'] = srsDimension
+
+    def _start_gml_point(self, attrsD):
+        self._parse_srs_attrs(attrsD)
+        self.ingeometry = 1
+        self.push('geometry', 0)
+
+    def _start_gml_linestring(self, attrsD):
+        self._parse_srs_attrs(attrsD)
+        self.ingeometry = 'linestring'
+        self.push('geometry', 0)
+
+    def _start_gml_polygon(self, attrsD):
+        self._parse_srs_attrs(attrsD)
+        self.push('geometry', 0)
+
+    def _start_gml_exterior(self, attrsD):
+        self.push('geometry', 0)
+
+    def _start_gml_linearring(self, attrsD):
+        self.ingeometry = 'polygon'
+        self.push('geometry', 0)
+
+    def _start_gml_pos(self, attrsD):
+        self.push('pos', 0)
+
+    def _end_gml_pos(self):
+        this = self.pop('pos')
+        context = self._getContext()
+        srsName = context['where'].get('srsName')
+        srsDimension = context['where'].get('srsDimension', 2)
+        swap = True
+        if srsName and "EPSG" in srsName:
+            epsg = int(srsName.split(":")[-1])
+            swap = bool(epsg in _geogCS)
+        geometry = _parse_georss_point(this, swap=swap, dims=srsDimension)
+        if geometry:
+            self._save_where(geometry)
+
+    def _start_gml_poslist(self, attrsD):
+        self.push('pos', 0)
+
+    def _end_gml_poslist(self):
+        this = self.pop('pos')
+        context = self._getContext()
+        srsName = context['where'].get('srsName')
+        srsDimension = context['where'].get('srsDimension', 2)
+        swap = True
+        if srsName and "EPSG" in srsName:
+            epsg = int(srsName.split(":")[-1])
+            swap = bool(epsg in _geogCS)
+        geometry = _parse_poslist(
+            this, self.ingeometry, swap=swap, dims=srsDimension)
+        if geometry:
+            self._save_where(geometry)
+
+    def _end_geom(self):
+        self.ingeometry = 0
+        self.pop('geometry')
+    _end_gml_point = _end_geom
+    _end_gml_linestring = _end_geom
+    _end_gml_linearring = _end_geom
+    _end_gml_exterior = _end_geom
+    _end_gml_polygon = _end_geom
+
+    def _end_where(self):
+        self.pop('where')
+    _end_georss_where = _end_where
+
+    # end geospatial
+
     def _start_cc_license(self, attrsD):
         context = self._getContext()
         value = self._getAttribute(attrsD, 'rdf:resource')
@@ -1471,13 +1568,6 @@ class _FeedParserMixin:
         context.setdefault('links', []).append(attrsD)
         del context['license']
     _end_creativeCommons_license = _end_creativecommons_license
-
-    def _addXFN(self, relationships, href, name):
-        context = self._getContext()
-        xfn = context.setdefault('xfn', [])
-        value = FeedParserDict({'relationships': relationships, 'href': href, 'name': name})
-        if value not in xfn:
-            xfn.append(value)
 
     def _addTag(self, term, scheme, label):
         context = self._getContext()
@@ -1595,6 +1685,7 @@ class _FeedParserMixin:
         else:
             self.pushContent('description', attrsD, u'text/html', self.infeed or self.inentry or self.insource)
     _start_dc_description = _start_description
+    _start_media_description = _start_description
 
     def _start_abstract(self, attrsD):
         self.pushContent('description', attrsD, u'text/plain', self.infeed or self.inentry or self.insource)
@@ -1607,6 +1698,7 @@ class _FeedParserMixin:
         self._summaryKey = None
     _end_abstract = _end_description
     _end_dc_description = _end_description
+    _end_media_description = _end_description
 
     def _start_info(self, attrsD):
         self.pushContent('info', attrsD, u'text/plain', 1)
@@ -1730,6 +1822,44 @@ class _FeedParserMixin:
         # by applications that only need to know if the content is explicit.
         self._getContext()['itunes_explicit'] = (None, False, True)[(value == 'yes' and 2) or value == 'clean' or 0]
 
+    def _start_media_group(self, attrsD):
+        # don't do anything, but don't break the enclosed tags either
+        pass
+
+    def _start_media_credit(self, attrsD):
+        context = self._getContext()
+        context.setdefault('media_credit', [])
+        context['media_credit'].append(attrsD)
+        self.push('credit', 1)
+
+    def _end_media_credit(self):
+        credit = self.pop('credit')
+        if credit != None and len(credit.strip()) != 0:
+            context = self._getContext()
+            context['media_credit'][-1]['content'] = credit
+
+    def _start_media_restriction(self, attrsD):
+        context = self._getContext()
+        context.setdefault('media_restriction', attrsD)
+        self.push('restriction', 1)
+
+    def _end_media_restriction(self):
+        restriction = self.pop('restriction')
+        if restriction != None and len(restriction.strip()) != 0:
+            context = self._getContext()
+            context['media_restriction']['content'] = restriction
+
+    def _start_media_license(self, attrsD):
+        context = self._getContext()
+        context.setdefault('media_license', attrsD)
+        self.push('license', 1)
+
+    def _end_media_license(self):
+        license = self.pop('license')
+        if license != None and len(license.strip()) != 0:
+            context = self._getContext()
+            context['media_license']['content'] = license
+
     def _start_media_content(self, attrsD):
         context = self._getContext()
         context.setdefault('media_content', [])
@@ -1767,6 +1897,26 @@ class _FeedParserMixin:
         if context is not self.feeddata:
             return
         context['newlocation'] = _makeSafeAbsoluteURI(self.baseuri, url.strip())
+
+    def _start_psc_chapters(self, attrsD):
+        if self.psc_chapters_flag is None:
+	    # Transition from None -> True
+            self.psc_chapters_flag = True
+            attrsD['chapters'] = []
+            self._getContext()['psc_chapters'] = FeedParserDict(attrsD)
+            
+    def _end_psc_chapters(self):
+        # Transition from True -> False
+        self.psc_chapters_flag = False
+        
+    def _start_psc_chapter(self, attrsD):
+        if self.psc_chapters_flag:
+            start = self._getAttribute(attrsD, 'start')
+            attrsD['start_parsed'] = _parse_psc_chapter_start(start)
+
+            context = self._getContext()['psc_chapters']
+            context['chapters'].append(FeedParserDict(attrsD))
+
 
 if _XML_AVAILABLE:
     class _StrictFeedParser(_FeedParserMixin, xml.sax.handler.ContentHandler):
@@ -1831,6 +1981,7 @@ if _XML_AVAILABLE:
                 attrsD[str(attrlocalname).lower()] = attrvalue
             for qname in attrs.getQNames():
                 attrsD[str(qname).lower()] = attrs.getValueByQName(qname)
+            localname = str(localname).lower()
             self.unknown_starttag(localname, attrsD.items())
 
         def characters(self, text):
@@ -1973,6 +2124,7 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser):
     def handle_charref(self, ref):
         # called for each character reference, e.g. for '&#160;', ref will be '160'
         # Reconstruct the original character reference.
+        ref = ref.lower()
         if ref.startswith('x'):
             value = int(ref[1:], 16)
         else:
@@ -2081,443 +2233,6 @@ class _LooseFeedParser(_FeedParserMixin, _BaseHTMLProcessor):
     def strattrs(self, attrs):
         return ''.join([' %s="%s"' % (n,v.replace('"','&quot;')) for n,v in attrs])
 
-class _MicroformatsParser:
-    STRING = 1
-    DATE = 2
-    URI = 3
-    NODE = 4
-    EMAIL = 5
-
-    known_xfn_relationships = set(['contact', 'acquaintance', 'friend', 'met', 'co-worker', 'coworker', 'colleague', 'co-resident', 'coresident', 'neighbor', 'child', 'parent', 'sibling', 'brother', 'sister', 'spouse', 'wife', 'husband', 'kin', 'relative', 'muse', 'crush', 'date', 'sweetheart', 'me'])
-    known_binary_extensions =  set(['zip','rar','exe','gz','tar','tgz','tbz2','bz2','z','7z','dmg','img','sit','sitx','hqx','deb','rpm','bz2','jar','rar','iso','bin','msi','mp2','mp3','ogg','ogm','mp4','m4v','m4a','avi','wma','wmv'])
-
-    def __init__(self, data, baseuri, encoding):
-        self.document = BeautifulSoup.BeautifulSoup(data)
-        self.baseuri = baseuri
-        self.encoding = encoding
-        if isinstance(data, unicode):
-            data = data.encode(encoding)
-        self.tags = []
-        self.enclosures = []
-        self.xfn = []
-        self.vcard = None
-
-    def vcardEscape(self, s):
-        if isinstance(s, basestring):
-            s = s.replace(',', '\\,').replace(';', '\\;').replace('\n', '\\n')
-        return s
-
-    def vcardFold(self, s):
-        s = re.sub(';+$', '', s)
-        sFolded = ''
-        iMax = 75
-        sPrefix = ''
-        while len(s) > iMax:
-            sFolded += sPrefix + s[:iMax] + '\n'
-            s = s[iMax:]
-            sPrefix = ' '
-            iMax = 74
-        sFolded += sPrefix + s
-        return sFolded
-
-    def normalize(self, s):
-        return re.sub(r'\s+', ' ', s).strip()
-
-    def unique(self, aList):
-        results = []
-        for element in aList:
-            if element not in results:
-                results.append(element)
-        return results
-
-    def toISO8601(self, dt):
-        return time.strftime('%Y-%m-%dT%H:%M:%SZ', dt)
-
-    def getPropertyValue(self, elmRoot, sProperty, iPropertyType=4, bAllowMultiple=0, bAutoEscape=0):
-        all = lambda x: 1
-        sProperty = sProperty.lower()
-        bFound = 0
-        bNormalize = 1
-        propertyMatch = {'class': re.compile(r'\b%s\b' % sProperty)}
-        if bAllowMultiple and (iPropertyType != self.NODE):
-            snapResults = []
-            containers = elmRoot(['ul', 'ol'], propertyMatch)
-            for container in containers:
-                snapResults.extend(container('li'))
-            bFound = (len(snapResults) != 0)
-        if not bFound:
-            snapResults = elmRoot(all, propertyMatch)
-            bFound = (len(snapResults) != 0)
-        if (not bFound) and (sProperty == 'value'):
-            snapResults = elmRoot('pre')
-            bFound = (len(snapResults) != 0)
-            bNormalize = not bFound
-            if not bFound:
-                snapResults = [elmRoot]
-                bFound = (len(snapResults) != 0)
-        arFilter = []
-        if sProperty == 'vcard':
-            snapFilter = elmRoot(all, propertyMatch)
-            for node in snapFilter:
-                if node.findParent(all, propertyMatch):
-                    arFilter.append(node)
-        arResults = []
-        for node in snapResults:
-            if node not in arFilter:
-                arResults.append(node)
-        bFound = (len(arResults) != 0)
-        if not bFound:
-            if bAllowMultiple:
-                return []
-            elif iPropertyType == self.STRING:
-                return ''
-            elif iPropertyType == self.DATE:
-                return None
-            elif iPropertyType == self.URI:
-                return ''
-            elif iPropertyType == self.NODE:
-                return None
-            else:
-                return None
-        arValues = []
-        for elmResult in arResults:
-            sValue = None
-            if iPropertyType == self.NODE:
-                if bAllowMultiple:
-                    arValues.append(elmResult)
-                    continue
-                else:
-                    return elmResult
-            sNodeName = elmResult.name.lower()
-            if (iPropertyType == self.EMAIL) and (sNodeName == 'a'):
-                sValue = (elmResult.get('href') or '').split('mailto:').pop().split('?')[0]
-            if sValue:
-                sValue = bNormalize and self.normalize(sValue) or sValue.strip()
-            if (not sValue) and (sNodeName == 'abbr'):
-                sValue = elmResult.get('title')
-            if sValue:
-                sValue = bNormalize and self.normalize(sValue) or sValue.strip()
-            if (not sValue) and (iPropertyType == self.URI):
-                if sNodeName == 'a':
-                    sValue = elmResult.get('href')
-                elif sNodeName == 'img':
-                    sValue = elmResult.get('src')
-                elif sNodeName == 'object':
-                    sValue = elmResult.get('data')
-            if sValue:
-                sValue = bNormalize and self.normalize(sValue) or sValue.strip()
-            if (not sValue) and (sNodeName == 'img'):
-                sValue = elmResult.get('alt')
-            if sValue:
-                sValue = bNormalize and self.normalize(sValue) or sValue.strip()
-            if not sValue:
-                sValue = elmResult.renderContents()
-                sValue = re.sub(r'<\S[^>]*>', '', sValue)
-                sValue = sValue.replace('\r\n', '\n')
-                sValue = sValue.replace('\r', '\n')
-            if sValue:
-                sValue = bNormalize and self.normalize(sValue) or sValue.strip()
-            if not sValue:
-                continue
-            if iPropertyType == self.DATE:
-                sValue = _parse_date_iso8601(sValue)
-            if bAllowMultiple:
-                arValues.append(bAutoEscape and self.vcardEscape(sValue) or sValue)
-            else:
-                return bAutoEscape and self.vcardEscape(sValue) or sValue
-        return arValues
-
-    def findVCards(self, elmRoot, bAgentParsing=0):
-        sVCards = ''
-
-        if not bAgentParsing:
-            arCards = self.getPropertyValue(elmRoot, 'vcard', bAllowMultiple=1)
-        else:
-            arCards = [elmRoot]
-
-        for elmCard in arCards:
-            arLines = []
-
-            def processSingleString(sProperty):
-                sValue = self.getPropertyValue(elmCard, sProperty, self.STRING, bAutoEscape=1).decode(self.encoding)
-                if sValue:
-                    arLines.append(self.vcardFold(sProperty.upper() + ':' + sValue))
-                return sValue or u''
-
-            def processSingleURI(sProperty):
-                sValue = self.getPropertyValue(elmCard, sProperty, self.URI)
-                if sValue:
-                    sContentType = ''
-                    sEncoding = ''
-                    sValueKey = ''
-                    if sValue.startswith('data:'):
-                        sEncoding = ';ENCODING=b'
-                        sContentType = sValue.split(';')[0].split('/').pop()
-                        sValue = sValue.split(',', 1).pop()
-                    else:
-                        elmValue = self.getPropertyValue(elmCard, sProperty)
-                        if elmValue:
-                            if sProperty != 'url':
-                                sValueKey = ';VALUE=uri'
-                            sContentType = elmValue.get('type', '').strip().split('/').pop().strip()
-                    sContentType = sContentType.upper()
-                    if sContentType == 'OCTET-STREAM':
-                        sContentType = ''
-                    if sContentType:
-                        sContentType = ';TYPE=' + sContentType.upper()
-                    arLines.append(self.vcardFold(sProperty.upper() + sEncoding + sContentType + sValueKey + ':' + sValue))
-
-            def processTypeValue(sProperty, arDefaultType, arForceType=None):
-                arResults = self.getPropertyValue(elmCard, sProperty, bAllowMultiple=1)
-                for elmResult in arResults:
-                    arType = self.getPropertyValue(elmResult, 'type', self.STRING, 1, 1)
-                    if arForceType:
-                        arType = self.unique(arForceType + arType)
-                    if not arType:
-                        arType = arDefaultType
-                    sValue = self.getPropertyValue(elmResult, 'value', self.EMAIL, 0)
-                    if sValue:
-                        arLines.append(self.vcardFold(sProperty.upper() + ';TYPE=' + ','.join(arType) + ':' + sValue))
-
-            # AGENT
-            # must do this before all other properties because it is destructive
-            # (removes nested class="vcard" nodes so they don't interfere with
-            # this vcard's other properties)
-            arAgent = self.getPropertyValue(elmCard, 'agent', bAllowMultiple=1)
-            for elmAgent in arAgent:
-                if re.compile(r'\bvcard\b').search(elmAgent.get('class')):
-                    sAgentValue = self.findVCards(elmAgent, 1) + '\n'
-                    sAgentValue = sAgentValue.replace('\n', '\\n')
-                    sAgentValue = sAgentValue.replace(';', '\\;')
-                    if sAgentValue:
-                        arLines.append(self.vcardFold('AGENT:' + sAgentValue))
-                    # Completely remove the agent element from the parse tree
-                    elmAgent.extract()
-                else:
-                    sAgentValue = self.getPropertyValue(elmAgent, 'value', self.URI, bAutoEscape=1);
-                    if sAgentValue:
-                        arLines.append(self.vcardFold('AGENT;VALUE=uri:' + sAgentValue))
-
-            # FN (full name)
-            sFN = processSingleString('fn')
-
-            # N (name)
-            elmName = self.getPropertyValue(elmCard, 'n')
-            if elmName:
-                sFamilyName = self.getPropertyValue(elmName, 'family-name', self.STRING, bAutoEscape=1)
-                sGivenName = self.getPropertyValue(elmName, 'given-name', self.STRING, bAutoEscape=1)
-                arAdditionalNames = self.getPropertyValue(elmName, 'additional-name', self.STRING, 1, 1) + self.getPropertyValue(elmName, 'additional-names', self.STRING, 1, 1)
-                arHonorificPrefixes = self.getPropertyValue(elmName, 'honorific-prefix', self.STRING, 1, 1) + self.getPropertyValue(elmName, 'honorific-prefixes', self.STRING, 1, 1)
-                arHonorificSuffixes = self.getPropertyValue(elmName, 'honorific-suffix', self.STRING, 1, 1) + self.getPropertyValue(elmName, 'honorific-suffixes', self.STRING, 1, 1)
-                arLines.append(self.vcardFold('N:' + sFamilyName + ';' +
-                                         sGivenName + ';' +
-                                         ','.join(arAdditionalNames) + ';' +
-                                         ','.join(arHonorificPrefixes) + ';' +
-                                         ','.join(arHonorificSuffixes)))
-            elif sFN:
-                # implied "N" optimization
-                # http://microformats.org/wiki/hcard#Implied_.22N.22_Optimization
-                arNames = self.normalize(sFN).split()
-                if len(arNames) == 2:
-                    bFamilyNameFirst = (arNames[0].endswith(',') or
-                                        len(arNames[1]) == 1 or
-                                        ((len(arNames[1]) == 2) and (arNames[1].endswith('.'))))
-                    if bFamilyNameFirst:
-                        arLines.append(self.vcardFold('N:' + arNames[0] + ';' + arNames[1]))
-                    else:
-                        arLines.append(self.vcardFold('N:' + arNames[1] + ';' + arNames[0]))
-
-            # SORT-STRING
-            sSortString = self.getPropertyValue(elmCard, 'sort-string', self.STRING, bAutoEscape=1)
-            if sSortString:
-                arLines.append(self.vcardFold('SORT-STRING:' + sSortString))
-
-            # NICKNAME
-            arNickname = self.getPropertyValue(elmCard, 'nickname', self.STRING, 1, 1)
-            if arNickname:
-                arLines.append(self.vcardFold('NICKNAME:' + ','.join(arNickname)))
-
-            # PHOTO
-            processSingleURI('photo')
-
-            # BDAY
-            dtBday = self.getPropertyValue(elmCard, 'bday', self.DATE)
-            if dtBday:
-                arLines.append(self.vcardFold('BDAY:' + self.toISO8601(dtBday)))
-
-            # ADR (address)
-            arAdr = self.getPropertyValue(elmCard, 'adr', bAllowMultiple=1)
-            for elmAdr in arAdr:
-                arType = self.getPropertyValue(elmAdr, 'type', self.STRING, 1, 1)
-                if not arType:
-                    arType = ['intl','postal','parcel','work'] # default adr types, see RFC 2426 section 3.2.1
-                sPostOfficeBox = self.getPropertyValue(elmAdr, 'post-office-box', self.STRING, 0, 1)
-                sExtendedAddress = self.getPropertyValue(elmAdr, 'extended-address', self.STRING, 0, 1)
-                sStreetAddress = self.getPropertyValue(elmAdr, 'street-address', self.STRING, 0, 1)
-                sLocality = self.getPropertyValue(elmAdr, 'locality', self.STRING, 0, 1)
-                sRegion = self.getPropertyValue(elmAdr, 'region', self.STRING, 0, 1)
-                sPostalCode = self.getPropertyValue(elmAdr, 'postal-code', self.STRING, 0, 1)
-                sCountryName = self.getPropertyValue(elmAdr, 'country-name', self.STRING, 0, 1)
-                arLines.append(self.vcardFold('ADR;TYPE=' + ','.join(arType) + ':' +
-                                         sPostOfficeBox + ';' +
-                                         sExtendedAddress + ';' +
-                                         sStreetAddress + ';' +
-                                         sLocality + ';' +
-                                         sRegion + ';' +
-                                         sPostalCode + ';' +
-                                         sCountryName))
-
-            # LABEL
-            processTypeValue('label', ['intl','postal','parcel','work'])
-
-            # TEL (phone number)
-            processTypeValue('tel', ['voice'])
-
-            # EMAIL
-            processTypeValue('email', ['internet'], ['internet'])
-
-            # MAILER
-            processSingleString('mailer')
-
-            # TZ (timezone)
-            processSingleString('tz')
-
-            # GEO (geographical information)
-            elmGeo = self.getPropertyValue(elmCard, 'geo')
-            if elmGeo:
-                sLatitude = self.getPropertyValue(elmGeo, 'latitude', self.STRING, 0, 1)
-                sLongitude = self.getPropertyValue(elmGeo, 'longitude', self.STRING, 0, 1)
-                arLines.append(self.vcardFold('GEO:' + sLatitude + ';' + sLongitude))
-
-            # TITLE
-            processSingleString('title')
-
-            # ROLE
-            processSingleString('role')
-
-            # LOGO
-            processSingleURI('logo')
-
-            # ORG (organization)
-            elmOrg = self.getPropertyValue(elmCard, 'org')
-            if elmOrg:
-                sOrganizationName = self.getPropertyValue(elmOrg, 'organization-name', self.STRING, 0, 1)
-                if not sOrganizationName:
-                    # implied "organization-name" optimization
-                    # http://microformats.org/wiki/hcard#Implied_.22organization-name.22_Optimization
-                    sOrganizationName = self.getPropertyValue(elmCard, 'org', self.STRING, 0, 1)
-                    if sOrganizationName:
-                        arLines.append(self.vcardFold('ORG:' + sOrganizationName))
-                else:
-                    arOrganizationUnit = self.getPropertyValue(elmOrg, 'organization-unit', self.STRING, 1, 1)
-                    arLines.append(self.vcardFold('ORG:' + sOrganizationName + ';' + ';'.join(arOrganizationUnit)))
-
-            # CATEGORY
-            arCategory = self.getPropertyValue(elmCard, 'category', self.STRING, 1, 1) + self.getPropertyValue(elmCard, 'categories', self.STRING, 1, 1)
-            if arCategory:
-                arLines.append(self.vcardFold('CATEGORIES:' + ','.join(arCategory)))
-
-            # NOTE
-            processSingleString('note')
-
-            # REV
-            processSingleString('rev')
-
-            # SOUND
-            processSingleURI('sound')
-
-            # UID
-            processSingleString('uid')
-
-            # URL
-            processSingleURI('url')
-
-            # CLASS
-            processSingleString('class')
-
-            # KEY
-            processSingleURI('key')
-
-            if arLines:
-                arLines = [u'BEGIN:vCard',u'VERSION:3.0'] + arLines + [u'END:vCard']
-                # XXX - this is super ugly; properly fix this with issue 148
-                for i, s in enumerate(arLines):
-                    if not isinstance(s, unicode):
-                        arLines[i] = s.decode('utf-8', 'ignore')
-                sVCards += u'\n'.join(arLines) + u'\n'
-
-        return sVCards.strip()
-
-    def isProbablyDownloadable(self, elm):
-        attrsD = elm.attrMap
-        if 'href' not in attrsD:
-            return 0
-        linktype = attrsD.get('type', '').strip()
-        if linktype.startswith('audio/') or \
-           linktype.startswith('video/') or \
-           (linktype.startswith('application/') and not linktype.endswith('xml')):
-            return 1
-        path = urlparse.urlparse(attrsD['href'])[2]
-        if path.find('.') == -1:
-            return 0
-        fileext = path.split('.').pop().lower()
-        return fileext in self.known_binary_extensions
-
-    def findTags(self):
-        all = lambda x: 1
-        for elm in self.document(all, {'rel': re.compile(r'\btag\b')}):
-            href = elm.get('href')
-            if not href:
-                continue
-            urlscheme, domain, path, params, query, fragment = \
-                       urlparse.urlparse(_urljoin(self.baseuri, href))
-            segments = path.split('/')
-            tag = segments.pop()
-            if not tag:
-                if segments:
-                    tag = segments.pop()
-                else:
-                    # there are no tags
-                    continue
-            tagscheme = urlparse.urlunparse((urlscheme, domain, '/'.join(segments), '', '', ''))
-            if not tagscheme.endswith('/'):
-                tagscheme += '/'
-            self.tags.append(FeedParserDict({"term": tag, "scheme": tagscheme, "label": elm.string or ''}))
-
-    def findEnclosures(self):
-        all = lambda x: 1
-        enclosure_match = re.compile(r'\benclosure\b')
-        for elm in self.document(all, {'href': re.compile(r'.+')}):
-            if not enclosure_match.search(elm.get('rel', u'')) and not self.isProbablyDownloadable(elm):
-                continue
-            if elm.attrMap not in self.enclosures:
-                self.enclosures.append(elm.attrMap)
-                if elm.string and not elm.get('title'):
-                    self.enclosures[-1]['title'] = elm.string
-
-    def findXFN(self):
-        all = lambda x: 1
-        for elm in self.document(all, {'rel': re.compile('.+'), 'href': re.compile('.+')}):
-            rels = elm.get('rel', u'').split()
-            xfn_rels = [r for r in rels if r in self.known_xfn_relationships]
-            if xfn_rels:
-                self.xfn.append({"relationships": xfn_rels, "href": elm.get('href', ''), "name": elm.string})
-
-def _parseMicroformats(htmlSource, baseURI, encoding):
-    if not BeautifulSoup:
-        return
-    try:
-        p = _MicroformatsParser(htmlSource, baseURI, encoding)
-    except UnicodeEncodeError:
-        # sgmllib throws this exception when performing lookups of tags
-        # with non-ASCII characters in them.
-        return
-    p.vcard = p.findVCards(p.document)
-    p.findTags()
-    p.findEnclosures()
-    p.findXFN()
-    return {"tags": p.tags, "enclosures": p.enclosures, "xfn": p.xfn, "vcard": p.vcard}
-
 class _RelativeURIResolver(_BaseHTMLProcessor):
     relative_uris = set([('a', 'href'),
                      ('applet', 'codebase'),
@@ -2543,7 +2258,8 @@ class _RelativeURIResolver(_BaseHTMLProcessor):
                      ('object', 'data'),
                      ('object', 'usemap'),
                      ('q', 'cite'),
-                     ('script', 'src')])
+                     ('script', 'src'),
+                     ('video', 'poster')])
 
     def __init__(self, baseuri, encoding, _type):
         _BaseHTMLProcessor.__init__(self, encoding, _type)
@@ -2568,10 +2284,7 @@ def _resolveRelativeURIs(htmlSource, baseURI, encoding, _type):
 def _makeSafeAbsoluteURI(base, rel=None):
     # bail if ACCEPTABLE_URI_SCHEMES is empty
     if not ACCEPTABLE_URI_SCHEMES:
-        try:
-            return _urljoin(base, rel or u'')
-        except ValueError:
-            return u''
+        return _urljoin(base, rel or u'')
     if not base:
         return rel or u''
     if not rel:
@@ -2582,10 +2295,7 @@ def _makeSafeAbsoluteURI(base, rel=None):
         if not scheme or scheme in ACCEPTABLE_URI_SCHEMES:
             return base
         return u''
-    try:
-        uri = _urljoin(base, rel)
-    except ValueError:
-        return u''
+    uri = _urljoin(base, rel)
     if uri.strip().split(':', 1)[0] not in ACCEPTABLE_URI_SCHEMES:
         return u''
     return uri
@@ -2621,13 +2331,13 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
       'loop', 'loopcount', 'loopend', 'loopstart', 'low', 'lowsrc', 'max',
       'maxlength', 'media', 'method', 'min', 'multiple', 'name', 'nohref',
       'noshade', 'nowrap', 'open', 'optimum', 'pattern', 'ping', 'point-size',
-      'prompt', 'pqg', 'radiogroup', 'readonly', 'rel', 'repeat-max',
-      'repeat-min', 'replace', 'required', 'rev', 'rightspacing', 'rows',
-      'rowspan', 'rules', 'scope', 'selected', 'shape', 'size', 'span', 'src',
-      'start', 'step', 'summary', 'suppress', 'tabindex', 'target', 'template',
-      'title', 'toppadding', 'type', 'unselectable', 'usemap', 'urn', 'valign',
-      'value', 'variable', 'volume', 'vspace', 'vrml', 'width', 'wrap',
-      'xml:lang'])
+      'poster', 'pqg', 'preload', 'prompt', 'radiogroup', 'readonly', 'rel',
+      'repeat-max', 'repeat-min', 'replace', 'required', 'rev', 'rightspacing',
+      'rows', 'rowspan', 'rules', 'scope', 'selected', 'shape', 'size', 'span',
+      'src', 'start', 'step', 'summary', 'suppress', 'tabindex', 'target',
+      'template', 'title', 'toppadding', 'type', 'unselectable', 'usemap',
+      'urn', 'valign', 'value', 'variable', 'volume', 'vspace', 'vrml',
+      'width', 'wrap', 'xml:lang'])
 
     unacceptable_elements_with_end_tag = set(['script', 'applet', 'style'])
 
@@ -2857,38 +2567,6 @@ def _sanitizeHTML(htmlSource, encoding, _type):
     htmlSource = htmlSource.replace('<![CDATA[', '&lt;![CDATA[')
     p.feed(htmlSource)
     data = p.output()
-    if TIDY_MARKUP:
-        # loop through list of preferred Tidy interfaces looking for one that's installed,
-        # then set up a common _tidy function to wrap the interface-specific API.
-        _tidy = None
-        for tidy_interface in PREFERRED_TIDY_INTERFACES:
-            try:
-                if tidy_interface == "uTidy":
-                    from tidy import parseString as _utidy
-                    def _tidy(data, **kwargs):
-                        return str(_utidy(data, **kwargs))
-                    break
-                elif tidy_interface == "mxTidy":
-                    from mx.Tidy import Tidy as _mxtidy
-                    def _tidy(data, **kwargs):
-                        nerrors, nwarnings, data, errordata = _mxtidy.tidy(data, **kwargs)
-                        return data
-                    break
-            except:
-                pass
-        if _tidy:
-            utf8 = isinstance(data, unicode)
-            if utf8:
-                data = data.encode('utf-8')
-            data = _tidy(data, output_xhtml=1, numeric_entities=1, wrap=0, char_encoding="utf8")
-            if utf8:
-                data = unicode(data, 'utf-8')
-            if data.count('<body'):
-                data = data.split('<body', 1)[1]
-                if data.count('>'):
-                    data = data.split('>', 1)[1]
-            if data.count('</body'):
-                data = data.split('</body', 1)[0]
     data = data.strip().replace('\r\n', '\n')
     return data
 
@@ -2979,9 +2657,9 @@ def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, h
             url_file_stream_or_string = 'http:' + url_file_stream_or_string[5:]
         if not agent:
             agent = USER_AGENT
-        # test for inline user:password for basic auth
+        # Test for inline user:password credentials for HTTP basic auth
         auth = None
-        if base64:
+        if base64 and not url_file_stream_or_string.startswith('ftp:'):
             urltype, rest = urllib.splittype(url_file_stream_or_string)
             realhost, rest = urllib.splithost(rest)
             if realhost:
@@ -3083,6 +2761,17 @@ def _build_urllib2_request(url, agent, etag, modified, referrer, auth, request_h
     request.add_header('A-IM', 'feed') # RFC 3229 support
     return request
 
+def _parse_psc_chapter_start(start):
+    FORMAT = r'^((\d{2}):)?(\d{2}):(\d{2})(\.(\d{3}))?$'
+
+    m = re.compile(FORMAT).match(start)
+    if m is None:
+        return None
+
+    _, h, m, s, _, ms = m.groups()
+    h, m, s, ms = (int(h or 0), int(m), int(s), int(ms or 0))
+    return datetime.timedelta(0, h*60*60 + m*60 + s, ms*1000)
+
 _date_handlers = []
 def registerDateHandler(func):
     '''Register a date handler function (takes string, returns 9-tuple date in GMT)'''
@@ -3125,6 +2814,7 @@ try:
     del regex
 except NameError:
     pass
+    
 def _parse_date_iso8601(dateString):
     '''Parse a variety of ISO-8601-compatible formats like 20040105'''
     m = None
@@ -3339,124 +3029,7 @@ def _parse_date_hungarian(dateString):
     return _parse_date_w3dtf(w3dtfdate)
 registerDateHandler(_parse_date_hungarian)
 
-# W3DTF-style date parsing adapted from PyXML xml.utils.iso8601, written by
-# Drake and licensed under the Python license.  Removed all range checking
-# for month, day, hour, minute, and second, since mktime will normalize
-# these later
-# Modified to also support MSSQL-style datetimes as defined at:
-# http://msdn.microsoft.com/en-us/library/ms186724.aspx
-# (which basically means allowing a space as a date/time/timezone separator)
-def _parse_date_w3dtf(dateString):
-    def __extract_date(m):
-        year = int(m.group('year'))
-        if year < 100:
-            year = 100 * int(time.gmtime()[0] / 100) + int(year)
-        if year < 1000:
-            return 0, 0, 0
-        julian = m.group('julian')
-        if julian:
-            julian = int(julian)
-            month = julian / 30 + 1
-            day = julian % 30 + 1
-            jday = None
-            while jday != julian:
-                t = time.mktime((year, month, day, 0, 0, 0, 0, 0, 0))
-                jday = time.gmtime(t)[-2]
-                diff = abs(jday - julian)
-                if jday > julian:
-                    if diff < day:
-                        day = day - diff
-                    else:
-                        month = month - 1
-                        day = 31
-                elif jday < julian:
-                    if day + diff < 28:
-                        day = day + diff
-                    else:
-                        month = month + 1
-            return year, month, day
-        month = m.group('month')
-        day = 1
-        if month is None:
-            month = 1
-        else:
-            month = int(month)
-            day = m.group('day')
-            if day:
-                day = int(day)
-            else:
-                day = 1
-        return year, month, day
-
-    def __extract_time(m):
-        if not m:
-            return 0, 0, 0
-        hours = m.group('hours')
-        if not hours:
-            return 0, 0, 0
-        hours = int(hours)
-        minutes = int(m.group('minutes'))
-        seconds = m.group('seconds')
-        if seconds:
-            seconds = int(seconds)
-        else:
-            seconds = 0
-        return hours, minutes, seconds
-
-    def __extract_tzd(m):
-        '''Return the Time Zone Designator as an offset in seconds from UTC.'''
-        if not m:
-            return 0
-        tzd = m.group('tzd')
-        if not tzd:
-            return 0
-        if tzd == 'Z':
-            return 0
-        hours = int(m.group('tzdhours'))
-        minutes = m.group('tzdminutes')
-        if minutes:
-            minutes = int(minutes)
-        else:
-            minutes = 0
-        offset = (hours*60 + minutes) * 60
-        if tzd[0] == '+':
-            return -offset
-        return offset
-
-    __date_re = ('(?P<year>\d\d\d\d)'
-                 '(?:(?P<dsep>-|)'
-                 '(?:(?P<month>\d\d)(?:(?P=dsep)(?P<day>\d\d))?'
-                 '|(?P<julian>\d\d\d)))?')
-    __tzd_re = ' ?(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)?'
-    __time_re = ('(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 '(?:(?P=tsep)(?P<seconds>\d\d)(?:[.,]\d+)?)?'
-                 + __tzd_re)
-    __datetime_re = '%s(?:[T ]%s)?' % (__date_re, __time_re)
-    __datetime_rx = re.compile(__datetime_re)
-    m = __datetime_rx.match(dateString)
-    if (m is None) or (m.group() != dateString):
-        return
-    gmt = __extract_date(m) + __extract_time(m) + (0, 0, 0)
-    if gmt[0] == 0:
-        return
-    return time.gmtime(time.mktime(gmt) + __extract_tzd(m) - time.timezone)
-registerDateHandler(_parse_date_w3dtf)
-
-# Define the strings used by the RFC822 datetime parser
-_rfc822_months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun',
-          'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-_rfc822_daynames = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-
-# Only the first three letters of the month name matter
-_rfc822_month = "(?P<month>%s)(?:[a-z]*,?)" % ('|'.join(_rfc822_months))
-# The year may be 2 or 4 digits; capture the century if it exists
-_rfc822_year = "(?P<year>(?:\d{2})?\d{2})"
-_rfc822_day = "(?P<day> *\d{1,2})"
-_rfc822_date = "%s %s %s" % (_rfc822_day, _rfc822_month, _rfc822_year)
-
-_rfc822_hour = "(?P<hour>\d{2}):(?P<minute>\d{2})(?::(?P<second>\d{2}))?"
-_rfc822_tz = "(?P<tz>ut|gmt(?:[+-]\d{2}:\d{2})?|[aecmp][sd]?t|[zamny]|[+-]\d{4})"
-_rfc822_tznames = {
+timezonenames = {
     'ut': 0, 'gmt': 0, 'z': 0,
     'adt': -3, 'ast': -4, 'at': -4,
     'edt': -4, 'est': -5, 'et': -5,
@@ -3465,63 +3038,185 @@ _rfc822_tznames = {
     'pdt': -7, 'pst': -8, 'pt': -8,
     'a': -1, 'n': 1,
     'm': -12, 'y': 12,
- }
-# The timezone may be prefixed by 'Etc/'
-_rfc822_time = "%s (?:etc/)?%s" % (_rfc822_hour, _rfc822_tz)
-
-_rfc822_dayname = "(?P<dayname>%s)" % ('|'.join(_rfc822_daynames))
-_rfc822_match = re.compile(
-    "(?:%s, )?%s(?: %s)?" % (_rfc822_dayname, _rfc822_date, _rfc822_time)
-).match
-
-def _parse_date_rfc822(dt):
-    """Parse RFC 822 dates and times, with one minor
-    difference: years may be 4DIGIT or 2DIGIT.
-    http://tools.ietf.org/html/rfc822#section-5"""
-    try:
-        m = _rfc822_match(dt.lower()).groupdict(0)
-    except AttributeError:
+}
+# W3 date and time format parser
+# http://www.w3.org/TR/NOTE-datetime
+# Also supports MSSQL-style datetimes as defined at:
+# http://msdn.microsoft.com/en-us/library/ms186724.aspx
+# (basically, allow a space as a date/time/timezone separator)
+def _parse_date_w3dtf(datestr):
+    if not datestr.strip():
         return None
-
-    # Calculate a date and timestamp
-    for k in ('year', 'day', 'hour', 'minute', 'second'):
-        m[k] = int(m[k])
-    m['month'] = _rfc822_months.index(m['month']) + 1
-    # If the year is 2 digits, assume everything in the 90's is the 1990's
-    if m['year'] < 100:
-        m['year'] += (1900, 2000)[m['year'] < 90]
-    stamp = datetime.datetime(*[m[i] for i in 
-                ('year', 'month', 'day', 'hour', 'minute', 'second')])
-
-    # Use the timezone information to calculate the difference between
-    # the given date and timestamp and Universal Coordinated Time
+    parts = datestr.lower().split('t')
+    if len(parts) == 1:
+        # This may be a date only, or may be an MSSQL-style date
+        parts = parts[0].split()
+        if len(parts) == 1:
+            # Treat this as a date only
+            parts.append('00:00:00z')
+    elif len(parts) > 2:
+        return None
+    date = parts[0].split('-', 2) 
+    if not date or len(date[0]) != 4:
+        return None
+    # Ensure that `date` has 3 elements. Using '1' sets the default
+    # month to January and the default day to the 1st of the month.
+    date.extend(['1'] * (3 - len(date)))
+    try:
+        year, month, day = [int(i) for i in date]
+    except ValueError:
+        # `date` may have more than 3 elements or may contain
+        # non-integer strings.
+        return None
+    if parts[1].endswith('z'):
+        parts[1] = parts[1][:-1]
+        parts.append('z')
+    # Append the numeric timezone offset, if any, to parts.
+    # If this is an MSSQL-style date then parts[2] already contains
+    # the timezone information, so `append()` will not affect it.
+    # Add 1 to each value so that if `find()` returns -1 it will be
+    # treated as False.
+    loc = parts[1].find('-') + 1 or parts[1].find('+') + 1 or len(parts[1]) + 1
+    loc = loc - 1
+    parts.append(parts[1][loc:])
+    parts[1] = parts[1][:loc]
+    time = parts[1].split(':', 2)
+    # Ensure that time has 3 elements. Using '0' means that the
+    # minutes and seconds, if missing, will default to 0.
+    time.extend(['0'] * (3 - len(time)))
     tzhour = 0
     tzmin = 0
-    if m['tz'] and m['tz'].startswith('gmt'):
-        # Handle GMT and GMT+hh:mm timezone syntax (the trailing
-        # timezone info will be handled by the next `if` block)
-        m['tz'] = ''.join(m['tz'][3:].split(':')) or 'gmt'
-    if not m['tz']:
-        pass
-    elif m['tz'].startswith('+'):
-        tzhour = int(m['tz'][1:3])
-        tzmin = int(m['tz'][3:])
-    elif m['tz'].startswith('-'):
-        tzhour = int(m['tz'][1:3]) * -1
-        tzmin = int(m['tz'][3:]) * -1
+    if parts[2][:1] in ('-', '+'):
+        try:
+            tzhour = int(parts[2][1:3])
+            tzmin = int(parts[2][4:])
+        except ValueError:
+            return None
+        if parts[2].startswith('-'):
+            tzhour = tzhour * -1
+            tzmin = tzmin * -1
     else:
-        tzhour = _rfc822_tznames[m['tz']]
+        tzhour = timezonenames.get(parts[2], 0)
+    try:
+        hour, minute, second = [int(float(i)) for i in time]
+    except ValueError:
+        return None
+    # Create the datetime object and timezone delta objects
+    try:
+        stamp = datetime.datetime(year, month, day, hour, minute, second)
+    except ValueError:
+        return None
     delta = datetime.timedelta(0, 0, 0, 0, tzmin, tzhour)
+    # Return the date and timestamp in a UTC 9-tuple
+    try:
+        return (stamp - delta).utctimetuple()
+    except (OverflowError, ValueError):
+        # IronPython throws ValueErrors instead of OverflowErrors
+        return None
 
-    # Return the date and timestamp in UTC
-    return (stamp - delta).utctimetuple()
+registerDateHandler(_parse_date_w3dtf)
+
+def _parse_date_rfc822(date):
+    """Parse RFC 822 dates and times
+    http://tools.ietf.org/html/rfc822#section-5
+
+    There are some formatting differences that are accounted for:
+    1. Years may be two or four digits.
+    2. The month and day can be swapped.
+    3. Additional timezone names are supported.
+    4. A default time and timezone are assumed if only a date is present.
+    """
+    daynames = set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+    months = {
+        'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+        'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12,
+    }
+
+    parts = date.lower().split()
+    if len(parts) < 5:
+        # Assume that the time and timezone are missing
+        parts.extend(('00:00:00', '0000'))
+    # Remove the day name
+    if parts[0][:3] in daynames:
+        parts = parts[1:]
+    if len(parts) < 5:
+        # If there are still fewer than five parts, there's not enough
+        # information to interpret this
+        return None
+    try:
+        day = int(parts[0])
+    except ValueError:
+        # Check if the day and month are swapped
+        if months.get(parts[0][:3]):
+            try:
+                day = int(parts[1])
+            except ValueError:
+                return None
+            else:
+                parts[1] = parts[0]
+        else:
+            return None
+    month = months.get(parts[1][:3])
+    if not month:
+        return None
+    try:
+        year = int(parts[2])
+    except ValueError:
+        return None
+    # Normalize two-digit years:
+    # Anything in the 90's is interpreted as 1990 and on
+    # Anything 89 or less is interpreted as 2089 or before
+    if len(parts[2]) <= 2:
+        year += (1900, 2000)[year < 90]
+    timeparts = parts[3].split(':')
+    timeparts = timeparts + ([0] * (3 - len(timeparts)))
+    try:
+        (hour, minute, second) = map(int, timeparts)
+    except ValueError:
+        return None
+    tzhour = 0
+    tzmin = 0
+    # Strip 'Etc/' from the timezone
+    if parts[4].startswith('etc/'):
+        parts[4] = parts[4][4:]
+    # Normalize timezones that start with 'gmt':
+    # GMT-05:00 => -0500
+    # GMT => GMT
+    if parts[4].startswith('gmt'):
+        parts[4] = ''.join(parts[4][3:].split(':')) or 'gmt'
+    # Handle timezones like '-0500', '+0500', and 'EST'
+    if parts[4] and parts[4][0] in ('-', '+'):
+        try:
+            tzhour = int(parts[4][1:3])
+            tzmin = int(parts[4][3:])
+        except ValueError:
+            return None
+        if parts[4].startswith('-'):
+            tzhour = tzhour * -1
+            tzmin = tzmin * -1
+    else:
+        tzhour = timezonenames.get(parts[4], 0)
+    # Create the datetime object and timezone delta objects
+    try:
+        stamp = datetime.datetime(year, month, day, hour, minute, second)
+    except ValueError:
+        return None
+    delta = datetime.timedelta(0, 0, 0, 0, tzmin, tzhour)
+    # Return the date and timestamp in a UTC 9-tuple
+    try:
+        return (stamp - delta).utctimetuple()
+    except (OverflowError, ValueError):
+        # IronPython throws ValueErrors instead of OverflowErrors
+        return None
 registerDateHandler(_parse_date_rfc822)
 
+_months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun',
+           'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 def _parse_date_asctime(dt):
     """Parse asctime-style dates"""
     dayname, month, day, remainder = dt.split(None, 3)
     # Convert month and day into zero-padded integers
-    month = '%02i ' % (_rfc822_months.index(month.lower()) + 1)
+    month = '%02i ' % (_months.index(month.lower()) + 1)
     day = '%02i ' % (int(day),)
     dt = month + day + remainder
     return time.strptime(dt, '%m %d %H:%M:%S %Y')[:-1] + (0, )
@@ -3742,8 +3437,12 @@ def convert_to_utf8(http_headers, data):
     known_encoding = 0
     chardet_encoding = None
     tried_encodings = []
-    if chardet and data:
-        chardet_encoding = unicode(chardet.detect(data)['encoding'] or "", 'ascii', 'ignore')
+    if chardet:
+        chardet_encoding = chardet.detect(data)['encoding']
+        if not chardet_encoding:
+            chardet_encoding = ''
+        if not isinstance(chardet_encoding, unicode):
+            chardet_encoding = unicode(chardet_encoding, 'ascii', 'ignore')
     # try: HTTP encoding, declared XML encoding, encoding sniffed from BOM
     for proposed_encoding in (rfc3023_encoding, xml_encoding, bom_encoding,
                               chardet_encoding, u'utf-8', u'windows-1252', u'iso-8859-2'):
@@ -3837,6 +3536,76 @@ def replace_doctype(data):
     safe_entities = dict((k.decode('utf-8'), v.decode('utf-8'))
                       for k, v in RE_SAFE_ENTITY_PATTERN.findall(replacement))
     return version, data, safe_entities
+
+
+# GeoRSS geometry parsers. Each return a dict with 'type' and 'coordinates'
+# items, or None in the case of a parsing error.
+
+def _parse_poslist(value, geom_type, swap=True, dims=2):
+    if geom_type == 'linestring':
+        return _parse_georss_line(value, swap, dims)
+    elif geom_type == 'polygon':
+        ring = _parse_georss_line(value, swap, dims)
+        return {'type': u'Polygon', 'coordinates': (ring['coordinates'],)}
+    else:
+        return None
+
+def _gen_georss_coords(value, swap=True, dims=2):
+    # A generator of (lon, lat) pairs from a string of encoded GeoRSS
+    # coordinates. Converts to floats and swaps order.
+    latlons = itertools.imap(float, value.strip().replace(',', ' ').split())
+    nxt = latlons.next
+    while True:
+        t = [nxt(), nxt()][::swap and -1 or 1]
+        if dims == 3:
+            t.append(nxt())
+        yield tuple(t)
+
+def _parse_georss_point(value, swap=True, dims=2):
+    # A point contains a single latitude-longitude pair, separated by
+    # whitespace. We'll also handle comma separators.
+    try:
+        coords = list(_gen_georss_coords(value, swap, dims))
+        return {u'type': u'Point', u'coordinates': coords[0]}
+    except (IndexError, ValueError):
+        return None
+
+def _parse_georss_line(value, swap=True, dims=2):
+    # A line contains a space separated list of latitude-longitude pairs in
+    # WGS84 coordinate reference system, with each pair separated by
+    # whitespace. There must be at least two pairs.
+    try:
+        coords = list(_gen_georss_coords(value, swap, dims))
+        return {u'type': u'LineString', u'coordinates': coords}
+    except (IndexError, ValueError):
+        return None
+
+def _parse_georss_polygon(value, swap=True, dims=2):
+    # A polygon contains a space separated list of latitude-longitude pairs,
+    # with each pair separated by whitespace. There must be at least four
+    # pairs, with the last being identical to the first (so a polygon has a
+    # minimum of three actual points). 
+    try:
+        ring = list(_gen_georss_coords(value, swap, dims))
+    except (IndexError, ValueError):
+        return None
+    if len(ring) < 4:
+        return None
+    return {u'type': u'Polygon', u'coordinates': (ring,)}
+
+def _parse_georss_box(value, swap=True, dims=2):
+    # A bounding box is a rectangular region, often used to define the extents
+    # of a map or a rough area of interest. A box contains two space seperate
+    # latitude-longitude pairs, with each pair separated by whitespace. The
+    # first pair is the lower corner, the second is the upper corner.
+    try:
+        coords = list(_gen_georss_coords(value, swap, dims))
+        return {u'type': u'Box', u'coordinates': tuple(coords)}
+    except (IndexError, ValueError):
+        return None
+
+# end geospatial parsers
+
 
 def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, referrer=None, handlers=None, request_headers=None, response_headers=None):
     '''Parse a feed from a URL, file, stream, or string.
@@ -3988,3 +3757,41 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
     result['version'] = result['version'] or feedparser.version
     result['namespaces'] = feedparser.namespacesInUse
     return result
+
+# The list of EPSG codes for geographic (latitude/longitude) coordinate
+# systems to support decoding of GeoRSS GML profiles.
+_geogCS = [
+3819, 3821, 3824, 3889, 3906, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008,
+4009, 4010, 4011, 4012, 4013, 4014, 4015, 4016, 4018, 4019, 4020, 4021, 4022,
+4023, 4024, 4025, 4027, 4028, 4029, 4030, 4031, 4032, 4033, 4034, 4035, 4036,
+4041, 4042, 4043, 4044, 4045, 4046, 4047, 4052, 4053, 4054, 4055, 4075, 4081,
+4120, 4121, 4122, 4123, 4124, 4125, 4126, 4127, 4128, 4129, 4130, 4131, 4132,
+4133, 4134, 4135, 4136, 4137, 4138, 4139, 4140, 4141, 4142, 4143, 4144, 4145,
+4146, 4147, 4148, 4149, 4150, 4151, 4152, 4153, 4154, 4155, 4156, 4157, 4158,
+4159, 4160, 4161, 4162, 4163, 4164, 4165, 4166, 4167, 4168, 4169, 4170, 4171,
+4172, 4173, 4174, 4175, 4176, 4178, 4179, 4180, 4181, 4182, 4183, 4184, 4185,
+4188, 4189, 4190, 4191, 4192, 4193, 4194, 4195, 4196, 4197, 4198, 4199, 4200,
+4201, 4202, 4203, 4204, 4205, 4206, 4207, 4208, 4209, 4210, 4211, 4212, 4213,
+4214, 4215, 4216, 4218, 4219, 4220, 4221, 4222, 4223, 4224, 4225, 4226, 4227,
+4228, 4229, 4230, 4231, 4232, 4233, 4234, 4235, 4236, 4237, 4238, 4239, 4240,
+4241, 4242, 4243, 4244, 4245, 4246, 4247, 4248, 4249, 4250, 4251, 4252, 4253,
+4254, 4255, 4256, 4257, 4258, 4259, 4260, 4261, 4262, 4263, 4264, 4265, 4266,
+4267, 4268, 4269, 4270, 4271, 4272, 4273, 4274, 4275, 4276, 4277, 4278, 4279,
+4280, 4281, 4282, 4283, 4284, 4285, 4286, 4287, 4288, 4289, 4291, 4292, 4293,
+4294, 4295, 4296, 4297, 4298, 4299, 4300, 4301, 4302, 4303, 4304, 4306, 4307,
+4308, 4309, 4310, 4311, 4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319, 4322,
+4324, 4326, 4463, 4470, 4475, 4483, 4490, 4555, 4558, 4600, 4601, 4602, 4603,
+4604, 4605, 4606, 4607, 4608, 4609, 4610, 4611, 4612, 4613, 4614, 4615, 4616,
+4617, 4618, 4619, 4620, 4621, 4622, 4623, 4624, 4625, 4626, 4627, 4628, 4629,
+4630, 4631, 4632, 4633, 4634, 4635, 4636, 4637, 4638, 4639, 4640, 4641, 4642,
+4643, 4644, 4645, 4646, 4657, 4658, 4659, 4660, 4661, 4662, 4663, 4664, 4665,
+4666, 4667, 4668, 4669, 4670, 4671, 4672, 4673, 4674, 4675, 4676, 4677, 4678,
+4679, 4680, 4681, 4682, 4683, 4684, 4685, 4686, 4687, 4688, 4689, 4690, 4691,
+4692, 4693, 4694, 4695, 4696, 4697, 4698, 4699, 4700, 4701, 4702, 4703, 4704,
+4705, 4706, 4707, 4708, 4709, 4710, 4711, 4712, 4713, 4714, 4715, 4716, 4717,
+4718, 4719, 4720, 4721, 4722, 4723, 4724, 4725, 4726, 4727, 4728, 4729, 4730,
+4731, 4732, 4733, 4734, 4735, 4736, 4737, 4738, 4739, 4740, 4741, 4742, 4743,
+4744, 4745, 4746, 4747, 4748, 4749, 4750, 4751, 4752, 4753, 4754, 4755, 4756,
+4757, 4758, 4759, 4760, 4761, 4762, 4763, 4764, 4765, 4801, 4802, 4803, 4804,
+4805, 4806, 4807, 4808, 4809, 4810, 4811, 4813, 4814, 4815, 4816, 4817, 4818,
+4819, 4820, 4821, 4823, 4824, 4901, 4902, 4903, 4904, 4979 ]

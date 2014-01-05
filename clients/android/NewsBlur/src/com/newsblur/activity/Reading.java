@@ -219,11 +219,24 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	}
 
     @Override
-    public void actionCompleteCallback() {
-        stories.requery();
+    public void actionCompleteCallback(boolean noMoreData) {
+        this.requestedPage = false;
+		updateSyncStatus(false);
+        if (noMoreData) {
+		    this.noMoreApiPages = true;
+        }
+		stories.requery();
+		readingAdapter.notifyDataSetChanged();
+        this.enableOverlays();
+        checkStoryCount(pager.getCurrentItem());
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
         ReadingItemFragment fragment = getReadingFragment();
-        fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
-        fragment.updateSaveButton();
+        if (fragment != null ) {
+            fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
+            fragment.updateSaveButton();
+        }
     }
 
     // interface OnPageChangeListener

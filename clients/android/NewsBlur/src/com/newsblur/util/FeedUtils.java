@@ -20,7 +20,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -31,12 +30,100 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.SocialFeedResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 
 public class FeedUtils {
 
-    private static Gson gson = new Gson();
+    public static void updateFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, StoriesResponse>() {
+            @Override
+            protected StoriesResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStoriesForFeed(feedId, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(StoriesResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    public static void updateFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, StoriesResponse>() {
+            @Override
+            protected StoriesResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStoriesForFeeds(feedIds, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(StoriesResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    public static void updateSocialFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, SocialFeedResponse>() {
+            @Override
+            protected SocialFeedResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStoriesForSocialFeed(feedId, socialUsername, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(SocialFeedResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    public static void updateSocialFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
+        new AsyncTask<Void, Void, SocialFeedResponse>() {
+            @Override
+            protected SocialFeedResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getSharedStoriesForFeeds(feedIds, pageNumber, order, filter);
+            }
+            @Override
+            protected void onPostExecute(SocialFeedResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    public static void updateSavedStories(final Context context, final ActionCompletionListener receiver, final int pageNumber) {
+        new AsyncTask<Void, Void, StoriesResponse>() {
+            @Override
+            protected StoriesResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.getStarredStories(pageNumber);
+            }
+            @Override
+            protected void onPostExecute(StoriesResponse result) {
+                handleStoryResponse(context, result, result.stories, receiver);
+            }
+        }.execute();
+    }
+
+    private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
+        if (response.isError()) {
+            Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
+            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
+            receiver.actionCompleteCallback(false); // it is reasonable to try to load again
+            return;
+        }
+        if (stories == null) {
+            Log.e(FeedUtils.class.getName(), "Null stories member received loading stories.");
+            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
+            receiver.actionCompleteCallback(true); // it is not reasonable to try to load again
+            return;
+        }
+        if (receiver != null) {
+            receiver.actionCompleteCallback(stories.length == 0); // only keep loading if there are more stories left
+        }
+    }
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
@@ -62,7 +149,7 @@ public class FeedUtils {
                 }
 
                 if (receiver != null) {
-                    receiver.actionCompleteCallback();
+                    receiver.actionCompleteCallback(false);
                 }
             }
         }.execute();
@@ -291,6 +378,6 @@ public class FeedUtils {
      * as a result.
      */
     public interface ActionCompletionListener {
-        public abstract void actionCompleteCallback();
+        public abstract void actionCompleteCallback(boolean noMoreData);
     }
 }

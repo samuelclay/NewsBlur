@@ -431,6 +431,50 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             '当打开一个站点时'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-doubleclickfeed-1', type: 'radio', name: 'doubleclick_feed', value: 'open' }),
+                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-1' }, [
+                                    'Open the site in a new window'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-doubleclickfeed-0', type: 'radio', name: 'doubleclick_feed', value: 'open_and_read' }),
+                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-0' }, [
+                                    'Open the site in a new window and mark it as read'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-doubleclickfeed-2', type: 'radio', name: 'doubleclick_feed', value: 'ignore' }),
+                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-2' }, [
+                                    'Don\'t do anything on double-clicks'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Double-clicking a site'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-doubleclickunread' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-doubleclickunread-1', type: 'radio', name: 'doubleclick_unread', value: 'markread' }),
+                                $.make('label', { 'for': 'NB-preference-doubleclickunread-1' }, [
+                                    'Mark the site as read'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-doubleclickunread-0', type: 'radio', name: 'doubleclick_unread', value: "ignore" }),
+                                $.make('label', { 'for': 'NB-preference-doubleclickunread-0' }, [
+                                    'Don\'t do anything on double-clicks'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Double-clicking an unread count'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -873,6 +917,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=doubleclick_feed]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.doubleclick_feed) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=doubleclick_unread]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.doubleclick_unread) {
                 $(this).attr('checked', true);
                 return false;
             }

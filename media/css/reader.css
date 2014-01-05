@@ -2110,9 +2110,9 @@ background: transparent;
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-  max-width: 100% !important;
-  width: auto;
-  height: auto !important;
+    max-width: 100% !important;
+/*  width: auto;*/
+/*  height: auto !important;*/
 }
 .NB-feed-story {
     position: relative;
