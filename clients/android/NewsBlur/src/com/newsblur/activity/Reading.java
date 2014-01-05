@@ -221,7 +221,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		    this.noMoreApiPages = true;
         }
 		stories.requery();
-		readingAdapter.notifyDataSetChanged();
+        try {
+		    readingAdapter.notifyDataSetChanged();
+        } catch (IllegalStateException ise) {
+            // sometimes the pager is already shutting down by the time the callback finishes
+            finish();
+            return;
+        }
         this.enableOverlays();
         checkStoryCount(pager.getCurrentItem());
         if (this.unreadSearchLatch != null) {
