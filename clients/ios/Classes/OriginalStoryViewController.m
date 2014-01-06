@@ -13,7 +13,7 @@
 #import "TransparentToolbar.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
-#import "UIActivitiesControl.h"
+#import "OvershareKit.h"
 #import "NBBarButtonItem.h"
 
 @implementation OriginalStoryViewController
@@ -302,8 +302,9 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
-        UIActivityViewController *shareSheet = [UIActivitiesControl activityViewControllerForView:self withUrl:url];
-        [self presentViewController:shareSheet animated:YES completion:nil];
+        OSKShareableContent *content = [OSKShareableContent contentFromURL:url];
+        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                       presentingViewController:self options:nil];
     }
 }
 

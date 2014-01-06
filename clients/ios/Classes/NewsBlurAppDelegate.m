@@ -47,6 +47,7 @@
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "PocketAPI.h"
+#import <float.h>
 
 @implementation NewsBlurAppDelegate
 

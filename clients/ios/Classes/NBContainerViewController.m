@@ -22,7 +22,7 @@
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
-#import "UIActivitiesControl.h"
+#import "OvershareKit.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
@@ -363,19 +363,12 @@
         [popoverController dismissPopoverAnimated:NO];
     }
 
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:[UIActivitiesControl activityViewControllerForView:self]];
-    popoverController.delegate = self;
+    OSKShareableContent *content = [OSKShareableContent contentFromURL:[NSURL URLWithString:[appDelegate.activeStory objectForKey:@"story_permalink"]]];
 
     if ([sender class] == [UIBarButtonItem class]) {
-        [popoverController presentPopoverFromBarButtonItem:sender
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                  animated:NO];
+        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:[sender superview] popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
     } else {
-        [popoverController presentPopoverFromRect:[sender frame]
-                                           inView:[sender superview]
-                         permittedArrowDirections:UIPopoverArrowDirectionAny
-                                         animated:YES];
+        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:[sender superview] popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
     }
 }
 
