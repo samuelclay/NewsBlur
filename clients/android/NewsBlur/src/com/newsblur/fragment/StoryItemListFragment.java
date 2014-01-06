@@ -58,4 +58,5 @@ public abstract class StoryItemListFragment extends ItemListFragment implements 
     protected abstract void refreshStories();
     
     protected abstract StoryItemsAdapter getAdapter();
+
 }

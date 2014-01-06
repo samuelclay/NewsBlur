@@ -362,6 +362,7 @@ public class FeedUtils {
     }
     
     public static void shareStory(Story story, Context context) {
+        if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);

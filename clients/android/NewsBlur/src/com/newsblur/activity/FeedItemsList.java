@@ -18,10 +18,8 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -62,12 +60,7 @@ public class FeedItemsList extends ItemsList {
 			listTransaction.commit();
 		}
 
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
-		}
+        triggerRefresh(1);
 	}
 	
 	public void deleteFeed() {
