@@ -566,6 +566,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var href = $target.attr('href');
         
+        // Fix footnotes
+        if (_.string.contains(href, "#")) {
+            href = href.replace(/^.*?\#(.*?)$/, "\#$1")
+                       .replace(':', "\\\:");
+            var $footnote = $(href);
+            if ($footnote.length) {
+                var offset = $(href).offset().top;
+                offset += NEWSBLUR.reader.$s.$feed_scroll.scrollTop();
+                NEWSBLUR.reader.$s.$feed_scroll.stop().scrollTo(offset-60, {
+                    duration: 340,
+                    axis: 'y', 
+                    easing: 'easeInOutQuint'
+                });
+                return;
+            }
+        }
+        
         if (NEWSBLUR.assets.preference('new_window') == 1) {
             window.open(href, '_blank');
         } else {
