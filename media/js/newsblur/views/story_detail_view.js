@@ -573,8 +573,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $footnote = $(href);
             if ($footnote.length) {
                 var offset = $(href).offset().top;
-                offset += NEWSBLUR.reader.$s.$feed_scroll.scrollTop();
-                NEWSBLUR.reader.$s.$feed_scroll.stop().scrollTo(offset-60, {
+                var $scroll;
+                if (NEWSBLUR.assets.preference('story_layout') == "list") {
+                    $scroll = NEWSBLUR.reader.$s.$story_titles;
+                } else if (NEWSBLUR.reader.flags['temporary_story_view'] || 
+                    NEWSBLUR.reader.story_view == 'text') {
+                    $scroll = NEWSBLUR.reader.$s.$text_view;
+                } else {
+                    $scroll = NEWSBLUR.reader.$s.$feed_scroll;
+                }
+                offset += $scroll.scrollTop();
+                $scroll.stop().scrollTo(offset-60, {
                     duration: 340,
                     axis: 'y', 
                     easing: 'easeInOutQuint'
