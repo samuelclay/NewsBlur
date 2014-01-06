@@ -10,6 +10,12 @@ var loadImages = function() {
 
 };
 
+var fitVideos = function() {
+       $(".NB-story").fitVids({
+            customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
+       });
+};
+
 $('a.NB-show-profile').live('click', function () {
     var offset = $('img', this).offset();
     console.log(offset);
@@ -179,6 +185,7 @@ function attachFastClick() {
 }
 
 loadImages();
+fitVideos();
 
 Zepto(function($) {
       attachFastClick();

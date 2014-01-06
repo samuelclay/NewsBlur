@@ -180,6 +180,7 @@
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
+                    "<script src=\"fitvid.js\"></script>"
                     "<script src=\"storyDetailView.js\"></script>"
                     "<script src=\"fastTouch.js\"></script>"];
     
