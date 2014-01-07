@@ -141,7 +141,7 @@ static NSString * OSKAppDotNetUtility_URL_WriteNewPost = @"stream/0/posts?access
         }
         if (theError == nil) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSDictionary *userDictionary = nil;
+                NSDictionary *userDictionary = @{};
                 if (data) {
                     NSDictionary *responseDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                     userDictionary = [responseDictionary objectForKey:@"data"];

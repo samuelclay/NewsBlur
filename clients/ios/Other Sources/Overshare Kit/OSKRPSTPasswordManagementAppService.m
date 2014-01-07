@@ -127,7 +127,7 @@ NSString * const OSKRPSTOnePasswordOpenWebURLHTTPS = @"ophttps://";
 		case OSKRPSTPasswordManagementAppType1Password_v4:
 		case OSKRPSTPasswordManagementAppType1Password_v3: {
 			supportsWebViews = NO;
-		}
+		} break;
 		default: {
 			supportsWebViews = NO;
 		} break;
