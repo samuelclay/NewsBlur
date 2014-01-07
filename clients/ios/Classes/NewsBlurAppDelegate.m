@@ -601,7 +601,7 @@
     
     
     OSKActivityCompletionHandler completionHandler = ^(OSKActivity *activity, BOOL successful, NSError *error){
-//        if (!successful) return;
+        if (!successful) return;
         
         NSString *activityType = [activity.class activityType];
         NSString *_completedString;
@@ -676,6 +676,19 @@
     }
 
     [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+}
+
+- (void)showSendToManagement {
+    OSKAccountManagementViewController *manager = [[OSKAccountManagementViewController alloc] initWithIgnoredActivityClasses:nil optionalBespokeActivityClasses:nil];
+    OSKNavigationController *navController = [[OSKNavigationController alloc] initWithRootViewController:manager];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController presentViewController:navController animated:YES completion:nil];
+    } else {
+        [self.navigationController presentViewController:navController animated:YES completion:nil];
+    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {

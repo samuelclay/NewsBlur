@@ -276,6 +276,7 @@
              title:(NSString *)title
          feedTitle:(NSString *)title
             images:(NSArray *)images;
+- (void)showSendToManagement;
 - (void)showFindFriends;
 - (void)showPreferences;
 
