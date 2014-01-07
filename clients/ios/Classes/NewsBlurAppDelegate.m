@@ -599,18 +599,60 @@
         content.airDropItem = airDrop;
     }
     
+    
+    OSKActivityCompletionHandler completionHandler = ^(OSKActivity *activity, BOOL successful, NSError *error){
+//        if (!successful) return;
+        
+        NSString *activityType = [activity.class activityType];
+        NSString *_completedString;
+        
+        if ([activityType isEqualToString:OSKActivityType_iOS_Twitter]) {
+            _completedString = @"Posted";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Facebook]) {
+            _completedString = @"Posted";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Email]) {
+            _completedString = @"Sent";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_SMS]) {
+            _completedString = @"Sent";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_CopyToPasteboard]) {
+            _completedString = @"Copied";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Instapaper]) {
+            _completedString = @"Saved to Instapaper";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Pocket]) {
+            _completedString = @"Saved to Pocket";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Readability]) {
+            _completedString = @"Saved to Readability";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Pinboard]) {
+            _completedString = @"Saved to Pinboard";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Safari]) {
+            return;
+        } else if ([activityType isEqualToString:OSKActivityType_URLScheme_Chrome]) {
+            return;
+        } else {
+            _completedString = @"Saved";
+        }
+        [MBProgressHUD hideHUDForView:vc.view animated:NO];
+        MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
+        storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+        storyHUD.mode = MBProgressHUDModeCustomView;
+        storyHUD.removeFromSuperViewOnHide = YES;
+        storyHUD.labelText = _completedString;
+        [storyHUD hide:YES afterDelay:1];
+    };
+    
+    NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showSendToPopover:vc];
-        
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
-            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         } else {
-            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
 
     } else {
         [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                       presentingViewController:vc options:nil];
+                                                       presentingViewController:vc options:options];
     }
 }
 
