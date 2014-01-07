@@ -518,7 +518,7 @@
     content.title = [NSString stringWithFormat:@"%@", title];
     
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
-    microblogPost.text = [NSString stringWithFormat:@"“%@” (Via %@) %@ ", text, authorName, [url absoluteString]];
+    microblogPost.text = [NSString stringWithFormat:@"%@ %@", title, [url absoluteString]];
     microblogPost.images = [activeStory objectForKey:@"story_images"];;
     content.microblogPostItem = microblogPost;
     
@@ -624,6 +624,8 @@
             _completedString = @"Saved to Readability";
         } else if ([activityType isEqualToString:OSKActivityType_API_Pinboard]) {
             _completedString = @"Saved to Pinboard";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_AirDrop]) {
+            _completedString = @"Airdropped";
         } else if ([activityType isEqualToString:OSKActivityType_iOS_Safari]) {
             return;
         } else if ([activityType isEqualToString:OSKActivityType_URLScheme_Chrome]) {

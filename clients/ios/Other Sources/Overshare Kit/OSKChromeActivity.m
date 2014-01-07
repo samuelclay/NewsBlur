@@ -108,6 +108,15 @@ static NSString * kGoogleChromeHTTPSScheme = @"googlechromes:";
     return ([(OSKWebBrowserContentItem *)self.contentItem url] != nil);
 }
 
+- (NSString *)encodeByAddingPercentEscapes:(NSString *)input {
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+                                                        kCFAllocatorDefault,
+                                                        (CFStringRef)input,
+                                                        NULL,
+                                                        (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                        kCFStringEncodingUTF8));
+}
+
 - (void)performActivity:(OSKActivityCompletionHandler)completion {
     NSURL *url = [[self browserItem] url];
     NSString *scheme = [url.scheme lowercaseString];
@@ -122,12 +131,11 @@ static NSString * kGoogleChromeHTTPSScheme = @"googlechromes:";
     
     // Proceed only if a valid Google Chrome URI Scheme is available.
     if (chromeScheme) {
-        NSString *absoluteString = [url absoluteString];
-        NSRange rangeForScheme = [absoluteString rangeOfString:@":"];
-        NSString *urlNoScheme =
-        [absoluteString substringFromIndex:rangeForScheme.location + 1];
-        NSString *chromeURLString =
-        [chromeScheme stringByAppendingString:urlNoScheme];
+        NSString *chromeURLString = [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?x-source=%@&x-success=%@&url=%@",
+                                     @"NewsBlur",
+                                     [self encodeByAddingPercentEscapes:@"newsblur://"],
+                                     [self encodeByAddingPercentEscapes:[url absoluteString]]];
+        
         NSURL *chromeURL = [NSURL URLWithString:chromeURLString];
         
         // Open the URL with Google Chrome.
