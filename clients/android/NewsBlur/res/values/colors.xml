@@ -75,8 +75,8 @@
 
     <color name="newsblur_blue">#0b445a</color>
 
-    <color name="progress_circle_complete">#9a9c96</color>
-    <color name="progress_circle_remaining">#dbe4e1</color>
+    <color name="progress_circle_complete">#8F918B</color>
+    <color name="progress_circle_remaining">#D5D7CF</color>
 
     <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>
