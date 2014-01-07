@@ -101,7 +101,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private Boolean textMode = false;
 
-    // NB: when subclassing, set up and member variables needed by onCreateLoader() before chaining onCreate()
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
