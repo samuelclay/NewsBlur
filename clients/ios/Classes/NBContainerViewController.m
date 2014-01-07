@@ -363,7 +363,11 @@
         [popoverController dismissPopoverAnimated:NO];
     }
 
-    OSKShareableContent *content = [OSKShareableContent contentFromURL:[NSURL URLWithString:[appDelegate.activeStory objectForKey:@"story_permalink"]]];
+    OSKShareableContent *content = [OSKShareableContent
+                                    contentFromMicroblogPost:[appDelegate.activeStory objectForKey:@"story_content"]
+                                    authorName:[appDelegate.activeStory objectForKey:@"story_author"]
+                                    canonicalURL:[appDelegate.activeStory objectForKey:@"story_permalink"]
+                                    images:[appDelegate.activeStory objectForKey:@"story_images"]];
 
     if ([sender class] == [UIBarButtonItem class]) {
         [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:[sender superview] popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];

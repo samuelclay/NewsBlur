@@ -25,7 +25,6 @@
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
-#import "OvershareKit.h"
 
 @implementation StoryPageControl
 
@@ -833,9 +832,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSendToPopover:sender];
     } else {
-        OSKShareableContent *content = [OSKShareableContent contentFromURL:[NSURL URLWithString:[appDelegate.activeStory objectForKey:@"story_permalink"]]];
-        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                       presentingViewController:self options:nil];
+        [appDelegate showSendTo:self];
     }
 }
 

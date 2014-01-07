@@ -47,6 +47,7 @@
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "PocketAPI.h"
+#import "OvershareKit.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -483,7 +484,121 @@
     [self.friendsListViewController loadSuggestedFriendsList];
 }
 
-- (void)showShareView:(NSString *)type 
+- (void)showSendTo:(UIViewController *)vc {
+    NSString *authorName = [activeStory objectForKey:@"story_authors"];
+    NSString *text = [activeStory objectForKey:@"story_content"];
+    NSString *title = [activeStory objectForKey:@"story_title"];
+    NSArray *images = [activeStory objectForKey:@"story_images"];
+    NSURL *url = [NSURL URLWithString:[activeStory objectForKey:@"story_permalink"]];
+    NSString *feedId = [NSString stringWithFormat:@"%@", [activeStory objectForKey:@"story_feed_id"]];
+    NSDictionary *feed = [self getFeed:feedId];
+    NSString *feedTitle = [feed objectForKey:@"feed_title"];
+    
+    return [self showSendTo:vc
+                    withUrl:url
+                 authorName:authorName
+                       text:text
+                      title:title
+                  feedTitle:feedTitle
+                     images:images];
+}
+
+- (void)showSendTo:(UIViewController *)vc withUrl:(NSURL *)url
+        authorName:(NSString *)authorName
+              text:(NSString *)text
+             title:(NSString *)title
+         feedTitle:(NSString *)feedTitle
+            images:(NSArray *)images {
+    OSKShareableContent *content = [[OSKShareableContent alloc] init];
+    
+    content.title = [NSString stringWithFormat:@"%@", title];
+    
+    OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
+    microblogPost.text = [NSString stringWithFormat:@"“%@” (Via %@) %@ ", text, authorName, [url absoluteString]];
+    microblogPost.images = [activeStory objectForKey:@"story_images"];;
+    content.microblogPostItem = microblogPost;
+    
+    OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyTextToPasteboard.text = text;
+    copyTextToPasteboard.alternateActivityName = @"Copy Text";
+    content.pasteboardItem = copyTextToPasteboard;
+    
+    OSKCopyToPasteboardContentItem *copyURLToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyURLToPasteboard.text = [url absoluteString];
+    copyURLToPasteboard.alternateActivityName = @"Copy URL";
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+    } else {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+    }
+    
+    OSKCopyToPasteboardContentItem *copyTitleToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyTitleToPasteboard.text = title;
+    copyTitleToPasteboard.alternateActivityName = @"Copy Title";
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+    } else {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+    }
+    
+    content.additionalItems = @[copyURLToPasteboard, copyTitleToPasteboard];
+    
+    OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
+    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a> via %@<br>%@", [url absoluteString], title, feedTitle, text];
+    emailItem.subject = title;
+    emailItem.isHTML = YES;
+    content.emailItem = emailItem;
+    
+    OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
+    smsItem.body = [NSString stringWithFormat:@"%@\n\n--\n\n%@\n\n", title, [url absoluteString]];;
+    content.smsItem = smsItem;
+    
+    OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
+    readLater.url = url;
+    content.readLaterItem = readLater;
+    
+    OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
+    toDoList.title = [NSString stringWithFormat:@"Read \"%@\"", title];
+    toDoList.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
+    content.toDoListItem = toDoList;
+    
+    OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
+    linkBookmarking.url = readLater.url;
+    linkBookmarking.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    linkBookmarking.tags = @[appName];
+    linkBookmarking.markToRead = YES;
+    content.linkBookmarkItem = linkBookmarking;
+    
+    OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
+    browserItem.url = readLater.url;
+    content.webBrowserItem = browserItem;
+    
+    OSKPasswordManagementAppSearchContentItem *passwordSearchItem = [[OSKPasswordManagementAppSearchContentItem alloc] init];
+    passwordSearchItem.query = [url host];
+    content.passwordSearchItem = passwordSearchItem;
+    
+    if (images.count) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = images;
+        content.airDropItem = airDrop;
+    }
+    else if ([url absoluteString].length) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = @[[url absoluteString]];
+        content.airDropItem = airDrop;
+    }
+    else if (text.length) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = @[text];
+        content.airDropItem = airDrop;
+    }
+    
+    [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                   presentingViewController:vc options:nil];
+}
+
+- (void)showShareView:(NSString *)type
             setUserId:(NSString *)userId 
           setUsername:(NSString *)username 
       setReplyId:(NSString *)replyId {

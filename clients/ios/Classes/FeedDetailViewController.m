@@ -29,7 +29,6 @@
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
 #import "NBBarButtonItem.h"
-#import "OvershareKit.h"
 
 #define kTableViewRowHeight 38;
 #define kTableViewRiverRowHeight 60;
@@ -1188,9 +1187,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showSendToPopover:cell];
     } else {
-        OSKShareableContent *content = [OSKShareableContent contentFromURL:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
-        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                       presentingViewController:self options:nil];
+        [appDelegate showSendTo:self];
     }
 
 }

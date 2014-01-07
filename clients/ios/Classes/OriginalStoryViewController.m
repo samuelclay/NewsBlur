@@ -13,7 +13,6 @@
 #import "TransparentToolbar.h"
 #import "MBProgressHUD.h"
 #import "UIBarButtonItem+Image.h"
-#import "OvershareKit.h"
 #import "NBBarButtonItem.h"
 
 @implementation OriginalStoryViewController
@@ -298,14 +297,16 @@
 - (IBAction)doOpenActionSheet:(id)sender {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    } else {
-        OSKShareableContent *content = [OSKShareableContent contentFromURL:url];
-        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                       presentingViewController:self options:nil];
-    }
+    NSString *title = [[webView stringByEvaluatingJavaScriptFromString:@"document.title"]
+                       stringByDecodingHTMLEntities];
+    
+    [appDelegate showSendTo:self
+                    withUrl:url
+                 authorName:nil
+                       text:nil
+                      title:title
+                  feedTitle:nil
+                     images:nil];
 }
 
 @end
