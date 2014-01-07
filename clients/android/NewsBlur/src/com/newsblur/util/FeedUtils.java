@@ -108,16 +108,17 @@ public class FeedUtils {
     }
 
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
+        // NB: we do not keep loading on error, since the calling class would need to know to adjust pagination
         if (response.isError()) {
             Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
             Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(false); // it is reasonable to try to load again
+            receiver.actionCompleteCallback(true);
             return;
         }
         if (stories == null) {
             Log.e(FeedUtils.class.getName(), "Null stories member received loading stories.");
             Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(true); // it is not reasonable to try to load again
+            receiver.actionCompleteCallback(true);
             return;
         }
         if (receiver != null) {
