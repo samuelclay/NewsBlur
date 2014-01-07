@@ -47,6 +47,7 @@
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "PocketAPI.h"
+#import "ADNLogin.h"
 #import "OvershareKit.h"
 #import "NBBarButtonItem.h"
 #import <float.h>
@@ -203,7 +204,6 @@
     });
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
-
 //    [self showFirstTimeUser];
 
 	return YES;
@@ -569,9 +569,11 @@
     
     OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
     linkBookmarking.url = readLater.url;
-    linkBookmarking.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
+    linkBookmarking.title = title;
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    linkBookmarking.tags = @[appName];
+    NSMutableArray *tags = [NSMutableArray arrayWithObject:appName];
+    [tags addObjectsFromArray:[activeStory objectForKey:@"story_tags"]];
+    linkBookmarking.tags = tags;
     linkBookmarking.markToRead = YES;
     content.linkBookmarkItem = linkBookmarking;
     
@@ -642,6 +644,8 @@
         [storyHUD hide:YES afterDelay:1];
     };
     
+    [[OSKActivitiesManager sharedInstance] setCustomizationsDelegate:self];
+    
     NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -656,6 +660,37 @@
         [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
                                                        presentingViewController:vc options:options];
     }
+}
+
+
+- (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
+    OSKApplicationCredential *appCredential = nil;
+    if ([activityType isEqualToString:OSKActivityType_iOS_Facebook]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"230426707030569"
+                         applicationSecret:@"b819827cab9a66faf41478cf9c405195"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_AppDotNet]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"7Y482n6JErhDeSDA6TY7Qv29mU22G2v2"
+                         applicationSecret:@"4rFFMKG68fWnAQA8W6puxTaYBkupuCBH"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_Pocket]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"16638-05adf4465390446398e53b8b"
+                         applicationSecret:@"16638-05adf4465390446398e53b8b"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_Readability]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"samuelclay"
+                         applicationSecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"
+                         appName:@"NewsBlur"];
+    }
+
+    return appCredential;
 }
 
 - (void)showShareView:(NSString *)type

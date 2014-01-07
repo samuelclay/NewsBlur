@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
+#import "OvershareKit.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -44,7 +45,7 @@
 @class UnreadCounts;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
