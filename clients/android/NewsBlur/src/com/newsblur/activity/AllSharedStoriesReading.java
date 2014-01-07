@@ -3,6 +3,8 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
@@ -20,8 +22,6 @@ public class AllSharedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-        stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         setTitle(getResources().getString(R.string.all_shared_stories));
 
         Cursor folderCursor = contentResolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
@@ -30,16 +30,21 @@ public class AllSharedStoriesReading extends Reading {
         this.startingUnreadCount = unreadCount;
         this.currentUnreadCount = unreadCount;
 
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
-
-        setupPager();
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
 
         addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
+
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        return new CursorLoader(this, FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
 
     @Override
-    public void triggerRefresh(int page) {
-        updateSyncStatus(true);
+    protected void triggerRefresh(int page) {
         FeedUtils.updateSocialFeeds(this, this, new String[0], page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
     }
 
