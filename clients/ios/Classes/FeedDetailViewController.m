@@ -1184,12 +1184,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     appDelegate.activeStory = story;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:cell];
-    } else {
-        [appDelegate showSendTo:self];
-    }
-
+    [appDelegate showSendTo:self sender:cell];
 }
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {

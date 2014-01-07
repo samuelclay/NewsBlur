@@ -829,11 +829,7 @@
 - (IBAction)openSendToDialog:(id)sender {
     [self endTouchDown:sender];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showSendToPopover:sender];
-    } else {
-        [appDelegate showSendTo:self];
-    }
+    [appDelegate showSendTo:self sender:sender];
 }
 
 - (void)markStoryAsSaved {

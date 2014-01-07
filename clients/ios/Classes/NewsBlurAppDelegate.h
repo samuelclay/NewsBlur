@@ -268,8 +268,9 @@
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
-- (void)showSendTo:(UIViewController *)vc;
-- (void)showSendTo:(UIViewController *)vc withUrl:(NSURL *)url
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender;
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender
+           withUrl:(NSURL *)url
         authorName:(NSString *)authorName
               text:(NSString *)text
              title:(NSString *)title

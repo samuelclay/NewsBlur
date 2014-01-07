@@ -48,6 +48,7 @@
 #import "OfflineCleanImages.h"
 #import "PocketAPI.h"
 #import "OvershareKit.h"
+#import "NBBarButtonItem.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -484,17 +485,18 @@
     [self.friendsListViewController loadSuggestedFriendsList];
 }
 
-- (void)showSendTo:(UIViewController *)vc {
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender {
     NSString *authorName = [activeStory objectForKey:@"story_authors"];
     NSString *text = [activeStory objectForKey:@"story_content"];
     NSString *title = [activeStory objectForKey:@"story_title"];
-    NSArray *images = [activeStory objectForKey:@"story_images"];
+    NSArray *images = [activeStory objectForKey:@"image_urls"];
     NSURL *url = [NSURL URLWithString:[activeStory objectForKey:@"story_permalink"]];
     NSString *feedId = [NSString stringWithFormat:@"%@", [activeStory objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [self getFeed:feedId];
     NSString *feedTitle = [feed objectForKey:@"feed_title"];
     
     return [self showSendTo:vc
+                     sender:sender
                     withUrl:url
                  authorName:authorName
                        text:text
@@ -503,7 +505,8 @@
                      images:images];
 }
 
-- (void)showSendTo:(UIViewController *)vc withUrl:(NSURL *)url
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender
+           withUrl:(NSURL *)url
         authorName:(NSString *)authorName
               text:(NSString *)text
              title:(NSString *)title
@@ -511,6 +514,7 @@
             images:(NSArray *)images {
     OSKShareableContent *content = [[OSKShareableContent alloc] init];
     
+    text = text ? text : @"";
     content.title = [NSString stringWithFormat:@"%@", title];
     
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
@@ -544,7 +548,8 @@
     content.additionalItems = @[copyURLToPasteboard, copyTitleToPasteboard];
     
     OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
-    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a> via %@<br>%@", [url absoluteString], title, feedTitle, text];
+    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@", [url absoluteString], title, maybeFeedTitle, text];
     emailItem.subject = title;
     emailItem.isHTML = YES;
     content.emailItem = emailItem;
@@ -594,8 +599,19 @@
         content.airDropItem = airDrop;
     }
     
-    [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-                                                   presentingViewController:vc options:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController showSendToPopover:vc];
+        
+        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
+        } else {
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:nil];
+        }
+
+    } else {
+        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                       presentingViewController:vc options:nil];
+    }
 }
 
 - (void)showShareView:(NSString *)type

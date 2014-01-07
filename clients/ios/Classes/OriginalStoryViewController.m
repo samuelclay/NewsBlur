@@ -301,6 +301,7 @@
                        stringByDecodingHTMLEntities];
     
     [appDelegate showSendTo:self
+                     sender:sender
                     withUrl:url
                  authorName:nil
                        text:nil
