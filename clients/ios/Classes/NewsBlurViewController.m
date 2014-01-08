@@ -900,12 +900,6 @@ static UIFont *userLabelFont;
           @"offline_download_connection",
           @"offline_store_limit",
           nil] animated:YES];
-	} else if ([notification.object isEqual:@"enable_instapaper"]) {
-		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"enable_instapaper"] intValue];
-		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
-         [NSSet setWithObjects:@"instapaper_username",
-          @"instapaper_password",
-          nil] animated:YES];
 	} else if ([notification.object isEqual:@"use_system_font_size"]) {
 		BOOL enabled = (BOOL)[[notification.userInfo objectForKey:@"use_system_font_size"] intValue];
 		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
