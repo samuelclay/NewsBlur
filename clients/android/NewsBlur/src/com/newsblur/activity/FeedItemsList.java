@@ -50,6 +50,7 @@ public class FeedItemsList extends ItemsList {
             Feed feed = Feed.fromCursor(cursor);
             setTitle(feed.title);
         }
+        cursor.close();
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
@@ -59,8 +60,6 @@ public class FeedItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-
-        triggerRefresh(1);
 	}
 	
 	public void deleteFeed() {

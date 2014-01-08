@@ -51,8 +51,6 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-
-        triggerRefresh(1);
 	}
 
 	@Override
