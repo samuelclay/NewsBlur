@@ -13,8 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -31,14 +29,10 @@ import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	public int currentState;
-	private boolean doRequest = true;
 	private ContentResolver contentResolver;
-	private SimpleCursorAdapter adapter;
-	private boolean requestedPage;
-	private int currentPage = 0;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	private Cursor countCursor;
@@ -52,9 +46,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
         storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
-		if (!NetworkUtils.isOnline(getActivity())) {
-			doRequest  = false;
-		}
 	}
 
 	@Override
@@ -67,6 +58,10 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 		groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+        Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+        adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+        itemList.setAdapter(adapter);
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
@@ -74,20 +69,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		itemList.setOnItemClickListener(this);
 
 		return v;
-	}
-
-
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (adapter == null) {
-			adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-			adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
-			itemList.setAdapter(adapter);
-		}
-		if (cursor != null) {
-			adapter.swapCursor(cursor);
-		}
 	}
 
 	public void hasUpdated() {
@@ -105,8 +86,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-		adapter.swapCursor(cursor);
+        hasUpdated();
 	}
 
 	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder) {
@@ -120,18 +100,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	}
 
 	@Override
-	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (firstVisible + visibleCount == totalCount && !requestedPage && doRequest) {
-			currentPage += 1;
-			requestedPage = true;
-			((ItemsList) getActivity()).triggerRefresh(currentPage);
-		}
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView arg0, int arg1) { }
-
-	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
@@ -141,12 +109,12 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-		return cursorLoader;
+		return new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
 
 	@Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;
     }
+
 }

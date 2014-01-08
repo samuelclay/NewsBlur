@@ -44,8 +44,6 @@ public class SavedStoriesItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-
-        triggerRefresh(1);
 	}
 
 	@Override

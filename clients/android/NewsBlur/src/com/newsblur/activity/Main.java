@@ -17,6 +17,7 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
@@ -65,6 +66,8 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
         if (PrefsUtils.isTimeToAutoSync(this)) {
             triggerRefresh();
         }
+        // clear all stories from the DB, the story activities will load them.
+        FeedUtils.clearStories(this);
     }
 
     /**

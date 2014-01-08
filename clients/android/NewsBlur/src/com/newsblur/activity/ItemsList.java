@@ -108,19 +108,23 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
+        FeedUtils.clearStories(this);
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
+        FeedUtils.clearStories(this);
         updateReadFilterPreference(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

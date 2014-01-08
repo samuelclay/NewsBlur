@@ -42,8 +42,6 @@ public class SocialFeedItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-		
-        triggerRefresh(1);
 	}
 	
 

@@ -208,9 +208,6 @@ public class APIManager {
             Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
-			if (pageNumber == 1) {
-				contentResolver.delete(storyUri, null, null);
-			}
 			contentResolver.delete(classifierUri, null, null);
 
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
@@ -241,11 +238,6 @@ public class APIManager {
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (pageNumber == 1) {
-				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				contentResolver.delete(storyUri, null, null);
-			}
-
 			for (Story story : storiesResponse.stories) {
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
@@ -255,7 +247,6 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-
 		}
         return storiesResponse;
 	}
@@ -267,9 +258,6 @@ public class APIManager {
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (pageNumber == 1) {
-				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
-			}
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(FeedProvider.STARRED_STORIES_URI, story.getValues());
 				insertComments(story);
@@ -293,11 +281,6 @@ public class APIManager {
 		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
 		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
-
-			if (pageNumber == 1) {
-				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				contentResolver.delete(storyUri, null, null);
-			}
 
 			for (Story story : storiesResponse.stories) {
 				for (String userId : story.sharedUserIds) {
@@ -337,15 +320,11 @@ public class APIManager {
 		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
-			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-			if (pageNumber == 1) {
-				contentResolver.delete(storySocialUri, null, null);
-			}
-
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
 
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
+                Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storyUri, story.getValues());
 				contentResolver.insert(storySocialUri, story.getValues());
 			}

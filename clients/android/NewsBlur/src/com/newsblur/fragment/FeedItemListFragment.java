@@ -13,8 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -32,14 +30,10 @@ import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
-	private ContentResolver contentResolver;
 	private String feedId;
-	private FeedItemsAdapter adapter;
 	private int currentState;
-	private int currentPage = 1;
-	private boolean requestedPage = false;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	
@@ -72,7 +66,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
-        contentResolver = getActivity().getContentResolver();
+        ContentResolver contentResolver = getActivity().getContentResolver();
         Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
         Cursor storiesCursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
@@ -116,13 +110,6 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		return cursorLoader;
 	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (cursor != null) {
-			adapter.swapCursor(cursor);
-		}
-	}
-
 	public void hasUpdated() {
         if (isAdded()) {
 		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
@@ -146,36 +133,12 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 
 	public void changeState(int state) {
 		currentState = state;
-		refreshStories();
+		hasUpdated();
 	}
-
-    @Override
-    protected void refreshStories() {
-        Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-        Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
-        adapter.swapCursor(cursor);
-    }
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (firstVisible + visibleCount == totalCount && !requestedPage) {
-			currentPage += 1;
-			requestedPage = true;
-			((ItemsList) getActivity()).triggerRefresh(currentPage);
-		}
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
     @Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;
-    }
-
-    @Override
-    protected StoryItemsAdapter getAdapter() {
-        return adapter;
     }
 
 }

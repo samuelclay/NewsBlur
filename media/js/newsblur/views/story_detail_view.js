@@ -568,10 +568,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         // Fix footnotes
         if (_.string.contains(href, "#")) {
-            href = href.replace(/^.*?\#(.*?)$/, "\#$1")
-                       .replace(':', "\\\:");
-            var $footnote = $(href);
+            try {
+                footnote_href = href.replace(/^.*?\#(.*?)$/, "\#$1")
+                                    .replace(':', "\\\:");
+                var $footnote = $(footnote_href);
+            } catch (err) {
+                $footnote = [];
+            }
             if ($footnote.length) {
+                href = footnote_href;
                 var offset = $(href).offset().top;
                 var $scroll;
                 if (NEWSBLUR.assets.preference('story_layout') == "list") {

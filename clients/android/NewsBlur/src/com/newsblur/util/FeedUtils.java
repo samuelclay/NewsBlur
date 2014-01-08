@@ -48,7 +48,7 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -62,7 +62,7 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSocialFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -76,7 +76,7 @@ public class FeedUtils {
             protected void onPostExecute(SocialFeedResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSocialFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -90,7 +90,7 @@ public class FeedUtils {
             protected void onPostExecute(SocialFeedResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSavedStories(final Context context, final ActionCompletionListener receiver, final int pageNumber) {
@@ -104,7 +104,17 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void clearStories(final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                context.getContentResolver().delete(FeedProvider.ALL_STORIES_URI, null, null);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
