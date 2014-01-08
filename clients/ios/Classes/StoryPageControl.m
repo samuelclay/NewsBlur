@@ -221,7 +221,9 @@
             }
             titleImageView.hidden = YES;
             titleImageView.contentMode = UIViewContentModeScaleAspectFit;
-            self.navigationItem.titleView = titleImageView;
+            if (!self.navigationItem.titleView) {
+                self.navigationItem.titleView = titleImageView;
+            }
             titleImageView.hidden = NO;
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
@@ -332,6 +334,8 @@
 }
 
 - (void)resetPages {
+    self.navigationItem.titleView = nil;
+
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];

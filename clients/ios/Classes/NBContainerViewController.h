@@ -29,6 +29,8 @@
 
 - (void)transitionToFeedDetail;
 - (void)transitionToFeedDetail:(BOOL)resetLayout;
+- (void)transitionToOriginalView;
+- (void)transitionFromOriginalView;
 - (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage;
 - (void)transitionFromFeedDetail;
 - (void)transitionFromFeedDetail:(BOOL)resetLayout;

@@ -1293,24 +1293,40 @@
             return;
     } else {
         self.activeOriginalStoryURL = url;
-        UINavigationController *navController = [[UINavigationController alloc]
-                                                 initWithRootViewController:self.originalStoryViewController];
-        navController.navigationBar.translucent = NO;
-        self.originalStoryViewNavController = navController;
-
+        
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
-                                                             animated:YES completion:nil];
+            [self.masterContainerViewController transitionToOriginalView];
         } else {
-            [self.navigationController presentViewController:self.originalStoryViewNavController
-                                                    animated:YES completion:nil];
+            NSLog(@"NavCon vc: %@", [navigationController viewControllers]);
+            if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
+                return;
+            }
+            [navigationController pushViewController:originalStoryViewController
+                                            animated:YES];
         }
+//        
+//        UINavigationController *navController = [[UINavigationController alloc]
+//                                                 initWithRootViewController:self.originalStoryViewController];
+//        navController.navigationBar.translucent = NO;
+//        self.originalStoryViewNavController = navController;
+//
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
+//                                                             animated:YES completion:nil];
+//        } else {
+//            [self.navigationController presentViewController:self.originalStoryViewNavController
+//                                                    animated:YES completion:nil];
+//        }
     }
 }
 
 - (void)closeOriginalStory {
-    if (![self.presentedViewController isBeingDismissed]) {
-        [originalStoryViewNavController dismissViewControllerAnimated:YES completion:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController transitionFromOriginalView];
+    } else {
+        if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
+            [navigationController popToViewController:storyPageControl animated:YES];
+        }
     }
 }
 

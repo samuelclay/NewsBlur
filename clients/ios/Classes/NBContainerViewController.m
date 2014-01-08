@@ -12,6 +12,7 @@
 #import "DashboardViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
+#import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
@@ -40,6 +41,7 @@
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
+@property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
@@ -65,6 +67,7 @@
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
 @synthesize storyDetailViewController;
+@synthesize originalViewController;
 @synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
@@ -108,6 +111,7 @@
     self.dashboardViewController = appDelegate.dashboardViewController;
     self.feedDetailViewController = appDelegate.feedDetailViewController;
     self.storyDetailViewController = appDelegate.storyDetailViewController;
+    self.originalViewController = appDelegate.originalStoryViewController;
     self.storyPageControl = appDelegate.storyPageControl;
     self.shareViewController = appDelegate.shareViewController;
     
@@ -591,6 +595,64 @@
         
         self.storyPageControl.navigationItem.titleView = nil;
     }
+}
+
+- (void)transitionToOriginalView {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (UIInterfaceOrientationIsPortrait(orientation)) {
+        
+    }
+    
+    CGRect viewFrame = [self.view bounds];
+    [self.view addSubview:self.originalViewController.view];
+    [self.originalViewController.view setFrame:CGRectMake(CGRectGetMaxX(viewFrame), 0,
+                                                          CGRectGetWidth(viewFrame),
+                                                          CGRectGetHeight(viewFrame))];
+    [UIView animateWithDuration:.35 delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^
+     {
+         self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, viewFrame.size.height);
+         self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH + 1, 0, viewFrame.size.width - NB_DEFAULT_MASTER_WIDTH - 1, viewFrame.size.height);
+
+         [self.originalViewController.view setFrame:CGRectMake(0, 0,
+                                                               CGRectGetWidth(viewFrame),
+                                                               CGRectGetHeight(viewFrame))];
+     } completion:^(BOOL finished) {
+         NSLog(@"Master frame pre: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(viewFrame));
+         
+         NSLog(@"Master frame post: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(viewFrame));
+     }];
+}
+
+- (void)transitionFromOriginalView {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (UIInterfaceOrientationIsPortrait(orientation)) {
+        
+    }
+    
+    CGRect vb = [self.view bounds];
+    [UIView animateWithDuration:.35 delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^
+     {
+         [self adjustFeedDetailScreen];
+     } completion:^(BOOL finished) {
+         
+     }];
+}
+
+- (void)interactiveTransitionFromOriginalView:(CGFloat)percentage {
+    [self.view insertSubview:self.dashboardViewController.view atIndex:0];
+    [self.view addSubview:self.masterNavigationController.view];
+    
+    CGRect storyNavFrame = self.storyNavigationController.view.frame;
+    storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH + 1 + storyNavFrame.size.width * percentage;
+    self.storyNavigationController.view.frame = storyNavFrame;
+    
+    CGRect dashboardFrame = self.dashboardViewController.view.frame;
+    dashboardFrame.origin.x = NB_DEFAULT_MASTER_WIDTH + 1 + -1 * (1-percentage) * dashboardFrame.size.width/6;
+    self.dashboardViewController.view.frame = dashboardFrame;
 }
 
 - (void)interactiveTransitionFromFeedDetail:(CGFloat)percentage {

@@ -43,6 +43,7 @@
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
     [self updateAddress:request];
     [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
+    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
@@ -58,6 +59,10 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [appDelegate.masterContainerViewController transitionFromOriginalView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
     if ([self.webView isLoading]) {
         [self.webView stopLoading];
     }
@@ -87,6 +92,7 @@
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [navBar addSubview:label];
     self.pageTitle = label;
+    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     
     UIBarButtonItem *close = [[UIBarButtonItem alloc]
                               initWithTitle:@"Close"
@@ -187,7 +193,7 @@
     } else {
         self.toolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.bounds) -
                                                   toolbarSize.height), toolbarSize};
-        self.webView.frame = (CGRect){CGPointMake(0, kNavBarHeight), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame) - kNavBarHeight)};
+        self.webView.frame = (CGRect){CGPointMake(0, 0), CGSizeMake(CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.toolbar.frame))};
     }
 }
 
@@ -212,6 +218,8 @@
     [self.webView loadRequest:request];
     [self.pageUrl resignFirstResponder];
     [self.pageTitle setText:@"Loading..."];
+    self.navigationItem.title = @"Loading...";
+
 }
 
 # pragma mark: -
@@ -266,6 +274,7 @@
 {
     NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
     self.pageTitle.text = [pageTitleValue stringByDecodingHTMLEntities];
+    self.navigationItem.title = [pageTitleValue stringByDecodingHTMLEntities];
 }
 
 - (void)updateAddress:(NSURLRequest*)request

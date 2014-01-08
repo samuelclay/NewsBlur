@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OriginalStoryViewController">
             <connections>
                 <outlet property="back" destination="6" id="26"/>
                 <outlet property="forward" destination="14" id="23"/>
-                <outlet property="navBar" destination="wB4-Cq-a4Y" id="NzG-e5-D83"/>
                 <outlet property="pageAction" destination="17" id="22"/>
                 <outlet property="refresh" destination="52" id="60"/>
                 <outlet property="toolbar" destination="5" id="45"/>
@@ -23,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <webView multipleTouchEnabled="YES" contentMode="scaleToFill" scalesPageToFit="YES" id="4">
-                    <rect key="frame" x="0.0" y="76" width="320" height="360"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                     <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
@@ -31,10 +30,6 @@
                         <outlet property="delegate" destination="-1" id="7"/>
                     </connections>
                 </webView>
-                <view contentMode="scaleToFill" id="wB4-Cq-a4Y" customClass="UINavigationBar">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="78"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                </view>
                 <toolbar clipsSubviews="YES" contentMode="scaleToFill" id="5">
                     <rect key="frame" x="0.0" y="436" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
