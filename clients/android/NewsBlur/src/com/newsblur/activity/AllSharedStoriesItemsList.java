@@ -44,8 +44,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-        
-        triggerRefresh(1);
 	}
 
 	@Override

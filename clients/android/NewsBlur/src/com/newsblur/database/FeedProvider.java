@@ -378,7 +378,12 @@ public class FeedProvider extends ContentProvider {
                     " FROM " + DatabaseConstants.STARRED_STORIES_TABLE +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STARRED_STORIES_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID; 
-			return db.rawQuery(savedStoriesQuery, null);
+            StringBuilder q = new StringBuilder();
+            q.append(savedStoriesQuery);
+			if (!TextUtils.isEmpty(sortOrder)) {
+				q.append(" ORDER BY " + sortOrder);
+			}
+			return db.rawQuery(q.toString(), null);
 
         case STARRED_STORIES_COUNT:
             return db.query(DatabaseConstants.STARRED_STORY_COUNT_TABLE, projection, selection, selectionArgs, null, null, null);

@@ -12,6 +12,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.StoryOrder;
 
 public class SavedStoriesReading extends Reading {
 
@@ -27,7 +28,7 @@ public class SavedStoriesReading extends Reading {
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, null);
+        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
     }
     
     @Override
