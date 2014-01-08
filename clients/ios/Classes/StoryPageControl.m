@@ -244,6 +244,12 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@" "
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil action:nil];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
