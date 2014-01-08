@@ -144,7 +144,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		;
+		readingAdapter.swapCursor(null);
 	}
 
 	@Override
@@ -515,7 +515,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             boolean unreadFound = false;
             boolean error = false;
             unreadSearch:while (!unreadFound) {
-
                 Story story = readingAdapter.getStory(candidate);
 
                 if (story == null) {
