@@ -37,6 +37,7 @@
 @property (nonatomic, strong) UINavigationController *masterNavigationController;
 @property (nonatomic, strong) UINavigationController *storyNavigationController;
 @property (nonatomic, strong) UINavigationController *shareNavigationController;
+@property (nonatomic, strong) UINavigationController *originalNavigationController;
 @property (nonatomic, strong) NewsBlurViewController *feedsViewController;
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
@@ -63,6 +64,7 @@
 @synthesize appDelegate;
 @synthesize masterNavigationController;
 @synthesize shareNavigationController;
+@synthesize originalNavigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
@@ -132,6 +134,15 @@
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
     self.shareNavigationController = shareNav;
     self.shareNavigationController.navigationBar.translucent = NO;
+    
+    UIViewController *preOriginalViewController = [[UIViewController alloc] init];
+    preOriginalViewController.navigationItem.title = @"";
+//    [preOriginalViewController.view setBackgroundColor:[UIColor redColor]];
+    UINavigationController *originalNav = [[UINavigationController alloc]
+                                           initWithRootViewController:preOriginalViewController];
+    [originalNav pushViewController:self.originalViewController animated:NO];
+    self.originalNavigationController = originalNav;
+    self.originalNavigationController.navigationBar.translucent = NO;
     
     // set default y coordinate for feedDetailY from saved preferences
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -603,25 +614,38 @@
         
     }
     
-    CGRect viewFrame = [self.view bounds];
-    [self.view addSubview:self.originalViewController.view];
-    [self.originalViewController.view setFrame:CGRectMake(CGRectGetMaxX(viewFrame), 0,
-                                                          CGRectGetWidth(viewFrame),
-                                                          CGRectGetHeight(viewFrame))];
+    CGRect vb = [self.view bounds];
+    [self addChildViewController:self.originalNavigationController];
+    [self.originalNavigationController.view setHidden:NO];
+    if (![[self.originalNavigationController viewControllers]
+          containsObject:self.originalViewController]) {
+        [self.originalNavigationController pushViewController:self.originalViewController
+                                                     animated:NO];
+    }
+
+    [self.view insertSubview:self.originalNavigationController.view
+                aboveSubview:self.masterNavigationController.view];
+    [self.originalNavigationController didMoveToParentViewController:self];
+    
+    self.originalNavigationController.view.frame = CGRectMake(CGRectGetMaxX(vb),
+                                                              0,
+                                                              CGRectGetWidth(vb),
+                                                              CGRectGetHeight(vb));
+
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
-         self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, viewFrame.size.height);
-         self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH + 1, 0, viewFrame.size.width - NB_DEFAULT_MASTER_WIDTH - 1, viewFrame.size.height);
+         self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+         self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
 
-         [self.originalViewController.view setFrame:CGRectMake(0, 0,
-                                                               CGRectGetWidth(viewFrame),
-                                                               CGRectGetHeight(viewFrame))];
+         self.originalNavigationController.view.frame = CGRectMake(0, 0,
+                                                                   CGRectGetWidth(vb),
+                                                                   CGRectGetHeight(vb));
      } completion:^(BOOL finished) {
-         NSLog(@"Master frame pre: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(viewFrame));
+         NSLog(@"Master frame pre: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(vb));
          
-         NSLog(@"Master frame post: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(viewFrame));
+         NSLog(@"Master frame post: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(vb));
      }];
 }
 
@@ -637,7 +661,8 @@
      {
          [self adjustFeedDetailScreen];
      } completion:^(BOOL finished) {
-         
+         [self.originalNavigationController removeFromParentViewController];
+         [self.originalNavigationController.view setHidden:YES];
      }];
 }
 
