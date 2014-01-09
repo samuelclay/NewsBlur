@@ -200,4 +200,7 @@
     </string-array>
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
+
+    <string name="story">Story</string>
+    <string name="text">Text</string>
 </resources>

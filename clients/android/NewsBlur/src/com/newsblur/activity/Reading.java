@@ -31,7 +31,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
-import com.newsblur.activity.Main;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
@@ -39,8 +38,8 @@ import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
@@ -53,6 +52,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_USERNAME = "username";
 	public static final String EXTRA_FOLDERNAME = "foldername";
 	public static final String EXTRA_FEED_IDS = "feed_ids";
+    public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
 	private static final String TEXT_SIZE = "textsize";
 
     private static final int OVERLAY_RANGE_TOP_DP = 45;
@@ -99,7 +99,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private List<Story> pageHistory;
 
-    private Boolean textMode = false;
+    private DefaultFeedView defaultFeedView;
+    private DefaultFeedView currentFeedView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -121,6 +122,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
+        defaultFeedView = DefaultFeedView.STORY;//(DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
+        currentFeedView = defaultFeedView;
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
@@ -355,9 +358,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         }
         this.overlayProgress.invalidate();
 
-        // make sure we start in story mode and the ui reflects it
-        synchronized (textMode) {
-            enableStoryMode();
+        // make sure we start in default mode and the ui reflects it
+        synchronized (currentFeedView) {
+            currentFeedView = defaultFeedView;
+            if (currentFeedView == DefaultFeedView.STORY) {
+                enableStoryMode();
+            } else {
+                enableTextMode();
+            }
         }
 
         invalidateOptionsMenu();
@@ -616,9 +624,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     public void overlayText(View v) {
-        synchronized (textMode) {
+        synchronized (currentFeedView) {
             // if we were already in text mode, switch back to story mode
-            if (textMode) {
+            if (currentFeedView == DefaultFeedView.TEXT) {
                 enableStoryMode();
             } else {
                 enableTextMode();
@@ -651,7 +659,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
         this.overlayText.setText(R.string.overlay_story);
-        this.textMode = true;
+        this.currentFeedView = DefaultFeedView.TEXT;
     }
 
     private void enableStoryMode() {    
@@ -660,7 +668,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
         this.overlayText.setText(R.string.overlay_text);
-        this.textMode = false;
+        this.currentFeedView = DefaultFeedView.STORY;
     }
 
     private ReadingItemFragment getReadingFragment() {
@@ -672,5 +680,4 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             return null;
         }
     }
-
 }
