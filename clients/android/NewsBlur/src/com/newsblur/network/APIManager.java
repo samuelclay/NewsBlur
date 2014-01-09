@@ -15,7 +15,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -689,6 +692,13 @@ public class APIManager {
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
+
+//            PackageManager manager = context.getPackageManager();
+//            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            connection.setRequestProperty("User-Agent", "NewsBlur Android app" +
+                                                            " (" + Build.MANUFACTURER + " " +
+                                                            Build.MODEL + " " +
+                                                            Build.VERSION.RELEASE + ")");
 			return new APIResponse(context, url, connection);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
