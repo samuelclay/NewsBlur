@@ -137,26 +137,11 @@
     
     UIViewController *preOriginalViewController = [[UIViewController alloc] init];
     preOriginalViewController.navigationItem.title = @"";
-//    [preOriginalViewController.view setBackgroundColor:[UIColor redColor]];
     UINavigationController *originalNav = [[UINavigationController alloc]
                                            initWithRootViewController:preOriginalViewController];
     [originalNav pushViewController:self.originalViewController animated:NO];
     self.originalNavigationController = originalNav;
     self.originalNavigationController.navigationBar.translucent = NO;
-    
-    // set default y coordinate for feedDetailY from saved preferences
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSInteger savedStoryTitlesYCoordinate = [userPreferences integerForKey:@"storyTitlesYCoordinate"];
-    if (savedStoryTitlesYCoordinate == 1004) {
-        self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
-        self.storyTitlesOnLeft = YES;
-    } else if (savedStoryTitlesYCoordinate) {
-        self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
-        self.storyTitlesOnLeft = NO;
-    } else {
-        self.storyTitlesYCoordinate = NB_DEFAULT_STORY_TITLE_HEIGHT;
-        self.storyTitlesOnLeft = YES;
-    }
     
     // set up story titles stub
     UIView * storyTitlesPlaceholder = [[UIView alloc] initWithFrame:CGRectZero];
@@ -171,6 +156,8 @@
     leftBorder.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, 1, CGRectGetHeight(self.view.bounds));
     leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     [self.view.layer addSublayer:leftBorder];
+    
+    [self setupStoryTitlesPosition];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -394,6 +381,23 @@
 
 # pragma mark Screen Transitions and Layout
 
+- (void)setupStoryTitlesPosition {
+    // set default y coordinate for feedDetailY from saved preferences
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSInteger savedStoryTitlesYCoordinate = [userPreferences integerForKey:@"storyTitlesYCoordinate"];
+    NSString *storyTitlesPosition = [userPreferences stringForKey:@"story_titles_position"];
+    if ([storyTitlesPosition isEqualToString:@"titles_on_bottom"]) {
+        if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate >= 890) {
+            savedStoryTitlesYCoordinate = 800;
+        }
+        self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
+        self.storyTitlesOnLeft = NO;
+    } else {
+        self.storyTitlesYCoordinate = NB_DEFAULT_STORY_TITLE_HEIGHT;
+        self.storyTitlesOnLeft = YES;
+    }
+}
+
 - (void)adjustDashboardScreen {
     CGRect vb = [self.view bounds];
     self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
@@ -402,7 +406,7 @@
 
 - (void)adjustFeedDetailScreen {
     CGRect vb = [self.view bounds];
-
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
@@ -442,6 +446,7 @@
             NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
             // save coordinate
             [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences setValue:@"titles_on_left" forKey:@"story_titles_position"];
             [userPreferences synchronize];
             self.storyTitlesYCoordinate = 1004;
             // slide to the left
@@ -473,15 +478,20 @@
             }];
         }
     } else if (self.storyTitlesOnLeft) {
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+
         if (self.storyTitlesYCoordinate == 1004) {
             return;
         } else if (self.storyTitlesYCoordinate > 890) {
-            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
             // save coordinate
             [userPreferences setInteger:890 forKey:@"storyTitlesYCoordinate"];
             [userPreferences synchronize];
             self.storyTitlesYCoordinate = 890;
         }
+
+        [userPreferences setValue:@"titles_on_bottom" forKey:@"story_titles_position"];
+        [userPreferences synchronize];
+
         self.storyTitlesOnLeft = NO;
         self.leftBorder.hidden = YES;
         
@@ -543,6 +553,8 @@
 
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
+        
+        [self setupStoryTitlesPosition];
     }
     
     CGRect vb = [self.view bounds];
@@ -636,9 +648,15 @@
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
-         self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-         self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
-
+         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+             self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
+             self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+             self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+         } else {
+             self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+             self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+         }
+         
          self.originalNavigationController.view.frame = CGRectMake(0, 0,
                                                                    CGRectGetWidth(vb),
                                                                    CGRectGetHeight(vb));
