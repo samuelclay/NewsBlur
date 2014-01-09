@@ -631,7 +631,6 @@
         
     }
     
-    CGRect vb = [self.view bounds];
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
