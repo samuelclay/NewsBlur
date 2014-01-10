@@ -20,6 +20,7 @@ import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -54,7 +55,7 @@ public class FeedItemsList extends ItemsList {
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder());
+			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
@@ -137,5 +138,10 @@ public class FeedItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFeed(this, feedId);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFeed(this, feedId);
     }
 }

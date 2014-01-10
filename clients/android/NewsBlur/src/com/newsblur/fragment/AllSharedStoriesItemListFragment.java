@@ -21,10 +21,12 @@ import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
@@ -40,12 +42,14 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	private String[] groupFrom;
 	private int[] groupTo;
     private StoryOrder storyOrder;
+    private DefaultFeedView defaultFeedView;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
         storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
 	@Override
@@ -89,11 +93,12 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
         hasUpdated();
 	}
 
-	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder) {
+	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
 		arguments.putSerializable("storyOrder", storyOrder);
+        arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
 
 		return everythingFragment;
@@ -104,6 +109,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 

@@ -122,7 +122,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
-        defaultFeedView = DefaultFeedView.STORY;//(DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
+        defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
         currentFeedView = defaultFeedView;
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

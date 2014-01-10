@@ -18,6 +18,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -38,7 +39,7 @@ public class SavedStoriesItemsList extends ItemsList {
 		
 		itemListFragment = (SavedStoriesItemListFragment) fragmentManager.findFragmentByTag(SavedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = SavedStoriesItemListFragment.newInstance();
+			itemListFragment = SavedStoriesItemListFragment.newInstance(getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
@@ -86,5 +87,10 @@ public class SavedStoriesItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME);
     }
 }
