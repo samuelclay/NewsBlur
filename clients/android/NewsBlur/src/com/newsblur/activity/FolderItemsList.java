@@ -112,6 +112,14 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     }
 
     @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, folderName, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
+
+    @Override
     public void onMarkAllRead() {
         new MarkFolderAsReadTask(apiManager, getContentResolver()) {
             @Override

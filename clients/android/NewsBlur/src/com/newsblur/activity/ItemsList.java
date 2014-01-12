@@ -14,6 +14,7 @@ import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
@@ -22,7 +23,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
+public abstract class ItemsList extends NbFragmentActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";

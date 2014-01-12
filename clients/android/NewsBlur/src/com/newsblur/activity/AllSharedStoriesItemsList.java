@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -47,6 +49,13 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		}
 	}
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.allsocialstories_itemslist, menu);
+        return true;
+    }
+
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
@@ -84,5 +93,13 @@ public class AllSharedStoriesItemsList extends ItemsList {
     @Override
     protected DefaultFeedView getDefaultFeedView() {
         return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 }

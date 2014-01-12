@@ -34,7 +34,6 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 	private ContentResolver contentResolver;
 	
 	public static int ITEMLIST_LOADER = 0x01;
-    private DefaultFeedView defaultFeedView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

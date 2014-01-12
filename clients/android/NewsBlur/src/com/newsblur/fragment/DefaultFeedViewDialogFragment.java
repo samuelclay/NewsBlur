@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 
 import com.newsblur.R;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.DefaultFeedViewChangedListener;
 
 /**
  * Created by mark on 09/01/2014.
@@ -55,6 +56,17 @@ public class DefaultFeedViewDialogFragment extends DialogFragment implements Vie
 
     @Override
     public void onClick(View v) {
+        DefaultFeedViewChangedListener listener = (DefaultFeedViewChangedListener)getActivity();
+        if (v.getId() == R.id.radio_story) {
+            if (currentValue == DefaultFeedView.TEXT) {
+                listener.defaultFeedViewChanged(DefaultFeedView.STORY);
+            }
+        } else {
+            if (currentValue == DefaultFeedView.STORY) {
+                listener.defaultFeedViewChanged(DefaultFeedView.TEXT);
+            }
+        }
+
         dismiss();
     }
 }

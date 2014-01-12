@@ -43,7 +43,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private int[] groupTos;
 	private ListView itemList;
     private StoryOrder storyOrder;
-    private DefaultFeedView defaultFeedView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -23,9 +23,7 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
@@ -37,8 +35,6 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
     private StoryOrder storyOrder;
 
 	public static int ITEMLIST_LOADER = 0x01;
-
-    private DefaultFeedView defaultFeedView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

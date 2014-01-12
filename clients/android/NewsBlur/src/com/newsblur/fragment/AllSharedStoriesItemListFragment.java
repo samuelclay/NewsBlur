@@ -42,7 +42,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	private String[] groupFrom;
 	private int[] groupTo;
     private StoryOrder storyOrder;
-    private DefaultFeedView defaultFeedView;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {

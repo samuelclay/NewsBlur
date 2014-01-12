@@ -43,8 +43,6 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 	
     private StoryOrder storyOrder;
 
-    private DefaultFeedView defaultFeedView;
-
 	public static int ITEMLIST_LOADER = 0x01;
 
 

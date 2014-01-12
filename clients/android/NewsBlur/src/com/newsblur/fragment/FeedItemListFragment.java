@@ -24,10 +24,8 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -39,7 +37,6 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	public static int ITEMLIST_LOADER = 0x01;
 	
     private StoryOrder storyOrder;
-    private DefaultFeedView defaultFeedView;
 
     public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();

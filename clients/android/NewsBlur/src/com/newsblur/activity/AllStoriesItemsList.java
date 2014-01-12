@@ -117,6 +117,14 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
     }
 
     @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
+
+    @Override
     public void onMarkAllRead() {
         new AsyncTask<Void, Void, Boolean>() {
             @Override

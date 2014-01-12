@@ -1,7 +1,6 @@
 package com.newsblur.activity;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -143,5 +142,13 @@ public class FeedItemsList extends ItemsList {
     @Override
     protected DefaultFeedView getDefaultFeedView() {
         return PrefsUtils.getDefaultFeedViewForFeed(this, feedId);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFeed(this, feedId, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 }

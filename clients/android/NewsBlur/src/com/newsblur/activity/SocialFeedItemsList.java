@@ -103,4 +103,12 @@ public class SocialFeedItemsList extends ItemsList {
     protected DefaultFeedView getDefaultFeedView() {
         return PrefsUtils.getDefaultFeedViewForFeed(this, userId);
     }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFeed(this, userId, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
 }

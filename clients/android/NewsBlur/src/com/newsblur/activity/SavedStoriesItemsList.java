@@ -63,8 +63,23 @@ public class SavedStoriesItemsList extends ItemsList {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		return false;
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.savedstories_itemslist, menu);
+        return true;
 	}
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
 
     // Note: the following four methods are required by our parent spec but are not
     // relevant since saved stories have no read/unread status nor ordering.
@@ -89,8 +104,5 @@ public class SavedStoriesItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
     }
 
-    @Override
-    protected DefaultFeedView getDefaultFeedView() {
-        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-    }
+
 }
