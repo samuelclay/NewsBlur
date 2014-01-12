@@ -69,6 +69,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
                 triggerRefresh(currentPage);
             }
 			adapter.swapCursor(cursor);
+            setEmptyListView(R.string.empty_list_view_no_stories);
 		}
 	}
 
