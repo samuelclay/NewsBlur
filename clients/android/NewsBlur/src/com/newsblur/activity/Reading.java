@@ -55,7 +55,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
 	private static final String TEXT_SIZE = "textsize";
 
-    private static final int OVERLAY_RANGE_TOP_DP = 45;
+    private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
@@ -164,7 +164,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         try {
 		    readingAdapter.notifyDataSetChanged();
-            this.enableOverlays();
             checkStoryCount(pager.getCurrentItem());
             if (this.unreadSearchLatch != null) {
                 this.unreadSearchLatch.countDown();
@@ -318,13 +317,21 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void setOverlayAlpha(float a) {
-        UIUtils.setViewAlpha(this.overlayLeft, a);
-        UIUtils.setViewAlpha(this.overlayRight, a);
-        UIUtils.setViewAlpha(this.overlayProgress, a);
-        UIUtils.setViewAlpha(this.overlayProgressLeft, a);
-        UIUtils.setViewAlpha(this.overlayProgressRight, a);
-        UIUtils.setViewAlpha(this.overlayText, a);
-        UIUtils.setViewAlpha(this.overlaySend, a);
+        // check to see if the device even has room for all the overlays, moving some to overflow if not
+        int widthPX = findViewById(android.R.id.content).getMeasuredWidth();
+        boolean overflowExtras = false;
+        if (widthPX != 0) {
+            float widthDP = UIUtils.px2dp(this, widthPX);
+            if ( widthDP < OVERLAY_MIN_WIDTH_DP ){
+                overflowExtras = true;
+            } 
+        }
+
+        UIUtils.setViewAlpha(this.overlayLeft, a, true);
+        UIUtils.setViewAlpha(this.overlayRight, a, true);
+        UIUtils.setViewAlpha(this.overlayProgress, a, true);
+        UIUtils.setViewAlpha(this.overlayText, a, true);
+        UIUtils.setViewAlpha(this.overlaySend, a, !overflowExtras);
     }
 
     /**
@@ -332,16 +339,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * an event happens that might change our list position.
      */
     private void enableOverlays() {
-        // check to see if the device even has room for all the overlays, moving some to overflow if not
-        int widthPX = findViewById(android.R.id.content).getMeasuredWidth();
-        if (widthPX != 0) {
-            float widthDP = UIUtils.px2dp(this, widthPX);
-            if ( widthDP < OVERLAY_MIN_WIDTH_DP ){
-                this.overlaySend.setVisibility(View.GONE);
-            } else {
-                this.overlaySend.setVisibility(View.VISIBLE);
-            }
-        }
+        this.setOverlayAlpha(1.0f);
+
 
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
@@ -370,7 +369,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         invalidateOptionsMenu();
 
-        this.setOverlayAlpha(1.0f);
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {

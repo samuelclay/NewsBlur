@@ -1,5 +1,7 @@
 package com.newsblur.network.domain;
 
+import android.util.Log;
+
 /**
  * A generic response to an API call that only encapsuates success versus failure.
  */
@@ -12,8 +14,14 @@ public class NewsBlurResponse {
     public String result;
 
     public boolean isError() {
-        if ((message != null) && (!message.equals(""))) return true;
-        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) return true;
+        if ((message != null) && (!message.equals(""))) {
+            Log.d(this.getClass().getName(), "Response interpreted as error due to 'message' field: " + message);
+            return true;
+        }
+        if ((errors != null) && (errors.message.length > 0) && (errors.message[0] != null)) {
+            Log.d(this.getClass().getName(), "Response interpreted as error due to 'ResponseErrors' field: " + errors.message[0]);
+            return true;
+        }
         return false;
     }
 
