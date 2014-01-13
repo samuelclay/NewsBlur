@@ -51,7 +51,8 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
 	@Override
 	public synchronized void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (totalCount != 0 && (firstVisible + visibleCount + 1 >= totalCount) && !requestedPage) {
+        // load an extra page worth of stories past the viewport
+		if (totalCount != 0 && (firstVisible + visibleCount + visibleCount - 1  >= totalCount) && !requestedPage) {
 			currentPage += 1;
 			requestedPage = true;
 			triggerRefresh(currentPage);
