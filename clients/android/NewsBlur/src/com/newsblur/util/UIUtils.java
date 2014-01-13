@@ -83,13 +83,15 @@ public class UIUtils {
     }
 
     /**
-     * Sets the alpha of a view in a manner that is safe to use before API version 11.
-     * If alpha isn't supported, just make the view invisible if the alpha is so low
-     * that it may as well be.
+     * Sets the alpha of a view, totally hiding the view if the alpha is so low
+     * as to be invisible, but also obeying intended visibility.
      */
-    public static void setViewAlpha(View v, float alpha) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            v.setAlpha(alpha);
+    public static void setViewAlpha(View v, float alpha, boolean visible) {
+        v.setAlpha(alpha);
+        if ((alpha < 0.001f) || !visible) {
+            v.setVisibility(View.GONE);
+        } else {
+            v.setVisibility(View.VISIBLE);
         }
     }
 
