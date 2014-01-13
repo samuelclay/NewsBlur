@@ -20,6 +20,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
     protected int currentPage = 0;
     protected boolean requestedPage;
 	protected StoryItemsAdapter adapter;
+    private boolean firstSyncDone = false;
 	
 	public abstract void hasUpdated();
 	public abstract void changeState(final int state);
@@ -30,7 +31,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         this.currentPage = 0;
     }
 
-    public void setEmptyListView(int rid) {
+    public void syncDone() {
+        this.firstSyncDone = true;
+    }
+
+    private void finishLoadingScreen() {
         View v = this.getView();
         if (v == null) return; // we might have beat construction?
 
@@ -41,7 +46,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
 
         TextView emptyView = (TextView) itemList.getEmptyView();
-        emptyView.setText(rid);
+        emptyView.setText(R.string.empty_list_view_no_stories);
     }
 
 	@Override
@@ -69,7 +74,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
                 triggerRefresh(currentPage);
             }
 			adapter.swapCursor(cursor);
-            setEmptyListView(R.string.empty_list_view_no_stories);
+
+            // iff a sync has finished and a cursor load has finished, it is safe to remove the loading message
+            if (this.firstSyncDone) {
+                finishLoadingScreen();
+            }
 		}
 	}
 
