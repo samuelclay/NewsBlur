@@ -55,7 +55,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
 
-    private static final int OVERLAY_RANGE_TOP_DP = 45;
+    private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
 
     /** The minimum screen width (in DP) needed to show all the overlay controls. */
