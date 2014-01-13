@@ -379,7 +379,7 @@
     [self.storyPageControl setNextPreviousButtons];
 }
 
-# pragma mark Screen Transitions and Layout
+#pragma mark - Screen Transitions and Layout
 
 - (void)setupStoryTitlesPosition {
     // set default y coordinate for feedDetailY from saved preferences
