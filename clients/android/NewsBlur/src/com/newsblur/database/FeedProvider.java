@@ -129,7 +129,9 @@ public class FeedProvider extends ContentProvider {
 				return 1;
 				
 			case ALL_STORIES:	
-				return db.delete(DatabaseConstants.STORY_TABLE, null, null);	
+				db.delete(DatabaseConstants.STORY_TABLE, null, null);	
+				db.delete(DatabaseConstants.STARRED_STORIES_TABLE, null, null);	
+                return 1;
 				
 			case SOCIALFEED_STORIES:
 				StringBuilder socialDeleteBuilder = new StringBuilder();
