@@ -93,7 +93,7 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
     public void actionCompleteCallback(boolean noMoreData) {
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
-            itemListFragment.setEmptyListView(R.string.empty_list_view_no_stories);
+			itemListFragment.syncDone();;
 		}
         setSupportProgressBarIndeterminateVisibility(false);
         if (noMoreData) {

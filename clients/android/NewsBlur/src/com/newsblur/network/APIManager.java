@@ -60,6 +60,7 @@ public class APIManager {
 	private Context context;
 	private Gson gson;
 	private ContentResolver contentResolver;
+    private String customUserAgent;
 
 	public APIManager(final Context context) {
 		this.context = context;
@@ -69,6 +70,14 @@ public class APIManager {
                 .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
                 .create();
+
+        String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");
+        this.customUserAgent =  "NewsBlur Android app" +
+                                " (" + Build.MANUFACTURER + " " +
+                                Build.MODEL + " " +
+                                Build.VERSION.RELEASE + " " +
+                                appVersion + ")";
+
 	}
 
 	public NewsBlurResponse login(final String username, final String password) {
@@ -692,13 +701,7 @@ public class APIManager {
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
-
-//            PackageManager manager = context.getPackageManager();
-//            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
-            connection.setRequestProperty("User-Agent", "NewsBlur Android app" +
-                                                            " (" + Build.MANUFACTURER + " " +
-                                                            Build.MODEL + " " +
-                                                            Build.VERSION.RELEASE + ")");
+            connection.setRequestProperty("User-Agent", this.customUserAgent);
 			return new APIResponse(context, url, connection);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());

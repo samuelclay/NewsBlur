@@ -118,22 +118,24 @@ public class FeedUtils {
     }
 
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
-        // NB: we do not keep loading on error, since the calling class would need to know to adjust pagination
+        // the API may return both a valid stories block *and* an error, so check for stories first
+        if (stories != null) {
+            if (receiver != null) {
+                receiver.actionCompleteCallback(stories.length == 0); // only keep loading if there are more stories left
+            }
+            return;
+        }
+
         if (response.isError()) {
             Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
+            Toast.makeText(context, response.getErrorMessage(context.getString(R.string.toast_error_loading_stories)), Toast.LENGTH_LONG).show();
+        } else {
+            Log.e(FeedUtils.class.getName(), "Null stories member received while loading stories with no error found.");
             Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(true);
-            return;
         }
-        if (stories == null) {
-            Log.e(FeedUtils.class.getName(), "Null stories member received loading stories.");
-            Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(true);
-            return;
-        }
-        if (receiver != null) {
-            receiver.actionCompleteCallback(stories.length == 0); // only keep loading if there are more stories left
-        }
+
+        // NB: we do not keep loading on error, since the calling class would need to know to adjust pagination
+        receiver.actionCompleteCallback(true);
     }
 
 	private static void setStorySaved(final Story story, final boolean saved, final Context context, final APIManager apiManager, final ActionCompletionListener receiver) {
