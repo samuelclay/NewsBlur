@@ -63,8 +63,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         } else {
             this.$el.html(_.pluck(stories, 'el'));
         }
-        _.invoke(stories, 'watch_images_for_story_height');
-        _.invoke(stories, 'render_starred_tags');
+        _.invoke(stories, 'attach_handlers');
         this.show_correct_feed_in_feed_title_floater();
         this.stories = stories;
         _.defer(this.check_feed_view_scrolled_to_bottom);
@@ -86,8 +85,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             if (!NEWSBLUR.assets.preference('feed_view_single_story')) {
                 this.$el.append(_.pluck(stories, 'el'));
             }
-            _.invoke(stories, 'watch_images_for_story_height');
-            _.invoke(stories, 'render_starred_tags');
+            _.invoke(stories, 'attach_handlers');
             
             this.stories = this.stories.concat(stories);
             _.defer(this.check_feed_view_scrolled_to_bottom);

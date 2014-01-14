@@ -10,10 +10,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SocialFeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -43,13 +41,6 @@ public class SocialFeedItemsList extends ItemsList {
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
 			listTransaction.commit();
-		}
-		
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
 		}
 	}
 	

@@ -48,7 +48,7 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -62,7 +62,7 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSocialFeed(final Context context, final ActionCompletionListener receiver, final String feedId, final String socialUsername, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -76,7 +76,7 @@ public class FeedUtils {
             protected void onPostExecute(SocialFeedResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSocialFeeds(final Context context, final ActionCompletionListener receiver, final String[] feedIds, final int pageNumber, final StoryOrder order, final ReadFilter filter) {
@@ -90,7 +90,7 @@ public class FeedUtils {
             protected void onPostExecute(SocialFeedResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void updateSavedStories(final Context context, final ActionCompletionListener receiver, final int pageNumber) {
@@ -104,20 +104,31 @@ public class FeedUtils {
             protected void onPostExecute(StoriesResponse result) {
                 handleStoryResponse(context, result, result.stories, receiver);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void clearStories(final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                context.getContentResolver().delete(FeedProvider.ALL_STORIES_URI, null, null);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
+        // NB: we do not keep loading on error, since the calling class would need to know to adjust pagination
         if (response.isError()) {
             Log.e(FeedUtils.class.getName(), "Error response received loading stories.");
             Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(false); // it is reasonable to try to load again
+            receiver.actionCompleteCallback(true);
             return;
         }
         if (stories == null) {
             Log.e(FeedUtils.class.getName(), "Null stories member received loading stories.");
             Toast.makeText(context, R.string.toast_error_loading_stories, Toast.LENGTH_LONG).show();
-            receiver.actionCompleteCallback(true); // it is not reasonable to try to load again
+            receiver.actionCompleteCallback(true);
             return;
         }
         if (receiver != null) {
@@ -362,6 +373,7 @@ public class FeedUtils {
     }
     
     public static void shareStory(Story story, Context context) {
+        if (story == null ) { return; } 
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);

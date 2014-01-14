@@ -18,8 +18,6 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -45,13 +43,6 @@ public class SavedStoriesItemsList extends ItemsList {
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SavedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
-		}
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
 		}
 	}
 

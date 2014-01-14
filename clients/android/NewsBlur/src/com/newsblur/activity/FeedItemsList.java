@@ -18,10 +18,8 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -52,6 +50,7 @@ public class FeedItemsList extends ItemsList {
             Feed feed = Feed.fromCursor(cursor);
             setTitle(feed.title);
         }
+        cursor.close();
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
@@ -60,13 +59,6 @@ public class FeedItemsList extends ItemsList {
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
 			listTransaction.commit();
-		}
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
 		}
 	}
 	

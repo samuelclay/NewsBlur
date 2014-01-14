@@ -12,7 +12,6 @@ import com.newsblur.R;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
@@ -21,7 +20,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
+public abstract class ItemsList extends NbFragmentActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -33,7 +32,6 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
-	protected SyncUpdateFragment syncFragment;
 	protected int currentState;
 	private Menu menu;
 	
@@ -91,41 +89,11 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	
 	protected abstract ReadFilter getReadFilter();
 	
-	@Override
-	public void updateAfterSync() {
-		if (itemListFragment != null) {
-			itemListFragment.hasUpdated();
-		} else {
-			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
-		}
-		setSupportProgressBarIndeterminateVisibility(false);
-	}
-
-	@Override
-	public void updatePartialSync() {
-		if (itemListFragment != null) {
-			itemListFragment.hasUpdated();
-		} else {
-			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
-		}
-	}
-
-	@Override
-	public void updateSyncStatus(boolean syncRunning) {
-		if (syncRunning) {
-			setSupportProgressBarIndeterminateVisibility(true);
-		}
-	}
-	
-	@Override
-    public void setNothingMoreToUpdate() {
-        stopLoading = true;
-    }
-
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
+            itemListFragment.setEmptyListView(R.string.empty_list_view_no_stories);
 		}
         setSupportProgressBarIndeterminateVisibility(false);
         if (noMoreData) {
@@ -140,19 +108,23 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
+        FeedUtils.clearStories(this);
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
+        FeedUtils.clearStories(this);
         updateReadFilterPreference(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

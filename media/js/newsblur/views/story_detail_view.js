@@ -90,8 +90,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
-        this.attach_audio_handler_to_stories();
-
+        
         return this;
     },
     
@@ -105,6 +104,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.model.get('starred')) {
             this.save_view.reset_height({immediate: true});
         }
+    },
+
+    attach_handlers: function() {
+        this.watch_images_for_story_height();
+        this.attach_audio_handler();
+        this.attach_syntax_highlighter_handler();
+        this.attach_fitvid_handler();
+        this.render_starred_tags();
     },
     
     render_header: function(model, value, options) {
@@ -530,7 +537,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
-    attach_audio_handler_to_stories: function() {
+    attach_audio_handler: function() {
         _.delay(_.bind(function() {
             var $audio = this.$('audio').filter(function() {
                 return !$(this).closest('.audiojs').length;
@@ -548,19 +555,68 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this), 500);
     },
     
+    attach_syntax_highlighter_handler: function() {
+        _.delay(_.bind(function() {
+            this.$('pre').each(function(i, e) {
+                hljs.highlightBlock(e);
+            });
+        }, this), 100);
+    },
+    
+    attach_fitvid_handler: function() {
+        // Thanks to feedbin for the custom selector
+        _.delay(_.bind(function() {
+            this.$el.fitVids({
+                customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
+            });
+        }, this), 50);
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     click_link_in_story: function(e) {
         if (NEWSBLUR.hotkeys.shift) return;
+        var $target = $(e.currentTarget);
 
         e.preventDefault();
         e.stopPropagation();
         if (e.which >= 2) return;
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
-        var href = $(e.currentTarget).attr('href');
+        var href = $target.attr('href');
+        
+        // Fix footnotes
+        if (_.string.contains(href, "#")) {
+            try {
+                footnote_href = href.replace(/^.*?\#(.*?)$/, "\#$1")
+                                    .replace(':', "\\\:");
+                var $footnote = $(footnote_href);
+            } catch (err) {
+                $footnote = [];
+            }
+            if ($footnote.length) {
+                href = footnote_href;
+                var offset = $(href).offset().top;
+                var $scroll;
+                if (NEWSBLUR.assets.preference('story_layout') == "list") {
+                    $scroll = NEWSBLUR.reader.$s.$story_titles;
+                } else if (NEWSBLUR.reader.flags['temporary_story_view'] || 
+                    NEWSBLUR.reader.story_view == 'text') {
+                    $scroll = NEWSBLUR.reader.$s.$text_view;
+                } else {
+                    $scroll = NEWSBLUR.reader.$s.$feed_scroll;
+                }
+                offset += $scroll.scrollTop();
+                $scroll.stop().scrollTo(offset-60, {
+                    duration: 340,
+                    axis: 'y', 
+                    easing: 'easeInOutQuint'
+                });
+                return;
+            }
+        }
         
         if (NEWSBLUR.assets.preference('new_window') == 1) {
             window.open(href, '_blank');

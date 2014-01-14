@@ -2102,10 +2102,10 @@ body {
 }
 
 .NB-feed-story blockquote {
-    border-left: 5px solid #C2C5BE;
-    padding: 0 1.5em;
+    border-left: 2px solid #ECEFE9;
+    padding: .5em 1.5em;
     margin: 0px;
-    color: rgba(10, 12, 38, .6);
+    background-color: #F4F6F2;
 }
 
 .NB-feed-story .NB-feed-story-content iframe,
@@ -2118,8 +2118,10 @@ body {
 }
 .NB-feed-story .NB-feed-story-content img {
     max-width: 100% !important;
-/*  width: auto;*/
-/*  height: auto !important;*/
+  width: auto !important;
+  height: auto !important;
+  
+  /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
 .NB-feed-story {
     position: relative;
