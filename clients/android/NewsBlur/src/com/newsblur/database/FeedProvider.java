@@ -347,6 +347,18 @@ public class FeedProvider extends ContentProvider {
         public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
             return mdb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
         }
+        public void execSQL(String sql) {
+            if (AppConstants.VERBOSE_LOG) {
+                Log.d(LoggingDatabase.class.getName(), "execSQL: " + sql);
+            }
+            mdb.execSQL(sql);
+        }
+        public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+            return mdb.update(table, values, whereClause, whereArgs);
+        }
+        public long insertWithOnConflict(String table, String nullColumnHack, ContentValues initialValues, int conflictAlgorithm) {
+            return mdb.insertWithOnConflict(table, nullColumnHack, initialValues, conflictAlgorithm);
+        }
     }
 
 	@Override
@@ -603,7 +615,8 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
+		final SQLiteDatabase rwdb = databaseHelper.getWritableDatabase();
+        final LoggingDatabase db = new LoggingDatabase(rwdb);
 		
 		switch (uriMatcher.match(uri)) {
         case ALL_FEEDS:
@@ -622,10 +635,10 @@ public class FeedProvider extends ContentProvider {
         // In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
-			return 0;
+			return 1;
 		case SOCIALFEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
-			return 0;	
+			return 1;	
         case STARRED_STORIES_COUNT:
             int rows = db.update(DatabaseConstants.STARRED_STORY_COUNT_TABLE, values, null, null);
             if (rows == 0 ) {

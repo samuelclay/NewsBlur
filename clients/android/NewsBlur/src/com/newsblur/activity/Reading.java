@@ -151,8 +151,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
             if (this.pager == null) {
                 // if this is the first time we've found a cursor, we know the onCreate chain is done
-                setupPager();
                 this.startingUnreadCount = getUnreadCount();
+                // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
+                setupPager();
             }
 
             try {

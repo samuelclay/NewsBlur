@@ -320,20 +320,28 @@ public class FeedUtils {
 		} else {
 			selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
 		}
-		
 		operations.add(ContentProviderOperation.newUpdate(FeedProvider.FEED_COUNT_URI).withValues(emptyValues).withSelection("", selectionArgs).build());
 
-		if (!TextUtils.isEmpty(story.socialUserId)) {
-			String[] socialSelectionArgs; 
-			if (story.getIntelligenceTotal() > 0) {
-				socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, story.socialUserId } ; 
-			} else if (story.getIntelligenceTotal() == 0) {
-				socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, story.socialUserId } ;
-			} else {
-				socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, story.socialUserId } ;
-			}
-			operations.add(ContentProviderOperation.newUpdate(FeedProvider.SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
-		}
+        HashSet<String> socialIds = new HashSet<String>();
+        if (!TextUtils.isEmpty(story.socialUserId)) {
+            socialIds.add(story.socialUserId);
+        }
+        if (story.friendUserIds != null) {
+            for (String id : story.friendUserIds) {
+                socialIds.add(id);
+            }
+        }
+        for (String id : socialIds) {
+            String[] socialSelectionArgs; 
+            if (story.getIntelligenceTotal() > 0) {
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, id } ; 
+            } else if (story.getIntelligenceTotal() == 0) {
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, id } ;
+            } else {
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, id } ;
+            }
+            operations.add(ContentProviderOperation.newUpdate(FeedProvider.SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
+        }
 
 		Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
 		ContentValues values = new ContentValues();
