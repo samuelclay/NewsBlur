@@ -27,17 +27,17 @@ public class FolderReading extends Reading {
         folderName = getIntent().getStringExtra(Reading.EXTRA_FOLDERNAME);
         setTitle(folderName);       
 
-        Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI.buildUpon().appendPath(folderName).build(), null, null, new String[] { DatabaseConstants.getFolderSelectionFromState(currentState) }, null);
-        int unreadCount = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
-        folderCursor.close();
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
-
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
 
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
+        Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI.buildUpon().appendPath(folderName).build(), null, null, new String[] { DatabaseConstants.getFolderSelectionFromState(currentState) }, null);
+        int c = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
+        folderCursor.close();
+        return c;
     }
 
 	@Override

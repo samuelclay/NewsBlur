@@ -21,7 +21,6 @@ import com.newsblur.util.StoryOrder;
 public class FeedReading extends Reading {
 
     String feedId;
-    private Feed feed;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
@@ -33,23 +32,24 @@ public class FeedReading extends Reading {
         Cursor feedClassifierCursor = contentResolver.query(classifierUri, null, null, null, null);
         Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 
-        final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
-
-        feedCursor.moveToFirst();
-        feed = Feed.fromCursor(feedCursor);
+        Feed feed = Feed.fromCursor(feedCursor);
         feedCursor.close();
         setTitle(feed.title);
 
-        int unreadCount = FeedUtils.getFeedUnreadCount(this.feed, this.currentState);
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
-
         readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, classifier);
 
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
+        Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+        Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+        Feed feed = Feed.fromCursor(feedCursor);
+        feedCursor.close();
+        return FeedUtils.getFeedUnreadCount(feed, this.currentState);
     }
 
 	@Override

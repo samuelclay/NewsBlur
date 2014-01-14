@@ -26,19 +26,19 @@ public class AllStoriesReading extends Reading {
         stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         setTitle(getResources().getString(R.string.all_stories_row_title));
 
-        Cursor folderCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
-        int unreadCount = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
-        folderCursor.close();
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
-
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
-
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    protected int getUnreadCount() {
+        Cursor folderCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
+        int c = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
+        folderCursor.close();
+        return c;
+    }
+        
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);

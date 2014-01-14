@@ -26,6 +26,12 @@ public class SavedStoriesReading extends Reading {
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    protected int getUnreadCount() {
+        // effectively disable the notion of unreads for this feed
+        return 0;
+    }
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
         return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));

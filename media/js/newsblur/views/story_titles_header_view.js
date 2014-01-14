@@ -32,18 +32,22 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             NEWSBLUR.reader.active_folder && 
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
         
-        if (NEWSBLUR.reader.active_feed == 'starred') {
+        if (NEWSBLUR.reader.flags['starred_view']) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
+                    <div class="NB-search-container"></div>\
                     <div class="NB-starred-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
-                    <div class="folder_title_text">Saved Stories</div>\
+                    <span class="folder_title_text">Saved Stories<% if (tag) { %> - <%= tag %><% } %></span>\
                 </div>\
-            ', {}));
+            ', {
+                tag: NEWSBLUR.reader.flags['starred_tag']
+            }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
-            $view.prepend(this.search_view.$el);
+            this.search_view.blur_search();
+            $(".NB-search-container", $view).html(this.search_view.$el);
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
@@ -128,7 +132,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         var $indicator = this.$('.NB-story-title-indicator');
         var unread_hidden_stories;
         if (NEWSBLUR.reader.flags['river_view']) {
-            unread_hidden_stories = NEWSBLUR.reader.active_folder.folders &&
+            unread_hidden_stories = NEWSBLUR.reader.active_folder &&
+                                    NEWSBLUR.reader.active_folder.folders &&
                                     NEWSBLUR.reader.active_folder.folders.unread_counts &&
                                     NEWSBLUR.reader.active_folder.folders.unread_counts().ng;
         } else {

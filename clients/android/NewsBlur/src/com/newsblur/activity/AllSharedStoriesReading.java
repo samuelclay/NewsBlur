@@ -24,17 +24,17 @@ public class AllSharedStoriesReading extends Reading {
 
         setTitle(getResources().getString(R.string.all_shared_stories));
 
-        Cursor folderCursor = contentResolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
-        int unreadCount = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
-        folderCursor.close();
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
-
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
 
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
+        Cursor folderCursor = contentResolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
+        int c = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
+        folderCursor.close();
+        return c;
     }
 
 	@Override

@@ -12,6 +12,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
     
     initialize: function() {
+        this.sideoptions_view = this.options.sideoptions_view;
         this.model.story_share_view = this;
     },
     
@@ -67,38 +68,11 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         if (options.close ||
             ($sideoption.hasClass('NB-active') && !options.resize_open)) {
             // Close
-            $share.animate({
-                'height': 0
-            }, {
-                'duration': 300,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': _.bind(function() {
-                    this.$('.NB-error').remove();
-                    if (NEWSBLUR.app.story_list) {
-                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                    }
-                }, this)
-            });
-            $comment_input.blur();
-            $sideoption.removeClass('NB-active');
-            if ($story_content.data('original_height')) {
-                $story_content.animate({
-                    'height': $story_content.data('original_height')
-                }, {
-                    'duration': 300,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        if (NEWSBLUR.app.story_list) {
-                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                        }
-                    }
-                });
-                $story_content.removeData('original_height');
-            }
+            this.is_open = false;
+            this.resize({close: true});
         } else {
             // Open/resize
+            this.is_open = true;
             if (!options.resize_open) {
                 this.$('.NB-error').remove();
             }
@@ -108,14 +82,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $facebook_button.removeClass('NB-active');
             $appdotnet_button.removeClass('NB-active');
             this.update_share_button_label();
-            
-            var $share_clone = $share.clone();
-            var dialog_height = $share_clone.css({
-                'height': 'auto',
-                'position': 'absolute',
-                'visibility': 'hidden'
-            }).appendTo($share.parent()).height();
-            $share_clone.remove();
 
             if (options.animate_scroll) {
                 var $scroll_container = NEWSBLUR.reader.$s.$story_titles;
@@ -130,61 +96,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                             $scroll_container.height()
                 });
             }
-            $share.animate({
-                'height': dialog_height
-            }, {
-                'duration': options.immediate ? 0 : 350,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': _.bind(function() {
-                    if ($comment_input.length == 1) {
-                        $comment_input.focus();
-                    }
-                    if (NEWSBLUR.app.story_list) {
-                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                    }
 
-                }, this)
-            });
-            
-            var sideoptions_height  = $sideoption_container.outerHeight(true);
-            var wrapper_height      = $story_wrapper.height();
-            var content_height      = $story_content.height();
-            var content_outerheight = $story_content.outerHeight(true);
-            var comments_height     = $story_comments.outerHeight(true);
-            var container_offset    = $sideoption_container.length &&
-                                      ($sideoption_container.position().top - 32);
-            
-            if (content_outerheight + comments_height < sideoptions_height) {
-                $story_content.css('height', $sideoption_container.height());
-                $story_content.animate({
-                    'height': sideoptions_height + dialog_height - comments_height
-                }, {
-                    'duration': 350,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        if (NEWSBLUR.app.story_list) {
-                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                        }
-                    }
-                }).data('original_height', content_height);
-            } else if (sideoptions_height + dialog_height > wrapper_height) {
-                $story_content.animate({
-                    'height': content_height + dialog_height - container_offset
-                }, {
-                    'duration': 350,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        if (NEWSBLUR.app.story_list) {
-                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                        }
-                    }
-                }).data('original_height', content_height);
-            } else if (NEWSBLUR.app.story_list) {
-                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-            }
+            this.resize(options);
+
             var share = _.bind(function(e) {
                 e.preventDefault();
                 this.mark_story_as_shared({'source': 'sideoption'});
@@ -193,6 +107,99 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $comments.unbind('keydown.story_share')
                      .bind('keydown.story_share', 'ctrl+return', share)
                      .bind('keydown.story_share', 'meta+return', share);
+        }
+    },
+    
+    resize: function(options) {
+        options = options || {};
+        var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
+        var $share_wrapper = this.$('.NB-sideoption-share-wrapper');
+        var $share_content = this.$('.NB-sideoption-share');
+        var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
+        var $story_comments = this.$('.NB-feed-story-comments');
+        var $sideoption = this.$('.NB-sideoption.NB-feed-story-share');
+
+        var $share_clone = $share_wrapper.clone();
+        $share_wrapper.after($share_clone.css({
+            'height': options.close ? 0 : 'auto',
+            'position': 'absolute',
+            'visibility': 'hidden',
+            'display': 'block'
+        }));
+        var sideoption_content_height = $share_clone.height();
+        $share_clone.remove();
+        var new_sideoptions_height = $sideoption_container.height() - $share_wrapper.height() + sideoption_content_height;
+        
+        if (!options.close) {
+            $share_wrapper.addClass('NB-active');
+            $sideoption.addClass('NB-active');
+        }
+
+        $share_wrapper.animate({
+            'height': sideoption_content_height
+        }, {
+            'duration': options.immediate ? 0 : 350,
+            'easing': 'easeInOutQuint',
+            'queue': false,
+            'complete': _.bind(function() {
+                if (NEWSBLUR.app.story_list) {
+                    NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                }
+                if (options.close) {
+                    $share_wrapper.removeClass('NB-active');
+                    $sideoption.removeClass('NB-active');
+                }
+            }, this)
+        });
+        
+        var sideoptions_height  = $sideoption_container.height();
+        var content_height      = $story_content.height();
+        var comments_height     = $story_comments.height();
+        var left_height         = content_height + comments_height;
+        var original_height     = $story_content.data('original_height') || content_height;
+        
+        if (!NEWSBLUR.reader.flags.narrow_content &&
+            !options.close && new_sideoptions_height >= original_height) {
+            // Sideoptions too big, embiggen left side
+            $story_content.animate({
+                'height': new_sideoptions_height
+            }, {
+                'duration': 350,
+                'easing': 'easeInOutQuint',
+                'queue': false,
+                'complete': function() {
+                    if (NEWSBLUR.app.story_list) {
+                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                    }
+                }
+            });
+            if (!$story_content.data('original_height')) {
+                $story_content.data('original_height', content_height);
+            }
+        } else if (!NEWSBLUR.reader.flags.narrow_content) {
+            // Content is bigger, move content back to normal
+            if ($story_content.data('original_height') && !this.sideoptions_view.save_view.is_open) {
+                $story_content.animate({
+                    'height': $story_content.data('original_height')
+                }, {
+                    'duration': 300,
+                    'easing': 'easeInOutQuint',
+                    'queue': false,
+                    'complete': function() {
+                        if (NEWSBLUR.app.story_list) {
+                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                        }
+                    }
+                });
+            } else if (this.sideoptions_view && 
+                       this.sideoptions_view.save_view && 
+                       this.sideoptions_view.save_view.is_open) {
+                this.sideoptions_view.save_view.resize();
+            }
+        }
+        
+        if (NEWSBLUR.app.story_list) {
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
     },
     
