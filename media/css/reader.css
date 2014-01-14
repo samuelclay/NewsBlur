@@ -3084,7 +3084,7 @@ body {
 /* ===================== */
 
 .NB-sideoption-save-wrapper {
-    height: 0;
+    height: 0px;
     overflow: hidden;
     display: none;
 }

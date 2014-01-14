@@ -93,15 +93,15 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
 
                 afterTagAdded: function(event, options) {
                     options = options || {};
-                    self.resize();
                     if (!options.duringInitialization) {
+                        self.resize();
                         self.save_tags();
                     }
                 },
                 afterTagRemoved: function(event, duringInitialization) {
                     options = options || {};
-                    self.resize();
                     if (!options.duringInitialization) {
+                        self.resize();
                         self.save_tags();
                     }
                 }
@@ -146,12 +146,14 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var sideoption_content_height = $save_clone.height();
         $save_clone.remove();
         var new_sideoptions_height = $sideoption_container.height() - $save_wrapper.height() + sideoption_content_height;
-        
         if (!options.close) {
             $sideoption.addClass('NB-active');
             $save_wrapper.addClass('NB-active');
         }
 
+        if (sideoption_content_height > 0) {
+            $save_wrapper.css('height', '0px');
+        }
         $save_wrapper.animate({
             'height': sideoption_content_height
         }, {
