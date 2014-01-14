@@ -198,11 +198,12 @@ public class FeedUtils {
 
     }
 
-    public static void markStoryUnread( final Story story, final Context context, final APIManager apiManager ) {
-
+    public static void markStoryUnread(final Story story, final Context context) {
+        // TODO: update DB, too
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
                 return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
             }
             @Override
@@ -214,7 +215,40 @@ public class FeedUtils {
                 }
             }
         }.execute();
+    }
 
+    /**
+     * Mark a single story as read on both the local DB and on the server.
+     */
+    public static void markStoryAsRead(final Story story, final Context context) {
+        if (story.read) { return; }
+
+        // first, update unread counts in the local DB
+        ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
+        appendStoryReadOperations(story, updateOps);
+        try {
+            context.getContentResolver().applyBatch(FeedProvider.AUTHORITY, updateOps);
+        } catch (Exception e) {
+            Log.w(FeedUtils.class.getName(), "Could not update unread counts in local storage.", e);
+        }
+
+        // next, update the server
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... arg) {
+                APIManager apiManager = new APIManager(context);
+                return apiManager.markStoryAsRead(story.storyHash);
+            }
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                if (result.isError()) {
+                    Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
+                }
+            }
+        }.execute();
+
+        // update the local object to show as read even before requeried
+        story.read = true;
     }
 
     /**

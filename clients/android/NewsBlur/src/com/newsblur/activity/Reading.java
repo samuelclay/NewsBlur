@@ -71,6 +71,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected int passedPosition;
 	protected int currentState;
 
+    protected final Object STORIES_MUTEX = new Object();
+	protected Cursor stories;
+
 	protected ViewPager pager;
     protected Button overlayLeft, overlayRight;
     protected ProgressBar overlayProgress, overlayProgressRight, overlayProgressLeft;
@@ -79,20 +82,13 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected ReadingAdapter readingAdapter;
     protected ContentResolver contentResolver;
     private APIManager apiManager;
-	protected Cursor stories;
     private boolean noMoreApiPages;
     private boolean stopLoading;
     protected volatile boolean requestedPage; // set high iff a syncservice request for stories is already in flight
     private int currentApiPage = 0;
-	private Set<Story> storiesToMarkAsRead;
 
-    // unread counts for the circular progress overlay. set to nonzero to activate the progress indicator overlay
+    // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     protected int startingUnreadCount = 0;
-    protected int currentUnreadCount = 0;
-
-    // A list of stories we have marked as read during this reading session. Needed to help keep track of unread
-    // counts since it would be too costly to query and update the DB on every page change.
-    private Set<Story> storiesAlreadySeen;
 
     private float overlayRangeTopPx;
     private float overlayRangeBotPx;
@@ -115,9 +111,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
 		fragmentManager = getSupportFragmentManager();
-		
-        storiesToMarkAsRead = new HashSet<Story>();
-        storiesAlreadySeen = new HashSet<Story>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -149,30 +142,33 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (cursor != null) {
-			readingAdapter.swapCursor(cursor);
-            stories = cursor;
-		}
-
-        if (this.pager == null) {
-            // if this is the first time we've found a cursor, set up the pager
-            setupPager();
-        }
-
-        try {
-		    readingAdapter.notifyDataSetChanged();
-            checkStoryCount(pager.getCurrentItem());
-            if (this.unreadSearchLatch != null) {
-                this.unreadSearchLatch.countDown();
+        synchronized (STORIES_MUTEX) {
+            if (cursor != null) {
+                readingAdapter.swapCursor(cursor);
+                stories = cursor;
             }
-            ReadingItemFragment fragment = getReadingFragment();
-            if (fragment != null ) {
-                fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
-                fragment.updateSaveButton();
+
+            if (this.pager == null) {
+                // if this is the first time we've found a cursor, we know the onCreate chain is done
+                setupPager();
+                this.startingUnreadCount = getUnreadCount();
             }
-        } catch (IllegalStateException ise) {
-            // sometimes the pager is already shutting down by the time the callback finishes
-            finish();
+
+            try {
+                readingAdapter.notifyDataSetChanged();
+                checkStoryCount(pager.getCurrentItem());
+                if (this.unreadSearchLatch != null) {
+                    this.unreadSearchLatch.countDown();
+                }
+                ReadingItemFragment fragment = getReadingFragment();
+                if (fragment != null ) {
+                    fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
+                    fragment.updateSaveButton();
+                }
+            } catch (IllegalStateException ise) {
+                // sometimes the pager is already shutting down by the time the callback finishes
+                finish();
+            }
         }
 	}
 
@@ -190,6 +186,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
         this.enableOverlays();
 	}
+
+    /**
+     * Query the DB for the current unreadcount for this view.
+     */
+    protected abstract int getUnreadCount();
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -261,6 +262,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         if (noMoreData) {
 		    this.noMoreApiPages = true;
         }
+        updateCursor();
+    }
+
+    private void updateCursor() {
         getSupportLoaderManager().restartLoader(0, null, this);
     }
 
@@ -284,10 +289,9 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                     this.pageHistory.add(story);
                 }
             }
-			addStoryToMarkAsRead(story);
-			checkStoryCount(position);
+            markStoryRead(story);
 		}
-        this.enableOverlays();
+        checkStoryCount(position);
 	}
 
     // interface ScrollChangeListener
@@ -340,15 +344,15 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
-        this.overlayRight.setText((this.currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((this.currentUnreadCount > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
+        this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
             this.overlayProgress.setMax(1);
             this.overlayProgress.setProgress(1);
         } else {
-            int unreadProgress = this.startingUnreadCount - this.currentUnreadCount;
+            int unreadProgress = this.startingUnreadCount - getUnreadCount();
             this.overlayProgress.setMax(this.startingUnreadCount);
             this.overlayProgress.setProgress(unreadProgress);
         }
@@ -406,61 +410,21 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected abstract void triggerRefresh(int page);
 
     @Override
-    protected void onPause() {
-        flushStoriesMarkedRead();
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         this.stopLoading = true;
         super.onStop();
     }
 
-    /** 
-     * Log a story as having been read. The local DB and remote server will be updated
-     * batch-wise when the activity pauses.
-     */
-    protected void addStoryToMarkAsRead(Story story) {
-        if (story == null) return;
-        if (story.read) return;
-        synchronized (this.storiesToMarkAsRead) {
-            this.storiesToMarkAsRead.add(story);
-        }
-        // flush immediately if the batch reaches a sufficient size
-        if (this.storiesToMarkAsRead.size() >= AppConstants.MAX_MARK_READ_BATCH) {
-            flushStoriesMarkedRead();
-        }
-        if (!this.storiesAlreadySeen.contains(story)) {
-            // only decrement the cached story count if the story wasn't already read
-            this.storiesAlreadySeen.add(story);
-            this.currentUnreadCount--;
-        }
-        this.enableOverlays();
-    }
-
-    private void flushStoriesMarkedRead() {
-        synchronized(this.storiesToMarkAsRead) {
-            if (this.storiesToMarkAsRead.size() > 0) {
-                FeedUtils.markStoriesAsRead(this.storiesToMarkAsRead, this);
-                this.storiesToMarkAsRead.clear();
-            }
-        }
+    private void markStoryRead(Story story) {
+        FeedUtils.markStoryAsRead(story, this);
+        updateCursor();
+        enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
-
-        // first, ensure the story isn't queued up to be marked as read
-        this.storiesToMarkAsRead.remove(story);
-
-        // next, call the API to un-mark it as read, just in case we missed the batch
-        // operation, or it was read long before now.
-        FeedUtils.markStoryUnread(story, Reading.this, this.apiManager);
-
-        this.currentUnreadCount++;
-        this.storiesAlreadySeen.remove(story);
-
-        this.enableOverlays();
+        FeedUtils.markStoryUnread(story, this);
+        updateCursor();
+        enableOverlays();
     }
 
     // NB: this callback is for the text size slider
@@ -484,7 +448,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * Click handler for the righthand overlay nav button.
      */
     public void overlayRight(View v) {
-        if (this.currentUnreadCount == 0) {
+        if (getUnreadCount() == 0) {
             // if there are no unread stories, go back to the feed list
             Intent i = new Intent(this, Main.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -498,7 +462,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                     return null;
                 }
             }.execute();
-            //}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -522,7 +485,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                         break unreadSearch;
                     } 
                 } else {
-                    if ((candidate == pager.getCurrentItem()) || (story.read) || (this.storiesAlreadySeen.contains(story))) {
+                    if ((candidate == pager.getCurrentItem()) || (story.read) ) {
                         candidate++;
                         continue unreadSearch;
                     } else {
@@ -604,8 +567,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * Click handler for the progress indicator on the righthand overlay nav button.
      */
     public void overlayCount(View v) {
-        String unreadText = getString((this.currentUnreadCount == 1) ? R.string.overlay_count_toast_1 : R.string.overlay_count_toast_N);
-        Toast.makeText(this, String.format(unreadText, this.currentUnreadCount), Toast.LENGTH_SHORT).show();
+        String unreadText = getString((getUnreadCount() == 1) ? R.string.overlay_count_toast_1 : R.string.overlay_count_toast_N);
+        Toast.makeText(this, String.format(unreadText, getUnreadCount()), Toast.LENGTH_SHORT).show();
     }
 
     public void overlaySend(View v) {
