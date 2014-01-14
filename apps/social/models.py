@@ -7,6 +7,7 @@ import re
 import mongoengine as mongo
 import random
 import requests
+import HTMLParser
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
@@ -1407,7 +1408,7 @@ class MSharedStory(mongo.Document):
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s: %s (%s)%s%s" % (user.username, 
-                                    self.story_title[:20], 
+                                    self.decoded_story_title[:20], 
                                     self.story_feed_id, 
                                     ': ' if self.has_comments else '', 
                                     self.comments[:20])
@@ -1420,6 +1421,11 @@ class MSharedStory(mongo.Document):
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
     
+    @property
+    def decoded_story_title(self):
+        h = HTMLParser.HTMLParser()
+        return h.unescape(self.story_title)
+        
     def canonical(self):
         return {
             "user_id": self.user_id,
@@ -1634,7 +1640,7 @@ class MSharedStory(mongo.Document):
             
             if interactive:
                 feed = Feed.get_by_id(story.story_feed_id)
-                accept_story = raw_input("%s / %s [Y/n]: " % (story.story_title, feed.title))
+                accept_story = raw_input("%s / %s [Y/n]: " % (story.decoded_story_title, feed.title))
                 if accept_story in ['n', 'N']: continue
                 
             story_db = dict([(k, v) for k, v in story._data.items() 
@@ -1658,7 +1664,7 @@ class MSharedStory(mongo.Document):
                 shared_feed_ids.append(story.story_feed_id)
                 publish_new_stories = True
                 logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
-                    story.story_title[:50],
+                    story.decoded_story_title[:50],
                     story_info['count'],
                     cutoff))
             
@@ -1914,7 +1920,7 @@ class MSharedStory(mongo.Document):
     def generate_post_to_service_message(self, truncate=None, include_url=True):
         message = strip_tags(self.comments)
         if not message or len(message) < 1:
-            message = self.story_title
+            message = self.decoded_story_title
             if include_url and truncate:
                 message = truncate_chars(message, truncate - 18 - 30)
             feed = Feed.get_by_id(self.story_feed_id)
@@ -2023,7 +2029,7 @@ class MSharedStory(mongo.Document):
                 'story_feed': story_feed,
                 'mute_url': mute_url,
             }
-            story_title = self.story_title.replace('\n', ' ')
+            story_title = self.decoded_story_title.replace('\n', ' ')
             
             text    = render_to_string('mail/email_reply.txt', data)
             html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
@@ -2038,7 +2044,7 @@ class MSharedStory(mongo.Document):
         logging.user(reply_user, "~BB~FM~SBSending %s/%s email%s for new reply: %s" % (
             sent_emails, len(notify_user_ids), 
             '' if len(notify_user_ids) == 1 else 's', 
-            self.story_title[:30]))
+            self.decoded_story_title[:30]))
         
         self.emailed_replies.append(reply.reply_id)
         self.save()
@@ -2087,7 +2093,7 @@ class MSharedStory(mongo.Document):
             'story_feed': story_feed,
             'mute_url': mute_url,
         }
-        story_title = self.story_title.replace('\n', ' ')
+        story_title = self.decoded_story_title.replace('\n', ' ')
         
         text    = render_to_string('mail/email_reshare.txt', data)
         html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
@@ -2103,7 +2109,7 @@ class MSharedStory(mongo.Document):
             
         logging.user(reshare_user, "~BB~FM~SBSending %s email for story re-share: %s" % (
             original_user.username,
-            self.story_title[:30]))
+            self.decoded_story_title[:30]))
     
     def calculate_image_sizes(self, force=False):
         if not self.story_content_z:
@@ -2547,7 +2553,7 @@ class MSocialServices(mongo.Document):
             api.put_object('me', '%s:share' % settings.FACEBOOK_NAMESPACE, 
                            link=shared_story.blurblog_permalink(), 
                            type="link", 
-                           name=shared_story.story_title, 
+                           name=shared_story.decoded_story_title, 
                            description=content, 
                            website=shared_story.blurblog_permalink(),
                            message=message,
@@ -2564,7 +2570,7 @@ class MSocialServices(mongo.Document):
         try:
             api = self.appdotnet_api()
             api.createPost(text=message, links=[{
-                'text': shared_story.story_title,
+                'text': shared_story.decoded_story_title,
                 'url': shared_story.blurblog_permalink()
             }])
         except Exception, e:

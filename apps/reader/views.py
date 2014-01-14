@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 import requests
+import zlib
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -20,6 +21,7 @@ from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
+from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -29,7 +31,7 @@ from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_f
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import MFeedIcon
+from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
 try:
@@ -257,7 +259,9 @@ def load_feeds(request):
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
 
-    starred_count = MStarredStory.objects(user_id=user.pk).count()
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
+    if not starred_count and len(starred_counts):
+        starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
         'user_id': user.pk,
@@ -283,6 +287,7 @@ def load_feeds(request):
         'user_profile': user.profile,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
+        'starred_counts': starred_counts,
         'categories': categories
     }
     return data
@@ -592,13 +597,16 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
-                                       .only('story_hash', 'starred_date')
+                                       .only('story_hash', 'starred_date', 'user_tags')
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_feed_id=feed_id, 
                                               story_hash__in=story_hashes)\
                                      .only('story_hash', 'shared_date', 'comments')
-        starred_stories = dict([(story.story_hash, story.starred_date) for story in starred_stories])
-        shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date, comments=story.comments))
+        starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
+                                                        user_tags=story.user_tags))
+                                for story in starred_stories])
+        shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
+                                                       comments=story.comments))
                                for story in shared_stories])
             
     checkpoint4 = time.time()
@@ -618,9 +626,10 @@ def load_single_feed(request, feed_id):
                 story['read_status'] = 0
             if story['story_hash'] in starred_stories:
                 story['starred'] = True
-                starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+                starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                       user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
+                story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
             if story['story_hash'] in shared_stories:
                 story['shared'] = True
                 shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
@@ -742,6 +751,7 @@ def load_starred_stories(request):
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
     query  = request.REQUEST.get('query')
+    tag    = request.REQUEST.get('tag')
     story_hashes = request.REQUEST.getlist('h')[:100]
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
@@ -751,10 +761,20 @@ def load_starred_stories(request):
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            stories = MStarredStory.find_stories(query, user.pk, offset=offset, limit=limit)
+            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif tag:
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk,
+                user_tags__contains=tag
+            ).order_by('-starred_date')[offset:offset+limit]
+            stories = Feed.format_stories(mstories)        
+        else:
+            stories = []
+            message = "You must be a premium subscriber to read saved stories by tag."
     elif story_hashes:
         mstories = MStarredStory.objects(
             user_id=user.pk,
@@ -830,6 +850,60 @@ def starred_story_hashes(request):
                            (len(story_hashes)))
 
     return dict(starred_story_hashes=story_hashes)
+
+def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404
+    
+    try:
+        tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
+    except MStarredStoryCounts.DoesNotExist:
+        raise Http404
+    
+    data = {}
+    data['title'] = "Saved Stories - %s" % tag_counts.tag
+    data['link'] = "%s%s" % (
+        settings.NEWSBLUR_URL,
+        reverse('saved-stories-tag', kwargs=dict(tag_name=tag_slug)))
+    data['description'] = "Stories saved by %s on NewsBlur with the tag \"%s\"." % (user.username,
+                                                                                    tag_counts.tag)
+    data['lastBuildDate'] = datetime.datetime.utcnow()
+    data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
+    data['docs'] = None
+    data['author_name'] = user.username
+    data['feed_url'] = "%s%s" % (
+        settings.NEWSBLUR_URL,
+        reverse('starred-stories-rss-feed', 
+                kwargs=dict(user_id=user_id, secret_token=secret_token, tag_slug=tag_slug)),
+    )
+    rss = feedgenerator.Atom1Feed(**data)
+
+    starred_stories = MStarredStory.objects(
+        user_id=user.pk,
+        user_tags__contains=tag_counts.tag
+    ).order_by('-starred_date')[:25]
+    for starred_story in starred_stories:
+        story_data = {
+            'title': starred_story.story_title,
+            'link': starred_story.story_permalink,
+            'description': (starred_story.story_content_z and
+                            zlib.decompress(starred_story.story_content_z)),
+            'author_name': starred_story.story_author_name,
+            'categories': starred_story.story_tags,
+            'unique_id': starred_story.story_guid,
+            'pubdate': starred_story.starred_date,
+        }
+        rss.add_item(**story_data)
+        
+    logging.user(request, "~FBGenerating ~SB%s~SN's saved story RSS feed (%s, %s stories): ~FM%s" % (
+        user.username,
+        tag_counts.tag,
+        tag_counts.count,
+        request.META.get('HTTP_USER_AGENT', "")[:24]
+    ))
+    return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
 @json.json_view
 def load_river_stories__redis(request):
@@ -913,7 +987,8 @@ def load_river_stories__redis(request):
             user_id=user.pk,
             story_feed_id__in=found_feed_ids
         ).only('story_hash', 'starred_date')
-        starred_stories = dict([(story.story_hash, story.starred_date) 
+        starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
+                                                        user_tags=story.user_tags)) 
                                 for story in starred_stories])
     else:
         starred_stories = {}
@@ -953,9 +1028,10 @@ def load_river_stories__redis(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
+            story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
             'author': apply_classifier_authors(classifier_authors, story),
@@ -1685,11 +1761,13 @@ def iframe_buster(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
-    code     = 1
-    feed_id  = int(request.REQUEST['feed_id'])
-    story_id = request.REQUEST['story_id']
-    message  = ""
-    story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    code      = 1
+    feed_id   = int(request.REQUEST['feed_id'])
+    story_id  = request.REQUEST['story_id']
+    user_tags = request.REQUEST.getlist('user_tags')
+    message   = ""
+    story, _  = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    
     if not story:
         return {'code': -1, 'message': "Could not find story to save."}
         
@@ -1698,24 +1776,31 @@ def mark_story_as_starred(request):
     story_db.pop('user_id', None)
     story_db.pop('starred_date', None)
     story_db.pop('id', None)
+    story_db.pop('user_tags', None)
     now = datetime.datetime.now()
-    story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
+    story_values = dict(user_id=request.user.pk, starred_date=now, user_tags=user_tags, **story_db)
     starred_story, created = MStarredStory.objects.get_or_create(
         story_hash=story.story_hash,
         user_id=story_values.pop('user_id'),
         defaults=story_values)
     if created:
-        logging.user(request, "~FCStarring: ~SB%s" % (story.story_title[:50]))
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
     else:
-        code = -1
-        message = "Already saved this story."
-        logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story.story_title[:50]))
+        starred_story.user_tags = user_tags
+        starred_story.save()
     
-    return {'code': code, 'message': message}
+    MStarredStoryCounts.count_tags_for_user(request.user.pk)
+    starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
+    
+    if created:
+        logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
+    else:
+        logging.user(request, "~FCUpdating starred:~SN~FC ~SB%s~SN (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))
+    
+    return {'code': code, 'message': message, 'starred_counts': starred_counts}
     
 @required_params('story_id')
 @ajax_login_required
@@ -1723,6 +1808,7 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
+    starred_counts = None
     
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if not starred_story:
@@ -1730,10 +1816,12 @@ def mark_story_as_unstarred(request):
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()
+        MStarredStoryCounts.count_tags_for_user(request.user.pk)
+        starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:
         code = -1
     
-    return {'code': code}
+    return {'code': code, 'starred_counts': starred_counts}
 
 @ajax_login_required
 @json.json_view

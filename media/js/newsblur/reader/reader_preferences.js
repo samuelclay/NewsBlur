@@ -321,23 +321,33 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-feeds' }, [
                     $.make('div', { className: 'NB-preference NB-preference-view' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
+                        $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
+                            $.make('div', { className: "NB-view-setting-original" }, [
                                 $.make('label', { 'for': 'NB-preference-view-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_original.png' })
+                                    $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_original_active.png' }),
+                                    $.make("div", { className: "NB-view-title" }, "Original")
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-view-2', type: 'radio', name: 'default_view', value: 'feed' }),
                                 $.make('label', { 'for': 'NB-preference-view-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_feed.png' })
+                                    $.make('input', { id: 'NB-preference-view-2', type: 'radio', name: 'default_view', value: 'feed' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_feed_active.png' }),
+                                    $.make("div", { className: "NB-view-title" }, "Feed")
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'default_view', value: 'story' }),
                                 $.make('label', { 'for': 'NB-preference-view-3' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_story.png' })
+                                    $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'default_view', value: 'text' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_text_active.png' }),
+                                    $.make("div", { className: "NB-view-title" }, "Text")
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-view-4' }, [
+                                    $.make('input', { id: 'NB-preference-view-4', type: 'radio', name: 'default_view', value: 'story' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_story_active.png' }),
+                                    $.make("div", { className: "NB-view-title" }, "Story")
                                 ])
                             ])
                         ]),

@@ -444,8 +444,8 @@ body {
   color: rgba(0, 0, 0, .4);
   opacity: .4;
   font-size: 16px;
-  padding: 78px 24px 0;
-  position: absolute;
+  padding: 78px 16px 0;
+  margin: 48px 0;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
   top: 40%;
   width: 100%;
@@ -733,6 +733,10 @@ body {
     opacity: 1;
     display: block;
 }
+.NB-feedlist .feed.NB-no-hover .NB-feedlist-manage-icon,
+.NB-feedlist .folder_title.NB-no-hover .NB-feedlist-manage-icon {
+    display: none;
+}
 
 .NB-feedlists .folder .folder_title .feed_counts_floater,
 .NB-feeds-header .feed_counts_floater {
@@ -793,8 +797,14 @@ body {
 .NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
     display: none;
 }
+.NB-feedlist .feed.NB-toplevel.NB-no-hover .feed_favicon {
+    display: block;
+}
 .NB-feedlist .folder_title.NB-toplevel:hover {
     background: none;
+}
+.NB-feedlist .folder_title.NB-toplevel.NB-no-hover {
+    background: inherit;
 }
 
 .NB-feedlist .feed_counts {
@@ -809,11 +819,11 @@ body {
 .NB-feedlist .feed.NB-selected,
 .NB-feeds-header.NB-selected,
 .NB-feedlist .folder.NB-selected > .folder_title {
-    background-color: #FDED8D;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
-    background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
-    border-top: 1px solid #EBE0BE;
-    border-bottom: 1px solid #E3D0AE;
+    background-color: #FFFFD2;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#F5F9B4));
+    background: -moz-linear-gradient(center top , #FFFFD2 0%, #F5F9B4 100%);
+    border-top: 1px solid #D6D682;
+    border-bottom: 1px solid #D6D682;
 }
 .NB-feedlist .folder.NB-selected > .folder_title {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
@@ -1088,11 +1098,11 @@ body {
 
 
 .NB-feed-story-header-info ::-moz-selection {
-  background: transparent;
+    background: transparent;
 } 
 
 .NB-feed-story-header-info ::selection {
-background: transparent;
+    background: transparent;
 }
 
 #story_titles {
@@ -1757,10 +1767,7 @@ background: transparent;
     color: #304080;
     border-top: 1px solid #EFEEC3;
     border-bottom: 1px solid #EFEEC3;
-    background-color: #FFFDDF;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFDEF), to(#FFFDDF));
-    background: -moz-linear-gradient(center top , #FFFDEF 0%, #FFFDDF 100%);
-    background: linear-gradient(center top , #FFFDEF 0%, #FFFDDF 100%);
+    background-color: #FFFEE2;
 }
 
 #story_titles .NB-story-title:hover:not(.NB-selected) {
@@ -2075,11 +2082,11 @@ background: transparent;
     font-weight: bold;
 }
 .NB-feed-story-feed .NB-feed-story-header-title:hover {
-    color: #DFE2F3;
+    color: rgba(255, 255, 255, .8);
 }
 
 .NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
-    color: #274C63;
+    color: rgba(0, 0, 0, .6);
 }
 
 /* =============================== */
@@ -2397,6 +2404,7 @@ background: transparent;
 .NB-feed-story .NB-feed-story-content {
     padding: 12px 0 0;
     max-width: 700px;
+    min-height: 12px;
 }
 .NB-feed-story .NB-narrow-content .NB-feed-story-content {
     margin-right: 28px;
@@ -3070,6 +3078,92 @@ background: transparent;
     color: #90928B;
     opacity: 1;
 }
+
+/* ===================== */
+/* = Sideoption - Save = */
+/* ===================== */
+
+.NB-sideoption-save-wrapper {
+    height: 0;
+    overflow: hidden;
+    display: none;
+}
+.NB-sideoption-save-wrapper ::-moz-selection {
+    background: transparent;
+} 
+
+.NB-sideoption-save-wrapper ::selection {
+    background: transparent;
+}
+
+.NB-sideoption-save-wrapper.NB-active {
+    display: block;
+    height: auto;
+}
+
+.NB-narrow-content .NB-sideoption-save-wrapper {
+    clear: both;
+    width: 100%;
+    margin: 0;
+}
+.NB-sideoption-save {
+    padding: 4px 12px 6px;
+    border: 1px solid #DBE6EA;
+    text-align: left;
+    color: #606060;
+}
+.NB-sideoption-save .NB-sideoption-save-icon {
+    float: left;
+    margin: 2px 2px 0 0;
+    width: 16px;
+    height: 16px;
+    background: transparent url("/media/embed/reader/tag.png") no-repeat 0 0;
+    background-size: 14px;
+}
+.NB-sideoption-save .NB-sideoption-save-title {
+    text-transform: uppercase;
+    font-size: 10px;
+    text-align: left;
+    text-shadow: 0 1px 0 #F6F6F6;
+    color: #202020;
+}
+
+.NB-sideoption-save .NB-sideoption-save-tag {
+  width: 100%;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.NB-sideoption-save .NB-sideoption-save-populate {
+    float: right;
+    font-size: 9px;
+    line-height: 11px;
+    text-transform: uppercase;
+    padding: 2px 4px;
+    margin: 0 0 2px 0;
+    border-radius: 2px;
+    background-color: rgba(205, 205, 205, .5);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.NB-sideoption-save .NB-sideoption-save-populate:hover {
+    background-color: rgba(205, 205, 205, .8);    
+}
+.NB-sideoption-save .NB-sideoption-save-populate:active {
+    background-color: rgba(205, 205, 205, 1);    
+}
+.NB-tagging-autocomplete.ui-autocomplete {
+    font-size: 11px;
+    width: 150px !important;
+}
+
+/* ====================== */
+/* = Sideoption - Share = */
+/* ====================== */
+
 .NB-sideoption-share-wrapper {
     height: 0;
     overflow: hidden;
@@ -3153,7 +3247,9 @@ background: transparent;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-    height: 52px;
+  height: 52px;
+  border-color: #C6C6C6;
+  border-radius: 4px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
   font-size: 10px;
@@ -3495,8 +3591,11 @@ background: transparent;
 .NB-feeds-header-river-container .NB-feeds-header {
     border-bottom: 1px solid #B7BBAA;
 }
-.NB-feeds-header-starred.NB-feeds-header {
+.NB-feeds-header-starred-container {
     border-top: 1px solid #B7BBAA;
+}
+.NB-feeds-header-starred.NB-feeds-header {
+    border-bottom: 1px solid #B7BBAA;
 }
 .NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
   display: none;
@@ -3512,13 +3611,23 @@ background: transparent;
 }
 
 .NB-feeds-header-starred .NB-feeds-header-count {
-    background-color: #11448B;
+    background-color: #506B9A;
     display: block;
-    padding: 3px 4px 1px;
-    margin: 3px 3px 0 0;
+    padding: 2px 3px 2px;
+    margin: 3px 3px 0 1px;
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+    
+}
+.NB-starred-feeds .unread_count_positive {
+    background-color: #506B9A;    
     border-bottom: 1px solid rgba(0, 0, 0, .2);
 }
 
+.NB-starred-feeds .feed {
+    border-top: 1px solid #E9EBEE;
+    border-bottom: 1px solid #E9EBEE;
+    background-color: #E9EBEE;
+}
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
   display: none;
 }
@@ -7466,6 +7575,13 @@ form.opml_import_form input {
 .NB-modal-exception .NB-fieldset-fields .NB-error {
     padding: 6px 0 6px 4px;
 }
+.NB-modal-feed-settings .NB-exception-option-status {
+    color: #3945C0;
+    font-weight: bold;
+    text-transform: uppercase;
+    opacity: 0;
+}
+
 .NB-modal-feed-settings .NB-preference-label {
     float: left;
     margin: 6px 0;
@@ -7475,30 +7591,7 @@ form.opml_import_form input {
     float: left;
     overflow: hidden;
 }
-.NB-modal-feed-settings .NB-preference-options div {
-    float: left;
-    margin: 0 12px;
-}
-.NB-modal-feed-settings .NB-preference-options input[type=radio] {
-    float: left;
-    margin: 10px 4px;
-}
 
-.NB-modal-feed-settings .NB-preference-options label {
-    padding-left: 4px;
-    margin: 0 0 4px 0;
-    float: left;
-    cursor: pointer;
-}
-.NB-modal-feed-settings .NB-preference-options img {
-    height: 31px;
-}
-.NB-modal-feed-settings .NB-exception-option-status {
-    color: #3945C0;
-    font-weight: bold;
-    text-transform: uppercase;
-    opacity: 0;
-}
 
 /* ===================== */
 /* = Feedchooser Modal = */
@@ -8215,16 +8308,6 @@ form.opml_import_form input {
     border-radius: 3px;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
-.NB-modal-preferences .NB-preference-view {
-  padding-bottom: 4px;
-}
-.NB-modal-preferences .NB-preference-view img {
-  height: 31px;
-  min-width: 50px;
-}
-.NB-modal-preferences .NB-preference-view .NB-preference-options input[type="radio"] {
-  margin-top: 10px;
-}
 .NB-modal-preferences .NB-preference-story-pane-position input {
   margin-top: 4px;
 }
@@ -8402,6 +8485,52 @@ form.opml_import_form input {
     font-size: 12px;
     width: 100px;
 }
+.NB-modal-preferences .NB-preference-autoopenfolder .NB-folders {
+    max-width: 240px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options.NB-view-settings input[type=radio] {
+    margin: 3px 6px 0 2px;
+}
+
+
+.NB-view-settings.NB-preference-options div {
+    float: left;
+    margin: 0 6px 0 0;
+}
+.NB-view-settings.NB-preference-options input[type=radio] {
+    float: left;
+    margin: 2px 6px 0 0px;
+}
+.NB-view-settings.NB-preference-options label {
+    margin: 0 0 4px 0;
+    float: left;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #303030;
+    display: block;
+    padding: 4px 6px;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 3px;
+}
+.NB-preference-options.NB-view-settings img {
+    float: left;
+    width: 18px;
+    height: 15px;
+    padding: 1px 0 0 0;
+    margin: 0 4px 0 0;
+}
+.NB-preference-options.NB-view-settings .NB-view-title {
+    margin: 0;
+    padding: 1px 0 0 0;
+    float: left;
+}
+
+.NB-preference-options.NB-view-settings div {
+    float: left;
+    margin: 0 6px 0 0;
+}
+
 
 /* ================== */
 /* = Account Dialog = */
