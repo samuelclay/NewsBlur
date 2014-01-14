@@ -94,14 +94,14 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 afterTagAdded: function(event, options) {
                     options = options || {};
                     if (!options.duringInitialization) {
-                        self.resize();
+                        self.resize({change_tag: true});
                         self.save_tags();
                     }
                 },
                 afterTagRemoved: function(event, duringInitialization) {
                     options = options || {};
                     if (!options.duringInitialization) {
-                        self.resize();
+                        self.resize({change_tag: true});
                         self.save_tags();
                     }
                 }
@@ -151,7 +151,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
             $save_wrapper.addClass('NB-active');
         }
 
-        if (sideoption_content_height > 0) {
+        if (!options.resize_open && !options.close && !options.change_tag) {
             $save_wrapper.css('height', '0px');
         }
         $save_wrapper.animate({
@@ -229,7 +229,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         $story_content.stop(true, true).css('height', 'auto');
         $story_content.removeData('original_height');
         
-        this.resize();
+        this.resize({change_tag: true});
     },
     
     save_tags: function() {
