@@ -129,6 +129,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
+
 	}
 
 
@@ -179,7 +180,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		pager.setOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
-		pager.setCurrentItem(passedPosition);
+		pager.setCurrentItem(passedPosition, false);
         // setCurrentItem sometimes fails to pass the first page to the callback, so call it manually
         // for the first one.
         this.onPageSelected(passedPosition); 
@@ -342,7 +343,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     private void enableOverlays() {
         this.setOverlayAlpha(1.0f);
 
-
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((getUnreadCount() > 0) ? R.string.overlay_next : R.string.overlay_done);
         this.overlayRight.setBackgroundResource((getUnreadCount() > 0) ? R.drawable.selector_overlay_bg_right : R.drawable.selector_overlay_bg_right_done);
@@ -364,7 +364,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         }
 
         invalidateOptionsMenu();
-
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -416,14 +415,18 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void markStoryRead(Story story) {
-        FeedUtils.markStoryAsRead(story, this);
-        updateCursor();
+        synchronized (STORIES_MUTEX) {
+            FeedUtils.markStoryAsRead(story, this);
+            updateCursor();
+        }
         enableOverlays();
     }
 
     private void markStoryUnread(Story story) {
-        FeedUtils.markStoryUnread(story, this);
-        updateCursor();
+        synchronized (STORIES_MUTEX) {
+            FeedUtils.markStoryUnread(story, this);
+            updateCursor();
+        }
         enableOverlays();
     }
 

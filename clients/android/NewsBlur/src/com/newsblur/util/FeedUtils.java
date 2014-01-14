@@ -223,6 +223,21 @@ public class FeedUtils {
     public static void markStoryAsRead(final Story story, final Context context) {
         if (story.read) { return; }
 
+        // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
+        // to ensure it isn't already marked as read.  if so, do not update feed counts
+        Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
+        Cursor cursor = context.getContentResolver().query(storyUri, null, null, null, null);
+        if (cursor.getCount() < 1) {
+            Log.w(FeedUtils.class.getName(), "can't mark story as read, not found in DB: " + story.id);
+            return;
+        }
+        Story freshStory = Story.fromCursor(cursor);
+        cursor.close();
+        if (freshStory.read) { return; }
+
+        // update the local object to show as read even before requeried
+        story.read = true;
+
         // first, update unread counts in the local DB
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
         appendStoryReadOperations(story, updateOps);
@@ -246,9 +261,6 @@ public class FeedUtils {
                 }
             }
         }.execute();
-
-        // update the local object to show as read even before requeried
-        story.read = true;
     }
 
     /**
@@ -256,7 +268,6 @@ public class FeedUtils {
      * the local DB and on the server.
      */
     public static void markStoriesAsRead( Collection<Story> stories, final Context context ) {
-
         // the list of story hashes to mark read
         final ArrayList<String> storyHashes = new ArrayList<String>();
         // a list of local DB ops to perform
@@ -295,7 +306,6 @@ public class FeedUtils {
         for (Story story : stories) {
             story.read = true;
         }
-
     }
 
 	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations) {

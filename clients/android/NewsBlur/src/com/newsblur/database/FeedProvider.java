@@ -431,6 +431,11 @@ public class FeedProvider extends ContentProvider {
 			selectionArgs = new String[] { uri.getLastPathSegment() };
 			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, sortOrder);
 			
+        case INDIVIDUAL_STORY:
+			selectionArgs = new String[] { uri.getLastPathSegment() };
+            selection = DatabaseConstants.STORY_ID + " = ?";
+			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, sortOrder);
+
 			// Querying for all stories
 		case ALL_STORIES:
 			String allStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
