@@ -2292,7 +2292,7 @@ class MSocialServices(mongo.Document):
             return
         
         twitter_user = api.me()
-        self.twitter_picture_url = twitter_user.profile_image_url
+        self.twitter_picture_url = twitter_user.profile_image_url_https
         self.twitter_username = twitter_user.screen_name
         self.twitter_refreshed_date = datetime.datetime.utcnow()
         self.syncing_twitter = False
@@ -2530,6 +2530,18 @@ class MSocialServices(mongo.Document):
         profile.save()
         return profile
     
+    def sync_twitter_photo(self):
+        profile = MSocialProfile.get_user(self.user_id)
+
+        if profile.photo_service != "twitter":
+            return
+        
+        api = self.twitter_api()
+        me = api.me()
+        self.twitter_picture_url = me.profile_image_url_https
+        self.save()
+        self.set_photo('twitter')
+        
     def post_to_twitter(self, shared_story):
         message = shared_story.generate_post_to_service_message(truncate=140)
         
