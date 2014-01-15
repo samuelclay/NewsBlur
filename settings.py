@@ -8,7 +8,7 @@ import os
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),
-                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'),)
+                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'))
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
 STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
@@ -66,10 +66,11 @@ USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/reader/login'
 MEDIA_URL             = '/media/'
+STATIC_URL             = '/media/'
+STATIC_ROOT             = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX    = '/media/admin/'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
@@ -108,10 +109,13 @@ MIDDLEWARE_CLASSES = (
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # ===========
 # = Logging =
@@ -264,6 +268,8 @@ INSTALLED_APPS = (
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
     'vendor.haystack',
+    'oauth2_provider',
+    'corsheaders',
 )
 
 # ==========
@@ -521,9 +527,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 if DEBUG:
     TEMPLATE_LOADERS = (
-        ('django.template.loaders.filesystem.Loader',
-         'django.template.loaders.app_directories.Loader',
-        ),
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
     )
 else:
     TEMPLATE_LOADERS = (
@@ -532,7 +537,7 @@ else:
             'django.template.loaders.app_directories.Loader',
         )),
     )
-
+print TEMPLATE_LOADERS
 # =========
 # = Redis =
 # =========
