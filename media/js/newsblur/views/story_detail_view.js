@@ -437,16 +437,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.on('change:images_loaded', _.bind(function() {
             this.resize_starred_tags();
         }, this));
+        var is_truncatable = this.is_truncatable();
         
-        if (!this.is_truncatable()) return;
+        if (!is_truncatable && !this.model.get('starred')) return;
         
         this.truncate_delay = 100;
         this.images_to_load = this.$('img').length;
-        this.truncate_story_height();
-
+        if (is_truncatable) this.truncate_story_height();
         this.$('img').load(_.bind(function() {
             this.images_to_load -= 1;
-            this.truncate_story_height();
+            if (is_truncatable) this.truncate_story_height();
+            if (this.images_to_load <= 0) {
+                this.model.set('images_loaded', true);
+            } else {
+                this.model.set('images_loaded', false);
+            }
         }, this));
     },
     

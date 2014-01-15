@@ -2901,7 +2901,18 @@ class MActivity(mongo.Document):
                                   story_feed_id=story_feed_id,
                                   content_id=story_id,
                                   defaults=dict(content=story_title))
-                           
+
+    @classmethod
+    def remove_starred_story(cls, user_id, story_feed_id, story_id):
+        params = {
+            'user_id': user_id,
+            'category': 'star',
+            'story_feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        original = cls.objects.filter(**params)
+        original.delete()
+    
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
         params = {

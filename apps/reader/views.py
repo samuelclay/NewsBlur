@@ -1814,7 +1814,11 @@ def mark_story_as_unstarred(request):
     if not starred_story:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
     if starred_story:
-        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
+        starred_story = starred_story[0]
+        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
+        MActivity.remove_starred_story(user_id=request.user.pk, 
+                                       story_feed_id=starred_story.story_feed_id,
+                                       story_id=starred_story.story_guid)
         starred_story.delete()
         MStarredStoryCounts.count_tags_for_user(request.user.pk)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
