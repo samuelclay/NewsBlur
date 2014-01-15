@@ -50,7 +50,9 @@ urlpatterns = patterns('',
     url(r'^android/?',      static_views.android, name='android-static'),
     url(r'^firefox/?',      static_views.firefox, name='firefox'),
     url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
-    (r'^account/login/?$', 'django.contrib.auth.views.login', {'template_name': 'accounts/login.html'}),
+    url(r'^account/login/?$', 
+                            'django.contrib.auth.views.login', 
+                            {'template_name': 'accounts/login.html'}, name='login'),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
 )
 

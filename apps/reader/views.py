@@ -744,6 +744,7 @@ def load_feed_page(request, feed_id):
     logging.user(request, "~FYLoading original page, from the db")
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
     
+@login_required()
 @json.json_view
 def load_starred_stories(request):
     user   = get_user(request)
