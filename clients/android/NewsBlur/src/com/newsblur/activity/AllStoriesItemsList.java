@@ -23,6 +23,7 @@ import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -45,7 +46,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder());
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
@@ -108,6 +109,19 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 
     @Override

@@ -22,11 +22,13 @@ import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.FolderReading;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Folder;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
@@ -44,7 +46,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 	public static int ITEMLIST_LOADER = 0x01;
 
 
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder) {
+	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
@@ -52,6 +54,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		args.putStringArrayList("feedIds", feedIds);
 		args.putString("folderName", folderName);
 		args.putSerializable("storyOrder", storyOrder);
+        args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -63,6 +66,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
 		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
 		feedIdArrayList.toArray(feedIds);
@@ -122,6 +126,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 
 public abstract class ItemListFragment extends Fragment implements OnScrollListener {
@@ -20,6 +21,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
     protected int currentPage = 0;
     protected boolean requestedPage;
 	protected StoryItemsAdapter adapter;
+    protected DefaultFeedView defaultFeedView;
     private boolean firstSyncDone = false;
 	
 	public abstract void hasUpdated();
@@ -83,4 +85,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 		}
 	}
 
+    public void setDefaultFeedView(DefaultFeedView value) {
+        this.defaultFeedView = value;
+    }
 }

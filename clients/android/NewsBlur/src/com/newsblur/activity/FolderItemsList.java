@@ -14,13 +14,13 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.FolderItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -53,7 +53,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getStoryOrder());
+			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
@@ -104,6 +104,19 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, folderName);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, folderName, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 
     @Override
