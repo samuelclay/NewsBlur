@@ -245,7 +245,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             var last_story = NEWSBLUR.assets.stories.last();
-            if (!last_story.get('selected')) return;
+            if (last_story && !last_story.get('selected')) return;
         }
 
         endbar_height /= 2; // Splitting padding between top and bottom

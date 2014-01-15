@@ -172,6 +172,7 @@
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
     <string name="menu_read_filter">Read Filter</string>
+    <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
     <string name="settings_default_story_order">Default Story Order</string>
@@ -200,4 +201,7 @@
     </string-array>
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
+
+    <string name="story">Story</string>
+    <string name="text">Text</string>
 </resources>

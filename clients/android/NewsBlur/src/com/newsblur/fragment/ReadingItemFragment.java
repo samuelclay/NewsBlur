@@ -63,7 +63,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
     private Reading activity;
-    private Boolean customContent = false;
+
+    private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -147,11 +148,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
-		
-        synchronized (customContent) {
-            setupWebview(story.content);
-            customContent = false;
-        }
 
 		setupItemMetadata();
 		setupShareButton();
@@ -324,22 +320,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     /**
      * Set the webview to show the default story content.
      */
-    public void setDefaultWebview() {
-        // if the default content hasn't been changed, don't reset it
-        synchronized (customContent) {
-            if (!customContent) return;
+    public void showStoryContentInWebview() {
+        synchronized (WEBVIEW_CONTENT_MUTEX) {
             setupWebview(story.content);
-            customContent = false;
         }
     }
 
     /**
      * Set the webview to show non-default content, tracking the change.
      */
-    public void setCustomWebview(String content) {
-        synchronized (customContent) {
+    public void showCustomContentInWebview(String content) {
+        synchronized (WEBVIEW_CONTENT_MUTEX) {
             setupWebview(content);
-            customContent = true;
         }
     }
 
