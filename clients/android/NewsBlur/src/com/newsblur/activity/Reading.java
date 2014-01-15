@@ -3,9 +3,7 @@ package com.newsblur.activity;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -169,6 +167,16 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 if (fragment != null ) {
                     fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
                     fragment.updateSaveButton();
+
+                    // make sure we start in default mode and the ui reflects it
+                    synchronized (currentFeedView) {
+                        currentFeedView = defaultFeedView;
+                        if (currentFeedView == DefaultFeedView.STORY) {
+                            enableStoryMode();
+                        } else {
+                            enableTextMode();
+                        }
+                    }
                 }
             } catch (IllegalStateException ise) {
                 // sometimes the pager is already shutting down by the time the callback finishes
@@ -361,16 +369,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             this.overlayProgress.setProgress(unreadProgress);
         }
         this.overlayProgress.invalidate();
-
-        // make sure we start in default mode and the ui reflects it
-        synchronized (currentFeedView) {
-            currentFeedView = defaultFeedView;
-            if (currentFeedView == DefaultFeedView.STORY) {
-                enableStoryMode();
-            } else {
-                enableTextMode();
-            }
-        }
 
         invalidateOptionsMenu();
     }
@@ -615,7 +613,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 protected void onPostExecute(StoryTextResponse result) {
                     ReadingItemFragment item = getReadingFragment();
                     if ((item != null) && (result != null) && (result.originalText != null)) {
-                        item.setCustomWebview(result.originalText);
+                        item.showCustomContentInWebview(result.originalText);
                     }
                     enableProgressCircle(overlayProgressLeft, false);
                 }
@@ -629,7 +627,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private void enableStoryMode() {    
         ReadingItemFragment item = getReadingFragment();
-        if (item != null) item.setDefaultWebview();
+        if (item != null) item.showStoryContentInWebview();
 
         this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
         this.overlayText.setText(R.string.overlay_text);
