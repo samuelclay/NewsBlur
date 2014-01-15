@@ -40,7 +40,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         if (this.story == story) return;
         
         this.story = story;
-        this.$el.html(new NEWSBLUR.Views.StoryDetailView({
+        this.story_detail = new NEWSBLUR.Views.StoryDetailView({
             model: this.story,
             collection: this.story.collection,
             show_feed_title: true,
@@ -48,7 +48,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             text_view: true,
             tagName: 'div',
             inline_story_title: this.options.inline_story_title
-        }).render().el);
+        }).render();
+        this.$el.html(this.story_detail.el);
         this.$el.scrollTop(0);
         this.show_loading();
         NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
