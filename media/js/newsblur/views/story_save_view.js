@@ -182,6 +182,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         if (!NEWSBLUR.reader.flags.narrow_content &&
             !options.close && !options.force && new_sideoptions_height >= original_height) {
             // Sideoptions too big, embiggen left side
+            console.log(["Sideoption too big, embiggening", content_height, sideoptions_height]);
             $story_content.stop(true, true).animate({
                 'height': new_sideoptions_height
             }, {

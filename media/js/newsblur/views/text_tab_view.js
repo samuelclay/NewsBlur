@@ -73,6 +73,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         } else {
             $content.html(this.story.get('original_text'));
             NEWSBLUR.reader.make_story_titles_pane_counter();
+            this.resize_starred_tags();
         }
         $content.css('opacity', 0);
         $content.show();
@@ -142,6 +143,13 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         this.$(".NB-story-list-empty").remove();
         this.$el.append($empty);
     },
+    
+    resize_starred_tags: function() {
+        if (this.story.get('starred')) {
+            this.story_detail.save_view.reset_height({immediate: true});
+        }
+    },
+
     
     // ==========
     // = Events =
