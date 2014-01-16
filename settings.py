@@ -552,7 +552,7 @@ else:
             'django.template.loaders.app_directories.Loader',
         )),
     )
-print TEMPLATE_LOADERS
+
 # =========
 # = Redis =
 # =========
