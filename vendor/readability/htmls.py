@@ -3,20 +3,19 @@ from encoding import get_encoding
 from lxml.html import tostring
 import logging
 import lxml.html
-import re
-
-logging.getLogger().setLevel(logging.DEBUG)
+import re, sys
 
 utf8_parser = lxml.html.HTMLParser(encoding='utf-8')
 
 def build_doc(page):
     if isinstance(page, unicode):
+        enc = None
         page_unicode = page
     else:
-        enc = get_encoding(page)
+        enc = get_encoding(page) or 'utf-8'
         page_unicode = page.decode(enc, 'replace')
     doc = lxml.html.document_fromstring(page_unicode.encode('utf-8', 'replace'), parser=utf8_parser)
-    return doc
+    return doc, enc
 
 def js_re(src, pattern, flags, repl):
     return re.compile(pattern, flags).sub(src, repl.replace('$', '\\'))
@@ -57,7 +56,7 @@ def add_match(collection, text, orig):
 
 def shorten_title(doc):
     title = doc.find('.//title')
-    if title is None or len(title.text) == 0:
+    if title is None or title.text is None or len(title.text) == 0:
         return ''
 
     title = orig = norm_title(title.text)
@@ -111,5 +110,5 @@ def get_body(doc):
         #BeautifulSoup(cleaned) #FIXME do we really need to try loading it?
         return cleaned
     except Exception: #FIXME find the equivalent lxml error
-        logging.error("cleansing broke html content: %s\n---------\n%s" % (raw_html, cleaned))
+        #logging.error("cleansing broke html content: %s\n---------\n%s" % (raw_html, cleaned))
         return raw_html

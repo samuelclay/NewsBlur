@@ -24,9 +24,8 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Feed;
-import com.newsblur.util.NetworkUtils;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -39,13 +38,14 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 	
     private StoryOrder storyOrder;
 
-	public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder) {
+    public static FeedItemListFragment newInstance(String feedId, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
 
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
 		args.putSerializable("storyOrder", storyOrder);
+        args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -57,6 +57,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
 		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
     @Override
@@ -128,6 +129,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 

@@ -76,6 +76,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             });
             this.text_view.fetch_and_render(this.model, temporary_text);
             this.$(".NB-story-detail").html(this.text_view.$el);
+            this.text_view.story_detail.render_starred_tags();
         } else {
             this.story_detail = new NEWSBLUR.Views.StoryDetailView({
                 model: this.model,

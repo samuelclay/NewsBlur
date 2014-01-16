@@ -129,6 +129,10 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         NEWSBLUR.reader.open_social_profile_modal(this.model.get("user_id"));
     },
     
+    toggle_feed_story_save_dialog: function() {
+        this.story.story_save_view.toggle_feed_story_save_dialog();
+    },
+    
     toggle_feed_story_share_dialog: function() {
         this.story.story_share_view.toggle_feed_story_share_dialog();
     },

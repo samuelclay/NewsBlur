@@ -120,6 +120,9 @@ public class Story implements Serializable {
 	}
 
 	public static Story fromCursor(final Cursor cursor) {
+		if (cursor.isBeforeFirst()) {
+			cursor.moveToFirst();
+		}
 		Story story = new Story();
 		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
 		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));

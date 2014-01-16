@@ -17,12 +17,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.activity.Reading;
 import com.newsblur.activity.SavedStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
@@ -32,10 +34,12 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 	private ContentResolver contentResolver;
 	
 	public static int ITEMLIST_LOADER = 0x01;
-	
-	@Override
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 	}
 
 	@Override
@@ -81,8 +85,11 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
         ; // This fragment ignores state
 	}
 
-	public static ItemListFragment newInstance() {
+	public static ItemListFragment newInstance(DefaultFeedView defaultFeedView) {
 		ItemListFragment fragment = new SavedStoriesItemListFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("defaultFeedView", defaultFeedView);
+        fragment.setArguments(args);
 		return fragment;
 	}
 
@@ -90,6 +97,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), SavedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 

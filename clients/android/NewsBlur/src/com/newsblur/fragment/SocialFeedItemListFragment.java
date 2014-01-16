@@ -25,6 +25,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
@@ -43,13 +44,14 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private ListView itemList;
     private StoryOrder storyOrder;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
         userId = getArguments().getString("userId");
         username = getArguments().getString("username");
         storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		
@@ -73,13 +75,14 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 	}
 	
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder) {
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder, final DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
         args.putInt("currentState", currentState);
         args.putString("userId", userId);
         args.putString("username", username);
         args.putSerializable("storyOrder", storyOrder);
+        args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
         return fragment;
 	}
@@ -124,6 +127,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		i.putExtra(Reading.EXTRA_USERNAME, username);
 		i.putExtra(Reading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 

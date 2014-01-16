@@ -21,7 +21,6 @@ public class SocialFeedReading extends Reading {
 
     private String userId;
     private String username;
-    private SocialFeed socialFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
@@ -30,20 +29,20 @@ public class SocialFeedReading extends Reading {
         userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
         username = getIntent().getStringExtra(Reading.EXTRA_USERNAME);
 
-        Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
-        socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
-
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
-
-        int unreadCount = FeedUtils.getFeedUnreadCount(this.socialFeed, this.currentState);
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
 
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
 
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
-
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
+        Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+        Cursor cursor = contentResolver.query(socialFeedUri, null, null, null, null);
+        SocialFeed socialFeed = SocialFeed.fromCursor(cursor);
+        cursor.close();
+        return FeedUtils.getFeedUnreadCount(socialFeed, this.currentState);
     }
 
 	@Override
