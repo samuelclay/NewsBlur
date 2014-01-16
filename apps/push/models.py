@@ -14,7 +14,7 @@ from apps.rss_feeds.models import Feed
 from utils import log as logging
 from utils.feed_functions import timelimit
 
-DEFAULT_LEASE_SECONDS = 2592000 # 30 days in seconds
+DEFAULT_LEASE_SECONDS = (10 * 24 * 60 * 60)  # 10 days
 
 class PushSubscriptionManager(models.Manager):
     

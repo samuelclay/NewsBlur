@@ -110,11 +110,13 @@ def load_social_stories(request, user_id, username=None):
 
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_hash__in=story_hashes)\
-                                   .only('story_hash', 'starred_date')
+                                   .only('story_hash', 'starred_date', 'user_tags')
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
                                  .only('story_hash', 'shared_date', 'comments')
-    starred_stories = dict([(story.story_hash, story.starred_date) for story in starred_stories])
+    starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
+                                                    user_tags=story.user_tags))
+                            for story in starred_stories])
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
                            for story in shared_stories])
@@ -135,9 +137,10 @@ def load_social_stories(request, user_id, username=None):
 
         if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
+            story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
         if story['story_hash'] in shared_stories:
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
@@ -239,8 +242,9 @@ def load_river_blurblog(request):
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
             story_hash__in=story_hashes
-        ).only('story_hash', 'starred_date')
-        starred_stories = dict([(story.story_hash, story.starred_date) 
+        ).only('story_hash', 'starred_date', 'user_tags')
+        starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
+                                                        user_tags=story.user_tags)) 
                                 for story in starred_stories])
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_hash__in=story_hashes)\
@@ -281,8 +285,9 @@ def load_river_blurblog(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['story_hash']], user.profile.timezone)
+            starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
+            story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
                                              social_user_ids=story['friend_user_ids']),
@@ -1193,6 +1198,22 @@ def remove_like_comment(request):
             'user_profiles': profiles,
         })
         
+def shared_stories_rss_feed_noid(request):
+    index = HttpResponseRedirect('http://%s%s' % (
+                                 Site.objects.get_current().domain,
+                                 reverse('index')))
+    if request.subdomain:
+        username = request.subdomain
+        try:
+            if '.' in username:
+                username = username.split('.')[0]
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return index
+        return shared_stories_rss_feed(request, user_id=user.pk, username=request.subdomain)
+
+    return index
+
 def shared_stories_rss_feed(request, user_id, username):
     try:
         user = User.objects.get(pk=user_id)
@@ -1217,7 +1238,7 @@ def shared_stories_rss_feed(request, user_id, username):
     data['link'] = social_profile.blurblog_url
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
     data['lastBuildDate'] = datetime.datetime.utcnow()
-    data['generator'] = 'NewsBlur - http://www.newsblur.com'
+    data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
     data['feed_url'] = "http://%s%s" % (
@@ -1243,7 +1264,7 @@ def shared_stories_rss_feed(request, user_id, username):
             'description': content,
             'author_name': shared_story.story_author_name,
             'categories': shared_story.story_tags,
-            'unique_id': shared_story.story_guid,
+            'unique_id': shared_story.story_permalink,
             'pubdate': shared_story.shared_date,
         }
         rss.add_item(**story_data)

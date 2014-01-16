@@ -79,24 +79,27 @@ public class Feed {
 		return values;
 	}
 
-	public static Feed fromCursor(Cursor childCursor) {
+	public static Feed fromCursor(Cursor cursor) {
+		if (cursor.isBeforeFirst()) {
+			cursor.moveToFirst();
+		}
 		Feed feed = new Feed();
-		feed.active = Boolean.parseBoolean(childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
-		feed.address = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
-		feed.favicon = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));
-		feed.faviconColor = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
-        feed.faviconFade = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-        feed.faviconBorder = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
-        feed.faviconText = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
-		feed.faviconUrl = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-		feed.feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
-		feed.feedLink = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_LINK));
-		feed.lastUpdated = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
-		feed.negativeCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_NEGATIVE_COUNT));
-		feed.neutralCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
-		feed.positiveCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
-		feed.subscribers = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
-		feed.title = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+		feed.active = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
+		feed.address = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
+		feed.favicon = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));
+		feed.faviconColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+        feed.faviconFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        feed.faviconBorder = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
+        feed.faviconText = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
+		feed.faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+		feed.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID));
+		feed.feedLink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_LINK));
+		feed.lastUpdated = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
+		feed.negativeCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_NEGATIVE_COUNT));
+		feed.neutralCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
+		feed.positiveCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
+		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
+		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
 		return feed;
 	}
 	

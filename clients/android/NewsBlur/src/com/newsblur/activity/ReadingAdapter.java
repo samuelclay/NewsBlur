@@ -14,24 +14,27 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
 	
-	public ReadingAdapter(FragmentManager fm, Cursor stories) {
+	public ReadingAdapter(FragmentManager fm) {
 		super(fm);
-		this.stories = stories;
 	}
 	
 	@Override
-	public Fragment getItem(int position) {
+	public synchronized Fragment getItem(int position) {
 		if (stories == null || stories.getCount() == 0 || position >= stories.getCount()) {
 			return new LoadingFragment();
         } else {
             return getReadingItemFragment(position);
         }
     }
+
+    public synchronized void swapCursor(Cursor cursor) {
+        this.stories = cursor;
+    }
         
 	protected abstract Fragment getReadingItemFragment(int position);
 	
 	@Override
-	public int getCount() {
+	public synchronized int getCount() {
 		if (stories != null && stories.getCount() > 0) {
 			return stories.getCount();
 		} else {
@@ -39,8 +42,8 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 
-	public Story getStory(int position) {
-		if (stories == null || position >= stories.getCount()) {
+	public synchronized Story getStory(int position) {
+		if (stories == null || stories.getColumnCount() == 0 || position >= stories.getCount() || position < 0) {
 			return null;
 		} else {
 			stories.moveToPosition(position);
@@ -48,7 +51,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 
-    public int getPosition(Story story) {
+    public synchronized int getPosition(Story story) {
         int pos = 0;
         while (pos < stories.getCount()) {
 			stories.moveToPosition(pos);
@@ -61,7 +64,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
     }
 	
 	@Override
-	public int getItemPosition(Object object) {
+	public synchronized int getItemPosition(Object object) {
 		if (object instanceof LoadingFragment) {
 			return POSITION_NONE;
 		} else {

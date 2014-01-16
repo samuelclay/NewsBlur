@@ -31,7 +31,7 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-recommend NB-modal' }, [
             $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
-                this.make_feed_chooser()
+                this.make_feed_chooser({skip_starred: true, skip_social: true})
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [

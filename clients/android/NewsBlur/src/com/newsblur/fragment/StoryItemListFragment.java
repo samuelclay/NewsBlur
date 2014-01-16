@@ -29,14 +29,13 @@ public abstract class StoryItemListFragment extends ItemListFragment implements 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        StoryItemsAdapter adapter = getAdapter();
         if (item.getItemId() == R.id.menu_mark_story_as_read) {
             final Story story = adapter.getStory(menuInfo.position);
             if(! story.read) {
                 List<Story> storiesToMarkAsRead = new ArrayList<Story>();
                 storiesToMarkAsRead.add(story);
                 FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
-                refreshStories();
+                hasUpdated();
             }
         } else if (item.getItemId() == R.id.menu_mark_previous_stories_as_read) {
             final List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
@@ -47,7 +46,7 @@ public abstract class StoryItemListFragment extends ItemListFragment implements 
                 }
             }
             FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
-            refreshStories();
+            hasUpdated();
         } else if (item.getItemId() == R.id.menu_shared) {
             Story story = adapter.getStory(menuInfo.position);
             FeedUtils.shareStory(story, getActivity());
@@ -55,7 +54,4 @@ public abstract class StoryItemListFragment extends ItemListFragment implements 
         return super.onContextItemSelected(item);
     }
 
-    protected abstract void refreshStories();
-    
-    protected abstract StoryItemsAdapter getAdapter();
 }

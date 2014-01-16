@@ -20,11 +20,11 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.network.APIManager;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -43,22 +43,14 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 
 		apiManager = new APIManager(this);
 		resolver = getContentResolver();
-		
 
 		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(AllStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder());
+			itemListFragment = AllStoriesItemListFragment.newInstance(currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllStoriesItemListFragment.class.getName());
 			listTransaction.commit();
-		}
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
 		}
 	}
 
@@ -81,18 +73,9 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
                 cursor.close();
             }
 
-			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
-            intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feedIds);
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
-			intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-
-			startService(intent);
+            FeedUtils.updateFeeds(this, this, feedIds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
 		}
 	}
-
 
 	@Override
 	public void markItemListAsRead() {
@@ -126,6 +109,19 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 
     @Override

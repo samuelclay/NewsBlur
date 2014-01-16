@@ -69,21 +69,52 @@ NEWSBLUR.Modal.prototype = {
         $.modal.close(callback);
     },
     
-    make_feed_chooser: function() {
+    make_feed_chooser: function(options) {
+        options = options || {};
         var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
+        var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
+        var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
         var current_feed_id = this.feed_id;
-        this.feeds = this.model.get_feeds();
         
-        this.feeds.each(function(feed) {
+        var make_feed_option = function(feed) {
+            if (!feed.get('feed_title')) return;
+            
             var $option = $.make('option', { value: feed.id }, feed.get('feed_title'));
-            $option.appendTo($chooser);
+            $option.appendTo(feed.is_starred() ? $starred_feeds_optgroup : 
+                             feed.is_social() ? $social_feeds_optgroup : 
+                             $feeds_optgroup);
             
             if (feed.id == current_feed_id) {
                 $option.attr('selected', true);
             }
-        });
+        };
         
-        $('option', $chooser).tsort();
+        this.feeds = this.model.get_feeds();
+        this.feeds.each(make_feed_option);
+        
+        if (!options.skip_social) {
+            this.social_feeds = this.model.get_social_feeds();
+            this.social_feeds.each(make_feed_option);
+        }
+        
+        if (!options.skip_starred) {
+            this.starred_feeds = this.model.get_starred_feeds();
+            this.starred_feeds.each(make_feed_option);
+        }
+        
+        $('option', $feeds_optgroup).tsort();
+        $('option', $social_feeds_optgroup).tsort();
+        $('option', $starred_feeds_optgroup).tsort();
+        
+        $chooser.append($feeds_optgroup);
+        if (!options.skip_social) {
+            $chooser.append($social_feeds_optgroup);
+        }
+        if (!options.skip_starred) {
+            $chooser.append($starred_feeds_optgroup);
+        }
+        
         return $chooser;
     },
     

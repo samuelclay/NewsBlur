@@ -16,14 +16,14 @@ public class FeedReadingAdapter extends ReadingAdapter {
 	private final Feed feed;
 	private Classifier classifier;
 
-	public FeedReadingAdapter(FragmentManager fm, Feed feed, Cursor stories, Classifier classifier) {
-		super(fm, stories);
+	public FeedReadingAdapter(FragmentManager fm, Feed feed, Classifier classifier) {
+		super(fm);
 		this.feed = feed;
 		this.classifier = classifier;
 	}
 
 	@Override
-	protected Fragment getReadingItemFragment(int position) {
+	protected synchronized Fragment getReadingItemFragment(int position) {
         stories.moveToPosition(position);
         return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false);
 	}

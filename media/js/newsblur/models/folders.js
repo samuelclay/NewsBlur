@@ -204,6 +204,16 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return names;
     },
     
+    parent_folder_names: function() {
+        var names = [this.options.title];
+        if (this.parent_folder) {
+            var parents = _.compact(_.flatten(this.parent_folder.parent_folder_names()));
+            names = names.concat(parents);
+        }
+        
+        return names;
+    },
+    
     feed_ids_in_folder: function() {
         return _.compact(_.flatten(this.map(function(item) {
             return item.feed_ids_in_folder();
@@ -242,15 +252,17 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         });
     },
     
-    unread_counts: function(sum_total) {
+    unread_counts: function(sum_total, seen_feeds) {
+        if (!seen_feeds) seen_feeds = [];
         var counts = this.reduce(function(counts, item) {
-            if (item.is_feed()) {
+            if (item.is_feed() && !_.contains(seen_feeds, item.feed.id)) {
                 var feed_counts = item.feed.unread_counts();
                 counts['ps'] += feed_counts['ps'];
                 counts['nt'] += feed_counts['nt'];
                 counts['ng'] += feed_counts['ng'];
+                seen_feeds.push(item.feed.id);
             } else if (item.is_folder()) {
-                var folder_counts = item.folders.unread_counts();
+                var folder_counts = item.folders.unread_counts(false, seen_feeds);
                 counts['ps'] += folder_counts['ps'];
                 counts['nt'] += folder_counts['nt'];
                 counts['ng'] += folder_counts['ng'];

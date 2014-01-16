@@ -7,13 +7,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.service.SyncService;
+import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -35,41 +37,32 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}
+		cursor.close();
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
 			listTransaction.commit();
 		}
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
-		}
-		cursor.close();
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.allsocialstories_itemslist, menu);
+        return true;
+    }
 
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
 			setSupportProgressBarIndeterminateVisibility(true);
-			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-			intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTISOCIALFEED_UPDATE);
-
 			String[] feeds = new String[feedIds.size()];
 			feedIds.toArray(feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-			intent.putExtra(SyncService.EXTRA_TASK_ORDER, getStoryOrder());
-            intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
-
-			startService(intent);
+            FeedUtils.updateSocialFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
 		}
 	}
 
@@ -95,5 +88,18 @@ public class AllSharedStoriesItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 }

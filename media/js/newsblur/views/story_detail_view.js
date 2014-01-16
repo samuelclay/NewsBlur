@@ -23,7 +23,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
-        "click .NB-feed-story-save"             : "star_story",
+        "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
         "click .NB-story-content-expander"      : "expand_story"
     },
@@ -33,7 +33,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
-        this.model.bind('change:starred', this.toggle_starred, this);
+        this.model.bind('change:starred', this.render_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.model.bind('change:shared', this.render_comments, this);
@@ -66,12 +66,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render: function() {
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
-        this.share_view = new NEWSBLUR.Views.StoryShareView({
+        this.sideoptions_view = new NEWSBLUR.Views.StorySideoptionsView({
             model: this.model, 
             el: this.el
         });
+        this.save_view = this.sideoptions_view.save_view;
+        this.share_view = this.sideoptions_view.share_view;
         
-        params['story_share_view'] = this.share_view.template({
+        params['story_save_view'] = this.sideoptions_view.save_view.render();
+        params['story_share_view'] = this.sideoptions_view.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
@@ -87,9 +90,28 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
-        this.attach_audio_handler_to_stories();
-
+        
         return this;
+    },
+    
+    render_starred_tags: function() {
+        if (this.model.get('starred')) {
+            this.save_view.toggle_feed_story_save_dialog();
+        }
+    },
+    
+    resize_starred_tags: function() {
+        if (this.model.get('starred')) {
+            this.save_view.reset_height({immediate: true});
+        }
+    },
+
+    attach_handlers: function() {
+        this.watch_images_for_story_height();
+        this.attach_audio_handler();
+        this.attach_syntax_highlighter_handler();
+        this.attach_fitvid_handler();
+        this.render_starred_tags();
     },
     
     render_header: function(model, value, options) {
@@ -197,6 +219,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
                 </div>\
+                <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
@@ -411,15 +434,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     watch_images_for_story_height: function() {
-        if (!this.is_truncatable()) return;
+        this.model.on('change:images_loaded', _.bind(function() {
+            this.resize_starred_tags();
+        }, this));
+        var is_truncatable = this.is_truncatable();
+        
+        if (!is_truncatable && !this.model.get('starred')) return;
         
         this.truncate_delay = 100;
         this.images_to_load = this.$('img').length;
-        this.truncate_story_height();
-
+        if (is_truncatable) this.truncate_story_height();
         this.$('img').load(_.bind(function() {
             this.images_to_load -= 1;
-            this.truncate_story_height();
+            if (is_truncatable) this.truncate_story_height();
+            if (this.images_to_load <= 0) {
+                this.model.set('images_loaded', true);
+            } else {
+                this.model.set('images_loaded', false);
+            }
         }, this));
     },
     
@@ -492,7 +524,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
     },
 
-    toggle_starred: function() {
+    render_starred: function() {
         var story = this.model;
         var $sideoption_title = this.$('.NB-feed-story-save .NB-sideoption-title');
         
@@ -510,7 +542,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
-    attach_audio_handler_to_stories: function() {
+    attach_audio_handler: function() {
         _.delay(_.bind(function() {
             var $audio = this.$('audio').filter(function() {
                 return !$(this).closest('.audiojs').length;
@@ -528,19 +560,68 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }, this), 500);
     },
     
+    attach_syntax_highlighter_handler: function() {
+        _.delay(_.bind(function() {
+            this.$('pre').each(function(i, e) {
+                hljs.highlightBlock(e);
+            });
+        }, this), 100);
+    },
+    
+    attach_fitvid_handler: function() {
+        // Thanks to feedbin for the custom selector
+        _.delay(_.bind(function() {
+            this.$el.fitVids({
+                customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
+            });
+        }, this), 50);
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     click_link_in_story: function(e) {
         if (NEWSBLUR.hotkeys.shift) return;
+        var $target = $(e.currentTarget);
 
         e.preventDefault();
         e.stopPropagation();
         if (e.which >= 2) return;
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
-        var href = $(e.currentTarget).attr('href');
+        var href = $target.attr('href');
+        
+        // Fix footnotes
+        if (_.string.contains(href, "#")) {
+            try {
+                footnote_href = href.replace(/^.*?\#(.*?)$/, "\#$1")
+                                    .replace(':', "\\\:");
+                var $footnote = $(footnote_href);
+            } catch (err) {
+                $footnote = [];
+            }
+            if ($footnote.length) {
+                href = footnote_href;
+                var offset = $(href).offset().top;
+                var $scroll;
+                if (NEWSBLUR.assets.preference('story_layout') == "list") {
+                    $scroll = NEWSBLUR.reader.$s.$story_titles;
+                } else if (NEWSBLUR.reader.flags['temporary_story_view'] || 
+                    NEWSBLUR.reader.story_view == 'text') {
+                    $scroll = NEWSBLUR.reader.$s.$text_view;
+                } else {
+                    $scroll = NEWSBLUR.reader.$s.$feed_scroll;
+                }
+                offset += $scroll.scrollTop();
+                $scroll.stop().scrollTo(offset-60, {
+                    duration: 340,
+                    axis: 'y', 
+                    easing: 'easeInOutQuint'
+                });
+                return;
+            }
+        }
         
         if (NEWSBLUR.assets.preference('new_window') == 1) {
             window.open(href, '_blank');
@@ -658,8 +739,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },
     
-    star_story: function() {
-        this.model.star_story();
+    toggle_starred: function() {
+        this.model.toggle_starred();
     },
     
     scroll_to_comments: function() {

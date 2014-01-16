@@ -53,6 +53,7 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
+        - media/js/vendor/tag-it.js
         - media/js/vendor/chart.js
         - media/js/vendor/audio.js
         - media/js/vendor/socket.io-client.*.js
@@ -61,6 +62,8 @@ javascripts:
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
         - media/js/vendor/bootstrap-transition.js
+        - media/js/vendor/highlight.js
+        - media/js/vendor/fitvid.js
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/reader_popover.js
@@ -117,6 +120,8 @@ stylesheets:
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
         - media/css/vendor/bootstrap-progressbar.css
+        - media/css/vendor/jquery.tagit.css
+        - media/css/vendor/highlight.css
         - media/css/*.css
     mobile:
         - media/css/mobile/jquery.mobile-1.0b1.css

@@ -8,7 +8,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     flags: {},
     
     events: {
-        "dblclick .feed_counts"                     : "mark_feed_as_read",
+        "dblclick .feed_counts"                     : "dblclick_mark_feed_as_read",
         "dblclick"                                  : "open_feed_link",
         "click .NB-feedbar-mark-feed-read"          : "mark_feed_as_read",
         "click .NB-feedbar-mark-feed-read-time"     : "mark_feed_as_read_days",
@@ -64,7 +64,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
-        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('<<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %> <% if (disable_hover) { %>NB-no-hover<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
           </div>\
           <% if (type == "story") { %>\
@@ -102,10 +102,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         ', {
           feed                : feed,
           type                : this.options.type,
+          disable_hover       : this.options.disable_hover,
           extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
+          selected            : this.model.get('selected')
         }));
         
         if (this.options.type == 'story') {
@@ -263,6 +264,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
         } else if (this.model.is_social()) {
             NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed: this.$el});
+        } else if (this.model.is_starred()) {
+            NEWSBLUR.reader.open_starred_stories({
+                tag: this.model.tag_slug(),
+                model: this.model
+            });
         } else {
             NEWSBLUR.reader.open_feed(this.model.id, {$feed: this.$el});
         }
@@ -271,8 +277,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     open_feed_link: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+        var dblclick_pref = NEWSBLUR.assets.preference('doubleclick_feed');
+        if (dblclick_pref == "ignore") return;
         if (this.options.type == "story") return;
+        if (this.options.starred_tag) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         this.flags.double_click = true;
@@ -280,18 +288,31 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             this.flags.double_click = false;
         }, this), 500);
 
-        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
-        window.open(this.model.get('feed_link'), '_blank');
-        window.focus();
+        if (dblclick_pref == "open_and_read") {
+            NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        }
+
+        if (this.model.get('feed_link')) {
+            window.open(this.model.get('feed_link'), '_blank');
+            window.focus();
+        }
         
         return false;
     },
     
+    dblclick_mark_feed_as_read: function(e) {
+        if (NEWSBLUR.assets.preference('doubleclick_unread') == "ignore") return;
+        
+        return this.mark_feed_as_read(e);
+    },
+    
     mark_feed_as_read: function(e, days) {
+        if (this.options.starred_tag) return;
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
+
         this.flags.double_click = true;
         _.delay(_.bind(function() {
             this.flags.double_click = false;
@@ -305,7 +326,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     mark_feed_as_read_days: function(e) {
         var days = parseInt($(e.target).data('days'), 10);
-        this.mark_feed_as_read(e, days);
+        this.mark_feed_as_read(e, days, true);
     },
     
     expand_mark_read: function() {
@@ -349,11 +370,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     show_manage_menu: function(e) {
         if (this.options.feed_chooser) return;
-
+        
+        var feed_type = this.model.is_social() ? 'socialfeed' : 
+                        this.model.is_starred() ? 'starred' : 
+                        'feed';
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);
-        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
+
+        NEWSBLUR.reader.show_manage_menu(feed_type, this.$el, {
             feed_id: this.model.id,
             toplevel: this.options.depth == 0,
             rightclick: e.which >= 2

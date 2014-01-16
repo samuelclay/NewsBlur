@@ -16,13 +16,13 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
 	private final ContentResolver resolver; 
 
-	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver, final Cursor cursor) {
-		super(fragmentManager, cursor);
+	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver) {
+		super(fragmentManager);
 		this.resolver = resolver;
 	}
 
 	@Override
-	protected Fragment getReadingItemFragment(int position) {
+	protected synchronized Fragment getReadingItemFragment(int position) {
         stories.moveToPosition(position);
         Story story = Story.fromCursor(stories);
         String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
