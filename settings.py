@@ -64,7 +64,7 @@ LANGUAGE_CODE         = 'en-us'
 SITE_ID               = 1
 USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
-LOGIN_URL             = '/reader/login'
+LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
 STATIC_URL             = '/media/'
 STATIC_ROOT             = '/media/'
@@ -121,6 +121,16 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'Read: saved stories, shared stories, tags, training, and feeds',
+        'write': 'Write: saving stories, sharing stories, adding tags, adding training, feed management',
+    },
+
+    'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
+
+}
 
 # ===========
 # = Logging =

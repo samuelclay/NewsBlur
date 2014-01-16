@@ -53,6 +53,9 @@ urlpatterns = patterns('',
     url(r'^account/login/?$', 
                             'django.contrib.auth.views.login', 
                             {'template_name': 'accounts/login.html'}, name='login'),
+    url(r'^account/logout/?$', 
+                            'django.contrib.auth.views.logout', 
+                            {'next_page': '/'}, name='logout'),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
 )
 

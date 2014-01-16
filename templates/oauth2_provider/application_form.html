@@ -1,0 +1,43 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% load i18n %}
+{% load url from future %}
+{% block content %}
+    <div class="block-center">
+        <form class="form-horizontal" method="post" action="{% block app-form-action-url %}{% url 'oauth2_provider:update' application.id %}{% endblock app-form-action-url %}">
+            <h3 class="block-center-heading">
+                {% block app-form-title %}
+                    {% trans "Edit application" %} {{ application.name }}
+                {% endblock app-form-title %}
+            </h3>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="control-group {% if field.errors %}error{% endif %}">
+                    <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="controls">
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="help-inline">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="control-group {% if form.non_field_errors %}error{% endif %}">
+                {% for error in form.non_field_errors %}
+                    <span class="help-inline">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <a class="btn" href="{% block app-form-back-url %}{% url "oauth2_provider:detail" application.id %}{% endblock app-form-back-url %}">
+                        {% trans "Go Back" %}
+                    </a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
