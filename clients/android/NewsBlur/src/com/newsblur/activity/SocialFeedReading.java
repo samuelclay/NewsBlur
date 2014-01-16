@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,11 +10,8 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.StoryOrder;
 
 public class SocialFeedReading extends Reading {
 
@@ -31,7 +27,7 @@ public class SocialFeedReading extends Reading {
 
         setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), defaultFeedView);
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
