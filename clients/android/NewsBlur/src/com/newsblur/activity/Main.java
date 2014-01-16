@@ -17,6 +17,7 @@ import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
@@ -50,9 +51,12 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
+
             // for our first sync, don't just trigger a heavyweight refresh, do it in two steps
             // so the UI appears more quickly (per the docs at newsblur.com/api)
-			triggerFirstSync();
+            if (PrefsUtils.isTimeToAutoSync(this)) {
+                triggerFirstSync();
+            }
 		}
 	}
 
@@ -62,6 +66,8 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
         if (PrefsUtils.isTimeToAutoSync(this)) {
             triggerRefresh();
         }
+        // clear all stories from the DB, the story activities will load them.
+        FeedUtils.clearStories(this);
     }
 
     /**
@@ -71,9 +77,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	private void triggerFirstSync() {
         PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
-		if (menu != null) {
-			menu.findItem(R.id.menu_refresh).setEnabled(false);
-		}
+        setRefreshEnabled(false);
 		
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
@@ -87,9 +91,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
     private void triggerRefresh() {
         PrefsUtils.updateLastSyncTime(this);
 		setSupportProgressBarIndeterminateVisibility(true);
-		if (menu != null) {
-			menu.findItem(R.id.menu_refresh).setEnabled(false);
-		}
+        setRefreshEnabled(false);
 
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
@@ -154,9 +156,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	public void updateAfterSync() {
 		folderFeedList.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
-        
-        MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
-        if (refreshItem != null) refreshItem.setEnabled(true);
+        setRefreshEnabled(true);
 	}
 
     /**
@@ -174,13 +174,21 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
         //       interface method may be redundant.
 		if (syncRunning) {
 			setSupportProgressBarIndeterminateVisibility(true);
-			if (menu != null) {
-				menu.findItem(R.id.menu_refresh).setEnabled(true);
-			}
+            setRefreshEnabled(false);
 		}
 	}
 
 	@Override
 	public void setNothingMoreToUpdate() { }
+
+    private void setRefreshEnabled(boolean enabled) {
+        if (menu != null) {
+            MenuItem item = menu.findItem(R.id.menu_refresh);
+            if (item != null) {
+                item.setEnabled(enabled);
+            }
+        }
+    }
+            
 
 }

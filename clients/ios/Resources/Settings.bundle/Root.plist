@@ -72,6 +72,74 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Text Size</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use system size</string>
+			<key>Key</key>
+			<string>use_system_font_size</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed and story list</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_font_size</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story detail</string>
+			<key>Titles</key>
+			<array>
+				<string>Extra small</string>
+				<string>Small</string>
+				<string>Medium</string>
+				<string>Large</string>
+				<string>Extra Large</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>medium</string>
+			<key>Values</key>
+			<array>
+				<string>xs</string>
+				<string>small</string>
+				<string>medium</string>
+				<string>large</string>
+				<string>xl</string>
+			</array>
+			<key>Key</key>
+			<string>story_font_size</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Offline stories</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -244,9 +312,31 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Comments</string>
+			<string>Reading Stories</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Every other view uses a left edge swipe to return to the previous screen. But the story detail view has this option because you may wish to traverse stories and not accidentally jump to the previous screen.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe left edge</string>
+			<key>Titles</key>
+			<array>
+				<string>Go back to story list</string>
+				<string>Previous story</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>pop_to_story_list</string>
+			<key>Values</key>
+			<array>
+				<string>pop_to_story_list</string>
+				<string>previous_story</string>
+			</array>
+			<key>Key</key>
+			<string>story_detail_swipe_left_edge</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -257,6 +347,28 @@
 			<string>show_public_comments</string>
 			<key>DefaultValue</key>
 			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Default browser</string>
+			<key>Titles</key>
+			<array>
+				<string>In-app browser</string>
+				<string>Safari</string>
+				<string>Chrome</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>inapp</string>
+			<key>Values</key>
+			<array>
+				<string>inapp</string>
+				<string>safari</string>
+				<string>chrome</string>
+			</array>
+			<key>Key</key>
+			<string>story_browser</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

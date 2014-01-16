@@ -16,6 +16,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.collection.bind('no_more_stories', this.check_premium_river, this);
         this.collection.bind('no_more_stories', this.check_premium_search, this);
         NEWSBLUR.reader.$s.$story_titles.scroll(this.scroll);
+        this.stories = [];
     },
     
     // ==========
@@ -23,13 +24,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
     
     render: function() {
+        this.clear();
         NEWSBLUR.reader.$s.$story_titles.scrollTop(0);
         var collection = this.collection;
-        var $stories = this.collection.map(function(story) {
+        var stories = this.collection.map(function(story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection
-            }).render().el;
+            }).render();
+        });
+        this.stories = stories;
+        var $stories = _.map(stories, function(story) {
+            return story.el;
         });
         this.$el.html($stories);
         this.end_loading();
@@ -39,26 +45,42 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     add: function(options) {
         var collection = this.collection;
         if (options.added) {
-            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection
-                }).render().el;
+                }).render();
             }));
+            this.stories = this.stories.concat(stories);
+            var $stories = _.map(stories, function(story) {
+                return story.el;
+            });
             this.$el.append($stories);
         }
         this.end_loading();
         this.fill_out();
     },
-    
+
+    clear: function() {
+        _.invoke(this.stories, 'destroy');
+    },
+
     append_river_premium_only_notification: function() {
-        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
-                'The full River of News is a ',
+        var message = [
+            'The full River of News is a ',
+            $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+            '.'
+        ];
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            message = [
+                'Reading saved stories by tag is a ',
                 $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                 '.'
-            ])
+            ];
+        }
+        var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);
@@ -179,14 +201,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('story_layout') == 'list') {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
-            var last_story_height = 100;
+            var last_story_height = 280;
             endbar_height = pane_height - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
 
             var empty_space = pane_height - last_story_height - endbar_height;
             if (empty_space > 0) endbar_height += empty_space + 1;
-
+            
+            endbar_height /= 2; // Splitting padding between top and bottom
             $end_stories_line.css('paddingBottom', endbar_height);
+            $end_stories_line.css('paddingTop', endbar_height);
+            // console.log(["endbar height list", endbar_height, empty_space, pane_height, last_story_height]);
         }
 
         this.$el.append($end_stories_line);

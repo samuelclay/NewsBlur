@@ -242,16 +242,21 @@ class Profile(models.Model):
                                               payment_provider='stripe')
             print " ---> Found %s stripe_payments" % len(stripe_payments)
         
-        # Calculate last payment date
+        # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
-        most_recent_payment_date = None
+        last_year = datetime.datetime.now() - datetime.timedelta(days=364)
+        recent_payments_count = 0
+        oldest_recent_payment_date = None
         for payment in payment_history:
-            if not most_recent_payment_date or payment.payment_date > most_recent_payment_date:
-                most_recent_payment_date = payment.payment_date
+            if payment.payment_date > last_year:
+                recent_payments_count += 1
+                if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
+                    oldest_recent_payment_date = payment.payment_date
         print " ---> %s payments" % len(payment_history)
         
-        if most_recent_payment_date:
-            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
+        if oldest_recent_payment_date:
+            self.premium_expire = (oldest_recent_payment_date +
+                                   datetime.timedelta(days=365*recent_payments_count))
             self.save()
 
     def refund_premium(self, partial=False):

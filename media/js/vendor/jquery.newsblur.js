@@ -257,7 +257,8 @@ NEWSBLUR.log = function(msg) {
             else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
             else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
             else if (feed.get('favicon_url')) return feed.get('favicon_url');
-            return NEWSBLUR.Globals.MEDIA_URL + '/img/silk/circular/world.png';
+            else if (feed.is_starred()) return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
+            return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
         },
         
         deepCopy: function(obj) {

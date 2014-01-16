@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:text="@string/empty_list_notice"
+        android:text="@string/empty_list_view_loading"
         android:textColor="@color/darkgray"
         android:textSize="13dp"
         android:textStyle="italic" />

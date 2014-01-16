@@ -14,35 +14,29 @@ import com.newsblur.fragment.ReadingItemFragment;
 
 public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
-	private LoadingFragment loadingFragment;
 	private final ContentResolver resolver; 
 
-	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver, final Cursor cursor) {
-		super(fragmentManager, cursor);
+	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final ContentResolver resolver) {
+		super(fragmentManager);
 		this.resolver = resolver;
 	}
 
 	@Override
-	public Fragment getItem(int position)  {
-		if (stories == null || stories.getCount() == 0) {
-			loadingFragment = new LoadingFragment();
-			return loadingFragment;
-		} else {
-			stories.moveToPosition(position);
-			Story story = Story.fromCursor(stories);
-			String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
-			String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
-			String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-            String feedFaviconBorder = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
-            String feedFaviconText = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
-			String feedFaviconUrl = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-			
-			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(story.feedId).build();
-			Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
-			Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
-			
-			return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true);
-		}
+	protected synchronized Fragment getReadingItemFragment(int position) {
+        stories.moveToPosition(position);
+        Story story = Story.fromCursor(stories);
+        String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
+        String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+        String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        String feedFaviconBorder = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
+        String feedFaviconText = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
+        String feedFaviconUrl = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+        
+        Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(story.feedId).build();
+        Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
+        Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
+        
+        return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true);
 	}
 	
 }

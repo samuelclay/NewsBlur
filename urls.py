@@ -1,6 +1,7 @@
 from django.conf.urls import include, url, patterns
 from django.conf import settings
 from apps.reader import views as reader_views
+from apps.social import views as social_views
 from apps.static import views as static_views
 
 urlpatterns = patterns('',
@@ -10,10 +11,13 @@ urlpatterns = patterns('',
     (r'^try/?',             reader_views.index),
     (r'^site/(?P<feed_id>\d+)?', reader_views.index),
     (r'^folder/(?P<folder_name>\d+)?', reader_views.index),
+    url(r'^saved/(?P<tag_name>\d+)?', reader_views.index, name='saved-stories-tag'),
+    (r'^saved/?', reader_views.index),
     (r'^social/\d+/.*?',    reader_views.index),
     (r'^user/.*?',          reader_views.index),
     (r'^null/.*?',          reader_views.index),
     (r'^story/.*?',         reader_views.index),
+    (r'^feed/?',            social_views.shared_stories_rss_feed_noid),
     (r'^rss_feeds/',        include('apps.rss_feeds.urls')),
     (r'^classifier/',       include('apps.analyzer.urls')),
     (r'^profile/',          include('apps.profile.urls')),

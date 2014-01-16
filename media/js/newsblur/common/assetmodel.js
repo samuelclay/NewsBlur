@@ -14,6 +14,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
+        this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
         this.queued_read_stories = {};
         this.classifiers = {};
         this.friends = {};
@@ -226,26 +227,52 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     mark_story_as_starred: function(story_id, callback) {
         var self = this;
-        this.starred_count += 1;
         var story = this.get_story(story_id);
-        story.set('starred', true);
+        var selected = this.starred_feeds.selected();
+        
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true});
+            
+            if (selected) {
+                self.starred_feeds.get(selected).set('selected', true);
+            }
+            
+            if (callback) callback(data);
+        };
+
         this.make_request('/reader/mark_story_as_starred', {
-            story_id: story_id,
-            feed_id:  story.get('story_feed_id')
-        }, callback);
+            story_id:  story_id,
+            feed_id:   story.get('story_feed_id'),
+            user_tags: story.get('user_tags')
+        }, pre_callback);
     },
     
     mark_story_as_unstarred: function(story_id, callback) {
         var self = this;
-        this.starred_count -= 1;
         var story = this.get_story(story_id);
-        story.set('starred', false);
+        var selected = this.starred_feeds.selected();
+
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true});
+            
+            if (selected && self.starred_feeds.get(selected)) {
+                self.starred_feeds.get(selected).set('selected', true);
+            }
+            
+            if (callback) callback(data);
+        };
+
+        var pre_callback = function(data) {
+            self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            if (callback) callback(data);
+        };
+
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id
-        }, callback);
+        }, pre_callback);
     },
     
-    mark_feed_as_read: function(feed_id, cutoff_timestamp, mark_active, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, mark_active, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
@@ -253,13 +280,21 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/reader/mark_feed_as_read', {
             feed_id: feed_ids,
-            cutoff_timestamp: cutoff_timestamp
+            cutoff_timestamp: cutoff_timestamp,
+            direction: direction
         }, callback);
 
         if (mark_active) {
             this.stories.each(function(story) {
-                if (cutoff_timestamp && 
-                    parseInt(story.get('story_timestamp'), 10) > cutoff_timestamp) return;
+                if ((!direction || direction == "older") && 
+                    cutoff_timestamp && 
+                    parseInt(story.get('story_timestamp'), 10) > cutoff_timestamp) {
+                    return;
+                } else if (direction == "newer" && 
+                    cutoff_timestamp && 
+                    parseInt(story.get('story_timestamp'), 10) < cutoff_timestamp) {
+                    return;
+                }
                 story.set('read_status', true);
             });
         }
@@ -389,7 +424,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             self.folders.reset(_.compact(subscriptions.folders), {parse: true});
             self.starred_count = subscriptions.starred_count;
-            self.social_feeds.reset(subscriptions.social_feeds);
+            self.starred_feeds.reset(subscriptions.starred_counts, {parse: true});
+            self.social_feeds.reset(subscriptions.social_feeds, {parse: true});
             self.user_profile.set(subscriptions.social_profile);
             self.social_services = subscriptions.social_services;
             
@@ -506,10 +542,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                         feed_title: data.feed_title || this.active_feed.get('feed_title'),
                         updated: data.updated || this.active_feed.get('updated'),
                         feed_address: data.feed_address || this.active_feed.get('feed_address')
-                    }, {silent: true});
-                    if (this.active_feed.hasChanged()) {
-                        this.active_feed.change();
-                    }
+                    });
                 }
                 this.feed_id = feed_id;
                 this.starred_stories = data.starred_stories;
@@ -547,7 +580,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_starred_stories: function(page, callback, error_callback, first_load) {
+    fetch_starred_stories: function(page, tag, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -558,7 +591,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/reader/starred_stories', {
             page: page,
-            query: NEWSBLUR.reader.flags.search
+            query: NEWSBLUR.reader.flags.search,
+            tag: tag
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -840,8 +874,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     get_feed: function(feed_id) {
         var self = this;
         
-        if (_.string.include(feed_id, 'social:')) {
+        if (_.string.startsWith(feed_id, 'social:')) {
             return this.social_feeds.get(feed_id);
+        } else if (_.string.startsWith(feed_id, 'starred:')) {
+            return this.starred_feeds.get(feed_id);
         } else {
             return this.feeds.get(feed_id);
         }
@@ -860,6 +896,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         return this.feeds;
+    },
+    
+    get_social_feeds: function() {
+        var self = this;
+        
+        return this.social_feeds;
+    },
+    
+    get_starred_feeds: function() {
+        var self = this;
+        
+        return this.starred_feeds;
     },
     
     get_folders: function() {

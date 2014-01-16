@@ -43,7 +43,8 @@ static NSMutableDictionary *imageCache;
     
     // Save image to memory-based cache, for performance when reading.
 //    NSLog(@"Saving %@", [imageCache allKeys]);
-    if (image && [filename class] != [NSNull class]) {
+    if (image && filename && ![image isKindOfClass:[NSNull class]] &&
+        [filename class] != [NSNull class]) {
         [imageCache setObject:image forKey:filename];
     } else {
 //        NSLog(@"%@ has no image!!!", filename);
@@ -132,6 +133,7 @@ static NSMutableDictionary *imageCache;
 }
 
 + (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
+    if (!orig) return nil;
     UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
     [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
                                 cornerRadius:r] addClip];
@@ -139,6 +141,14 @@ static NSMutableDictionary *imageCache;
     UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return result;
+}
+
++ (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return destImage;
 }
 
 + (NSString *)md5:(NSString *)string {
@@ -254,7 +264,7 @@ static NSMutableDictionary *imageCache;
 
 + (NSString *)suffixForDayInDate:(NSDate *)date {
     NSInteger day = [[[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] components:NSDayCalendarUnit fromDate:date] day];
-    if (day == 11) {
+    if (day == 11 || day == 12 || day == 13) {
         return @"th";
     } else if (day % 10 == 1) {
         return @"st";

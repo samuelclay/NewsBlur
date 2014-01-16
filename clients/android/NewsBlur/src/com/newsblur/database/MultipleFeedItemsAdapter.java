@@ -7,7 +7,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,7 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
 
-public class MultipleFeedItemsAdapter extends SimpleCursorAdapter implements StoryItemsAdapter {
+public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
 	private Cursor cursor;
 	private ImageLoader imageLoader;

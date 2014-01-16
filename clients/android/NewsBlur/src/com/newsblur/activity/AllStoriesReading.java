@@ -3,6 +3,8 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
@@ -24,32 +26,28 @@ public class AllStoriesReading extends Reading {
         stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         setTitle(getResources().getString(R.string.all_stories_row_title));
 
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
+
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
         Cursor folderCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.getBlogSelectionFromState(currentState), null, null);
-        int unreadCount = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
+        int c = FeedUtils.getCursorUnreadCount(folderCursor, currentState);
         folderCursor.close();
-        this.startingUnreadCount = unreadCount;
-        this.currentUnreadCount = unreadCount;
-
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
-
-        setupPager();
-
-        addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
+        return c;
+    }
+        
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        StoryOrder storyOrder = PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        return new CursorLoader(this, FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
     }
     
     @Override
-    public void triggerRefresh(int page) {
-        updateSyncStatus(true);
-        final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-        intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-        intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.MULTIFEED_UPDATE);
-        intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, new String[0]); // ask for all stories via wildcarding the feed param
-        if (page > 1) {
-            intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-        }
-        intent.putExtra(SyncService.EXTRA_TASK_ORDER, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-        intent.putExtra(SyncService.EXTRA_TASK_READ_FILTER, PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
-        startService(intent);
+    protected void triggerRefresh(int page) {
+        FeedUtils.updateFeeds(this, this, new String[0], page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME));
     }
 
 }

@@ -9,6 +9,7 @@ import zlib
 import hashlib
 import redis
 import pymongo
+import HTMLParser
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -1216,6 +1217,8 @@ class Feed(models.Model):
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
+        if hasattr(story_db, 'user_tags'):
+            story['user_tags'] = story_db.user_tags
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
@@ -1644,7 +1647,12 @@ class MStory(mongo.Document):
     @property
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id, self.guid_hash)
-    
+
+    @property
+    def decoded_story_title(self):
+        h = HTMLParser.HTMLParser()
+        return h.unescape(self.story_title)
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
@@ -1934,6 +1942,7 @@ class MStarredStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    user_tags                = mongo.ListField(mongo.StringField(max_length=128))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
@@ -1968,12 +1977,26 @@ class MStarredStory(mongo.Document):
                                  db_id=str(self.id))
     
     @classmethod
-    def find_stories(cls, query, user_id, offset=0, limit=25):
+    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):
         stories_db = cls.objects(
             Q(user_id=user_id) &
             (Q(story_title__icontains=query) |
              Q(story_author_name__icontains=query) |
              Q(story_tags__icontains=query))
+        )
+        if tag:
+            stories_db = stories_db.filter(user_tags__contains=tag)
+            
+        stories_db = stories_db.order_by('-starred_date')[offset:offset+limit]
+        stories = Feed.format_stories(stories_db)
+        
+        return stories
+    
+    @classmethod
+    def find_stories_by_user_tag(cls, user_tag, user_id, offset=0, limit=25):
+        stories_db = cls.objects(
+            Q(user_id=user_id),
+            Q(user_tags__icontains=user_tag)
         ).order_by('-starred_date')[offset:offset+limit]
         stories = Feed.format_stories(stories_db)
         
@@ -2037,7 +2060,63 @@ class MStarredStory(mongo.Document):
         
         return original_text
         
+class MStarredStoryCounts(mongo.Document):
+    user_id = mongo.IntField()
+    tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    slug = mongo.StringField(max_length=128)
+    count = mongo.IntField()
 
+    meta = {
+        'collection': 'starred_stories_counts',
+        'indexes': ['user_id'],
+        'ordering': ['tag'],
+        'allow_inheritance': False,
+    }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+
+        return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, self.slug)
+    
+    @classmethod
+    def user_counts(cls, user_id, include_total=False, try_counting=True):
+        counts = cls.objects.filter(user_id=user_id)
+        counts = [{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts]
+        
+        if counts == [] and try_counting:
+            cls.count_tags_for_user(user_id)
+            return cls.user_counts(user_id, include_total=include_total,
+                                   try_counting=False)
+        
+        if include_total:
+            for c in counts:
+                if c['tag'] == "":
+                    return counts, c['count']
+            return counts, 0
+        
+        return counts
+    
+    @classmethod
+    def count_tags_for_user(cls, user_id):
+        all_tags = MStarredStory.objects(user_id=user_id,
+                                         user_tags__exists=True).item_frequencies('user_tags')
+        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
+                           key=itemgetter(1), 
+                           reverse=True)
+                           
+        cls.objects(user_id=user_id).delete()
+        for tag, count in dict(user_tags).items():
+            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
+        
+        total_stories_count = MStarredStory.objects(user_id=user_id).count()
+        cls.objects.create(user_id=user_id, tag="", count=total_stories_count)
+        
+        return dict(total=total_stories_count, tags=user_tags)
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()

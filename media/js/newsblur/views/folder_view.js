@@ -89,7 +89,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     // console.log(["Not a feed or folder", item]);
                 }
             }));
-            $feeds.push(this.make('li', { 'class': 'feed NB-empty' }));
+            $feeds.push($.make('li', { className: 'feed NB-empty' }));
             this.$('.folder').append($feeds);
         }
         
@@ -217,6 +217,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             });
         }
         
+        if (this.folder_count) {
+            this.folder_count.destroy();
+        }
         this.folder_count = new NEWSBLUR.Views.UnreadCount({
             collection: this.collection
         }).render();

@@ -1,13 +1,18 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.FeedUtils;
+import com.newsblur.util.StoryOrder;
 
 public class SavedStoriesReading extends Reading {
 
@@ -15,23 +20,26 @@ public class SavedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        stories = contentResolver.query(FeedProvider.STARRED_STORIES_URI, null, null, null, null);
         setTitle(getResources().getString(R.string.saved_stories_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
 
-        setupPager();
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected int getUnreadCount() {
+        // effectively disable the notion of unreads for this feed
+        return 0;
+    }
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
     }
     
     @Override
-    public void triggerRefresh(int page) {
-        setSupportProgressBarIndeterminateVisibility(true);
-        final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-        intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-        intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.STARRED_STORIES_UPDATE);
-        if (page > 1) {
-            intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-        }
-        startService(intent);
+    protected void triggerRefresh(int page) {
+        FeedUtils.updateSavedStories(this, this, page);
     }
 
 }

@@ -10,7 +10,9 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import time
 import s3
 
-COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
+COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
+if False:
+    COLLECTIONS += " starred_stories"
 
 date = time.strftime('%Y-%m-%d-%H-%M')
 collections = COLLECTIONS.split(' ')
@@ -30,6 +32,9 @@ cmd = 'tar -zcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
 print 'Uploading %s to S3...' % filename
-s3.save_file_in_s3(filename)
+try:
+    s3.save_file_in_s3(filename)
+except Exception, e:
+    print " ****> Exceptions: %s" % e
 shutil.rmtree(dir_name)
 os.remove(filename)

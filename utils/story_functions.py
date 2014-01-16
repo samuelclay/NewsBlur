@@ -35,9 +35,9 @@ def format_story_link_date__short(date, now=None):
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
     midnight = midnight_today(now)
-    if date > midnight:
+    if date >= midnight:
         return date.strftime('%I:%M%p').lstrip('0').lower()
-    elif date > midnight_yesterday(midnight):
+    elif date >= midnight_yesterday(midnight):
         return 'Yesterday, ' + date.strftime('%I:%M%p').lstrip('0').lower()
     else:
         return date.strftime('%d %b %Y, ') + date.strftime('%I:%M%p').lstrip('0').lower()
@@ -46,14 +46,14 @@ def format_story_link_date__long(date, now=None):
     if not now:
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
-    midnight = midnight_today()
+    midnight = midnight_today(now)
     parsed_date = DateFormat(date)
 
-    if date > midnight:
+    if date >= midnight:
         return 'Today, ' + parsed_date.format('F jS ') + date.strftime('%I:%M%p').lstrip('0').lower()
-    elif date > midnight_yesterday(midnight):
+    elif date >= midnight_yesterday(midnight):
         return 'Yesterday, ' + parsed_date.format('F jS g:ia').replace('.','')
-    elif date > beginning_of_this_month():
+    elif date >= beginning_of_this_month():
         return parsed_date.format('l, F jS g:ia').replace('.','')
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')

@@ -394,7 +394,7 @@
 			});
 
 			// update window size
-			$(window).bind('resize.simplemodal', _.bind(this.resize_modal, this));
+			$(window).bind('resize.simplemodal', $.proxy(this.resize_modal, this));
 		},
 		
 		resize_modal: function () {
