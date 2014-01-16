@@ -70,6 +70,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             // Close
             this.is_open = false;
             this.resize({close: true});
+            NEWSBLUR.reader.blur_to_page();
         } else {
             // Open/resize
             this.is_open = true;
@@ -104,10 +105,16 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 this.mark_story_as_shared({'source': 'sideoption'});
             }, this);
             var $comments = $('.NB-sideoption-share-comments', $share);
-            $comments.unbind('keydown.story_share')
+            $comments.unbind('keydown.story_share').unbind('keypress.story_share')
                      .bind('keydown.story_share', 'ctrl+return', share)
-                     .bind('keydown.story_share', 'meta+return', share);
+                     .bind('keydown.story_share', 'meta+return', share)
+                     .bind('keypress.story_share', 'esc', blur);
+            $comments.focus();
         }
+    },
+    
+    blur: function() {
+        NEWSBLUR.reader.blur_to_page();
     },
     
     resize: function(options) {
@@ -193,8 +200,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 });
             } else if (this.sideoptions_view && 
                        this.sideoptions_view.save_view && 
-                       this.sideoptions_view.save_view.is_open) {
-                this.sideoptions_view.save_view.resize();
+                       this.sideoptions_view.save_view.is_open &&
+                       !options.from_save_view) {
+                this.sideoptions_view.save_view.resize({from_share_view: true});
             }
         }
         

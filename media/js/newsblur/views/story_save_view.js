@@ -213,8 +213,8 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                         }
                     }
                 });
-            } else if (this.sideoptions_view.share_view.is_open) {
-                this.sideoptions_view.share_view.resize();
+            } else if (this.sideoptions_view.share_view.is_open && !options.from_share_view) {
+                this.sideoptions_view.share_view.resize({from_save_view: true});
             }
         }
         
