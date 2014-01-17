@@ -105,6 +105,7 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
+
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
@@ -220,7 +221,8 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         appDelegate.masterContainerViewController.storyTitlesOnLeft &&
-        !self.isMovingFromParentViewController) {
+        !self.isMovingFromParentViewController &&
+        !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
     }
 }

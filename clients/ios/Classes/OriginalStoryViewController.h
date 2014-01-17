@@ -24,6 +24,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIWebView *webView;
 
+- (void)loadInitialStory;
 - (IBAction) doOpenActionSheet:(id)sender;
 - (IBAction)loadAddress:(id)sender;
 - (IBAction)webViewGoBack:(id)sender;

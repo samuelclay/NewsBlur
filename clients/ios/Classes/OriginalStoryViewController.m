@@ -54,28 +54,22 @@
 
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
     
-    activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
-    [self loadAddress:nil];
-    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
-    
-    [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-    HUD.labelText = @"On its way...";
-    [HUD hide:YES afterDelay:2];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [appDelegate.masterContainerViewController transitionFromOriginalView];
+    if (!appDelegate.masterContainerViewController.interactiveOriginalTransition) {
+        [appDelegate.masterContainerViewController transitionFromOriginalView];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     if ([self.webView isLoading]) {
         [self.webView stopLoading];
     }
+    activeUrl = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -84,6 +78,16 @@
 
 - (void)viewDidLoad {    
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
+}
+
+- (void)loadInitialStory {
+    [self loadAddress:nil];
+    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
+    
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"On its way...";
+    [HUD hide:YES afterDelay:2];
 }
 
 - (IBAction)webViewGoBack:(id)sender {
@@ -152,6 +156,9 @@
 }
 
 - (IBAction)loadAddress:(id)sender {
+    if (!activeUrl) {
+        activeUrl = [appDelegate.activeOriginalStoryURL absoluteString];
+    }
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
     

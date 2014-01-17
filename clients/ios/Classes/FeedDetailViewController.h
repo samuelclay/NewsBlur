@@ -33,6 +33,7 @@
     BOOL finishedAnimatingIn;
     BOOL isOffline;
     BOOL isShowingOffline;
+
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;

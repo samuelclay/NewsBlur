@@ -1297,26 +1297,14 @@
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToOriginalView];
         } else {
-            NSLog(@"NavCon vc: %@", [navigationController viewControllers]);
-            if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
+            if ([[navigationController viewControllers]
+                 containsObject:originalStoryViewController]) {
                 return;
             }
             [navigationController pushViewController:originalStoryViewController
                                             animated:YES];
+            [originalStoryViewController loadInitialStory];
         }
-//        
-//        UINavigationController *navController = [[UINavigationController alloc]
-//                                                 initWithRootViewController:self.originalStoryViewController];
-//        navController.navigationBar.translucent = NO;
-//        self.originalStoryViewNavController = navController;
-//
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
-//                                                             animated:YES completion:nil];
-//        } else {
-//            [self.navigationController presentViewController:self.originalStoryViewNavController
-//                                                    animated:YES completion:nil];
-//        }
     }
 }
 
