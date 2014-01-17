@@ -31,13 +31,16 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
     public void resetPagination() {
         this.currentPage = 0;
+        // also re-enable the loading indicator, since this means the story list was reset
+        firstSyncDone = false;
+        setEmptyListView(R.string.empty_list_view_loading);
     }
 
     public void syncDone() {
         this.firstSyncDone = true;
     }
 
-    private void finishLoadingScreen() {
+    private void setEmptyListView(int rid) {
         View v = this.getView();
         if (v == null) return; // we might have beat construction?
 
@@ -48,7 +51,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
 
         TextView emptyView = (TextView) itemList.getEmptyView();
-        emptyView.setText(R.string.empty_list_view_no_stories);
+        emptyView.setText(rid);
     }
 
 	@Override
@@ -80,7 +83,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
             // iff a sync has finished and a cursor load has finished, it is safe to remove the loading message
             if (this.firstSyncDone) {
-                finishLoadingScreen();
+                setEmptyListView(R.string.empty_list_view_no_stories);
             }
 		}
 	}
