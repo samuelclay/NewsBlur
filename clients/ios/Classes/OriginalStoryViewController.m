@@ -54,6 +54,25 @@
 
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
     
+    id<UIViewControllerTransitionCoordinator> tc = appDelegate.masterContainerViewController.transitionCoordinator;
+    [tc notifyWhenInteractionEndsUsingBlock:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        NSLog(@"DONE!!!");
+        NSLog(@"Container View: %@", [context containerView]);
+        NSLog(@"From VC: %@", [context viewControllerForKey:UITransitionContextFromViewControllerKey]);
+        NSLog(@"To VC: %@", [context viewControllerForKey:UITransitionContextToViewControllerKey]);
+        NSLog(@"Initially Interactive: %i", [context initiallyInteractive]);
+        NSLog(@"Completion Curve: %d", [context completionCurve]);
+        NSLog(@"Is Animated: %i", [context isAnimated]);
+        NSLog(@"Is Cancelled: %i", [context isCancelled]);
+        NSLog(@"Is Interactive: %i", [context isInteractive]);
+        NSLog(@"Percent Complete: %f", [context percentComplete]);
+        NSLog(@"Presentation Style: %d", [context presentationStyle]);
+        NSLog(@"Transition Duration: %f", [context transitionDuration]);
+    }];
+    
+    if (!appDelegate.masterContainerViewController.interactiveOriginalTransition) {
+        [self loadInitialStory];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
