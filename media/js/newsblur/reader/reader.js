@@ -1218,7 +1218,7 @@
             var self = this;
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id) || options.feed;
-            var temp = feed && (feed.get('temp') || !feed.get('subscribed'));
+            var temp = feed && feed.get('temp') && !feed.get('subscribed');
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
