@@ -45,6 +45,7 @@
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
+@property (nonatomic, strong) UIViewController *preOriginalViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
 @property (readwrite) int storyTitlesYCoordinate;
@@ -65,6 +66,7 @@
 @synthesize masterNavigationController;
 @synthesize shareNavigationController;
 @synthesize originalNavigationController;
+@synthesize preOriginalViewController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
@@ -137,7 +139,7 @@
     self.shareNavigationController = shareNav;
     self.shareNavigationController.navigationBar.translucent = NO;
     
-    UIViewController *preOriginalViewController = [[UIViewController alloc] init];
+    preOriginalViewController = [[UIViewController alloc] init];
     preOriginalViewController.navigationItem.title = @"";
     UINavigationController *originalNav = [[UINavigationController alloc]
                                            initWithRootViewController:preOriginalViewController];
@@ -445,7 +447,8 @@
         self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
         [self.dashboardViewController.view removeFromSuperview];
-        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
+        self.originalNavigationController.view.frame = CGRectMake(vb.size.width / 3, 0, vb.size.width, vb.size.height);
+        NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
     }
 }
 
@@ -713,7 +716,7 @@
 - (void)transitionFromOriginalView {
     NSLog(@"Transition from Original View");
     
-    [UIView animateWithDuration:.35 delay:0
+    [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
@@ -733,6 +736,7 @@
         CGRect originalNavFrame = self.originalNavigationController.view.frame;
         originalNavFrame.origin.x = vb.size.width * percentage;
         self.originalNavigationController.view.frame = originalNavFrame;
+        self.originalViewController.view.frame = originalNavFrame;
         NSLog(@"Original frame: %@", NSStringFromCGRect(self.originalViewController.view.frame));
         
         CGRect feedDetailFrame = self.feedDetailViewController.view.frame;
@@ -744,8 +748,10 @@
         self.storyNavigationController.view.frame = storyNavFrame;
     } else {
         CGRect originalNavFrame = self.originalNavigationController.view.frame;
-        originalNavFrame.origin.x = vb.size.width * percentage;
-        self.originalNavigationController.view.frame = originalNavFrame;
+        originalNavFrame.origin.x = vb.size.width * percentage * 0;
+//        self.originalNavigationController.view.frame = originalNavFrame;
+//        self.originalViewController.view.frame = originalNavFrame;
+        NSLog(@"PreOriginal frame: %@", NSStringFromCGRect(preOriginalViewController.view.frame));
         NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
         
         CGRect feedDetailFrame = self.masterNavigationController.view.frame;
