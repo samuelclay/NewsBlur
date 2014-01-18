@@ -67,11 +67,20 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     append_river_premium_only_notification: function() {
+        var message = [
+            '在此页面完整加载全部文章是一项 ',
+            $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能'),
+            '.'
+        ];
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            message = [
+                '通过标签阅读已收藏的文章是一项 ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能'),
+                '.'
+            ];
+        }
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
-                '在此页面完整加载全部文章是一项 ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, '付费功能')
-            ])
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, message)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);
@@ -192,14 +201,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('story_layout') == 'list') {
             var pane_height = NEWSBLUR.reader.$s.$story_titles.height();
             var endbar_height = 20;
-            var last_story_height = 100;
+            var last_story_height = 280;
             endbar_height = pane_height - last_story_height;
             if (endbar_height <= 20) endbar_height = 20;
 
             var empty_space = pane_height - last_story_height - endbar_height;
             if (empty_space > 0) endbar_height += empty_space + 1;
-
+            
+            endbar_height /= 2; // Splitting padding between top and bottom
             $end_stories_line.css('paddingBottom', endbar_height);
+            $end_stories_line.css('paddingTop', endbar_height);
+            // console.log(["endbar height list", endbar_height, empty_space, pane_height, last_story_height]);
         }
 
         this.$el.append($end_stories_line);

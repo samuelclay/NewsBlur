@@ -1,7 +1,6 @@
 package com.newsblur.activity;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,10 +17,9 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
-import com.newsblur.service.SyncService;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -52,21 +50,15 @@ public class FeedItemsList extends ItemsList {
             Feed feed = Feed.fromCursor(cursor);
             setTitle(feed.title);
         }
+        cursor.close();
 
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder());
+			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
 			listTransaction.commit();
-		}
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh(1);
 		}
 	}
 	
@@ -145,5 +137,18 @@ public class FeedItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFeed(this, feedId);
+    }
+
+    @Override
+    protected DefaultFeedView getDefaultFeedView() {
+        return PrefsUtils.getDefaultFeedViewForFeed(this, feedId);
+    }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedViewForFeed(this, feedId, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
     }
 }

@@ -34,7 +34,6 @@
 
     NEWSBLUR.Bookmarklet.prototype = {
         
-        
         // ==================
         // = Initialization =
         // ==================
@@ -62,8 +61,7 @@
             this.attach_css();
             this.make_modal();
             this.open_modal();
-            this.get_page_content();
-        
+
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
 
             var $comment = $('textarea[name=newsblur_comment]', this.$modal);
@@ -75,6 +73,8 @@
             $content.bind('keyup', $.rescope(this.update_share_button_title, this));
             $comment.bind('keydown', 'ctrl+return', $.rescope(this.share_story, this));
             $comment.bind('keydown', 'meta+return', $.rescope(this.share_story, this));
+
+            this.get_page_content();
         },
             
         make_modal: function() {

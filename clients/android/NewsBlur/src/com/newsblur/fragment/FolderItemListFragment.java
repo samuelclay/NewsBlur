@@ -14,8 +14,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -24,26 +22,23 @@ import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.FolderReading;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Folder;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FolderItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class FolderItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	private String[] feedIds;
-	private MultipleFeedItemsAdapter adapter;
-	private Uri storiesUri;
 	private int currentState;
-	private int currentPage = 1;
 	private String folderName;
-	private boolean requestedPage = false;
-	private boolean doRequest = true;
 	private Folder folder;
 	
     private StoryOrder storyOrder;
@@ -51,7 +46,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 	public static int ITEMLIST_LOADER = 0x01;
 
 
-	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder) {
+	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
 		Bundle args = new Bundle();
@@ -59,6 +54,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		args.putStringArrayList("feedIds", feedIds);
 		args.putString("folderName", folderName);
 		args.putSerializable("storyOrder", storyOrder);
+        args.putSerializable("defaultFeedView", defaultFeedView);
 		feedItemFragment.setArguments(args);
 
 		return feedItemFragment;
@@ -70,13 +66,10 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		currentState = getArguments().getInt("currentState");
 		folderName = getArguments().getString("folderName");
 		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
 		feedIdArrayList.toArray(feedIds);
-
-		if (!NetworkUtils.isOnline(getActivity())) {
-			doRequest = false;
-		}
 	}
 
 	@Override
@@ -87,9 +80,8 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		contentResolver = getActivity().getContentResolver();
-		storiesUri = FeedProvider.MULTIFEED_STORIES_URI;
 
-		Cursor cursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
+		Cursor cursor = contentResolver.query(FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		getActivity().startManagingCursor(cursor);
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
@@ -112,16 +104,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.MULTIFEED_STORIES_URI;
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
-		return cursorLoader;
-	}
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (cursor != null) {
-			adapter.swapCursor(cursor);
-		}
+		return new CursorLoader(getActivity(), FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 	}
 
 	public void hasUpdated() {
@@ -143,41 +126,18 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(FeedReading.EXTRA_FOLDERNAME, folderName);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 
 	public void changeState(int state) {
 		currentState = state;
-		refreshStories();
+		hasUpdated();
 	}
-	
-	@Override
-    protected void refreshStories() {
-	    final String selection = DatabaseConstants.getStorySelectionFromState(currentState);
-        Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
-        getActivity().startManagingCursor(cursor);
-        adapter.swapCursor(cursor);
-    }
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (firstVisible + visibleCount == totalCount && !requestedPage && doRequest) {
-			currentPage += 1;
-			requestedPage = true;
-			((ItemsList) getActivity()).triggerRefresh(currentPage);
-		}
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 	
 	@Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;
     }
 
-    @Override
-    protected StoryItemsAdapter getAdapter() {
-        return adapter;
-    }
 }

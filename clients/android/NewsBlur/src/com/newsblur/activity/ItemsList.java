@@ -9,10 +9,12 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
+import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FeedUtils.ActionCompletionListener;
 import com.newsblur.util.ReadFilter;
@@ -21,7 +23,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public abstract class ItemsList extends NbFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener {
+public abstract class ItemsList extends NbFragmentActivity implements ActionCompletionListener, StateChangedListener, StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener {
 
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
@@ -30,10 +32,10 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
+    private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
-	protected SyncUpdateFragment syncFragment;
 	protected int currentState;
 	private Menu menu;
 	
@@ -82,6 +84,11 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
             readFilter.show(getSupportFragmentManager(), READ_FILTER);
             return true;
+        } else if (item.getItemId() == R.id.menu_default_view) {
+            DefaultFeedView currentValue = getDefaultFeedView();
+            DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
+            readFilter.show(getSupportFragmentManager(), DEFAULT_FEED_VIEW);
+            return true;
         }
 	
 		return false;
@@ -90,42 +97,14 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	protected abstract StoryOrder getStoryOrder();
 	
 	protected abstract ReadFilter getReadFilter();
+
+    protected abstract DefaultFeedView getDefaultFeedView();
 	
-	@Override
-	public void updateAfterSync() {
-		if (itemListFragment != null) {
-			itemListFragment.hasUpdated();
-		} else {
-			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
-		}
-		setSupportProgressBarIndeterminateVisibility(false);
-	}
-
-	@Override
-	public void updatePartialSync() {
-		if (itemListFragment != null) {
-			itemListFragment.hasUpdated();
-		} else {
-			Log.e(this.getClass().getName(), "Error updating list as it doesn't exist.");
-		}
-	}
-
-	@Override
-	public void updateSyncStatus(boolean syncRunning) {
-		if (syncRunning) {
-			setSupportProgressBarIndeterminateVisibility(true);
-		}
-	}
-	
-	@Override
-    public void setNothingMoreToUpdate() {
-        stopLoading = true;
-    }
-
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
+			itemListFragment.syncDone();;
 		}
         setSupportProgressBarIndeterminateVisibility(false);
         if (noMoreData) {
@@ -140,19 +119,23 @@ public abstract class ItemsList extends NbFragmentActivity implements SyncUpdate
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
+        FeedUtils.clearStories(this);
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 	
 	public abstract void updateStoryOrderPreference(StoryOrder newValue);
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
+        FeedUtils.clearStories(this);
         updateReadFilterPreference(newValue);
+        itemListFragment.resetPagination();
         stopLoading = false;
-        triggerRefresh(1);
+        itemListFragment.hasUpdated();
     }
 
     protected abstract void updateReadFilterPreference(ReadFilter newValue);

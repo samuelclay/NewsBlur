@@ -13,8 +13,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -27,18 +25,17 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	private String userId, username;
-	private SimpleCursorAdapter adapter;
 	private Uri storiesUri;
 	private SocialFeed socialFeed;
-	private int currentState, currentPage = 1;
-	private boolean requestedPage;
+    private int currentState;
 	
 	public static int ITEMLIST_LOADER = 0x01;
 	private Uri socialFeedUri;
@@ -47,20 +44,27 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private ListView itemList;
     private StoryOrder storyOrder;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
         userId = getArguments().getString("userId");
         username = getArguments().getString("username");
         storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
+        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		
 		setupSocialFeed();
+
+		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
+		Cursor cursor = getActivity().getContentResolver().query(uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
 		
 		groupFroms = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
 		groupTos = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
+
+        adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 		
@@ -71,13 +75,14 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 	}
 	
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder) {
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState, final StoryOrder storyOrder, final DefaultFeedView defaultFeedView) {
 	    SocialFeedItemListFragment fragment = new SocialFeedItemListFragment();
 		Bundle args = new Bundle();
         args.putInt("currentState", currentState);
         args.putString("userId", userId);
         args.putString("username", username);
         args.putSerializable("storyOrder", storyOrder);
+        args.putSerializable("defaultFeedView", defaultFeedView);
         fragment.setArguments(args);
         return fragment;
 	}
@@ -102,19 +107,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	    return cursorLoader;
 	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (adapter == null) {
-			adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-			adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
-			itemList.setAdapter(adapter);
-		}
-		
-		if (cursor != null) {
-			adapter.swapCursor(cursor);
-		}
-	}
-	
 	public void hasUpdated() {
 		setupSocialFeed();
 		requestedPage = false;
@@ -129,37 +121,21 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	}
 	
 	@Override
-	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (firstVisible + visibleCount == totalCount) {
-			if (!requestedPage) {
-				currentPage += 1;
-				requestedPage = true;
-				((ItemsList) getActivity()).triggerRefresh(currentPage);
-			} 
-		}
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), SocialFeedReading.class);
 		i.putExtra(Reading.EXTRA_USERID, userId);
 		i.putExtra(Reading.EXTRA_USERNAME, username);
 		i.putExtra(Reading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+        i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
 		startActivity(i);
 	}
 
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = DatabaseConstants.getStorySelectionFromState(state);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
-		adapter.swapCursor(cursor);
-		getActivity().startManagingCursor(cursor);
+        hasUpdated();
 	}
 
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) { }
-	
 	@Override
     public void setStoryOrder(StoryOrder storyOrder) {
         this.storyOrder = storyOrder;

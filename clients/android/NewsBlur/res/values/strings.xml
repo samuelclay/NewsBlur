@@ -128,12 +128,14 @@
     <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="feed_search_hint">Search for new feeds</string>
-    <string name="empty_list_notice">Loading…</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
+
+    <string name="empty_list_view_loading">Loading…</string>
+    <string name="empty_list_view_no_stories">No stories to read</string>
     
     <string name="login_registration_register">Register</string>
     <string name="login_google_reader">Google Reader</string>
@@ -170,6 +172,7 @@
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
     <string name="menu_read_filter">Read Filter</string>
+    <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
     <string name="settings_default_story_order">Default Story Order</string>
@@ -198,4 +201,7 @@
     </string-array>
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
+
+    <string name="story">Story</string>
+    <string name="text">Text</string>
 </resources>

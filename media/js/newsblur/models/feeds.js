@@ -78,6 +78,14 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return true;
     },
     
+    parent_folder_names: function() {
+        var names = _.compact(_.flatten(_.map(this.folders, function(folder) {
+            return folder.parent_folder_names();
+        })));
+        
+        return names;
+    },
+    
     rename: function(new_title) {
         this.set('feed_title', new_title);
         NEWSBLUR.assets.rename_feed(this.id, new_title);
@@ -105,6 +113,10 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
     is_feed: function() {
         return true;
+    },
+    
+    is_starred: function() {
+        return false;
     },
     
     is_light: function() {

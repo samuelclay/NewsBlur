@@ -40,7 +40,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         if (this.story == story) return;
         
         this.story = story;
-        this.$el.html(new NEWSBLUR.Views.StoryDetailView({
+        this.story_detail = new NEWSBLUR.Views.StoryDetailView({
             model: this.story,
             collection: this.story.collection,
             show_feed_title: true,
@@ -48,8 +48,10 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             text_view: true,
             tagName: 'div',
             inline_story_title: this.options.inline_story_title
-        }).render().el);
+        }).render();
+        this.$el.html(this.story_detail.el);
         this.$el.scrollTop(0);
+        this.story_detail.attach_handlers();
         this.show_loading();
         NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
                                             this.render, this.error);
@@ -73,6 +75,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         } else {
             $content.html(this.story.get('original_text'));
             NEWSBLUR.reader.make_story_titles_pane_counter();
+            this.resize_starred_tags();
         }
         $content.css('opacity', 0);
         $content.show();
@@ -108,6 +111,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         
         var $content = this.$('.NB-feed-story-content');
         $content.html(this.story.get('story_content'));
+        this.story_detail.attach_handlers();
     },
     
     append_premium_only_notification: function() {
@@ -141,6 +145,13 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         this.$(".NB-story-list-empty").remove();
         this.$el.append($empty);
     },
+    
+    resize_starred_tags: function() {
+        if (this.story.get('starred')) {
+            this.story_detail.save_view.reset_height({immediate: true});
+        }
+    },
+
     
     // ==========
     // = Events =

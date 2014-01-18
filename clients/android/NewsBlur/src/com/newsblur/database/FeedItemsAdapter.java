@@ -17,7 +17,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 
-public class FeedItemsAdapter extends SimpleCursorAdapter implements StoryItemsAdapter {
+public class FeedItemsAdapter extends StoryItemsAdapter {
 
 	private Cursor cursor;
 	private final Feed feed;

@@ -15,7 +15,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -57,6 +60,7 @@ public class APIManager {
 	private Context context;
 	private Gson gson;
 	private ContentResolver contentResolver;
+    private String customUserAgent;
 
 	public APIManager(final Context context) {
 		this.context = context;
@@ -66,6 +70,14 @@ public class APIManager {
                 .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
                 .create();
+
+        String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");
+        this.customUserAgent =  "NewsBlur Android app" +
+                                " (" + Build.MANUFACTURER + " " +
+                                Build.MODEL + " " +
+                                Build.VERSION.RELEASE + " " +
+                                appVersion + ")";
+
 	}
 
 	public NewsBlurResponse login(final String username, final String password) {
@@ -125,6 +137,13 @@ public class APIManager {
         for (String storyHash : storyHashes) {
             values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
         }
+        APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse markStoryAsRead(String storyHash) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
         APIResponse response = post(APIConstants.URL_MARK_STORIES_READ, values, false);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
@@ -208,9 +227,6 @@ public class APIManager {
             Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
-			if (pageNumber == 1) {
-				contentResolver.delete(storyUri, null, null);
-			}
 			contentResolver.delete(classifierUri, null, null);
 
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
@@ -241,11 +257,6 @@ public class APIManager {
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (pageNumber == 1) {
-				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				contentResolver.delete(storyUri, null, null);
-			}
-
 			for (Story story : storiesResponse.stories) {
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
@@ -255,7 +266,6 @@ public class APIManager {
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-
 		}
         return storiesResponse;
 	}
@@ -267,9 +277,6 @@ public class APIManager {
 
 		StoriesResponse storiesResponse = (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 		if (!response.isError()) {
-			if (pageNumber == 1) {
-				contentResolver.delete(FeedProvider.STARRED_STORIES_URI, null, null);
-			}
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(FeedProvider.STARRED_STORIES_URI, story.getValues());
 				insertComments(story);
@@ -293,11 +300,6 @@ public class APIManager {
 		final APIResponse response = get(APIConstants.URL_SHARED_RIVER_STORIES, values);
 		SocialFeedResponse storiesResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
-
-			if (pageNumber == 1) {
-				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				contentResolver.delete(storyUri, null, null);
-			}
 
 			for (Story story : storiesResponse.stories) {
 				for (String userId : story.sharedUserIds) {
@@ -337,15 +339,11 @@ public class APIManager {
 		SocialFeedResponse socialFeedResponse = (SocialFeedResponse) response.getResponse(gson, SocialFeedResponse.class);
 		if (!response.isError()) {
 
-			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-			if (pageNumber == 1) {
-				contentResolver.delete(storySocialUri, null, null);
-			}
-
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
 
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
+                Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storyUri, story.getValues());
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
@@ -710,6 +708,7 @@ public class APIManager {
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
+            connection.setRequestProperty("User-Agent", this.customUserAgent);
 			return new APIResponse(context, url, connection);
 		} catch (IOException e) {
 			Log.e(this.getClass().getName(), "Error opening GET connection to " + urlString, e.getCause());
