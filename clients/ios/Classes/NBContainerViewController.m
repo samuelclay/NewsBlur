@@ -141,10 +141,11 @@
     preOriginalViewController.navigationItem.title = @"";
     UINavigationController *originalNav = [[UINavigationController alloc]
                                            initWithRootViewController:preOriginalViewController];
-//    [originalNav pushViewController:self.originalViewController animated:NO];
     self.originalNavigationController = originalNav;
     self.originalNavigationController.navigationBar.translucent = NO;
-    [self.originalNavigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleOriginalNavGesture:)];
+    [self.originalNavigationController.interactivePopGestureRecognizer
+     addTarget:self
+     action:@selector(handleOriginalNavGesture:)];
     
     // set up story titles stub
     UIView * storyTitlesPlaceholder = [[UIView alloc] initWithFrame:CGRectZero];
@@ -432,6 +433,7 @@
         [self.view insertSubview:self.feedDetailViewController.view atIndex:0];
         [self.masterNavigationController.view removeFromSuperview];
         [self.dashboardViewController.view removeFromSuperview];
+        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
     } else {
         // remove the back button
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
@@ -443,6 +445,7 @@
         self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
         [self.dashboardViewController.view removeFromSuperview];
+        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
     }
 }
 
@@ -634,9 +637,9 @@
     self.interactiveOriginalTransition = YES;
     
     CGPoint point = [gesture locationInView:self.view];
-    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+    CGFloat viewWidth = CGRectGetWidth(self.view.bounds);
     CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
+//    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
     
     if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
@@ -645,38 +648,42 @@
         if (velocity.x > 0) {
             [appDelegate.masterContainerViewController transitionFromOriginalView];
         } else {
-            //            // Returning back to view, cancelling pop animation.
-            //            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+            // Returning back to view, cancelling pop animation.
+            [appDelegate.masterContainerViewController transitionToOriginalView:NO];
         }
-        
-        self.interactiveOriginalTransition = NO;
     }
 }
 
 - (void)transitionToOriginalView {
+    [self transitionToOriginalView:YES];
+}
+
+- (void)transitionToOriginalView:(BOOL)resetLayout {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (UIInterfaceOrientationIsPortrait(orientation)) {
         
     }
 
     CGRect vb = [self.view bounds];
-    [self addChildViewController:self.originalNavigationController];
-    [self.originalNavigationController.view setHidden:NO];
-    if (![[self.originalNavigationController viewControllers]
-          containsObject:self.originalViewController]) {
-        [self.originalNavigationController pushViewController:self.originalViewController
-                                                     animated:NO];
-    }
+    
+    if (resetLayout) {
+        [self addChildViewController:self.originalNavigationController];
+        [self.originalNavigationController.view setHidden:NO];
+        if (![[self.originalNavigationController viewControllers]
+              containsObject:self.originalViewController]) {
+            [self.originalNavigationController pushViewController:self.originalViewController
+                                                         animated:NO];
+        }
 
-    [self.view insertSubview:self.originalNavigationController.view
-                aboveSubview:self.masterNavigationController.view];
-    [self.originalNavigationController didMoveToParentViewController:self];
-    
-    self.originalNavigationController.view.frame = CGRectMake(CGRectGetMaxX(vb),
-                                                              0,
-                                                              CGRectGetWidth(vb),
-                                                              CGRectGetHeight(vb));
-    
+        [self.view insertSubview:self.originalNavigationController.view
+                    aboveSubview:self.masterNavigationController.view];
+        [self.originalNavigationController didMoveToParentViewController:self];
+        
+        self.originalNavigationController.view.frame = CGRectMake(CGRectGetMaxX(vb),
+                                                                  0,
+                                                                  CGRectGetWidth(vb),
+                                                                  CGRectGetHeight(vb));
+    }
     
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -696,15 +703,15 @@
                                                                    CGRectGetHeight(vb));
      } completion:^(BOOL finished) {
          NSLog(@"Master frame: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(vb));
+         self.interactiveOriginalTransition = NO;
+         if (resetLayout) {
+             [self.originalViewController loadInitialStory];
+         }
      }];
 }
 
 - (void)transitionFromOriginalView {
     NSLog(@"Transition from Original View");
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        
-    }
     
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -712,39 +719,43 @@
      {
          [self adjustFeedDetailScreen];
      } completion:^(BOOL finished) {
+         self.interactiveOriginalTransition = NO;
          [self.originalNavigationController removeFromParentViewController];
          [self.originalNavigationController.view setHidden:YES];
      }];
 }
 
 - (void)interactiveTransitionFromOriginalView:(CGFloat)percentage {
-//    [self.view insertSubview:self.dashboardViewController.view atIndex:0];
-//    [self.view addSubview:self.masterNavigationController.view];
-    
-//    if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-//        self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
-//        self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
-//        self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-//    } else {
-//        self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-//        self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH - 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
-//    }
-//    
-//    self.originalNavigationController.view.frame = CGRectMake(0, 0,
-//                                                              CGRectGetWidth(vb),
-//                                                              CGRectGetHeight(vb));
+    CGRect vb = [self.view bounds];
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 
-    CGRect originalNavFrame = self.originalNavigationController.view.frame;
-    originalNavFrame.origin.x = originalNavFrame.size.width * percentage;
-    self.originalNavigationController.view.frame = originalNavFrame;
-    
-    CGRect feedDetailFrame = self.masterNavigationController.view.frame;
-    feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
-    self.masterNavigationController.view.frame = feedDetailFrame;
-    
-    CGRect storyNavFrame = self.storyNavigationController.view.frame;
-    storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * feedDetailFrame.size.width/6;
-    self.storyNavigationController.view.frame = storyNavFrame;
+    if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+        CGRect originalNavFrame = self.originalNavigationController.view.frame;
+        originalNavFrame.origin.x = vb.size.width * percentage;
+        self.originalNavigationController.view.frame = originalNavFrame;
+        NSLog(@"Original frame: %@", NSStringFromCGRect(self.originalViewController.view.frame));
+        
+        CGRect feedDetailFrame = self.feedDetailViewController.view.frame;
+        feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        self.feedDetailViewController.view.frame = feedDetailFrame;
+        
+        CGRect storyNavFrame = self.storyNavigationController.view.frame;
+        storyNavFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        self.storyNavigationController.view.frame = storyNavFrame;
+    } else {
+        CGRect originalNavFrame = self.originalNavigationController.view.frame;
+        originalNavFrame.origin.x = vb.size.width * percentage;
+        self.originalNavigationController.view.frame = originalNavFrame;
+        NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
+        
+        CGRect feedDetailFrame = self.masterNavigationController.view.frame;
+        feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        self.masterNavigationController.view.frame = feedDetailFrame;
+        
+        CGRect storyNavFrame = self.storyNavigationController.view.frame;
+        storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        self.storyNavigationController.view.frame = storyNavFrame;
+    }
     
 //    CGRect leftBorderFrame = leftBorder.frame;
 //    leftBorderFrame.origin.x = storyNavFrame.origin.x - 1;

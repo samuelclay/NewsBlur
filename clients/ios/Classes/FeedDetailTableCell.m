@@ -161,7 +161,15 @@ static UIFont *indicatorFont = nil;
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
-        
+
+        // site favicon
+        if (cell.isRead && !cell.hasAlpha) {
+            if (cell.isRiverOrSocial) {
+                cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
+            }
+            cell.hasAlpha = YES;
+        }
+
         [cell.siteFavicon drawInRect:CGRectMake(leftMargin, siteTitleY, 16.0, 16.0)];
 
         if (cell.isRead) {
@@ -312,14 +320,6 @@ static UIFont *indicatorFont = nil;
         CGContextMoveToPoint(context, 0.0f, 0.5f);
         CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
-    }
-    
-    // site favicon
-    if (cell.isRead && !cell.hasAlpha) {
-        if (cell.isRiverOrSocial) {
-            cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
-        }
-        cell.hasAlpha = YES;
     }
     
     // story indicator

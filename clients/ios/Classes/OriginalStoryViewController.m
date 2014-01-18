@@ -53,10 +53,6 @@
 
 
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-    
-    if (!appDelegate.masterContainerViewController.interactiveOriginalTransition) {
-        [self loadInitialStory];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
