@@ -447,7 +447,7 @@
         self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
         [self.dashboardViewController.view removeFromSuperview];
-        self.originalNavigationController.view.frame = CGRectMake(vb.size.width / 3, 0, vb.size.width, vb.size.height);
+        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
         NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
     }
 }
