@@ -32,7 +32,7 @@ public class SavedStoriesReading extends Reading {
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
+        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
     }
     
     @Override
