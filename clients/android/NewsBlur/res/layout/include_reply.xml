@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:background="#A6A6A6" />
+        android:layout_marginBottom="10dp"
+        android:background="@color/story_comment_divider" />
 
     <ImageView
         android:id="@+id/reply_user_image"
