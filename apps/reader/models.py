@@ -429,19 +429,22 @@ class UserSubscription(models.Model):
     
     @classmethod
     def trim_user_read_stories(self, user_id):
+        user = User.objects.get(pk=user_id)
+        logging.user(user, "~FBTrimming all read stories...")
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only('feed')
         if not subs: return
-        feeds = [f.feed_id for f in subs]
-        old_rs = r.smembers("RS:%s" % user_id)
-        old_count = len(old_rs)
-        # new_rs = r.sunionstore("RS:%s" % user_id, *["RS:%s:%s" % (user_id, f) for f in feeds])
-        new_rs = r.sunion(*["RS:%s:%s" % (user_id, f) for f in feeds])
 
+        key = "RS:%s" % user_id
+        feeds = [f.feed_id for f in subs]
+        old_rs = r.smembers(key)
+        old_count = len(old_rs)
         if not old_count: return
-        
-        r.sunionstore("RS:%s:backup" % user_id, "RS:%s" % user_id)
-        r.expire("RS:%s:backup" % user_id, 60*60*24)
+
+        r.sunionstore("%s:backup" % key, key)
+        r.expire("%s:backup" % key, 60*60*24)
+        r.sunionstore(key, *["%s:%s" % (key, f) for f in feeds])
+        new_rs = r.smembers(key)        
         
         missing_rs = []
         feed_re = re.compile(r'(\d+):.*?')
@@ -453,13 +456,12 @@ class UserSubscription(models.Model):
             rs_feed_id = found.groups()[0]
             if int(rs_feed_id) not in feeds:
                 missing_rs.append(rs)
-                # r.sadd("RS:%s" % user_id, *missing_rs)
+                r.sadd(key, *missing_rs)
         
         new_count = len(new_rs)
         missing_count = len(missing_rs)
         new_total = new_count + missing_count
-        user = User.objects.get(pk=user_id)
-        logging.user(user, "~FBTrimming ~FR%s~FB/%s (~SB%s~SN+~SB%s~SN saved) user read stories..." %
+        logging.user(user, "~FBTrimming ~FR%s~FB/%s (~SB%s sub'ed ~SN+ ~SB%s unsub'ed~SN saved) user read stories..." %
                      (old_count - new_total, old_count, new_count, missing_count))
         
         

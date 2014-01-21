@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
+from apps.profile.tasks import CleanupUser
 from utils import json_functions as json
 
 class LastSeenMiddleware(object):
@@ -22,6 +23,8 @@ class LastSeenMiddleware(object):
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
+                if random.random() < 0.01:
+                    CleanupUser.delay(user_id=request.user.pk)
             elif settings.DEBUG:
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
