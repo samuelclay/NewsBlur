@@ -50,7 +50,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
+		Cursor cursor = contentResolver.query(FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
@@ -103,7 +103,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return new CursorLoader(getActivity(), FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
+		return new CursorLoader(getActivity(), FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
 	}
 
 	@Override

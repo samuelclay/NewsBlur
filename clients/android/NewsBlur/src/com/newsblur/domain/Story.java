@@ -44,6 +44,9 @@ public class Story implements Serializable {
     @SerializedName("starred")
     public boolean starred;
 
+    @SerializedName("starred_dated")
+    public Date starredDate;
+
 	@SerializedName("story_tags")
 	public String[] tags;
 
@@ -114,6 +117,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
+		values.put(DatabaseConstants.STORY_STARRED_DATE, starredDate != null ? starredDate.getTime() : new Date().getTime());
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
 		return values;
