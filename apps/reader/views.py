@@ -1820,7 +1820,7 @@ def mark_story_as_unstarred(request):
         MActivity.remove_starred_story(user_id=request.user.pk, 
                                        story_feed_id=starred_story.story_feed_id,
                                        story_id=starred_story.story_guid)
-        starred_story.user_id = None
+        starred_story.user_id = 0
         try:
             starred_story.save()
         except NotUniqueError:
