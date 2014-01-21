@@ -439,7 +439,7 @@ class UserSubscription(models.Model):
         old_rs = r.smembers(key)
         old_count = len(old_rs)
         if not old_count:
-            logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN." % old_count)
+            logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN.")
             return
 
         r.sunionstore("%s:backup" % key, key)
