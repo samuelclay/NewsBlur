@@ -705,7 +705,6 @@
                                                                    CGRectGetWidth(vb),
                                                                    CGRectGetHeight(vb));
      } completion:^(BOOL finished) {
-         NSLog(@"Master frame: %@ to %@", NSStringFromCGRect(self.masterNavigationController.view.frame), NSStringFromCGRect(vb));
          self.interactiveOriginalTransition = NO;
          if (resetLayout) {
              [self.originalViewController loadInitialStory];
