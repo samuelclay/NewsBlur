@@ -438,8 +438,9 @@ class UserSubscription(models.Model):
         feeds = [f.feed_id for f in subs]
         old_rs = r.smembers(key)
         old_count = len(old_rs)
-        logging.user(user, "~FBTrimming all read stories (~SB%s exist~SN)..." % old_count)
-        if not old_count: return
+        if not old_count:
+            logging.user(user, "~FBTrimming all read stories, ~SBnone found~SN." % old_count)
+            return
 
         r.sunionstore("%s:backup" % key, key)
         r.expire("%s:backup" % key, 60*60*24)
