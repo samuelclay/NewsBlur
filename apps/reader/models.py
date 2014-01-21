@@ -452,7 +452,8 @@ class UserSubscription(models.Model):
         for i, rs in enumerate(old_rs):
             if i and i % 1000 == 0:
                 logging.user(user, "~FBTrimming progress ~SB%s~SN/~SB%s~SN" % (i, old_count))
-                r.sadd(key, *missing_rs)
+                if missing_rs:
+                    r.sadd(key, *missing_rs)
                 missing_count += len(missing_rs)
                 missing_rs = []
             found = feed_re.search(rs)
@@ -462,8 +463,9 @@ class UserSubscription(models.Model):
             rs_feed_id = found.groups()[0]
             if int(rs_feed_id) not in feeds:
                 missing_rs.append(rs)
-
-        r.sadd(key, *missing_rs)
+        
+        if missing_rs:
+            r.sadd(key, *missing_rs)
         missing_count += len(missing_rs)        
         new_count = len(new_rs)
         new_total = new_count + missing_count
