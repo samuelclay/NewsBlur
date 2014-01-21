@@ -449,8 +449,10 @@ class UserSubscription(models.Model):
         missing_rs = []
         feed_re = re.compile(r'(\d+):.*?')
         for i, rs in enumerate(old_rs):
-            if settings.DEBUG and i and i % 1000 == 0:
+            if i and i % 1000 == 0:
                 logging.user(user, "~FBTrimming progress ~SB%s~SN/~SB%s~SN" % (i, old_count))
+                r.sadd(key, *missing_rs)
+                missing_rs = []
             found = feed_re.search(rs)
             if not found:
                 print " ---> Not found: %s" % rs
