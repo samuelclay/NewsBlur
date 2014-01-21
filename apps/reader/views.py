@@ -23,6 +23,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -1822,7 +1823,7 @@ def mark_story_as_unstarred(request):
         starred_story.user_id = None
         try:
             starred_story.save()
-        except MStarredStory.NotUniqueError:
+        except NotUniqueError:
             starred_story.delete()
         MStarredStoryCounts.count_tags_for_user(request.user.pk)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
