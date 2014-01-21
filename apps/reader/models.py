@@ -451,7 +451,6 @@ class UserSubscription(models.Model):
         feed_re = re.compile(r'(\d+):.*?')
         for i, rs in enumerate(old_rs):
             if i and i % 1000 == 0:
-                logging.user(user, "~FBTrimming progress ~SB%s~SN/~SB%s~SN" % (i, old_count))
                 if missing_rs:
                     r.sadd(key, *missing_rs)
                 missing_count += len(missing_rs)
