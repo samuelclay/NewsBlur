@@ -430,7 +430,6 @@ class UserSubscription(models.Model):
     @classmethod
     def trim_user_read_stories(self, user_id):
         user = User.objects.get(pk=user_id)
-        logging.user(user, "~FBTrimming all read stories...")
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only('feed')
         if not subs: return
@@ -439,6 +438,7 @@ class UserSubscription(models.Model):
         feeds = [f.feed_id for f in subs]
         old_rs = r.smembers(key)
         old_count = len(old_rs)
+        logging.user(user, "~FBTrimming all read stories (~SB%s exist~SN)..." % old_count)
         if not old_count: return
 
         r.sunionstore("%s:backup" % key, key)
@@ -448,7 +448,9 @@ class UserSubscription(models.Model):
         
         missing_rs = []
         feed_re = re.compile(r'(\d+):.*?')
-        for rs in old_rs:
+        for i, rs in enumerate(old_rs):
+            if settings.DEBUG and i and i % 1000 == 0:
+                logging.user(user, "~FBTrimming progress ~SB%s~SN/~SB%s~SN" % (i, old_count))
             found = feed_re.search(rs)
             if not found:
                 print " ---> Not found: %s" % rs
@@ -456,7 +458,7 @@ class UserSubscription(models.Model):
             rs_feed_id = found.groups()[0]
             if int(rs_feed_id) not in feeds:
                 missing_rs.append(rs)
-                r.sadd(key, *missing_rs)
+        r.sadd(key, *missing_rs)
         
         new_count = len(new_rs)
         missing_count = len(missing_rs)
