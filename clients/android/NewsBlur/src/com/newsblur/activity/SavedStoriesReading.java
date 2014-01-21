@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
@@ -10,7 +9,6 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -21,7 +19,7 @@ public class SavedStoriesReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         setTitle(getResources().getString(R.string.saved_stories_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver());
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), defaultFeedView);
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -34,7 +32,7 @@ public class SavedStoriesReading extends Reading {
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.getStorySortOrder(StoryOrder.NEWEST));
+        return new CursorLoader(this, FeedProvider.STARRED_STORIES_URI, null, null, null, DatabaseConstants.STARRED_STORY_ORDER);
     }
     
     @Override
