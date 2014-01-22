@@ -1780,16 +1780,19 @@ def mark_story_as_starred(request):
     story_db.pop('user_tags', None)
     now = datetime.datetime.now()
     story_values = dict(user_id=request.user.pk, starred_date=now, user_tags=user_tags, **story_db)
-    starred_story, created = MStarredStory.objects.get_or_create(
-        story_hash=story.story_hash,
-        user_id=story_values.pop('user_id'),
-        defaults=story_values)
-    if created:
+    params = dict(story_hash=story.story_hash, user_id=story_values.pop('user_id'))
+    starred_story = MStarredStory.objects(**params).limit(1)
+    created = False
+    if not starred_story:
+        params.update(story_values)
+        starred_story = MStarredStory.objects.create(**params)
+        created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
     else:
+        starred_story = starred_story[0]
         starred_story.user_tags = user_tags
         starred_story.save()
     
