@@ -408,7 +408,7 @@ def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
 def setup_python():
-    # sudo('easy_install -U pip')
+    sudo('easy_install -U pip')
     sudo('easy_install -U $(<%s)' %
          os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
     put('config/pystartup.py', '.pystartup')
@@ -426,6 +426,10 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+def pip():
+    sudo('easy_install -U pip')
+    sudo('pip install -r requirements.txt')
+    
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
     sudo('easy_install --always-unzip pil')
