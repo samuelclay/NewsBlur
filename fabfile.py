@@ -427,8 +427,9 @@ def setup_python():
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def pip():
-    sudo('easy_install -U pip')
-    sudo('pip install -r requirements.txt')
+    with cd(env.NEWSBLUR_PATH):
+        sudo('easy_install -U pip')
+        sudo('pip install -r requirements.txt')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
