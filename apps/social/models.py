@@ -2530,6 +2530,23 @@ class MSocialServices(mongo.Document):
         profile.save()
         return profile
     
+    @classmethod
+    def sync_all_twitter_photos(cls, days=14):
+        week_ago = datetime.datetime.now() - datetime.timedelta(days=days)
+        shares = MSharedStory.objects.filter(shared_date__gte=week_ago)
+        sharers = sorted(set([s.user_id for s in shares]))
+        print " ---> %s sharing user_ids" % len(sorted(sharers))
+
+        for user_id in sharers:
+            profile = MSocialProfile.objects.get(user_id=user_id)
+            if not profile.photo_service == 'twitter': continue
+            ss = MSocialServices.objects.get(user_id=user_id)
+            try:
+                ss.sync_twitter_photo()
+                print " ---> Syncing %s" % user_id
+            except Exception, e:
+                print " ***> Exception on %s: %s" % (user_id, e)
+
     def sync_twitter_photo(self):
         profile = MSocialProfile.get_user(self.user_id)
 
