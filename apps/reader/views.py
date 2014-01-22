@@ -23,6 +23,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from oauth2_provider.decorators import protected_resource
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -1779,17 +1780,20 @@ def mark_story_as_starred(request):
     story_db.pop('id', None)
     story_db.pop('user_tags', None)
     now = datetime.datetime.now()
-    story_values = dict(user_id=request.user.pk, starred_date=now, user_tags=user_tags, **story_db)
-    starred_story, created = MStarredStory.objects.get_or_create(
-        story_hash=story.story_hash,
-        user_id=story_values.pop('user_id'),
-        defaults=story_values)
-    if created:
+    story_values = dict(starred_date=now, user_tags=user_tags, **story_db)
+    params = dict(story_guid=story.story_guid, user_id=request.user.pk)
+    starred_story = MStarredStory.objects(**params).limit(1)
+    created = False
+    if not starred_story:
+        params.update(story_values)
+        starred_story = MStarredStory.objects.create(**params)
+        created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
     else:
+        starred_story = starred_story[0]
         starred_story.user_tags = user_tags
         starred_story.save()
     
@@ -1820,7 +1824,11 @@ def mark_story_as_unstarred(request):
         MActivity.remove_starred_story(user_id=request.user.pk, 
                                        story_feed_id=starred_story.story_feed_id,
                                        story_id=starred_story.story_guid)
-        starred_story.delete()
+        starred_story.user_id = 0
+        try:
+            starred_story.save()
+        except NotUniqueError:
+            starred_story.delete()
         MStarredStoryCounts.count_tags_for_user(request.user.pk)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:

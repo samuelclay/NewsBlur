@@ -231,7 +231,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var selected = this.starred_feeds.selected();
         
         var pre_callback = function(data) {
-            self.starred_feeds.reset(data.starred_counts, {parse: true});
+            if (data.starred_counts) {
+                self.starred_feeds.reset(data.starred_counts, {parse: true});
+            }
             
             if (selected) {
                 self.starred_feeds.get(selected).set('selected', true);
@@ -253,17 +255,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var selected = this.starred_feeds.selected();
 
         var pre_callback = function(data) {
-            self.starred_feeds.reset(data.starred_counts, {parse: true});
+            if (data.starred_counts) { 
+                self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+            }
             
             if (selected && self.starred_feeds.get(selected)) {
                 self.starred_feeds.get(selected).set('selected', true);
             }
             
-            if (callback) callback(data);
-        };
-
-        var pre_callback = function(data) {
-            self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
             if (callback) callback(data);
         };
 
