@@ -242,7 +242,7 @@ public class PrefsUtils {
     
     public static float getTextSize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
+        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
     }
 
     public static void setTextSize(Context context, float size) {

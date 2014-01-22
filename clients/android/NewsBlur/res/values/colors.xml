@@ -30,6 +30,7 @@
     <color name="story_author_read">#C0C0C0</color>
     <color name="story_date_unread">#262C6C</color>
     <color name="story_date_read">#BABDD1</color>
+    <color name="story_comment_divider">#F0F0F0</color>
     
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>

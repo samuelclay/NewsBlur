@@ -15,6 +15,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -410,7 +411,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=0; target-densityDpi=medium-dpi\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
+		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
 		builder.append(storyText);

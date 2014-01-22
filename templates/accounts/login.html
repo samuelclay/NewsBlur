@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags zebra_tags %}
+
+{% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
+{% block extra_head_js %}
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("input[name=username]").focus();
+        });
+    </script>
+    
+  {% include_stylesheets "common" %}
+{% endblock %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-title">
+    Login
+</div>
+
+<div class="NB-static-form-wrapper" style="overflow:hidden">
+    <form method="post" class="NB-static-form" action="{% url 'django.contrib.auth.views.login' %}">
+        {% if form.errors %}
+        <p class="NB-error error">Your username and password didn't match.<br />Please try again.</p>
+        {% else %}{% if next %}
+        <p class="NB-error error">Please login to continue.</p>
+        {% endif %}{% endif %}
+
+        {% csrf_token %}
+        <div class="NB-static-form-label">{{ form.username.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.username }}</div>
+        <div class="NB-static-form-label">{{ form.password.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.password }}</div>
+
+        <input type="submit" value="login" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+
+</div>
+
+{% endblock %}

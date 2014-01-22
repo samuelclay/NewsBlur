@@ -4069,9 +4069,9 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-title {
     position: absolute;
     bottom: -1px;
-    height: 55px;
+    width: 282px;
+    height: 54px;
     right: 166px;
-    width: 312px;
     z-index: 2;
 }
 
@@ -4079,8 +4079,8 @@ form.opml_import_form input {
     top: 0px;
     bottom: inherit;
     right: 24px;
-    width: 312px;
-    height: 55px;
+    width: 282px;
+    height: 54px;
 }
 .NB-body-main .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
@@ -8607,6 +8607,9 @@ form.opml_import_form input {
   color: #303030;
   line-height: 18px;
 }
+.NB-static h3 {
+    line-height: 1.4em;
+}
 
 .NB-static .NB-splash-info {
   opacity: .9;
@@ -10200,6 +10203,56 @@ form.opml_import_form input {
 .NB-static-form .NB-errors {
     margin-left: 200px;
 }
+
+/* =============== */
+/* = OAuth Forms = */
+/* =============== */
+
+.NB-static-oauth h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.NB-static-oauth .NB-static-form {
+    width: 500px;
+    margin: 24px auto;
+}
+.NB-static-login .NB-static-form {
+    width: 360px;
+}
+.NB-static-oauth .NB-static-form-label label {
+    width: 120px;
+    text-transform: uppercase;
+    font-size: 18px;
+    padding: 8px 0 0 0;
+    color: rgba(0, 0, 0, .6);
+}
+.NB-static-oauth .NB-static-form-input input {
+    margin-left: 0;
+    margin-right: 0;
+    height: 34px;
+    font-size: 22px;
+}
+
+.NB-static-oauth input[type=submit].NB-static-form-submit {
+    margin: 24px 0 0 0;
+    font-size: 26px;
+    font-size: 18px;
+    padding: 8px 12px;
+}
+.NB-static-login input[type=submit].NB-static-form-submit {
+    margin: 12px 0 0 120px;
+}
+.NB-static-oauth .NB-error {
+    font-size: 12px;
+    text-align: center;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
+    clear: both;
+}
+
 
 /* ======================== */
 /* = Feed Options Popover = */
