@@ -24,6 +24,7 @@ from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
+from oauth2_provider.decorators import protected_resource
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -744,7 +745,7 @@ def load_feed_page(request, feed_id):
     
     logging.user(request, "~FYLoading original page, from the db")
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
-    
+
 @json.json_view
 def load_starred_stories(request):
     user   = get_user(request)

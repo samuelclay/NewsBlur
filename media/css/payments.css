@@ -58,14 +58,19 @@
 
 .NB-static-form input,
 .NB-static-form select {
-    margin: 6px 0 2px;
-    width: 200px;
     font-size: 14px;
     padding: 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #A0B998;
-    -webkit-box-shadow:2px 2px 0 #A0B998;
-    box-shadow:2px 2px 0 #A0B998;
+    margin: 6px 4px;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 1px;
+    -moz-box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
+    box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
+
+    width: 200px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
 }
 
 .NB-static-form input.error,
