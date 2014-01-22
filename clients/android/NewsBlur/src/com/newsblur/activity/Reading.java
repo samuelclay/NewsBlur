@@ -584,6 +584,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     public void overlayText(View v) {
         ReadingItemFragment item = getReadingFragment();
+        if (item == null) return;
         item.switchSelectedFeedView();
         updateOverlayText();
     }
