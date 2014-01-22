@@ -16,8 +16,9 @@ public class AppConstants {
 	public static final int REGISTRATION_COMPLETED = 1;
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
-	public static final float FONT_SIZE_LOWER_BOUND = 0.7f;
-	public static final float FONT_SIZE_INCREMENT_FACTOR = 8;
+
+    // reading view font sizes, in em
+	public static final float[] READING_FONT_SIZE = {0.6f, 0.8f, 1.0f, 1.3f, 1.6f, 3.0f};
 	
     // the name to give the "root" folder in the local DB since the API does not assign it one.
     // this name should be unique and such that it will sort to the beginning of a list, ideally.

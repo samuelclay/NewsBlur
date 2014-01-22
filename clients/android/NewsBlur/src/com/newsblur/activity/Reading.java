@@ -435,9 +435,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     // NB: this callback is for the text size slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-	    PrefsUtils.setTextSize(this, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR);
+        float size = AppConstants.READING_FONT_SIZE[progress];
+	    PrefsUtils.setTextSize(this, size);
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
-		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / AppConstants.FONT_SIZE_INCREMENT_FACTOR); 
+		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, size); 
 		sendBroadcast(data);
 	}
 
