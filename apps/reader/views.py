@@ -1779,8 +1779,8 @@ def mark_story_as_starred(request):
     story_db.pop('id', None)
     story_db.pop('user_tags', None)
     now = datetime.datetime.now()
-    story_values = dict(user_id=request.user.pk, starred_date=now, user_tags=user_tags, **story_db)
-    params = dict(story_hash=story.story_hash, user_id=story_values.pop('user_id'))
+    story_values = dict(starred_date=now, user_tags=user_tags, **story_db)
+    params = dict(story_guid=story.story_guid, user_id=request.user.pk)
     starred_story = MStarredStory.objects(**params).limit(1)
     created = False
     if not starred_story:
