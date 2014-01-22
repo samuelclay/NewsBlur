@@ -429,6 +429,7 @@ def setup_python():
 def pip():
     with cd(env.NEWSBLUR_PATH):
         sudo('easy_install -U pip')
+        sudo('pip install --upgrade pip')
         sudo('pip install -r requirements.txt')
     
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
