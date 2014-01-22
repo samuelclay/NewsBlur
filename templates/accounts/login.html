@@ -4,6 +4,13 @@
 
 {% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
 {% block extra_head_js %}
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("input[name=username]").focus();
+        });
+    </script>
+    
   {% include_stylesheets "common" %}
 {% endblock %}
 
