@@ -378,7 +378,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
     private void checkStoryCount(int position) {
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
+		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
 			requestedPage = true;
             enableMainProgress(true);
