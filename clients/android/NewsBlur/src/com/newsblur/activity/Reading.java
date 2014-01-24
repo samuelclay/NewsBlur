@@ -214,24 +214,22 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+        if (pager == null) return false;
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
+        if (story == null) return false;
 
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_original) {
-			if (story != null) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(story.permalink));
-				startActivity(i);
-			}
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(story.permalink));
+            startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
-				newFragment.show(getSupportFragmentManager(), "dialog");
-			}
+            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
+            newFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
 			FeedUtils.shareStory(story, this);
