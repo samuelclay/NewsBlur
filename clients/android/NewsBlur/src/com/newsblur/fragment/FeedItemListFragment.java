@@ -68,6 +68,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
         ContentResolver contentResolver = getActivity().getContentResolver();
+        // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first stories cursor
         Uri storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
         Cursor storiesCursor = contentResolver.query(storiesUri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
@@ -85,6 +86,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 
         feedCursor.moveToFirst();
         Feed feed = Feed.fromCursor(feedCursor);
+        feedCursor.close();
 
         String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
         int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
