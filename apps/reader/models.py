@@ -965,6 +965,34 @@ class UserSubscriptionFolders(models.Model):
         
         return _arrange_folder(user_sub_folders)
     
+    def flatten_folders(self, feeds=None):
+        folders = json.decode(self.folders)
+        flat_folders = {" ": []}
+        
+        def _flatten_folders(items, parent_folder="", depth=0):
+            for item in items:
+                if isinstance(item, int) and ((not feeds) or (feeds and item in feeds)):
+                    if not parent_folder:
+                        parent_folder = ' '
+                    if parent_folder in flat_folders:
+                        flat_folders[parent_folder].append(item)
+                    else:
+                        flat_folders[parent_folder] = [item]
+                elif isinstance(item, dict):
+                    for folder_name in item:
+                        folder = item[folder_name]
+                        flat_folder_name = "%s%s%s" % (
+                            parent_folder if parent_folder and parent_folder != ' ' else "",
+                            " - " if parent_folder and parent_folder != ' ' else "",
+                            folder_name
+                        )
+                        flat_folders[flat_folder_name] = []
+                        _flatten_folders(folder, flat_folder_name, depth+1)
+        
+        _flatten_folders(folders)
+        
+        return flat_folders
+
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
             new_folders = []

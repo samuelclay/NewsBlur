@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
 from apps.social.models import MSocialServices
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -180,9 +181,7 @@ def appdotnet_connect(request):
         social_services.syncing_appdotnet = True
         social_services.save()
         
-        # SyncAppdotnetFriends.delay(user_id=request.user.pk)
-        # XXX TODO: Remove below and uncomment above. Only for www->dev.
-        social_services.sync_appdotnet_friends()
+        SyncAppdotnetFriends.delay(user_id=request.user.pk)
         
         logging.user(request, "~BB~FRFinishing App.net connect")
         return {}
@@ -270,3 +269,32 @@ def api_user_info(request):
         "name": user.username,
         "id": user.pk,
     }}
+    
+@login_required
+@json.json_view
+def api_feed_list(request, trigger_slug=None):
+    user = request.user
+    usf = UserSubscriptionFolders.objects.get(user=user)
+    flat_folders = usf.flatten_folders()
+    titles = []
+    feeds = {}
+    
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)    
+    
+    for sub in user_subs:
+        feeds[sub.feed_id] = sub.canonical()
+    
+    for folder_title in sorted(flat_folders.keys()):
+        if folder_title and folder_title != " ":
+            titles.append(dict(label=" - Folder: %s" % folder_title, value=folder_title, optgroup=True))
+        else:
+            titles.append(dict(label=" - Folder: Top Level", value=" ", optgroup=True))
+        folder_contents = []
+        for feed_id in flat_folders[folder_title]:
+            if feed_id not in feeds: continue
+            feed = feeds[feed_id]
+            folder_contents.append(dict(label=feed['feed_title'], value=feed['id']))
+        folder_contents = sorted(folder_contents, key=lambda f: f['label'].lower())
+        titles.extend(folder_contents)
+        
+    return {"data": titles}
