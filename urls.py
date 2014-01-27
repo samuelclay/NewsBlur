@@ -56,7 +56,7 @@ urlpatterns = patterns('',
     url(r'^account/logout/?$', 
                             'django.contrib.auth.views.logout', 
                             {'next_page': '/'}, name='logout'),
-    url(r'^account/ifttt/v1/oauth2/', include('apps.oauth.urls')),
+    url(r'^account/ifttt/v1/', include('apps.oauth.urls')),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
 )
 
