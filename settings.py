@@ -128,7 +128,6 @@ OAUTH2_PROVIDER = {
         'write': 'Create new saved stories, shared stories, and subscriptions.',
         'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
     },
-
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
 
 }
