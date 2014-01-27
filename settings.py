@@ -124,8 +124,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
-        'read': 'Read: saved stories, shared stories, tags, training, and feeds',
-        'write': 'Write: saving stories, sharing stories, adding tags, adding training, feed management',
+        'read': 'View new unread stories, saved stories, and shared stories.',
+        'write': 'Create new saved stories, shared stories, and subscriptions.',
+        'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
     },
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
