@@ -260,3 +260,13 @@ def unfollow_twitter_account(request):
         message = e
     
     return {'code': code, 'message': message}
+
+@login_required
+@json.json_view
+def api_user_info(request):
+    user = request.user
+    
+    return {"data": {
+        "name": user.username,
+        "id": user.pk,
+    }}
