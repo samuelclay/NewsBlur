@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^unfollow_twitter_account/?$', views.unfollow_twitter_account, name='social-unfollow-twitter'),
 
     # Django OAuth Toolkit
+    url(r'^status/?$', views.ifttt_status, name="ifttt-status"),
     url(r'^oauth2/authorize/?$', op_views.AuthorizationView.as_view(), name="ifttt-authorize"),
     url(r'^oauth2/token/?$', op_views.TokenView.as_view(), name="ifttt-token"),
     url(r'^user/info/?$', views.api_user_info, name="ifttt-user-info"),

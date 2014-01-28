@@ -1,5 +1,6 @@
 import urllib
 import urlparse
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -471,7 +472,6 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
-    logging.user(user, body)
     if isinstance(blurblog_user, int):
         social_user_ids = [blurblog_user]
     else:
@@ -525,3 +525,9 @@ def api_shared_story(request):
     
     return {"data": entries}
 
+@json.json_view
+def ifttt_status(request):
+    return {"data": {
+        "status": "OK",
+        "time": datetime.datetime.now().isoformat()
+    }}
