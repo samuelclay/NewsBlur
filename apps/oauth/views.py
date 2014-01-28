@@ -11,7 +11,7 @@ from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdo
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
-from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts
+from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredStory
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -309,7 +309,6 @@ def api_saved_tag_list(request):
     starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
     tags = []
     
-    print starred_counts, starred_count
     for tag in starred_counts:
         if tag['tag'] == "": continue
         tags.append(dict(label="%s (%s %s)" % (tag['tag'], tag['count'], 
@@ -403,6 +402,31 @@ def api_unread_story(request, unread_score=None):
 @login_required
 @json.json_view
 def api_saved_story(request):
+    user = request.user
+    body = json.decode(request.body)
+    after = body.get('after', None)
+    before = body.get('before', None)
+    limit = body.get('limit', 50)
+    fields = body.get('triggerFields')
+    story_tag = fields['story_tag']
     entries = []
 
+    mstories = MStarredStory.objects(
+        user_id=user.pk,
+        user_tags__contains=story_tag
+    ).order_by('-starred_date')[:limit]
+    stories = Feed.format_stories(mstories)        
+
+    for story in stories:
+        if before and story['story_date'].strftime("%s") > before: continue
+        if after and story['story_date'].strftime("%s") < after: continue
+        entries.append({
+            "story_title": story['story_title'],
+            "story_content": story['story_content'],
+            "story_url": story['story_permalink'],
+            "story_author": story['story_authors'],
+            "story_date": story['story_date'],
+            "saved_date": story['starred_date'],
+        })
+    
     return {"data": entries}
