@@ -9,6 +9,9 @@ from django.conf import settings
 from apps.social.models import MSocialServices
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+from apps.analyzer.models import compute_story_score
+from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -298,3 +301,79 @@ def api_feed_list(request, trigger_slug=None):
         titles.extend(folder_contents)
         
     return {"data": titles}
+
+@login_required
+@json.json_view
+def api_unread_story(request, unread_score=None):
+    user = request.user
+    body = json.decode(request.body)
+    after = body.get('after', None)
+    before = body.get('before', None)
+    limit = body.get('limit', 50)
+    fields = body.get('triggerFields')
+    feed_or_folder = fields['feed_or_folder']
+    entries = []
+    
+    if isinstance(feed_or_folder, int):
+        feed_id = feed_or_folder
+        usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+        found_feed_ids = [feed_id]
+        found_trained_feed_ids = [feed_id] if usersub.is_trained else []
+        stories = usersub.get_stories(order="newest", read_filter="unread", 
+                                      offset=0, limit=limit,
+                                      default_cutoff_date=user.profile.unread_cutoff)
+    else:
+        folder_title = feed_or_folder
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        flat_folders = usf.flatten_folders()
+        feed_ids = flat_folders.get(folder_title)
+        print flat_folders, folder_title, feed_ids
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+                                                   read_filter="unread")
+        feed_ids = [sub.feed_id for sub in usersubs]
+        print unread_score, feed_ids, folder_title
+        params = {
+            "user_id": user.pk, 
+            "feed_ids": feed_ids,
+            "offset": 0,
+            "limit": limit,
+            "order": "newest",
+            "read_filter": "unread",
+            "usersubs": usersubs,
+            "cutoff_date": user.profile.unread_cutoff,
+        }
+        story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by('-story_date')
+        stories = Feed.format_stories(mstories)
+        found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+        trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
+        found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
+    
+    if found_trained_feed_ids:
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                                        feed_id__in=found_trained_feed_ids))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                            feed_id__in=found_trained_feed_ids))
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                          feed_id__in=found_trained_feed_ids))
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
+                                                      feed_id__in=found_trained_feed_ids))
+    
+    for story in stories:
+        score = 0
+        if found_trained_feed_ids and story['story_feed_id'] in found_trained_feed_ids:
+            score = compute_story_score(story, classifier_titles=classifier_titles, 
+                                        classifier_authors=classifier_authors, 
+                                        classifier_tags=classifier_tags,
+                                        classifier_feeds=classifier_feeds)
+            if score < 0: continue
+            if unread_score == "new-focus-story" and score < 1: continue
+        entries.append({
+            "story_title": story['story_title'],
+            "story_content": story['story_content'],
+            "story_url": story['story_permalink'],
+            "story_date": story['story_date'],
+            "story_score": score,
+        })
+    
+    return {"data": entries}

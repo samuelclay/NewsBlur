@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url(r'^oauth2/token/?$', op_views.TokenView.as_view(), name="ifttt-token"),
     url(r'^user/info/?$', views.api_user_info, name="ifttt-user-info"),
     url(r'^triggers/(?P<trigger_slug>\w+)/fields/feed_or_folder/options/?$', views.api_feed_list, name="ifttt-trigger-feedlist"),
+    url(r'^triggers/(?P<unread_score>(new-unread-story|new-focus-story))/?$', views.api_unread_story, name="ifttt-trigger-unreadstory"),
 )
