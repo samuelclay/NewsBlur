@@ -472,6 +472,7 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
+    logging.user(request, body)
     if isinstance(blurblog_user, int):
         social_user_ids = [blurblog_user]
     else:
@@ -522,7 +523,8 @@ def api_shared_story(request):
                 "timestamp": story['story_date'].strftime("%f")
             },
         })
-    
+    logging.user(request, entries)
+
     return {"data": entries}
 
 @json.json_view
