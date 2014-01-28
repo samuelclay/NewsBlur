@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
-from apps.social.models import MSocialServices
+from apps.social.models import MSocialServices, MSocialSubscription
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -324,6 +324,26 @@ def api_saved_tag_list(request):
 
 @login_required
 @json.json_view
+def api_shared_usernames(request):
+    user = request.user
+    social_feeds = MSocialSubscription.feeds(user_id=user.pk)
+    blurblogs = []
+
+    for social_feed in social_feeds:
+        if not social_feed['shared_stories_count']: continue
+        blurblogs.append(dict(label="%s (%s %s)" % (social_feed['username'],
+                                                    social_feed['shared_stories_count'], 
+                                                    'story' if social_feed['shared_stories_count'] == 1 else 'stories'),
+                         value=social_feed['user_id']))
+    blurblogs = sorted(blurblogs, key=lambda b: b['label'].lower())
+    catchall = dict(label="All Shared Stories",
+                    value="")
+    blurblogs.insert(0, catchall)
+    
+    return {"data": blurblogs}
+
+@login_required
+@json.json_view
 def api_unread_story(request, unread_score=None):
     user = request.user
     body = json.decode(request.body)
@@ -402,6 +422,38 @@ def api_unread_story(request, unread_score=None):
 @login_required
 @json.json_view
 def api_saved_story(request):
+    user = request.user
+    body = json.decode(request.body)
+    after = body.get('after', None)
+    before = body.get('before', None)
+    limit = body.get('limit', 50)
+    fields = body.get('triggerFields')
+    story_tag = fields['story_tag']
+    entries = []
+
+    mstories = MStarredStory.objects(
+        user_id=user.pk,
+        user_tags__contains=story_tag
+    ).order_by('-starred_date')[:limit]
+    stories = Feed.format_stories(mstories)        
+
+    for story in stories:
+        if before and story['story_date'].strftime("%s") > before: continue
+        if after and story['story_date'].strftime("%s") < after: continue
+        entries.append({
+            "story_title": story['story_title'],
+            "story_content": story['story_content'],
+            "story_url": story['story_permalink'],
+            "story_author": story['story_authors'],
+            "story_date": story['story_date'],
+            "saved_date": story['starred_date'],
+        })
+    
+    return {"data": entries}
+    
+@login_required
+@json.json_view
+def api_shared_story(request):
     user = request.user
     body = json.decode(request.body)
     after = body.get('after', None)
