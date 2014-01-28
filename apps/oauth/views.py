@@ -315,7 +315,7 @@ def api_folder_list(request, trigger_slug=None):
         if folder_title and folder_title != " ":
             titles.append(dict(label=folder_title, value=folder_title))
         else:
-            titles.append(dict(label="Top Level", value=" "))
+            titles.append(dict(label="Top Level", value="Top Level"))
         
     return {"data": titles}
 
@@ -569,7 +569,28 @@ def api_save_new_story(request):
 @login_required
 @json.json_view
 def api_save_new_subscription(request):
+    user = request.user
+    body = json.decode(request.body)
+    fields = body.get('actionFields')
+    url = fields['url']
+    folder = fields['folder']
     
-    return {"data": {
+    if folder == "Top Level":
+        folder = " "
     
-    }}
+    code, message, us = UserSubscription.add_subscription(
+        user=user, 
+        feed_address=url,
+        folder=folder,
+        bookmarklet=True
+    )
+    
+    logging.user(request, "~FRAdding URL from IFTTT: ~SB%s (in %s)" % (url, folder))
+
+    if us and us.feed:
+        url = us.feed.feed_address
+
+    return {"data": [{
+        "id": us and us.feed_id,
+        "url": url,
+    }]}
