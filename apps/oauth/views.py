@@ -302,6 +302,22 @@ def api_feed_list(request, trigger_slug=None):
         titles.extend(folder_contents)
         
     return {"data": titles}
+    
+@login_required
+@json.json_view
+def api_folder_list(request, trigger_slug=None):
+    user = request.user
+    usf = UserSubscriptionFolders.objects.get(user=user)
+    flat_folders = usf.flatten_folders()
+    titles = []
+    
+    for folder_title in sorted(flat_folders.keys()):
+        if folder_title and folder_title != " ":
+            titles.append(dict(label=folder_title, value=folder_title))
+        else:
+            titles.append(dict(label="Top Level", value=" "))
+        
+    return {"data": titles}
 
 @login_required
 @json.json_view
@@ -532,4 +548,28 @@ def ifttt_status(request):
     return {"data": {
         "status": "OK",
         "time": datetime.datetime.now().isoformat()
+    }}
+
+@login_required
+@json.json_view
+def api_share_new_story(request):
+    
+    return {"data": {
+    
+    }}
+
+@login_required
+@json.json_view
+def api_save_new_story(request):
+    
+    return {"data": {
+    
+    }}
+
+@login_required
+@json.json_view
+def api_save_new_subscription(request):
+    
+    return {"data": {
+    
     }}
