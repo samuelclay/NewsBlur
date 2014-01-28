@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
-from apps.social.models import MSocialServices, MSocialSubscription
+from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -460,25 +460,55 @@ def api_shared_story(request):
     before = body.get('before', None)
     limit = body.get('limit', 50)
     fields = body.get('triggerFields')
-    story_tag = fields['story_tag']
+    blurblog_user = fields['blurblog_user']
     entries = []
+    
+    if isinstance(blurblog_user, int):
+        social_user_ids = [blurblog_user]
+    else:
+        socialsubs = MSocialSubscription.objects.filter(user_id=user.pk)
+        social_user_ids = [ss.subscription_user_id for ss in socialsubs]
 
-    mstories = MStarredStory.objects(
-        user_id=user.pk,
-        user_tags__contains=story_tag
-    ).order_by('-starred_date')[:limit]
-    stories = Feed.format_stories(mstories)        
-
+    mstories = MSharedStory.objects(
+        user_id__in=social_user_ids
+    ).order_by('-shared_date')[:limit]        
+    stories = Feed.format_stories(mstories)
+    
+    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, 
+                                                      social_user_id__in=social_user_ids))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk,
+                                                        social_user_id__in=social_user_ids))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk,
+                                                       social_user_id__in=social_user_ids))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, 
+                                                     social_user_id__in=social_user_ids))
+    # Merge with feed specific classifiers
+    classifier_feeds   = classifier_feeds + list(MClassifierFeed.objects(user_id=user.pk,
+                                                                         feed_id__in=found_feed_ids))
+    classifier_authors = classifier_authors + list(MClassifierAuthor.objects(user_id=user.pk,
+                                                                             feed_id__in=found_feed_ids))
+    classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=user.pk,
+                                                                           feed_id__in=found_feed_ids))
+    classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk,
+                                                                       feed_id__in=found_feed_ids))
+        
     for story in stories:
         if before and story['story_date'].strftime("%s") > before: continue
         if after and story['story_date'].strftime("%s") < after: continue
+        score = compute_story_score(story, classifier_titles=classifier_titles, 
+                                    classifier_authors=classifier_authors, 
+                                    classifier_tags=classifier_tags,
+                                    classifier_feeds=classifier_feeds)
+        if score < 0: continue
         entries.append({
             "story_title": story['story_title'],
             "story_content": story['story_content'],
             "story_url": story['story_permalink'],
             "story_author": story['story_authors'],
             "story_date": story['story_date'],
-            "saved_date": story['starred_date'],
+            "story_score": score,
         })
     
     return {"data": entries}
+

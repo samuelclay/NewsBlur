@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^triggers/new-saved-story/fields/story_tag/options/?$', 
         views.api_saved_tag_list, name="ifttt-trigger-taglist"),
     url(r'^triggers/new-saved-story/?$', views.api_saved_story, name="ifttt-trigger-saved"),
-    url(r'^triggers/new-shared-story/fields/blurblog_username/options/?$', 
+    url(r'^triggers/new-shared-story/fields/blurblog_user/options/?$', 
         views.api_shared_usernames, name="ifttt-trigger-blurbloglist"),
     url(r'^triggers/new-shared-story/?$', views.api_shared_story, name="ifttt-trigger-shared"),
 )
