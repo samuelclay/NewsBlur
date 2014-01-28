@@ -471,6 +471,7 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
+    logging.user(user, body)
     if isinstance(blurblog_user, int):
         social_user_ids = [blurblog_user]
     else:
