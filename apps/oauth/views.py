@@ -415,6 +415,10 @@ def api_unread_story(request, unread_score=None):
             "story_author": story['story_authors'],
             "story_date": story['story_date'],
             "story_score": score,
+            "ifttt": {
+                "id": story['story_hash'],
+                "timestamp": story['story_date'].strftime("%f")
+            },
         })
     
     return {"data": entries}
@@ -447,6 +451,10 @@ def api_saved_story(request):
             "story_author": story['story_authors'],
             "story_date": story['story_date'],
             "saved_date": story['starred_date'],
+            "ifttt": {
+                "id": story['story_hash'],
+                "timestamp": story['story_date'].strftime("%f")
+            },
         })
     
     return {"data": entries}
@@ -508,6 +516,10 @@ def api_shared_story(request):
             "story_author": story['story_authors'],
             "story_date": story['story_date'],
             "story_score": score,
+            "ifttt": {
+                "id": story['story_hash'],
+                "timestamp": story['story_date'].strftime("%f")
+            },
         })
     
     return {"data": entries}
