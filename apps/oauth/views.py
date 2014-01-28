@@ -11,7 +11,7 @@ from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdo
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -304,6 +304,27 @@ def api_feed_list(request, trigger_slug=None):
 
 @login_required
 @json.json_view
+def api_saved_tag_list(request):
+    user = request.user
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
+    tags = []
+    
+    print starred_counts, starred_count
+    for tag in starred_counts:
+        if tag['tag'] == "": continue
+        tags.append(dict(label="%s (%s %s)" % (tag['tag'], tag['count'], 
+                                               'story' if tag['count'] == 1 else 'stories'),
+                         value=tag['tag']))
+    tags = sorted(tags, key=lambda t: t['value'].lower())
+    catchall = dict(label="All Saved Stories (%s %s)" % (starred_count,
+                                                         'story' if starred_count == 1 else 'stories'),
+                    value="")
+    tags.insert(0, catchall)
+    
+    return {"data": tags}
+
+@login_required
+@json.json_view
 def api_unread_story(request, unread_score=None):
     user = request.user
     body = json.decode(request.body)
@@ -327,11 +348,9 @@ def api_unread_story(request, unread_score=None):
         usf = UserSubscriptionFolders.objects.get(user=user)
         flat_folders = usf.flatten_folders()
         feed_ids = flat_folders.get(folder_title)
-        print flat_folders, folder_title, feed_ids
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter="unread")
         feed_ids = [sub.feed_id for sub in usersubs]
-        print unread_score, feed_ids, folder_title
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
@@ -360,6 +379,8 @@ def api_unread_story(request, unread_score=None):
                                                       feed_id__in=found_trained_feed_ids))
     
     for story in stories:
+        if before and story['story_date'].strftime("%s") > before: continue
+        if after and story['story_date'].strftime("%s") < after: continue
         score = 0
         if found_trained_feed_ids and story['story_feed_id'] in found_trained_feed_ids:
             score = compute_story_score(story, classifier_titles=classifier_titles, 
@@ -372,8 +393,16 @@ def api_unread_story(request, unread_score=None):
             "story_title": story['story_title'],
             "story_content": story['story_content'],
             "story_url": story['story_permalink'],
+            "story_author": story['story_authors'],
             "story_date": story['story_date'],
             "story_score": score,
         })
     
+    return {"data": entries}
+
+@login_required
+@json.json_view
+def api_saved_story(request):
+    entries = []
+
     return {"data": entries}
