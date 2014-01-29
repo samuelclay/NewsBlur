@@ -33,6 +33,7 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
+    public static final String BUNDLE_FEED_IDS = "feedIds";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;

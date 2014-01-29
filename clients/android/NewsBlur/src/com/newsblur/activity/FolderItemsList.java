@@ -30,7 +30,6 @@ import com.newsblur.util.StoryOrder;
 public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
 
 	public static final String EXTRA_FOLDER_NAME = "folderName";
-    public static final String BUNDLE_FEED_IDS = "feedIds";
 	private String folderName;
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
