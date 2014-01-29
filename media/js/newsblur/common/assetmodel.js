@@ -428,7 +428,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.user_profile.set(subscriptions.social_profile);
             self.social_services = subscriptions.social_services;
             
-            if (selected) {
+            if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
             }
             if (!_.isEqual(self.favicons, {})) {
@@ -755,7 +755,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         _.each(data.feeds, _.bind(function(feed, feed_id) {
             var existing_feed = this.feeds.get(feed_id);
-            if (!existing_feed) return;
+            if (!existing_feed) {
+                console.log(["Trying to refresh unsub feed", feed_id, feed]);
+                return;
+            }
             var feed_id = feed.id || feed_id;
             
             if (feed.id && feed_id != feed.id) {

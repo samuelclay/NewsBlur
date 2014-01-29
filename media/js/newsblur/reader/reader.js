@@ -1237,6 +1237,7 @@
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
+                console.log(["Temp open feed", feed_id, feed, options, temp]);
                 options.feed = options.feed && options.feed.attributes;
                 return this.load_feed_in_tryfeed_view(feed_id, options);
             }

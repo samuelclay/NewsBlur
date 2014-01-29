@@ -552,6 +552,17 @@ def ifttt_status(request):
 @login_required
 @json.json_view
 def api_share_new_story(request):
+    user = request.user
+    body = json.decode(request.body)
+    fields = body.get('actionFields')
+    story_url = fields['story_url']
+    story_content = fields.get('story_content', "")
+    story_title = fields.get('story_title', "[Untitled]")
+    story_author = fields.get('story_author', "")
+    user_tags = fields.get('user_tags', "")
+    story = None
+    
+    
     
     return {"data": {
     
@@ -588,7 +599,7 @@ def api_save_new_story(request):
         story = MStarredStory.objects.create(**story_db)
         MStarredStoryCounts.count_tags_for_user(user.pk)
     except OperationError:
-        # logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
+        logging.user(request, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
         pass
     
     return {"data": [{

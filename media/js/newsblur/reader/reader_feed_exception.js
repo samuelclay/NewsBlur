@@ -314,11 +314,21 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         if (feed_address.length) {
             this.model.save_exception_change_feed_address(feed_id, feed_address, _.bind(function(data) {
                 console.log(["return to change address", data]);
-                if (data && data.new_feed_id) {
-                    NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+                NEWSBLUR.assets.feeds.add(_.values(data.feeds));
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id || feed_id);
+                var old_feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (data.new_feed_id != feed_id && old_feed.get('selected')) {
+                    old_feed.set('selected', false);
                 }
                 
-                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id || feed_id);
+                if (data && data.new_feed_id) {
+                    NEWSBLUR.assets.load_feeds(function() {
+                        var feed = NEWSBLUR.assets.get_feed(data.new_feed_id || feed_id);
+                        console.log(["Loading feed", data.new_feed_id || feed_id, feed]);
+                        NEWSBLUR.reader.open_feed(feed.id);
+                    });
+                }
+                
                 console.log(["feed address", feed, NEWSBLUR.assets.get_feed(feed_id)]);
                 if (!data || data.code < 0 || !data.new_feed_id) {
                     var error = data.message || "There was a problem fetching the feed from this URL.";
@@ -348,10 +358,19 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         if (feed_link.length) {
             this.model.save_exception_change_feed_link(feed_id, feed_link, _.bind(function(data) {
-                if (data.new_feed_id) {
-                    NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+                var old_feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (data.new_feed_id != feed_id && old_feed.get('selected')) {
+                    old_feed.set('selected', false);
                 }
-
+                
+                if (data && data.new_feed_id) {
+                    NEWSBLUR.assets.load_feeds(function() {
+                        var feed = NEWSBLUR.assets.get_feed(data.new_feed_id || feed_id);
+                        console.log(["Loading feed", data.new_feed_id || feed_id, feed]);
+                        NEWSBLUR.reader.open_feed(feed.id);
+                    });
+                }
+                
                 var feed = NEWSBLUR.assets.get_feed(data.new_feed_id) || NEWSBLUR.assets.get_feed(feed_id);
                 
                 if (!data || data.code < 0 || !data.new_feed_id) {
