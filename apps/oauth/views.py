@@ -414,7 +414,12 @@ def api_unread_story(request, unread_score=None):
                                                           feed_id__in=found_trained_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
                                                       feed_id__in=found_trained_feed_ids))
-    
+    feeds = dict([(f.pk, {
+        "title": f.feed_title,
+        "website": f.feed_link,
+        "address": f.feed_address,
+    }) for f in Feed.objects.filter(pk__in=found_feed_ids)])
+
     for story in stories:
         if before and story['story_date'].strftime("%s") > before: continue
         if after and story['story_date'].strftime("%s") < after: continue
@@ -426,6 +431,7 @@ def api_unread_story(request, unread_score=None):
                                         classifier_feeds=classifier_feeds)
             if score < 0: continue
             if unread_score == "new-focus-story" and score < 1: continue
+        feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
@@ -433,9 +439,9 @@ def api_unread_story(request, unread_score=None):
             "StoryAuthor": story['story_authors'],
             "StoryDate": story['story_date'],
             "StoryScore": score,
-            "SiteTitle": "",
-            "SiteWebsite": "",
-            "SiteFeedAddress": "",
+            "SiteTitle": feed and feed['title'],
+            "SiteWebsite": feed and feed['website'],
+            "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
@@ -461,10 +467,18 @@ def api_saved_story(request):
         user_tags__contains=story_tag
     ).order_by('-starred_date')[:limit]
     stories = Feed.format_stories(mstories)        
+    
+    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    feeds = dict([(f.pk, {
+        "title": f.feed_title,
+        "website": f.feed_link,
+        "address": f.feed_address,
+    }) for f in Feed.objects.filter(pk__in=found_feed_ids)])
 
     for story in stories:
         if before and story['story_date'].strftime("%s") > before: continue
         if after and story['story_date'].strftime("%s") < after: continue
+        feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
@@ -473,9 +487,9 @@ def api_saved_story(request):
             "StoryDate": story['story_date'],
             "SavedDate": story['starred_date'],
             "SavedTags": ', '.join(story['user_tags']),
-            "SiteTitle": "",
-            "SiteWebsite": "",
-            "SiteFeedAddress": "",
+            "SiteTitle": feed and feed['title'],
+            "SiteWebsite": feed and feed['website'],
+            "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
@@ -509,8 +523,13 @@ def api_shared_story(request):
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     share_user_ids = list(set([story['user_id'] for story in stories]))
-    users = [(u.pk, u.username) 
-             for u in User.objects.filter(pk__in=share_user_ids).only('pk', 'username')]
+    users = dict([(u.pk, u.username) 
+                 for u in User.objects.filter(pk__in=share_user_ids).only('pk', 'username')])
+    feeds = dict([(f.pk, {
+        "title": f.feed_title,
+        "website": f.feed_link,
+        "address": f.feed_address,
+    }) for f in Feed.objects.filter(pk__in=found_feed_ids)])
     
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, 
                                                       social_user_id__in=social_user_ids))
@@ -538,6 +557,7 @@ def api_shared_story(request):
                                     classifier_tags=classifier_tags,
                                     classifier_feeds=classifier_feeds)
         if score < 0: continue
+        feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
@@ -547,9 +567,9 @@ def api_shared_story(request):
             "StoryScore": score,
             "SharedComments": story['comments'],
             "ShareUsername": users.get(story['user_id']),
-            "SiteTitle": "",
-            "SiteWebsite": "",
-            "SiteFeedAddress": "",
+            "SiteTitle": feed and feed['title'],
+            "SiteWebsite": feed and feed['website'],
+            "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
