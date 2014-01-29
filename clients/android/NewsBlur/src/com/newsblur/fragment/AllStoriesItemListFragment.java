@@ -1,5 +1,7 @@
 package com.newsblur.fragment;
 
+import java.util.ArrayList;
+
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -29,7 +31,8 @@ import com.newsblur.view.SocialItemViewBinder;
 
 public class AllStoriesItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
-	public int currentState;
+    private String[] feedIds;
+	private int currentState;
 	private ContentResolver contentResolver;
 	
     private StoryOrder storyOrder;
@@ -42,6 +45,9 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 		currentState = getArguments().getInt("currentState");
 		storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
+		feedIds = new String[feedIdArrayList.size()];
+		feedIdArrayList.toArray(feedIds);
 	}
 
 	@Override
@@ -52,6 +58,7 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		Cursor cursor = getActivity().getContentResolver().query(FeedProvider.ALL_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
+		getActivity().startManagingCursor(cursor);
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
 
@@ -87,10 +94,11 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 		hasUpdated();
 	}
 	
-	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
+        arguments.putStringArrayList("feedIds", feedIds);
 		arguments.putSerializable("storyOrder", storyOrder);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
@@ -101,6 +109,7 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), AllStoriesReading.class);
+		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);
