@@ -1,6 +1,7 @@
 import urllib
 import urlparse
 import datetime
+import lxml.html
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -10,7 +11,7 @@ from django.conf import settings
 from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
 from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredStory
@@ -592,17 +593,61 @@ def api_share_new_story(request):
     body = json.decode(request.body)
     fields = body.get('actionFields')
     story_url = fields['story_url']
-    story_content = fields.get('story_content', "")
+    content = fields.get('story_content', "")
     story_title = fields.get('story_title', "[Untitled]")
     story_author = fields.get('story_author', "")
-    user_tags = fields.get('user_tags', "")
-    story = None
+    comments = fields.get('comments', None)
+
+    feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     
+    content = lxml.html.fromstring(content)
+    content.make_links_absolute(story_url)
+    content = lxml.html.tostring(content)
     
+    shared_story = MSharedStory.objects.filter(user_id=user.pk,
+                                               story_feed_id=feed and feed.pk or 0,
+                                               story_guid=story_url).limit(1).first()
+    if not shared_story:
+        story_db = {
+            "story_guid": story_url,
+            "story_permalink": story_url,
+            "story_title": story_title,
+            "story_feed_id": feed and feed.pk or 0,
+            "story_content": content,
+            "story_author": story_author,
+            "story_date": datetime.datetime.now(),
+            "user_id": user.pk,
+            "comments": comments,
+            "has_comments": bool(comments),
+        }
+        shared_story = MSharedStory.objects.create(**story_db)
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=user.pk)
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
+        logging.user(request, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+    else:
+        logging.user(request, "~BM~FY~SBAlready~SN shared story from IFTTT: ~SB%s: %s" % (story_url, comments))
     
-    return {"data": {
+    try:
+        socialsub = MSocialSubscription.objects.get(user_id=user.pk, 
+                                                    subscription_user_id=user.pk)
+    except MSocialSubscription.DoesNotExist:
+        socialsub = None
     
-    }}
+    if socialsub:
+        socialsub.mark_story_ids_as_read([shared_story.story_hash], 
+                                          shared_story.story_feed_id, 
+                                          request=request)
+    else:
+        RUserStory.mark_read(user.pk, shared_story.story_feed_id, shared_story.story_hash)
+
+    shared_story.publish_update_to_subscribers()
+    
+    return {"data": [{
+        "id": shared_story and shared_story.story_guid,
+        "url": shared_story and shared_story.blurblog_permalink()
+    }]}
 
 @login_required
 @json.json_view
