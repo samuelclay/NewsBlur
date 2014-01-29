@@ -299,7 +299,7 @@ def api_feed_list(request, trigger_slug=None):
         for feed_id in flat_folders[folder_title]:
             if feed_id not in feeds: continue
             feed = feeds[feed_id]
-            folder_contents.append(dict(label=feed['feed_title'], value=feed['id']))
+            folder_contents.append(dict(label=feed['feed_title'], value=str(feed['id'])))
         folder_contents = sorted(folder_contents, key=lambda f: f['label'].lower())
         titles.extend(folder_contents)
         
