@@ -508,6 +508,10 @@ def api_shared_story(request):
     stories = Feed.format_stories(mstories)
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    share_user_ids = list(set([story['user_id'] for story in stories]))
+    users = [(u.pk, u.username) 
+             for u in User.objects.filter(pk__in=share_user_ids).only('pk', 'username')]
+    
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, 
                                                       social_user_id__in=social_user_ids))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk,
@@ -542,6 +546,7 @@ def api_shared_story(request):
             "StoryDate": story['story_date'],
             "StoryScore": score,
             "SharedComments": story['comments'],
+            "ShareUsername": users.get(story['user_id']),
             "SiteTitle": "",
             "SiteWebsite": "",
             "SiteFeedAddress": "",
