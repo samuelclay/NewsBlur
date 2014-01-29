@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
+from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
@@ -488,7 +489,6 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
-    logging.user(request, body)
     if isinstance(blurblog_user, int):
         social_user_ids = [blurblog_user]
     else:
@@ -539,7 +539,6 @@ def api_shared_story(request):
                 "timestamp": story['story_date'].strftime("%f")
             },
         })
-    logging.user(request, entries)
 
     return {"data": entries}
 
@@ -561,10 +560,41 @@ def api_share_new_story(request):
 @login_required
 @json.json_view
 def api_save_new_story(request):
+    user = request.user
+    body = json.decode(request.body)
+    fields = body.get('actionFields')
+    story_url = fields['story_url']
+    story_content = fields.get('story_content', "")
+    story_title = fields.get('story_title', "[Untitled]")
+    story_author = fields.get('story_author', "")
+    user_tags = fields.get('user_tags', "")
+    story = None
     
-    return {"data": {
+    try:
+        original_feed = Feed.get_feed_from_url(story_url)
+        story_db = {
+            "user_id": user.pk,
+            "starred_date": datetime.datetime.now(),
+            "story_date": datetime.datetime.now(),
+            "story_title": story_title or '[Untitled]',
+            "story_permalink": story_url,
+            "story_guid": story_url,
+            "story_content": story_content,
+            "story_author_name": story_author,
+            "story_feed_id": original_feed and original_feed.pk or 0,
+            "user_tags": [tag for tag in user_tags.split(',')]
+        }
+        logging.user(request, "~FCStarring by IFTTT: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
+        story = MStarredStory.objects.create(**story_db)
+        MStarredStoryCounts.count_tags_for_user(user.pk)
+    except OperationError:
+        # logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
+        pass
     
-    }}
+    return {"data": [{
+        "id": story and story.id,
+        "url": story and story.story_permalink
+    }]}
 
 @login_required
 @json.json_view

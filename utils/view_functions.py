@@ -60,18 +60,24 @@ class required_params(object):
     def view_wrapper(self, request, fn, *args, **kwargs):
         if request.method != self.method and self.method != 'REQUEST':
             return self.disallowed(method=True, status_code=405)
-            
+        
+        # Check if parameter is included
         for param in self.params:
-            if not getattr(request, self.method).get(param):
+            if getattr(request, self.method).get(param) is None:
+                print " Unnamed parameter not found: %s" % param
                 return self.disallowed(param)
 
+        # Check if parameter is correct type
         for param, param_type in self.named_params.items():
-            if not getattr(request, self.method).get(param):
+            if getattr(request, self.method).get(param) is None:
+                print " Typed parameter not found: %s" % param
                 return self.disallowed(param)
             try:
-                if not param_type(getattr(request, self.method).get(param)):
+                if param_type(getattr(request, self.method).get(param)) is None:
+                    print " Typed parameter wrong: %s" % param
                     return self.disallowed(param, param_type)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError), e:
+                print " %s -> %s" % (param, e)
                 return self.disallowed(param, param_type)
                 
         return fn(request, *args, **kwargs)
