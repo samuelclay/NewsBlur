@@ -558,8 +558,8 @@ def api_shared_story(request):
                                                                        feed_id__in=found_feed_ids))
         
     for story in stories:
-        if before and int(story['story_date'].strftime("%s")) > before: continue
-        if after and int(story['story_date'].strftime("%s")) < after: continue
+        if before and int(story['shared_date'].strftime("%s")) > before: continue
+        if after and int(story['shared_date'].strftime("%s")) < after: continue
         score = compute_story_score(story, classifier_titles=classifier_titles, 
                                     classifier_authors=classifier_authors, 
                                     classifier_tags=classifier_tags,
@@ -575,12 +575,13 @@ def api_shared_story(request):
             "StoryScore": score,
             "SharedComments": story['comments'],
             "ShareUsername": users.get(story['user_id']),
+            "SharedDate": story['shared_date'],
             "SiteTitle": feed and feed['title'],
             "SiteWebsite": feed and feed['website'],
             "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
-                "timestamp": int(story['story_date'].strftime("%s"))
+                "timestamp": int(story['shared_date'].strftime("%s"))
             },
         })
 
