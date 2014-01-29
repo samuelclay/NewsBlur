@@ -387,10 +387,10 @@ def api_unread_story(request, unread_score=None):
             folder_title = " "
         usf = UserSubscriptionFolders.objects.get(user=user)
         flat_folders = usf.flatten_folders()
-        feed_ids = []
+        feed_ids = None
         if folder_title != "all":
             feed_ids = flat_folders.get(folder_title)
-        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids__in=feed_ids,
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter="unread")
         feed_ids = [sub.feed_id for sub in usersubs]
         params = {
