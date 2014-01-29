@@ -348,7 +348,7 @@ def load_feeds_flat(request):
     
     flat_folders = []
     if folders:
-        flat_folders = folders.flatten_folders()
+        flat_folders = folders.flatten_folders(feeds=feeds)
         
     social_params = {
         'user_id': user.pk,
