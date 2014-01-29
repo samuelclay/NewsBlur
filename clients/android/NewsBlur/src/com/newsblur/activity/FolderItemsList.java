@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -29,6 +30,7 @@ import com.newsblur.util.StoryOrder;
 public class FolderItemsList extends ItemsList implements MarkAllReadDialogListener {
 
 	public static final String EXTRA_FOLDER_NAME = "folderName";
+    public static final String BUNDLE_FEED_IDS = "feedIds";
 	private String folderName;
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
@@ -40,16 +42,21 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 		setTitle(folderName);
 
-		feedIds = new ArrayList<String>();
+        if (bundle != null) {
+            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
+        }
+
+        if (feedIds == null) {
+            feedIds = new ArrayList<String>();
+            final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
+            Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID }, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
+            while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
+                feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
+            }
+            cursor.close();
+        }
 
 		apiManager = new APIManager(this);
-
-		final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
-		Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID }, DatabaseConstants.getStorySelectionFromState(currentState), null, null);
-
-		while (cursor.moveToNext() && (feedIds.size() <= AppConstants.MAX_FEED_LIST_SIZE)) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
-		}
 
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
 		if (itemListFragment == null) {
@@ -78,7 +85,6 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
             FeedUtils.updateFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, folderName));
 		}
 	}
-
 
 	@Override
 	public void markItemListAsRead() {
@@ -138,5 +144,13 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
     @Override
     public void onCancel() {
         // do nothing
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        if (this.feedIds != null) {
+            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
+        }
+        super.onSaveInstanceState(bundle);
     }
 }
