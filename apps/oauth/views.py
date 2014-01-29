@@ -282,7 +282,7 @@ def api_feed_list(request, trigger_slug=None):
     user = request.user
     usf = UserSubscriptionFolders.objects.get(user=user)
     flat_folders = usf.flatten_folders()
-    titles = []
+    titles = [dict(label=" - Folder: All Site Stories", value="all")]
     feeds = {}
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)    
@@ -294,7 +294,7 @@ def api_feed_list(request, trigger_slug=None):
         if folder_title and folder_title != " ":
             titles.append(dict(label=" - Folder: %s" % folder_title, value=folder_title, optgroup=True))
         else:
-            titles.append(dict(label=" - Folder: Top Level", value=" ", optgroup=True))
+            titles.append(dict(label=" - Folder: Top Level", value="Top Level", optgroup=True))
         folder_contents = []
         for feed_id in flat_folders[folder_title]:
             if feed_id not in feeds: continue
@@ -311,7 +311,7 @@ def api_folder_list(request, trigger_slug=None):
     user = request.user
     usf = UserSubscriptionFolders.objects.get(user=user)
     flat_folders = usf.flatten_folders()
-    titles = []
+    titles = [dict(label="All Site Stories", value="all")]
     
     for folder_title in sorted(flat_folders.keys()):
         if folder_title and folder_title != " ":
@@ -336,7 +336,7 @@ def api_saved_tag_list(request):
     tags = sorted(tags, key=lambda t: t['value'].lower())
     catchall = dict(label="All Saved Stories (%s %s)" % (starred_count,
                                                          'story' if starred_count == 1 else 'stories'),
-                    value="")
+                    value="all")
     tags.insert(0, catchall)
     
     return {"data": tags}
@@ -356,7 +356,7 @@ def api_shared_usernames(request):
                          value=social_feed['user_id']))
     blurblogs = sorted(blurblogs, key=lambda b: b['label'].lower())
     catchall = dict(label="All Shared Stories",
-                    value="")
+                    value="all")
     blurblogs.insert(0, catchall)
     
     return {"data": blurblogs}
@@ -372,9 +372,9 @@ def api_unread_story(request, unread_score=None):
     fields = body.get('triggerFields')
     feed_or_folder = fields['feed_or_folder']
     entries = []
-    
-    if isinstance(feed_or_folder, int):
-        feed_id = feed_or_folder
+
+    if feed_or_folder.isdigit():
+        feed_id = int(feed_or_folder)
         usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
         found_feed_ids = [feed_id]
         found_trained_feed_ids = [feed_id] if usersub.is_trained else []
@@ -383,10 +383,14 @@ def api_unread_story(request, unread_score=None):
                                       default_cutoff_date=user.profile.unread_cutoff)
     else:
         folder_title = feed_or_folder
+        if folder_title == "Top Level":
+            folder_title = " "
         usf = UserSubscriptionFolders.objects.get(user=user)
         flat_folders = usf.flatten_folders()
-        feed_ids = flat_folders.get(folder_title)
-        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
+        feed_ids = []
+        if folder_title != "all":
+            feed_ids = flat_folders.get(folder_title)
+        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids__in=feed_ids,
                                                    read_filter="unread")
         feed_ids = [sub.feed_id for sub in usersubs]
         params = {
@@ -462,7 +466,10 @@ def api_saved_story(request):
     fields = body.get('triggerFields')
     story_tag = fields['story_tag']
     entries = []
-
+    
+    if story_tag == "all":
+        story_tag = ""
+    
     mstories = MStarredStory.objects(
         user_id=user.pk,
         user_tags__contains=story_tag
@@ -511,9 +518,9 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
-    if isinstance(blurblog_user, int):
-        social_user_ids = [blurblog_user]
-    else:
+    if blurblog_user.isdigit():
+        social_user_ids = [int(blurblog_user)]
+    elif blurblog_user == "all":
         socialsubs = MSocialSubscription.objects.filter(user_id=user.pk)
         social_user_ids = [ss.subscription_user_id for ss in socialsubs]
 
