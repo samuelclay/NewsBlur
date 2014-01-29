@@ -422,8 +422,8 @@ def api_unread_story(request, unread_score=None):
     }) for f in Feed.objects.filter(pk__in=found_feed_ids)])
 
     for story in stories:
-        if before and story['story_date'].strftime("%s") > before: continue
-        if after and story['story_date'].strftime("%s") < after: continue
+        if before and int(story['story_date'].strftime("%s")) > before: continue
+        if after and int(story['story_date'].strftime("%s")) < after: continue
         score = 0
         if found_trained_feed_ids and story['story_feed_id'] in found_trained_feed_ids:
             score = compute_story_score(story, classifier_titles=classifier_titles, 
@@ -445,7 +445,7 @@ def api_unread_story(request, unread_score=None):
             "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
-                "timestamp": story['story_date'].strftime("%f")
+                "timestamp": int(story['story_date'].strftime("%s"))
             },
         })
     
@@ -477,8 +477,8 @@ def api_saved_story(request):
     }) for f in Feed.objects.filter(pk__in=found_feed_ids)])
 
     for story in stories:
-        if before and story['story_date'].strftime("%s") > before: continue
-        if after and story['story_date'].strftime("%s") < after: continue
+        if before and int(story['story_date'].strftime("%s")) > before: continue
+        if after and int(story['story_date'].strftime("%s")) < after: continue
         feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
@@ -493,7 +493,7 @@ def api_saved_story(request):
             "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
-                "timestamp": story['story_date'].strftime("%f")
+                "timestamp": int(story['story_date'].strftime("%s"))
             },
         })
     
@@ -551,8 +551,8 @@ def api_shared_story(request):
                                                                        feed_id__in=found_feed_ids))
         
     for story in stories:
-        if before and story['story_date'].strftime("%s") > before: continue
-        if after and story['story_date'].strftime("%s") < after: continue
+        if before and int(story['story_date'].strftime("%s")) > before: continue
+        if after and int(story['story_date'].strftime("%s")) < after: continue
         score = compute_story_score(story, classifier_titles=classifier_titles, 
                                     classifier_authors=classifier_authors, 
                                     classifier_tags=classifier_tags,
@@ -573,7 +573,7 @@ def api_shared_story(request):
             "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
-                "timestamp": story['story_date'].strftime("%f")
+                "timestamp": int(story['story_date'].strftime("%s"))
             },
         })
 
