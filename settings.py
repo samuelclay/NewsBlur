@@ -129,7 +129,7 @@ OAUTH2_PROVIDER = {
         'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
     },
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
-
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10 # 10 years
 }
 
 # ===========
