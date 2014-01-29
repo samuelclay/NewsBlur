@@ -427,12 +427,15 @@ def api_unread_story(request, unread_score=None):
             if score < 0: continue
             if unread_score == "new-focus-story" and score < 1: continue
         entries.append({
-            "story_title": story['story_title'],
-            "story_content": story['story_content'],
-            "story_url": story['story_permalink'],
-            "story_author": story['story_authors'],
-            "story_date": story['story_date'],
-            "story_score": score,
+            "StoryTitle": story['story_title'],
+            "StoryContent": story['story_content'],
+            "StoryUrl": story['story_permalink'],
+            "StoryAuthor": story['story_authors'],
+            "StoryDate": story['story_date'],
+            "StoryScore": score,
+            "SiteTitle": "",
+            "SiteWebsite": "",
+            "SiteFeedAddress": "",
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
@@ -463,12 +466,16 @@ def api_saved_story(request):
         if before and story['story_date'].strftime("%s") > before: continue
         if after and story['story_date'].strftime("%s") < after: continue
         entries.append({
-            "story_title": story['story_title'],
-            "story_content": story['story_content'],
-            "story_url": story['story_permalink'],
-            "story_author": story['story_authors'],
-            "story_date": story['story_date'],
-            "saved_date": story['starred_date'],
+            "StoryTitle": story['story_title'],
+            "StoryContent": story['story_content'],
+            "StoryUrl": story['story_permalink'],
+            "StoryAuthor": story['story_authors'],
+            "StoryDate": story['story_date'],
+            "SavedDate": story['starred_date'],
+            "SavedTags": ', '.join(story['user_tags']),
+            "SiteTitle": "",
+            "SiteWebsite": "",
+            "SiteFeedAddress": "",
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
@@ -528,12 +535,16 @@ def api_shared_story(request):
                                     classifier_feeds=classifier_feeds)
         if score < 0: continue
         entries.append({
-            "story_title": story['story_title'],
-            "story_content": story['story_content'],
-            "story_url": story['story_permalink'],
-            "story_author": story['story_authors'],
-            "story_date": story['story_date'],
-            "story_score": score,
+            "StoryTitle": story['story_title'],
+            "StoryContent": story['story_content'],
+            "StoryUrl": story['story_permalink'],
+            "StoryAuthor": story['story_authors'],
+            "StoryDate": story['story_date'],
+            "StoryScore": score,
+            "SharedComments": story['comments'],
+            "SiteTitle": "",
+            "SiteWebsite": "",
+            "SiteFeedAddress": "",
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": story['story_date'].strftime("%f")
