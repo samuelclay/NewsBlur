@@ -442,7 +442,7 @@ def api_unread_story(request, unread_score=None):
             "StoryContent": story['story_content'],
             "StoryUrl": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'],
+            "StoryDate": story['story_date'].isoformat(),
             "StoryScore": score,
             "SiteTitle": feed and feed['title'],
             "SiteWebsite": feed and feed['website'],
@@ -492,15 +492,15 @@ def api_saved_story(request):
             "StoryContent": story['story_content'],
             "StoryUrl": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'],
-            "SavedDate": story['starred_date'],
+            "StoryDate": story['story_date'].isoformat(),
+            "SavedDate": story['starred_date'].isoformat(),
             "SavedTags": ', '.join(story['user_tags']),
             "SiteTitle": feed and feed['title'],
             "SiteWebsite": feed and feed['website'],
             "SiteFeedAddress": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
-                "timestamp": int(story['story_date'].strftime("%s"))
+                "timestamp": int(story['starred_date'].strftime("%s"))
             },
         })
     
@@ -571,11 +571,11 @@ def api_shared_story(request):
             "StoryContent": story['story_content'],
             "StoryUrl": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'],
+            "StoryDate": story['story_date'].isoformat(),
             "StoryScore": score,
             "SharedComments": story['comments'],
             "ShareUsername": users.get(story['user_id']),
-            "SharedDate": story['shared_date'],
+            "SharedDate": story['shared_date'].isoformat(),
             "SiteTitle": feed and feed['title'],
             "SiteWebsite": feed and feed['website'],
             "SiteFeedAddress": feed and feed['address'],
