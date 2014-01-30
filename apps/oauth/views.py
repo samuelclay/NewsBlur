@@ -453,6 +453,8 @@ def api_unread_story(request, unread_score=None):
             },
         })
     
+    logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
+    
     return {"data": entries}
 
 @login_required
@@ -503,6 +505,8 @@ def api_saved_story(request):
                 "timestamp": int(story['starred_date'].strftime("%s"))
             },
         })
+    
+    logging.user(request, "~FCChecking saved stories from ~SBIFTTT~SB: ~SB%s~SN - ~SB%s~SN stories" % (story_tag if story_tag else "[All stories]", len(entries)))
     
     return {"data": entries}
     
@@ -585,10 +589,14 @@ def api_shared_story(request):
             },
         })
 
+    logging.user(request, "~FMChecking shared stories from ~SB~FCIFTTT~SN~FM: ~SB~FM%s~FM~SN - ~SB%s~SN stories" % (blurblog_user, len(entries)))
+
     return {"data": entries}
 
 @json.json_view
 def ifttt_status(request):
+    logging.user(request, "~FCChecking ~SBIFTTT~SN status")
+
     return {"data": {
         "status": "OK",
         "time": datetime.datetime.now().isoformat()
@@ -633,9 +641,9 @@ def api_share_new_story(request):
         for socialsub in socialsubs:
             socialsub.needs_unread_recalc = True
             socialsub.save()
-        logging.user(request, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+        logging.user(request, "~BM~FYSharing story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     else:
-        logging.user(request, "~BM~FY~SBAlready~SN shared story from IFTTT: ~SB%s: %s" % (story_url, comments))
+        logging.user(request, "~BM~FY~SBAlready~SN shared story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     
     try:
         socialsub = MSocialSubscription.objects.get(user_id=user.pk, 
@@ -684,11 +692,11 @@ def api_save_new_story(request):
             "story_feed_id": original_feed and original_feed.pk or 0,
             "user_tags": [tag for tag in user_tags.split(',')]
         }
-        logging.user(request, "~FCStarring by IFTTT: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
         story = MStarredStory.objects.create(**story_db)
+        logging.user(request, "~FCStarring by ~SBIFTTT~SN: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
         MStarredStoryCounts.count_tags_for_user(user.pk)
     except OperationError:
-        logging.user(request, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
+        logging.user(request, "~FCAlready starred by ~SBIFTTT~SN: ~SB%s" % (story_db['story_title'][:50]))
         pass
     
     return {"data": [{
@@ -715,7 +723,7 @@ def api_save_new_subscription(request):
         bookmarklet=True
     )
     
-    logging.user(request, "~FRAdding URL from IFTTT: ~SB%s (in %s)" % (url, folder))
+    logging.user(request, "~FRAdding URL from ~FC~SBIFTTT~SN~FR: ~SB%s (in %s)" % (url, folder))
 
     if us and us.feed:
         url = us.feed.feed_address
