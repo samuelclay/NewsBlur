@@ -417,3 +417,16 @@ def delete_all_sites(request):
     logging.user(request.user, "~BC~FRDeleting %s sites" % sub_count)
 
     return dict(code=1)
+
+
+@login_required
+@render_to('profile/email_optout.xhtml')
+def email_optout(request):
+    user = request.user
+    user.profile.send_emails = False
+    user.profile.save()
+    
+    return {
+        "user": user,
+    }
+    
