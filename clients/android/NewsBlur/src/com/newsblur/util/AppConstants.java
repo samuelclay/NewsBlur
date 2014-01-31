@@ -41,4 +41,7 @@ public class AppConstants {
     // when generating a request for multiple feeds, limit the total number requested to prevent
     // unworkably long URLs
     public static final int MAX_FEED_LIST_SIZE = 250;
+
+    // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
+    public static final int READING_STORY_PRELOAD = 5;
 }

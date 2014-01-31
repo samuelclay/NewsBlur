@@ -183,12 +183,14 @@ BANNED_USER_AGENTS = (
     'feed reader-background',
     'missing',
 )
+
 class UserAgentBanMiddleware:
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
         
         if 'profile' in request.path: return
         if 'haproxy' in request.path: return
+        if 'account' in request.path: return
         if getattr(settings, 'TEST_DEBUG'): return
         
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
@@ -197,7 +199,6 @@ class UserAgentBanMiddleware:
                 'code': -1
             }
             logging.user(request, "~FB~SN~BBBanned UA: ~SB%s" % (user_agent))
-
-            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
             
+            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
 

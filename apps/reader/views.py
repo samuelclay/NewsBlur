@@ -313,7 +313,6 @@ def load_feeds_flat(request):
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
-    flat_folders = {" ": []}
     iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
@@ -346,32 +345,11 @@ def load_feeds_flat(request):
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
-
+    
+    flat_folders = []
     if folders:
-        folders = json.decode(folders.folders)
-    
-        def make_feeds_folder(items, parent_folder="", depth=0):
-            for item in items:
-                if isinstance(item, int) and item in feeds:
-                    if not parent_folder:
-                        parent_folder = ' '
-                    if parent_folder in flat_folders:
-                        flat_folders[parent_folder].append(item)
-                    else:
-                        flat_folders[parent_folder] = [item]
-                elif isinstance(item, dict):
-                    for folder_name in item:
-                        folder = item[folder_name]
-                        flat_folder_name = "%s%s%s" % (
-                            parent_folder if parent_folder and parent_folder != ' ' else "",
-                            " - " if parent_folder and parent_folder != ' ' else "",
-                            folder_name
-                        )
-                        flat_folders[flat_folder_name] = []
-                        make_feeds_folder(folder, flat_folder_name, depth+1)
+        flat_folders = folders.flatten_folders(feeds=feeds)
         
-        make_feeds_folder(folders)
-    
     social_params = {
         'user_id': user.pk,
         'include_favicon': include_favicons,

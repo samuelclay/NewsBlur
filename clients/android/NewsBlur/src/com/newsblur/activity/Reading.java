@@ -214,24 +214,22 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+        if (pager == null) return false;
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
+        if (story == null) return false;
 
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_original) {
-			if (story != null) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(story.permalink));
-				startActivity(i);
-			}
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(story.permalink));
+            startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
-				newFragment.show(getSupportFragmentManager(), "dialog");
-			}
+            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
+            newFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
 			FeedUtils.shareStory(story, this);
@@ -378,7 +376,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
     private void checkStoryCount(int position) {
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
+		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
 			requestedPage = true;
             enableMainProgress(true);
@@ -584,6 +582,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     public void overlayText(View v) {
         ReadingItemFragment item = getReadingFragment();
+        if (item == null) return;
         item.switchSelectedFeedView();
         updateOverlayText();
     }

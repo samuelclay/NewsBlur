@@ -168,10 +168,10 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         var feed_id = this.$next_feed.data('id');
         if (_.string.include(feed_id, 'social:')) {
             NEWSBLUR.reader.open_social_stories(this.$next_feed.data('id'), {
-                $feed_link: this.$next_feed
+                $feed: this.$next_feed
             });
         } else {
-            NEWSBLUR.reader.open_feed(this.$next_feed.data('id'), this.$next_feed);
+            NEWSBLUR.reader.open_feed(this.$next_feed.data('id'), {$feed: this.$next_feed});
         }
         
         e.preventDefault();

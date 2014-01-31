@@ -4470,7 +4470,10 @@ form.opml_import_form input {
     position: relative;
     padding: 5px 8px 4px;
 }
-.NB-narrow .NB-intelligence-slider .NB-intelligence-label {
+.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green .NB-intelligence-label {
+    display: none;
+}
+.NB-extra-narrow .NB-intelligence-slider .NB-intelligence-slider-yellow .NB-intelligence-label {
     display: none;
 }
 .NB-intelligence-slider img {
@@ -4480,9 +4483,13 @@ form.opml_import_form input {
     float: left;
     vertical-align: bottom;
 }
-.NB-narrow .NB-intelligence-slider img {
+.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green img {
     margin: 2px 8px 1px;
 }
+.NB-extra-narrow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
+    margin: 2px 8px 1px;
+}
+
 /* ===================== */
 /* = Add Feeds/Folders = */
 /* ===================== */

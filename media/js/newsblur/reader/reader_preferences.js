@@ -145,6 +145,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 ])
                             ])
                         ]),
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-dateformat-1', type: 'radio', name: 'dateformat', value: '12' }),
+                                $.make('label', { 'for': 'NB-preference-dateformat-1' }, [
+                                    'Use 12-hour clock'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-dateformat-2', type: 'radio', name: 'dateformat', value: '24' }),
+                                $.make('label', { 'for': 'NB-preference-dateformat-2' }, [
+                                    'Use 24-hour clock'
+                                ])
+                            ])
+                        ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Timezone'
                         ])
@@ -941,6 +955,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=animations]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=dateformat]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.dateformat) {
                 $(this).attr('checked', true);
                 return false;
             }
