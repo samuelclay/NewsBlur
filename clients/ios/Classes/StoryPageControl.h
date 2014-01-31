@@ -34,6 +34,7 @@
 	Class popoverClass;
     
     BOOL isDraggingScrollview;
+    BOOL isAnimatedIntoPlace;
     BOOL waitingForNextUnreadFromServer;
     UIInterfaceOrientation _orientation;
 }
@@ -68,6 +69,7 @@
 @property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
+@property (assign) BOOL isAnimatedIntoPlace;
 @property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic) NSInteger scrollingToPage;
@@ -88,6 +90,7 @@
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location;
+- (void)animateIntoPlace;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;

@@ -51,6 +51,7 @@
 @synthesize storyHUD;
 @synthesize scrollingToPage;
 @synthesize traverseView;
+@synthesize isAnimatedIntoPlace;
 @synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
 
@@ -241,6 +242,7 @@
     
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
+    self.isAnimatedIntoPlace = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
@@ -605,6 +607,23 @@
     }
 }
 
+- (void)animateIntoPlace {
+    // Move view into position if no story is selected yet
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !self.isAnimatedIntoPlace) {
+        CGRect frame = self.scrollView.frame;
+        frame.origin.x = frame.size.width;
+        self.scrollView.frame = frame;
+        [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            CGRect frame = self.scrollView.frame;
+            frame.origin.x = 0;
+            self.scrollView.frame = frame;
+        } completion:^(BOOL finished) {
+            self.isAnimatedIntoPlace = YES;
+        }];
+    }
+}
+
 - (void)changePage:(NSInteger)pageIndex {
     [self changePage:pageIndex animated:YES];
 }
@@ -613,7 +632,6 @@
 //    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
-
     CGRect frame = self.scrollView.frame;
     frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;

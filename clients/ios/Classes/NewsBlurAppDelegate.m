@@ -1227,7 +1227,7 @@
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        //        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
+        [self.storyPageControl animateIntoPlace];
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
