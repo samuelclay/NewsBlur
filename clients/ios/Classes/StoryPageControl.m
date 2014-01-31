@@ -614,7 +614,7 @@
         CGRect frame = self.scrollView.frame;
         frame.origin.x = frame.size.width;
         self.scrollView.frame = frame;
-        [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        [UIView animateWithDuration:.22 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             CGRect frame = self.scrollView.frame;
             frame.origin.x = 0;
             self.scrollView.frame = frame;
