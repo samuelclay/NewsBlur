@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
+
+{% block content %}
+
+
+    <style>
+        body {
+            font-size: 16px;
+            font-weight: bold;
+            color: #A0A0A0;
+        }
+        .NB-demo {
+            position: absolute;
+            top: 200px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-thanks {
+            position: absolute;
+            top: 230px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-thanks div {
+            margin: 0 0 12px 0;
+            text-shadow: 0 1px 0 #FFF;
+        }
+    </style>
+    
+    <div style="text-align: center;position: relative;">
+
+        <div class="NB-thanks">
+            <div style="color: #175700;font-size: 24px"><b><em>Unsubscribed!</em></b></div>
+            {% if user.profile.is_active %}
+                <div>You will no longer receive any emails from NewsBlur.</div>
+            {% else %}
+                <div style="max-width: 600px;margin: 24px auto;">You will no longer receive any emails from NewsBlur, except for a single email coming soon letting you know your free account is ready to use.</div>
+            {% endif %}
+            <div><a href="{% url "index" %}">Continue to NewsBlur &raquo;</a></div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
