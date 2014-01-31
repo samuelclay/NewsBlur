@@ -2,7 +2,7 @@ import datetime
 from celery.task import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
-
+from apps.reader.models import UserSubscription
 
 class EmailNewUser(Task):
     
@@ -42,3 +42,9 @@ class ActivateNextNewUser(Task):
     
     def run(self):
         RNewUserQueue.activate_next()
+
+class CleanupUser(Task):
+    name = 'cleanup-user'
+    
+    def run(self, user_id):
+        UserSubscription.trim_user_read_stories(user_id)

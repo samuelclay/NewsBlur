@@ -144,7 +144,6 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
-			Log.d(this.getClass().getName(), "onActivityResult:RESULT_OK" );
 			folderFeedList.hasUpdated();
 		}
 	}
@@ -165,7 +164,8 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
      */
     @Override
     public void updatePartialSync() {
-        folderFeedList.hasUpdated();
+        // TODO: move 2-step sync to new async lib and remove this method entirely
+        // folderFeedList.hasUpdated();
     }
 	
 	@Override

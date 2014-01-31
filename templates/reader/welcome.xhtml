@@ -70,7 +70,9 @@
                     <div class="NB-module-header-signup">Sign up</div>
                 </div>
                 <div class="NB-login">
-                    <form method="post" action="{% url "login" %}">
+                    <form method="post" action="{% url "welcome-login" %}">
+                        {% csrf_token %}
+
                         <div>
                             {{ login_form.username.label_tag }}
                             {{ login_form.username }}
@@ -97,7 +99,9 @@
                 </div>
             
                 <div class="NB-signup">
-                    <form method="post" action="{% url "signup" %}">
+                    <form method="post" action="{% url "welcome-signup" %}">
+                        {% csrf_token %}
+
                         <div>
                             {{ signup_form.username.label_tag }}
                             {{ signup_form.username }}

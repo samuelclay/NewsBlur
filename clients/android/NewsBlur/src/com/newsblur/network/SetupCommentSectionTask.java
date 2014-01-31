@@ -110,6 +110,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
 					UserProfile user = UserProfile.fromCursor(userCursor);
+                    userCursor.close();
 
 					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
 					favouriteImage.setTag(id);
@@ -135,6 +136,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					if (story != null) {
 						Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
 						UserProfile user = UserProfile.fromCursor(userCursor);
+                        userCursor.close();
 
 						DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
 						newFragment.show(manager, "dialog");
@@ -171,15 +173,18 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
 					replyUsername.setText(R.string.unknown_user);
 				}
+                replyCursor.close();
 				
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
 				replySharedDate.setText(reply.shortDate + " ago");
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}
+            replies.close();
 
 			Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
 			UserProfile commentUser = UserProfile.fromCursor(userCursor);
+            userCursor.close();
 
 			TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
 			commentUsername.setText(commentUser.username);
@@ -209,6 +214,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
 					imageLoader.displayImage(userPhoto, usershareImage, 10f);
 				}
+                sourceUserCursor.close();
 			} else {
 				imageLoader.displayImage(userPhoto, commentImage, 10f);
 			}
@@ -260,6 +266,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                         ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
                         sharedGrid.addView(image);
                     }
+                    userCursor.close();
                 }
             }
 

@@ -34,7 +34,6 @@ import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
@@ -93,8 +92,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private List<Story> pageHistory;
 
-    private DefaultFeedView defaultFeedView;
-    private DefaultFeedView currentFeedView;
+    protected DefaultFeedView defaultFeedView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -114,7 +112,6 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
-        currentFeedView = defaultFeedView;
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
@@ -168,15 +165,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                     fragment.updateStory(readingAdapter.getStory(pager.getCurrentItem()));
                     fragment.updateSaveButton();
 
-                    // make sure we start in default mode and the ui reflects it
-                    synchronized (currentFeedView) {
-                        currentFeedView = defaultFeedView;
-                        if (currentFeedView == DefaultFeedView.STORY) {
-                            enableStoryMode();
-                        } else {
-                            enableTextMode();
-                        }
-                    }
+                    updateOverlayText();
                 }
             } catch (IllegalStateException ise) {
                 // sometimes the pager is already shutting down by the time the callback finishes
@@ -225,24 +214,22 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+        if (pager == null) return false;
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
+        if (story == null) return false;
 
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_original) {
-			if (story != null) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(story.permalink));
-				startActivity(i);
-			}
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(story.permalink));
+            startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
-				newFragment.show(getSupportFragmentManager(), "dialog");
-			}
+            DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
+            newFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
 			FeedUtils.shareStory(story, this);
@@ -305,6 +292,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
             markStoryRead(story);
 		}
         checkStoryCount(position);
+
+        updateOverlayText();
 	}
 
     // interface ScrollChangeListener
@@ -387,7 +376,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      */
     private void checkStoryCount(int position) {
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-		if (((position + 2) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
+		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
 			requestedPage = true;
             enableMainProgress(true);
@@ -398,6 +387,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	protected void enableMainProgress(boolean enabled) {
         enableProgressCircle(overlayProgressRight, enabled);
 	}
+
+    public void enableLeftProgressCircle(boolean enabled) {
+        enableProgressCircle(overlayProgressLeft, enabled);
+    }
 
     private void enableProgressCircle(final ProgressBar view, final boolean enabled) {
         runOnUiThread(new Runnable() {
@@ -440,9 +433,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     // NB: this callback is for the text size slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-	    PrefsUtils.setTextSize(this, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR);
+        float size = AppConstants.READING_FONT_SIZE[progress];
+	    PrefsUtils.setTextSize(this, size);
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
-		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / AppConstants.FONT_SIZE_INCREMENT_FACTOR); 
+		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, size); 
 		sendBroadcast(data);
 	}
 
@@ -587,51 +581,21 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     public void overlayText(View v) {
-        synchronized (currentFeedView) {
-            // if we were already in text mode, switch back to story mode
-            if (currentFeedView == DefaultFeedView.TEXT) {
-                enableStoryMode();
-            } else {
-                enableTextMode();
-            }
-        }
-    }
-
-    private void enableTextMode() {
-        final Story story = readingAdapter.getStory(pager.getCurrentItem());
-        if (story != null) {
-            new AsyncTask<Void, Void, StoryTextResponse>() {
-                @Override
-                protected void onPreExecute() {
-                    enableProgressCircle(overlayProgressLeft, true);
-                }
-                @Override
-                protected StoryTextResponse doInBackground(Void... arg) {
-                    return apiManager.getStoryText(story.feedId, story.id);
-                }
-                @Override
-                protected void onPostExecute(StoryTextResponse result) {
-                    ReadingItemFragment item = getReadingFragment();
-                    if ((item != null) && (result != null) && (result.originalText != null)) {
-                        item.showCustomContentInWebview(result.originalText);
-                    }
-                    enableProgressCircle(overlayProgressLeft, false);
-                }
-            }.execute();
-        }
-
-        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
-        this.overlayText.setText(R.string.overlay_story);
-        this.currentFeedView = DefaultFeedView.TEXT;
-    }
-
-    private void enableStoryMode() {    
         ReadingItemFragment item = getReadingFragment();
-        if (item != null) item.showStoryContentInWebview();
+        if (item == null) return;
+        item.switchSelectedFeedView();
+        updateOverlayText();
+    }
 
-        this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
-        this.overlayText.setText(R.string.overlay_text);
-        this.currentFeedView = DefaultFeedView.STORY;
+    private void updateOverlayText() {
+        ReadingItemFragment item = getReadingFragment();
+        if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
+            this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
+            this.overlayText.setText(R.string.overlay_text);
+        } else {
+            this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_story);
+            this.overlayText.setText(R.string.overlay_story);
+        }
     }
 
     private ReadingItemFragment getReadingFragment() {

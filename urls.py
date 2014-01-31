@@ -3,6 +3,9 @@ from django.conf import settings
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
+from django.contrib import admin
+
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$',              reader_views.index, name='index'),
@@ -32,6 +35,7 @@ urlpatterns = patterns('',
     (r'^push/',             include('apps.push.urls')),
     (r'^categories/',       include('apps.categories.urls')),
     (r'^_haproxychk',       static_views.haproxy_check),
+    url(r'^admin/',         include(admin.site.urls)),
     url(r'^about/?',        static_views.about, name='about'),
     url(r'^faq/?',          static_views.faq, name='faq'),
     url(r'^api/?',          static_views.api, name='api'),
@@ -46,6 +50,14 @@ urlpatterns = patterns('',
     url(r'^android/?',      static_views.android, name='android-static'),
     url(r'^firefox/?',      static_views.firefox, name='firefox'),
     url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
+    url(r'^account/login/?$', 
+                            'django.contrib.auth.views.login', 
+                            {'template_name': 'accounts/login.html'}, name='login'),
+    url(r'^account/logout/?$', 
+                            'django.contrib.auth.views.logout', 
+                            {'next_page': '/'}, name='logout'),
+    url(r'^account/ifttt/v1/', include('apps.oauth.urls')),
+    url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
 )
 
 if settings.DEBUG:

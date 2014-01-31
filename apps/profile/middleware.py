@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
+from apps.profile.tasks import CleanupUser
 from utils import json_functions as json
 
 class LastSeenMiddleware(object):
@@ -22,6 +23,7 @@ class LastSeenMiddleware(object):
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
+                CleanupUser.delay(user_id=request.user.pk)
             elif settings.DEBUG:
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
@@ -181,12 +183,14 @@ BANNED_USER_AGENTS = (
     'feed reader-background',
     'missing',
 )
+
 class UserAgentBanMiddleware:
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
         
         if 'profile' in request.path: return
         if 'haproxy' in request.path: return
+        if 'account' in request.path: return
         if getattr(settings, 'TEST_DEBUG'): return
         
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
@@ -195,7 +199,6 @@ class UserAgentBanMiddleware:
                 'code': -1
             }
             logging.user(request, "~FB~SN~BBBanned UA: ~SB%s" % (user_agent))
-
-            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
             
+            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
 

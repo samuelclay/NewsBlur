@@ -41,8 +41,13 @@ public class TextSizeDialogFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		this.currentValue = getArguments().getFloat(CURRENT_SIZE);
 		View v = inflater.inflate(R.layout.textsize_slider_dialog, null);
+
+        int currentSizeIndex = 0;
+        for (int i=0; i<AppConstants.READING_FONT_SIZE.length; i++) {
+            if (currentValue >= AppConstants.READING_FONT_SIZE[i]) currentSizeIndex = i;
+        }
 		seekBar = (SeekBar) v.findViewById(R.id.textSizeSlider);
-		seekBar.setProgress((int) (currentValue * AppConstants.FONT_SIZE_INCREMENT_FACTOR));
+		seekBar.setProgress(currentSizeIndex);
 		
 		getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_DITHER, WindowManager.LayoutParams.FLAG_DITHER);
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);

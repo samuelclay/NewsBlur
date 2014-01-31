@@ -826,7 +826,8 @@ class Feed(models.Model):
 
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
+            if self.feed_link:
+                self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
             self.save()
             
         options = {
@@ -1220,6 +1221,10 @@ class Feed(models.Model):
             story['user_tags'] = story_db.user_tags
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
+        if hasattr(story_db, 'comments'):
+            story['comments'] = story_db.comments
+        if hasattr(story_db, 'user_id'):
+            story['user_id'] = story_db.user_id
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:

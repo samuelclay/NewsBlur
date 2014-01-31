@@ -100,6 +100,7 @@ def list_do():
     
 def host(*names):
     env.hosts = []
+    env.doname = ','.join(names)
     hostnames = do(split=True)
     for role, hosts in hostnames.items():
         for host in hosts:
@@ -278,7 +279,10 @@ def setup_task_image():
     copy_task_settings()
     setup_hosts()
     config_pgbouncer()
+    pull()
+    pip()
     deploy()
+    done()
 
 # ==================
 # = Setup - Common =
@@ -286,7 +290,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % env.host_string
+    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -408,9 +412,10 @@ def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
 def setup_python():
-    # sudo('easy_install -U pip')
-    sudo('easy_install -U $(<%s)' %
-         os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
+    sudo('easy_install -U pip')
+    # sudo('easy_install -U $(<%s)' %
+    #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
+    pip()
     put('config/pystartup.py', '.pystartup')
 
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -426,6 +431,12 @@ def setup_python():
         with settings(warn_only=True):
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
+def pip():
+    with cd(env.NEWSBLUR_PATH):
+        sudo('easy_install -U pip')
+        sudo('pip install --upgrade pip')
+        sudo('pip install -r requirements.txt')
+    
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
     sudo('easy_install --always-unzip pil')
@@ -1038,6 +1049,8 @@ def setup_do(name, size=2, image=None):
         images = dict((s.name, s.id) for s in doapi.images(show_all=False))
         image_id = images[IMAGE_NAME]
     name = do_name(name)
+    env.doname = name
+    print "Creating droplet: %s" % name
     instance = doapi.create_droplet(name=name,
                                     size_id=size_id,
                                     image_id=image_id,
@@ -1077,7 +1090,7 @@ def do_name(name):
         hosts = do_roledefs(split=False)
         hostnames = [host.name for host in hosts]
         existing_hosts = [hostname for hostname in hostnames if name in hostname]
-        for i in range(1, 50):
+        for i in range(1, 100):
             try_host = "%s%02d" % (name, i)
             if try_host not in existing_hosts:
                 print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 

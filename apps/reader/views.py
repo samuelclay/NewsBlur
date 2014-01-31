@@ -23,6 +23,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
+from oauth2_provider.decorators import protected_resource
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -311,7 +313,6 @@ def load_feeds_flat(request):
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
-    flat_folders = {" ": []}
     iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
@@ -344,32 +345,11 @@ def load_feeds_flat(request):
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
-
+    
+    flat_folders = []
     if folders:
-        folders = json.decode(folders.folders)
-    
-        def make_feeds_folder(items, parent_folder="", depth=0):
-            for item in items:
-                if isinstance(item, int) and item in feeds:
-                    if not parent_folder:
-                        parent_folder = ' '
-                    if parent_folder in flat_folders:
-                        flat_folders[parent_folder].append(item)
-                    else:
-                        flat_folders[parent_folder] = [item]
-                elif isinstance(item, dict):
-                    for folder_name in item:
-                        folder = item[folder_name]
-                        flat_folder_name = "%s%s%s" % (
-                            parent_folder if parent_folder and parent_folder != ' ' else "",
-                            " - " if parent_folder and parent_folder != ' ' else "",
-                            folder_name
-                        )
-                        flat_folders[flat_folder_name] = []
-                        make_feeds_folder(folder, flat_folder_name, depth+1)
+        flat_folders = folders.flatten_folders(feeds=feeds)
         
-        make_feeds_folder(folders)
-    
     social_params = {
         'user_id': user.pk,
         'include_favicon': include_favicons,
@@ -743,7 +723,7 @@ def load_feed_page(request, feed_id):
     
     logging.user(request, "~FYLoading original page, from the db")
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
-    
+
 @json.json_view
 def load_starred_stories(request):
     user   = get_user(request)
@@ -1855,17 +1835,20 @@ def mark_story_as_starred(request):
     story_db.pop('id', None)
     story_db.pop('user_tags', None)
     now = datetime.datetime.now()
-    story_values = dict(user_id=request.user.pk, starred_date=now, user_tags=user_tags, **story_db)
-    starred_story, created = MStarredStory.objects.get_or_create(
-        story_hash=story.story_hash,
-        user_id=story_values.pop('user_id'),
-        defaults=story_values)
-    if created:
+    story_values = dict(starred_date=now, user_tags=user_tags, **story_db)
+    params = dict(story_guid=story.story_guid, user_id=request.user.pk)
+    starred_story = MStarredStory.objects(**params).limit(1)
+    created = False
+    if not starred_story:
+        params.update(story_values)
+        starred_story = MStarredStory.objects.create(**params)
+        created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
     else:
+        starred_story = starred_story[0]
         starred_story.user_tags = user_tags
         starred_story.save()
     
@@ -1896,7 +1879,11 @@ def mark_story_as_unstarred(request):
         MActivity.remove_starred_story(user_id=request.user.pk, 
                                        story_feed_id=starred_story.story_feed_id,
                                        story_id=starred_story.story_guid)
-        starred_story.delete()
+        starred_story.user_id = 0
+        try:
+            starred_story.save()
+        except NotUniqueError:
+            starred_story.delete()
         MStarredStoryCounts.count_tags_for_user(request.user.pk)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:

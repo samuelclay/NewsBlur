@@ -23,7 +23,7 @@ kombu==2.5.7
 mongoengine==0.8.2
 nltk==2.0.4
 oauth2==1.5.211
-psutil==0.7.1
+psutil>=1.2.1
 pyes==0.19.1
 pyelasticsearch==0.5
 pyflakes==0.6.1
@@ -39,3 +39,5 @@ requests==1.1.0
 seacucumber==1.5
 South==0.7.6
 stripe==1.7.10
+django-oauth-toolkit==0.5.0
+django-cors-headers==0.12

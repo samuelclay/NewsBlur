@@ -229,7 +229,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         // Reset story content height to get an accurate height measurement.
         $story_content.stop(true, true).css('height', 'auto');
         $story_content.removeData('original_height');
-        
+
         this.resize({change_tag: true});
     },
     

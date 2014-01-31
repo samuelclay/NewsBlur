@@ -9,11 +9,13 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +33,9 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
+import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -63,10 +67,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public String previouslySavedShareText;
 	private ImageView feedIcon;
     private Reading activity;
+    private DefaultFeedView selectedFeedView;
+    private String originalText;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails) {
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -79,6 +85,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
+        args.putSerializable("defaultFeedView", defaultFeedView);
 		readingFragment.setArguments(args);
 
 		return readingFragment;
@@ -115,9 +122,37 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
 
+        selectedFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+
 		receiver = new TextSizeReceiver();
 		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
 	}
+
+    private void loadOriginalText() {
+        if (story != null) {
+            new AsyncTask<Void, Void, StoryTextResponse>() {
+                @Override
+                protected void onPreExecute() {
+                    ((Reading)getActivity()).enableLeftProgressCircle(true);
+                }
+                @Override
+                protected StoryTextResponse doInBackground(Void... arg) {
+                    return apiManager.getStoryText(story.feedId, story.id);
+                }
+                @Override
+                protected void onPostExecute(StoryTextResponse result) {
+                    if ((result != null) && (result.originalText != null)) {
+                        ReadingItemFragment.this.originalText = result.originalText;
+                        showTextContentInWebview();
+                    }
+                    if (getActivity() != null) {
+                        ((Reading)getActivity()).enableLeftProgressCircle(false);
+                    }
+                }
+            }.execute();
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("story", story);
@@ -148,6 +183,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
+
+        if (selectedFeedView == DefaultFeedView.TEXT) {
+            loadOriginalText();
+        } else {
+            showStoryContentInWebview();
+        }
 
 		setupItemMetadata();
 		setupShareButton();
@@ -191,6 +232,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     public void updateStory(Story story) {
         if (story != null ) {
             this.story = story;
+            if (selectedFeedView == DefaultFeedView.TEXT && originalText == null) {
+                loadOriginalText();
+            }
         }
     }
     
@@ -317,6 +361,23 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		
 	}
 
+    public void switchSelectedFeedView() {
+        synchronized (selectedFeedView) {
+            // if we were already in text mode, switch back to story mode
+            if (selectedFeedView == DefaultFeedView.TEXT) {
+                showStoryContentInWebview();
+                selectedFeedView = DefaultFeedView.STORY;
+            } else {
+                showTextContentInWebview();
+                selectedFeedView = DefaultFeedView.TEXT;
+            }
+        }
+    }
+
+    public DefaultFeedView getSelectedFeedView() {
+        return selectedFeedView;
+    }
+
     /**
      * Set the webview to show the default story content.
      */
@@ -329,9 +390,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     /**
      * Set the webview to show non-default content, tracking the change.
      */
-    public void showCustomContentInWebview(String content) {
-        synchronized (WEBVIEW_CONTENT_MUTEX) {
-            setupWebview(content);
+    public void showTextContentInWebview() {
+        if (originalText == null) {
+            loadOriginalText();
+        } else {
+            synchronized (WEBVIEW_CONTENT_MUTEX) {
+                setupWebview(originalText);
+            }
         }
     }
 
@@ -344,9 +409,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		float currentSize = PrefsUtils.getTextSize(getActivity());
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=0; target-densityDpi=medium-dpi\" />");
+		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
+		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
 		builder.append(storyText);

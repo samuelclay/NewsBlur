@@ -4,18 +4,19 @@ import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
-import android.view.ViewGroup;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
+import com.newsblur.util.DefaultFeedView;
 
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
+    protected DefaultFeedView defaultFeedView;
 	
-	public ReadingAdapter(FragmentManager fm) {
+	public ReadingAdapter(FragmentManager fm, DefaultFeedView defaultFeedView) {
 		super(fm);
+        this.defaultFeedView = defaultFeedView;
 	}
 	
 	@Override
