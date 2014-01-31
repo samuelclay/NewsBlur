@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.http import HttpResponse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
 from mongoengine.queryset import OperationError
@@ -266,15 +267,16 @@ def unfollow_twitter_account(request):
     
     return {'code': code, 'message': message}
 
-@login_required
-@json.json_view
 def api_user_info(request):
     user = request.user
     
-    return {"data": {
+    if user.is_anonymous():
+        return HttpResponse(content="{}", status=401)
+    
+    return json.json_response(request, {"data": {
         "name": user.username,
         "id": user.pk,
-    }}
+    }})
     
 @login_required
 @json.json_view
