@@ -53,6 +53,7 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
+        - media/js/vendor/date.format.js
         - media/js/vendor/tag-it.js
         - media/js/vendor/chart.js
         - media/js/vendor/audio.js

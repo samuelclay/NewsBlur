@@ -156,16 +156,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-manage-icon"></div>\
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
-                <% if (story.get("long_parsed_date")) { %>\
-                    <div class="NB-feed-story-date">\
-                        <% if (story.has_modifications()) { %>\
-                            <div class="NB-feed-story-hide-changes" \
-                                 title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
-                            </div>\
-                        <% } %>\
-                        <%= story.get("long_parsed_date") %>\
-                    </div>\
-                <% } %>\
+                <div class="NB-feed-story-date">\
+                    <% if (story.has_modifications()) { %>\
+                        <div class="NB-feed-story-hide-changes" \
+                             title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
+                        </div>\
+                    <% } %>\
+                    <%= story.formatted_long_date() %>\
+                </div>\
                 <% if (story.get("story_authors")) { %>\
                     <div class="NB-feed-story-author-wrapper">\
                         <span class="NB-middot">&middot;</span>\

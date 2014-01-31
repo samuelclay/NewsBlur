@@ -54,7 +54,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                 <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
             </a>\
-            <span class="story_date NB-hidden-fade"><%= story.get("short_parsed_date") %></span>\
+            <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
                     <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
