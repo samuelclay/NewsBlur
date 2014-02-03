@@ -2553,8 +2553,18 @@ class MSocialServices(mongo.Document):
         if profile.photo_service != "twitter":
             return
         
-        api = self.twitter_api()
-        me = api.me()
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCSyncing Twitter profile photo...")
+        
+        try:
+            api = self.twitter_api()
+            me = api.me()
+        except tweepy.TweepError, e:
+            logging.user(user, "~FRException (%s): ~FCsetting to blank profile photo" % e)
+            self.twitter_picture_url = None
+            self.set_photo("nothing")
+            return
+
         self.twitter_picture_url = me.profile_image_url_https
         self.save()
         self.set_photo('twitter')

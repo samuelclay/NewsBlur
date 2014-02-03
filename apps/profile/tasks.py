@@ -1,8 +1,10 @@
 import datetime
+import random
 from celery.task import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 from apps.reader.models import UserSubscription
+from apps.social.models import MSocialServices
 
 class EmailNewUser(Task):
     
@@ -37,14 +39,21 @@ class PremiumExpire(Task):
             profile.send_premium_expire_email()
             profile.deactivate_premium()
 
+
 class ActivateNextNewUser(Task):
     name = 'activate-next-new-user'
     
     def run(self):
         RNewUserQueue.activate_next()
 
+
 class CleanupUser(Task):
     name = 'cleanup-user'
     
     def run(self, user_id):
         UserSubscription.trim_user_read_stories(user_id)
+
+        if random.random() < 0.01:
+            ss = MSocialServices.objects.get(user_id=user_id)
+            ss.sync_twitter_photo()
+
