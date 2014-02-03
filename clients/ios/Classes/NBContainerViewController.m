@@ -45,7 +45,6 @@
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
 @property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
-@property (nonatomic, strong) UIViewController *preOriginalViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
 @property (readwrite) int storyTitlesYCoordinate;
@@ -66,7 +65,6 @@
 @synthesize masterNavigationController;
 @synthesize shareNavigationController;
 @synthesize originalNavigationController;
-@synthesize preOriginalViewController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
@@ -139,10 +137,8 @@
     self.shareNavigationController = shareNav;
     self.shareNavigationController.navigationBar.translucent = NO;
     
-    preOriginalViewController = [[UIViewController alloc] init];
-    preOriginalViewController.navigationItem.title = @"";
     UINavigationController *originalNav = [[UINavigationController alloc]
-                                           initWithRootViewController:preOriginalViewController];
+                                           initWithRootViewController:originalViewController];
     self.originalNavigationController = originalNav;
     self.originalNavigationController.navigationBar.translucent = NO;
     [self.originalNavigationController.interactivePopGestureRecognizer
@@ -704,6 +700,9 @@
          self.originalNavigationController.view.frame = CGRectMake(0, 0,
                                                                    CGRectGetWidth(vb),
                                                                    CGRectGetHeight(vb));
+         CGRect frame = self.originalViewController.view.frame;
+         frame.origin.x = 0;
+         self.originalViewController.view.frame = frame;
      } completion:^(BOOL finished) {
          self.interactiveOriginalTransition = NO;
          if (resetLayout) {
@@ -750,7 +749,6 @@
         originalNavFrame.origin.x = vb.size.width * percentage * 0;
 //        self.originalNavigationController.view.frame = originalNavFrame;
 //        self.originalViewController.view.frame = originalNavFrame;
-        NSLog(@"PreOriginal frame: %@", NSStringFromCGRect(preOriginalViewController.view.frame));
         NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
         
         CGRect feedDetailFrame = self.masterNavigationController.view.frame;

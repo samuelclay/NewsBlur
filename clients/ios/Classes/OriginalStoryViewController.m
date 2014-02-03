@@ -28,7 +28,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
+    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
@@ -69,6 +69,11 @@
         [self.webView stopLoading];
     }
     activeUrl = nil;
+    
+    NSLog(@"Original disappear: %@ - %@", NSStringFromCGRect(self.view.frame), NSStringFromCGPoint(self.view.center));
+    CGRect frame = self.view.frame;
+    frame.origin.x = 0;
+    self.view.frame = frame;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -77,6 +82,46 @@
 
 - (void)viewDidLoad {    
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
+    UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
+                                             initWithTarget:self action:@selector(handlePanGesture:)];
+    [self.view addGestureRecognizer:gesture];
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
+    CGFloat percentage = 1 - (recognizer.view.frame.size.width - recognizer.view.frame.origin.x) / recognizer.view.frame.size.width;
+    CGPoint center = recognizer.view.center;
+    CGPoint translation = [recognizer translationInView:recognizer.view];
+    NSLog(@"Panning %f%%. (%@ - %@)", percentage, NSStringFromCGRect(recognizer.view.frame), NSStringFromCGPoint(translation));
+
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
+        center = CGPointMake(MAX(recognizer.view.frame.size.width / 2, center.x + translation.x),
+                             center.y);
+        recognizer.view.center = center;
+        [recognizer setTranslation:CGPointZero inView:recognizer.view];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
+        } else {
+            
+        }
+    }
+    
+    if ([recognizer state] == UIGestureRecognizerStateEnded ||
+        [recognizer state] == UIGestureRecognizerStateCancelled) {
+        CGFloat velocity = [recognizer velocityInView:recognizer.view].x;
+        if (velocity > 0) {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                [appDelegate.masterContainerViewController transitionFromOriginalView];
+            } else {
+                
+            }
+        } else {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
+            } else {
+                
+            }
+        }
+    }
 }
 
 - (void)loadInitialStory {
