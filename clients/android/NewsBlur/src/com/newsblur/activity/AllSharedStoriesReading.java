@@ -16,10 +16,13 @@ import com.newsblur.util.StoryOrder;
 
 public class AllSharedStoriesReading extends Reading {
 
+    private String[] feedIds;
+
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
+        feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_shared_stories));
 
         readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), defaultFeedView);
@@ -43,7 +46,7 @@ public class AllSharedStoriesReading extends Reading {
 
     @Override
     protected void triggerRefresh(int page) {
-        FeedUtils.updateSocialFeeds(this, this, new String[0], page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
+        FeedUtils.updateSocialFeeds(this, this, feedIds, page, PrefsUtils.getStoryOrderForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));
     }
 
 }

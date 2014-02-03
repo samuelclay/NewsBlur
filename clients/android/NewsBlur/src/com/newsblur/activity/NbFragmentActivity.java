@@ -39,9 +39,8 @@ public class NbFragmentActivity extends SherlockFragmentActivity {
 	}
 	
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey);
-		
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
