@@ -2553,8 +2553,15 @@ class MSocialServices(mongo.Document):
         if profile.photo_service != "twitter":
             return
         
-        api = self.twitter_api()
-        me = api.me()
+        try:
+            api = self.twitter_api()
+            me = api.me()
+        except tweepy.TweepError, e:
+            print " ***> Exception (%s): setting to blank profile photo" % e
+            self.twitter_picture_url = None
+            self.set_photo("nothing")
+            return
+
         self.twitter_picture_url = me.profile_image_url_https
         self.save()
         self.set_photo('twitter')
