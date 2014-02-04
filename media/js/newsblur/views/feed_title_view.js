@@ -61,6 +61,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
+    remove: function() {
+        this.stopListening(this.model);
+        Backbone.View.prototype.remove.call(this);
+    },
+    
     render: function() {
         var feed = this.model;
         var extra_classes = this.extra_classes();
@@ -127,7 +132,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             $search.focus();
         }
         
-        this.$el.bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
+        this.$el.unbind('contextmenu')
+                .bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
         
         return this;
     },

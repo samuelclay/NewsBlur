@@ -32,25 +32,30 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
 
         if (this.model && !this.options.feed_chooser) {
             // Root folder does not have a model.
-            this.model.bind('change:folder_title', this.update_title);
-            this.model.bind('change:selected', this.update_selected);
-            this.model.bind('change:selected', this.update_hidden);
-            this.collection.bind('change:feed_selected', this.update_hidden);
-            this.collection.bind('change:counts', this.update_hidden);
-            this.model.bind('delete', this.delete_folder);
+            this.model.bind('change:folder_title', this.update_title, this);
+            this.model.bind('change:selected', this.update_selected, this);
+            this.model.bind('change:selected', this.update_hidden, this);
+            this.collection.bind('change:feed_selected', this.update_hidden, this);
+            this.collection.bind('change:counts', this.update_hidden, this);
+            this.model.bind('delete', this.delete_folder, this);
             if (!this.options.feedbar) {
                 this.model.folder_view = this;
             }
         }
     },
     
+    remove: function() {
+        this.destroy();
+    },
+    
     destroy: function() {
-        console.log(["destroy", this]);
         if (this.model) {
-            this.model.unbind(null, this);
+            this.model.unbind(null, null, this);
+            if (!this.options.feedbar) {
+                this.model.folder_view = null;
+            }
         }
-        this.$el.remove();
-        delete this.views;
+        this.$el.empty().remove();
     },
     
     render: function() {
