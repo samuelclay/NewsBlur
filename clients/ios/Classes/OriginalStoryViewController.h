@@ -19,6 +19,7 @@
     NSMutableArray *visitedUrls;
     UIWebView *webView;
     UIBarButtonItem *backBarButton;
+    UILabel *titleView;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

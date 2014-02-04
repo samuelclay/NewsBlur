@@ -114,7 +114,7 @@ static NSMutableDictionary *imageCache;
 + (void)saveimagesToDisk {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
     
-    dispatch_async(queue, [^{
+    dispatch_async(queue, ^{
         for (NSString *filename in [imageCache allKeys]) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
             NSString *cacheDirectory = [paths objectAtIndex:0];
@@ -126,10 +126,17 @@ static NSMutableDictionary *imageCache;
             NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
             
             // Save image to disk
-            UIImage *image = [imageCache objectForKey:filename];
+            UIImage *image;
+            @try {
+                image = [imageCache objectForKey:filename];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"Warning: imageCache EXC_BAD_ACCESS!!!");
+                return;
+            }
             [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
         }
-    } copy]);
+    });
 }
 
 + (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {

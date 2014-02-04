@@ -672,6 +672,8 @@
               containsObject:self.originalViewController]) {
             [self.originalNavigationController pushViewController:self.originalViewController
                                                          animated:NO];
+        } else {
+            [self.originalViewController viewWillAppear:YES];
         }
 
         [self.view insertSubview:self.originalNavigationController.view
@@ -714,6 +716,9 @@
 - (void)transitionFromOriginalView {
     NSLog(@"Transition from Original View");
     
+    [self.originalViewController viewWillDisappear:YES];
+    self.originalNavigationController.navigationBar.alpha = 1;
+    
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
@@ -723,6 +728,7 @@
          self.interactiveOriginalTransition = NO;
          [self.originalNavigationController removeFromParentViewController];
          [self.originalNavigationController.view setHidden:YES];
+         [self.originalViewController viewDidDisappear:YES];
      }];
 }
 
@@ -731,11 +737,11 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 
     if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-        CGRect originalNavFrame = self.originalNavigationController.view.frame;
-        originalNavFrame.origin.x = vb.size.width * percentage;
-        self.originalNavigationController.view.frame = originalNavFrame;
-        self.originalViewController.view.frame = originalNavFrame;
-        NSLog(@"Original frame: %@", NSStringFromCGRect(self.originalViewController.view.frame));
+//        CGRect originalNavFrame = self.originalNavigationController.view.frame;
+//        originalNavFrame.origin.x = vb.size.width * percentage;
+//        self.originalNavigationController.view.frame = originalNavFrame;
+//        self.originalViewController.view.frame = originalNavFrame;
+//        NSLog(@"Original frame: %@", NSStringFromCGRect(self.originalViewController.view.frame));
         
         CGRect feedDetailFrame = self.feedDetailViewController.view.frame;
         feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
@@ -749,7 +755,7 @@
         originalNavFrame.origin.x = vb.size.width * percentage * 0;
 //        self.originalNavigationController.view.frame = originalNavFrame;
 //        self.originalViewController.view.frame = originalNavFrame;
-        NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
+//        NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
         
         CGRect feedDetailFrame = self.masterNavigationController.view.frame;
         feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
@@ -759,6 +765,10 @@
         storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * feedDetailFrame.size.width/6;
         self.storyNavigationController.view.frame = storyNavFrame;
     }
+    
+//    self.originalNavigationController.navigationBar.alpha = 1 - percentage;
+//    NSLog(@"Original subviews; %@", self.originalNavigationController.view.subviews);
+    self.originalViewController.navigationItem.titleView.alpha = 1 - percentage;
     
 //    CGRect leftBorderFrame = leftBorder.frame;
 //    leftBorderFrame.origin.x = storyNavFrame.origin.x - 1;

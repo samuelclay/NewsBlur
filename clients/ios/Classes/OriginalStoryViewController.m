@@ -29,13 +29,37 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
+
+    appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
+    activeUrl = nil;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
+- (void)viewDidLoad {    
+//    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                                      target:nil
                                                                      action:nil];
     [separatorBarButton setEnabled:NO];
-
+    
     UIBarButtonItem *sendToBarButton = [UIBarButtonItem
                                         barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
                                         target:self
@@ -45,43 +69,20 @@
                      target:self
                      action:@selector(webViewGoBack:)];
     backBarButton.enabled = NO;
-
+    
+    titleView = [[UILabel alloc] init];
+    titleView.textColor = UIColorFromRGB(0x303030);
+    titleView.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    titleView.text = @"Loading...";
+    [titleView sizeToFit];
+    titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.navigationItem.titleView = titleView;
+    
     self.navigationItem.rightBarButtonItems = @[sendToBarButton,
                                                 separatorBarButton,
                                                 backBarButton
                                                 ];
-
-
-    appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    if (!appDelegate.masterContainerViewController.interactiveOriginalTransition) {
-        [appDelegate.masterContainerViewController transitionFromOriginalView];
-    }
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    if ([self.webView isLoading]) {
-        [self.webView stopLoading];
-    }
-    activeUrl = nil;
     
-    NSLog(@"Original disappear: %@ - %@", NSStringFromCGRect(self.view.frame), NSStringFromCGPoint(self.view.center));
-    CGRect frame = self.view.frame;
-    frame.origin.x = 0;
-    self.view.frame = frame;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (void)viewDidLoad {    
-//    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                              initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:gesture];
@@ -91,7 +92,6 @@
     CGFloat percentage = 1 - (recognizer.view.frame.size.width - recognizer.view.frame.origin.x) / recognizer.view.frame.size.width;
     CGPoint center = recognizer.view.center;
     CGPoint translation = [recognizer translationInView:recognizer.view];
-    NSLog(@"Panning %f%%. (%@ - %@)", percentage, NSStringFromCGRect(recognizer.view.frame), NSStringFromCGPoint(translation));
 
     if (recognizer.state == UIGestureRecognizerStateChanged) {
         center = CGPointMake(MAX(recognizer.view.frame.size.width / 2, center.x + translation.x),
@@ -108,7 +108,7 @@
     if ([recognizer state] == UIGestureRecognizerStateEnded ||
         [recognizer state] == UIGestureRecognizerStateCancelled) {
         CGFloat velocity = [recognizer velocityInView:recognizer.view].x;
-        if (velocity > 0) {
+        if (percentage > 0.25 && velocity > 0) {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 [appDelegate.masterContainerViewController transitionFromOriginalView];
             } else {
@@ -126,8 +126,9 @@
 
 - (void)loadInitialStory {
     [self loadAddress:nil];
-    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
-    
+    titleView.text = [[appDelegate activeStory] objectForKey:@"story_title"];
+    [titleView sizeToFit];
+
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"On its way...";
@@ -196,7 +197,8 @@
 - (void)updateTitle:(UIWebView*)aWebView
 {
     NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
-    self.navigationItem.title = [pageTitleValue stringByDecodingHTMLEntities];
+    titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    [titleView sizeToFit];
 }
 
 - (IBAction)loadAddress:(id)sender {
@@ -215,8 +217,8 @@
     }
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
-    self.navigationItem.title = @"Loading...";
-    
+    titleView.text = @"Loading...";
+    [titleView sizeToFit];
 }
 
 - (void)didReceiveMemoryWarning {
