@@ -62,6 +62,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     remove: function() {
+        if (this.counts_view) {
+            this.counts_view.destroy();
+        }
+
         this.stopListening(this.model);
         Backbone.View.prototype.remove.call(this);
     },

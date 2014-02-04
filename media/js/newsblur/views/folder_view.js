@@ -49,6 +49,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     destroy: function() {
+        if (this.folder_count) {
+            this.folder_count.destroy();
+        }
+        if (this.search_view) {
+            this.search_view.remove();
+        }
         if (this.model) {
             this.model.unbind(null, null, this);
             if (!this.options.feedbar) {
