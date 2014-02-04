@@ -31,17 +31,22 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		setTitle(getResources().getString(R.string.all_shared_stories));
 
-		feedIds = new ArrayList<String>();
+        if (bundle != null) {
+            feedIds = bundle.getStringArrayList(BUNDLE_FEED_IDS);
+        }
 
-		Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
-		while (cursor.moveToNext()) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
-		}
-		cursor.close();
+        if (feedIds == null) {
+            feedIds = new ArrayList<String>();
+            Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
+            while (cursor.moveToNext()) {
+                feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
+            }
+            cursor.close();
+        }
 
 		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(AllSharedStoriesItemListFragment.class.getName());
 		if (itemListFragment == null) {
-			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState, getStoryOrder(), getDefaultFeedView());
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(feedIds, currentState, getStoryOrder(), getDefaultFeedView());
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, AllSharedStoriesItemListFragment.class.getName());
@@ -101,5 +106,13 @@ public class AllSharedStoriesItemsList extends ItemsList {
         if (itemListFragment != null) {
             itemListFragment.setDefaultFeedView(value);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        if (this.feedIds != null) {
+            bundle.putStringArrayList(BUNDLE_FEED_IDS, this.feedIds);
+        }
+        super.onSaveInstanceState(bundle);
     }
 }

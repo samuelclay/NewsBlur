@@ -45,7 +45,6 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 
 	public static int ITEMLIST_LOADER = 0x01;
 
-
 	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
 
@@ -100,7 +99,6 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 
 		return v;
 	}
-
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {

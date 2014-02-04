@@ -1,5 +1,7 @@
 package com.newsblur.fragment;
 
+import java.util.ArrayList;
+
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -34,13 +36,10 @@ import com.newsblur.view.SocialItemViewBinder;
 public class AllSharedStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	public int currentState;
+	private String[] feedIds;
 	private ContentResolver contentResolver;
 
 	public static int ITEMLIST_LOADER = 0x01;
-	private Cursor countCursor;
-	private ListView itemList;
-	private String[] groupFrom;
-	private int[] groupTo;
     private StoryOrder storyOrder;
 
     @Override
@@ -49,19 +48,22 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		currentState = getArguments().getInt("currentState");
         storyOrder = (StoryOrder)getArguments().getSerializable("storyOrder");
         defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
+		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
+		feedIds = new String[feedIdArrayList.size()];
+		feedIdArrayList.toArray(feedIds);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
 		contentResolver = getActivity().getContentResolver();
 
-		groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
-		groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
-        // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first cursor
+		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+        // TODO: defer creation of the adapter until the loader's first callback so we don't leak this first ListView cursor
         Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySortOrder(storyOrder));
         adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
@@ -93,10 +95,11 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
         hasUpdated();
 	}
 
-	public static ItemListFragment newInstance(int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
+	public static ItemListFragment newInstance(ArrayList<String> feedIds, int currentState, StoryOrder storyOrder, DefaultFeedView defaultFeedView) {
 		ItemListFragment everythingFragment = new AllSharedStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
+		arguments.putStringArrayList("feedIds", feedIds);
 		arguments.putSerializable("storyOrder", storyOrder);
         arguments.putSerializable("defaultFeedView", defaultFeedView);
 		everythingFragment.setArguments(arguments);
@@ -107,6 +110,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
+		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);

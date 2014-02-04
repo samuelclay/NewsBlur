@@ -115,6 +115,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     remove: function() {
         if (this.view) {
             this.view.remove();
+            delete this.view;
         }
         // Backbone.View.prototype.remove.call(this);
     },
