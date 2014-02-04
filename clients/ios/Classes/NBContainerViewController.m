@@ -717,7 +717,6 @@
     NSLog(@"Transition from Original View");
     
     [self.originalViewController viewWillDisappear:YES];
-    self.originalNavigationController.navigationBar.alpha = 1;
     
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut

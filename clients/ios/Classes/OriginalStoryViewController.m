@@ -31,13 +31,14 @@
     NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
 
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
+    [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-
+    self.navigationController.navigationBar.alpha = 1;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -45,6 +46,7 @@
         [self.webView stopLoading];
     }
     activeUrl = nil;
+    titleView.alpha = 1.0;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

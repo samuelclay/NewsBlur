@@ -131,7 +131,7 @@ static NSMutableDictionary *imageCache;
                 image = [imageCache objectForKey:filename];
             }
             @catch (NSException *exception) {
-                NSLog(@"Warning: imageCache EXC_BAD_ACCESS!!!");
+                NSLog(@"Warning: imageCache EXC_BAD_ACCESS!!! %@", imageCache);
                 return;
             }
             [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];

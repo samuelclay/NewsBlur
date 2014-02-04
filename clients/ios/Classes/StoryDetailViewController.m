@@ -75,8 +75,23 @@
                                               initWithTarget:self action:@selector(showOriginalStory:)];
     [self.webView addGestureRecognizer:pinchGesture];
     
+    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
+                                                initWithTarget:self action:@selector(showOriginalStory:)];
+    doubleTapGesture.numberOfTapsRequired = 2;
+    [self.webView addGestureRecognizer:doubleTapGesture];
+    doubleTapGesture.delegate = self;
+    
     self.pageIndex = -2;
     self.inTextView = NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    return YES;
+}
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"Gesture should multiple? %ld", gestureRecognizer.state);
+    return YES;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
