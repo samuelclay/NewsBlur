@@ -71,9 +71,9 @@
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
 
-    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
-                                              initWithTarget:self action:@selector(showOriginalStory:)];
-    [self.webView addGestureRecognizer:pinchGesture];
+//    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
+//                                              initWithTarget:self action:@selector(showOriginalStory:)];
+//    [self.webView addGestureRecognizer:pinchGesture];
     
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
                                                 initWithTarget:self action:@selector(showOriginalStory:)];
@@ -86,11 +86,16 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+//    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    inDoubleTap = (touch.tapCount == 2);
     return YES;
 }
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    NSLog(@"Gesture should multiple? %ld", gestureRecognizer.state);
+//    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
+        [self showOriginalStory:gestureRecognizer];
+        inDoubleTap = NO;
+    }
     return YES;
 }
 
@@ -105,16 +110,9 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-//    Class viewClass = [appDelegate.navigationController.visibleViewController class];
-//    if (viewClass == [appDelegate.feedDetailViewController class] ||
-//        viewClass == [appDelegate.feedsViewController class]) {
-////        self.activeStoryId = nil;
-//        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
-//    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-//    [appDelegate.shareViewController.commentField resignFirstResponder];
 }
 
 #pragma mark -
@@ -1073,7 +1071,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                        objectForKey:@"story_permalink"]];
     [appDelegate.masterContainerViewController hidePopover];
 
-    if (!gesture) {
+    if (!gesture || [gesture isKindOfClass:[UITapGestureRecognizer class]]) {
         [appDelegate showOriginalStory:url];
         return;
     }
@@ -1087,7 +1085,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         CGFloat distance = sqrtf(slope.x*slope.x + slope.y*slope.y);
         CGFloat scale = [(UIPinchGestureRecognizer *)gesture scale];
         
-        NSLog(@"Gesture: %f - %f", [(UIPinchGestureRecognizer *)gesture scale], distance);
+//        NSLog(@"Gesture: %f - %f", [(UIPinchGestureRecognizer *)gesture scale], distance);
         
         if ((distance < 150 && scale <= 1.5) ||
             (distance < 500 && scale <= 1.2)) {

@@ -24,6 +24,7 @@
     NSInteger pageIndex;
     BOOL pullingScrollview;
     BOOL inTextView;
+    BOOL inDoubleTap;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
