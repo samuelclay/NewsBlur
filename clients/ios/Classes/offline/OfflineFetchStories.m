@@ -78,7 +78,7 @@
                                            NSLog(@"Failed fetch all unreads.");
                                            [lock signal];
                                        }];
-    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+    request.successCallbackQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                              (unsigned long)NULL);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [request start];

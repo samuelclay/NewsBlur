@@ -744,11 +744,11 @@
 //        NSLog(@"Original frame: %@", NSStringFromCGRect(self.originalViewController.view.frame));
         
         CGRect feedDetailFrame = self.feedDetailViewController.view.frame;
-        feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        feedDetailFrame.origin.x = -1 * (1-percentage) * 100;
         self.feedDetailViewController.view.frame = feedDetailFrame;
         
         CGRect storyNavFrame = self.storyNavigationController.view.frame;
-        storyNavFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        storyNavFrame.origin.x = -1 * (1-percentage) * 100;
         self.storyNavigationController.view.frame = storyNavFrame;
     } else {
         CGRect originalNavFrame = self.originalNavigationController.view.frame;
@@ -758,11 +758,11 @@
 //        NSLog(@"Original frame: %@", NSStringFromCGRect([[[[self.originalNavigationController viewControllers] objectAtIndex:0] view] frame]));
         
         CGRect feedDetailFrame = self.masterNavigationController.view.frame;
-        feedDetailFrame.origin.x = -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        feedDetailFrame.origin.x = -1 * (1-percentage) * 100;
         self.masterNavigationController.view.frame = feedDetailFrame;
         
         CGRect storyNavFrame = self.storyNavigationController.view.frame;
-        storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * feedDetailFrame.size.width/6;
+        storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * 100;
         self.storyNavigationController.view.frame = storyNavFrame;
     }
     

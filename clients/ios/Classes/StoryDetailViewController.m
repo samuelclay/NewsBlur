@@ -62,7 +62,7 @@
                         error:nil];
     
     self.webView.scalesPageToFit = YES;
-    self.webView.multipleTouchEnabled = NO;
+//    self.webView.multipleTouchEnabled = NO;
     
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -70,6 +70,10 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+
+    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
+                                              initWithTarget:self action:@selector(showOriginalStory:)];
+    [self.webView addGestureRecognizer:pinchGesture];
     
     self.pageIndex = -2;
     self.inTextView = NO;
@@ -1047,6 +1051,37 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return NO;
     }
     return YES;
+}
+
+- (void)showOriginalStory:(UIGestureRecognizer *)gesture {
+    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
+                                       objectForKey:@"story_permalink"]];
+    [appDelegate.masterContainerViewController hidePopover];
+
+    if (!gesture) {
+        [appDelegate showOriginalStory:url];
+        return;
+    }
+    
+    if ([gesture isKindOfClass:[UIPinchGestureRecognizer class]] &&
+        gesture.state == UIGestureRecognizerStateChanged &&
+        [gesture numberOfTouches] >= 2) {
+        CGPoint touch1 = [gesture locationOfTouch:0 inView:self.view];
+        CGPoint touch2 = [gesture locationOfTouch:1 inView:self.view];
+        CGPoint slope = CGPointMake(touch2.x-touch1.x, touch2.y-touch1.y);
+        CGFloat distance = sqrtf(slope.x*slope.x + slope.y*slope.y);
+        CGFloat scale = [(UIPinchGestureRecognizer *)gesture scale];
+        
+        NSLog(@"Gesture: %f - %f", [(UIPinchGestureRecognizer *)gesture scale], distance);
+        
+        if ((distance < 150 && scale <= 1.5) ||
+            (distance < 500 && scale <= 1.2)) {
+            return;
+        }
+        [appDelegate showOriginalStory:url];
+        gesture.enabled = NO;
+        gesture.enabled = YES;
+    }
 }
 
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {

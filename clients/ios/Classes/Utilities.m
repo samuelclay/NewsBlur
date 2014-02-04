@@ -112,7 +112,7 @@ static NSMutableDictionary *imageCache;
 }
 
 + (void)saveimagesToDisk {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,0);
     
     dispatch_async(queue, ^{
         for (NSString *filename in [imageCache allKeys]) {

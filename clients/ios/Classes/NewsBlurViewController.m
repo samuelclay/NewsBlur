@@ -522,7 +522,6 @@ static UIFont *userLabelFont;
                        forKey:userKey];
     }
     
-    NSLog(@"Setting dictSocialFeeds");
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
     
@@ -1536,7 +1535,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)loadAvatars {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
         for (NSString *feed_id in [appDelegate.dictSocialFeeds allKeys]) {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
@@ -1569,7 +1568,7 @@ heightForHeaderInSection:(NSInteger)section {
                              options:kNilOptions 
                              error:&error];
     
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
         for (id feed_id in results) {
             NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 

@@ -108,19 +108,26 @@
     if ([recognizer state] == UIGestureRecognizerStateEnded ||
         [recognizer state] == UIGestureRecognizerStateCancelled) {
         CGFloat velocity = [recognizer velocityInView:recognizer.view].x;
-        if (percentage > 0.25 && velocity > 0) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                [appDelegate.masterContainerViewController transitionFromOriginalView];
-            } else {
-                
-            }
+        if ((percentage > 0.25 && velocity > 0) ||
+            (percentage > 0.05 && velocity > 1000)) {
+            NSLog(@"Original velocity ESCAPED: %f (at %.2f%%)", velocity, percentage*100);
+            [self transitionToFeedDetail:recognizer];
         } else {
+            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 [appDelegate.masterContainerViewController transitionToOriginalView:NO];
             } else {
                 
             }
         }
+    }
+}
+
+- (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromOriginalView];
+    } else {
+        
     }
 }
 

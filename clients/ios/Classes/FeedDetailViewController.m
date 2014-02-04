@@ -1771,7 +1771,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                              options:kNilOptions 
                              error:&error];
     
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
         for (id feed_id in results) {
             NSMutableDictionary *feed = [[appDelegate.dictActiveFeeds objectForKey:feed_id] mutableCopy];

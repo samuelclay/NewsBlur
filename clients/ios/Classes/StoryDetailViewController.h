@@ -14,7 +14,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryDetailViewController : BaseViewController
-<UIScrollViewDelegate> {
+<UIScrollViewDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;

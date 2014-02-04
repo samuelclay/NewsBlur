@@ -12,7 +12,8 @@
 @class NewsBlurAppDelegate;
 
 @interface OriginalStoryViewController : BaseViewController
-<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate> {
+<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate,
+UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     NSString *activeUrl;

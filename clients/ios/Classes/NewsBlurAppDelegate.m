@@ -192,8 +192,8 @@
     [window makeKeyAndVisible];
 //    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     
-    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
-    [[UIToolbar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
+    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
+    [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
     [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
 //    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
@@ -2976,7 +2976,7 @@
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                  (unsigned long)NULL), ^(void) {
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
