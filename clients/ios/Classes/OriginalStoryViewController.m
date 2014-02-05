@@ -47,6 +47,7 @@
     }
     activeUrl = nil;
     titleView.alpha = 1.0;
+    [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -56,6 +57,11 @@
 - (void)viewDidLoad {    
 //    self.navigationItem.title = [[appDelegate activeStory] objectForKey:@"story_title"];
     
+    self.view.layer.masksToBounds = NO;
+    self.view.layer.shadowRadius = 5;
+    self.view.layer.shadowOpacity = 0.5;
+    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
+
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
                                                                      target:nil

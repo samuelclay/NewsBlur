@@ -132,6 +132,10 @@
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyPageControl];
     self.storyNavigationController = nav;
     self.storyNavigationController.navigationBar.translucent = NO;
+    self.storyNavigationController.view.layer.masksToBounds = NO;
+    self.storyNavigationController.view.layer.shadowRadius = 5;
+    self.storyNavigationController.view.layer.shadowOpacity = 0.5;
+    self.storyNavigationController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
     self.shareNavigationController = shareNav;
