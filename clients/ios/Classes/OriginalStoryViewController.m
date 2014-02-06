@@ -106,7 +106,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 150) {
+        velocity.x > 0 && abs(velocity.y) < 200) {
         return NO;
     }
     
@@ -120,7 +120,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 150) {
+        velocity.x > 0 && abs(velocity.y) < 200) {
         return YES;
     }
     return NO;
@@ -142,7 +142,7 @@
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
-        velocity.x > 0 && abs(velocity.y) < 150) {
+        velocity.x > 0 && abs(velocity.y) < 200) {
         NSLog(@"Should required failure? YES");
         return YES;
     }
@@ -203,9 +203,10 @@
     [titleView sizeToFit];
 
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"On its way...";
     [HUD hide:YES afterDelay:2];
+    HUD.userInteractionEnabled = NO;
 }
 
 - (IBAction)webViewGoBack:(id)sender {
