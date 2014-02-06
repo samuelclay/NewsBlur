@@ -15,7 +15,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,7 +33,6 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.network.domain.StoryTextResponse;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
@@ -311,7 +309,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         itemTitle.setText(Html.fromHtml(story.title));
 		itemDate.setText(StoryUtils.formatLongDate(story.date));
-        Log.d("mark", story.longDate);
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
