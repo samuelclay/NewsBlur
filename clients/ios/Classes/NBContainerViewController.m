@@ -688,8 +688,9 @@
                                                                   0,
                                                                   CGRectGetWidth(vb),
                                                                   CGRectGetHeight(vb));
+        [self.originalViewController loadInitialStory];
     }
-    
+
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
@@ -711,9 +712,6 @@
          self.originalViewController.view.frame = frame;
      } completion:^(BOOL finished) {
          self.interactiveOriginalTransition = NO;
-         if (resetLayout) {
-             [self.originalViewController loadInitialStory];
-         }
      }];
 }
 

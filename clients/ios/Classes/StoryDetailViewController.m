@@ -76,11 +76,19 @@
 //    [self.webView addGestureRecognizer:pinchGesture];
     
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
-                                                initWithTarget:self action:@selector(showOriginalStory:)];
+                                                initWithTarget:self action:nil];
     doubleTapGesture.numberOfTapsRequired = 2;
     [self.webView addGestureRecognizer:doubleTapGesture];
     doubleTapGesture.delegate = self;
     
+    UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
+                                                      initWithTarget:self
+                                                      action:nil];
+    doubleDoubleTapGesture.numberOfTouchesRequired = 2;
+    doubleDoubleTapGesture.numberOfTapsRequired = 2;
+    [self.webView addGestureRecognizer:doubleDoubleTapGesture];
+    doubleDoubleTapGesture.delegate = self;
+
     self.pageIndex = -2;
     self.inTextView = NO;
 }
@@ -90,10 +98,15 @@
     inDoubleTap = (touch.tapCount == 2);
     return YES;
 }
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
 //    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
-        [self showOriginalStory:gestureRecognizer];
+        if (gestureRecognizer.numberOfTouches == 2) {
+            [self fetchTextView];
+        } else {
+            [self showOriginalStory:gestureRecognizer];
+        }
         inDoubleTap = NO;
     }
     return YES;
