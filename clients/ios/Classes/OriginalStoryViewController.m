@@ -28,10 +28,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
-
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-    [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -100,7 +97,6 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    NSLog(@"should recognize simultaneously: %@ %@", NSStringFromCGPoint(self.webView.scrollView.contentOffset), NSStringFromCGPoint([(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view]));
     CGPoint velocity = CGPointMake(0, 0);
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
@@ -114,7 +110,6 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
-    NSLog(@"Should gesture begin? %@ %f", NSStringFromCGPoint(self.webView.scrollView.contentOffset), [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view].x);
     CGPoint velocity = CGPointMake(0, 0);
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
@@ -129,10 +124,8 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if (self.webView.scrollView.contentOffset.x == 0 &&
         [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        NSLog(@"should receive touch (YES)");
         return YES;
     }
-    NSLog(@"should receive touch (NO): %@ - %f", gestureRecognizer, self.webView.scrollView.contentOffset.x);
     return NO;
 }
 
@@ -143,10 +136,8 @@
     }
     if (self.webView.scrollView.contentOffset.x == 0 &&
         velocity.x > 0 && abs(velocity.y) < 200) {
-        NSLog(@"Should required failure? YES");
         return YES;
     }
-    NSLog(@"Should required failure? NO");
     return NO;
 }
 
@@ -176,10 +167,10 @@
         CGFloat velocity = [recognizer velocityInView:self.view].x;
         if ((percentage > 0.25 && velocity > 0) ||
             (percentage > 0.05 && velocity > 1000)) {
-            NSLog(@"Original velocity ESCAPED: %f (at %.2f%%)", velocity, percentage*100);
+//            NSLog(@"Original velocity ESCAPED: %f (at %.2f%%)", velocity, percentage*100);
             [self transitionToFeedDetail:recognizer];
         } else {
-            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
+//            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 [appDelegate.masterContainerViewController transitionToOriginalView:NO];
             } else {
@@ -199,6 +190,7 @@
 
 - (void)loadInitialStory {
     [self loadAddress:nil];
+    
     titleView.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [titleView sizeToFit];
 
@@ -283,7 +275,6 @@
     }
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
-    
     if (!url.scheme) {
         NSString* modifiedURLString = [NSString stringWithFormat:@"%@", urlString];
         url = [NSURL URLWithString:modifiedURLString];

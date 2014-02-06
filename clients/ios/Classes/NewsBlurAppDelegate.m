@@ -1303,6 +1303,7 @@
             }
             [navigationController pushViewController:originalStoryViewController
                                             animated:YES];
+            [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
         }
     }
