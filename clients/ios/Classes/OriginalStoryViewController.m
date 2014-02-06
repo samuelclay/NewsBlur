@@ -92,20 +92,78 @@
                                                 ];
     
     UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
-                                             initWithTarget:self action:@selector(handlePanGesture:)];
-    [self.view addGestureRecognizer:gesture];
+                                       initWithTarget:self action:@selector(handlePanGesture:)];
+    gesture.delegate = self;
+    [self.webView.scrollView addGestureRecognizer:gesture];
+    
+    [self.webView loadHTMLString:@"" baseURL:nil];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"should recognize simultaneously: %@ %@", NSStringFromCGPoint(self.webView.scrollView.contentOffset), NSStringFromCGPoint([(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view]));
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 150) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
+    NSLog(@"Should gesture begin? %@ %f", NSStringFromCGPoint(self.webView.scrollView.contentOffset), [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view].x);
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 150) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        NSLog(@"should receive touch (YES)");
+        return YES;
+    }
+    NSLog(@"should receive touch (NO): %@ - %f", gestureRecognizer, self.webView.scrollView.contentOffset.x);
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    CGPoint velocity = CGPointMake(0, 0);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
+    }
+    if (self.webView.scrollView.contentOffset.x == 0 &&
+        velocity.x > 0 && abs(velocity.y) < 150) {
+        NSLog(@"Should required failure? YES");
+        return YES;
+    }
+    NSLog(@"Should required failure? NO");
+    return NO;
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
-    CGFloat percentage = 1 - (recognizer.view.frame.size.width - recognizer.view.frame.origin.x) / recognizer.view.frame.size.width;
-    CGPoint center = recognizer.view.center;
-    CGPoint translation = [recognizer translationInView:recognizer.view];
-
+    CGFloat percentage = 1 - (self.view.frame.size.width - self.view.frame.origin.x) / self.view.frame.size.width;
+    CGPoint center = self.view.center;
+    CGPoint translation = [recognizer translationInView:self.view];
+    
+    if (self.webView.scrollView.contentOffset.x != 0) {
+        return;
+    }
+    
     if (recognizer.state == UIGestureRecognizerStateChanged) {
-        center = CGPointMake(MAX(recognizer.view.frame.size.width / 2, center.x + translation.x),
+        center = CGPointMake(MAX(self.view.frame.size.width / 2, center.x + translation.x),
                              center.y);
-        recognizer.view.center = center;
-        [recognizer setTranslation:CGPointZero inView:recognizer.view];
+        self.view.center = center;
+        [recognizer setTranslation:CGPointZero inView:self.view];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
         } else {
@@ -115,7 +173,7 @@
     
     if ([recognizer state] == UIGestureRecognizerStateEnded ||
         [recognizer state] == UIGestureRecognizerStateCancelled) {
-        CGFloat velocity = [recognizer velocityInView:recognizer.view].x;
+        CGFloat velocity = [recognizer velocityInView:self.view].x;
         if ((percentage > 0.25 && velocity > 0) ||
             (percentage > 0.05 && velocity > 1000)) {
             NSLog(@"Original velocity ESCAPED: %f (at %.2f%%)", velocity, percentage*100);
@@ -145,7 +203,7 @@
     [titleView sizeToFit];
 
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"On its way...";
     [HUD hide:YES afterDelay:2];
 }
