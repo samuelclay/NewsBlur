@@ -88,11 +88,13 @@
                                                 backBarButton
                                                 ];
     
-    UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
-                                       initWithTarget:self action:@selector(handlePanGesture:)];
-    gesture.delegate = self;
-    [self.webView.scrollView addGestureRecognizer:gesture];
-
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
+                                           initWithTarget:self action:@selector(handlePanGesture:)];
+        gesture.delegate = self;
+        [self.webView.scrollView addGestureRecognizer:gesture];
+    }
+    
     [self.webView loadHTMLString:@"" baseURL:nil];
 }
 
