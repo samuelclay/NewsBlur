@@ -15,6 +15,9 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.StoryUtils;
+
+import java.util.Date;
 
 public class SocialItemViewBinder implements ViewBinder {
 
@@ -72,7 +75,10 @@ public class SocialItemViewBinder implements ViewBinder {
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
 			((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
-		}
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
+            ((TextView) view).setText(StoryUtils.formatShortDate(new Date(cursor.getLong(columnIndex))));
+            return true;
+        }
 		return false;
 	}
 

@@ -13,6 +13,7 @@ public class StoryUtils {
     private static final SimpleDateFormat monthLongFormat = new SimpleDateFormat("EEEE, MMMM d");
     private static final SimpleDateFormat yearLongFormat = new SimpleDateFormat("yyyy");
     private static final SimpleDateFormat twelveHourFormat = new SimpleDateFormat("h:mma");
+    private static final SimpleDateFormat shortDateFormat = new SimpleDateFormat("d MMM yyyy");
 
     public static String formatLongDate(Date storyDate) {
 
@@ -24,10 +25,6 @@ public class StoryUtils {
         storyCalendar.setTime(storyDate);
         int month = storyCalendar.get(Calendar.DAY_OF_MONTH);
 
-        // F = Long Month
-        // l = Long Day
-        // j = day number
-        // S = st/th etc.
         if (storyDate.getTime() > midnightToday.getTime()) {
             // Today, January 1st 00:00
             return "Today, " + todayLongFormat.format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.format(storyDate);
@@ -76,6 +73,23 @@ public class StoryUtils {
             case 2:  return "nd";
             case 3:  return "rd";
             default: return "th";
+        }
+    }
+
+    public static String formatShortDate(Date storyDate) {
+
+        Date midnightToday = midnightToday();
+        Date midnightYesterday = midnightYesterday();
+
+        if (storyDate.getTime() > midnightToday.getTime()) {
+            // 00:00
+            return twelveHourFormat.format(storyDate);
+        } else if (storyDate.getTime() > midnightYesterday.getTime()) {
+            // Yesterday, 00:00
+            return "Yesterday, " + twelveHourFormat.format(storyDate);
+        } else {
+            // 1 Jan 2014, 00:00
+            return shortDateFormat.format(storyDate) +", " + twelveHourFormat.format(storyDate);
         }
     }
 }
