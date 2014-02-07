@@ -452,9 +452,12 @@ def api_unread_story(request, unread_score=None):
             },
         })
     
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
     
-    return {"data": entries}
+    return {"data": entries[:limit]}
 
 @oauth_login_required
 @json.json_view
