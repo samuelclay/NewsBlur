@@ -1,8 +1,11 @@
 import hashlib
+from simplejson.decoder import JSONDecodeError
+from utils import json_functions as json
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.utils.http import urlquote
 from django.http import HttpResponseForbidden
+from django.http import HttpResponse
 from django.conf import settings
 
 def ajax_login_required(function=None):
@@ -11,6 +14,33 @@ def ajax_login_required(function=None):
             if request.user.is_anonymous():
                 return HttpResponseForbidden()
             else:
+                return view_func(request, *args, **kwargs)
+
+        _view.__name__ = view_func.__name__
+        _view.__dict__ = view_func.__dict__
+        _view.__doc__ = view_func.__doc__
+
+        return _view
+
+    if function is None:
+        return _dec
+    else:
+        return _dec(function)
+
+def oauth_login_required(function=None):
+    def _dec(view_func):
+        def _view(request, *args, **kwargs):
+            if request.user.is_anonymous():
+                return HttpResponse(content=json.encode({
+                    "message": "You must have a valid OAuth token.",
+                }), status=401)
+            else:
+                try:
+                    setattr(request, 'body_json', json.decode(request.body))
+                except JSONDecodeError:
+                    return HttpResponse(content=json.encode({
+                        "message": "Your JSON body is malformed.",
+                    }), status=400)
                 return view_func(request, *args, **kwargs)
 
         _view.__name__ = view_func.__name__

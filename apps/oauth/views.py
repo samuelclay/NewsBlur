@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.http import HttpResponse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
 from mongoengine.queryset import OperationError
@@ -17,7 +16,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import compute_story_score
 from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredStory
 from utils import log as logging
-from utils.user_functions import ajax_login_required
+from utils.user_functions import ajax_login_required, oauth_login_required
 from utils.view_functions import render_to
 from utils import json_functions as json
 from vendor import facebook
@@ -267,18 +266,16 @@ def unfollow_twitter_account(request):
     
     return {'code': code, 'message': message}
 
+@oauth_login_required
 def api_user_info(request):
     user = request.user
-    
-    if user.is_anonymous():
-        return HttpResponse(content="{}", status=401)
     
     return json.json_response(request, {"data": {
         "name": user.username,
         "id": user.pk,
     }})
     
-@login_required
+@oauth_login_required
 @json.json_view
 def api_feed_list(request, trigger_slug=None):
     user = request.user
@@ -307,7 +304,7 @@ def api_feed_list(request, trigger_slug=None):
         
     return {"data": titles}
     
-@login_required
+@oauth_login_required
 @json.json_view
 def api_folder_list(request, trigger_slug=None):
     user = request.user
@@ -323,7 +320,7 @@ def api_folder_list(request, trigger_slug=None):
         
     return {"data": titles}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_saved_tag_list(request):
     user = request.user
@@ -343,7 +340,7 @@ def api_saved_tag_list(request):
     
     return {"data": tags}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_shared_usernames(request):
     user = request.user
@@ -363,11 +360,11 @@ def api_shared_usernames(request):
     
     return {"data": blurblogs}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_unread_story(request, unread_score=None):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     after = body.get('after', None)
     before = body.get('before', None)
     limit = body.get('limit', 50)
@@ -375,7 +372,7 @@ def api_unread_story(request, unread_score=None):
     feed_or_folder = fields['feed_or_folder']
     entries = []
 
-    if feed_or_folder.isdigit():
+    if isinstance(feed_or_folder, int) or feed_or_folder.isdigit():
         feed_id = int(feed_or_folder)
         usersub = UserSubscription.objects.get(user=user, feed_id=feed_id)
         found_feed_ids = [feed_id]
@@ -455,15 +452,18 @@ def api_unread_story(request, unread_score=None):
             },
         })
     
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
     
-    return {"data": entries}
+    return {"data": entries[:limit]}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_saved_story(request):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     after = body.get('after', None)
     before = body.get('before', None)
     limit = body.get('limit', 50)
@@ -512,11 +512,11 @@ def api_saved_story(request):
     
     return {"data": entries}
     
-@login_required
+@oauth_login_required
 @json.json_view
 def api_shared_story(request):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     after = body.get('after', None)
     before = body.get('before', None)
     limit = body.get('limit', 50)
@@ -524,7 +524,7 @@ def api_shared_story(request):
     blurblog_user = fields['blurblog_user']
     entries = []
     
-    if blurblog_user.isdigit():
+    if isinstance(blurblog_user, int) or blurblog_user.isdigit():
         social_user_ids = [int(blurblog_user)]
     elif blurblog_user == "all":
         socialsubs = MSocialSubscription.objects.filter(user_id=user.pk)
@@ -604,11 +604,11 @@ def ifttt_status(request):
         "time": datetime.datetime.now().isoformat()
     }}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_share_new_story(request):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     fields = body.get('actionFields')
     story_url = fields['story_url']
     content = fields.get('story_content', "")
@@ -667,11 +667,11 @@ def api_share_new_story(request):
         "url": shared_story and shared_story.blurblog_permalink()
     }]}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_save_new_story(request):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     fields = body.get('actionFields')
     story_url = fields['story_url']
     story_content = fields.get('story_content', "")
@@ -706,11 +706,11 @@ def api_save_new_story(request):
         "url": story and story.story_permalink
     }]}
 
-@login_required
+@oauth_login_required
 @json.json_view
 def api_save_new_subscription(request):
     user = request.user
-    body = json.decode(request.body)
+    body = request.body_json
     fields = body.get('actionFields')
     url = fields['url']
     folder = fields['folder']
