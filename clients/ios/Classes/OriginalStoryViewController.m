@@ -196,13 +196,11 @@
     titleView.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [titleView sizeToFit];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [MBProgressHUD hideHUDForView:self.webView animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-        HUD.labelText = @"On its way...";
-        [HUD hide:YES afterDelay:2];
-        HUD.userInteractionEnabled = NO;
-    });
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"On its way...";
+    [HUD hide:YES afterDelay:2];
+    HUD.userInteractionEnabled = NO;
 }
 
 - (IBAction)webViewGoBack:(id)sender {

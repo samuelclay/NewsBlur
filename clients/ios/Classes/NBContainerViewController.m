@@ -688,6 +688,7 @@
                                                                   0,
                                                                   CGRectGetWidth(vb),
                                                                   CGRectGetHeight(vb));
+        [self.originalViewController view]; // Force viewDidLoad
         [self.originalViewController loadInitialStory];
     }
 
