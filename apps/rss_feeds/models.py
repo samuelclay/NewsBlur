@@ -2108,7 +2108,7 @@ class MStarredStoryCounts(mongo.Document):
     def count_tags_for_user(cls, user_id):
         all_tags = MStarredStory.objects(user_id=user_id,
                                          user_tags__exists=True).item_frequencies('user_tags')
-        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
+        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
                            key=itemgetter(1), 
                            reverse=True)
                            
