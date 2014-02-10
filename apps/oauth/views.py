@@ -18,6 +18,7 @@ from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredSto
 from utils import log as logging
 from utils.user_functions import ajax_login_required, oauth_login_required
 from utils.view_functions import render_to
+from utils import urlnorm
 from utils import json_functions as json
 from vendor import facebook
 from vendor import tweepy
@@ -619,7 +620,7 @@ def api_share_new_story(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    story_url = fields['story_url']
+    story_url = urlnorm.normalize(fields['story_url'])
     content = fields.get('story_content', "")
     story_title = fields.get('story_title', "[Untitled]")
     story_author = fields.get('story_author', "")
@@ -682,7 +683,7 @@ def api_save_new_story(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    story_url = fields['story_url']
+    story_url = urlnorm.normalize(fields['story_url'])
     story_content = fields.get('story_content', "")
     story_title = fields.get('story_title', "[Untitled]")
     story_author = fields.get('story_author', "")
@@ -721,7 +722,7 @@ def api_save_new_subscription(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    url = fields['url']
+    url = urlnorm.normalize(fields['url'])
     folder = fields['folder']
     
     if folder == "Top Level":
