@@ -18,6 +18,7 @@ from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredSto
 from utils import log as logging
 from utils.user_functions import ajax_login_required, oauth_login_required
 from utils.view_functions import render_to
+from utils import urlnorm
 from utils import json_functions as json
 from vendor import facebook
 from vendor import tweepy
@@ -310,7 +311,10 @@ def api_folder_list(request, trigger_slug=None):
     user = request.user
     usf = UserSubscriptionFolders.objects.get(user=user)
     flat_folders = usf.flatten_folders()
-    titles = [dict(label="All Site Stories", value="all")]
+    if 'add-new-subscription' in request.path:
+        titles = []
+    else:
+        titles = [dict(label="All Site Stories", value="all")]
     
     for folder_title in sorted(flat_folders.keys()):
         if folder_title and folder_title != " ":
@@ -439,13 +443,13 @@ def api_unread_story(request, unread_score=None):
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
-            "StoryUrl": story['story_permalink'],
+            "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'].isoformat(),
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "StoryScore": score,
-            "SiteTitle": feed and feed['title'],
-            "SiteWebsite": feed and feed['website'],
-            "SiteFeedAddress": feed and feed['address'],
+            "Site": feed and feed['title'],
+            "SiteURL": feed and feed['website'],
+            "SiteRSS": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": int(story['story_date'].strftime("%s"))
@@ -474,10 +478,10 @@ def api_saved_story(request):
     if story_tag == "all":
         story_tag = ""
     
-    mstories = MStarredStory.objects(
-        user_id=user.pk,
-        user_tags__contains=story_tag
-    ).order_by('-starred_date')[:limit]
+    params = dict(user_id=user.pk)
+    if story_tag:
+        params.update(dict(user_tags__contains=story_tag))
+    mstories = MStarredStory.objects(**params).order_by('-starred_date')[:limit]
     stories = Feed.format_stories(mstories)        
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
@@ -494,20 +498,23 @@ def api_saved_story(request):
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
-            "StoryUrl": story['story_permalink'],
+            "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'].isoformat(),
-            "SavedDate": story['starred_date'].isoformat(),
-            "SavedTags": ', '.join(story['user_tags']),
-            "SiteTitle": feed and feed['title'],
-            "SiteWebsite": feed and feed['website'],
-            "SiteFeedAddress": feed and feed['address'],
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "SavedAt": story['starred_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "Tags": ', '.join(story['user_tags']),
+            "Site": feed and feed['title'],
+            "SiteURL": feed and feed['website'],
+            "SiteRSS": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": int(story['starred_date'].strftime("%s"))
             },
         })
-    
+
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FCChecking saved stories from ~SBIFTTT~SB: ~SB%s~SN - ~SB%s~SN stories" % (story_tag if story_tag else "[All stories]", len(entries)))
     
     return {"data": entries}
@@ -575,22 +582,25 @@ def api_shared_story(request):
         entries.append({
             "StoryTitle": story['story_title'],
             "StoryContent": story['story_content'],
-            "StoryUrl": story['story_permalink'],
+            "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "StoryDate": story['story_date'].isoformat(),
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "StoryScore": score,
-            "SharedComments": story['comments'],
-            "ShareUsername": users.get(story['user_id']),
-            "SharedDate": story['shared_date'].isoformat(),
-            "SiteTitle": feed and feed['title'],
-            "SiteWebsite": feed and feed['website'],
-            "SiteFeedAddress": feed and feed['address'],
+            "Comments": story['comments'],
+            "Username": users.get(story['user_id']),
+            "SharedAt": story['shared_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "Site": feed and feed['title'],
+            "SiteURL": feed and feed['website'],
+            "SiteRSS": feed and feed['address'],
             "ifttt": {
                 "id": story['story_hash'],
                 "timestamp": int(story['shared_date'].strftime("%s"))
             },
         })
 
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FMChecking shared stories from ~SB~FCIFTTT~SN~FM: ~SB~FM%s~FM~SN - ~SB%s~SN stories" % (blurblog_user, len(entries)))
 
     return {"data": entries}
@@ -601,7 +611,7 @@ def ifttt_status(request):
 
     return {"data": {
         "status": "OK",
-        "time": datetime.datetime.now().isoformat()
+        "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }}
 
 @oauth_login_required
@@ -610,7 +620,7 @@ def api_share_new_story(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    story_url = fields['story_url']
+    story_url = urlnorm.normalize(fields['story_url'])
     content = fields.get('story_content', "")
     story_title = fields.get('story_title', "[Untitled]")
     story_author = fields.get('story_author', "")
@@ -673,7 +683,7 @@ def api_save_new_story(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    story_url = fields['story_url']
+    story_url = urlnorm.normalize(fields['story_url'])
     story_content = fields.get('story_content', "")
     story_title = fields.get('story_title', "[Untitled]")
     story_author = fields.get('story_author', "")
@@ -712,7 +722,7 @@ def api_save_new_subscription(request):
     user = request.user
     body = request.body_json
     fields = body.get('actionFields')
-    url = fields['url']
+    url = urlnorm.normalize(fields['url'])
     folder = fields['folder']
     
     if folder == "Top Level":
