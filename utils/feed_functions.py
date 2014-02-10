@@ -190,7 +190,8 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     if isinstance(obj, dict):
         obj_identifier = obj.keys()[0]
 
-    if (not in_folder and not parent and 
+    if ((not in_folder or in_folder == " ") and
+        not parent and 
         not isinstance(obj, dict) and 
         obj_identifier not in folders):
         folders.append(obj)

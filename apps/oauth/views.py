@@ -310,7 +310,10 @@ def api_folder_list(request, trigger_slug=None):
     user = request.user
     usf = UserSubscriptionFolders.objects.get(user=user)
     flat_folders = usf.flatten_folders()
-    titles = [dict(label="All Site Stories", value="all")]
+    if 'add-new-subscription' in request.path:
+        titles = []
+    else:
+        titles = [dict(label="All Site Stories", value="all")]
     
     for folder_title in sorted(flat_folders.keys()):
         if folder_title and folder_title != " ":
