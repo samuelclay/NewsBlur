@@ -210,6 +210,13 @@
 
 <div class="NB-page">
 
+    {% if not stories and social_profile.private %}
+        <div class="NB-warning-private">
+            <div class="NB-icon-lock"></div>
+            This user has limited their shared stories only to followers.
+        </div>
+    {% endif %}
+    
     {% for story in stories %}
         {% render_social_story story %}
     {% endfor %}
