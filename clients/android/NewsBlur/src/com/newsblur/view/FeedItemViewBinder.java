@@ -12,6 +12,9 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
+import com.newsblur.util.StoryUtils;
+
+import java.util.Date;
 
 public class FeedItemViewBinder implements ViewBinder {
 
@@ -68,7 +71,10 @@ public class FeedItemViewBinder implements ViewBinder {
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
             ((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
-		}
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
+            ((TextView) view).setText(StoryUtils.formatShortDate(new Date(cursor.getLong(columnIndex))));
+            return true;
+        }
 		
 		return false;
 	}
