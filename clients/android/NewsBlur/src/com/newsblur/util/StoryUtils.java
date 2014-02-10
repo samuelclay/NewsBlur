@@ -9,11 +9,40 @@ import java.util.Date;
  */
 public class StoryUtils {
 
-    private static final SimpleDateFormat todayLongFormat = new SimpleDateFormat("MMMM d");
-    private static final SimpleDateFormat monthLongFormat = new SimpleDateFormat("EEEE, MMMM d");
-    private static final SimpleDateFormat yearLongFormat = new SimpleDateFormat("yyyy");
-    private static final SimpleDateFormat twelveHourFormat = new SimpleDateFormat("h:mma");
-    private static final SimpleDateFormat shortDateFormat = new SimpleDateFormat("d MMM yyyy");
+    private static final ThreadLocal<SimpleDateFormat> todayLongFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("MMMM d");
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> monthLongFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("EEEE, MMMM d");
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> yearLongFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy");
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> twelveHourFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("h:mma");
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> shortDateFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("d MMM yyyy");
+        }
+    };
 
     public static String formatLongDate(Date storyDate) {
 
@@ -27,16 +56,16 @@ public class StoryUtils {
 
         if (storyDate.getTime() > midnightToday.getTime()) {
             // Today, January 1st 00:00
-            return "Today, " + todayLongFormat.format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.format(storyDate);
+            return "Today, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
         } else if (storyDate.getTime() > midnightYesterday.getTime()) {
             // Yesterday, January 1st 00:00
-            return "Yesterday, " + todayLongFormat.format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.format(storyDate);
+            return "Yesterday, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
         } else if (storyDate.getTime() > beginningOfMonth.getTime()) {
             // Monday, January 1st 00:00
-            return monthLongFormat.format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.format(storyDate);
+            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
         } else {
             // Monday, January 1st 2014 00:00
-            return monthLongFormat.format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.format(storyDate) + " " + twelveHourFormat.format(storyDate);
+            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + twelveHourFormat.get().format(storyDate);
         }
     }
 
@@ -83,13 +112,13 @@ public class StoryUtils {
 
         if (storyDate.getTime() > midnightToday.getTime()) {
             // 00:00
-            return twelveHourFormat.format(storyDate);
+            return twelveHourFormat.get().format(storyDate);
         } else if (storyDate.getTime() > midnightYesterday.getTime()) {
             // Yesterday, 00:00
-            return "Yesterday, " + twelveHourFormat.format(storyDate);
+            return "Yesterday, " + twelveHourFormat.get().format(storyDate);
         } else {
             // 1 Jan 2014, 00:00
-            return shortDateFormat.format(storyDate) +", " + twelveHourFormat.format(storyDate);
+            return shortDateFormat.get().format(storyDate) +", " + twelveHourFormat.get().format(storyDate);
         }
     }
 }
