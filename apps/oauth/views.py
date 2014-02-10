@@ -441,7 +441,7 @@ def api_unread_story(request, unread_score=None):
             "StoryContent": story['story_content'],
             "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "PublishedAt": story['story_date'].isoformat(),
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "StoryScore": score,
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
@@ -474,10 +474,10 @@ def api_saved_story(request):
     if story_tag == "all":
         story_tag = ""
     
-    mstories = MStarredStory.objects(
-        user_id=user.pk,
-        user_tags__contains=story_tag
-    ).order_by('-starred_date')[:limit]
+    params = dict(user_id=user.pk)
+    if story_tag:
+        params.update(dict(user_tags__contains=story_tag))
+    mstories = MStarredStory.objects(**params).order_by('-starred_date')[:limit]
     stories = Feed.format_stories(mstories)        
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
@@ -496,8 +496,8 @@ def api_saved_story(request):
             "StoryContent": story['story_content'],
             "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "PublishedAt": story['story_date'].isoformat(),
-            "SavedAt": story['starred_date'].isoformat(),
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "SavedAt": story['starred_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "Tags": ', '.join(story['user_tags']),
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
@@ -507,7 +507,10 @@ def api_saved_story(request):
                 "timestamp": int(story['starred_date'].strftime("%s"))
             },
         })
-    
+
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FCChecking saved stories from ~SBIFTTT~SB: ~SB%s~SN - ~SB%s~SN stories" % (story_tag if story_tag else "[All stories]", len(entries)))
     
     return {"data": entries}
@@ -577,11 +580,11 @@ def api_shared_story(request):
             "StoryContent": story['story_content'],
             "StoryURL": story['story_permalink'],
             "StoryAuthor": story['story_authors'],
-            "PublishedAt": story['story_date'].isoformat(),
+            "PublishedAt": story['story_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "StoryScore": score,
             "Comments": story['comments'],
             "Username": users.get(story['user_id']),
-            "SharedAt": story['shared_date'].isoformat(),
+            "SharedAt": story['shared_date'].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "Site": feed and feed['title'],
             "SiteURL": feed and feed['website'],
             "SiteRSS": feed and feed['address'],
@@ -591,6 +594,9 @@ def api_shared_story(request):
             },
         })
 
+    if after:
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        
     logging.user(request, "~FMChecking shared stories from ~SB~FCIFTTT~SN~FM: ~SB~FM%s~FM~SN - ~SB%s~SN stories" % (blurblog_user, len(entries)))
 
     return {"data": entries}
@@ -601,7 +607,7 @@ def ifttt_status(request):
 
     return {"data": {
         "status": "OK",
-        "time": datetime.datetime.now().isoformat()
+        "time": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }}
 
 @oauth_login_required
