@@ -72,7 +72,7 @@ public class FeedItemViewBinder implements ViewBinder {
             ((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
-            ((TextView) view).setText(StoryUtils.formatShortDate(new Date(cursor.getLong(columnIndex))));
+            ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));
             return true;
         }
 		
