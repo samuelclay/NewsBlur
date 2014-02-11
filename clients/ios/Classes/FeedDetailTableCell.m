@@ -147,46 +147,49 @@ static UIFont *indicatorFont = nil;
             [storyImageView setClipsToBounds:YES];
             CGFloat alpha = 1.0f;
             if (cell.highlighted || cell.selected) {
-                alpha = 0.6f;
+                alpha = cell.isRead ? 0.5f : 0.65f;
             } else if (cell.isRead) {
-                alpha = 0.3f;
+                alpha = 0.34f;
             }
             [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
             rect.size.width -= r.size.height;
         } else {
-            NSLog(@"Fetching image: %@", cell.storyTitle);
-            NSMutableURLRequest *request = [NSMutableURLRequest
-                                            requestWithURL:[NSURL URLWithString:cell.storyImageUrl]];
-            [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-
-            [storyImageView setImageWithURLRequest:request
-                                  placeholderImage:nil
-                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
-            {
-                if (image.size.height < 50 || image.size.width < 50) {
-                   [[TMCache sharedCache] setObject:[NSNull null]
-                                             forKey:cell.storyImageUrl];
-                   return;
-                }
-                CGSize maxImageSize = CGSizeMake(300, 300);
-                image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                [[TMCache sharedCache] setObject:image
-                                         forKey:cell.storyImageUrl
-                                          block:^(TMCache *cache, NSString *key, id object)
+            NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
+                NSLog(@"Fetching image: %@", cell.storyTitle);
+                NSMutableURLRequest *request = [NSMutableURLRequest
+                                                requestWithURL:[NSURL URLWithString:cell.storyImageUrl]];
+                [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+                
+                [storyImageView setImageWithURLRequest:request
+                                      placeholderImage:nil
+                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
                 {
-                    if (cell.inDashboard) {
-                        [appDelegate.dashboardViewController.storiesModule
-                         showStoryImage:key];
-                    } else {
-                        [appDelegate.feedDetailViewController
-                         showStoryImage:key];
+                    if (image.size.height < 50 || image.size.width < 50) {
+                       [[TMCache sharedCache] setObject:[NSNull null]
+                                                 forKey:cell.storyImageUrl];
+                       return;
                     }
+                    CGSize maxImageSize = CGSizeMake(300, 300);
+                    image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                    [[TMCache sharedCache] setObject:image
+                                             forKey:cell.storyImageUrl
+                                              block:^(TMCache *cache, NSString *key, id object)
+                    {
+                        if (cell.inDashboard) {
+                            [appDelegate.dashboardViewController.storiesModule
+                             showStoryImage:key];
+                        } else {
+                            [appDelegate.feedDetailViewController
+                             showStoryImage:key];
+                        }
+                    }];
+                } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
+                {
+                    [[TMCache sharedCache] setObject:[NSNull null]
+                                              forKey:cell.storyImageUrl];
                 }];
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
-            {
-                [[TMCache sharedCache] setObject:[NSNull null]
-                                          forKey:cell.storyImageUrl];
             }];
+            [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
         }
     }
     

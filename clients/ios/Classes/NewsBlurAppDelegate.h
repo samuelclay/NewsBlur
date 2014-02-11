@@ -145,6 +145,7 @@
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
     NSOperationQueue *offlineCleaningQueue;
+    NSOperationQueue *cacheImagesOperationQueue;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
@@ -250,6 +251,7 @@
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
 @property (nonatomic) NSOperationQueue *offlineCleaningQueue;
+@property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
