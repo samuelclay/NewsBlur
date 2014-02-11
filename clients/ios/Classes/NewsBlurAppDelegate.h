@@ -286,9 +286,15 @@
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
+- (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;
+- (void)loadRiverFeedDetailView:(BOOL)transition;
+- (void)loadRiverDetailViewWithStory:(NSString *)contentId
+                    showFindingStory:(BOOL)showHUD;
+- (void)prepareRiverFeedDetail:(NSString *)tag;
+
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;

@@ -33,7 +33,7 @@
     BOOL finishedAnimatingIn;
     BOOL isOffline;
     BOOL isShowingOffline;
-
+    BOOL isDashboardModule;
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
@@ -59,6 +59,7 @@
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic, readwrite) BOOL isShowingOffline;
+@property (nonatomic, readwrite) BOOL isDashboardModule;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;

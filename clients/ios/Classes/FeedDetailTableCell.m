@@ -10,8 +10,10 @@
 #import "FeedDetailTableCell.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
+#import "UIImageView+AFNetworking.h"
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
+#import "TMCache.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -23,8 +25,11 @@ static UIFont *indicatorFont = nil;
 @synthesize storyTitle;
 @synthesize storyAuthor;
 @synthesize storyDate;
+@synthesize storyContent;
+@synthesize storyImageUrl;
 @synthesize storyTimestamp;
 @synthesize storyScore;
+@synthesize storyImage;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
@@ -60,6 +65,7 @@ static UIFont *indicatorFont = nil;
 
 - (void)drawRect:(CGRect)rect {
     ((FeedDetailTableCellView *)cellContent).cell = self;
+    ((FeedDetailTableCellView *)cellContent).storyImage = nil;
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
 }
@@ -101,6 +107,7 @@ static UIFont *indicatorFont = nil;
 @implementation FeedDetailTableCellView
 
 @synthesize cell;
+@synthesize storyImage;
 
 - (void)drawRect:(CGRect)r {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -120,6 +127,45 @@ static UIFont *indicatorFont = nil;
     [backgroundColor set];
     
     CGContextFillRect(context, r);
+    
+    if (cell.storyImageUrl) {
+        CGRect imageFrame = CGRectMake(r.size.width-r.size.height, 1,
+                                       r.size.height, r.size.height);
+        UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
+        
+        UIImage *cachedImage = (UIImage *)[[TMCache sharedCache] objectForKey:cell.storyImageUrl];
+        if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
+            NSLog(@"Found cached image: %@", cell.storyTitle);
+            storyImageView.image = cachedImage;
+            [storyImageView setContentMode:UIViewContentModeScaleAspectFill];
+            [storyImageView setClipsToBounds:YES];
+            [self addSubview:storyImageView];
+            rect.size.width -= r.size.height;
+        } else {
+            NSLog(@"Fetching image: %@", cell.storyTitle);
+            NSMutableURLRequest *request = [NSMutableURLRequest
+                                            requestWithURL:[NSURL URLWithString:cell.storyImageUrl]];
+            [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+
+            [storyImageView setImageWithURLRequest:request
+                                  placeholderImage:nil
+                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                               if (image.size.height < 50 || image.size.width < 50) {
+                                                   [[TMCache sharedCache] setObject:[NSNull null]
+                                                                             forKey:cell.storyImageUrl];
+                                                   return;
+                                               }
+                                               [[TMCache sharedCache] setObject:image
+                                                                         forKey:cell.storyImageUrl
+                                                                          block:
+                                                ^(TMCache *cache, NSString *key, id object) {
+                                                   [self setNeedsLayout];
+                                               }];
+                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                               
+                                           }];
+        }
+    }
     
     UIColor *textColor;
     UIFont *font;
@@ -216,6 +262,34 @@ static UIFont *indicatorFont = nil;
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}
                           context:nil];
+    
+    if (cell.storyContent) {
+        CGSize contentSize = [cell.storyContent
+                              boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                              options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                              attributes:@{NSFontAttributeName: font,
+                                           NSParagraphStyleAttributeName: paragraphStyle}
+                              context:nil].size;
+        
+        int storyContentY = r.size.height - 18 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
+        
+        if (cell.isRead) {
+            textColor = UIColorFromRGB(0x606060);
+            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        } else {
+            textColor = UIColorFromRGB(0x404040);
+            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        }
+        if (cell.highlighted || cell.selected) {
+            textColor = UIColorFromRGB(0x686868);
+        }
+        
+        [cell.storyContent
+         drawInRect:CGRectMake(storyTitleX, storyContentY, rect.size.width - leftMargin*2, contentSize.height)
+         withAttributes:@{NSFontAttributeName: font,
+                          NSForegroundColorAttributeName: textColor,
+                          NSParagraphStyleAttributeName: paragraphStyle}];
+    }
     
     int storyAuthorDateY = r.size.height - 18;
     if (cell.isShort) {

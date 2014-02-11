@@ -501,12 +501,6 @@ static UIFont *userLabelFont;
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
-    // Only update the dashboard if there is a social profile
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController refreshInteractions];
-        [appDelegate.dashboardViewController refreshActivity];
-    }
-    
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
@@ -669,6 +663,12 @@ static UIFont *userLabelFont;
     [self showExplainerOnEmptyFeedlist];
     [self layoutHeaderCounts:nil];
     [self refreshHeaderCounts];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isOffline) {
+        [appDelegate.dashboardViewController refreshStories];
+        [appDelegate.dashboardViewController refreshInteractions];
+        [appDelegate.dashboardViewController refreshActivity];
+    }
 }
 
 
@@ -714,6 +714,9 @@ static UIFont *userLabelFont;
         dispatch_async(dispatch_get_main_queue(), ^{
             [_self finishLoadingFeedListWithDict:results];
             [_self fetchFeedList:NO];
+            if (failed) {
+                [appDelegate.dashboardViewController refreshStories];
+            }
         });
     }];
 }
@@ -796,7 +799,7 @@ static UIFont *userLabelFont;
     [self.popoverController presentPopoverFromBarButtonItem:self.activitiesButton
                                    permittedArrowDirections:UIPopoverArrowDirectionUp
                                                    animated:YES];
-    
+
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
 }
@@ -1141,65 +1144,18 @@ heightForHeaderInSection:(NSInteger)section {
     self.currentRowAtIndexPath = nil;
     self.currentSection = button.tag;
     
-    appDelegate.readStories = [NSMutableArray array];
-    
-    NSMutableArray *feeds = [NSMutableArray array];
-
+    NSString *tag;
     if (button.tag == 0) {
-        appDelegate.isSocialRiverView = YES;
-        appDelegate.isRiverView = YES;
-        [appDelegate setActiveFolder:@"river_global"];
+        tag = @"river_global";
     } else if (button.tag == 1) {
-        appDelegate.isSocialRiverView = YES;
-        appDelegate.isRiverView = YES;
-        // add all the feeds from every NON blurblog folder
-        [appDelegate setActiveFolder:@"river_blurblogs"];
-        for (NSString *folderName in self.activeFeedLocations) {
-            if ([folderName isEqualToString:@"river_blurblogs"]) { // remove all blurblugs which is a blank folder name
-                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-                NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                for (int l=0; l < [folderFeeds count]; l++) {
-                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
-                }
-            }
-        }
+        tag = @"river_blurblogs";
     } else if (button.tag == 2) {
-        appDelegate.isSocialRiverView = NO;
-        appDelegate.isRiverView = YES;
-        // add all the feeds from every NON blurblog folder
-        [appDelegate setActiveFolder:@"everything"];
-        for (NSString *folderName in self.activeFeedLocations) {
-            if (![folderName isEqualToString:@"river_blurblogs"]) {
-                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-                NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                for (int l=0; l < [folderFeeds count]; l++) {
-                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
-                }
-            }
-        }
-        [appDelegate.folderCountCache removeAllObjects];
+        tag = @"everything";
     } else {
-        appDelegate.isSocialRiverView = NO;
-        appDelegate.isRiverView = YES;
-        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
-        
-        [appDelegate setActiveFolder:folderName];
-        NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-        NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-        for (int l=0; l < [activeFolderFeeds count]; l++) {
-            [feeds addObject:[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]]];
-        }
-
+        tag = [NSString stringWithFormat:@"%ld", (long)button.tag];
     }
-    appDelegate.activeFolderFeeds = feeds;
-    if (!self.viewShowingAllFeeds) {
-        for (id feedId in feeds) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-            [self.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
-        }
-    }
-    [appDelegate.folderCountCache removeObjectForKey:appDelegate.activeFolder];
     
+    [appDelegate prepareRiverFeedDetail:tag];
     [appDelegate loadRiverFeedDetailView];
 }
 

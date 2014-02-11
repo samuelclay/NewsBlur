@@ -173,6 +173,9 @@
 		FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */; };
 		FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
 		FF191E4F18A323F400473252 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF191E4E18A323F400473252 /* Images.xcassets */; };
+		FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13CE18A9C2BE00FDA816 /* TMCache.m */; };
+		FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */; };
+		FF1F13D518A9C2BE00FDA816 /* TMMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */; };
 		FF22FE4616E410A60046165A /* folder_collapse.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE4416E410A60046165A /* folder_collapse.png */; };
 		FF22FE4716E410A60046165A /* folder_expand.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE4516E410A60046165A /* folder_expand.png */; };
 		FF22FE4A16E413C30046165A /* disclosure_border@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE4816E413C30046165A /* disclosure_border@2x.png */; };
@@ -829,6 +832,12 @@
 		FF1660CB16D6FD8A00AF8541 /* SmallInteractionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmallInteractionCell.h; sourceTree = "<group>"; };
 		FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallInteractionCell.m; sourceTree = "<group>"; };
 		FF191E4E18A323F400473252 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NewsBlur/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		FF1F13CD18A9C2BE00FDA816 /* TMCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMCache.h; sourceTree = "<group>"; };
+		FF1F13CE18A9C2BE00FDA816 /* TMCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMCache.m; sourceTree = "<group>"; };
+		FF1F13CF18A9C2BE00FDA816 /* TMDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDiskCache.h; sourceTree = "<group>"; };
+		FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMDiskCache.m; sourceTree = "<group>"; };
+		FF1F13D118A9C2BE00FDA816 /* TMMemoryCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMMemoryCache.h; sourceTree = "<group>"; };
+		FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TMMemoryCache.m; sourceTree = "<group>"; };
 		FF22FE4416E410A60046165A /* folder_collapse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder_collapse.png; sourceTree = "<group>"; };
 		FF22FE4516E410A60046165A /* folder_expand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder_expand.png; sourceTree = "<group>"; };
 		FF22FE4816E413C30046165A /* disclosure_border@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "disclosure_border@2x.png"; sourceTree = "<group>"; };
@@ -1486,6 +1495,7 @@
 				FF753CC2175858FC00344EC9 /* fmdb */,
 				FF22FE5316E53ADC0046165A /* Underscore */,
 				43A4BABE15C8663600F3B8D4 /* Popover */,
+				FF1F13CC18A9C2BE00FDA816 /* TMCache */,
 				43A3912E15B73A7B0074B212 /* AFNetworking */,
 				FFFC60821716578E00DC22E2 /* THCircularProgressView.h */,
 				FFFC60831716578E00DC22E2 /* THCircularProgressView.m */,
@@ -2040,6 +2050,20 @@
 			);
 			name = JSON;
 			path = Source;
+			sourceTree = "<group>";
+		};
+		FF1F13CC18A9C2BE00FDA816 /* TMCache */ = {
+			isa = PBXGroup;
+			children = (
+				FF1F13CD18A9C2BE00FDA816 /* TMCache.h */,
+				FF1F13CE18A9C2BE00FDA816 /* TMCache.m */,
+				FF1F13CF18A9C2BE00FDA816 /* TMDiskCache.h */,
+				FF1F13D018A9C2BE00FDA816 /* TMDiskCache.m */,
+				FF1F13D118A9C2BE00FDA816 /* TMMemoryCache.h */,
+				FF1F13D218A9C2BE00FDA816 /* TMMemoryCache.m */,
+			);
+			name = TMCache;
+			path = "Other Sources/TMCache";
 			sourceTree = "<group>";
 		};
 		FF22FE5216E52BAD0046165A /* Foundation */ = {
@@ -3159,6 +3183,7 @@
 				43A4C3E215B00966008787B5 /* PullToRefreshView.m in Sources */,
 				43A4C3E315B00966008787B5 /* StringHelper.m in Sources */,
 				FF265F01187B635A0080C332 /* UIColor+OSKUtility.m in Sources */,
+				FF1F13D518A9C2BE00FDA816 /* TMMemoryCache.m in Sources */,
 				43A4C3E415B00966008787B5 /* TransparentToolbar.m in Sources */,
 				43A4C3E515B00966008787B5 /* UIView+TKCategory.m in Sources */,
 				FF265EF1187B635A0080C332 /* OSKSessionController.m in Sources */,
@@ -3185,6 +3210,7 @@
 				FF265EFB187B635A0080C332 /* OSKTwitterText.m in Sources */,
 				43A3914B15B73A7B0074B212 /* AFURLConnectionOperation.m in Sources */,
 				43A3914C15B73A7B0074B212 /* AFXMLRequestOperation.m in Sources */,
+				FF1F13D418A9C2BE00FDA816 /* TMDiskCache.m in Sources */,
 				FF265EFE187B635A0080C332 /* OSKUsernamePasswordCell.m in Sources */,
 				43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
@@ -3222,6 +3248,7 @@
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 				FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */,
 				FF4151C016DED9660013E84B /* UIBarButtonItem+Image.m in Sources */,
+				FF1F13D318A9C2BE00FDA816 /* TMCache.m in Sources */,
 				FF22FE5E16E53ADC0046165A /* Underscore+Functional.m in Sources */,
 				FF22FE5F16E53ADC0046165A /* Underscore.m in Sources */,
 				FF22FE6016E53ADC0046165A /* USArrayWrapper.m in Sources */,

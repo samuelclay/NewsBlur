@@ -59,6 +59,7 @@
 @synthesize notifier;
 @synthesize isOffline;
 @synthesize isShowingOffline;
+@synthesize isDashboardModule;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -69,6 +70,9 @@
  
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(preferredContentSizeChanged:)
                                                  name:UIContentSizeCategoryDidChangeNotification
@@ -219,7 +223,8 @@
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if (!isDashboardModule &&
+        UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         appDelegate.masterContainerViewController.storyTitlesOnLeft &&
         !self.isMovingFromParentViewController &&
         !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
@@ -317,7 +322,8 @@
 }
 
 - (void)beginOfflineTimer {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 10 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!appDelegate.storyLocationsCount && !self.pageFinished &&
             self.feedPage == 1 && !self.isOffline) {
             self.isShowingOffline = YES;
@@ -919,11 +925,21 @@
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
     cell.isStarred = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
+    if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
+        cell.storyImageUrl = [[story objectForKey:@"image_urls"] objectAtIndex:0];
+    } else {
+        cell.storyImageUrl = nil;
+    }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
     } else {
         cell.storyAuthor = @"";
+    }
+    
+    if (self.isDashboardModule) {
+        cell.storyContent = [[story objectForKey:@"story_content"]
+                             stringByConvertingHTMLToPlainText];
     }
     
     // feed color bar border
@@ -1016,8 +1032,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < appDelegate.storyLocationsCount) {
         // mark the cell as read
-        FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
-        [self loadStory:cell atRow:indexPath.row];
+        
+        if (self.isDashboardModule) {
+            NSInteger storyIndex = [appDelegate indexFromLocation:indexPath.row];
+            NSDictionary *activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
+            [appDelegate loadRiverDetailViewWithStory:[activeStory objectForKey:@"id"] showFindingStory:NO];
+        } else {
+            FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
+            [self loadStory:cell atRow:indexPath.row];
+        }
     }
 }
 
@@ -1049,7 +1072,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        return height + font.pointSize*2;
+        if (self.isDashboardModule) {
+            return height + font.pointSize*5;
+        } else {
+            return height + font.pointSize*2;
+        }
     } else {
         NSInteger height = kTableViewRowHeight;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
@@ -1059,7 +1086,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        return height + font.pointSize*2;
+        if (self.isDashboardModule) {
+            return height + font.pointSize*5;
+        } else {
+            return height + font.pointSize*2;
+        }
     }
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {

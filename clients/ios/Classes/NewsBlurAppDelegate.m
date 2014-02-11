@@ -863,28 +863,35 @@
 }
 
 - (void)loadFeedDetailView {
+    [self loadFeedDetailView:YES];
+}
+
+- (void)loadFeedDetailView:(BOOL)transition {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
     
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
-                                      initWithTitle: @"All"
-                                      style: UIBarButtonItemStyleBordered
-                                      target: nil
-                                      action: nil];
-    [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
     [feedDetailViewController resetFeedDetail];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     }];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionToFeedDetail];
-    } else {
-        [navigationController pushViewController:feedDetailViewController
-                                        animated:YES];
+    if (transition) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
+                                          initWithTitle: @"All"
+                                          style: UIBarButtonItemStyleBordered
+                                          target: nil
+                                          action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToFeedDetail];
+        } else {
+            [navigationController pushViewController:feedDetailViewController
+                                            animated:YES];
+        }
     }
 }
 
@@ -1093,27 +1100,134 @@
     }
 }
 
+- (void)prepareRiverFeedDetail:(NSString *)tag {
+    
+    self.readStories = [NSMutableArray array];
+    
+    NSMutableArray *feeds = [NSMutableArray array];
+    
+    if ([tag isEqualToString:@"river_global"]) {
+        self.isSocialRiverView = YES;
+        self.isRiverView = YES;
+        [self setActiveFolder:@"river_global"];
+    } else if ([tag isEqualToString:@"river_blurblogs"]) {
+        self.isSocialRiverView = YES;
+        self.isRiverView = YES;
+        // add all the feeds from every NON blurblog folder
+        [self setActiveFolder:@"river_blurblogs"];
+        for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+            if ([folderName isEqualToString:@"river_blurblogs"]) { // remove all blurblugs which is a blank folder name
+                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                }
+            }
+        }
+    } else if ([tag isEqualToString:@"everything"]) {
+        self.isSocialRiverView = NO;
+        self.isRiverView = YES;
+        // add all the feeds from every NON blurblog folder
+        [self setActiveFolder:@"everything"];
+        for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+            if (![folderName isEqualToString:@"river_blurblogs"]) {
+                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                }
+            }
+        }
+        [self.folderCountCache removeAllObjects];
+    } else {
+        self.isSocialRiverView = NO;
+        self.isRiverView = YES;
+        NSString *folderName = [self.dictFoldersArray objectAtIndex:[tag intValue]];
+        
+        [self setActiveFolder:folderName];
+        NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+        NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+        for (int l=0; l < [activeFeedLocations count]; l++) {
+            [feeds addObject:[originalFolder objectAtIndex:[[activeFeedLocations objectAtIndex:l] intValue]]];
+        }
+        
+    }
+    self.activeFolderFeeds = feeds;
+    if (!self.feedsViewController.viewShowingAllFeeds) {
+        for (id feedId in feeds) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            [self.feedsViewController.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+        }
+    }
+    [self.folderCountCache removeObjectForKey:self.activeFolder];
+}
+
 - (void)loadRiverFeedDetailView {
+    [self loadRiverFeedDetailView:YES];
+}
+
+- (void)loadRiverFeedDetailView:(BOOL)transition {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
     self.inFeedDetail = YES;
 
-    [feedDetailViewController resetFeedDetail];
+    if (transition) {
+        [feedDetailViewController resetFeedDetail];
+    } else {
+        [self.dashboardViewController.storiesModule resetFeedDetail];
+    }
     
     [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+        if (transition) {
+            [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+        } else {
+            [self.dashboardViewController.storiesModule fetchRiverPage:1 withCallback:nil];
+        }
     }];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionToFeedDetail];
-    } else {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
-                                                                         action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:feedDetailViewController animated:YES];
+    if (transition) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToFeedDetail];
+        } else {
+            UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
+                                                                              style: UIBarButtonItemStyleBordered 
+                                                                             target: nil 
+                                                                             action: nil];
+            [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+            UINavigationController *navController = self.navigationController;
+            [navController pushViewController:feedDetailViewController animated:YES];
+        }
+    }
+}
+
+- (void)loadRiverDetailViewWithStory:(NSString *)contentId
+                    showFindingStory:(BOOL)showHUD {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
+        }
+    }
+    
+    self.isSocialRiverView = NO;
+    self.isRiverView = YES;
+    self.inFindingStoryMode = YES;
+    self.isSocialView = NO;
+    
+    self.tryFeedStoryId = contentId;
+    self.activeFeed = nil;
+    self.activeFolder = @"everything";
+    
+    [self loadRiverFeedDetailView];
+    
+    if (showHUD) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.storyPageControl showShareHUD:@"Finding story..."];
+        } else {
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
+            HUD.labelText = @"Finding story...";
+        }
     }
 }
 

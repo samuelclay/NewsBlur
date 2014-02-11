@@ -17,6 +17,9 @@
     NSString *storyTitle;
     NSString *storyAuthor;
     NSString *storyDate;
+    NSString *storyContent;
+    NSString *storyImageUrl;
+    UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
     BOOL isStarred;
@@ -45,6 +48,9 @@
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
+@property (nonatomic) NSString *storyContent;
+@property (nonatomic) NSString *storyImageUrl;
+@property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
 @property (nonatomic) UIColor *feedColorBar;
@@ -59,8 +65,11 @@
 
 @end
 
-@interface FeedDetailTableCellView : UIView
+@interface FeedDetailTableCellView : UIView {
+    UIImage *storyImage;
+}
 
 @property (nonatomic) FeedDetailTableCell *cell;
+@property (nonatomic) UIImage *storyImage;
 
 @end
