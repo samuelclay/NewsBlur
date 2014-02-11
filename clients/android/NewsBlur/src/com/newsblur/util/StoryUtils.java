@@ -1,5 +1,8 @@
 package com.newsblur.util;
 
+import android.content.Context;
+import android.text.format.DateFormat;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +47,14 @@ public class StoryUtils {
         }
     };
 
-    public static String formatLongDate(Date storyDate) {
+    private static final ThreadLocal<SimpleDateFormat> twentyFourHourFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("HH:mm");
+        }
+    };
+
+    public static String formatLongDate(Context context, Date storyDate) {
 
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
@@ -54,18 +64,20 @@ public class StoryUtils {
         storyCalendar.setTime(storyDate);
         int month = storyCalendar.get(Calendar.DAY_OF_MONTH);
 
+        SimpleDateFormat timeFormat = getTimeFormat(context);
+
         if (storyDate.getTime() > midnightToday.getTime()) {
             // Today, January 1st 00:00
-            return "Today, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
+            return "Today, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + timeFormat.format(storyDate);
         } else if (storyDate.getTime() > midnightYesterday.getTime()) {
             // Yesterday, January 1st 00:00
-            return "Yesterday, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
+            return "Yesterday, " + todayLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + timeFormat.format(storyDate);
         } else if (storyDate.getTime() > beginningOfMonth.getTime()) {
             // Monday, January 1st 00:00
-            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + twelveHourFormat.get().format(storyDate);
+            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + timeFormat.format(storyDate);
         } else {
             // Monday, January 1st 2014 00:00
-            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + twelveHourFormat.get().format(storyDate);
+            return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + timeFormat.format(storyDate);
         }
     }
 
@@ -90,6 +102,14 @@ public class StoryUtils {
         return month.getTime();
     }
 
+    private static SimpleDateFormat getTimeFormat(Context context) {
+        if (DateFormat.is24HourFormat(context)) {
+            return twentyFourHourFormat.get();
+        } else {
+            return twelveHourFormat.get();
+        }
+    }
+
     /**
      * From http://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-in-java
      */
@@ -105,20 +125,22 @@ public class StoryUtils {
         }
     }
 
-    public static String formatShortDate(Date storyDate) {
+    public static String formatShortDate(Context context, Date storyDate) {
 
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
 
+        SimpleDateFormat timeFormat = getTimeFormat(context);
+
         if (storyDate.getTime() > midnightToday.getTime()) {
             // 00:00
-            return twelveHourFormat.get().format(storyDate);
+            return timeFormat.format(storyDate);
         } else if (storyDate.getTime() > midnightYesterday.getTime()) {
             // Yesterday, 00:00
-            return "Yesterday, " + twelveHourFormat.get().format(storyDate);
+            return "Yesterday, " + timeFormat.format(storyDate);
         } else {
             // 1 Jan 2014, 00:00
-            return shortDateFormat.get().format(storyDate) +", " + twelveHourFormat.get().format(storyDate);
+            return shortDateFormat.get().format(storyDate) +", " + timeFormat.format(storyDate);
         }
     }
 }

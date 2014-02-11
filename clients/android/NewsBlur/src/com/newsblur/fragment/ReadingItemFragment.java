@@ -308,7 +308,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
         itemTitle.setText(Html.fromHtml(story.title));
-		itemDate.setText(StoryUtils.formatLongDate(story.date));
+		itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.date));
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
