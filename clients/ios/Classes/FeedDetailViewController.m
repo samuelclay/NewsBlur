@@ -334,6 +334,20 @@
     });
 }
 
+- (void)showStoryImage:(NSString *)imageUrl {
+    for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
+        if ([cell isKindOfClass:[NBLoadingCell class]]) return;
+        if ([cell.storyImageUrl isEqualToString:imageUrl]) {
+            NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+            NSLog(@"Reloading cell: %@ (%ld)", cell.storyTitle, (long)indexPath.row);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                             withRowAnimation:UITableViewRowAnimationFade];
+            });
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
@@ -914,7 +928,9 @@
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     }
-        
+    
+    cell.inDashboard = self.isDashboardModule;
+    
     NSString *siteTitle = [feed objectForKey:@"feed_title"];
     cell.siteTitle = siteTitle; 
 

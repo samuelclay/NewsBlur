@@ -2978,7 +2978,7 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:avatarsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
     }
     
-    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+//    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
 - (void)cancelOfflineQueue {
@@ -2995,7 +2995,7 @@
         offlineQueue = [NSOperationQueue new];
     }
     offlineQueue.name = @"Offline Queue";
-    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
+//    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
     [offlineQueue cancelAllOperations];
     [offlineQueue setMaxConcurrentOperationCount:1];
     OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
@@ -3008,7 +3008,7 @@
     
     [offlineQueue addOperation:operationFetchStories];
     
-    NSLog(@"Done start offline fetch stories");
+//    NSLog(@"Done start offline fetch stories");
 }
 
 - (void)startOfflineFetchImages {
@@ -3180,7 +3180,7 @@
         cached++;
     }
     
-    NSLog(@"Pre-cached %d images", cached);
+//    NSLog(@"Pre-cached %d images", cached);
 }
 
 - (void)cleanImageCache {

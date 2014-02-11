@@ -48,7 +48,7 @@
     NSArray *hashes = [self unfetchedStoryHashes];
     
     if ([hashes count] == 0) {
-        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
+//        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
             if (![[[NSUserDefaults standardUserDefaults]

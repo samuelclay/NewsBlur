@@ -7,7 +7,9 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import "FeedDetailViewController.h"
 #import "FeedDetailTableCell.h"
+#import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
@@ -40,6 +42,7 @@ static UIFont *indicatorFont = nil;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
+@synthesize inDashboard;
 
 
 #define leftMargin 30
@@ -66,6 +69,7 @@ static UIFont *indicatorFont = nil;
 - (void)drawRect:(CGRect)rect {
     ((FeedDetailTableCellView *)cellContent).cell = self;
     ((FeedDetailTableCellView *)cellContent).storyImage = nil;
+    ((FeedDetailTableCellView *)cellContent).appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
 }
@@ -108,6 +112,7 @@ static UIFont *indicatorFont = nil;
 
 @synthesize cell;
 @synthesize storyImage;
+@synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -159,7 +164,13 @@ static UIFont *indicatorFont = nil;
                                                                          forKey:cell.storyImageUrl
                                                                           block:
                                                 ^(TMCache *cache, NSString *key, id object) {
-                                                   [self setNeedsLayout];
+                                                    if (cell.inDashboard) {
+                                                        [appDelegate.dashboardViewController.storiesModule
+                                                         showStoryImage:key];
+                                                    } else {
+                                                        [appDelegate.feedDetailViewController
+                                                         showStoryImage:key];
+                                                    }
                                                }];
                                            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
                                                

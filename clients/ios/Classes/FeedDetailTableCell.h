@@ -24,6 +24,7 @@
     int storyScore;
     BOOL isStarred;
     BOOL isShared;
+    BOOL inDashboard;
     
     // River view    
     NSString *siteTitle;
@@ -60,6 +61,7 @@
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
+@property (readwrite) BOOL inDashboard;
 
 - (void)setupGestures;
 
@@ -69,6 +71,7 @@
     UIImage *storyImage;
 }
 
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) FeedDetailTableCell *cell;
 @property (nonatomic) UIImage *storyImage;
 
