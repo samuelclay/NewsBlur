@@ -13,6 +13,7 @@
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIImage+Resize.h"
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
 #import "TMCache.h"
@@ -144,7 +145,13 @@ static UIFont *indicatorFont = nil;
             storyImageView.image = cachedImage;
             [storyImageView setContentMode:UIViewContentModeScaleAspectFill];
             [storyImageView setClipsToBounds:YES];
-            [self addSubview:storyImageView];
+            CGFloat alpha = 1.0f;
+            if (cell.highlighted || cell.selected) {
+                alpha = 0.6f;
+            } else if (cell.isRead) {
+                alpha = 0.3f;
+            }
+            [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
             rect.size.width -= r.size.height;
         } else {
             NSLog(@"Fetching image: %@", cell.storyTitle);
@@ -154,27 +161,32 @@ static UIFont *indicatorFont = nil;
 
             [storyImageView setImageWithURLRequest:request
                                   placeholderImage:nil
-                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                                               if (image.size.height < 50 || image.size.width < 50) {
-                                                   [[TMCache sharedCache] setObject:[NSNull null]
-                                                                             forKey:cell.storyImageUrl];
-                                                   return;
-                                               }
-                                               [[TMCache sharedCache] setObject:image
-                                                                         forKey:cell.storyImageUrl
-                                                                          block:
-                                                ^(TMCache *cache, NSString *key, id object) {
-                                                    if (cell.inDashboard) {
-                                                        [appDelegate.dashboardViewController.storiesModule
-                                                         showStoryImage:key];
-                                                    } else {
-                                                        [appDelegate.feedDetailViewController
-                                                         showStoryImage:key];
-                                                    }
-                                               }];
-                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                               
-                                           }];
+                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
+            {
+                if (image.size.height < 50 || image.size.width < 50) {
+                   [[TMCache sharedCache] setObject:[NSNull null]
+                                             forKey:cell.storyImageUrl];
+                   return;
+                }
+                CGSize maxImageSize = CGSizeMake(300, 300);
+                image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                [[TMCache sharedCache] setObject:image
+                                         forKey:cell.storyImageUrl
+                                          block:^(TMCache *cache, NSString *key, id object)
+                {
+                    if (cell.inDashboard) {
+                        [appDelegate.dashboardViewController.storiesModule
+                         showStoryImage:key];
+                    } else {
+                        [appDelegate.feedDetailViewController
+                         showStoryImage:key];
+                    }
+                }];
+            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
+            {
+                [[TMCache sharedCache] setObject:[NSNull null]
+                                          forKey:cell.storyImageUrl];
+            }];
         }
     }
     

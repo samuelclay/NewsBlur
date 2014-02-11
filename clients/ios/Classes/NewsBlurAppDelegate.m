@@ -555,7 +555,7 @@
     content.emailItem = emailItem;
     
     OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
-    smsItem.body = [NSString stringWithFormat:@"%@\n\n--\n\n%@\n\n", title, [url absoluteString]];;
+    smsItem.body = [NSString stringWithFormat:@"%@\n%@", title, [url absoluteString]];;
     content.smsItem = smsItem;
     
     OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
