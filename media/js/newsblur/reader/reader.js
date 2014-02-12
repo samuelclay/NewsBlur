@@ -4146,6 +4146,15 @@
                     this.apply_tipsy_titles();
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));
+                this.socket.on('reconnect_failed', _.bind(function() {
+                    console.log(["Socket.io reconnect failed"]);
+                }, this));
+                this.socket.on('reconnect', _.bind(function() {
+                    console.log(["Socket.io reconnected successfully!"]);
+                }, this));
+                this.socket.on('reconnecting', _.bind(function() {
+                    console.log(["Socket.io reconnecting..."]);
+                }, this));
             }
             
         },
@@ -4203,7 +4212,7 @@
                     self.force_feeds_refresh();
                 }
             }, refresh_interval);
-            this.flags.refresh_interval = refresh_interval / 1000;
+            this.flags.refresh_interval = parseInt(refresh_interval / 1000, 10);
             if (!this.socket || !this.socket.socket.connected) {
                 $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                 this.apply_tipsy_titles();
