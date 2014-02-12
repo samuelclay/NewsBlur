@@ -9,15 +9,12 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailViewController.h"
 #import "FeedDetailTableCell.h"
-#import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
-#import "UIImage+Resize.h"
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
 #import "TMCache.h"
-#import "AFImageRequestOperation.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -142,7 +139,7 @@ static UIFont *indicatorFont = nil;
         
         UIImage *cachedImage = (UIImage *)[[TMCache sharedCache] objectForKey:cell.storyImageUrl];
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
-            NSLog(@"Found cached image: %@", cell.storyTitle);
+//            NSLog(@"Found cached image: %@", cell.storyTitle);
             storyImageView.image = cachedImage;
             [storyImageView setContentMode:UIViewContentModeScaleAspectFill];
             [storyImageView setClipsToBounds:YES];
@@ -154,41 +151,6 @@ static UIFont *indicatorFont = nil;
             }
             [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
             rect.size.width -= r.size.height;
-        } else {
-            NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
-                NSLog(@"Fetching image: %@", cell.storyTitle);
-                NSMutableURLRequest *request = [NSMutableURLRequest
-                                                requestWithURL:[NSURL URLWithString:cell.storyImageUrl]];
-                [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-                
-                AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
-                                                             initWithRequest:request];
-                [requestOperation start];
-                [requestOperation waitUntilFinished];
-                
-                UIImage *image = requestOperation.responseImage;
-
-                if (!image || image.size.height < 50 || image.size.width < 50) {
-                   [[TMCache sharedCache] setObject:[NSNull null]
-                                             forKey:cell.storyImageUrl];
-                   return;
-                }
-                
-                CGSize maxImageSize = CGSizeMake(300, 300);
-                image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                [[TMCache sharedCache] setObject:image
-                                          forKey:cell.storyImageUrl];
-                if (cell.inDashboard) {
-                    [appDelegate.dashboardViewController.storiesModule
-                     showStoryImage:cell.storyImageUrl];
-                } else {
-                    [appDelegate.feedDetailViewController
-                     showStoryImage:cell.storyImageUrl];
-                }
-            }];
-            [cacheImagesOperation setThreadPriority:0];
-            [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
-            [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
         }
     }
     

@@ -204,10 +204,12 @@
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        [[TMCache sharedCache] removeAllObjects];
+        [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {
+            NSLog(@"Done clearing story image cache.");
+        }];
         [self.feedsViewController loadOfflineFeeds:NO];
         cacheImagesOperationQueue = [NSOperationQueue new];
-        cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
     });
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];

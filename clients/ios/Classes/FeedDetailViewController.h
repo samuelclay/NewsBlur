@@ -69,6 +69,7 @@
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)testForTryFeed;
+- (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;
 
 - (void)renderStories:(NSArray *)newStories;

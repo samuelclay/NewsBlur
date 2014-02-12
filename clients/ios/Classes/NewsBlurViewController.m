@@ -517,7 +517,6 @@ static UIFont *userLabelFont;
     }
     
     appDelegate.dictSocialFeeds = socialDict;
-    [self loadAvatars];
     
     // set up dictFolders
     NSMutableDictionary * allFolders = [[NSMutableDictionary alloc] init];
@@ -1542,6 +1541,7 @@ heightForHeaderInSection:(NSInteger)section {
 
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self.feedTitlesTable reloadData];
+            [self loadAvatars];
         });
     });
     

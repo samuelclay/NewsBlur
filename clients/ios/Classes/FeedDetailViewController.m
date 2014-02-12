@@ -29,6 +29,10 @@
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
 #import "NBBarButtonItem.h"
+#import "UIImage+Resize.h"
+#import "TMCache.h"
+#import "AFImageRequestOperation.h"
+#import "DashboardViewController.h"
 
 #define kTableViewRowHeight 38;
 #define kTableViewRiverRowHeight 60;
@@ -300,6 +304,7 @@
     [self.notifier hideIn:0];
     [self cancelRequests];
     [self beginOfflineTimer];
+    [appDelegate.cacheImagesOperationQueue cancelAllOperations];
 }
 
 - (void)reloadPage {
@@ -334,17 +339,57 @@
     });
 }
 
+- (void)cacheStoryImages:(NSArray *)storyImageUrls {
+        NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
+            for (NSString *storyImageUrl in storyImageUrls) {
+//            NSLog(@"Fetching image: %@", storyImageUrl);
+                NSMutableURLRequest *request = [NSMutableURLRequest
+                                                requestWithURL:[NSURL URLWithString:storyImageUrl]];
+                [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+                [request setTimeoutInterval:5.0];
+                AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
+                                                             initWithRequest:request];
+                [requestOperation start];
+                [requestOperation waitUntilFinished];
+                
+                UIImage *image = requestOperation.responseImage;
+                
+                if (!image || image.size.height < 50 || image.size.width < 50) {
+                    [[TMCache sharedCache] setObject:[NSNull null]
+                                              forKey:storyImageUrl];
+                    continue;
+                }
+                
+                CGSize maxImageSize = CGSizeMake(300, 300);
+                image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                [[TMCache sharedCache] setObject:image
+                                          forKey:storyImageUrl];
+                if (self.isDashboardModule) {
+                    [appDelegate.dashboardViewController.storiesModule
+                     showStoryImage:storyImageUrl];
+                } else {
+                    [appDelegate.feedDetailViewController
+                     showStoryImage:storyImageUrl];
+                }
+            }
+        }];
+        [cacheImagesOperation setThreadPriority:0];
+        [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
+        [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
+}
+
 - (void)showStoryImage:(NSString *)imageUrl {
     dispatch_async(dispatch_get_main_queue(), ^{
         for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
                 NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-                NSLog(@"Reloading cell: %@ (%ld)", cell.storyTitle, (long)indexPath.row);
+//                NSLog(@"Reloading cell: %@ (%ld)", cell.storyTitle, (long)indexPath.row);
                 [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationNone];
                 [self.storyTitlesTable endUpdates];
+                break;
             }
         }
     });
@@ -654,7 +699,6 @@
         
         return;
     }
-    
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOffline = NO;
     self.isShowingOffline = NO;
@@ -672,7 +716,6 @@
         && request.tag != [feedId intValue]) {
         return;
     }
-    
     if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         NSArray *newFeeds = [results objectForKey:@"feeds"];
         for (int i = 0; i < newFeeds.count; i++){
@@ -682,7 +725,7 @@
         }
         [self loadFaviconsFromActiveFeed];
     }
-    
+
     NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
     if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         for (id key in [newClassifiers allKeys]) {
@@ -709,7 +752,7 @@
             }
         }
     }
-    
+
     // Adding new user profiles to appDelegate.activeFeedUserProfiles
 
     NSArray *newUserProfiles = [[NSArray alloc] init];
@@ -748,12 +791,15 @@
 //        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
 //        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
-    
+
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
-    [appDelegate.storyPageControl resizeScrollView];
-    [appDelegate.storyPageControl setStoryFromScroll:YES];
-    [appDelegate.storyPageControl advanceToNextUnread];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.storyPageControl resizeScrollView];
+        [appDelegate.storyPageControl setStoryFromScroll:YES];
+        [appDelegate.storyPageControl advanceToNextUnread];
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -773,13 +819,13 @@
     });
 
     [self.notifier hide];
+
 }
 
 #pragma mark -
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
-
     NSInteger newStoriesCount = [newStories count];
     
     if (newStoriesCount > 0) {
@@ -791,7 +837,7 @@
     } else {
         self.pageFinished = YES;
     }
-    
+
     [self.storyTitlesTable reloadData];
     
     self.pageFetching = NO;
@@ -807,6 +853,14 @@
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.1];
+    
+    NSMutableArray *storyImageUrls = [NSMutableArray array];
+    for (NSDictionary *story in newStories) {
+        if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
+            [storyImageUrls addObject:[[story objectForKey:@"image_urls"] objectAtIndex:0]];
+        }
+    }
+    [self performSelector:@selector(cacheStoryImages:) withObject:storyImageUrls afterDelay:0.2];
 }
 
 - (void)testForTryFeed {
@@ -1145,7 +1199,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (![self.appDelegate.activeFeedStories count]) return;
     
-    if (maximumOffset - currentOffset <= 60.0 || 
+    if (maximumOffset - currentOffset <= 500.0 ||
         (appDelegate.inFindingStoryMode)) {
         if (appDelegate.isRiverView) {
             [self fetchRiverPage:self.feedPage+1 withCallback:nil];
