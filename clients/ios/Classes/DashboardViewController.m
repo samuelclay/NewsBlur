@@ -39,7 +39,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.interactionsModule.hidden = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.interactionsModule.hidden = YES;
+    } else {
+        self.interactionsModule.hidden = NO;
+    }
     self.activitiesModule.hidden = YES;
     self.feedbackWebView.hidden = YES;
     self.feedbackWebView.delegate = self;

@@ -17,6 +17,7 @@
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
 #import "TMCache.h"
+#import "AFImageRequestOperation.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -147,7 +148,7 @@ static UIFont *indicatorFont = nil;
             [storyImageView setClipsToBounds:YES];
             CGFloat alpha = 1.0f;
             if (cell.highlighted || cell.selected) {
-                alpha = cell.isRead ? 0.5f : 0.65f;
+                alpha = cell.isRead ? 0.5f : 0.85f;
             } else if (cell.isRead) {
                 alpha = 0.34f;
             }
@@ -160,35 +161,33 @@ static UIFont *indicatorFont = nil;
                                                 requestWithURL:[NSURL URLWithString:cell.storyImageUrl]];
                 [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
                 
-                [storyImageView setImageWithURLRequest:request
-                                      placeholderImage:nil
-                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
-                {
-                    if (image.size.height < 50 || image.size.width < 50) {
-                       [[TMCache sharedCache] setObject:[NSNull null]
-                                                 forKey:cell.storyImageUrl];
-                       return;
-                    }
-                    CGSize maxImageSize = CGSizeMake(300, 300);
-                    image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                    [[TMCache sharedCache] setObject:image
-                                             forKey:cell.storyImageUrl
-                                              block:^(TMCache *cache, NSString *key, id object)
-                    {
-                        if (cell.inDashboard) {
-                            [appDelegate.dashboardViewController.storiesModule
-                             showStoryImage:key];
-                        } else {
-                            [appDelegate.feedDetailViewController
-                             showStoryImage:key];
-                        }
-                    }];
-                } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
-                {
-                    [[TMCache sharedCache] setObject:[NSNull null]
-                                              forKey:cell.storyImageUrl];
-                }];
+                AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
+                                                             initWithRequest:request];
+                [requestOperation start];
+                [requestOperation waitUntilFinished];
+                
+                UIImage *image = requestOperation.responseImage;
+
+                if (!image || image.size.height < 50 || image.size.width < 50) {
+                   [[TMCache sharedCache] setObject:[NSNull null]
+                                             forKey:cell.storyImageUrl];
+                   return;
+                }
+                
+                CGSize maxImageSize = CGSizeMake(300, 300);
+                image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                [[TMCache sharedCache] setObject:image
+                                          forKey:cell.storyImageUrl];
+                if (cell.inDashboard) {
+                    [appDelegate.dashboardViewController.storiesModule
+                     showStoryImage:cell.storyImageUrl];
+                } else {
+                    [appDelegate.feedDetailViewController
+                     showStoryImage:cell.storyImageUrl];
+                }
             }];
+            [cacheImagesOperation setThreadPriority:0];
+            [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
             [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
         }
     }

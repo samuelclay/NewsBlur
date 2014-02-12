@@ -343,7 +343,7 @@
                 NSLog(@"Reloading cell: %@ (%ld)", cell.storyTitle, (long)indexPath.row);
                 [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                             withRowAnimation:UITableViewRowAnimationFade];
+                                             withRowAnimation:UITableViewRowAnimationNone];
                 [self.storyTitlesTable endUpdates];
             }
         }
