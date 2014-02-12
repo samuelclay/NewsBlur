@@ -4217,7 +4217,7 @@
                 $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                 this.apply_tipsy_titles();
             } 
-            NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
+            NEWSBLUR.log(["Setting refresh interval to every " + this.flags.refresh_interval + " seconds."]);
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {
