@@ -83,7 +83,7 @@ public class FolderItemListFragment extends StoryItemListFragment implements Loa
 		Cursor cursor = contentResolver.query(FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		getActivity().startManagingCursor(cursor);
 
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
+		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_DATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
