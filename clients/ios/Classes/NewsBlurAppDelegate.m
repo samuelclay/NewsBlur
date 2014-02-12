@@ -126,13 +126,8 @@
 @synthesize storyCount;
 @synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
+
 @synthesize savedStoriesCount;
-@synthesize totalUnfetchedStoryCount;
-@synthesize remainingUnfetchedStoryCount;
-@synthesize latestFetchedStoryDate;
-@synthesize latestCachedImageDate;
-@synthesize totalUncachedImagesCount;
-@synthesize remainingUncachedImagesCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -164,6 +159,13 @@
 @synthesize offlineCleaningQueue;
 @synthesize backgroundCompletionHandler;
 @synthesize cacheImagesOperationQueue;
+
+@synthesize totalUnfetchedStoryCount;
+@synthesize remainingUnfetchedStoryCount;
+@synthesize latestFetchedStoryDate;
+@synthesize latestCachedImageDate;
+@synthesize totalUncachedImagesCount;
+@synthesize remainingUncachedImagesCount;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
