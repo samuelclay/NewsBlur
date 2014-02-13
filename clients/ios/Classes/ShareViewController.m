@@ -275,9 +275,9 @@
         // Don't bother to reset comment field for replies while on the same story.
         // It'll get cleared out on a new story and when posting a reply.
         if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId] ||
-            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             self.activeCommentId = userId;
-            self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];
+            self.activeStoryId = [appDelegate.activeStory objectForKey:@"story_hash"];
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {

@@ -765,10 +765,10 @@
     } else {
         NSMutableSet *storyIds = [NSMutableSet set];
         for (id story in storiesCollection.activeFeedStories) {
-            [storyIds addObject:[story objectForKey:@"id"]];
+            [storyIds addObject:[story objectForKey:@"story_hash"]];
         }
         for (id story in newStories) {
-            if (![storyIds containsObject:[story objectForKey:@"id"]]) {
+            if (![storyIds containsObject:[story objectForKey:@"story_hash"]]) {
                 [confirmedNewStories addObject:story];
             }
         }
@@ -885,7 +885,10 @@
         for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
             NSString *storyIdStr = [[storiesCollection.activeFeedStories
                                      objectAtIndex:i] objectForKey:@"id"];
-            if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
+            NSString *storyHashStr = [[storiesCollection.activeFeedStories
+                                       objectAtIndex:i] objectForKey:@"story_hash"];
+            if ([storyHashStr isEqualToString:appDelegate.tryFeedStoryId] ||
+                [storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
                 NSDictionary *feed = [storiesCollection.activeFeedStories objectAtIndex:i];
                 
                 NSInteger score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
@@ -893,7 +896,7 @@
                 if (score < appDelegate.selectedIntelligence) {
                     [self changeIntelligence:score];
                 }
-                NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyIdStr];
+                NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
                 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
@@ -1123,7 +1126,7 @@
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
             NSDictionary *activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            [appDelegate loadRiverDetailViewWithStory:[activeStory objectForKey:@"id"] showFindingStory:NO];
+            [appDelegate loadRiverDetailViewWithStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
         } else {
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
             [self loadStory:cell atRow:indexPath.row];

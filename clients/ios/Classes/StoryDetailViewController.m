@@ -150,7 +150,7 @@
 }
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
-    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
+    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"story_hash"]) {
         NSLog(@"Already drawn story.");
 //        return;
     }
@@ -298,12 +298,12 @@
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
 
-    self.activeStoryId = [self.activeStory objectForKey:@"id"];
+    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
     self.inTextView = NO;
 }
 
 - (void)showStory {
-    id storyId = [self.activeStory objectForKey:@"id"];
+    id storyId = [self.activeStory objectForKey:@"story_hash"];
     [appDelegate.storiesCollection pushReadStory:storyId];
     [appDelegate resetShareComments];
 }
@@ -1160,7 +1160,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // see if it's a tryfeed for animation
     if (!self.webView.hidden &&
         appDelegate.tryFeedCategory &&
-        [[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
+        ([[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId] ||
+         [[self.activeStory objectForKey:@"story_hash"] isEqualToString:appDelegate.tryFeedStoryId])) {
         [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
@@ -1264,8 +1265,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
         NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
-        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
-        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"id"]];
+        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"story_hash"]];
+        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_hash"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStory];
         } else {

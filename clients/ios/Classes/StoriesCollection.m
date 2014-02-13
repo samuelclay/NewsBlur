@@ -74,7 +74,7 @@
         if (score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
-            [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"id"]];
+            [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"story_hash"]];
             if ([[story objectForKey:@"read_status"] intValue] == 0) {
                 self.visibleUnreadCount += 1;
             }
@@ -126,7 +126,7 @@
 - (NSInteger)indexOfActiveStory {
     for (NSInteger i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([appDelegate.activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
+        if ([appDelegate.activeStory objectForKey:@"story_hash"] == [story objectForKey:@"story_hash"]) {
             return i;
         }
     }
@@ -136,7 +136,7 @@
 - (NSInteger)indexOfStoryId:(id)storyId {
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"id"] == storyId) {
+        if ([story objectForKey:@"story_hash"] == storyId) {
             return i;
         }
     }
@@ -155,7 +155,7 @@
 - (NSInteger)locationOfActiveStory {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
         if ([[activeFeedStoryLocationIds objectAtIndex:i]
-             isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+             isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             return i;
         }
     }

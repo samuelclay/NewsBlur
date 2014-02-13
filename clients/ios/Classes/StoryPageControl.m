@@ -721,7 +721,7 @@
 }
 
 - (void)updatePageWithActiveStory:(NSInteger)location {
-    [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+    [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
     [self.view setNeedsLayout];
     
@@ -761,7 +761,7 @@
     NSInteger readStoryCount = [appDelegate.readStories count];
     if (readStoryCount == 0 ||
         (readStoryCount == 1 &&
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"])) {
         [buttonPrevious setEnabled:NO];
     } else {
         [buttonPrevious setEnabled:YES];
@@ -1115,7 +1115,7 @@
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
-    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
+    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
                               objectAtIndex:0]

@@ -194,7 +194,11 @@
         [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
         cacheImagesOperationQueue = [NSOperationQueue new];
-        cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        } else {
+            cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        }
     });
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
@@ -865,10 +869,6 @@
     
     [feedDetailViewController resetFeedDetail];
     
-    [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
-    }];
-    
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
                                           initWithTitle: @"All"
@@ -886,6 +886,11 @@
     }
 
     feedDetailViewController.storiesCollection = storiesCollection;
+    
+    [self flushQueuedReadStories:NO withCallback:^{
+        [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    }];
+    
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -1777,11 +1782,11 @@
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     
     // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     NSMutableArray *newActiveFeedStories = [storiesCollection.activeFeedStories mutableCopy];
     for (int i = 0; i < [newActiveFeedStories count]; i++) {
         NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
         if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
             [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
             break;
@@ -1833,7 +1838,7 @@
         }];
     });
     
-    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"id"]];
+    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
                                  forKey:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:location]];
@@ -1864,11 +1869,11 @@
     [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
     
     // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     NSMutableArray *newActiveFeedStories = [storiesCollection.activeFeedStories mutableCopy];
     for (int i = 0; i < [newActiveFeedStories count]; i++) {
         NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
         if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
             [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
             break;
@@ -1914,7 +1919,7 @@
          feedIdStr];
     }];
     
-    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"id"]];
+    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:location]];
 }
@@ -2104,11 +2109,11 @@
     }
     
     // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     NSMutableArray *newActiveFeedStories = [storiesCollection.activeFeedStories mutableCopy];
     for (int i = 0; i < [newActiveFeedStories count]; i++) {
         NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
         if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
             [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
             break;
