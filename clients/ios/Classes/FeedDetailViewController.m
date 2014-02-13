@@ -337,7 +337,7 @@
 
 - (void)beginOfflineTimer {
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 10 : 5) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 10 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.feedPage == 1 && !self.isOffline) {
             self.isShowingOffline = YES;
