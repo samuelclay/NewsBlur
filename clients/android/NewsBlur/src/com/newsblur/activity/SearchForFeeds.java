@@ -1,5 +1,8 @@
 package com.newsblur.activity;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +27,9 @@ import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
 
 public class SearchForFeeds extends NbFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
+    
+    private static String SUPPORTED_URL_PROTOCOL = "http";
+
 	private ListView resultsList;
 	private Loader<SearchLoaderResponse> searchLoader;
 	private FeedSearchResultAdapter adapter;
@@ -65,6 +71,10 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
+
+            // test to see if a feed URL was passed rather than a search term
+            if (tryAddByURL(query)) { return; }
+
 			setSupportProgressBarIndeterminateVisibility(true);
 			
 			Bundle bundle = new Bundle();
@@ -75,6 +85,25 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 		}
 	}
 
+    /**
+     * See if the text entered in the query field was actually a URL so we can skip the
+     * search step and just let users who know feed URLs directly subscribe.
+     */
+    private boolean tryAddByURL(String s) {
+        URL u = null;
+        try {
+            u = new URL(s);
+        } catch (MalformedURLException mue) {
+            ; // this just signals that the string wasn't a URL, we will return
+        }
+        if (u == null) { return false; }
+        if (!u.getProtocol().equals(SUPPORTED_URL_PROTOCOL)) { return false; };
+        if ((u.getHost() == null) || (u.getHost().trim().isEmpty())) { return false; }
+
+		DialogFragment addFeedFragment = AddFeedFragment.newInstance(s, s);
+		addFeedFragment.show(getSupportFragmentManager(), "dialog");
+        return true;
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
