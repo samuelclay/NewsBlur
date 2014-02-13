@@ -96,27 +96,28 @@
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
-    NSDictionary * activeFeed;
-    NSMutableDictionary * activeClassifiers;
-    NSArray * activePopularTags;
-    NSArray * activePopularAuthors;
+
     NSString * activeFolder;
-    NSDictionary * activeComment;
-    NSString * activeShareType;
+    NSDictionary * activeFeed;
     NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
     NSArray * activeFeedUserProfiles;
     NSMutableArray * activeFeedStoryLocations;
     NSMutableArray * activeFeedStoryLocationIds;
-    NSDictionary * activeStory;
-    NSURL * activeOriginalStoryURL;
-    
-    int feedDetailPortraitYCoordinate;
+    NSMutableDictionary * activeClassifiers;
+    NSArray * activePopularTags;
+    NSArray * activePopularAuthors;
     int storyCount;
     int storyLocationsCount;
+    int visibleUnreadCount;
+    
+    NSDictionary * activeStory;
+    NSURL * activeOriginalStoryURL;
+    NSString * activeShareType;
+    NSDictionary * activeComment;
+    int feedDetailPortraitYCoordinate;
     int originalStoryCount;
     NSInteger selectedIntelligence;
-    int visibleUnreadCount;
     int savedStoriesCount;
     int totalUnfetchedStoryCount;
     int remainingUnfetchedStoryCount;

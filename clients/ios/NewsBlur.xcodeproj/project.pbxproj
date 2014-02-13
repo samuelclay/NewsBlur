@@ -479,6 +479,7 @@
 		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
+		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
 		FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FC1727098D001D132F /* menu_icn_mail.png */; };
 		FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */; };
@@ -1282,6 +1283,8 @@
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		FFAD89C018AC45A100D68567 /* StoriesCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCollection.h; sourceTree = "<group>"; };
+		FFAD89C118AC45A100D68567 /* StoriesCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCollection.m; sourceTree = "<group>"; };
 		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
 		FFB757FC1727098D001D132F /* menu_icn_mail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_mail.png; sourceTree = "<group>"; };
 		FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_mail@2x.png"; sourceTree = "<group>"; };
@@ -2094,6 +2097,8 @@
 				FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */,
 				FFCDD8FF17F65A71000C6483 /* NBSwipeableCell.h */,
 				FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */,
+				FFAD89C018AC45A100D68567 /* StoriesCollection.h */,
+				FFAD89C118AC45A100D68567 /* StoriesCollection.m */,
 			);
 			name = Foundation;
 			sourceTree = "<group>";
@@ -3282,6 +3287,7 @@
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FFF1E4B9177504CA00BF59D3 /* IASKAppSettingsViewController.m in Sources */,
 				FFF1E4BA177504CA00BF59D3 /* IASKAppSettingsWebViewController.m in Sources */,
+				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
 				FF265EDB187B635A0080C332 /* OSKLinkShorteningUtility.m in Sources */,
 				FFF1E4BB177504CA00BF59D3 /* IASKSpecifierValuesViewController.m in Sources */,
 				FFF1E4BC177504CA00BF59D3 /* IASKSettingsReader.m in Sources */,
