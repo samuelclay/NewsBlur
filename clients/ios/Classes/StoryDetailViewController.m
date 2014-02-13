@@ -24,6 +24,7 @@
 #import "DataUtilities.h"
 #import "JSON.h"
 #import "StringHelper.h"
+#import "StoriesCollection.h"
 
 @implementation StoryDetailViewController
 
@@ -198,7 +199,8 @@
         }
     }
     
-    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+    NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
+                            appDelegate.storiesCollection.isSocialView) ?
                             @"NB-river" : @"NB-non-river";
     
     // set up layout values based on iPad/iPhone
@@ -288,7 +290,8 @@
         }
     }
     
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+    if (appDelegate.storiesCollection.isRiverView ||
+        appDelegate.storiesCollection.isSocialView) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
@@ -301,7 +304,7 @@
 
 - (void)showStory {
     id storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate pushReadStory:storyId];
+    [appDelegate.storiesCollection pushReadStory:storyId];
     [appDelegate resetShareComments];
 }
 
@@ -329,7 +332,7 @@
         NSString *author = [NSString stringWithFormat:@"%@",
                             [self.activeStory objectForKey:@"story_authors"]];
         if (author && [author class] != [NSNull class]) {
-            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
             storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
@@ -345,7 +348,7 @@
         if ([tagArray count] > 0) {
             NSMutableArray *tagStrings = [NSMutableArray array];
             for (NSString *tag in tagArray) {
-                int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
                 NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
@@ -369,7 +372,7 @@
     }
     
     NSString *storyUnread = @"";
-    if (self.isRecentlyUnread && [appDelegate isStoryUnread:self.activeStory]) {
+    if (self.isRecentlyUnread && [appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
@@ -377,8 +380,9 @@
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
     NSString *storyPermalink = [self.activeStory objectForKey:@"story_permalink"];
-    NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                            objectForKey:@"titles"];
+    NSMutableDictionary *titleClassifiers = [[appDelegate.storiesCollection.activeClassifiers
+                                              objectForKey:feedId]
+                                             objectForKey:@"titles"];
     for (NSString *titleClassifier in titleClassifiers) {
         if ([storyTitle containsString:titleClassifier]) {
             int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
@@ -949,7 +953,8 @@
 
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex {
     if (activeStoryIndex >= 0) {
-        self.activeStory = [[appDelegate.activeFeedStories objectAtIndex:activeStoryIndex] mutableCopy];
+        self.activeStory = [[appDelegate.storiesCollection.activeFeedStories
+                             objectAtIndex:activeStoryIndex] mutableCopy];
     } else {
         self.activeStory = [appDelegate.activeStory mutableCopy];
     }
@@ -1051,10 +1056,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
                         
-            for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
-                NSString *userId = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"]];
+            for (int i = 0; i < appDelegate.storiesCollection.activeFeedUserProfiles.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@", [[appDelegate.storiesCollection.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"]];
                 if ([userId isEqualToString:appDelegate.activeUserProfileId]){
-                    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"username"]];
+                    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [[appDelegate.storiesCollection.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"username"]];
                     break;
                 }
             }
@@ -1114,7 +1119,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGRect frame = CGRectZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1140,7 +1146,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     
-    if ([appDelegate.activeFeedStories count] &&
+    if ([appDelegate.storiesCollection.activeFeedStories count] &&
         self.activeStoryId &&
         ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
@@ -1256,18 +1262,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
-        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
+    for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
         NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStory];
         } else {
-            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
+            [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
         }
     }
     
-    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     [self refreshComments:@"like"];
@@ -1321,7 +1327,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGRect frame = CGRectZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1348,7 +1355,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[appDelegate.activeFeed 
+    [request setPostValue:[appDelegate.storiesCollection.activeFeed
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 
@@ -1465,7 +1472,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         contentWidthClass = @"NB-iphone";
     }
-    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+    NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
+                            appDelegate.storiesCollection.isSocialView) ?
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:

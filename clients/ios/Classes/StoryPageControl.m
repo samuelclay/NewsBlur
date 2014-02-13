@@ -25,6 +25,7 @@
 #import "UIBarButtonItem+Image.h"
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
+#import "StoriesCollection.h"
 
 @implementation StoryPageControl
 
@@ -192,21 +193,21 @@
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (!appDelegate.isSocialView) {
+        if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
-            if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
-                                                  isEqualToString:@"river_global"]) {
+            if (appDelegate.storiesCollection.isSocialRiverView &&
+                [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
-            } else if (appDelegate.isSocialRiverView && [appDelegate.activeFolder
-                                                         isEqualToString:@"river_blurblogs"]) {
+            } else if (appDelegate.storiesCollection.isSocialRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
-                                                   isEqualToString:@"everything"]) {
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder
-                                                   isEqualToString:@"saved_stories"]) {
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
-            } else if (appDelegate.isRiverView) {
+            } else if (appDelegate.storiesCollection.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
@@ -215,7 +216,7 @@
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-            if (appDelegate.isRiverView) {
+            if (appDelegate.storiesCollection.isRiverView) {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 22.0, 22.0);
             } else {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -228,7 +229,7 @@
             titleImageView.hidden = NO;
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
-                                   [appDelegate.activeFeed objectForKey:@"id"]];
+                                   [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
             UIImage *titleImage  = [Utilities getImage:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
@@ -258,7 +259,7 @@
     // set the subscribeButton flag
     if (appDelegate.isTryFeedView && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
-                                      [appDelegate.activeFeed objectForKey:@"username"]];
+                                      [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
@@ -380,16 +381,19 @@
 }
 
 - (void)refreshHeaders {
-    [currentPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:currentPage.activeStoryId]];
-    [nextPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:nextPage.activeStoryId]];
-    [previousPage setActiveStoryAtIndex:[appDelegate indexOfStoryId:previousPage.activeStoryId]];
+    [currentPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                        indexOfStoryId:currentPage.activeStoryId]];
+    [nextPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                     indexOfStoryId:nextPage.activeStoryId]];
+    [previousPage setActiveStoryAtIndex:[appDelegate.storiesCollection
+                                         indexOfStoryId:previousPage.activeStoryId]];
 
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
 }
 - (void)resizeScrollView {
-    NSInteger widthCount = self.appDelegate.storyLocationsCount;
+    NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
@@ -435,7 +439,7 @@
 
 - (void)applyNewIndex:(NSInteger)newIndex
        pageController:(StoryDetailViewController *)pageController {
-	NSInteger pageCount = [[appDelegate activeFeedStoryLocations] count];
+	NSInteger pageCount = [[appDelegate.storiesCollection activeFeedStoryLocations] count];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
@@ -458,7 +462,7 @@
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
     
-    if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
+    if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
         if (self.appDelegate.feedDetailViewController.feedPage < 100 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
@@ -476,7 +480,7 @@
             [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
-        NSInteger location = [appDelegate indexFromLocation:pageController.pageIndex];
+        NSInteger location = [appDelegate.storiesCollection indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
         if (self.isDraggingScrollview ||
@@ -507,7 +511,7 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	NSInteger previousNumber = lowerNumber - 1;
 	
-    NSInteger storyCount = [appDelegate.activeFeedStoryLocations count];
+    NSInteger storyCount = [appDelegate.storiesCollection.activeFeedStoryLocations count];
     if (storyCount == 0 || lowerNumber > storyCount) return;
     
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
@@ -597,11 +601,12 @@
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
         
-        if (![appDelegate.activeFeedStories count]) return;
+        if (![appDelegate.storiesCollection.activeFeedStories count]) return;
         
-        NSInteger storyIndex = [appDelegate indexFromLocation:nearestNumber];
-        if (storyIndex != [appDelegate indexOfActiveStory]) {
-            appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
+        if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory]) {
+            appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories
+                                       objectAtIndex:storyIndex];
             [appDelegate changeActiveFeedDetailRow];
         }
     }
@@ -699,8 +704,8 @@
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
-        NSInteger storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
-        appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
+        appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
         [self markStoryAsRead];
     }
@@ -716,7 +721,7 @@
 }
 
 - (void)updatePageWithActiveStory:(NSInteger)location {
-    [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+    [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     [self.view setNeedsLayout];
     
@@ -764,7 +769,7 @@
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
-    NSInteger nextIndex = [appDelegate indexOfNextUnreadStory];
+    NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     if ((nextIndex == -1 && unreadCount > 0) ||
         nextIndex != -1) {
@@ -812,7 +817,7 @@
 - (void)markStoryAsRead {
     if (!appDelegate.activeStory) return;
     
-    if ([appDelegate isStoryUnread:appDelegate.activeStory]) {
+    if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
         
         [appDelegate markActiveStoryRead];
         [self.currentPage refreshHeader];
@@ -1079,7 +1084,7 @@
 
 - (IBAction)doNextUnreadStory:(id)sender {
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
-    NSInteger nextLocation = [appDelegate locationOfNextUnreadStory];
+    NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
@@ -1109,7 +1114,7 @@
     [self endTouchDown:sender];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
-    id previousStoryId = [appDelegate popReadStory];
+    id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
@@ -1117,7 +1122,7 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        NSInteger previousLocation = [appDelegate locationOfStoryId:previousStoryId];
+        NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];
         if (previousLocation == -1) {
             return [self doPreviousStory:sender];
         }

@@ -52,6 +52,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, retain) StoriesCollection *storiesCollection;
 
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;

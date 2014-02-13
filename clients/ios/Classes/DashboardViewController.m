@@ -13,6 +13,7 @@
 #import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
 #import "TMCache.h"
+#import "StoriesCollection.h"
 
 #define FEEDBACK_URL @"http://www.newsblur.com/about"
 
@@ -70,26 +71,16 @@
     self.topToolbar.frame = topToolbarFrame;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.storiesModule = [FeedDetailViewController alloc];
+        self.storiesModule = [FeedDetailViewController new];
         self.storiesModule.isDashboardModule = YES;
+        [self.storiesModule view]; // Force load
+        self.storiesModule.storiesCollection = [StoriesCollection new];
+        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
         self.storiesModule.view.frame = self.activitiesModule.frame;
         [self.view insertSubview:self.storiesModule.view belowSubview:self.activitiesModule];
         [self addChildViewController:self.storiesModule];
         [self.storiesModule didMoveToParentViewController:self];
     }
-}
-
-- (void)viewDidUnload {
-    [self setAppDelegate:nil];
-    [self setInteractionsModule:nil];
-    [self setActivitiesModule:nil];
-    [self setToolbar:nil];
-    [self setSegmentedButton:nil];
-    [self setFeedbackWebView:nil];
-    [self setTopToolbar:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -139,8 +130,7 @@
 
 - (void)refreshStories {
     [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {
-        [appDelegate prepareRiverFeedDetail:@"everything"];
-        [appDelegate loadRiverFeedDetailView:NO];
+        [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
     }];
 }
 

@@ -24,6 +24,7 @@
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
 #import "OvershareKit.h"
+#import "StoriesCollection.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
@@ -424,7 +425,7 @@
         self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
-        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
         
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
@@ -513,7 +514,7 @@
         self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
-        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
@@ -565,7 +566,7 @@
             self.storyPageControl.circularProgressView.percentage = 0;
         }
 
-        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
         
         [self setupStoryTitlesPosition];
@@ -986,7 +987,7 @@
     }
 
     UITableView *stories = appDelegate.feedDetailViewController.storyTitlesTable;
-    NSInteger location = appDelegate.locationOfActiveStory;
+    NSInteger location = appDelegate.storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
     NSArray *visible = [stories visibleCells];
     for (UITableViewCell *cell in visible) {

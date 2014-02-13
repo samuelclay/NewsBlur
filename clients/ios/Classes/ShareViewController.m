@@ -15,6 +15,7 @@
 #import "Utilities.h"
 #import "DataUtilities.h"
 #import "ASIHTTPRequest.h"
+#import "StoriesCollection.h"
 
 @implementation ShareViewController
 
@@ -337,7 +338,7 @@
         [request addPostValue:@"appdotnet" forKey:@"post_to_services"];
     }
     
-    if (appDelegate.isSocialRiverView) {
+    if (appDelegate.storiesCollection.isSocialRiverView) {
         if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
             [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
         } else if ([[appDelegate.activeStory objectForKey:@"public_user_ids"] count] > 0) {
@@ -376,9 +377,9 @@
     }
     
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
-    appDelegate.activeFeedUserProfiles = [DataUtilities 
-                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
-                                          withNewUserProfiles:userProfiles];
+    appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
+                                                            updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles
+                                                            withNewUserProfiles:userProfiles];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
 }
@@ -460,18 +461,18 @@
     
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
-        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
+    for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
         NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStoryParsed];
         } else {
-            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
+            [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
         }
     }
     
-    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
     [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];

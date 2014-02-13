@@ -34,6 +34,7 @@
 #import "IASKSettingsReader.h"
 #import "UIImageView+AFNetworking.h"
 #import "NBBarButtonItem.h"
+#import "StoriesCollection.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 31.0f;
 static const CGFloat kTableViewRowHeight = 31.0f;
@@ -142,8 +143,6 @@ static UIFont *userLabelFont;
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self layoutForInterfaceOrientation:orientation];
-
-    appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleLongPress:)];
@@ -222,10 +221,10 @@ static UIFont *userLabelFont;
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
     self.navigationController.navigationBar.backItem.title = @"All Sites";
     
-    // reset all feed detail specific data
-    appDelegate.activeFeed = nil;
-    appDelegate.isSocialView = NO;
-    appDelegate.isRiverView = NO;
+//    // reset all feed detail specific data
+//    appDelegate.activeFeed = nil;
+//    appDelegate.isSocialView = NO;
+//    appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
     self.interactiveFeedDetailTransition = NO;
 }
@@ -1031,10 +1030,10 @@ static UIFont *userLabelFont;
     NSDictionary *feed;
     if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        appDelegate.isSocialView = YES;
+        appDelegate.storiesCollection.isSocialView = YES;
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        appDelegate.isSocialView = NO;
+        appDelegate.storiesCollection.isSocialView = NO;
     }
 
     // If all feeds are already showing, no need to remember this one.
@@ -1042,13 +1041,13 @@ static UIFont *userLabelFont;
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
-    [appDelegate setActiveFeed:feed];
-    [appDelegate setActiveFolder:folderName];
+    [appDelegate.storiesCollection setActiveFeed:feed];
+    [appDelegate.storiesCollection setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
-    appDelegate.isRiverView = NO;
-    appDelegate.isSocialRiverView = NO;
+    appDelegate.storiesCollection.isRiverView = NO;
+    appDelegate.storiesCollection.isSocialRiverView = NO;
     [appDelegate.folderCountCache removeObjectForKey:folderName];
-    appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
+    appDelegate.storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
 
     [appDelegate loadFeedDetailView];
 }
@@ -1154,8 +1153,7 @@ heightForHeaderInSection:(NSInteger)section {
         tag = [NSString stringWithFormat:@"%ld", (long)button.tag];
     }
     
-    [appDelegate prepareRiverFeedDetail:tag];
-    [appDelegate loadRiverFeedDetailView];
+    [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:tag];
 }
 
 
@@ -1188,7 +1186,7 @@ heightForHeaderInSection:(NSInteger)section {
             [appDelegate showUserProfileModal:cell];
         } else {
             // Train
-            appDelegate.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
+            appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
             [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
         }
     } else if (state == MCSwipeTableViewCellState3) {
