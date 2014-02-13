@@ -422,85 +422,83 @@
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
-    NSLog(@"Fetch Feed in view: %@ (%@)", self, storiesCollection);
 
     if (!storiesCollection.activeFeed) return;
     
-    if (callback || (!self.pageFetching && !self.pageFinished)) {
+    if (!callback && (self.pageFetching || self.pageFinished)) return;
     
-        self.feedPage = page;
-        self.pageFetching = YES;
-        NSInteger storyCount = storiesCollection.storyCount;
-        if (storyCount == 0) {
-            [self.storyTitlesTable reloadData];
-            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-        }
-        if (self.feedPage == 1) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                     (unsigned long)NULL), ^(void) {
-                [appDelegate.database inDatabase:^(FMDatabase *db) {
-                    [appDelegate prepareActiveCachedImages:db];
-                }];
-            });
-        }
-        
-        if (self.isOffline) {
-            [self loadOfflineStories];
-            if (!self.isShowingOffline) {
-                [self showOfflineNotifier];
-            }
-            return;
-        }
-        
-        if (storiesCollection.isSocialView) {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
-                                NEWSBLUR_URL,
-                                [storiesCollection.activeFeed objectForKey:@"user_id"],
-                                self.feedPage];
-        } else {
-            theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
-                                NEWSBLUR_URL,
-                                [storiesCollection.activeFeed objectForKey:@"id"],
-                                self.feedPage];
-        }
-        
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                            theFeedDetailURL,
-                            [storiesCollection activeOrder]];
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                            theFeedDetailURL,
-                            [storiesCollection activeReadFilter]];
-        
-        [self cancelRequests];
-        __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            NSLog(@"in failed block %@", request);
-            if (request.isCancelled) {
-                NSLog(@"Cancelled");
-                return;
-            } else {
-                self.isOffline = YES;
-                self.feedPage = 1;
-                [self loadOfflineStories];
-                [self showOfflineNotifier];
-            }
-            [self.storyTitlesTable reloadData];
-        }];
-        [request setCompletionBlock:^(void) {
-            if (!storiesCollection.activeFeed) return;
-            [self finishedLoadingFeed:request];
-            if (callback) {
-                callback();
-            }
-        }];
-        [request setTimeOutSeconds:30];
-        [request setTag:[[[storiesCollection activeFeed] objectForKey:@"id"] intValue]];
-        [request startAsynchronous];
-        [requests addObject:request];
+    self.feedPage = page;
+    self.pageFetching = YES;
+    NSInteger storyCount = storiesCollection.storyCount;
+    if (storyCount == 0) {
+        [self.storyTitlesTable reloadData];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     }
+    if (self.feedPage == 1) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
+            [appDelegate.database inDatabase:^(FMDatabase *db) {
+                [appDelegate prepareActiveCachedImages:db];
+            }];
+        });
+    }
+    
+    if (self.isOffline) {
+        [self loadOfflineStories];
+        if (!self.isShowingOffline) {
+            [self showOfflineNotifier];
+        }
+        return;
+    }
+    
+    if (storiesCollection.isSocialView) {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
+                            NEWSBLUR_URL,
+                            [storiesCollection.activeFeed objectForKey:@"user_id"],
+                            self.feedPage];
+    } else {
+        theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
+                            NEWSBLUR_URL,
+                            [storiesCollection.activeFeed objectForKey:@"id"],
+                            self.feedPage];
+    }
+    
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeOrder]];
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeReadFilter]];
+    
+    [self cancelRequests];
+    __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        NSLog(@"in failed block %@", request);
+        if (request.isCancelled) {
+            NSLog(@"Cancelled");
+            return;
+        } else {
+            self.isOffline = YES;
+            self.feedPage = 1;
+            [self loadOfflineStories];
+            [self showOfflineNotifier];
+        }
+        [self.storyTitlesTable reloadData];
+    }];
+    [request setCompletionBlock:^(void) {
+        if (!storiesCollection.activeFeed) return;
+        [self finishedLoadingFeed:request];
+        if (callback) {
+            callback();
+        }
+    }];
+    [request setTimeOutSeconds:30];
+    [request setTag:[[[storiesCollection activeFeed] objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
+    [requests addObject:request];
 }
 
 - (void)loadOfflineStories {
@@ -602,94 +600,93 @@
 #pragma mark River of News
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    NSLog(@"Fetch River in view: %@ (%@)", self, storiesCollection);
-    if (!self.pageFetching && !self.pageFinished) {
-        self.feedPage = page;
-        self.pageFetching = YES;
-        NSInteger storyCount = storiesCollection.storyCount;
-        if (storyCount == 0) {
-            [self.storyTitlesTable reloadData];
-            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    if (self.pageFetching || self.pageFinished) return;
+    
+    self.feedPage = page;
+    self.pageFetching = YES;
+    NSInteger storyCount = storiesCollection.storyCount;
+    if (storyCount == 0) {
+        [self.storyTitlesTable reloadData];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 //            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
-        }
-        
-        if (self.feedPage == 1) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                                     (unsigned long)NULL), ^(void) {
-                [appDelegate.database inDatabase:^(FMDatabase *db) {
-                    [appDelegate prepareActiveCachedImages:db];
-                }];
-            });
-        }
-        
-        if (self.isOffline) {
-            [self loadOfflineStories];
-            return;
-        }
-        
-        NSString *theFeedDetailURL;
-        
-        if (storiesCollection.isSocialRiverView) {
-            if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-                theFeedDetailURL = [NSString stringWithFormat:
-                                    @"%@/social/river_stories/?global_feed=true&page=%d",
-                                    NEWSBLUR_URL,
-                                    self.feedPage];
-                
-            } else {
-                theFeedDetailURL = [NSString stringWithFormat:
-                                    @"%@/social/river_stories/?page=%d", 
-                                    NEWSBLUR_URL,
-                                    self.feedPage];
-            }
-        } else if ([storiesCollection.activeFolder isEqual:@"saved_stories"]) {
+    }
+    
+    if (self.feedPage == 1) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                 (unsigned long)NULL), ^(void) {
+            [appDelegate.database inDatabase:^(FMDatabase *db) {
+                [appDelegate prepareActiveCachedImages:db];
+            }];
+        });
+    }
+    
+    if (self.isOffline) {
+        [self loadOfflineStories];
+        return;
+    }
+    
+    NSString *theFeedDetailURL;
+    
+    if (storiesCollection.isSocialRiverView) {
+        if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/reader/starred_stories/?page=%d",
+                                @"%@/social/river_stories/?global_feed=true&page=%d",
                                 NEWSBLUR_URL,
                                 self.feedPage];
+            
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"%@/reader/river_stories/?f=%@&page=%d", 
+                                @"%@/social/river_stories/?page=%d", 
                                 NEWSBLUR_URL,
-                                [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
                                 self.feedPage];
         }
-        
-        
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
-                            theFeedDetailURL,
-                            [storiesCollection activeOrder]];
-        theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
-                            theFeedDetailURL,
-                            [storiesCollection activeReadFilter]];
-
-        [self cancelRequests];
-        __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            if (request.isCancelled) {
-                NSLog(@"Cancelled");
-                return;
-            } else {
-                self.isOffline = YES;
-                self.isShowingOffline = NO;
-                self.feedPage = 1;
-                [self loadOfflineStories];
-                [self showOfflineNotifier];
-            }
-        }];
-        [request setCompletionBlock:^(void) {
-            [self finishedLoadingFeed:request];
-            if (callback) {
-                callback();
-            }
-        }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
+    } else if ([storiesCollection.activeFolder isEqual:@"saved_stories"]) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/starred_stories/?page=%d",
+                            NEWSBLUR_URL,
+                            self.feedPage];
+    } else {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/river_stories/?f=%@&page=%d", 
+                            NEWSBLUR_URL,
+                            [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
+                            self.feedPage];
     }
+    
+    
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeOrder]];
+    theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                        theFeedDetailURL,
+                        [storiesCollection activeReadFilter]];
+
+    [self cancelRequests];
+    __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setFailedBlock:^(void) {
+        if (request.isCancelled) {
+            NSLog(@"Cancelled");
+            return;
+        } else {
+            self.isOffline = YES;
+            self.isShowingOffline = NO;
+            self.feedPage = 1;
+            [self loadOfflineStories];
+            [self showOfflineNotifier];
+        }
+    }];
+    [request setCompletionBlock:^(void) {
+        [self finishedLoadingFeed:request];
+        if (callback) {
+            callback();
+        }
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
 }
 
 #pragma mark -
