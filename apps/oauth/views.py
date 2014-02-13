@@ -457,7 +457,7 @@ def api_unread_story(request, unread_score=None):
         })
     
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
         
     logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
     
@@ -513,7 +513,7 @@ def api_saved_story(request):
         })
 
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
         
     logging.user(request, "~FCChecking saved stories from ~SBIFTTT~SB: ~SB%s~SN - ~SB%s~SN stories" % (story_tag if story_tag else "[All stories]", len(entries)))
     
@@ -599,7 +599,7 @@ def api_shared_story(request):
         })
 
     if after:
-        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'], reverse=True)
+        entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
         
     logging.user(request, "~FMChecking shared stories from ~SB~FCIFTTT~SN~FM: ~SB~FM%s~FM~SN - ~SB%s~SN stories" % (blurblog_user, len(entries)))
 
