@@ -57,7 +57,6 @@
 @implementation NewsBlurAppDelegate
 
 #define CURRENT_DB_VERSION 31
-#define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
 
@@ -181,7 +180,6 @@
     
     
     [window makeKeyAndVisible];
-//    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     
     [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
     [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
@@ -193,6 +191,7 @@
                                              (unsigned long)NULL), ^(void) {
         [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
+        [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
@@ -249,60 +248,6 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
 }
 
-- (void)showSplashView {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    splashView = [[UIImageView alloc] init];
-//    int rotate = 0;
-//    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-//        NSLog(@"UPSIDE DOWN");
-//        rotate = -2;
-//    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
-//        rotate = -1;
-//    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
-//        rotate = 1;
-//    }
-//    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        UIInterfaceOrientationIsLandscape(orientation)) {
-        splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
-        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        splashView.frame = self.view.frame;
-        splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
-    } else if (IS_IPHONE_5) {
-        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
-        splashView.image = [UIImage imageNamed:@"Default-568h.png"];
-    } else {
-        splashView.frame = self.window.frame;
-        splashView.image = [UIImage imageNamed:@"Default.png"];
-    }
-    
-    //    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    splashView.alpha = 1.0;
-    [window.rootViewController.view addSubview:splashView];
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:.6];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
-//    splashView.alpha = 0;
-    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
-    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
-    [UIView commitAnimations];
-    [self setupReachability];
-}
-
-- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
-    [splashView removeFromSuperview];
-}
-
-//- (void)applicationDidBecomeActive:(UIApplication *)application {
-//    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
-//}
-//
-//- (void)applicationWillTerminate:(UIApplication *)application {
-//    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
-//}
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
@@ -339,6 +284,11 @@
 
 - (void)reachabilityChanged:(id)something {
     NSLog(@"Reachability changed: %@", something);
+    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+
+    if (reach.isReachable && feedsViewController.isOffline) {
+        [feedsViewController fetchFeedList:NO];
+    }
 }
 
 #pragma mark -

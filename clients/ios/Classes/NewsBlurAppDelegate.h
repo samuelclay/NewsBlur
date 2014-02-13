@@ -228,7 +228,6 @@
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
-- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 
