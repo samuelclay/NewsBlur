@@ -24,7 +24,6 @@ import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
 
 public class SearchForFeeds extends NbFragmentActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
-	private static final int LOADER_TWITTER_SEARCH = 0x01;
 	private ListView resultsList;
 	private Loader<SearchLoaderResponse> searchLoader;
 	private FeedSearchResultAdapter adapter;
@@ -44,7 +43,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 		resultsList.setEmptyView(emptyView);
 		resultsList.setOnItemClickListener(this);
 		resultsList.setItemsCanFocus(false);
-		searchLoader = getSupportLoaderManager().initLoader(LOADER_TWITTER_SEARCH, new Bundle(), this);
+		searchLoader = getSupportLoaderManager().initLoader(0, new Bundle(), this);
 		
 		onSearchRequested();
 	}
@@ -70,7 +69,7 @@ public class SearchForFeeds extends NbFragmentActivity implements LoaderCallback
 			
 			Bundle bundle = new Bundle();
 			bundle.putString(SearchAsyncTaskLoader.SEARCH_TERM, query);
-			searchLoader = getSupportLoaderManager().restartLoader(LOADER_TWITTER_SEARCH, bundle, this);
+			searchLoader = getSupportLoaderManager().restartLoader(0, bundle, this);
 			
 			searchLoader.forceLoad();
 		}
