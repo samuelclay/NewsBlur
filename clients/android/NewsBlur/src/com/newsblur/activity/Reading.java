@@ -452,7 +452,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
      * Click handler for the righthand overlay nav button.
      */
     public void overlayRight(View v) {
-        if (getUnreadCount() == 0) {
+        if (getUnreadCount() <= 0) {
             // if there are no unread stories, go back to the feed list
             Intent i = new Intent(this, Main.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
