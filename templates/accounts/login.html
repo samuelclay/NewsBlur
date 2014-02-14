@@ -38,7 +38,7 @@
 
         <input type="submit" value="login" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />
-        <p class="NB-static-form-alttext"><a href="{% url "signup" %}?next={{ next }}">Create an account</a></a>
+        <p class="NB-static-form-alttext"><a href="{% url "signup" %}?next={{ next|urlencode }}">Create an account</a></a>
     </form>
 
 </div>

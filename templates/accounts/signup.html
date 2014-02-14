@@ -46,7 +46,7 @@
 
         <input type="submit" value="Sign Up" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />
-        <p class="NB-static-form-alttext"><a href="{% url "login" %}?next={{ next }}">Login to your account</a></a>
+        <p class="NB-static-form-alttext"><a href="{% url "login" %}?next={{ next|urlencode }}">Login to your account</a></a>
 
     </form>
 
