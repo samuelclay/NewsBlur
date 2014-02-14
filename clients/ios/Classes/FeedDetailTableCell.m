@@ -251,8 +251,12 @@ static UIFont *indicatorFont = nil;
                           context:nil];
     
     if (cell.storyContent) {
+        int storyContentWidth = rect.size.width;
+        if (cell.inDashboard) {
+            storyContentWidth -= leftMargin*2;
+        }
         CGSize contentSize = [cell.storyContent
-                              boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                              boundingRectWithSize:CGSizeMake(storyContentWidth, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
                               options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                               attributes:@{NSFontAttributeName: font,
                                            NSParagraphStyleAttributeName: paragraphStyle}
@@ -272,10 +276,12 @@ static UIFont *indicatorFont = nil;
         }
         
         [cell.storyContent
-         drawInRect:CGRectMake(storyTitleX, storyContentY, rect.size.width - leftMargin*2, contentSize.height)
-         withAttributes:@{NSFontAttributeName: font,
-                          NSForegroundColorAttributeName: textColor,
-                          NSParagraphStyleAttributeName: paragraphStyle}];
+         drawWithRect:CGRectMake(storyTitleX, storyContentY, storyContentWidth, contentSize.height)
+         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+         attributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}
+         context:nil];
     }
     
     int storyAuthorDateY = r.size.height - 18;

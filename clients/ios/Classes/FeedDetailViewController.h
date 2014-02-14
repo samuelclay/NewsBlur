@@ -61,12 +61,15 @@
 @property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic, readwrite) BOOL isShowingOffline;
 @property (nonatomic, readwrite) BOOL isDashboardModule;
+@property (nonatomic, readwrite) BOOL showContentPreview;
+@property (nonatomic, readwrite) BOOL showImagePreview;
 
 - (void)resetFeedDetail;
 - (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)loadOfflineStories;
+- (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)testForTryFeed;

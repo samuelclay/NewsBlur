@@ -27,6 +27,7 @@
 #import "StoriesCollection.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
+#define NB_DEFAULT_MASTER_WIDTH_LANDSCAPE 370
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
 #define NB_DEFAULT_SLIDER_INTERVAL 0.3
 #define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.3
@@ -165,7 +166,7 @@
     [self.storyNavigationController.view.layer addSublayer:leftBorder];
 
     rightBorder = [CALayer layer];
-    rightBorder.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, 1, CGRectGetHeight(self.view.bounds));
+    rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
     rightBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     [self.masterNavigationController.view.layer addSublayer:rightBorder];
     
@@ -199,7 +200,7 @@
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     self.rotatingToOrientation = UIDeviceOrientationUnknown;
-    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
+//    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
     
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) && !self.storyTitlesOnLeft) {
         leftBorder.hidden = YES;
@@ -215,13 +216,21 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
+//    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
 
     if (!self.feedDetailIsVisible) {
         [self adjustDashboardScreen];
     } else {
         [self adjustFeedDetailScreen];
     }
+}
+
+- (NSInteger)masterWidth {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+	if (UIInterfaceOrientationIsLandscape(orientation)) {
+        return NB_DEFAULT_MASTER_WIDTH_LANDSCAPE;
+    }
+    return NB_DEFAULT_MASTER_WIDTH;
 }
 
 # pragma mark Modals and Popovers
@@ -412,13 +421,15 @@
 
 - (void)adjustDashboardScreen {
     CGRect vb = [self.view bounds];
-    self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-    self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+    self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
+    self.dashboardViewController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width - self.masterWidth, vb.size.height);
+    rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
 }
 
 - (void)adjustFeedDetailScreen {
     CGRect vb = [self.view bounds];
-    
+    rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
+
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
@@ -445,10 +456,11 @@
             [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
         }
         [self.view addSubview:self.masterNavigationController.view];
-        self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-        self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
+        self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
+        self.storyNavigationController.view.frame = CGRectMake(self.masterWidth-1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
         [self.dashboardViewController.view removeFromSuperview];
         self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
+//        leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         NSLog(@"Transitioning back to feed detail, original frame: %@", NSStringFromCGRect(self.originalNavigationController.view.frame));
     }
 }
@@ -481,10 +493,10 @@
             }
             [self.view addSubview:self.masterNavigationController.view];
 
-            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+            self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
             [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-                self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH-1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
+                self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
+                self.storyNavigationController.view.frame = CGRectMake(self.masterWidth-1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
             } completion:^(BOOL finished) {
                 [self.feedDetailViewController checkScroll];
                 [appDelegate.storyPageControl refreshPages];
@@ -518,7 +530,7 @@
         self.storyPageControl.navigationItem.titleView = titleLabel;
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+            self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
             
             self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, storyTitlesYCoordinate);
             
@@ -586,12 +598,12 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         }
-        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
-        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
+        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - self.masterWidth) / vb.size.width;
+        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * self.masterWidth / vb.size.width;
         
         [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, vb.size.width, self.storyTitlesYCoordinate);
-            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH,
+            self.storyNavigationController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width, self.storyTitlesYCoordinate);
+            self.feedDetailViewController.view.frame = CGRectMake(self.masterWidth,
                                                                   self.storyTitlesYCoordinate, 
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
@@ -600,7 +612,7 @@
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
-                self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+                self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
             } completion:^(BOOL finished) {
                 self.feedDetailIsVisible = YES;
 
@@ -615,7 +627,7 @@
              pushViewController:self.feedDetailViewController
              animated:YES];
             self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
-                                                                   vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1,
+                                                                   vb.size.width - self.masterWidth + 1,
                                                                    vb.size.height);
             [self interactiveTransitionFromFeedDetail:1];
         }
@@ -700,10 +712,10 @@
          if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
              self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
              self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
-             self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+             self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
          } else {
-             self.masterNavigationController.view.frame = CGRectMake(-100, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-             self.storyNavigationController.view.frame = CGRectMake(-100 + NB_DEFAULT_MASTER_WIDTH - 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height);
+             self.masterNavigationController.view.frame = CGRectMake(-100, 0, self.masterWidth, vb.size.height);
+             self.storyNavigationController.view.frame = CGRectMake(-100 + self.masterWidth - 1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
          }
          
          self.originalNavigationController.view.frame = CGRectMake(0, 0,
@@ -765,7 +777,7 @@
         self.masterNavigationController.view.frame = feedDetailFrame;
         
         CGRect storyNavFrame = self.storyNavigationController.view.frame;
-        storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + -1 * (1-percentage) * 100;
+        storyNavFrame.origin.x = self.masterWidth - 1 + -1 * (1-percentage) * 100;
         self.storyNavigationController.view.frame = storyNavFrame;
     }
     
@@ -783,11 +795,11 @@
     [self.view addSubview:self.masterNavigationController.view];
 
     CGRect storyNavFrame = self.storyNavigationController.view.frame;
-    storyNavFrame.origin.x = NB_DEFAULT_MASTER_WIDTH - 1 + storyNavFrame.size.width * percentage;
+    storyNavFrame.origin.x = self.masterWidth - 1 + storyNavFrame.size.width * percentage;
     self.storyNavigationController.view.frame = storyNavFrame;
     
     CGRect dashboardFrame = self.dashboardViewController.view.frame;
-    dashboardFrame.origin.x = NB_DEFAULT_MASTER_WIDTH + -1 * (1-percentage) * dashboardFrame.size.width/6;
+    dashboardFrame.origin.x = self.masterWidth + -1 * (1-percentage) * dashboardFrame.size.width/6;
     self.dashboardViewController.view.frame = dashboardFrame;
 }
 
@@ -817,20 +829,20 @@
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
         if (resetLayout) {
-            self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+            self.dashboardViewController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width - self.masterWidth, vb.size.height);
+            self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
         }
-        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
-        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
+        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * self.masterWidth / vb.size.width;
+        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * ( vb.size.width - self.masterWidth) / vb.size.width;
         [self.masterNavigationController popViewControllerAnimated:NO];
 
         [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH - 1,
+            self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
+            self.storyNavigationController.view.frame = CGRectMake(self.masterWidth - 1,
                                                                    0, 
                                                                    vb.size.width, 
                                                                    self.storyTitlesYCoordinate);
-            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 
+            self.feedDetailViewController.view.frame = CGRectMake(self.masterWidth,
                                                                   self.storyTitlesYCoordinate, 
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
@@ -857,9 +869,9 @@
                                                                    0, 
                                                                    self.storyNavigationController.view.frame.size.width, 
                                                                    self.storyNavigationController.view.frame.size.height);
-            self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH,
+            self.dashboardViewController.view.frame = CGRectMake(self.masterWidth,
                                                                  0, 
-                                                                 vb.size.width - NB_DEFAULT_MASTER_WIDTH,
+                                                                 vb.size.width - self.masterWidth,
                                                                  vb.size.height);
         } completion:^(BOOL finished) {
             if (self.feedDetailIsVisible) return;

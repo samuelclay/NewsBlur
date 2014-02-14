@@ -107,10 +107,12 @@
             self.interactionsModule.hidden = YES;
             self.activitiesModule.hidden = YES;
         } else if (selectedSegmentIndex == 1) {
+            [self refreshInteractions];
             self.storiesModule.view.hidden = YES;
             self.interactionsModule.hidden = NO;
             self.activitiesModule.hidden = YES;
         } else if (selectedSegmentIndex == 2) {
+            [self refreshActivity];
             self.storiesModule.view.hidden = YES;
             self.interactionsModule.hidden = YES;
             self.activitiesModule.hidden = NO;

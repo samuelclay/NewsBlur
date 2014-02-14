@@ -664,8 +664,6 @@ static UIFont *userLabelFont;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isOffline) {
         [appDelegate.dashboardViewController refreshStories];
-        [appDelegate.dashboardViewController refreshInteractions];
-        [appDelegate.dashboardViewController refreshActivity];
     }
 }
 

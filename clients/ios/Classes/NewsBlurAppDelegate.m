@@ -163,7 +163,7 @@
     
     self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
-    self.storiesCollection = [[StoriesCollection alloc] init];
+    self.storiesCollection = [StoriesCollection new];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPad App v%@",
@@ -834,8 +834,6 @@
                                             animated:YES];
         }
     }
-
-    feedDetailViewController.storiesCollection = storiesCollection;
     
     [self flushQueuedReadStories:NO withCallback:^{
         [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
@@ -1033,10 +1031,6 @@
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
-    if (feedDetailView == feedDetailViewController) {
-        feedDetailView.storiesCollection = storiesCollection;
-    }
-    
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
     
@@ -1108,7 +1102,7 @@
     [feedDetailView resetFeedDetail];
     
     [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailView fetchRiverPage:1 withCallback:nil];
+        [feedDetailView fetchRiver];
     }];
     
     if (feedDetailView == feedDetailViewController) {

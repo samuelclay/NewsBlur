@@ -105,7 +105,10 @@
         self.progressBar.hidden = YES;
         [self addSubview:self.progressBar];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangedOrientation:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didChangedOrientation:)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
     }
     
     return self;
@@ -117,7 +120,8 @@
 }
 
 - (void) didChangedOrientation:(NSNotification *)sender {
-//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
     [self setView:self.view];
     self.progressBar.frame = CGRectMake(0, 4, 0, 1);
 }

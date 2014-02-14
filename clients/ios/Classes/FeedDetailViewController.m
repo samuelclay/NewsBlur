@@ -66,6 +66,8 @@
 @synthesize isShowingOffline;
 @synthesize isDashboardModule;
 @synthesize storiesCollection;
+@synthesize showContentPreview;
+@synthesize showImagePreview;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -116,8 +118,6 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
-    
-    storiesCollection = appDelegate.storiesCollection;
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
@@ -136,6 +136,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self checkScroll];
+    NSLog(@"Feed detail did re-orient.");
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -148,6 +150,10 @@
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
+    self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
     
     // set right avatar title image
     spacerBarButton.width = 0;
@@ -336,8 +342,7 @@
 }
 
 - (void)beginOfflineTimer {
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 10 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 1 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.feedPage == 1 && !self.isOffline) {
             self.isShowingOffline = YES;
@@ -349,42 +354,42 @@
 }
 
 - (void)cacheStoryImages:(NSArray *)storyImageUrls {
-        NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
-            for (NSString *storyImageUrl in storyImageUrls) {
+    NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
+        for (NSString *storyImageUrl in storyImageUrls) {
 //            NSLog(@"Fetching image: %@", storyImageUrl);
-                NSMutableURLRequest *request = [NSMutableURLRequest
-                                                requestWithURL:[NSURL URLWithString:storyImageUrl]];
-                [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-                [request setTimeoutInterval:5.0];
-                AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
-                                                             initWithRequest:request];
-                [requestOperation start];
-                [requestOperation waitUntilFinished];
-                
-                UIImage *image = requestOperation.responseImage;
-                
-                if (!image || image.size.height < 50 || image.size.width < 50) {
-                    [[TMCache sharedCache] setObject:[NSNull null]
-                                              forKey:storyImageUrl];
-                    continue;
-                }
-                
-                CGSize maxImageSize = CGSizeMake(300, 300);
-                image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                [[TMCache sharedCache] setObject:image
+            NSMutableURLRequest *request = [NSMutableURLRequest
+                                            requestWithURL:[NSURL URLWithString:storyImageUrl]];
+            [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+            [request setTimeoutInterval:5.0];
+            AFImageRequestOperation *requestOperation = [[AFImageRequestOperation alloc]
+                                                         initWithRequest:request];
+            [requestOperation start];
+            [requestOperation waitUntilFinished];
+            
+            UIImage *image = requestOperation.responseImage;
+            
+            if (!image || image.size.height < 50 || image.size.width < 50) {
+                [[TMCache sharedCache] setObject:[NSNull null]
                                           forKey:storyImageUrl];
-                if (self.isDashboardModule) {
-                    [appDelegate.dashboardViewController.storiesModule
-                     showStoryImage:storyImageUrl];
-                } else {
-                    [appDelegate.feedDetailViewController
-                     showStoryImage:storyImageUrl];
-                }
+                continue;
             }
-        }];
-        [cacheImagesOperation setThreadPriority:0];
-        [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
-        [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
+            
+            CGSize maxImageSize = CGSizeMake(300, 300);
+            image = [image imageByScalingAndCroppingForSize:maxImageSize];
+            [[TMCache sharedCache] setObject:image
+                                      forKey:storyImageUrl];
+            if (self.isDashboardModule) {
+                [appDelegate.dashboardViewController.storiesModule
+                 showStoryImage:storyImageUrl];
+            } else {
+                [appDelegate.feedDetailViewController
+                 showStoryImage:storyImageUrl];
+            }
+        }
+    }];
+    [cacheImagesOperation setThreadPriority:0];
+    [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
+    [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
 
 - (void)showStoryImage:(NSString *)imageUrl {
@@ -398,7 +403,7 @@
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
                 NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-                NSLog(@"Reloading cell (dashboard? %d): %@ (%ld)", self.isDashboardModule, cell.storyTitle, (long)indexPath.row);
+//                NSLog(@"Reloading cell (dashboard? %d): %@ (%ld)", self.isDashboardModule, cell.storyTitle, (long)indexPath.row);
                 [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationNone];
@@ -598,6 +603,10 @@
 
 #pragma mark -
 #pragma mark River of News
+
+- (void)fetchRiver {
+    [self fetchRiverPage:self.feedPage withCallback:nil];
+}
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
     if (self.pageFetching || self.pageFinished) return;
@@ -1015,7 +1024,8 @@
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
     cell.isStarred = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
-    if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
+    if (self.showImagePreview &&
+        [story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
         cell.storyImageUrl = [[story objectForKey:@"image_urls"] objectAtIndex:0];
     } else {
         cell.storyImageUrl = nil;
@@ -1027,7 +1037,7 @@
         cell.storyAuthor = @"";
     }
     
-    if (self.isDashboardModule) {
+    if (self.isDashboardModule || self.showContentPreview) {
         cell.storyContent = [[story objectForKey:@"story_content"]
                              stringByConvertingHTMLToPlainText];
     }
@@ -1161,7 +1171,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if (self.isDashboardModule) {
+        if (self.isDashboardModule || self.showContentPreview) {
             return height + font.pointSize*5;
         } else {
             return height + font.pointSize*2;
@@ -1175,7 +1185,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if (self.isDashboardModule) {
+        if (self.isDashboardModule || self.showContentPreview) {
             return height + font.pointSize*5;
         } else {
             return height + font.pointSize*2;

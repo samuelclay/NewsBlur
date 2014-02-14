@@ -1376,8 +1376,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.storyHUD hide:YES afterDelay:1];
     appDelegate.storyPageControl.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
-//    [appDelegate.feedDetailViewController resetFeedDetail];
-//    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
 - (void)refreshComments:(NSString *)replyId {

@@ -71,6 +71,26 @@
 			<string>default_feed_read_filter</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview descriptions</string>
+			<key>Key</key>
+			<string>story_list_preview_description</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview images</string>
+			<key>Key</key>
+			<string>story_list_preview_images</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Text Size</string>
 			<key>Type</key>
