@@ -356,7 +356,7 @@ def api_shared_usernames(request):
         blurblogs.append(dict(label="%s (%s %s)" % (social_feed['username'],
                                                     social_feed['shared_stories_count'], 
                                                     'story' if social_feed['shared_stories_count'] == 1 else 'stories'),
-                         value=social_feed['user_id']))
+                         value="%s" % social_feed['user_id']))
     blurblogs = sorted(blurblogs, key=lambda b: b['label'].lower())
     catchall = dict(label="All Shared Stories",
                     value="all")
