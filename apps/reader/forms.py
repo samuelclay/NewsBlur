@@ -77,7 +77,7 @@ class SignupForm(forms.Form):
                                     'invalid': "Your username may only contain letters and numbers."
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label=_(u'email address'),
+                             label=_(u'email'),
                              required=True,
                              error_messages={'required': 'Please enter an email.'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),

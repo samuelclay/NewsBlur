@@ -3,6 +3,7 @@ from django.conf import settings
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
+from apps.profile import views as profile_views
 from django.contrib import admin
 
 admin.autodiscover()
@@ -53,6 +54,7 @@ urlpatterns = patterns('',
     url(r'^account/login/?$', 
                             'django.contrib.auth.views.login', 
                             {'template_name': 'accounts/login.html'}, name='login'),
+    url(r'^account/signup/?$', profile_views.signup, name='signup'),
     url(r'^account/logout/?$', 
                             'django.contrib.auth.views.logout', 
                             {'next_page': '/'}, name='logout'),

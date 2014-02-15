@@ -14,20 +14,26 @@
   {% include_stylesheets "common" %}
 {% endblock %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Create an Account{% endblock %}
 
 {% block content %}
 
 <div class="NB-static-title">
-    Login
+    Create an Account
 </div>
 
 <div class="NB-static-form-wrapper" style="overflow:hidden">
-    <form method="post" class="NB-static-form" action="{% url 'django.contrib.auth.views.login' %}">
+    <form method="post" class="NB-static-form" action="{% url "signup" %}">
         {% if form.errors %}
-        <p class="NB-error error">Your username and password didn't match.<br />Please try again.</p>
+            {% if form.errors.username %}
+                <p class="NB-error error">{{ form.errors.username.as_text }}</p>
+            {% else %}{% if form.errors.email %}
+                <p class="NB-error error">{{ form.errors.email.as_text }}</p>
+            {% else %}
+                <p class="NB-error error">{{ form.non_field_errors.as_text }}</p>
+            {% endif %}{% endif %}
         {% else %}{% if next %}
-        <p class="NB-error error">Please login to continue.</p>
+        <p class="NB-error error">Please create an account to continue.</p>
         {% endif %}{% endif %}
 
         {% csrf_token %}
@@ -35,10 +41,13 @@
         <div class="NB-static-form-input">{{ form.username }}</div>
         <div class="NB-static-form-label">{{ form.password.label_tag }}</div>
         <div class="NB-static-form-input">{{ form.password }}</div>
+        <div class="NB-static-form-label">{{ form.email.label_tag }}</div>
+        <div class="NB-static-form-input">{{ form.email }}</div>
 
-        <input type="submit" value="login" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
+        <input type="submit" value="Sign Up" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />
-        <p class="NB-static-form-alttext"><a href="{% url "signup" %}?next={{ next|urlencode }}">Create an account</a></a>
+        <p class="NB-static-form-alttext"><a href="{% url "login" %}?next={{ next|urlencode }}">Login to your account</a></a>
+
     </form>
 
 </div>

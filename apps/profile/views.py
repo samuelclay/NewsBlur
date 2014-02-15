@@ -2,7 +2,9 @@ import stripe
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import logout as logout_user
+from django.contrib.auth import login as login_user
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -16,6 +18,7 @@ from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
+from apps.reader.forms import SignupForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -76,6 +79,24 @@ def get_preference(request):
         
     response = dict(code=code, payload=payload)
     return response
+
+@csrf_protect
+def signup(request):
+    form = SignupForm()
+
+    if request.method == "POST":
+        form = SignupForm(data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
+            new_user.profile.activate_free()
+            return HttpResponseRedirect(request.POST['next'])
+
+    return render_to_response('accounts/signup.html', {
+        'form': form,
+        'next': request.REQUEST.get('next', "")
+    }, context_instance=RequestContext(request))
     
 @ajax_login_required
 @require_POST
