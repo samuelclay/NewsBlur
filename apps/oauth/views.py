@@ -15,6 +15,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
 from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredStory
+from apps.rss_feeds.text_importer import TextImporter
 from utils import log as logging
 from utils.user_functions import ajax_login_required, oauth_login_required
 from utils.view_functions import render_to
@@ -366,7 +367,7 @@ def api_shared_usernames(request):
 
 @oauth_login_required
 @json.json_view
-def api_unread_story(request, unread_score=None):
+def api_unread_story(request, trigger_slug=None):
     user = request.user
     body = request.body_json
     after = body.get('after', None)
@@ -438,7 +439,7 @@ def api_unread_story(request, unread_score=None):
                                         classifier_tags=classifier_tags,
                                         classifier_feeds=classifier_feeds)
             if score < 0: continue
-            if unread_score == "new-focus-story" and score < 1: continue
+            if trigger_slug == "new-unread-focus-story" and score < 1: continue
         feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
@@ -459,7 +460,7 @@ def api_unread_story(request, unread_score=None):
     if after:
         entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
         
-    logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
+    logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if trigger_slug == "new-unread-focus-story" else "", feed_or_folder, len(entries)))
     
     return {"data": entries[:limit]}
 
@@ -621,27 +622,36 @@ def api_share_new_story(request):
     body = request.body_json
     fields = body.get('actionFields')
     story_url = urlnorm.normalize(fields['story_url'])
-    content = fields.get('story_content', "")
-    story_title = fields.get('story_title', "[Untitled]")
+    story_content = fields.get('story_content', "")
+    story_title = fields.get('story_title', "")
     story_author = fields.get('story_author', "")
     comments = fields.get('comments', None)
 
-    feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+    original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     
-    content = lxml.html.fromstring(content)
-    content.make_links_absolute(story_url)
-    content = lxml.html.tostring(content)
+    if not story_content or not story_title:
+        ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
+        original_story = ti.fetch(return_document=True)
+        story_url = original_story['url']
+        if not story_content:
+            story_content = original_story['content']
+        if not story_title:
+            story_title = original_story['title']
+
+    story_content = lxml.html.fromstring(story_content)
+    story_content.make_links_absolute(story_url)
+    story_content = lxml.html.tostring(story_content)
     
     shared_story = MSharedStory.objects.filter(user_id=user.pk,
-                                               story_feed_id=feed and feed.pk or 0,
+                                               story_feed_id=original_feed and original_feed.pk or 0,
                                                story_guid=story_url).limit(1).first()
     if not shared_story:
         story_db = {
             "story_guid": story_url,
             "story_permalink": story_url,
-            "story_title": story_title,
-            "story_feed_id": feed and feed.pk or 0,
-            "story_content": content,
+            "story_title": story_title or "[Untitled]",
+            "story_feed_id": original_feed and original_feed.pk or 0,
+            "story_content": story_content,
             "story_author": story_author,
             "story_date": datetime.datetime.now(),
             "user_id": user.pk,
@@ -685,13 +695,21 @@ def api_save_new_story(request):
     fields = body.get('actionFields')
     story_url = urlnorm.normalize(fields['story_url'])
     story_content = fields.get('story_content', "")
-    story_title = fields.get('story_title', "[Untitled]")
+    story_title = fields.get('story_title', "")
     story_author = fields.get('story_author', "")
     user_tags = fields.get('user_tags', "")
     story = None
     
+    original_feed = Feed.get_feed_from_url(story_url)
+    if not story_content or not story_title:
+        ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
+        original_story = ti.fetch(return_document=True)
+        story_url = original_story['url']
+        if not story_content:
+            story_content = original_story['content']
+        if not story_title:
+            story_title = original_story['title']
     try:
-        original_feed = Feed.get_feed_from_url(story_url)
         story_db = {
             "user_id": user.pk,
             "starred_date": datetime.datetime.now(),

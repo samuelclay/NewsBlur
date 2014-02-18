@@ -9,8 +9,9 @@ from utils.feed_functions import timelimit, TimeoutError
 
 class TextImporter:
     
-    def __init__(self, story, feed, request=None):
+    def __init__(self, story=None, feed=None, story_url=None, request=None):
         self.story = story
+        self.story_url = story_url
         self.feed = feed
         self.request = request
     
@@ -28,7 +29,7 @@ class TextImporter:
             'Connection': 'close',
         }
     
-    def fetch(self, skip_save=False):
+    def fetch(self, skip_save=False, return_document=False):
         try:
             resp = self.fetch_request()
         except TimeoutError:
@@ -57,8 +58,11 @@ class TextImporter:
         except readability.Unparseable:
             return
         
+        title = original_text_doc.title()
+        url = resp.url
+        
         if content:
-            if not skip_save:
+            if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(content)
                 try:
                     self.story.save()
@@ -66,19 +70,25 @@ class TextImporter:
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
                 len(unicode(content)),
-                self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
+                self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
             )), warn_color=False)
         else:
             logging.user(self.request, ("~SN~FRFailed~FY to fetch ~FGoriginal text~FY: was ~SB%s bytes" % (
-                self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
+                self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
             )), warn_color=False)
         
+        if return_document:
+            return dict(content=content, title=title, url=url, doc=original_text_doc)
+
         return content
     
     @timelimit(10)
     def fetch_request(self):
+        url = self.story_url
+        if self.story and not url:
+            url = self.story.story_permalink
         try:
-            r = requests.get(self.story.story_permalink, headers=self.headers, verify=False)
+            r = requests.get(url, headers=self.headers, verify=False)
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)

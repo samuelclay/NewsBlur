@@ -1924,10 +1924,11 @@ class MSharedStory(mongo.Document):
             if include_url and truncate:
                 message = truncate_chars(message, truncate - 18 - 30)
             feed = Feed.get_by_id(self.story_feed_id)
-            if truncate:
-                message += " (%s)" % truncate_chars(feed.feed_title, 18)
-            else:
-                message += " (%s)" % truncate_chars(feed.feed_title, 30)
+            if feed:
+                if truncate:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 18)
+                else:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 30)
             if include_url:
                 message += " " + self.blurblog_permalink()
         elif include_url:
