@@ -15,6 +15,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserS
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
 from apps.rss_feeds.models import Feed, MStory, MStarredStoryCounts, MStarredStory
+from apps.rss_feeds.text_importer import TextImporter
 from utils import log as logging
 from utils.user_functions import ajax_login_required, oauth_login_required
 from utils.view_functions import render_to
@@ -685,13 +686,21 @@ def api_save_new_story(request):
     fields = body.get('actionFields')
     story_url = urlnorm.normalize(fields['story_url'])
     story_content = fields.get('story_content', "")
-    story_title = fields.get('story_title', "[Untitled]")
+    story_title = fields.get('story_title', "")
     story_author = fields.get('story_author', "")
     user_tags = fields.get('user_tags', "")
     story = None
     
+    original_feed = Feed.get_feed_from_url(story_url)
+    if not story_content or not story_title:
+        ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
+        original_story = ti.fetch(return_document=True)
+        story_url = original_story['url']
+        if not story_content:
+            story_content = original_story['content']
+        if not story_title:
+            story_title = original_story['title']
     try:
-        original_feed = Feed.get_feed_from_url(story_url)
         story_db = {
             "user_id": user.pk,
             "starred_date": datetime.datetime.now(),

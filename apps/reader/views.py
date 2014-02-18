@@ -24,7 +24,6 @@ from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
-from oauth2_provider.decorators import protected_resource
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -726,15 +725,16 @@ def load_feed_page(request, feed_id):
 
 @json.json_view
 def load_starred_stories(request):
-    user   = get_user(request)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit  = int(request.REQUEST.get('limit', 10))
-    page   = int(request.REQUEST.get('page', 0))
-    query  = request.REQUEST.get('query')
-    tag    = request.REQUEST.get('tag')
+    user         = get_user(request)
+    offset       = int(request.REQUEST.get('offset', 0))
+    limit        = int(request.REQUEST.get('limit', 10))
+    page         = int(request.REQUEST.get('page', 0))
+    query        = request.REQUEST.get('query')
+    tag          = request.REQUEST.get('tag')
     story_hashes = request.REQUEST.getlist('h')[:100]
-    now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-    message = None
+    version      = int(request.REQUEST.get('v', 1))
+    now          = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    message      = None
     if page: offset = limit * (page - 1)
     
     if query:
@@ -808,7 +808,7 @@ def load_starred_stories(request):
     return {
         "stories": stories,
         "user_profiles": user_profiles,
-        "feeds": unsub_feeds,
+        'feeds': unsub_feeds.values() if version == 2 else unsub_feeds,
         "message": message,
     }
 
