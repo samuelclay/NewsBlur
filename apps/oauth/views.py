@@ -622,27 +622,36 @@ def api_share_new_story(request):
     body = request.body_json
     fields = body.get('actionFields')
     story_url = urlnorm.normalize(fields['story_url'])
-    content = fields.get('story_content', "")
-    story_title = fields.get('story_title', "[Untitled]")
+    story_content = fields.get('story_content', "")
+    story_title = fields.get('story_title', "")
     story_author = fields.get('story_author', "")
     comments = fields.get('comments', None)
 
-    feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+    original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     
-    content = lxml.html.fromstring(content)
-    content.make_links_absolute(story_url)
-    content = lxml.html.tostring(content)
+    if not story_content or not story_title:
+        ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
+        original_story = ti.fetch(return_document=True)
+        story_url = original_story['url']
+        if not story_content:
+            story_content = original_story['content']
+        if not story_title:
+            story_title = original_story['title']
+
+    story_content = lxml.html.fromstring(story_content)
+    story_content.make_links_absolute(story_url)
+    story_content = lxml.html.tostring(story_content)
     
     shared_story = MSharedStory.objects.filter(user_id=user.pk,
-                                               story_feed_id=feed and feed.pk or 0,
+                                               story_feed_id=original_feed and original_feed.pk or 0,
                                                story_guid=story_url).limit(1).first()
     if not shared_story:
         story_db = {
             "story_guid": story_url,
             "story_permalink": story_url,
-            "story_title": story_title,
-            "story_feed_id": feed and feed.pk or 0,
-            "story_content": content,
+            "story_title": story_title or "[Untitled]",
+            "story_feed_id": original_feed and original_feed.pk or 0,
+            "story_content": story_content,
             "story_author": story_author,
             "story_date": datetime.datetime.now(),
             "user_id": user.pk,
