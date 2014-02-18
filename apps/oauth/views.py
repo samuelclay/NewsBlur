@@ -366,7 +366,7 @@ def api_shared_usernames(request):
 
 @oauth_login_required
 @json.json_view
-def api_unread_story(request, unread_score=None):
+def api_unread_story(request, trigger_slug=None):
     user = request.user
     body = request.body_json
     after = body.get('after', None)
@@ -438,7 +438,7 @@ def api_unread_story(request, unread_score=None):
                                         classifier_tags=classifier_tags,
                                         classifier_feeds=classifier_feeds)
             if score < 0: continue
-            if unread_score == "new-focus-story" and score < 1: continue
+            if trigger_slug == "new-unread-focus-story" and score < 1: continue
         feed = feeds.get(story['story_feed_id'], None)
         entries.append({
             "StoryTitle": story['story_title'],
@@ -459,7 +459,7 @@ def api_unread_story(request, unread_score=None):
     if after:
         entries = sorted(entries, key=lambda s: s['ifttt']['timestamp'])
         
-    logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if unread_score == "new-focus-story" else "", feed_or_folder, len(entries)))
+    logging.user(request, "~FYChecking unread%s stories with ~SB~FCIFTTT~SN~FY: ~SB%s~SN - ~SB%s~SN stories" % (" ~SBfocus~SN" if trigger_slug == "new-unread-focus-story" else "", feed_or_folder, len(entries)))
     
     return {"data": entries[:limit]}
 
