@@ -274,17 +274,17 @@
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
                                                object:nil];
-    reach.reachableBlock = ^(Reachability *reach) {
-        NSLog(@"Reachable: %@", reach);
-    };
-    reach.unreachableBlock = ^(Reachability *reach) {
-        NSLog(@"Un-Reachable: %@", reach);
-    };
+//    reach.reachableBlock = ^(Reachability *reach) {
+//        NSLog(@"Reachable: %@", reach);
+//    };
+//    reach.unreachableBlock = ^(Reachability *reach) {
+//        NSLog(@"Un-Reachable: %@", reach);
+//    };
     [reach startNotifier];
 }
 
 - (void)reachabilityChanged:(id)something {
-    NSLog(@"Reachability changed: %@", something);
+//    NSLog(@"Reachability changed: %@", something);
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
 
     if (reach.isReachable && feedsViewController.isOffline) {
