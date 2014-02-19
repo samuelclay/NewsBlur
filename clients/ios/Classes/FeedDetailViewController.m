@@ -81,7 +81,8 @@
     [super viewDidLoad];
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    
+    self.storiesCollection = appDelegate.storiesCollection;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(preferredContentSizeChanged:)
                                                  name:UIContentSizeCategoryDidChangeNotification
@@ -118,8 +119,6 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
-
-    storiesCollection = appDelegate.storiesCollection;
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
@@ -735,6 +734,7 @@
                              error:&error];
     id feedId = [results objectForKey:@"feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSLog(@"Finished loading feed: %@", [[[results objectForKey:@"stories"] objectAtIndex:0] objectForKey:@"story_title"]);
     
     if (!(storiesCollection.isRiverView ||
           storiesCollection.isSocialView ||
@@ -907,7 +907,9 @@
                 NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
                 
-                [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
+                [self.storyTitlesTable selectRowAtIndexPath:indexPath
+                                                   animated:YES
+                                             scrollPosition:UITableViewScrollPositionMiddle];
                 
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
@@ -1135,7 +1137,7 @@
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
             NSDictionary *activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            [appDelegate loadRiverDetailViewWithStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
+            [appDelegate openDashboardRiverForStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
         } else {
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
             [self loadStory:cell atRow:indexPath.row];

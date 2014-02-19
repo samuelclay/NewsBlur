@@ -261,8 +261,8 @@
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
-- (void)loadRiverDetailViewWithStory:(NSString *)contentId
-                    showFindingStory:(BOOL)showHUD;
+- (void)openDashboardRiverForStory:(NSString *)contentId
+                  showFindingStory:(BOOL)showHUD;
 
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;

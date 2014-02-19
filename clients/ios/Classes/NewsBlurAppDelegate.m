@@ -1035,71 +1035,85 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
-
-    [feedDetailView.storiesCollection setStories:nil];
-    [feedDetailView.storiesCollection setFeedUserProfiles:nil];
-    [feedDetailView view]; // force viewDidLoad
-    self.inFeedDetail = YES;
+    BOOL transferFromDashboard = [folder isEqualToString:@"river_dashboard"];
     
-    [feedDetailView resetFeedDetail];
+//    [feedDetailView view]; // force viewDidLoad
+    self.inFeedDetail = YES;
 
-    if ([folder isEqualToString:@"river_global"]) {
-        feedDetailView.storiesCollection.isSocialRiverView = YES;
+    if (transferFromDashboard) {
+        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
+        [feedDetailView resetFeedDetail];
+        [feedDetailView.storiesCollection setStories:dashboardCollection.activeFeedStories];
+        [feedDetailView.storiesCollection setFeedUserProfiles:dashboardCollection.activeFeedUserProfiles];
+        feedDetailView.feedPage = dashboardViewController.storiesModule.feedPage + 1;
         feedDetailView.storiesCollection.isRiverView = YES;
-        [feedDetailView.storiesCollection setActiveFolder:@"river_global"];
-    } else if ([folder isEqualToString:@"river_blurblogs"]) {
-        feedDetailView.storiesCollection.isSocialRiverView = YES;
-        feedDetailView.storiesCollection.isRiverView = YES;
-        // add all the feeds from every NON blurblog folder
-        [feedDetailView.storiesCollection setActiveFolder:@"river_blurblogs"];
-        for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
-            if ([folderName isEqualToString:@"river_blurblogs"]) { // remove all blurblugs which is a blank folder name
-                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-                for (int l=0; l < [folderFeeds count]; l++) {
-                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
-                }
-            }
-        }
-    } else if ([folder isEqualToString:@"everything"]) {
-        feedDetailView.storiesCollection.isSocialRiverView = NO;
-        feedDetailView.storiesCollection.isRiverView = YES;
-        // add all the feeds from every NON blurblog folder
+        feedDetailView.storiesCollection.isSocialView = NO;
         [feedDetailView.storiesCollection setActiveFolder:@"everything"];
-        for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
-            if (![folderName isEqualToString:@"river_blurblogs"]) {
-                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-                for (int l=0; l < [folderFeeds count]; l++) {
-                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+        feedDetailView.storiesCollection.activeFolderFeeds = dashboardCollection.activeFolderFeeds;
+    } else {
+        [feedDetailView.storiesCollection setStories:nil];
+        [feedDetailView.storiesCollection setFeedUserProfiles:nil];
+        [feedDetailView resetFeedDetail];
+
+        if ([folder isEqualToString:@"river_global"]) {
+            feedDetailView.storiesCollection.isSocialRiverView = YES;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"river_global"];
+        } else if ([folder isEqualToString:@"river_blurblogs"]) {
+            feedDetailView.storiesCollection.isSocialRiverView = YES;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            // add all the feeds from every NON blurblog folder
+            [feedDetailView.storiesCollection setActiveFolder:@"river_blurblogs"];
+            for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+                if ([folderName isEqualToString:@"river_blurblogs"]) { // remove all blurblugs which is a blank folder name
+                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                    for (int l=0; l < [folderFeeds count]; l++) {
+                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                    }
                 }
             }
+        } else if ([folder isEqualToString:@"everything"]) {
+            feedDetailView.storiesCollection.isSocialRiverView = NO;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            // add all the feeds from every NON blurblog folder
+            [feedDetailView.storiesCollection setActiveFolder:@"everything"];
+            for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+                if (![folderName isEqualToString:@"river_blurblogs"]) {
+                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                    for (int l=0; l < [folderFeeds count]; l++) {
+                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                    }
+                }
+            }
+            [self.folderCountCache removeAllObjects];
+        } else if ([folder isEqualToString:@"saved_stories"]) {
+            feedDetailView.storiesCollection.isRiverView = YES;
+            feedDetailView.storiesCollection.isSocialRiverView = NO;
+            [feedDetailView.storiesCollection setActiveFolder:folder];
+        } else {
+            feedDetailView.storiesCollection.isSocialRiverView = NO;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
+            
+            [feedDetailView.storiesCollection setActiveFolder:folderName];
+            NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+            NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+            for (int l=0; l < [activeFeedLocations count]; l++) {
+                [feeds addObject:[originalFolder objectAtIndex:[[activeFeedLocations objectAtIndex:l] intValue]]];
+            }
+            
         }
-        [self.folderCountCache removeAllObjects];
-    } else if ([folder isEqualToString:@"saved_stories"]) {
-        feedDetailView.storiesCollection.isRiverView = YES;
-        feedDetailView.storiesCollection.isSocialRiverView = NO;
-        [feedDetailView.storiesCollection setActiveFolder:folder];
-    } else {
-        feedDetailView.storiesCollection.isSocialRiverView = NO;
-        feedDetailView.storiesCollection.isRiverView = YES;
-        NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
-        
-        [feedDetailView.storiesCollection setActiveFolder:folderName];
-        NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-        NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-        for (int l=0; l < [activeFeedLocations count]; l++) {
-            [feeds addObject:[originalFolder objectAtIndex:[[activeFeedLocations objectAtIndex:l] intValue]]];
+        feedDetailView.storiesCollection.activeFolderFeeds = feeds;
+        if (!self.feedsViewController.viewShowingAllFeeds) {
+            for (id feedId in feeds) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                [self.feedsViewController.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+            }
         }
-        
     }
-    feedDetailView.storiesCollection.activeFolderFeeds = feeds;
-    if (!self.feedsViewController.viewShowingAllFeeds) {
-        for (id feedId in feeds) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-            [self.feedsViewController.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
-        }
-    }
+    
     if (feedDetailView.storiesCollection.activeFolder) {
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
@@ -1123,8 +1137,8 @@
     }
 }
 
-- (void)loadRiverDetailViewWithStory:(NSString *)contentId
-                    showFindingStory:(BOOL)showHUD {
+- (void)openDashboardRiverForStory:(NSString *)contentId
+                  showFindingStory:(BOOL)showHUD {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -1142,7 +1156,7 @@
     storiesCollection.activeFeed = nil;
     storiesCollection.activeFolder = @"everything";
     
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"everything"];
+    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
     
     if (showHUD) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
