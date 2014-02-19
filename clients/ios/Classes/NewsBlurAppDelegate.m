@@ -52,6 +52,7 @@
 #import "NBBarButtonItem.h"
 #import "TMCache.h"
 #import "StoriesCollection.h"
+#import "NSString+HTML.h"
 #import <float.h>
 
 @implementation NewsBlurAppDelegate
@@ -433,7 +434,7 @@
 - (void)showSendTo:(UIViewController *)vc sender:(id)sender {
     NSString *authorName = [activeStory objectForKey:@"story_authors"];
     NSString *text = [activeStory objectForKey:@"story_content"];
-    NSString *title = [activeStory objectForKey:@"story_title"];
+    NSString *title = [[activeStory objectForKey:@"story_title"] stringByDecodingHTMLEntities];
     NSArray *images = [activeStory objectForKey:@"image_urls"];
     NSURL *url = [NSURL URLWithString:[activeStory objectForKey:@"story_permalink"]];
     NSString *feedId = [NSString stringWithFormat:@"%@", [activeStory objectForKey:@"story_feed_id"]];
@@ -818,6 +819,7 @@
     popoverHasFeedView = YES;
     
     [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController view]; // Force viewDidLoad
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -1033,7 +1035,14 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
+
+    [feedDetailView.storiesCollection setStories:nil];
+    [feedDetailView.storiesCollection setFeedUserProfiles:nil];
+    [feedDetailView view]; // force viewDidLoad
+    self.inFeedDetail = YES;
     
+    [feedDetailView resetFeedDetail];
+
     if ([folder isEqualToString:@"river_global"]) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;
@@ -1094,12 +1103,6 @@
     if (feedDetailView.storiesCollection.activeFolder) {
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
-
-    [feedDetailView.storiesCollection setStories:nil];
-    [feedDetailView.storiesCollection setFeedUserProfiles:nil];
-    self.inFeedDetail = YES;
-
-    [feedDetailView resetFeedDetail];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [feedDetailView fetchRiver];

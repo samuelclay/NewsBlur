@@ -118,6 +118,8 @@
 
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
+
+    storiesCollection = appDelegate.storiesCollection;
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {

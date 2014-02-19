@@ -367,6 +367,8 @@ static UIFont *userLabelFont;
     [self informError:[request error]];
     self.inPullToRefresh_ = NO;
     
+    self.isOffline = YES;
+    
     [self showOfflineNotifier];
 }
 
@@ -384,6 +386,7 @@ static UIFont *userLabelFont;
             [self informError:@"The server barfed!"];
         }
         
+        self.isOffline = YES;
         [self showOfflineNotifier];
         return;
     }
@@ -1242,6 +1245,7 @@ heightForHeaderInSection:(NSInteger)section {
                          inFeeds:[request.userInfo objectForKey:@"feeds"]
                  cutoffTimestamp:[[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]];
     [self showOfflineNotifier];
+    self.isOffline = YES;
     [self.feedTitlesTable reloadData];
 }
 
@@ -1250,6 +1254,8 @@ heightForHeaderInSection:(NSInteger)section {
         [self requestFailedMarkStoryRead:request];
         return;
     }
+    
+    self.isOffline = NO;
     
     if ([[request.userInfo objectForKey:@"cutoffTimestamp"] integerValue]) {
         id feed;

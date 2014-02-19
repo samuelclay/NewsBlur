@@ -120,8 +120,8 @@
 }
 
 - (void) didChangedOrientation:(NSNotification *)sender {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
+//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+//    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
     [self setView:self.view];
     self.progressBar.frame = CGRectMake(0, 4, 0, 1);
 }
