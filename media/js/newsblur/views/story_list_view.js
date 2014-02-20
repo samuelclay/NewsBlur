@@ -106,6 +106,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     clear_explainer: function() {
         var $container = this.$el.closest(".NB-feed-stories-container");
         $(".NB-story-list-empty", $container).remove();
+        this.$el.removeClass("NB-empty");
     },
     
     show_correct_explainer: function() {
@@ -160,6 +161,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         var $container = this.$el.closest(".NB-feed-stories-container");
         $container.append($empty);
+        
+        this.$el.addClass("NB-empty");
     },
     
     // ===========
