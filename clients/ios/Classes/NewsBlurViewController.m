@@ -276,11 +276,11 @@ static UIFont *userLabelFont;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                          duration:(NSTimeInterval)duration {
     [self layoutForInterfaceOrientation:toInterfaceOrientation];
+    [self.notifier setNeedsLayout];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self.feedTitlesTable reloadData];
-    [self.notifier setNeedsLayout];
 }
 
 - (void)viewDidUnload {
