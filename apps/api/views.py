@@ -34,9 +34,13 @@ def login(request):
         if form.errors:
             errors = form.errors
         if form.is_valid():
-            login_user(request, form.get_user())
-            logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
-            code = 1
+            user = form.get_user()
+            if user.is_active:
+                login_user(request, user)
+                logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
+                code = 1
+            else:
+                errors = dict(user="User acount is still inactive. Wait for queue to finish.")
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
         
