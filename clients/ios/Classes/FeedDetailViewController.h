@@ -31,8 +31,8 @@
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
-    BOOL isOffline;
-    BOOL isShowingOffline;
+    BOOL isOnline;
+    BOOL isShowingFetching;
     BOOL isDashboardModule;
      
     UITableView * storyTitlesTable;
@@ -58,8 +58,8 @@
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
-@property (nonatomic, readwrite) BOOL isOffline;
-@property (nonatomic, readwrite) BOOL isShowingOffline;
+@property (nonatomic, readwrite) BOOL isOnline;
+@property (nonatomic, readwrite) BOOL isShowingFetching;
 @property (nonatomic, readwrite) BOOL isDashboardModule;
 @property (nonatomic, readwrite) BOOL showContentPreview;
 @property (nonatomic, readwrite) BOOL showImagePreview;

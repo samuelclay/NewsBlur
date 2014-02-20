@@ -262,6 +262,8 @@
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
     }
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];

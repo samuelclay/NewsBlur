@@ -192,7 +192,7 @@
                                              (unsigned long)NULL), ^(void) {
         [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
-        [self setupReachability];
+//        [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
@@ -817,9 +817,13 @@
     [storiesCollection setFeedUserProfiles:nil];
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
-    
+
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController view]; // Force viewDidLoad
+    if (feedDetailViewController == dashboardViewController.storiesModule) {
+        feedDetailViewController.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
+    } else if (feedDetailViewController == feedDetailViewController) {
+        feedDetailViewController.storiesCollection = storiesCollection;
+    }
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -1037,12 +1041,16 @@
     NSMutableArray *feeds = [NSMutableArray array];
     BOOL transferFromDashboard = [folder isEqualToString:@"river_dashboard"];
     
-//    [feedDetailView view]; // force viewDidLoad
     self.inFeedDetail = YES;
+    [feedDetailView resetFeedDetail];
+    if (feedDetailView == dashboardViewController.storiesModule) {
+        feedDetailView.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
+    } else if (feedDetailView == feedDetailViewController) {
+        feedDetailView.storiesCollection = storiesCollection;
+    }
 
     if (transferFromDashboard) {
         StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
-        [feedDetailView resetFeedDetail];
         [feedDetailView.storiesCollection setStories:dashboardCollection.activeFeedStories];
         [feedDetailView.storiesCollection setFeedUserProfiles:dashboardCollection.activeFeedUserProfiles];
         feedDetailView.feedPage = dashboardViewController.storiesModule.feedPage + 1;
@@ -1053,7 +1061,6 @@
     } else {
         [feedDetailView.storiesCollection setStories:nil];
         [feedDetailView.storiesCollection setFeedUserProfiles:nil];
-        [feedDetailView resetFeedDetail];
 
         if ([folder isEqualToString:@"river_global"]) {
             feedDetailView.storiesCollection.isSocialRiverView = YES;

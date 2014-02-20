@@ -62,8 +62,8 @@
 @synthesize actionSheet_;
 @synthesize finishedAnimatingIn;
 @synthesize notifier;
-@synthesize isOffline;
-@synthesize isShowingOffline;
+@synthesize isOnline;
+@synthesize isShowingFetching;
 @synthesize isDashboardModule;
 @synthesize storiesCollection;
 @synthesize showContentPreview;
@@ -80,9 +80,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    self.storiesCollection = appDelegate.storiesCollection;
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(preferredContentSizeChanged:)
                                                  name:UIContentSizeCategoryDidChangeNotification
@@ -142,11 +139,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if (self.isDashboardModule) {
-        // Set in Dashboard
-    } else {
-        storiesCollection = appDelegate.storiesCollection;
-    }
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
@@ -196,7 +190,7 @@
     }
     
     NSMutableArray *indexPaths = [NSMutableArray array];
-//    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOffline, appDelegate.recentlyReadStoryLocations);
+//    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOnline, appDelegate.recentlyReadStoryLocations);
     for (id i in appDelegate.recentlyReadStoryLocations) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                     inSection:0];
@@ -261,6 +255,9 @@
     }
     
     self.finishedAnimatingIn = YES;
+    if ([storiesCollection.activeFeedStories count]) {
+        [self.storyTitlesTable reloadData];
+    }
     [self testForTryFeed];
 }
 
@@ -310,8 +307,8 @@
     self.navigationItem.titleView = nil;
     self.pageFetching = NO;
     self.pageFinished = NO;
-    self.isOffline = NO;
-    self.isShowingOffline = NO;
+    self.isOnline = YES;
+    self.isShowingFetching = NO;
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
@@ -345,9 +342,9 @@
 - (void)beginOfflineTimer {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 1 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!storiesCollection.storyLocationsCount && !self.pageFinished &&
-            self.feedPage == 1 && !self.isOffline) {
-            self.isShowingOffline = YES;
-            self.isOffline = YES;
+            self.feedPage == 1 && self.isOnline) {
+            self.isShowingFetching = YES;
+            self.isOnline = NO;
             [self showLoadingNotifier];
             [self loadOfflineStories];
         }
@@ -449,9 +446,9 @@
         });
     }
     
-    if (self.isOffline) {
+    if (!self.isOnline) {
         [self loadOfflineStories];
-        if (!self.isShowingOffline) {
+        if (!self.isShowingFetching) {
             [self showOfflineNotifier];
         }
         return;
@@ -481,13 +478,14 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:self.feedPage]}];
     [request setFailedBlock:^(void) {
         NSLog(@"in failed block %@", request);
         if (request.isCancelled) {
             NSLog(@"Cancelled");
             return;
         } else {
-            self.isOffline = YES;
+            self.isOnline = NO;
             self.feedPage = 1;
             [self loadOfflineStories];
             [self showOfflineNotifier];
@@ -570,7 +568,7 @@
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (!self.isOffline) {
+            if (self.isOnline) {
                 NSLog(@"Online before offline rendered. Tossing offline stories.");
                 return;
             }
@@ -580,7 +578,7 @@
             } else {
                 [self renderStories:offlineStories];
             }
-            if (!self.isShowingOffline) {
+            if (!self.isShowingFetching) {
                 [self showOfflineNotifier];
             }
         });
@@ -611,7 +609,8 @@
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
     if (self.pageFetching || self.pageFinished) return;
-    
+    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
+
     self.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
@@ -631,7 +630,7 @@
         });
     }
     
-    if (self.isOffline) {
+    if (!self.isOnline) {
         [self loadOfflineStories];
         return;
     }
@@ -677,13 +676,14 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:self.feedPage]}];
     [request setFailedBlock:^(void) {
         if (request.isCancelled) {
             NSLog(@"Cancelled");
             return;
         } else {
-            self.isOffline = YES;
-            self.isShowingOffline = NO;
+            self.isOnline = NO;
+            self.isShowingFetching = NO;
             self.feedPage = 1;
             [self loadOfflineStories];
             [self showOfflineNotifier];
@@ -707,8 +707,8 @@
         NSLog(@"Cancelled");
         return;
     } else if ([request responseStatusCode] >= 500) {
-        self.isOffline = YES;
-        self.isShowingOffline = NO;
+        self.isOnline = NO;
+        self.isShowingFetching = NO;
         self.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
@@ -723,8 +723,9 @@
         return;
     }
     appDelegate.hasLoadedFeedDetail = YES;
-    self.isOffline = NO;
-    self.isShowingOffline = NO;
+    self.isOnline = YES;
+    self.isShowingFetching = NO;
+    self.feedPage = [[request.userInfo objectForKey:@"feedPage"] integerValue];
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -734,7 +735,6 @@
                              error:&error];
     id feedId = [results objectForKey:@"feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSLog(@"Finished loading feed: %@", [[[results objectForKey:@"stories"] objectAtIndex:0] objectForKey:@"story_title"]);
     
     if (!(storiesCollection.isRiverView ||
           storiesCollection.isSocialView ||
@@ -865,8 +865,7 @@
 
     [self.storyTitlesTable reloadData];
     
-    self.pageFetching = NO;
-        
+    
     if (self.finishedAnimatingIn) {
         [self testForTryFeed];
     }
@@ -875,10 +874,6 @@
         [appDelegate.masterContainerViewController syncNextPreviousButtons];
     }
     
-    [self performSelector:@selector(checkScroll)
-               withObject:nil
-               afterDelay:0.1];
-    
     NSMutableArray *storyImageUrls = [NSMutableArray array];
     for (NSDictionary *story in newStories) {
         if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
@@ -886,6 +881,8 @@
         }
     }
     [self performSelector:@selector(cacheStoryImages:) withObject:storyImageUrls afterDelay:0.2];
+
+    self.pageFetching = NO;
 }
 
 - (void)testForTryFeed {
@@ -908,7 +905,7 @@
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
                 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath
-                                                   animated:YES
+                                                   animated:NO
                                              scrollPosition:UITableViewScrollPositionMiddle];
                 
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
@@ -1155,6 +1152,11 @@
     if ([cell class] == [NBLoadingCell class]) {
         [(NBLoadingCell *)cell animate];
     }
+    if ([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row) {
+        [self performSelector:@selector(checkScroll)
+                   withObject:nil
+                   afterDelay:0.1];
+    }
 }
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1228,6 +1230,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
+    if (self.pageFetching) {
+        return;
+    }
     if (![storiesCollection.activeFeedStories count]) return;
     
     if (maximumOffset - currentOffset <= 500.0 ||
