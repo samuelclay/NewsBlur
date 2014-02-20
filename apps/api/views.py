@@ -40,7 +40,7 @@ def login(request):
                 logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s" % user_agent)
                 code = 1
             else:
-                errors = dict(user="User acount is still inactive. Wait for queue to finish.")
+                errors = dict(user="User account is still inactive. Wait for queue to finish.")
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
         
