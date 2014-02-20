@@ -189,24 +189,10 @@
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
     }
     
-    NSMutableArray *indexPaths = [NSMutableArray array];
-//    NSLog(@"appDelegate.recentlyReadStoryLocations: %d - %@", self.isOnline, appDelegate.recentlyReadStoryLocations);
-    for (id i in appDelegate.recentlyReadStoryLocations) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
-                                                    inSection:0];
-//        NSLog(@"Read story: %d", [i intValue]);
-        if (![indexPaths containsObject:indexPath]) {
-            [indexPaths addObject:indexPath];
-        }
-    }
-    if ([indexPaths count] > 0 && [self.storyTitlesTable numberOfRowsInSection:0]) {
-//        [self.storyTitlesTable beginUpdates];
-//        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
-//        [self.storyTitlesTable endUpdates];
+    if ([storiesCollection.activeFeedStories count]) {
         [self.storyTitlesTable reloadData];
     }
     
-    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     appDelegate.originalStoryCount = [appDelegate unreadCount];
     
     if ((storiesCollection.isSocialRiverView ||
@@ -225,13 +211,7 @@
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.storyTitlesTable reloadData];
-        NSInteger location = storiesCollection.locationOfActiveStory;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
-        if (indexPath && location >= 0) {
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
-        }
-        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
+        [self fadeSelectedCell];
     }
     
     [self.notifier setNeedsLayout];
@@ -272,15 +252,26 @@
 }
 
 - (void)fadeSelectedCell {
-    // have the selected cell deselect
-    NSInteger location = storiesCollection.locationOfActiveStory;
-    
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
-    if (indexPath) {
-        [self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
-        
-    }           
+    [self fadeSelectedCell:YES];
+}
 
+- (void)fadeSelectedCell:(BOOL)deselect {
+    [self.storyTitlesTable reloadData];
+    NSInteger location = storiesCollection.locationOfActiveStory;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
+    if (indexPath && location >= 0) {
+        [self.storyTitlesTable selectRowAtIndexPath:indexPath
+                                           animated:NO
+                                     scrollPosition:UITableViewScrollPositionMiddle];
+        
+        if (deselect) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.4 * NSEC_PER_SEC),
+                           dispatch_get_main_queue(), ^(void) {
+                [self.storyTitlesTable deselectRowAtIndexPath:indexPath
+                                                     animated:YES];
+            });
+        }
+    }
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
@@ -312,8 +303,6 @@
     self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
-    appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
-    appDelegate.recentlyReadStoryLocations = [NSMutableArray array];
     [self.notifier hideIn:0];
     [self cancelRequests];
     [self beginOfflineTimer];
@@ -1134,6 +1123,7 @@
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
             NSDictionary *activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+            appDelegate.activeStory = activeStory;
             [appDelegate openDashboardRiverForStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
         } else {
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];

@@ -15,6 +15,7 @@
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
+#import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
@@ -237,9 +238,11 @@ static UIFont *userLabelFont;
     CGPoint point = [gesture locationInView:self.view];
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
+//    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
     
-    if (gesture.state == UIGestureRecognizerStateChanged) {
+    if (gesture.state == UIGestureRecognizerStateBegan) {
+        [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+    } else if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
     } else if (gesture.state == UIGestureRecognizerStateEnded) {
         CGPoint velocity = [gesture velocityInView:self.view];
@@ -392,6 +395,8 @@ static UIFont *userLabelFont;
     }
     
     appDelegate.hasNoSites = NO;
+    appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
+
     self.isOffline = NO;
     NSString *responseString = [request responseString];   
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    

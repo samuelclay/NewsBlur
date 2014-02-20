@@ -118,7 +118,6 @@
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
-@synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
 @synthesize unreadStoryHashes;
@@ -1806,10 +1805,8 @@
         }];
     });
     
-    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
                                  forKey:[story objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:location]];
     [self.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
 
 }
@@ -1887,9 +1884,7 @@
          feedIdStr];
     }];
     
-    NSInteger location = [storiesCollection locationOfStoryId:[story objectForKey:@"story_hash"]];
     [self.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:location]];
 }
 
 #pragma mark -

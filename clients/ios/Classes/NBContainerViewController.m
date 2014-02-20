@@ -879,6 +879,8 @@
             [self.storyNavigationController.view removeFromSuperview];
         }];
     }
+    
+    [self.dashboardViewController.storiesModule fadeSelectedCell];
 }
 
 - (void)transitionToShareView {

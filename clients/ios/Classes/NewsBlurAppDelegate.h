@@ -110,7 +110,6 @@
     int totalUncachedImagesCount;
     int remainingUncachedImagesCount;
     NSMutableDictionary * recentlyReadStories;
-    NSMutableArray * recentlyReadStoryLocations;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
@@ -198,7 +197,6 @@
 @property (readwrite) int latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableDictionary * recentlyReadStories;
-@property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;

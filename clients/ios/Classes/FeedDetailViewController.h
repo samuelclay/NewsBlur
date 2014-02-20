@@ -85,6 +85,7 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
+- (void)fadeSelectedCell:(BOOL)deselect;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
