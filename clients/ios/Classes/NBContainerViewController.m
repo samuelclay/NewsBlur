@@ -881,9 +881,6 @@
     }
     
     if (self.feedDetailViewController.storiesCollection.transferredFromDashboard) {
-        [self.dashboardViewController.storiesModule.storiesCollection
-         transferStoriesFromCollection:self.feedDetailViewController.storiesCollection];
-        self.dashboardViewController.storiesModule.feedPage = self.feedDetailViewController.feedPage + 1;
         [self.dashboardViewController.storiesModule fadeSelectedCell];
     }
 }

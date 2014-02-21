@@ -241,7 +241,12 @@ static UIFont *userLabelFont;
 //    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
     
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+        if (appDelegate.storiesCollection.transferredFromDashboard) {
+            [appDelegate.dashboardViewController.storiesModule.storiesCollection
+             transferStoriesFromCollection:appDelegate.storiesCollection];
+            appDelegate.dashboardViewController.storiesModule.feedPage = appDelegate.feedDetailViewController.feedPage + 1;
+            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+        }
     } else if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
     } else if (gesture.state == UIGestureRecognizerStateEnded) {
