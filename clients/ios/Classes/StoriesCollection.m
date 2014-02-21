@@ -8,6 +8,8 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "StoriesCollection.h"
+#import "JSON.h"
+#import "FMDatabase.h"
 
 @implementation StoriesCollection
 
@@ -260,6 +262,169 @@
         id lastStory = [appDelegate.readStories lastObject];
         return lastStory;
     }
+}
+
+#pragma mark - Story Reading
+
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSDictionary *story = nil;
+    for (NSDictionary *s in self.activeFeedStories) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
+            story = s;
+            break;
+        }
+    }
+    [self markStoryRead:story feed:feed];
+}
+
+- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    if (!feed) {
+        feedIdStr = @"0";
+    }
+    
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+    if ([[appDelegate.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
+        appDelegate.activeStory = newStory;
+    }
+    
+    // If not a feed, then don't bother updating local feed.
+    if (!feed) return;
+    
+    self.visibleUnreadCount -= 1;
+    if (![appDelegate.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
+        [appDelegate.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
+    }
+    
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+    } else if (score == 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+    } else if (score < 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+    }
+    [appDelegate.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            NSString *storyHash = [newStory objectForKey:@"story_hash"];
+            [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+             [newStory JSONRepresentation],
+             storyHash];
+            [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
+             storyHash];
+            [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+             [newUnreadCounts objectForKey:@"ps"],
+             [newUnreadCounts objectForKey:@"nt"],
+             [newUnreadCounts objectForKey:@"ng"],
+             feedIdStr];
+        }];
+    });
+    
+    [appDelegate.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
+                                        forKey:[story objectForKey:@"story_hash"]];
+    [appDelegate.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
+    
+}
+
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSDictionary *story = nil;
+    for (NSDictionary *s in self.activeFeedStories) {
+        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
+            story = s;
+            break;
+        }
+    }
+    [self markStoryUnread:story feed:feed];
+}
+
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    if (!feed) {
+        feedIdStr = @"0";
+    }
+    
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+    
+    // If not a feed, then don't bother updating local feed.
+    if (!feed) return;
+    
+    self.visibleUnreadCount += 1;
+    //    if ([self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
+    [appDelegate.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
+    //    }
+    
+    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
+    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+    } else if (score == 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+    } else if (score < 0) {
+        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] + 1);
+        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+    }
+    [appDelegate.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
+    
+    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *storyHash = [newStory objectForKey:@"story_hash"];
+        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
+         [newStory JSONRepresentation],
+         storyHash];
+        [db executeUpdate:@"INSERT INTO unread_hashes "
+         "(story_hash, story_feed_id, story_timestamp) VALUES (?, ?, ?)",
+         storyHash, feedIdStr, [newStory objectForKey:@"story_timestamp"]];
+        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
+         [newUnreadCounts objectForKey:@"ps"],
+         [newUnreadCounts objectForKey:@"nt"],
+         [newUnreadCounts objectForKey:@"ng"],
+         feedIdStr];
+    }];
+    
+    [appDelegate.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
 }
 
 @end

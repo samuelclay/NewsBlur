@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailViewController.h"
 #import "FeedDetailTableCell.h"
+#import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
@@ -91,7 +92,11 @@ static UIFont *indicatorFont = nil;
                             UIColorFromRGB(0xFFFFD2);
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    if (inDashboard) {
+        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.dashboardViewController.storiesModule];
+    } else {
+        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    }
     [self setFirstStateIconName:@"clock.png"
                      firstColor:shareColor
             secondStateIconName:nil

@@ -1271,7 +1271,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 //    NSLog(@"Did swipe with percentage : %f", percentage);
 }
 
-- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell
+didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
+                      mode:(MCSwipeTableViewCellMode)mode {
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
     if (!indexPath) {
         // This can happen if the user swipes on a cell that is being refreshed.
@@ -1679,8 +1681,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [request startAsynchronous];
     
     if ([appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", [story objectForKey:@"story_feed_id"]]]) {
-        [appDelegate markStoryRead:[story objectForKey:@"story_hash"]
-                            feedId:[story objectForKey:@"story_feed_id"]];
+        [storiesCollection markStoryRead:[story objectForKey:@"story_hash"]
+                                  feedId:[story objectForKey:@"story_feed_id"]];
     }
 }
 
@@ -1716,8 +1718,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [request setUserInfo:story];
     [request startAsynchronous];
     
-    [appDelegate markStoryUnread:[story objectForKey:@"story_hash"]
-                          feedId:[story objectForKey:@"story_feed_id"]];
+    [storiesCollection markStoryUnread:[story objectForKey:@"story_hash"]
+                                feedId:[story objectForKey:@"story_feed_id"]];
 }
 
 - (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
@@ -1744,7 +1746,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
     if (!dequeued) {
         [self informError:@"Failed to unread story"];
-        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
+        [storiesCollection markStoryRead:storyHash feedId:storyFeedId];
         [self.storyTitlesTable reloadData];
     } else {
         [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];

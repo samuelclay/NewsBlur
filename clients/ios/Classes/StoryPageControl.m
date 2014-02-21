@@ -979,7 +979,7 @@
     BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
     if (!dequeued) {
         [self informError:@"Failed to unread story"];
-        [appDelegate markStoryRead:storyHash feedId:storyFeedId];
+        [appDelegate.storiesCollection markStoryRead:storyHash feedId:storyFeedId];
     } else {
         [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
         [appDelegate markActiveStoryUnread];

@@ -72,5 +72,10 @@
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
+
 
 @end
