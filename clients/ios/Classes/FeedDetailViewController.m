@@ -1774,7 +1774,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request setUserInfo:story];
     [request startAsynchronous];
 
-    [appDelegate markStory:story asSaved:YES];
+    [storiesCollection markStory:story asSaved:YES];
 }
 
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
@@ -1788,7 +1788,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
     [self informError:@"Failed to save story"];
     
-    [appDelegate markStory:request.userInfo asSaved:NO];
+    [storiesCollection markStory:request.userInfo asSaved:NO];
     [self.storyTitlesTable reloadData];
 }
 
@@ -1809,7 +1809,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request setUserInfo:story];
     [request startAsynchronous];
 
-    [appDelegate markStory:story asSaved:NO];
+    [storiesCollection markStory:story asSaved:NO];
 }
 
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
@@ -1822,7 +1822,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
     [self informError:@"Failed to unsave story"];
-    [appDelegate markStory:request.userInfo asSaved:YES];
+    [storiesCollection markStory:request.userInfo asSaved:YES];
     [self.storyTitlesTable reloadData];
 }
 

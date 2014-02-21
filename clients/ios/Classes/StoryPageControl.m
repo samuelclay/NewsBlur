@@ -891,7 +891,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markStory:appDelegate.activeStory asSaved:YES];
+    [appDelegate.storiesCollection markStory:appDelegate.activeStory asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
@@ -923,7 +923,7 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate markStory:appDelegate.activeStory asSaved:NO];
+    [appDelegate.storiesCollection markStory:appDelegate.activeStory asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];

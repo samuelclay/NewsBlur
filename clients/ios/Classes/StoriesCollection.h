@@ -76,6 +76,7 @@
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStory:story asSaved:(BOOL)saved;
 
 
 @end

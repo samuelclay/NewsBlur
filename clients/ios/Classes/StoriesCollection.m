@@ -10,6 +10,7 @@
 #import "StoriesCollection.h"
 #import "JSON.h"
 #import "FMDatabase.h"
+#import "Utilities.h"
 
 @implementation StoriesCollection
 
@@ -264,7 +265,7 @@
     }
 }
 
-#pragma mark - Story Reading
+#pragma mark - Story Actions
 
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -426,5 +427,40 @@
     
     [appDelegate.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
 }
+
+- (void)markStory:story asSaved:(BOOL)saved {
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
+    if (saved) {
+        [newStory setValue:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+    } else {
+        [newStory removeObjectForKey:@"starred_date"];
+    }
+    
+    if ([[newStory objectForKey:@"story_hash"]
+         isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
+        appDelegate.activeStory = newStory;
+    }
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"story_hash"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+    
+    if (saved) {
+        appDelegate.savedStoriesCount += 1;
+    } else {
+        appDelegate.savedStoriesCount -= 1;
+    }
+}
+
 
 @end
