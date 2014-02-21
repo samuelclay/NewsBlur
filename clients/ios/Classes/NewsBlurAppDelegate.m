@@ -906,12 +906,10 @@
     }
 
     self.inFindingStoryMode = YES;
-    storiesCollection.isSocialRiverView = NO;
+    [storiesCollection reset];
     storiesCollection.isRiverView = YES;
-    storiesCollection.isSocialView = NO;
     
     self.tryFeedStoryId = contentId;
-    storiesCollection.activeFeed = nil;
     storiesCollection.activeFolder = @"saved_stories";
     
     [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"saved_stories"];
@@ -1048,19 +1046,16 @@
         feedDetailView.storiesCollection = storiesCollection;
     }
 
+    [feedDetailView.storiesCollection reset];
+
     if (transferFromDashboard) {
         StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
-        [feedDetailView.storiesCollection setStories:dashboardCollection.activeFeedStories];
-        [feedDetailView.storiesCollection setFeedUserProfiles:dashboardCollection.activeFeedUserProfiles];
+        [feedDetailView.storiesCollection transferStoriesFromCollection:dashboardCollection];
         feedDetailView.feedPage = dashboardViewController.storiesModule.feedPage + 1;
         feedDetailView.storiesCollection.isRiverView = YES;
-        feedDetailView.storiesCollection.isSocialView = NO;
+        feedDetailView.storiesCollection.transferredFromDashboard = YES;
         [feedDetailView.storiesCollection setActiveFolder:@"everything"];
-        feedDetailView.storiesCollection.activeFolderFeeds = dashboardCollection.activeFolderFeeds;
     } else {
-        [feedDetailView.storiesCollection setStories:nil];
-        [feedDetailView.storiesCollection setFeedUserProfiles:nil];
-
         if ([folder isEqualToString:@"river_global"]) {
             feedDetailView.storiesCollection.isSocialRiverView = YES;
             feedDetailView.storiesCollection.isRiverView = YES;
@@ -1080,7 +1075,6 @@
                 }
             }
         } else if ([folder isEqualToString:@"everything"]) {
-            feedDetailView.storiesCollection.isSocialRiverView = NO;
             feedDetailView.storiesCollection.isRiverView = YES;
             // add all the feeds from every NON blurblog folder
             [feedDetailView.storiesCollection setActiveFolder:@"everything"];
@@ -1096,10 +1090,8 @@
             [self.folderCountCache removeAllObjects];
         } else if ([folder isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isRiverView = YES;
-            feedDetailView.storiesCollection.isSocialRiverView = NO;
             [feedDetailView.storiesCollection setActiveFolder:folder];
         } else {
-            feedDetailView.storiesCollection.isSocialRiverView = NO;
             feedDetailView.storiesCollection.isRiverView = YES;
             NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
             
@@ -1154,12 +1146,10 @@
     }
     
     self.inFindingStoryMode = YES;
-    storiesCollection.isSocialRiverView = NO;
+    [storiesCollection reset];
     storiesCollection.isRiverView = YES;
-    storiesCollection.isSocialView = NO;
     
     self.tryFeedStoryId = contentId;
-    storiesCollection.activeFeed = nil;
     storiesCollection.activeFolder = @"everything";
     
     [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];

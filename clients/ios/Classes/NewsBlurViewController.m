@@ -1047,11 +1047,10 @@ static UIFont *userLabelFont;
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
+    [appDelegate.storiesCollection reset];
     [appDelegate.storiesCollection setActiveFeed:feed];
     [appDelegate.storiesCollection setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
-    appDelegate.storiesCollection.isRiverView = NO;
-    appDelegate.storiesCollection.isSocialRiverView = NO;
     [appDelegate.folderCountCache removeObjectForKey:folderName];
     appDelegate.storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
 

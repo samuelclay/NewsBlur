@@ -32,6 +32,7 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
+@synthesize transferredFromDashboard;
 
 
 - (id)init {
@@ -49,6 +50,26 @@
     }
     
     return self;
+}
+
+- (void)reset {
+    [self setStories:nil];
+    [self setFeedUserProfiles:nil];
+
+    self.activeFeed = nil;
+    self.activeFolder = nil;
+    self.activeFolderFeeds = nil;
+    
+    self.transferredFromDashboard = NO;
+    self.isRiverView = NO;
+    self.isSocialView = NO;
+    self.isSocialRiverView = NO;
+}
+
+- (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {
+    [self setStories:fromCollection.activeFeedStories];
+    [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
+    self.activeFolderFeeds = fromCollection.activeFolderFeeds;
 }
 
 #pragma mark - Story Traversal

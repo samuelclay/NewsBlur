@@ -26,6 +26,7 @@
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isSocialRiverView;
+    BOOL transferredFromDashboard;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -46,8 +47,11 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
+@property (nonatomic, readwrite) BOOL transferredFromDashboard;
 
 - (id)initForDashboard;
+- (void)reset;
+- (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection;
 
 - (BOOL)isStoryUnread:(NSDictionary *)story;
 - (void)calculateStoryLocations;
