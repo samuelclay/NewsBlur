@@ -240,6 +240,7 @@
         [self.storyTitlesTable reloadData];
     }
     [self testForTryFeed];
+    [self.notifier setNeedsLayout];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

@@ -158,8 +158,7 @@
     storyTitlesPlaceholder.backgroundColor = [UIColor whiteColor];
         
     self.storyTitlesStub = storyTitlesPlaceholder;
-    [self.view insertSubview:self.storyTitlesStub aboveSubview:self.storyNavigationController.view];
-
+    
     leftBorder = [CALayer layer];
     leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
     leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
@@ -555,16 +554,20 @@
     self.feedDetailIsVisible = YES;
     
     if (resetLayout) {
-        // adding feedDetailViewController
-        [self addChildViewController:self.feedDetailViewController];
-        [self.view addSubview:self.feedDetailViewController.view];
-        [self.feedDetailViewController didMoveToParentViewController:self];
-        
         // adding storyDetailViewController
         [self addChildViewController:self.storyNavigationController];
         [self.view addSubview:self.storyNavigationController.view];
         [self.storyNavigationController didMoveToParentViewController:self];
         
+        // adding feedDetailViewController
+        [self addChildViewController:self.feedDetailViewController];
+        [self.view insertSubview:self.feedDetailViewController.view
+                    aboveSubview:self.storyNavigationController.view];
+        [self.feedDetailViewController didMoveToParentViewController:self];
+        
+        [self.view insertSubview:self.storyTitlesStub
+                    aboveSubview:self.storyNavigationController.view];
+
         // reset the storyDetailViewController components
         self.storyPageControl.currentPage.webView.hidden = YES;
         self.storyPageControl.nextPage.webView.hidden = YES;
