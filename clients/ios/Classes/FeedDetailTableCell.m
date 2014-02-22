@@ -212,7 +212,7 @@ static UIFont *indicatorFont = nil;
 
         if (cell.isRead) {
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-            textColor = UIColorFromRGB(0x606060);
+            textColor = UIColorFromRGB(0x585858);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
             font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
@@ -274,14 +274,18 @@ static UIFont *indicatorFont = nil;
         }
         
         if (cell.isRead) {
-            textColor = UIColorFromRGB(0x606060);
+            textColor = UIColorFromRGB(0x848484);
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         } else {
             textColor = UIColorFromRGB(0x404040);
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         }
         if (cell.highlighted || cell.selected) {
-            textColor = UIColorFromRGB(0x686868);
+            if (cell.isRead) {
+                textColor = UIColorFromRGB(0x787878);
+            } else {
+                textColor = UIColorFromRGB(0x686868);
+            }
         }
         
         [cell.storyContent
