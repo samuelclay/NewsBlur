@@ -901,6 +901,9 @@ static UIFont *userLabelFont;
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
     [self.feedTitlesTable reloadData];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
+    }
 }
 
 - (void)settingDidChange:(NSNotification*)notification {
@@ -916,6 +919,11 @@ static UIFont *userLabelFont;
 		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
          [NSSet setWithObjects:@"feed_list_font_size",
           nil] animated:YES];
+    } else if ([notification.object isEqual:@"feed_list_font_size"]) {
+        [self.feedTitlesTable reloadData];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
+        }
     }
 }
 
