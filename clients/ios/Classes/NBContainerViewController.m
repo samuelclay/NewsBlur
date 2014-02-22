@@ -174,7 +174,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self adjustDashboardScreen];
+    [self layoutDashboardScreen];
 }
 
 - (void)viewDidUnload {
@@ -209,9 +209,9 @@
     }
     
     if (!self.feedDetailIsVisible) {
-        [self adjustDashboardScreen];
+        [self layoutDashboardScreen];
     } else {
-        [self adjustFeedDetailScreen];
+        [self layoutFeedDetailScreen];
     }
 }
 
@@ -219,9 +219,9 @@
 //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
 
     if (!self.feedDetailIsVisible) {
-        [self adjustDashboardScreen];
+        [self layoutDashboardScreen];
     } else {
-        [self adjustFeedDetailScreen];
+        [self layoutFeedDetailScreen];
     }
 }
 
@@ -419,14 +419,14 @@
     }
 }
 
-- (void)adjustDashboardScreen {
+- (void)layoutDashboardScreen {
     CGRect vb = [self.view bounds];
     self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
     self.dashboardViewController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width - self.masterWidth, vb.size.height);
     rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
 }
 
-- (void)adjustFeedDetailScreen {
+- (void)layoutFeedDetailScreen {
     CGRect vb = [self.view bounds];
     rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
 
@@ -630,6 +630,9 @@
                                                                    vb.size.width - self.masterWidth + 1,
                                                                    vb.size.height);
             [self interactiveTransitionFromFeedDetail:1];
+
+            UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
+            self.storyPageControl.navigationItem.titleView = titleLabel;
         }
         self.leftBorder.hidden = NO;
 
@@ -642,8 +645,6 @@
 //            NSLog(@"Finished hiding dashboard: %d", finished);
 //            [self.dashboardViewController.view removeFromSuperview];
         }];
-        
-        self.storyPageControl.navigationItem.titleView = nil;
     }
 }
 
@@ -738,7 +739,7 @@
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
-         [self adjustFeedDetailScreen];
+         [self layoutFeedDetailScreen];
      } completion:^(BOOL finished) {
          self.interactiveOriginalTransition = NO;
          [self.originalNavigationController removeFromParentViewController];

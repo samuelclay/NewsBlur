@@ -599,7 +599,7 @@
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
     if (self.pageFetching || self.pageFinished) return;
-    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
+//    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
 
     self.feedPage = page;
     self.pageFetching = YES;
@@ -1065,9 +1065,10 @@
     cell.isRead = ![storiesCollection isStoryUnread:story];
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-        && !appDelegate.masterContainerViewController.storyTitlesOnLeft
-        && UIInterfaceOrientationIsPortrait(orientation)) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !self.isDashboardModule &&
+        !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        UIInterfaceOrientationIsPortrait(orientation)) {
         cell.isShort = YES;
     }
 
@@ -1149,9 +1150,9 @@
                    afterDelay:0.1];
     }
 }
+
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     
@@ -1161,28 +1162,28 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                storiesCollection.isSocialView ||
                storiesCollection.isSocialRiverView) {
         NSInteger height = kTableViewRiverRowHeight;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
-            && UIInterfaceOrientationIsPortrait(orientation)) {
+        if ([self isShortTitles]) {
             height = height - kTableViewShortRowDifference;
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if (self.isDashboardModule || self.showContentPreview) {
+        if ([self isShortTitles] && self.showContentPreview) {
+            return height + font.pointSize*3.25;
+        } else if (self.isDashboardModule || self.showContentPreview) {
             return height + font.pointSize*5;
         } else {
             return height + font.pointSize*2;
         }
     } else {
         NSInteger height = kTableViewRowHeight;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
-            && UIInterfaceOrientationIsPortrait(orientation)) {
+        if ([self isShortTitles]) {
             height = height - kTableViewShortRowDifference;
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if (self.isDashboardModule || self.showContentPreview) {
+        if ([self isShortTitles] && self.showContentPreview) {
+            return height + font.pointSize*3.25;
+        } else if (self.isDashboardModule || self.showContentPreview) {
             return height + font.pointSize*5;
         } else {
             return height + font.pointSize*2;
@@ -1217,6 +1218,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return fontDescriptor;
 }
 
+- (BOOL)isShortTitles {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        UIInterfaceOrientationIsPortrait(orientation) &&
+        !self.isDashboardModule;
+}
 - (void)checkScroll {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;

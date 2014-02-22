@@ -73,9 +73,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.storiesModule = [FeedDetailViewController new];
         self.storiesModule.isDashboardModule = YES;
-//        [self.storiesModule view]; // Force load
         self.storiesModule.storiesCollection = [StoriesCollection new];
-        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
+//        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
         self.storiesModule.view.frame = self.activitiesModule.frame;
         [self.view insertSubview:self.storiesModule.view belowSubview:self.activitiesModule];
         [self addChildViewController:self.storiesModule];

@@ -220,7 +220,7 @@ static UIFont *userLabelFont;
     
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
-    self.navigationController.navigationBar.backItem.title = @"All Sites";
+//    self.navigationController.navigationBar.backItem.title = @"All Sites";
     
 //    // reset all feed detail specific data
 //    appDelegate.activeFeed = nil;

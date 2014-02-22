@@ -261,13 +261,17 @@ static UIFont *indicatorFont = nil;
             storyContentWidth -= leftMargin*2;
         }
         CGSize contentSize = [cell.storyContent
-                              boundingRectWithSize:CGSizeMake(storyContentWidth, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                              boundingRectWithSize:CGSizeMake(storyContentWidth,
+                                                              cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
                               options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                               attributes:@{NSFontAttributeName: font,
                                            NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil].size;
-        
+
         int storyContentY = r.size.height - 18 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
+        if (cell.isShort) {
+            storyContentY = r.size.height - 12 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
+        }
         
         if (cell.isRead) {
             textColor = UIColorFromRGB(0x606060);

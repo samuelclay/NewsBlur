@@ -27,8 +27,8 @@
 
 - (void)syncNextPreviousButtons;
 
-- (void)adjustDashboardScreen;
-- (void)adjustFeedDetailScreen;
+- (void)layoutDashboardScreen;
+- (void)layoutFeedDetailScreen;
 - (void)adjustFeedDetailScreenForStoryTitles;
 
 - (void)transitionToFeedDetail;
