@@ -263,11 +263,11 @@
     [self.storyTitlesTable reloadData];
     NSInteger location = storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
+    
     if (indexPath && location >= 0) {
         [self.storyTitlesTable selectRowAtIndexPath:indexPath
                                            animated:NO
                                      scrollPosition:UITableViewScrollPositionMiddle];
-        
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.4 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
@@ -275,6 +275,10 @@
                                                      animated:YES];
             });
         }
+    }
+    
+    if (deselect) {
+        appDelegate.activeStory = nil;
     }
 }
 

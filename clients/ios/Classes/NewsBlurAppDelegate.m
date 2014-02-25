@@ -2522,6 +2522,16 @@
     NSString *indexUsersUserId = @"CREATE INDEX IF NOT EXISTS users_user_id ON users (user_id)";
     [db executeUpdate:indexUsersUserId];
     
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory
+                                  withIntermediateDirectories:NO
+                                                   attributes:nil
+                                                        error:&error];
+    }
+
 //    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
