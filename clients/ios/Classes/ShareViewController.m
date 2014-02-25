@@ -113,7 +113,7 @@
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-        UIImage *titleImage  = [Utilities getImage:feedIdStr];
+        UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         titleImageView.hidden = YES;

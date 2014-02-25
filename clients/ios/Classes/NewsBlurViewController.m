@@ -1011,7 +1011,7 @@ static UIFont *userLabelFont;
                          [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-    cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:isSocial];
+    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
@@ -1520,10 +1520,8 @@ heightForHeaderInSection:(NSInteger)section {
             if (!faviconImage) continue;
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
-            [Utilities saveImage:faviconImage feedId:feed_id];
+            [appDelegate saveFavicon:faviconImage feedId:feed_id];
         }
-        
-        [Utilities saveimagesToDisk];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.feedTitlesTable reloadData];
@@ -1553,10 +1551,9 @@ heightForHeaderInSection:(NSInteger)section {
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
                 NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
-                [Utilities saveImage:faviconImage feedId:feed_id];
+                [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
         }
-        [Utilities saveimagesToDisk];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.feedTitlesTable reloadData];

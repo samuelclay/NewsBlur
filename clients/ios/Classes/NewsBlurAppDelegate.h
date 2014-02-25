@@ -44,6 +44,7 @@
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
+@class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations>  {
@@ -134,6 +135,9 @@
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
     NSMutableDictionary *activeCachedImages;
+    
+    TMCache *cachedFavicons;
+    TMCache *cachedStoryImages;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -170,6 +174,9 @@
 @property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
+@property (nonatomic, readwrite) TMCache *cachedFavicons;
+@property (nonatomic, readwrite) TMCache *cachedStoryImages;
+
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
@@ -309,6 +316,9 @@
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
+- (UIImage *)getFavicon:(NSString *)filename;
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

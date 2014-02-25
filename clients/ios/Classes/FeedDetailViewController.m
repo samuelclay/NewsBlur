@@ -161,7 +161,7 @@
     if (storiesCollection.isSocialView) {
         spacerBarButton.width = -6;
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
-        UIImage *titleImage  = [Utilities getImage:feedIdStr isSocial:YES];
+        UIImage *titleImage  = [appDelegate getFavicon:feedIdStr isSocial:YES];
         titleImage = [Utilities roundCorneredImage:titleImage radius:6];
         [((UIButton *)titleImageBarButton.customView).imageView removeFromSuperview];
         titleImageBarButton = [UIBarButtonItem barItemWithImage:titleImage
@@ -360,15 +360,15 @@
             UIImage *image = requestOperation.responseImage;
             
             if (!image || image.size.height < 50 || image.size.width < 50) {
-                [[TMCache sharedCache] setObject:[NSNull null]
-                                          forKey:storyImageUrl];
+                [appDelegate.cachedStoryImages setObject:[NSNull null]
+                                                  forKey:storyImageUrl];
                 continue;
             }
             
             CGSize maxImageSize = CGSizeMake(300, 300);
             image = [image imageByScalingAndCroppingForSize:maxImageSize];
-            [[TMCache sharedCache] setObject:image
-                                      forKey:storyImageUrl];
+            [appDelegate.cachedStoryImages setObject:image
+                                              forKey:storyImageUrl];
             if (self.isDashboardModule) {
                 [appDelegate.dashboardViewController.storiesModule
                  showStoryImage:storyImageUrl];
@@ -1064,7 +1064,7 @@
     cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
     
     // favicon
-    cell.siteFavicon = [Utilities getImage:feedIdStr];
+    cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
     
     // undread indicator
     
@@ -1963,10 +1963,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
                 NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
-                [Utilities saveImage:faviconImage feedId:feed_id];
+                [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
         }
-        [Utilities saveimagesToDisk];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.storyTitlesTable reloadData];

@@ -94,6 +94,8 @@
 @synthesize firstTimeUserAddNewsBlurViewController;
 
 @synthesize feedDetailPortraitYCoordinate;
+@synthesize cachedFavicons;
+@synthesize cachedStoryImages;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
@@ -189,7 +191,7 @@
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {}];
+        [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
 //        [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
@@ -202,6 +204,9 @@
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
 //    [self showFirstTimeUser];
+    
+    cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons" rootPath:@"favicons"];
+    cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages" rootPath:@"story_images"];
 
 	return YES;
 }
@@ -264,7 +269,7 @@
     [super didReceiveMemoryWarning];
     
 	// Release any cached data, images, etc that aren't in use.
-    [[TMCache sharedCache] removeAllObjects];
+    [cachedStoryImages removeAllObjects];
 }
 
 - (void)setupReachability {
@@ -2041,7 +2046,7 @@
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-        UIImage *titleImage = [Utilities getImage:feedIdStr];
+        UIImage *titleImage = [self getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
@@ -2110,7 +2115,7 @@
         } else if (storiesCollection.isRiverView) {
             titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
         } else {
-            titleImage = [Utilities getImage:feedIdStr];
+            titleImage = [self getFavicon:feedIdStr];
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -2119,6 +2124,32 @@
     [titleLabel sizeToFit];
 
     return titleLabel;
+}
+
+- (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
+    if (image && filename && ![image isKindOfClass:[NSNull class]] &&
+        [filename class] != [NSNull class]) {
+        [self.cachedFavicons setObject:image forKey:filename];
+    }
+}
+
+- (UIImage *)getFavicon:(NSString *)filename {
+    return [self getFavicon:filename isSocial:NO];
+}
+
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial {
+    UIImage *image = [self.cachedFavicons objectForKey:filename];
+    
+    if (image) {
+        return image;
+    } else {
+        if (isSocial) {
+            //            return [UIImage imageNamed:@"user_light.png"];
+            return nil;
+        } else {
+            return [UIImage imageNamed:@"world.png"];
+        }
+    }
 }
 
 #pragma mark -

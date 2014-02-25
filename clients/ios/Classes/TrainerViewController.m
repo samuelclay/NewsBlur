@@ -366,7 +366,7 @@
     int publisherScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                             objectForKey:@"feeds"] objectForKey:feedId] intValue];
     
-    UIImage *favicon = [Utilities getImage:feedId];
+    UIImage *favicon = [appDelegate getFavicon:feedId];
     NSData *faviconData = UIImagePNGRepresentation(favicon);
     NSString *feedImageUrl = [NSString stringWithFormat:@"data:image/png;charset=utf-8;base64,%@",
                               [faviconData base64Encoding]];

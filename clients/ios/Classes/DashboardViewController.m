@@ -130,7 +130,7 @@
 #pragma mark - Stories
 
 - (void)refreshStories {
-    [[TMCache sharedCache] removeAllObjects:^(TMCache *cache) {
+    [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
         [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
     }];
 }

@@ -212,7 +212,7 @@
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-                titleImage = [Utilities getImage:feedIdStr];
+                titleImage = [appDelegate getFavicon:feedIdStr];
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
@@ -230,7 +230,7 @@
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [Utilities getImage:feedIdStr];
+            UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];

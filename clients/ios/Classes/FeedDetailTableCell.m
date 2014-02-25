@@ -142,7 +142,7 @@ static UIFont *indicatorFont = nil;
                                        r.size.height, r.size.height);
         UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
         
-        UIImage *cachedImage = (UIImage *)[[TMCache sharedCache] objectForKey:cell.storyImageUrl];
+        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
 //            NSLog(@"Found cached image: %@", cell.storyTitle);
             storyImageView.image = cachedImage;
