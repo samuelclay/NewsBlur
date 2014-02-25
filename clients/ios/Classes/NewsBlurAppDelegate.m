@@ -1252,21 +1252,10 @@
 }
 
 - (void)loadStoryDetailView {
-    NSString *feedTitle;
-    if (storiesCollection.isRiverView) {
-        if ([storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-            feedTitle = @"All Shared Stories";
-        } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            feedTitle = @"Global Shared Stories";
-        } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
-            feedTitle = @"All Stories";
-        } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
-            feedTitle = @"Saved Stories";
-        } else {
-            feedTitle = storiesCollection.activeFolder;
-        }
-    } else {
-        feedTitle = [storiesCollection.activeFeed objectForKey:@"feed_title"];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UINavigationController *navController = self.navigationController;
+        [navController pushViewController:storyPageControl animated:YES];
+        navController.navigationItem.hidesBackButton = YES;
     }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
@@ -1274,21 +1263,9 @@
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        [self.storyPageControl animateIntoPlace];
+        [self.storyPageControl animateIntoPlace:YES];
     }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ([feedTitle length] >= 12) {
-            feedTitle = [NSString stringWithFormat:@"%@...", [feedTitle substringToIndex:MIN(9, [feedTitle length])]];
-        }
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStylePlain target: nil action: nil];
-        [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:storyPageControl animated:YES];
-        [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
-        navController.navigationItem.hidesBackButton = YES;
-    }
-    
+        
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
 }
 

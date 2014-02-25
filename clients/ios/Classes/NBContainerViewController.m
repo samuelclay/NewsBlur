@@ -560,10 +560,10 @@
         [self.storyNavigationController didMoveToParentViewController:self];
         
         // adding feedDetailViewController
-        [self addChildViewController:self.feedDetailViewController];
-        [self.view insertSubview:self.feedDetailViewController.view
-                    aboveSubview:self.storyNavigationController.view];
-        [self.feedDetailViewController didMoveToParentViewController:self];
+//        [self addChildViewController:self.feedDetailViewController];
+//        [self.view insertSubview:self.feedDetailViewController.view
+//                    aboveSubview:self.storyNavigationController.view];
+//        [self.feedDetailViewController didMoveToParentViewController:self];
         
         [self.view insertSubview:self.storyTitlesStub
                     aboveSubview:self.storyNavigationController.view];
@@ -626,12 +626,12 @@
     } else {
         // CASE: story titles on left
         if (resetLayout) {
+            self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
+                                                                   vb.size.width - (self.masterWidth-1),
+                                                                   vb.size.height);
             [self.masterNavigationController
              pushViewController:self.feedDetailViewController
              animated:YES];
-            self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
-                                                                   vb.size.width - self.masterWidth + 1,
-                                                                   vb.size.height);
             [self interactiveTransitionFromFeedDetail:1];
 
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
@@ -862,7 +862,6 @@
                                                                       vb.size.height - storyTitlesYCoordinate);
             } completion:^(BOOL finished) {
                 if (self.feedDetailIsVisible) return;
-                [self.feedDetailViewController.view removeFromSuperview];
                 [self.storyNavigationController.view removeFromSuperview];
             }];
         }]; 
@@ -879,7 +878,6 @@
                                                                  vb.size.height);
         } completion:^(BOOL finished) {
             if (self.feedDetailIsVisible) return;
-            [self.feedDetailViewController.view removeFromSuperview];
             [self.storyNavigationController.view removeFromSuperview];
         }];
     }

@@ -1454,9 +1454,9 @@ heightForHeaderInSection:(NSInteger)section {
         id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:self.currentRowAtIndexPath.row];
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-        cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
-        cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
-        cell.negativeCount  = [[unreadCounts objectForKey:@"ng"] intValue];
+        [cell setPositiveCount:[[unreadCounts objectForKey:@"ps"] intValue]];
+        [cell setNeutralCount:[[unreadCounts objectForKey:@"nt"] intValue]];
+        [cell setNegativeCount:[[unreadCounts objectForKey:@"ng"] intValue]];
     } else {
         [self.feedTitlesTable reloadData];
     }
@@ -1525,7 +1525,7 @@ heightForHeaderInSection:(NSInteger)section {
         
         [Utilities saveimagesToDisk];
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self.feedTitlesTable reloadData];
         });
     });
@@ -1558,7 +1558,7 @@ heightForHeaderInSection:(NSInteger)section {
         }
         [Utilities saveimagesToDisk];
 
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self.feedTitlesTable reloadData];
             [self loadAvatars];
         });

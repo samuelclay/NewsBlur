@@ -266,6 +266,7 @@
     appDelegate.isTryFeedView = NO;
     [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    NSLog(@"Story Page Control did appear");
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -616,14 +617,17 @@
     }
 }
 
-- (void)animateIntoPlace {
+- (void)animateIntoPlace:(BOOL)animated {
     // Move view into position if no story is selected yet
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
         frame.origin.x = frame.size.width;
         self.scrollView.frame = frame;
-        [UIView animateWithDuration:.22 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:(animated ? .22 : 0) delay:0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^
+        {
             CGRect frame = self.scrollView.frame;
             frame.origin.x = 0;
             self.scrollView.frame = frame;

@@ -225,6 +225,8 @@
         !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
     }
+
+    [self testForTryFeed];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -239,7 +241,7 @@
     if ([storiesCollection.activeFeedStories count]) {
         [self.storyTitlesTable reloadData];
     }
-    [self testForTryFeed];
+    NSLog(@"Detail did appear");
     [self.notifier setNeedsLayout];
 }
 
@@ -877,36 +879,42 @@
 }
 
 - (void)testForTryFeed {
-    if (appDelegate.inFindingStoryMode && appDelegate.tryFeedStoryId) {
-        for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
-            NSString *storyIdStr = [[storiesCollection.activeFeedStories
-                                     objectAtIndex:i] objectForKey:@"id"];
-            NSString *storyHashStr = [[storiesCollection.activeFeedStories
-                                       objectAtIndex:i] objectForKey:@"story_hash"];
-            if ([storyHashStr isEqualToString:appDelegate.tryFeedStoryId] ||
-                [storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
-                NSDictionary *feed = [storiesCollection.activeFeedStories objectAtIndex:i];
-                
-                NSInteger score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
-                
-                if (score < appDelegate.selectedIntelligence) {
-                    [self changeIntelligence:score];
-                }
-                NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
-                
-                [self.storyTitlesTable selectRowAtIndexPath:indexPath
-                                                   animated:NO
-                                             scrollPosition:UITableViewScrollPositionMiddle];
-                
+    if (self.isDashboardModule ||
+        !appDelegate.inFindingStoryMode ||
+        !appDelegate.tryFeedStoryId) return;
+
+    NSLog(@"Test for try feed");
+
+    for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
+        NSString *storyIdStr = [[storiesCollection.activeFeedStories
+                                 objectAtIndex:i] objectForKey:@"id"];
+        NSString *storyHashStr = [[storiesCollection.activeFeedStories
+                                   objectAtIndex:i] objectForKey:@"story_hash"];
+        if ([storyHashStr isEqualToString:appDelegate.tryFeedStoryId] ||
+            [storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
+            NSDictionary *feed = [storiesCollection.activeFeedStories objectAtIndex:i];
+            
+            NSInteger score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
+            
+            if (score < appDelegate.selectedIntelligence) {
+                [self changeIntelligence:score];
+            }
+            NSInteger locationOfStoryId = [storiesCollection locationOfStoryId:storyHashStr];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
+            
+            [self.storyTitlesTable selectRowAtIndexPath:indexPath
+                                               animated:NO
+                                         scrollPosition:UITableViewScrollPositionMiddle];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
-                
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                // found the story, reset the two flags.
-                //                appDelegate.tryFeedStoryId = nil;
-                appDelegate.inFindingStoryMode = NO;
-            }
+            });
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            // found the story, reset the two flags.
+            appDelegate.tryFeedStoryId = nil;
+            appDelegate.inFindingStoryMode = NO;
         }
     }
 }
@@ -1097,8 +1105,36 @@
     if ([storiesCollection isStoryUnread:appDelegate.activeStory]) {
         [self markStoryAsRead:appDelegate.activeStory];
     }
+    [self setTitleForBackButton];
     [appDelegate loadStoryDetailView];
     [self redrawUnreadStory];
+}
+
+- (void)setTitleForBackButton {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        NSString *feedTitle;
+        if (storiesCollection.isRiverView) {
+            if ([storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
+                feedTitle = @"All Shared Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
+                feedTitle = @"Global Shared Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
+                feedTitle = @"All Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+                feedTitle = @"Saved Stories";
+            } else {
+                feedTitle = storiesCollection.activeFolder;
+            }
+        } else {
+            feedTitle = [storiesCollection.activeFeed objectForKey:@"feed_title"];
+        }
+        
+        if ([feedTitle length] >= 12) {
+            feedTitle = [NSString stringWithFormat:@"%@...", [feedTitle substringToIndex:MIN(9, [feedTitle length])]];
+        }
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStylePlain target: nil action: nil];
+        [self.navigationItem setBackBarButtonItem: newBackButton];
+    }
 }
 
 - (void)redrawUnreadStory {
@@ -1932,7 +1968,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         [Utilities saveimagesToDisk];
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self.storyTitlesTable reloadData];
         });
     });
