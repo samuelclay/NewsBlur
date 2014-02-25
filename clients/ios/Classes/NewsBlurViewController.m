@@ -1029,6 +1029,8 @@ static UIFont *userLabelFont;
     if (appDelegate.hasNoSites) {
         return;
     }
+
+    [appDelegate.storiesCollection reset];
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
@@ -1060,7 +1062,6 @@ static UIFont *userLabelFont;
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
-    [appDelegate.storiesCollection reset];
     [appDelegate.storiesCollection setActiveFeed:feed];
     [appDelegate.storiesCollection setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
