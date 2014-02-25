@@ -998,7 +998,7 @@
                                                         dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                          reuseIdentifier:nil];
+                                          reuseIdentifier:cellIdentifier];
     }
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
@@ -1099,7 +1099,9 @@
     }
     
     [cell setupGestures];
-
+    
+    [cell setNeedsDisplay];
+    
     return cell;
 }
 

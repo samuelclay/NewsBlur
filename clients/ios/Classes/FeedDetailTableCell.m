@@ -124,7 +124,7 @@ static UIFont *indicatorFont = nil;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
     }
-    
+
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGRect rect = CGRectInset(r, 12, 12);
