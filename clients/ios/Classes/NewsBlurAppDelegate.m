@@ -205,8 +205,8 @@
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
 //    [self showFirstTimeUser];
     
-    cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons" rootPath:@"favicons"];
-    cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages" rootPath:@"story_images"];
+    cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
+    cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
 
 	return YES;
 }
@@ -2129,7 +2129,9 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        [self.cachedFavicons setObject:image forKey:filename];
+        [self.cachedFavicons setObject:image forKey:filename block:^(TMCache *cache, NSString *key, id object) {
+            
+        }];
     }
 }
 
@@ -2519,22 +2521,6 @@
     [db executeUpdate:createUsersTable];
     NSString *indexUsersUserId = @"CREATE INDEX IF NOT EXISTS users_user_id ON users (user_id)";
     [db executeUpdate:indexUsersUserId];
-    
-    NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-    NSString *faviconsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"favicons"];
-    NSString *avatarsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"avatars"];
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory withIntermediateDirectories:NO attributes:nil error:&error];
-    }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:faviconsDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:faviconsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
-    }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:avatarsDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:avatarsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
-    }
     
 //    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
