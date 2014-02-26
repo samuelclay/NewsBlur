@@ -4854,13 +4854,13 @@
         setup_dashboard_graphs: function() {
             if (NEWSBLUR.Globals.debug) return;
             
-          // Reload dashboard graphs every 10 minutes.
-          clearInterval(this.locks.load_dashboard_graphs);
-          if (!NEWSBLUR.Globals.debug) {
-              this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
-                  this.load_dashboard_graphs();
-              }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
-          }
+            // Reload dashboard graphs every 10 minutes.
+            var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+
+            clearInterval(this.locks.load_dashboard_graphs);
+            this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
+                this.load_dashboard_graphs();
+            }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
         },
         
         load_dashboard_graphs: function() {
@@ -4882,13 +4882,12 @@
         setup_feedback_table: function() {
             if (NEWSBLUR.Globals.debug) return;
             
-          // Reload feedback module every 10 minutes.
-          clearInterval(this.locks.load_feedback_table);
-          if (!NEWSBLUR.Globals.debug) {
-              this.locks.load_feedback_table = setInterval(_.bind(function() {
-                  this.load_feedback_table();
-              }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
-          }
+            // Reload feedback module every 10 minutes.
+            var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+            clearInterval(this.locks.load_feedback_table);
+            this.locks.load_feedback_table = setInterval(_.bind(function() {
+                this.load_feedback_table();
+            }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
         },
         
         load_feedback_table: function() {

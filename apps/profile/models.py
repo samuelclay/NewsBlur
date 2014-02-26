@@ -28,6 +28,7 @@ from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
 
@@ -314,9 +315,12 @@ class Profile(models.Model):
         paypal = PayPalInterface(**paypal_opts)
         transaction = transactions[0]
         profileid = transaction.subscr_id
-        paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
-        
-        logging.user(self.user, "~FRCanceling Paypal subscription")
+        try:
+            paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
+        except PayPalAPIResponseError:
+            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription")
+        else:
+            logging.user(self.user, "~FRCanceling Paypal subscription")
         
         return True
         

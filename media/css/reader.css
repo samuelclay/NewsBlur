@@ -1793,7 +1793,7 @@ body {
     min-height: 36px;
     border-top: 1px solid #C2C5BE;
     border-bottom: 1px solid #E1E6E0;
-    padding-left: 14px; /* offset for scrollbar on right */
+/*    padding-left: 14px; /* offset for scrollbar on right */
     background-color: #F8F8F8;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F8F8F8), to(#F1F6F0));
     background: -moz-linear-gradient(center top, #F8F8F8 0%, #F1F6F0 100%);
@@ -1813,6 +1813,9 @@ body {
     height: 36px;
 }
 
+.NB-empty .NB-end-line {
+    display: none;
+}
 /* ============================= */
 /* = Story Detial in List View = */
 /* ============================= */
@@ -10225,7 +10228,7 @@ form.opml_import_form input {
     margin: 24px auto;
 }
 .NB-static-login .NB-static-form {
-    width: 360px;
+    width: 320px;
 }
 .NB-static-oauth .NB-static-form-label label {
     width: 120px;
@@ -10259,7 +10262,11 @@ form.opml_import_form input {
     font-weight: bold;
     clear: both;
 }
-
+.NB-static-form-alttext {
+    margin: 24px 0 0 120px; 
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, .1); 
+}
 
 /* ======================== */
 /* = Feed Options Popover = */
