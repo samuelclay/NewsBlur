@@ -634,10 +634,10 @@ public class FeedProvider extends ContentProvider {
             return count;            
         // In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case FEED_COUNT: 
-			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
+			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " " + selectionArgs[2] + " WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 1;
 		case SOCIALFEED_COUNT: 
-			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
+			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " " + selectionArgs[2] + " WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
 			return 1;	
         case STARRED_STORIES_COUNT:
             int rows = db.update(DatabaseConstants.STARRED_STORY_COUNT_TABLE, values, null, null);

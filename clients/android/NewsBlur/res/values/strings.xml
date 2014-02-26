@@ -119,6 +119,7 @@
 
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_story_unread_error">Error marking story as unread</string>
+    <string name="toast_story_read_error">Error marking story as unread</string>
 
     <string name="toast_unread_search_error">Could not load next unread story</string>
 
