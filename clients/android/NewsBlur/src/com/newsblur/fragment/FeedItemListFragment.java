@@ -29,7 +29,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	private String feedId;
 	private int currentState;

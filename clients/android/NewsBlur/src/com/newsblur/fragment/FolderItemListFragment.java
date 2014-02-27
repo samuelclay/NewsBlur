@@ -33,7 +33,7 @@ import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FolderItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FolderItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	private ContentResolver contentResolver;
 	private String[] feedIds;

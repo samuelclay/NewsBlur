@@ -1,22 +1,33 @@
 package com.newsblur.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnCreateContextMenuListener;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
+import com.newsblur.domain.Story;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryOrder;
 
-public abstract class ItemListFragment extends Fragment implements OnScrollListener {
+public abstract class ItemListFragment extends Fragment implements OnScrollListener, OnCreateContextMenuListener {
 
     protected int currentPage = 0;
     protected boolean requestedPage;
@@ -90,5 +101,48 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
 
     public void setDefaultFeedView(DefaultFeedView value) {
         this.defaultFeedView = value;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_story, menu);
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        Story story = adapter.getStory(menuInfo.position);
+
+        switch (item.getItemId()) {
+        case R.id.menu_mark_story_as_read:
+            FeedUtils.markStoryAsRead(story, getActivity());
+            hasUpdated();
+            return true;
+
+        case R.id.menu_mark_story_as_unread:
+            FeedUtils.markStoryUnread(story, getActivity());
+            hasUpdated();
+            return true;
+
+        case R.id.menu_mark_previous_stories_as_read:
+            List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
+            List<Story> storiesToMarkAsRead = new ArrayList<Story>();
+            for(Story s : previousStories) {
+                if(! s.read) {
+                    storiesToMarkAsRead.add(s);
+                }
+            }
+            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
+            hasUpdated();
+            return true;
+
+        case R.id.menu_shared:
+            FeedUtils.shareStory(story, getActivity());
+            return true;
+
+        default:
+            return super.onContextItemSelected(item);
+        }
     }
 }
