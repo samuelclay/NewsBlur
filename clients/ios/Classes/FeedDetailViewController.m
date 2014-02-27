@@ -1069,6 +1069,7 @@
     
     // favicon
     cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
+    cell.hasAlpha = NO;
     
     // undread indicator
     
