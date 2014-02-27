@@ -469,7 +469,7 @@
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
-        if (self.appDelegate.feedDetailViewController.feedPage < 100 &&
+        if (self.appDelegate.storiesCollection.feedPage < 100 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
             [self.appDelegate.feedDetailViewController fetchNextPage:^() {
@@ -1100,7 +1100,7 @@
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
     if (nextLocation == -1 && unreadCount > 0 &&
-        fdvc.feedPage < 100) {
+        appDelegate.storiesCollection.feedPage < 100) {
         [self.loadingIndicator startAnimating];
         self.circularProgressView.hidden = YES;
         self.buttonNext.enabled = NO;

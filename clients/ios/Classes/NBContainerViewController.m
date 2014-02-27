@@ -894,6 +894,8 @@
     }
     
     if (self.feedDetailViewController.storiesCollection.transferredFromDashboard) {
+        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
+        [dashboardCollection transferStoriesFromCollection:feedDetailViewController.storiesCollection];
         [self.dashboardViewController.storiesModule fadeSelectedCell];
     }
 }

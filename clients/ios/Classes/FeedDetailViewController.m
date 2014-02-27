@@ -56,7 +56,6 @@
 @synthesize titleImageBarButton;
 @synthesize spacerBarButton, spacer2BarButton;
 @synthesize appDelegate;
-@synthesize feedPage;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize actionSheet_;
@@ -308,7 +307,7 @@
     self.pageFinished = NO;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    self.feedPage = 1;
+//    self.feedPage = 1;
     appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
     [self.notifier hideIn:0];
@@ -337,9 +336,9 @@
 }
 
 - (void)beginOfflineTimer {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 1 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 3 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!storiesCollection.storyLocationsCount && !self.pageFinished &&
-            self.feedPage == 1 && self.isOnline) {
+            storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
             self.isOnline = NO;
             [self showLoadingNotifier];
@@ -414,9 +413,9 @@
 
 - (void)fetchNextPage:(void(^)())callback {
     if (storiesCollection.isRiverView) {
-        [self fetchRiverPage:self.feedPage+1 withCallback:callback];
+        [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:callback];
     } else {
-        [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+        [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:callback];
     }
 }
 
@@ -427,14 +426,14 @@
     
     if (!callback && (self.pageFetching || self.pageFinished)) return;
     
-    self.feedPage = page;
+    storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
         [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     }
-    if (self.feedPage == 1) {
+    if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
             [appDelegate.database inDatabase:^(FMDatabase *db) {
@@ -449,18 +448,20 @@
             [self showOfflineNotifier];
         }
         return;
+    } else {
+        [self.notifier hide];
     }
     
     if (storiesCollection.isSocialView) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
                             NEWSBLUR_URL,
                             [storiesCollection.activeFeed objectForKey:@"user_id"],
-                            self.feedPage];
+                            storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
                             NEWSBLUR_URL,
                             [storiesCollection.activeFeed objectForKey:@"id"],
-                            self.feedPage];
+                            storiesCollection.feedPage];
     }
     
     theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
@@ -475,7 +476,7 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:self.feedPage]}];
+    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
     [request setFailedBlock:^(void) {
         NSLog(@"in failed block %@", request);
         if (request.isCancelled) {
@@ -483,7 +484,7 @@
             return;
         } else {
             self.isOnline = NO;
-            self.feedPage = 1;
+            storiesCollection.feedPage = 1;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         }
@@ -508,7 +509,7 @@
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         NSArray *feedIds;
         NSInteger limit = 12;
-        NSInteger offset = (self.feedPage - 1) * limit;
+        NSInteger offset = (storiesCollection.feedPage - 1) * limit;
         
         if (storiesCollection.isRiverView) {
             feedIds = storiesCollection.activeFolderFeeds;
@@ -552,7 +553,7 @@
                              [feedIds componentsJoinedByString:@","]];
             FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
             NSMutableDictionary *unreadStoryHashes;
-            if (self.feedPage == 1) {
+            if (storiesCollection.feedPage == 1) {
                 unreadStoryHashes = [NSMutableDictionary dictionary];
             } else {
                 unreadStoryHashes = appDelegate.unreadStoryHashes;
@@ -601,14 +602,14 @@
 #pragma mark River of News
 
 - (void)fetchRiver {
-    [self fetchRiverPage:self.feedPage withCallback:nil];
+    [self fetchRiverPage:storiesCollection.feedPage withCallback:nil];
 }
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
 
-    self.feedPage = page;
+    storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
@@ -618,7 +619,7 @@
 
     }
     
-    if (self.feedPage == 1) {
+    if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
             [appDelegate.database inDatabase:^(FMDatabase *db) {
@@ -630,6 +631,8 @@
     if (!self.isOnline) {
         [self loadOfflineStories];
         return;
+    } else {
+        [self.notifier hide];
     }
     
     NSString *theFeedDetailURL;
@@ -639,25 +642,25 @@
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?global_feed=true&page=%d",
                                 NEWSBLUR_URL,
-                                self.feedPage];
+                                storiesCollection.feedPage];
             
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"%@/social/river_stories/?page=%d", 
                                 NEWSBLUR_URL,
-                                self.feedPage];
+                                storiesCollection.feedPage];
         }
     } else if ([storiesCollection.activeFolder isEqual:@"saved_stories"]) {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/starred_stories/?page=%d",
                             NEWSBLUR_URL,
-                            self.feedPage];
+                            storiesCollection.feedPage];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?f=%@&page=%d", 
                             NEWSBLUR_URL,
                             [storiesCollection.activeFolderFeeds componentsJoinedByString:@"&f="],
-                            self.feedPage];
+                            storiesCollection.feedPage];
     }
     
     
@@ -673,7 +676,7 @@
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:self.feedPage]}];
+    [request setUserInfo:@{@"feedPage": [NSNumber numberWithInt:storiesCollection.feedPage]}];
     [request setFailedBlock:^(void) {
         if (request.isCancelled) {
             NSLog(@"Cancelled");
@@ -681,7 +684,7 @@
         } else {
             self.isOnline = NO;
             self.isShowingFetching = NO;
-            self.feedPage = 1;
+//            storiesCollection.feedPage = 1;
             [self loadOfflineStories];
             [self showOfflineNotifier];
         }
@@ -706,7 +709,7 @@
     } else if ([request responseStatusCode] >= 500) {
         self.isOnline = NO;
         self.isShowingFetching = NO;
-        self.feedPage = 1;
+//        storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
         if ([request responseStatusCode] == 503) {
@@ -722,7 +725,7 @@
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    self.feedPage = [[request.userInfo objectForKey:@"feedPage"] integerValue];
+    storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] integerValue];
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -765,7 +768,7 @@
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
-    if (self.feedPage == 1) {
+    if (storiesCollection.feedPage == 1) {
         confirmedNewStories = [newStories copy];
     } else {
         NSMutableSet *storyIds = [NSMutableSet set];
@@ -786,7 +789,7 @@
         newUserProfiles = [results objectForKey:@"user_profiles"];
     }
     // add self to user profiles
-    if (self.feedPage == 1) {
+    if (storiesCollection.feedPage == 1) {
         newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictSocialProfile];
     }
     
@@ -807,7 +810,7 @@
         }
         
         
-        if (self.feedPage == 1) {
+        if (storiesCollection.feedPage == 1) {
             [storiesCollection setFeedUserProfiles:confirmedNewUserProfiles];
         } else if (newUserProfiles.count > 0) {        
             [storiesCollection addFeedUserProfiles:confirmedNewUserProfiles];
@@ -851,7 +854,7 @@
     NSInteger newStoriesCount = [newStories count];
     
     if (newStoriesCount > 0) {
-        if (self.feedPage == 1) {
+        if (storiesCollection.feedPage == 1) {
             [storiesCollection setStories:newStories];
         } else {
             [storiesCollection addStories:newStories];
@@ -1284,9 +1287,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (maximumOffset - currentOffset <= 500.0 ||
         (appDelegate.inFindingStoryMode)) {
         if (storiesCollection.isRiverView) {
-            [self fetchRiverPage:self.feedPage+1 withCallback:nil];
+            [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
         } else {
-            [self fetchFeedDetail:self.feedPage+1 withCallback:nil];   
+            [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];
         }
     }
 }
@@ -1902,7 +1905,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [request startAsynchronous];
     
     [storiesCollection setStories:nil];
-    self.feedPage = 1;
+    storiesCollection.feedPage = 1;
     self.pageFetching = YES;
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];

@@ -172,6 +172,7 @@ static UIFont *userLabelFont;
 - (void)viewWillAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         !self.interactiveFeedDetailTransition) {
+        
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
     }
 //    NSDate *start = [NSDate date];
@@ -244,7 +245,6 @@ static UIFont *userLabelFont;
         if (appDelegate.storiesCollection.transferredFromDashboard) {
             [appDelegate.dashboardViewController.storiesModule.storiesCollection
              transferStoriesFromCollection:appDelegate.storiesCollection];
-            appDelegate.dashboardViewController.storiesModule.feedPage = appDelegate.feedDetailViewController.feedPage + 1;
             [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
         }
     } else if (gesture.state == UIGestureRecognizerStateChanged) {
@@ -376,7 +376,11 @@ static UIFont *userLabelFont;
     self.inPullToRefresh_ = NO;
     
     self.isOffline = YES;
-    
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController refreshStories];
+    }
+
     [self showOfflineNotifier];
 }
 
@@ -396,6 +400,10 @@ static UIFont *userLabelFont;
         
         self.isOffline = YES;
         [self showOfflineNotifier];
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.dashboardViewController refreshStories];
+        }
         return;
     }
     
@@ -443,13 +451,13 @@ static UIFont *userLabelFont;
             }
         }];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self finishLoadingFeedListWithDict:results];
+            [self finishLoadingFeedListWithDict:results finished:YES];
         });
     });
 
 }
 
-- (void)finishLoadingFeedListWithDict:(NSDictionary *)results {
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
@@ -675,7 +683,7 @@ static UIFont *userLabelFont;
     [self layoutHeaderCounts:nil];
     [self refreshHeaderCounts];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isOffline) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
     }
 }
@@ -684,7 +692,7 @@ static UIFont *userLabelFont;
 - (void)loadOfflineFeeds:(BOOL)failed {
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
-
+    NSLog(@"loadOfflineFeeds: %d", failed);
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (!appDelegate.activeUsername) {
         appDelegate.activeUsername = [userPreferences stringForKey:@"active_username"];
@@ -721,11 +729,8 @@ static UIFont *userLabelFont;
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_self finishLoadingFeedListWithDict:results];
+            [_self finishLoadingFeedListWithDict:results finished:failed];
             [_self fetchFeedList:NO];
-            if (failed) {
-                [appDelegate.dashboardViewController refreshStories];
-            }
         });
     }];
 }

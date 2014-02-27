@@ -28,6 +28,7 @@
 @synthesize storyCount;
 @synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
+@synthesize feedPage;
 
 @synthesize isRiverView;
 @synthesize isSocialView;
@@ -56,6 +57,7 @@
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
 
+    self.feedPage = 1;
     self.activeFeed = nil;
     self.activeFolder = nil;
     self.activeFolderFeeds = nil;
@@ -67,9 +69,11 @@
 }
 
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {
+    self.feedPage = fromCollection.feedPage;
     [self setStories:fromCollection.activeFeedStories];
     [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
     self.activeFolderFeeds = fromCollection.activeFolderFeeds;
+    
 }
 
 #pragma mark - Story Traversal

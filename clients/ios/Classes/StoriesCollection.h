@@ -22,6 +22,7 @@
     int storyCount;
     int storyLocationsCount;
     int visibleUnreadCount;
+    int feedPage;
 
     BOOL isRiverView;
     BOOL isSocialView;
@@ -43,6 +44,7 @@
 @property (readwrite) int storyCount;
 @property (readwrite) int storyLocationsCount;
 @property (readwrite) int visibleUnreadCount;
+@property (nonatomic, readwrite) int feedPage;
 
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;

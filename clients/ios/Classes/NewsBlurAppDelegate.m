@@ -1056,7 +1056,6 @@
     if (transferFromDashboard) {
         StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
         [feedDetailView.storiesCollection transferStoriesFromCollection:dashboardCollection];
-        feedDetailView.feedPage = dashboardViewController.storiesModule.feedPage + 1;
         feedDetailView.storiesCollection.isRiverView = YES;
         feedDetailView.storiesCollection.transferredFromDashboard = YES;
         [feedDetailView.storiesCollection setActiveFolder:@"everything"];
@@ -1121,9 +1120,11 @@
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
     
-    [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailView fetchRiver];
-    }];
+    if (!transferFromDashboard) {
+        [self flushQueuedReadStories:NO withCallback:^{
+            [feedDetailView fetchRiver];
+        }];
+    }
     
     if (feedDetailView == feedDetailViewController) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

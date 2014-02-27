@@ -27,7 +27,6 @@
  UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    int feedPage;
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
@@ -54,7 +53,6 @@
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 
-@property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
