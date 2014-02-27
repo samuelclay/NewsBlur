@@ -1028,11 +1028,10 @@
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
     cell.isStarred = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
+    cell.storyImageUrl = nil;
     if (self.showImagePreview &&
         [story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
         cell.storyImageUrl = [[story objectForKey:@"image_urls"] objectAtIndex:0];
-    } else {
-        cell.storyImageUrl = nil;
     }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
@@ -1041,6 +1040,7 @@
         cell.storyAuthor = @"";
     }
     
+    cell.storyContent = nil;
     if (self.isDashboardModule || self.showContentPreview) {
         cell.storyContent = [[story objectForKey:@"story_content"]
                              stringByConvertingHTMLToPlainText];
@@ -1078,6 +1078,7 @@
     
     cell.isRead = ![storiesCollection isStoryUnread:story];
     
+    cell.isShort = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         !self.isDashboardModule &&
@@ -1085,7 +1086,8 @@
         UIInterfaceOrientationIsPortrait(orientation)) {
         cell.isShort = YES;
     }
-
+    
+    cell.isRiverOrSocial = NO;
     if (storiesCollection.isRiverView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
