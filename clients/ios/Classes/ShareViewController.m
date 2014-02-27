@@ -16,6 +16,7 @@
 #import "DataUtilities.h"
 #import "ASIHTTPRequest.h"
 #import "StoriesCollection.h"
+#import "NSString+HTML.h"
 
 @implementation ShareViewController
 
@@ -108,7 +109,8 @@
     [self adjustShareButtons];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
+        self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
+                                stringByDecodingHTMLEntities];
         [self.commentField becomeFirstResponder];
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",

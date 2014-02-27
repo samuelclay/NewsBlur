@@ -193,7 +193,8 @@
 - (void)loadInitialStory {
     [self loadAddress:nil];
     
-    titleView.text = [[appDelegate activeStory] objectForKey:@"story_title"];
+    titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
+                      stringByDecodingHTMLEntities];
     [titleView sizeToFit];
 
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
