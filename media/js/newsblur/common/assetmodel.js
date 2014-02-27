@@ -1156,7 +1156,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     get_features_page: function(page, callback) {
-        this.make_request('/reader/features', {'page': page}, callback, callback, {request_type: 'GET'});
+        this.make_request('/reader/features', {'page': page}, callback, callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_recommended_feed: function(page, refresh, unmoderated, callback, error_callback) {
@@ -1164,7 +1167,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'page'         : page, 
             'refresh'      : refresh,
             'unmoderated'  : unmoderated
-        }, callback, error_callback, {request_type: 'GET'});
+        }, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_interactions_page: function(page, callback, error_callback) {
@@ -1211,11 +1217,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     load_dashboard_graphs: function(callback, error_callback) {
-        this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {request_type: 'GET'});
+        this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_feedback_table: function(callback, error_callback) {
-        this.make_request('/statistics/feedback_table', {}, callback, error_callback, {request_type: 'GET'});
+        this.make_request('/statistics/feedback_table', {}, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     save_feed_order: function(folders, callback) {
