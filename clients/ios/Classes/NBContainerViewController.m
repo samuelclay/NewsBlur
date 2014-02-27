@@ -441,12 +441,19 @@
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
         }
-        self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
-        self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
-        [self.view insertSubview:self.feedDetailViewController.view atIndex:0];
+        self.storyNavigationController.view.frame = CGRectMake(0, 0,
+                                                               vb.size.width,
+                                                               self.storyTitlesYCoordinate);
+        self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate,
+                                                              vb.size.width,
+                                                              vb.size.height -
+                                                              self.storyTitlesYCoordinate);
+        [self.view insertSubview:self.feedDetailViewController.view
+                    aboveSubview:self.storyNavigationController.view];
         [self.masterNavigationController.view removeFromSuperview];
         [self.dashboardViewController.view removeFromSuperview];
-        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height);
+        self.originalNavigationController.view.frame = CGRectMake(vb.size.width, 0,
+                                                                  vb.size.width, vb.size.height);
     } else {
         // remove the back button
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
@@ -535,7 +542,8 @@
             
             self.storyTitlesStub.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate - 44 - 20);
         } completion:^(BOOL finished) {
-            [self.view insertSubview:self.feedDetailViewController.view aboveSubview:self.storyTitlesStub];
+            [self.view insertSubview:self.feedDetailViewController.view
+                        aboveSubview:self.storyTitlesStub];
             self.feedDetailViewController.view.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
             self.storyTitlesStub.hidden = YES;
             [self.feedDetailViewController checkScroll];
@@ -594,6 +602,9 @@
         if (resetLayout) {
             self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
             self.storyPageControl.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
+
+        [self.view insertSubview:self.feedDetailViewController.view
+                    aboveSubview:self.storyNavigationController.view];
 
             self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
             self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
