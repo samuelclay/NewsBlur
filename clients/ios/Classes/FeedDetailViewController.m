@@ -223,7 +223,8 @@
     
     if (!isDashboardModule &&
         UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
+         !UIInterfaceOrientationIsPortrait(orientation)) &&
         !self.isMovingFromParentViewController &&
         !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
@@ -251,9 +252,12 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         self.isMovingToParentViewController &&
-        appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
+         !UIInterfaceOrientationIsPortrait(orientation))) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
     }
 }
