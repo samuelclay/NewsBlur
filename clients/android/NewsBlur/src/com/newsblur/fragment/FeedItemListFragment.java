@@ -63,8 +63,9 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_itemlist, null);
-        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
+        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
         ContentResolver contentResolver = getActivity().getContentResolver();
@@ -127,6 +128,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
