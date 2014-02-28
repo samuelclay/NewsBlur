@@ -1129,12 +1129,6 @@
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
     
-    if (!transferFromDashboard) {
-        [self flushQueuedReadStories:NO withCallback:^{
-            [feedDetailView fetchRiver];
-        }];
-    }
-    
     if (feedDetailView == feedDetailViewController) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToFeedDetail];
@@ -1147,6 +1141,14 @@
             UINavigationController *navController = self.navigationController;
             [navController pushViewController:feedDetailViewController animated:YES];
         }
+    }
+    
+    if (!transferFromDashboard) {
+        [self flushQueuedReadStories:NO withCallback:^{
+            [feedDetailView fetchRiver];
+        }];
+    } else {
+        [feedDetailView reloadData];
     }
 }
 

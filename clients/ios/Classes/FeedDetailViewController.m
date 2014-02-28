@@ -121,6 +121,10 @@
     [self.storyTitlesTable reloadData];
 }
 
+- (void)reloadData {
+    [self.storyTitlesTable reloadData];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }

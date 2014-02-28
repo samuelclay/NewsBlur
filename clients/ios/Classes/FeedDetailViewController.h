@@ -62,6 +62,7 @@
 @property (nonatomic, readwrite) BOOL showContentPreview;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 
+- (void)reloadData;
 - (void)resetFeedDetail;
 - (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
