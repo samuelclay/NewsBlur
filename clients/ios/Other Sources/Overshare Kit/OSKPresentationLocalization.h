@@ -34,7 +34,9 @@
 - (NSString *)osk_localizedText_Cancel;
 - (NSString *)osk_localizedText_Done;
 - (NSString *)osk_localizedText_Okay;
+- (NSString *)osk_localizedText_Add;
 - (NSString *)osk_localizedText_Username;
+- (NSString *)osk_localizedText_Email;
 - (NSString *)osk_localizedText_Password;
 - (NSString *)osk_localizedText_SignOut;
 - (NSString *)osk_localizedText_SignIn;
@@ -51,5 +53,8 @@
 - (NSString *)osk_localizedText_FacebookAudience_OnlyMe;
 - (NSString *)osk_localizedText_FacebookAudience_Audience;
 - (NSString *)osk_localizedText_OptionalActivities;
+- (NSString *)osk_localizedText_ShortenLinks;
+- (NSString *)osk_localizedText_LinksShortened;
+- (NSString *)osk_localizedText_Remove;
 
 @end

@@ -33,6 +33,8 @@
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>com.newsblur.NewsBlur</string>
 			<key>CFBundleURLSchemes</key>
@@ -52,6 +54,14 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>pocketapp16638</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>urn:ietf:wg:oauth:2.0:oob</string>
 			</array>
 		</dict>
 	</array>

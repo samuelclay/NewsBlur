@@ -8,6 +8,8 @@
 
 #import "OSKActivity.h"
 
-@interface OSKThingsActivity : OSKActivity
+#import "OSKURLSchemeActivity.h"
+
+@interface OSKThingsActivity : OSKActivity <OSKURLSchemeActivity>
 
 @end

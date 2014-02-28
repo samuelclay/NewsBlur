@@ -41,7 +41,7 @@
 #define ACCOUNT_BUTTON_INDEX 2
 #define AUDIENCE_BUTTON_INDEX 2
 
-#define TOOLBAR_FONT_SIZE 15
+#define TOOLBAR_FONT_SIZE 17
 
 @implementation OSKFacebookPublishingViewController
 
@@ -84,16 +84,12 @@
     
     [self updateDoneButton];
     
-    if (self.contentItem.images.count) {
-        NSMutableArray *attachments = [[NSMutableArray alloc] init];
-        for (UIImage *image in self.contentItem.images) {
-            OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImage:image];
-            [attachments addObject:attachment];
-            if (attachments.count == [self.activity maximumImageCount] || attachments.count == 3) {
-                break;
-            }
-        }
-        [self.textView setOskAttachments:attachments];
+    NSUInteger numberOfImages = self.contentItem.images.count;
+    if (numberOfImages > 0) {
+        NSUInteger numberOfImagesToShow = MIN(MIN([self.activity maximumImageCount], 3), numberOfImages);
+        NSArray *imagesToShow = [self.contentItem.images subarrayWithRange:NSMakeRange(0, numberOfImagesToShow)];
+        OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImages:imagesToShow];
+        [self.textView setOskAttachment:attachment];
     }
 }
 
@@ -213,6 +209,12 @@
     [self updateDoneButton];
 }
 
+- (void)textViewDidTapRemoveAttachment:(OSKTextView *)textView {
+    [textView removeAttachment];
+    [self.contentItem setImages:nil];
+    [self updateDoneButton];
+}
+
 #pragma mark - Autorotation
 
 - (void)viewDidLayoutSubviews {
@@ -234,6 +236,10 @@
     UIEdgeInsets insets = self.textView.contentInset;
     insets.top = [self.topLayoutGuide length];
     self.textView.contentInset = insets;
+    
+    UIEdgeInsets indicatorInsets = self.textView.scrollIndicatorInsets;
+    indicatorInsets.top = [self.topLayoutGuide length];
+    [self.textView setScrollIndicatorInsets:indicatorInsets];
 }
 
 #pragma mark - Done Button

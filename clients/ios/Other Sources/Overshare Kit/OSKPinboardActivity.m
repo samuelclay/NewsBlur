@@ -29,6 +29,10 @@
     return OSKManagedAccountAuthenticationViewControllerType_DefaultUsernamePasswordViewController;
 }
 
+- (OSKUsernameNomenclature)usernameNomenclatureForSignInScreen {
+    return OSKUsernameNomenclature_Username;
+}
+
 - (void)authenticateNewAccountWithUsername:(NSString *)username password:(NSString *)password appCredential:(OSKApplicationCredential *)appCredential completion:(OSKManagedAccountAuthenticationHandler)completion {
     [OSKPinboardUtility signIn:username password:password completion:^(OSKManagedAccount *account, NSError *error) {
         if (completion) {
@@ -79,8 +83,8 @@
     return NO;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_None;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_None;
 }
 
 - (BOOL)isReadyToPerform {
@@ -103,8 +107,7 @@
 }
 
 - (OSKActivityOperation *)operationForActivityWithCompletion:(OSKActivityCompletionHandler)completion {
-    OSKActivityOperation *op = nil;
-    return op;
+    return nil;
 }
 
 #pragma mark - Convenience

@@ -8,6 +8,8 @@
 
 @import UIKit;
 
+#import "OSKXCallbackURLInfo.h"
+
 @class OSKApplicationCredential;
 @class OSKShareableContent;
 @protocol OSKActivityCustomizations;
@@ -30,6 +32,19 @@ extern NSString * const OSKActivitiesManagerActivityTypesKey;
  on its own (application credentials, e.g.).
  */
 @property (weak, nonatomic) id <OSKActivityCustomizations> customizationsDelegate;
+
+/**
+ Some OSKActivities integrate with third-party apps that implement the x-callback-url specification.
+ `xCallbackURLDelegate`, if present, will provide information necessary to build valid NSURLs that conform
+ to the x-callback-url specification.
+ 
+ Your application, if it supports x-callback-url callbacks, will provide those callbacks via this object.
+
+ @note OvershareKit does *not* handle the processing of x-callback-url callbacks
+ if/when the target app relinquishes the user's focus back to the current application. 
+ If your app provides x-callback-url callbacks, you probably knew this already.
+ */
+@property (weak, nonatomic) id <OSKXCallbackURLInfo> xCallbackURLDelegate;
 
 /**
  Accesses the singleton activity manager.
@@ -101,6 +116,29 @@ extern NSString * const OSKActivitiesManagerActivityTypesKey;
  @return Return `YES` if `type` has been marked for permanent exclusion.
  */
 - (BOOL)activityTypeIsAlwaysExcluded:(NSString *)type;
+
+/**
+ Setting `syncActivityTypeExclusionsViaiCloud` to `YES` will sync the activity 
+ types marked/unmarked via the `markActivityTypes:alwaysExcluded:` method via 
+ iCloud key-value storage.
+ 
+ @discussion Enabling iCloud sync is helpful if your application uses 
+ `markActivityTypes:alwaysExcluded` as the logic behind user-facing switches to 
+ control which activities she never wants to see in a share sheet. For example,
+ a user may never want to use Facebook or the 1Password web browser.
+ 
+ See the sample OvershareKit app for an example (tap the left navigation bar
+ button to show the options screen).
+ 
+ If you wish to enable iCloud key value syncing, it is recommended
+ that you set this property on OSKActivitiesManager in your app delegate's
+ implementation of `application:didFinishLaunchingWithOptions`. Please note that
+ in-app purchase activity settings (see below) will *not* be synced via iCloud.
+ 
+ @warning Your app must have the appropriate entitlements for iCloud key value storage. 
+ See the iCloud documentation for more information.
+ */
+@property (assign, nonatomic) BOOL syncActivityTypeExclusionsViaiCloud;
 
 @end
 

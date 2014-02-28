@@ -70,7 +70,17 @@ static NSString * OSKInstapaperAPIAddURL = @"add";
                 completion(NO, error);
             });
         }
-    } else {
+    }
+    else if (credential.username == nil || credential.password == nil) {
+        if (completion) {
+            NSDictionary *info = @{NSLocalizedFailureReasonErrorKey:@"OSKInstapaperUtility: Unable to save the link because a username and/or password were not provided."};
+            NSError *error = [[NSError alloc] initWithDomain:@"Overshare" code:401 userInfo:info];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(NO, error);
+            });
+        }
+    }
+    else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSURLSession *sesh = [NSURLSession sharedSession];
             NSDictionary *parameters = @{@"username":credential.username,

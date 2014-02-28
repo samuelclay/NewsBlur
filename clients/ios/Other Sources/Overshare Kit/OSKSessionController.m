@@ -27,6 +27,7 @@
 #import "OSKSystemAccountStore.h"
 #import "OSKAlertView.h"
 #import "OSKSession.h"
+#import "OSKURLSchemeActivity.h"
 
 @interface OSKSessionController ()
 <
@@ -246,7 +247,8 @@
 }
 
 - (void)handlePublishingStepForActivity:(OSKActivity *)activity {
-    if ([activity.class publishingViewControllerType] == OSKPublishingViewControllerType_None) {
+    OSKPublishingMethod method = [activity.class publishingMethod];
+    if (method == OSKPublishingMethod_None || method == OSKPublishingMethod_URLScheme) {
         [self dismissViewControllers];
         [self handlePerformStepForActivity:activity];
     } else {
@@ -256,10 +258,27 @@
 
 - (void)handlePerformStepForActivity:(OSKActivity *)activity {
     [self.delegate sessionControllerDidBeginPerformingActivity:self hasDismissedAllViewControllers:YES]; // Always YES for now...
+    
+    if ([activity.class publishingMethod] == OSKPublishingMethod_URLScheme) {
+        [self prepareURLSchemeActivityToPerform:activity];
+    }
+    
     __weak OSKSessionController *weakSelf = self;
     [activity performActivity:^(OSKActivity *theActivity, BOOL successful, NSError *error) {
         [weakSelf.delegate sessionControllerDidFinish:weakSelf successful:successful error:error];
     }];
+}
+
+- (void)prepareURLSchemeActivityToPerform:(OSKActivity *)activity {
+    if ([activity conformsToProtocol:@protocol(OSKURLSchemeActivity)]) {
+        OSKActivity <OSKURLSchemeActivity> *urlSchemeActivity = (OSKActivity <OSKURLSchemeActivity> *)activity;
+        if ([urlSchemeActivity targetApplicationSupportsXCallbackURL]) {
+            if ([urlSchemeActivity respondsToSelector:@selector(prepareToPerformActionUsingXCallbackURLInfo:)]) {
+                id <OSKXCallbackURLInfo> xCallbackInfo = [OSKActivitiesManager sharedInstance].xCallbackURLDelegate;
+                [urlSchemeActivity prepareToPerformActionUsingXCallbackURLInfo:xCallbackInfo];
+            }
+        }
+    }
 }
 
 #pragma mark - Required for Subclasses
@@ -300,7 +319,7 @@
     UIViewController <OSKPublishingViewController> *viewController = nil;
     viewController = [[OSKPresentationManager sharedInstance] publishingViewControllerForActivity:activity];
     [viewController preparePublishingViewForActivity:activity delegate:self];
-    if ([activity.class publishingViewControllerType] == OSKPublishingViewControllerType_System) {
+    if ([activity.class publishingMethod] == OSKPublishingMethod_ViewController_System) {
         [self presentSystemViewControllerAppropriately:viewController];
     } else {
         [self presentViewControllerAppropriately:viewController setAsNewRoot:YES];

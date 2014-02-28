@@ -20,6 +20,7 @@ extern NSString * const OSKShareableContentItemType_WebBrowser;
 extern NSString * const OSKShareableContentItemType_PasswordManagementAppSearch;
 extern NSString * const OSKShareableContentItemType_ToDoListEntry;
 extern NSString * const OSKShareableContentItemType_AirDrop;
+extern NSString * const OSKShareableContentItemType_TextEditing;
 
 ///---------------------------
 /// @name Abstract Base Class
@@ -62,6 +63,40 @@ extern NSString * const OSKShareableContentItemType_AirDrop;
  @warning Required. Subclasses must override without calling super.
  */
 - (NSString *)itemType;
+
+/**
+ Additional activity-specific or contextual info.
+ 
+ @discussion Third-party apps & services vary widely in the extra features they
+ offer. Facebook is *in general* a microblogging activity, like ADN and Twitter,
+ but in practice it has a few advanced needs. Rather than add dozens of properties 
+ that are each only used by a single activity type, it makes more sense use an 
+ NSMutableDictionary to store activity-specific or app-specific contextual info.
+ 
+ To avoid conflicts, keys in this dictionary should be namespaced as follows:
+ 
+ com.<application>.<activityName>.<key>
+ 
+ For example, the key to an NSDictionary of Facebook post attributes would use
+ a protected namespace as follows:
+ 
+ com.oversharekit.facebook.userInfo
+ 
+ Let's say there's an app called Foo.app that has integrated OvershareKit.
+ It has also written a bespoke OSKActivity subclass, "FOOSelfieActivity." This
+ activity is a microblogging activity, but it needs additional data to submit a post.
+ It could add an NSDictionary of custom attributes to the userInfo dictionary 
+ with the following key:
+ 
+ com.fooapp.selfie.userInfo
+ 
+ This would allow Foo.app to add the Selfie activity without having to make awkward
+ modifications to their OSK integration.
+ 
+ As OvershareKit matures, we may occasionally promote frequently-used data types
+ stored in userInfo dictionaries to class-level @properties.
+ */
+@property (copy, nonatomic, readonly) NSMutableDictionary *userInfo;
 
 @end
 
@@ -265,9 +300,19 @@ extern NSString * const OSKShareableContentItemType_AirDrop;
 @interface OSKReadLaterContentItem : OSKShareableContentItem
 
 /**
- The url to be saved.
+ The url to be saved. Must be set to a non-nil value before sharing.
  */
 @property (copy, nonatomic) NSURL *url;
+
+/**
+ An optional title. Not all activities use this.
+ */
+@property (copy, nonatomic) NSString *title;
+
+/**
+ An optional description. Not all activities use this.
+ */
+@property (copy, nonatomic) NSString *description;
 
 @end
 
@@ -380,6 +425,39 @@ extern NSString * const OSKShareableContentItemType_AirDrop;
  instance of `UIActivityViewController`.
  */
 @property (copy, nonatomic) NSArray *items;
+
+@end
+
+///-------------------------------------------------------
+/// @name Text-Editing (Drafts, Editorial, Evernote etc.)
+///-------------------------------------------------------
+
+/**
+ Content for creating a new text editing document.
+ */
+@interface OSKTextEditingContentItem : OSKShareableContentItem
+
+/**
+ The body text. Required.
+ */
+@property (copy, nonatomic) NSString *text;
+
+/**
+ Optional title of the entry. Some apps don't support title fields.
+ */
+@property (copy, nonatomic) NSString *title;
+
+/**
+ Optional image attachements for the new entry. Not all apps support images. Those that
+ do may not support multiple images.
+ */
+@property (copy, nonatomic) NSArray *images;
+
+/**
+ Optional tags for the new entry. Not all apps support tags. Those that
+ do may not support multiple tags.
+ */
+@property (copy, nonatomic) NSArray *tags;
 
 @end
 

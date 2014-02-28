@@ -22,6 +22,7 @@
 #import "OSKAppDotNetActivity.h"
 #import "OSKChromeActivity.h"
 #import "OSKCopyToPasteboardActivity.h"
+#import "OSKDraftsActivity.h"
 #import "OSKEmailActivity.h"
 #import "OSKFacebookActivity.h"
 #import "OSKInstapaperActivity.h"
@@ -29,10 +30,12 @@
 #import "OSKPinboardActivity.h"
 #import "OSKPocketActivity.h"
 #import "OSKReadabilityActivity.h"
+#import "OSKReadingListActivity.h"
 #import "OSKSafariActivity.h"
 #import "OSKSMSActivity.h"
 #import "OSKThingsActivity.h"
 #import "OSKTwitterActivity.h"
+#import "OSKGooglePlusActivity.h"
 
 @interface OSKAccountManagementHeaderView : UITableViewHeaderFooterView
 
@@ -146,11 +149,13 @@ static NSString * OSKAccountManagementHeaderViewIdentifier = @"OSKAccountManagem
     [defaultClasses addObject:[OSKAppDotNetActivity class]];
     [defaultClasses addObject:[OSKInstapaperActivity class]];
     [defaultClasses addObject:[OSKPocketActivity class]];
+    [defaultClasses addObject:[OSKReadingListActivity class]];
     [defaultClasses addObject:[OSKReadabilityActivity class]];
     [defaultClasses addObject:[OSKPinboardActivity class]];
     [defaultClasses addObject:[OSKTwitterActivity class]];
     [defaultClasses addObject:[OSKFacebookActivity class]];
-    
+    [defaultClasses addObject:[OSKGooglePlusActivity class]];
+
     if ([OSK1PasswordSearchActivity isAvailable]) {
         [defaultClasses addObject:[OSK1PasswordSearchActivity class]];
         [defaultClasses addObject:[OSK1PasswordBrowserActivity class]];
@@ -163,6 +168,9 @@ static NSString * OSKAccountManagementHeaderViewIdentifier = @"OSKAccountManagem
     }
     if ([OSKThingsActivity isAvailable]) {
         [defaultClasses addObject:[OSKThingsActivity class]];
+    }
+    if ([OSKDraftsActivity isAvailable]) {
+        [defaultClasses addObject:[OSKDraftsActivity class]];
     }
     
     for (Class ignoredClass in ignoredActivityClasses) {

@@ -59,6 +59,8 @@ CGFloat const OSKUsernamePasswordCellHeight = 44.0f;
     [textField setTextAlignment:NSTextAlignmentNatural];
     [textField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+    [textField setEnablesReturnKeyAutomatically:YES];
+    [textField setDelegate:self];
     [self.contentView addSubview:textField];
     [self setTextField:textField];
     
@@ -110,6 +112,11 @@ CGFloat const OSKUsernamePasswordCellHeight = 44.0f;
     [self setPlaceholderTextHidden:(self.textField.text.length > 0)];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self.delegate usernamePasswordCellDidTapReturn:self];
+    return NO;
+}
+
 - (void)setPlaceholderTextHidden:(BOOL)hidden {
     [self.textFieldForFakingPlaceholderText setHidden:hidden];
 }
@@ -125,6 +132,15 @@ CGFloat const OSKUsernamePasswordCellHeight = 44.0f;
 
 - (void)setUseSecureInput:(BOOL)useSecureInput {
     [self.textField setSecureTextEntry:useSecureInput];
+    if (useSecureInput) {
+        [self.textField setReturnKeyType:UIReturnKeyDone];
+    } else {
+        [self.textField setReturnKeyType:UIReturnKeyNext];
+    }
+}
+
+- (void)setKeyboardType:(UIKeyboardType)keyboardType {
+    [self.textField setKeyboardType:keyboardType];
 }
 
 @end

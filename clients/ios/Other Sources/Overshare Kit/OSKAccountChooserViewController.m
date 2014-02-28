@@ -57,9 +57,11 @@
         _allowsEditing = YES;
         _allowsSelection = YES;
         _selectedManagedAccount = [[OSKManagedAccountStore sharedInstance] activeAccountForActivityType:[activityClass activityType]];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                               target:self
-                                                                                               action:@selector(addAccountButtonPressed:)];
+        NSString *addTitle = [OSKPresentationManager sharedInstance].localizedText_Add;
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:addTitle
+                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                 target:self
+                                                                                 action:@selector(addAccountButtonPressed:)];
     }
     return self;
 }
@@ -75,9 +77,11 @@
         _delegate = delegate;
         _allowsEditing = YES;
         _allowsSelection = YES;
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                               target:self
-                                                                                               action:@selector(addAccountButtonPressed:)];
+        NSString *addTitle = [OSKPresentationManager sharedInstance].localizedText_Add;
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:addTitle
+                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                 target:self
+                                                                                 action:@selector(addAccountButtonPressed:)];
     }
     return self;
 }

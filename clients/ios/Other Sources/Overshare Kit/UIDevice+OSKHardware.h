@@ -63,6 +63,8 @@ typedef NS_ENUM(NSInteger, OSKHardwareType) {
 
 @interface UIDevice (OSKHardware)
 
+- (NSString *)osk_hardwareDisplayName;
+
 - (OSKHardwareType)osk_hardwareType;
 
 - (BOOL)osk_airDropIsAvailable;

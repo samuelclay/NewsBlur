@@ -12,6 +12,7 @@
 #import "OSKShareableContentItem.h"
 #import "OSKFacebookUtility.h"
 #import "OSKApplicationCredential.h"
+#import "NSString+OSKEmoji.h"
 
 static NSInteger OSKFacebookActivity_MaxCharacterCount = 6000;
 static NSInteger OSKFacebookActivity_MaxUsernameLength = 20;
@@ -20,6 +21,7 @@ static NSInteger OSKFacebookActivity_MaxImageCount = 3;
 @implementation OSKFacebookActivity
 
 @synthesize activeSystemAccount = _activeSystemAccount;
+@synthesize remainingCharacterCount = _remainingCharacterCount;
 
 - (instancetype)initWithContentItem:(OSKShareableContentItem *)item {
     self = [super initWithContentItem:item];
@@ -89,18 +91,30 @@ static NSInteger OSKFacebookActivity_MaxImageCount = 3;
     return YES;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_Facebook;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_ViewController_Facebook;
 }
 
 - (BOOL)isReadyToPerform {
     BOOL accountPresent = (self.activeSystemAccount != nil);
     
-    OSKMicroblogPostContentItem *contentItem = (OSKMicroblogPostContentItem *)self.contentItem;
+    OSKMicroblogPostContentItem *contentItem = (OSKMicroblogPostContentItem *)[self contentItem];
+    
     NSInteger maxCharacterCount = [self maximumCharacterCount];
-    BOOL textIsValid = (contentItem.text.length > 0 && contentItem.text.length <= maxCharacterCount);
+    BOOL textIsValid = (0 <= self.remainingCharacterCount && self.remainingCharacterCount < maxCharacterCount && contentItem.text.length > 0);
     
     return (accountPresent && textIsValid);
+}
+
+- (NSInteger)updateRemainingCharacterCount:(OSKMicroblogPostContentItem *)contentItem urlEntities:(NSArray *)urlEntities {
+    
+    NSString *text = contentItem.text;
+    NSInteger composedLength = [text osk_lengthAdjustingForComposedCharacters];
+    NSInteger remainingCharacterCount = [self maximumCharacterCount] - composedLength;
+    
+    [self setRemainingCharacterCount:remainingCharacterCount];
+    
+    return remainingCharacterCount;
 }
 
 - (void)performActivity:(OSKActivityCompletionHandler)completion {

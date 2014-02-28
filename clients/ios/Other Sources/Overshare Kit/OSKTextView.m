@@ -11,6 +11,7 @@
 #import "OSKLogger.h"
 #import "OSKPresentationManager.h"
 #import "OSKTwitterText.h"
+#import "OSKSmartPunctuation.h"
 
 static CGFloat OSKTextViewAttachmentViewWidth_Phone = 78.0f; // 2 points larger than visual appearance, due to anti-aliasing technique
 static CGFloat OSKTextViewAttachmentViewWidth_Pad = 96.0f; // 2 points larger than visual appearance, due to anti-aliasing technique
@@ -19,15 +20,32 @@ static CGFloat OSKTextViewAttachmentViewWidth_Pad = 96.0f; // 2 points larger th
 
 @interface OSKTextViewAttachment ()
 
-@property (strong, nonatomic, readwrite) UIImage *thumbnail; // displayed cropped to 1:1 square
+@property (strong, nonatomic, readwrite) UIImage *thumbnail; // displayed cropped to 1:1, roughly square
+@property (copy, nonatomic, readwrite) NSArray *images;
 
 @end
 
 @implementation OSKTextViewAttachment
 
-- (instancetype)initWithImage:(UIImage *)image {
++ (CGSize)sizeNeededForThumbs:(NSUInteger)count ofIndividualSize:(CGSize)individualThumbnailSize {
+    CGSize sizeNeeded;
+    
+    if (count == 1) {
+        sizeNeeded = individualThumbnailSize;
+    } else {
+        CGFloat oneDegreeInRadians = M_PI / 180.0f;
+        CGFloat maxAngle = 12.0f * oneDegreeInRadians;
+        CGFloat widestOffset = sinf(maxAngle) * individualThumbnailSize.height;
+        sizeNeeded = CGSizeMake(individualThumbnailSize.width + widestOffset,
+                                individualThumbnailSize.height + widestOffset);
+    }
+    return CGSizeMake(ceilf(sizeNeeded.width), ceilf(sizeNeeded.width));
+}
+
+- (instancetype)initWithImages:(NSArray *)images {
     self = [super init];
     if (self) {
+        _images = images.copy;
         CGFloat width;
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             width = OSKTextViewAttachmentViewWidth_Phone;
@@ -35,33 +53,66 @@ static CGFloat OSKTextViewAttachmentViewWidth_Pad = 96.0f; // 2 points larger th
             width = OSKTextViewAttachmentViewWidth_Pad;
         }
         __weak OSKTextViewAttachment *weakSelf = self;
-        [self scaleImage:image toThumbmailOfSize:CGSizeMake(width, width) completion:^(UIImage *thumbnail) {
+        [self scaleImages:images toThumbmailsOfSize:CGSizeMake(width, width) completion:^(UIImage *thumbnail) {
             [weakSelf setThumbnail:thumbnail];
         }];
     }
     return self;
 }
 
-- (void)scaleImage:(UIImage *)image toThumbmailOfSize:(CGSize)size completion:(void(^)(UIImage *thumbnail))completion {
+- (void)scaleImages:(NSArray *)images toThumbmailsOfSize:(CGSize)individualThumbnailSize completion:(void(^)(UIImage *thumbnail))completion {
+    __weak OSKTextViewAttachment *weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIGraphicsBeginImageContextWithOptions(size, YES, 0);
-        CGFloat nativeWidth = image.size.width;
-        CGFloat nativeHeight = image.size.height;
-        CGFloat targetWidth;
-        CGFloat targetHeight;
-        if (nativeHeight > nativeWidth) {
-            targetWidth = size.width;
-            targetHeight = (nativeHeight / nativeWidth) * targetWidth;
-        } else {
-            targetHeight = size.height;
-            targetWidth = (nativeWidth / nativeHeight) * targetHeight;
+        
+        CGSize sizeNeeded = [OSKTextViewAttachment sizeNeededForThumbs:images.count ofIndividualSize:individualThumbnailSize];
+        
+        UIGraphicsBeginImageContextWithOptions(sizeNeeded, NO, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        for (NSUInteger index = 0; index < images.count; index++) {
+            UIImage *image = images.reverseObjectEnumerator.allObjects[index];
+            
+            CGContextSaveGState (context);
+            
+            CGFloat rotationAngle = [weakSelf attachmentRotationForPosition:index totalCount:images.count];
+            CGAffineTransform rotationTransform = CGAffineTransformMakeRotation(rotationAngle);
+            CGContextConcatCTM(context, rotationTransform);
+            
+            if (rotationAngle != 0) {
+                CGFloat offset = (sinf(rotationAngle) * sizeNeeded.width) / 2.0f;
+                CGAffineTransform translation = CGAffineTransformMakeTranslation(offset, offset * -1.0f);
+                CGContextConcatCTM(context, translation);
+            }
+
+            CGFloat nativeWidth = image.size.width;
+            CGFloat nativeHeight = image.size.height;
+            CGFloat targetWidth;
+            CGFloat targetHeight;
+            if (nativeHeight > nativeWidth) {
+                targetWidth = individualThumbnailSize.width;
+                targetHeight = (nativeHeight / nativeWidth) * targetWidth;
+            } else {
+                targetHeight = individualThumbnailSize.height;
+                targetWidth = (nativeWidth / nativeHeight) * targetHeight;
+            }
+            CGFloat xOrigin = (sizeNeeded.width/2.0f) - (targetWidth/2.0f);
+            CGFloat yOrigin = (sizeNeeded.height/2.0f) - (targetHeight/2.0f);
+            CGRect rect = CGRectMake(xOrigin, yOrigin, targetWidth, targetHeight);
+
+            CGRect clippingRect = CGRectMake(roundf(sizeNeeded.width - individualThumbnailSize.width)/2.0f,
+                                             roundf(sizeNeeded.height - individualThumbnailSize.height)/2.0f,
+                                             individualThumbnailSize.width,
+                                             individualThumbnailSize.height);
+            UIBezierPath *clippingPath  = [UIBezierPath bezierPathWithRect:clippingRect];
+            [clippingPath addClip];
+            [image drawInRect:rect];
+            
+            CGContextRestoreGState (context);
         }
-        CGFloat xOrigin = (size.width/2.0f) - (targetWidth/2.0f);
-        CGFloat yOrigin = (size.height/2.0f) - (targetHeight/2.0f);
-        CGRect rect = CGRectMake(xOrigin, yOrigin, targetWidth, targetHeight);
-        [image drawInRect:rect];
+        
         UIImage *thumbnail = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion){
                 completion(thumbnail);
@@ -70,36 +121,55 @@ static CGFloat OSKTextViewAttachmentViewWidth_Pad = 96.0f; // 2 points larger th
     });
 }
 
+- (CGFloat)attachmentRotationForPosition:(NSInteger)position totalCount:(NSInteger)count {
+    CGFloat rotation;
+    if (position > 2 || position == count-1) {
+        rotation = 0;
+    } else {
+        CGFloat oneDegreeInRadians = M_PI / 180.0f;
+        CGFloat degrees = (3.0f - position) * 4.0f;
+        degrees = (position % 2 == 0) ? degrees : degrees*-1.0;
+        rotation = degrees * oneDegreeInRadians;
+    }
+    return rotation;
+}
+
 @end
 
 // OSKTextViewAttachmentView ============================================================
 
 static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewContext";
 
-@interface OSKTextViewAttachmentView : UIView
+@class OSKTextViewAttachmentView;
+
+@protocol OSKTextViewAttachmentViewDelegate <NSObject>
+
+- (void)attachmentViewDidTapRemove:(OSKTextViewAttachmentView *)view;
+- (BOOL)attachmentViewShouldReportHasText:(OSKTextViewAttachmentView *)view;
+- (void)attachmentView:(OSKTextViewAttachmentView *)view didInsertText:(NSString *)text;
+- (void)attachmentViewDidDeleteBackward:(OSKTextViewAttachmentView *)view;
+- (UIKeyboardAppearance)attachmentViewKeyboardAppearance:(OSKTextViewAttachmentView *)view;
+- (UIKeyboardType)attachmentViewKeyboardType:(OSKTextViewAttachmentView *)view;
+- (UIReturnKeyType)attachmentViewReturnKeyType:(OSKTextViewAttachmentView *)view;
+
+@end
+
+@interface OSKTextViewAttachmentView : UIButton <UIKeyInput>
 
 @property (strong, nonatomic) OSKTextViewAttachment *attachment;
+@property (weak, nonatomic) id <OSKTextViewAttachmentViewDelegate> delegate;
 
 @end
 
 @implementation OSKTextViewAttachmentView
-
-- (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
-        [self setContentMode:UIViewContentModeScaleAspectFill];
-        [self setClipsToBounds:YES];
-    }
-    return self;
-}
 
 - (void)dealloc {
     [self removeObservationsFromAttachment:_attachment];
 }
 
 - (void)setAttachment:(OSKTextViewAttachment *)attachment {
-    if (_attachment != attachment) {
+    if (_attachment == nil) {
+        [self addTarget:self action:@selector(tapped:) forControlEvents:UIControlEventTouchUpInside];
         [self removeObservationsFromAttachment:_attachment];
         _attachment = attachment;
         [self addObservationsToAttachment:_attachment];
@@ -108,14 +178,66 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 }
 
 - (void)updateInterface {
-    if (self.attachment.thumbnail) {
-        self.backgroundColor = [UIColor clearColor];
-    }
-    [self setNeedsDisplay];
+    [self setBackgroundImage:self.attachment.thumbnail forState:UIControlStateNormal];
 }
 
-- (void)drawRect:(CGRect)rect {
-    [self.attachment.thumbnail drawInRect:CGRectInset(self.bounds, 1, 1)];
+#pragma mark - UIMenuItem Stuff
+
+-(void)tapped:(id)sender {
+    [self becomeFirstResponder];
+    
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
+    NSString *itemTitle = [OSKPresentationManager sharedInstance].localizedText_Remove;
+    UIMenuItem *removeAttachmentItem = [[UIMenuItem alloc] initWithTitle:itemTitle action:@selector(removeAttachmentItemTapped:)];
+    
+    NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
+    [menuController setMenuItems:[NSArray arrayWithObject:removeAttachmentItem]];
+    [menuController setTargetRect:self.frame inView:self.superview];
+    [menuController setMenuVisible:YES animated:YES];
+}
+
+- (void)removeAttachmentItemTapped:(id) sender {
+    [self.delegate attachmentViewDidTapRemove:self];
+}
+
+- (BOOL)canPerformAction:(SEL)selector withSender:(id) sender {
+    BOOL canPerform = NO;
+    if (selector == @selector(removeAttachmentItemTapped:)) {
+        canPerform = YES;
+    }
+    return canPerform;
+}
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+#pragma mark - Keep Keyboard Visible While Menu View Controller Popover is Out
+
+// See Ole Begemann's answer here: http://stackoverflow.com/a/4284675/1078579
+
+- (BOOL)hasText {
+    return [self.delegate attachmentViewShouldReportHasText:self];
+}
+
+- (void)insertText:(NSString *)text {
+    [self.delegate attachmentView:self didInsertText:text];
+}
+
+- (void)deleteBackward {
+    [self.delegate attachmentViewDidDeleteBackward:self];
+}
+
+- (UIKeyboardAppearance)keyboardAppearance {
+    return [self.delegate attachmentViewKeyboardAppearance:self];
+}
+
+- (UIKeyboardType)keyboardType {
+    return [self.delegate attachmentViewKeyboardType:self];
+}
+
+- (UIReturnKeyType)returnKeyType {
+    return [self.delegate attachmentViewReturnKeyType:self];
 }
 
 #pragma mark - KVO
@@ -146,18 +268,24 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 // OSKTextView ============================================================
 
 
-@interface OSKTextView () <UITextViewDelegate, NSTextStorageDelegate>
+@interface OSKTextView ()
+<
+    UITextViewDelegate,
+    NSTextStorageDelegate,
+    OSKTextViewAttachmentViewDelegate
+>
 
 @property (strong, nonatomic) NSDictionary *attributes_normal;
 @property (strong, nonatomic) NSDictionary *attributes_mentions;
 @property (strong, nonatomic) NSDictionary *attributes_hashtags;
 @property (strong, nonatomic) NSDictionary *attributes_links;
-@property (strong, nonatomic) NSMutableArray *attachmentViews;
 @property (assign, nonatomic) CGRect currentKeyboardFrame;
 @property (strong, nonatomic) UITextView *textView;
 @property (assign, nonatomic) NSRange previousSelectedRange;
 @property (assign, nonatomic) BOOL useLinearNextScrollAnimation;
 @property (assign, nonatomic) BOOL ignoreNextTextSelectionAnimation;
+@property (strong, nonatomic, readwrite) NSArray *detectedLinks;
+@property (strong, nonatomic) OSKTextViewAttachmentView *attachmentView;
 
 @end
 
@@ -185,7 +313,6 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 }
 
 - (void)commonInit {
-    [self setAttachmentViews:[NSMutableArray array]];
     [self setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     [self setAlwaysBounceVertical:YES];
     [self setupSwipeGestureRecognizers];
@@ -238,32 +365,24 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     if (boldDescriptor) {
         boldFont = [UIFont fontWithDescriptor:boldDescriptor size:fontSize];
     } else {
-        boldFont = [UIFont systemFontOfSize:fontSize];
+        boldFont = [UIFont boldSystemFontOfSize:fontSize];
     }
     
     UIColor *normalColor = manager.color_text;
     UIColor *actionColor = manager.color_action;
     UIColor *hashtagColor = [UIColor colorWithWhite:0.5 alpha:1.0];
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    [paragraphStyle setLineHeightMultiple:1.1];
-    [paragraphStyle setBaseWritingDirection:NSWritingDirectionNatural];
-    
     _attributes_normal = @{NSFontAttributeName:normalFont,
-                           NSForegroundColorAttributeName:normalColor,
-                           NSParagraphStyleAttributeName:paragraphStyle};
+                           NSForegroundColorAttributeName:normalColor};
     
     _attributes_mentions = @{NSFontAttributeName:boldFont,
-                             NSForegroundColorAttributeName:actionColor,
-                             NSParagraphStyleAttributeName:paragraphStyle};
+                             NSForegroundColorAttributeName:actionColor};
     
     _attributes_hashtags = @{NSFontAttributeName:normalFont,
-                             NSForegroundColorAttributeName:hashtagColor,
-                             NSParagraphStyleAttributeName:paragraphStyle};
+                             NSForegroundColorAttributeName:hashtagColor};
     
     _attributes_links = @{NSFontAttributeName:normalFont,
-                          NSForegroundColorAttributeName:actionColor,
-                          NSParagraphStyleAttributeName:paragraphStyle};
+                          NSForegroundColorAttributeName:actionColor};
     
     [self.textView setTypingAttributes:_attributes_normal];
     
@@ -295,7 +414,7 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     }
 }
 
-#pragma mark - These Are Why This Works
+#pragma mark - Critical Methods for iOS 7 Bug Workarounds
 
 // The various method & delegate method implementations in this pragma marked section
 // are why OSKTextView works. Edit these with extreme care.
@@ -369,7 +488,7 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     // usually called.
     
     [self updateContentSize:YES delay:YES];
-    if (self.attachmentViews.count) {
+    if (self.attachmentView) {
         [self updateAttachmentViewFrames];
     }
 }
@@ -438,6 +557,64 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     [self simpleScrollToCaret];
     if ([self.textViewDelegate respondsToSelector:@selector(textViewDidBeginEditing:)]) {
         [self.textViewDelegate textViewDidBeginEditing:self];
+    }
+}
+
+#pragma mark - Text Storage Delegate & Syntax Highlighting
+
+- (void)textStorage:(NSTextStorage *)textStorage willProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+    
+    NSInteger lengthChange = [OSKSmartPunctuation fixDumbPunctuation:textStorage editedRange:editedRange textInputObject:self.textView];
+    
+    if (lengthChange != 0) {
+        NSRange selectedRange = [self.textView selectedRange];
+        selectedRange.location += lengthChange;
+        [self.textView setSelectedRange:selectedRange];
+    }
+    
+    [self updateSyntaxHighlighting:textStorage];
+}
+
+- (void)updateSyntaxHighlighting:(NSTextStorage *)textStorage {
+    
+    // Apply default attributes to the entire string
+    [textStorage addAttributes:self.attributes_normal range:NSMakeRange(0, textStorage.length)];
+    
+    if (self.syntaxHighlighting == OSKMicroblogSyntaxHighlightingStyle_Twitter) {
+        // Apply syntax highlighting for entities
+        NSArray *allEntities = [OSKTwitterText entitiesInText:textStorage.string];
+        NSMutableArray *links = [[NSMutableArray alloc] init];
+        for (OSKTwitterTextEntity *anEntity in allEntities) {
+            switch (anEntity.type) {
+                case OSKTwitterTextEntityHashtag: {
+                    [textStorage addAttributes:self.attributes_hashtags range:anEntity.range];
+                } break;
+                    
+                case OSKTwitterTextEntityScreenName: {
+                    NSString *lowercaseName = [textStorage.string substringWithRange:anEntity.range].lowercaseString;
+                    [textStorage replaceCharactersInRange:anEntity.range withString:lowercaseName];
+                    [textStorage addAttributes:self.attributes_mentions range:anEntity.range];
+                } break;
+                    
+                case OSKTwitterTextEntityURL: {
+                    [textStorage addAttributes:self.attributes_links range:anEntity.range];
+                    [links addObject:anEntity];
+                } break;
+                default:
+                    break;
+            }
+        }
+        [self setDetectedLinks:links];
+    }
+    else if (self.syntaxHighlighting == OSKMicroblogSyntaxHighlightingStyle_LinksOnly) {
+        NSArray *allURLEntities = [OSKTwitterText URLsInText:textStorage.string];
+        for (OSKTwitterTextEntity *urlEntitiy in allURLEntities) {
+            [textStorage addAttributes:self.attributes_links range:urlEntitiy.range];
+        }
+        [self setDetectedLinks:allURLEntities];
+    }
+    else {
+        [self setDetectedLinks:nil];
     }
 }
 
@@ -766,9 +943,14 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 
 - (void)updateBottomContentInset:(CGRect)keyboardFrame {
     CGRect intersection = CGRectIntersection(self.frame, keyboardFrame);
+    
     UIEdgeInsets insets = self.contentInset;
     insets.bottom = intersection.size.height;
     [self setContentInset:insets];
+    
+    UIEdgeInsets indicatorInsets = self.scrollIndicatorInsets;
+    indicatorInsets.bottom = insets.bottom;
+    [self setScrollIndicatorInsets:indicatorInsets];
 }
 
 - (void)setAutomaticallyAdjustsContentInsetForKeyboard:(BOOL)automaticallyAdjustsContentInsetForKeyboard {
@@ -777,49 +959,6 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
         if (_automaticallyAdjustsContentInsetForKeyboard == NO) {
             [self setCurrentKeyboardFrame:CGRectZero];
             [self updateBottomContentInset:CGRectZero];
-        }
-    }
-}
-
-#pragma mark - Text Storage Delegate
-
-- (void)textStorage:(NSTextStorage *)textStorage willProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
-    [self fixDumbQuotes:textStorage];
-    [self updateSyntaxHighlighting:textStorage];
-}
-
-- (void)updateSyntaxHighlighting:(NSTextStorage *)textStorage {
-    
-    // Apply default attributes to the entire string
-    [textStorage addAttributes:self.attributes_normal range:NSMakeRange(0, textStorage.length)];
-    
-    if (self.syntaxHighlighting == OSKMicroblogSyntaxHighlightingStyle_Twitter) {
-        // Apply syntax highlighting for entities
-        NSArray *allEntities = [OSKTwitterText entitiesInText:textStorage.string];
-        for (OSKTwitterTextEntity *anEntity in allEntities) {
-            switch (anEntity.type) {
-                case OSKTwitterTextEntityHashtag: {
-                    [textStorage addAttributes:self.attributes_hashtags range:anEntity.range];
-                } break;
-                    
-                case OSKTwitterTextEntityScreenName: {
-                    NSString *lowercaseName = [textStorage.string substringWithRange:anEntity.range].lowercaseString;
-                    [textStorage replaceCharactersInRange:anEntity.range withString:lowercaseName];
-                    [textStorage addAttributes:self.attributes_mentions range:anEntity.range];
-                } break;
-                    
-                case OSKTwitterTextEntityURL: {
-                    [textStorage addAttributes:self.attributes_links range:anEntity.range];
-                } break;
-                default:
-                    break;
-            }
-        }
-    }
-    else if (self.syntaxHighlighting == OSKMicroblogSyntaxHighlightingStyle_LinksOnly) {
-        NSArray *allURLEntities = [OSKTwitterText URLsInText:textStorage.string];
-        for (OSKTwitterTextEntity *urlEntitiy in allURLEntities) {
-            [textStorage addAttributes:self.attributes_links range:urlEntitiy.range];
         }
     }
 }
@@ -855,14 +994,16 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 - (void)swipedToTheRight:(id)sender {
     NSRange selectedRange = self.textView.selectedRange;
     if (selectedRange.location < self.textView.attributedText.string.length) {
-        self.textView.selectedRange = NSMakeRange(selectedRange.location+1, 0);
+        NSInteger location = [self indexOfNextCharacter];
+        self.textView.selectedRange = NSMakeRange(location, 0);
     }
 }
 
 - (void)swipedToTheLeft:(id)sender {
     NSRange selectedRange = self.textView.selectedRange;
     if (selectedRange.location > 0) {
-        self.textView.selectedRange = NSMakeRange(selectedRange.location-1, 0);
+        NSInteger location = [self indexOfPreviousCharacter];
+        self.textView.selectedRange = NSMakeRange(location, 0);
     }
 }
 
@@ -885,6 +1026,49 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     NSInteger targetIndex = [self indexOfFirstPreviousLine];
     self.textView.selectedRange = NSMakeRange(targetIndex, 0);
 }
+
+- (NSInteger)indexOfPreviousCharacter {
+    
+    __block NSInteger indexOfSpace = 0;
+    
+    [self.textView.attributedText.string
+     enumerateSubstringsInRange:NSMakeRange(0, self.textView.selectedRange.location)
+     options:NSStringEnumerationReverse | NSStringEnumerationByComposedCharacterSequences
+     usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+         
+         indexOfSpace = substringRange.location;
+         *stop = YES;
+         
+     }];
+    
+    return indexOfSpace;
+}
+
+- (NSInteger)indexOfNextCharacter {
+    __block BOOL nextCharacterReached = NO;
+    __block BOOL indexChanged = NO;
+    __block NSInteger indexOfSpace = self.textView.selectedRange.location;
+    
+    [self.textView.attributedText.string
+     enumerateSubstringsInRange:NSMakeRange(self.textView.selectedRange.location, self.textView.attributedText.string.length - self.textView.selectedRange.location)
+     options:NSStringEnumerationByComposedCharacterSequences
+     usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+         
+         if (nextCharacterReached == YES) {
+             indexChanged = YES;
+             indexOfSpace = substringRange.location;
+             *stop = YES;
+         }
+         nextCharacterReached = YES;
+     }];
+    
+    if (indexChanged == NO) {
+        indexOfSpace = self.textView.attributedText.string.length;
+    }
+    
+    return indexOfSpace;
+}
+
 
 - (NSInteger)indexOfFirstPreviousSpace {
     __block NSInteger indexOfSpace = 0;
@@ -950,38 +1134,33 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
 
 #pragma mark - Text Attachments
 
-- (void)setOskAttachments:(NSArray *)attachments {
-    if (_oskAttachments == nil) {
-        _oskAttachments = attachments;
-        [self setupAttachmentViews:attachments];
-    } else {
-        OSKLog(@"OSKTextView does not support replacing existing attachments at this time.");
+- (void)setOskAttachment:(OSKTextViewAttachment *)attachment {
+    _oskAttachment = attachment;
+    if (_oskAttachment) {
+        [self setupAttachmentView:attachment];
     }
 }
 
-- (void)setupAttachmentViews:(NSArray *)newAttachments {
+- (void)setupAttachmentView:(OSKTextViewAttachment *)newAttachment {
     CGFloat width;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         width = OSKTextViewAttachmentViewWidth_Phone;
     } else {
         width = OSKTextViewAttachmentViewWidth_Pad;
     }
-    CGRect startFrame = CGRectMake(0, 0, width, width);
-    for (OSKTextViewAttachment *attachment in newAttachments) {
-        OSKTextViewAttachmentView *view = [[OSKTextViewAttachmentView alloc] initWithFrame:startFrame];
-        [view setAttachment:attachment];
-        view.autoresizingMask = UIViewAutoresizingNone;
-        [self.attachmentViews addObject:view];
-        [self.textView addSubview:view];
-    }
     
+    CGSize thumbSize = CGSizeMake(width, width);
+    CGSize sizeNeeded = [OSKTextViewAttachment sizeNeededForThumbs:newAttachment.images.count ofIndividualSize:thumbSize];
+    CGRect startFrame = CGRectMake(0, 0, sizeNeeded.width, sizeNeeded.height);
+    
+    OSKTextViewAttachmentView *attachmentView = [OSKTextViewAttachmentView buttonWithType:UIButtonTypeCustom];
+    [attachmentView setFrame:startFrame];
+    [attachmentView setAttachment:newAttachment];
+    [attachmentView setDelegate:self];
+    attachmentView.autoresizingMask = UIViewAutoresizingNone;
+    [self.textView addSubview:attachmentView];
+    [self setAttachmentView:attachmentView];
     [self updateAttachmentViewFrames];
-    
-    for (NSInteger index = 0; index < self.attachmentViews.count; index++) {
-        OSKTextViewAttachmentView *view = self.attachmentViews[index];
-        CGAffineTransform rotation = [self attachmentRotationForPosition:index totalCount:self.attachmentViews.count];
-        [view setTransform:rotation];
-    }
 }
 
 - (void)updateAttachmentViewFrames {
@@ -991,89 +1170,79 @@ static void * OSKTextViewAttachmentViewContext = "OSKTextViewAttachmentViewConte
     } else {
         width = OSKTextViewAttachmentViewWidth_Pad;
     }
+    NSUInteger numberOfImages = self.attachmentView.attachment.images.count;
     CGFloat myWidth = self.textView.frame.size.width;
-    CGFloat rightPadding = (self.attachmentViews.count > 1) ? 10.0f : 6.0f;
+    CGFloat padding = (numberOfImages > 1) ? 14.0f : 8.0f;
     CGFloat viewWidth = width;
     CGFloat viewHeight = viewWidth;
-    CGFloat xOrigin = myWidth - rightPadding - viewWidth;
-    CGFloat yOrigin = (self.attachmentViews.count > 1) ? 14.0f : 10.0f;
+    CGFloat xOrigin = myWidth - padding - viewWidth;
+    CGFloat yOrigin = (numberOfImages > 1) ? 14.0f : 10.0f;
     CGFloat centerY = yOrigin + viewHeight/2.0f;
     CGFloat centerX = xOrigin + viewWidth/2.0f;
     CGPoint center = CGPointMake(centerX, centerY);
     
-    for (NSInteger index = 0; index < self.attachmentViews.count; index++) {
-        OSKTextViewAttachmentView *view = self.attachmentViews[index];
-        [view setCenter:center];
-    }
+    [_attachmentView setCenter:center];
     
     CGRect frame = CGRectMake(xOrigin, yOrigin, viewWidth, viewHeight);
-    UIBezierPath *path = [self exclusionPathForRect:frame];
+    UIBezierPath *path = [self exclusionPathForRect:frame desiredInnerPadding:padding];
     [self.textView.textContainer setExclusionPaths:@[path]];
 }
 
-- (CGAffineTransform)attachmentRotationForPosition:(NSInteger)position totalCount:(NSInteger)count {
-    CGAffineTransform rotation;
-    if (position > 2 || position == count-1) {
-        rotation = CGAffineTransformIdentity;
-    } else {
-        CGFloat oneDegreeInRadians = M_PI / 180.0f;
-        CGFloat degrees = (3.0f - position) * 4.0f;
-        degrees = (position % 2 == 0) ? degrees : degrees*-1.0;
-        rotation = CGAffineTransformMakeRotation(degrees * oneDegreeInRadians);
-    }
-    return rotation;
-}
-
-- (UIBezierPath *)exclusionPathForRect:(CGRect)rect {
+- (UIBezierPath *)exclusionPathForRect:(CGRect)rect desiredInnerPadding:(CGFloat)padding {
     CGRect adjustedRect = rect;
-    adjustedRect.origin.x -= 6.0f;
+    adjustedRect.origin.x -= padding;
     adjustedRect.origin.y = 0.0;
     adjustedRect.size.height = rect.origin.y + rect.size.height;
     adjustedRect.size.width = self.textView.frame.size.width - adjustedRect.origin.x;
     return [UIBezierPath bezierPathWithRect:adjustedRect];
 }
 
-#pragma mark - Smart Quotes
+#pragma mark - OSKTextViewAttachmentViewDelegate
 
-- (void)fixDumbQuotes:(NSTextStorage *)mutableString {
-    [mutableString.string enumerateSubstringsInRange:NSMakeRange(0, [mutableString length]) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-        if ([substring isEqualToString:@"\""]) {
-            if (substringRange.location > 0) {
-                NSString *previousCharacter = [mutableString.string substringWithRange:NSMakeRange(substringRange.location - 1, 1)];
-                if ([previousCharacter isEqualToString:@" "] || [previousCharacter isEqualToString:@"\n"]) {
-                    [mutableString replaceCharactersInRange:substringRange withString:@"“"];
-                }
-                else {
-                    [mutableString replaceCharactersInRange:substringRange withString:@"”"];
-                }
-            }
-            else {
-                [mutableString replaceCharactersInRange:substringRange withString:@"“"];
-            }
-        }
-        else if ([substring isEqualToString:@"'"]) {
-            if (substringRange.location > 0) {
-                NSString *previousCharacter = [mutableString.string substringWithRange:NSMakeRange(substringRange.location - 1, 1)];
-                if ([previousCharacter isEqualToString:@" "] || [previousCharacter isEqualToString:@"\n"]) {
-                    [mutableString replaceCharactersInRange:substringRange withString:@"‘"];
-                }
-                else {
-                    [mutableString replaceCharactersInRange:substringRange withString:@"’"];
-                }
-            }
-            else {
-                [mutableString replaceCharactersInRange:substringRange withString:@"‘"];
-            }
-        }
-    }];
+- (void)attachmentViewDidTapRemove:(OSKTextViewAttachmentView *)view {
+    [view resignFirstResponder];
+    [self becomeFirstResponder];
+    [self.textViewDelegate textViewDidTapRemoveAttachment:self];
+}
+
+- (BOOL)attachmentViewShouldReportHasText:(OSKTextViewAttachmentView *)view {
+    return [self.textView hasText];
+}
+
+- (void)attachmentView:(OSKTextViewAttachmentView *)view didInsertText:(NSString *)text {
+    [view resignFirstResponder];
+    [self becomeFirstResponder];
+    [self insertText:text];
+}
+
+- (void)attachmentViewDidDeleteBackward:(OSKTextViewAttachmentView *)view {
+    [view resignFirstResponder];
+    [self becomeFirstResponder];
+    [self.textView deleteBackward];
+}
+
+- (UIKeyboardAppearance)attachmentViewKeyboardAppearance:(OSKTextViewAttachmentView *)view {
+    return self.textView.keyboardAppearance;
+}
+
+- (UIKeyboardType)attachmentViewKeyboardType:(OSKTextViewAttachmentView *)view {
+    return self.textView.keyboardType;
+}
+
+- (UIReturnKeyType)attachmentViewReturnKeyType:(OSKTextViewAttachmentView *)view {
+    return self.textView.returnKeyType;
+}
+
+#pragma mark - Removing Attachments
+
+- (void)removeAttachment {
+    [self.attachmentView removeFromSuperview];
+    [self setAttachmentView:nil];
+    [self setOskAttachment:nil];
+    [self.textView.textContainer setExclusionPaths:nil];
 }
 
 @end
-
-
-
-
-
 
 
 

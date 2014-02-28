@@ -6,48 +6,23 @@
 //  Copyright (c) 2013 Overshare Kit. All rights reserved.
 //
 
-// ======================================================================
-// Portions of this code from Google Inc:
-// ======================================================================
-//
-// Copyright 2012, Google Inc.
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// ======================================================================
-
 #import "OSKChromeActivity.h"
 
 #import "OSKShareableContentItem.h"
+#import "NSString+OSKDerp.h"
 
-static NSString * OSKChromeActivity_ChromeURLScheme = @"googlechrome:";
-static NSString * kGoogleChromeHTTPScheme = @"googlechrome:";
-static NSString * kGoogleChromeHTTPSScheme = @"googlechromes:";
+static NSString * OSKChromeActivity_ChromeURLScheme = @"googlechrome-x-callback:";
+static NSString * OSKChromeActivity_Path = @"//x-callback-url/open/";
+static NSString * OSKChromeActivity_URLQueryKey = @"url";
+
+@interface OSKChromeActivity ()
+
+@property (copy, nonatomic) NSString *url_encoded_x_source;
+@property (copy, nonatomic) NSString *url_encoded_x_success;
+@property (copy, nonatomic) NSString *url_encoded_x_cancel;
+@property (copy, nonatomic) NSString *url_encoded_x_error;
+
+@end
 
 @implementation OSKChromeActivity
 
@@ -57,6 +32,27 @@ static NSString * kGoogleChromeHTTPSScheme = @"googlechromes:";
         //
     }
     return self;
+}
+
+#pragma mark - OSKURLSchemeActivity
+
+- (BOOL)targetApplicationSupportsXCallbackURL {
+    return YES;
+}
+
+- (void)prepareToPerformActionUsingXCallbackURLInfo:(id<OSKXCallbackURLInfo>)info {
+    if ([info respondsToSelector:@selector(xCallbackSourceForActivity:)]) {
+        [self setUrl_encoded_x_source:[info xCallbackSourceForActivity:self]];
+    }
+    if ([info respondsToSelector:@selector(xCallbackCancelForActivity:)]) {
+        [self setUrl_encoded_x_cancel:[info xCallbackCancelForActivity:self]];
+    }
+    if ([info respondsToSelector:@selector(xCallbackSuccessForActivity:)]) {
+        [self setUrl_encoded_x_success:[info xCallbackSuccessForActivity:self]];
+    }
+    if ([info respondsToSelector:@selector(xCallbackErrorForActivity:)]) {
+        [self setUrl_encoded_x_error:[info xCallbackErrorForActivity:self]];
+    }
 }
 
 #pragma mark - Methods for OSKActivity Subclasses
@@ -100,47 +96,43 @@ static NSString * kGoogleChromeHTTPSScheme = @"googlechromes:";
     return NO;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_None;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_URLScheme;
 }
 
 - (BOOL)isReadyToPerform {
     return ([(OSKWebBrowserContentItem *)self.contentItem url] != nil);
 }
 
-- (NSString *)encodeByAddingPercentEscapes:(NSString *)input {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
-                                                        kCFAllocatorDefault,
-                                                        (CFStringRef)input,
-                                                        NULL,
-                                                        (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                        kCFStringEncodingUTF8));
-}
-
 - (void)performActivity:(OSKActivityCompletionHandler)completion {
     NSURL *url = [[self browserItem] url];
-    NSString *scheme = [url.scheme lowercaseString];
     
-    // Replace the URL Scheme with the Chrome equivalent.
-    NSString *chromeScheme = nil;
-    if ([scheme isEqualToString:@"http"]) {
-        chromeScheme = kGoogleChromeHTTPScheme;
-    } else if ([scheme isEqualToString:@"https"]) {
-        chromeScheme = kGoogleChromeHTTPSScheme;
+    NSMutableString *chromeURLString = [[NSMutableString alloc] init];
+    [chromeURLString appendString:OSKChromeActivity_ChromeURLScheme];
+    [chromeURLString appendString:OSKChromeActivity_Path];
+    
+    NSString *encodedURL = [url.absoluteString osk_derp_stringByEscapingPercents];
+    [chromeURLString appendFormat:@"?%@=%@", OSKChromeActivity_URLQueryKey, encodedURL];
+    
+    if (self.url_encoded_x_source) {
+        [chromeURLString appendFormat:@"&x-source=%@", self.url_encoded_x_source];
     }
     
-    // Proceed only if a valid Google Chrome URI Scheme is available.
-    if (chromeScheme) {
-        NSString *chromeURLString = [NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?x-source=%@&x-success=%@&url=%@",
-                                     @"NewsBlur",
-                                     [self encodeByAddingPercentEscapes:@"newsblur://"],
-                                     [self encodeByAddingPercentEscapes:[url absoluteString]]];
-        
-        NSURL *chromeURL = [NSURL URLWithString:chromeURLString];
-        
-        // Open the URL with Google Chrome.
-        [[UIApplication sharedApplication] openURL:chromeURL];
+    if (self.url_encoded_x_success) {
+        [chromeURLString appendFormat:@"&x-success=%@", self.url_encoded_x_success];
     }
+    
+    if (self.url_encoded_x_cancel) {
+        [chromeURLString appendFormat:@"&x-cancel=%@", self.url_encoded_x_cancel];
+    }
+    
+    if (self.url_encoded_x_error) {
+        [chromeURLString appendFormat:@"&x-error=%@", self.url_encoded_x_error];
+    }
+
+    NSURL *chromeURL = [NSURL URLWithString:chromeURLString];
+    [[UIApplication sharedApplication] openURL:chromeURL];
+    
     if (completion) {
         completion(self, YES, nil);
     }

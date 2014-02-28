@@ -43,8 +43,8 @@ NSString * const OSKPresentationOption_PresentationEndingHandler = @"OSKPresenta
 static CGFloat OSKPresentationManagerActivitySheetPresentationDuration = 0.3f;
 static CGFloat OSKPresentationManagerActivitySheetDismissalDuration = 0.16f;
 
-static NSInteger OSKTextViewFontSize_Phone = 16.0f;
-static NSInteger OSKTextViewFontSize_Pad = 19.0f;
+static NSInteger OSKTextViewFontSize_Phone = 18.0f;
+static NSInteger OSKTextViewFontSize_Pad = 20.0f;
 
 @interface OSKPresentationManager ()
 <
@@ -393,10 +393,10 @@ willRepositionPopoverToRect:(inout CGRect *)rect
     return image;
 }
 
-- (BOOL)automaticallyShortenURLsWhenRecommended {
+- (BOOL)allowLinkShorteningButton {
     BOOL shorten = YES;
-    if ([self.styleDelegate respondsToSelector:@selector(osk_automaticallyShortenURLsWhenRecommended)]) {
-        shorten = [self.styleDelegate osk_automaticallyShortenURLsWhenRecommended];
+    if ([self.styleDelegate respondsToSelector:@selector(osk_allowLinkShorteningButton)]) {
+        shorten = [self.styleDelegate osk_allowLinkShorteningButton];
     }
     return shorten;
 }
@@ -751,13 +751,35 @@ willRepositionPopoverToRect:(inout CGRect *)rect
     return text;
 }
 
+- (NSString *)localizedText_Add {
+    NSString *text = nil;
+    if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_Add)]) {
+        text = [self.localizationDelegate osk_localizedText_Add];
+    }
+    if (text == nil) {
+        text = @"Add";
+    }
+    return text;
+}
+
 - (NSString *)localizedText_Username {
     NSString *text = nil;
     if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_Username)]) {
         text = [self.localizationDelegate osk_localizedText_Username];
     }
     if (text == nil) {
-        text = @"Username";
+        text = @"username";
+    }
+    return text;
+}
+
+- (NSString *)localizedText_Email {
+    NSString *text = nil;
+    if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_Email)]) {
+        text = [self.localizationDelegate osk_localizedText_Email];
+    }
+    if (text == nil) {
+        text = @"email";
     }
     return text;
 }
@@ -768,7 +790,7 @@ willRepositionPopoverToRect:(inout CGRect *)rect
         text = [self.localizationDelegate osk_localizedText_Password];
     }
     if (text == nil) {
-        text = @"Password";
+        text = @"password";
     }
     return text;
 }
@@ -949,6 +971,39 @@ willRepositionPopoverToRect:(inout CGRect *)rect
     return text;
 }
 
+- (NSString *)localizedText_ShortenLinks {
+    NSString *text = nil;
+    if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_ShortenLinks)]) {
+        text = [self.localizationDelegate osk_localizedText_ShortenLinks];
+    }
+    if (text == nil) {
+        text = @"Shorten Links";
+    }
+    return text;
+}
+
+- (NSString *)localizedText_LinksShortened {
+    NSString *text = nil;
+    if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_LinksShortened)]) {
+        text = [self.localizationDelegate osk_localizedText_LinksShortened];
+    }
+    if (text == nil) {
+        text = @"Long links shortened.";
+    }
+    return text;
+}
+
+- (NSString *)localizedText_Remove {
+    NSString *text = nil;
+    if ([self.localizationDelegate respondsToSelector:@selector(osk_localizedText_Remove)]) {
+        text = [self.localizationDelegate osk_localizedText_Remove];
+    }
+    if (text == nil) {
+        text = @"Remove";
+    }
+    return text;
+}
+
 #pragma mark - View Controllers
 
 - (UIViewController <OSKPurchasingViewController> *)purchasingViewControllerForActivity:(OSKActivity *)activity {
@@ -984,15 +1039,15 @@ willRepositionPopoverToRect:(inout CGRect *)rect
         viewController = [self.viewControllerDelegate osk_publishingViewControllerForActivity:activity];
     }
     if (viewController == nil) {
-        switch ([activity.class publishingViewControllerType]) {
-            case OSKPublishingViewControllerType_Microblogging: {
+        switch ([activity.class publishingMethod]) {
+            case OSKPublishingMethod_ViewController_Microblogging: {
                 NSString *nibName = NSStringFromClass([OSKMicroblogPublishingViewController class]);
                 viewController = [[OSKMicroblogPublishingViewController alloc] initWithNibName:nibName bundle:nil];
             } break;
-            case OSKPublishingViewControllerType_Blogging: {
+            case OSKPublishingMethod_ViewController_Blogging: {
                 // alloc/init a blogging view controller
             } break;
-            case OSKPublishingViewControllerType_System: {
+            case OSKPublishingMethod_ViewController_System: {
                 if ([activity.contentItem.itemType isEqualToString:OSKShareableContentItemType_Email]) {
                     viewController = [[OSKMailComposeViewController alloc] initWithNibName:nil bundle:nil];
                 }
@@ -1003,14 +1058,15 @@ willRepositionPopoverToRect:(inout CGRect *)rect
                     viewController = [[OSKAirDropViewController alloc] initWithAirDropItem:(OSKAirDropContentItem *)activity.contentItem];
                 }
             } break;
-            case OSKPublishingViewControllerType_Facebook: {
+            case OSKPublishingMethod_ViewController_Facebook: {
                 NSString *nibName = NSStringFromClass([OSKFacebookPublishingViewController class]);
                 viewController = [[OSKFacebookPublishingViewController alloc] initWithNibName:nibName bundle:nil];
             } break;
-            case OSKPublishingViewControllerType_Bespoke: {
+            case OSKPublishingMethod_ViewController_Bespoke: {
                 NSAssert(NO, @"OSKPresentationManager: Activities with a bespoke publishing view controller require the OSKPresentationManager's delegate to vend the appropriate publishing view controller via osk_publishingViewControllerForActivity:");
             } break;
-            case OSKPublishingViewControllerType_None: {
+            case OSKPublishingMethod_URLScheme:
+            case OSKPublishingMethod_None: {
                 NSAssert(NO, @"OSKPresentationManager: Attempting to present a publishing view controller for an activity that does not require one.");
             } break;
             default:

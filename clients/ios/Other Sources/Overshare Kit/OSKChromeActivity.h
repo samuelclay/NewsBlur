@@ -8,6 +8,8 @@
 
 #import "OSKActivity.h"
 
-@interface OSKChromeActivity : OSKActivity
+#import "OSKURLSchemeActivity.h"
+
+@interface OSKChromeActivity : OSKActivity <OSKURLSchemeActivity>
 
 @end

@@ -57,8 +57,8 @@
     return NO;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_System;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_ViewController_System;
 }
 
 - (BOOL)isReadyToPerform {

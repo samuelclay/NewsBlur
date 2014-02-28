@@ -158,8 +158,7 @@
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [self registerDefaultsFromSettingsBundle];
     
@@ -637,6 +636,12 @@
         appCredential = [[OSKApplicationCredential alloc]
                          initWithOvershareApplicationKey:@"samuelclay"
                          applicationSecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_GooglePlus]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"598270143373.apps.googleusercontent.com"
+                         applicationSecret:@"gizh7veBOZS9_SdltRIyOhnB"
                          appName:@"NewsBlur"];
     }
 

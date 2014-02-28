@@ -145,13 +145,17 @@ static NSString * OSKPinboardActivity_TokenParamValue = @"%@:%@"; // username an
                     }];
                 }
             }
-            if (title.length == 0) {
-                NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-                title = [NSString stringWithFormat:@"Saved with %@", appName];
-            } else {
+            
+            if (title.length) {
                 title = [title stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 title = [self _stripHTMLEntitiesFromString:title];
             }
+            
+            if (title.length == 0) {
+                NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+                title = [NSString stringWithFormat:@"Saved with %@", appName];
+            }
+            
             if (completion) {
                 completion(title);
             }
@@ -160,6 +164,9 @@ static NSString * OSKPinboardActivity_TokenParamValue = @"%@:%@"; // username an
 }
 
 + (NSString *)_stripHTMLEntitiesFromString:(NSString *)sourceString {
+    if (sourceString.length == 0) {
+        return @"";
+    }
     NSMutableString *string = [NSMutableString stringWithString:sourceString];
     NSDictionary *symbolReplacementPairs = @{
                                              @"&nbsp;":@" ",
@@ -180,7 +187,15 @@ static NSString * OSKPinboardActivity_TokenParamValue = @"%@:%@"; // username an
                                              @"&lsquo;":@"‘",
                                              @"&rsquo;":@"’",
                                              @"&ldquo;":@"“",
-                                             @"&rdquo;":@"”"
+                                             @"&rdquo;":@"”",
+                                             @"&#8211;":@"–",
+                                             @"&#39;":@"'",
+                                             @"&#34;":@"\"",
+                                             @"&#38;":@"&",
+                                             @"&#8216;":@"‘",
+                                             @"&#8217;":@"’",
+                                             @"&#8220;":@"“",
+                                             @"&#8221;":@"”	",
                                              };
     for (NSString *key in symbolReplacementPairs.allKeys) {
         NSString *replacement = [symbolReplacementPairs objectForKey:key];

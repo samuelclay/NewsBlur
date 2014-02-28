@@ -20,6 +20,7 @@
 @class OSKToDoListEntryContentItem;
 @class OSKPasswordManagementAppSearchContentItem;
 @class OSKAirDropContentItem;
+@class OSKTextEditingContentItem;
 
 /**
  `OSKShareableContent` is the highest-level Overshare Kit model object for
@@ -114,6 +115,11 @@
  Content shareable via AirDrop.
  */
 @property (strong, nonatomic) OSKAirDropContentItem *airDropItem;
+
+/**
+ Content for text editing apps and services, like Drafts or Evernote.
+ */
+@property (strong, nonatomic) OSKTextEditingContentItem *textEditingItem;
 
 /**
 These can be custom items, or additional instances of the official items above.

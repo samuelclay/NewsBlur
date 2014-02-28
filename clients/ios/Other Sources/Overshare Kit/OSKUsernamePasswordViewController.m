@@ -97,8 +97,20 @@
             [textFieldCell setUseSecureInput:NO];
             [textFieldCell setText:self.username];
             [textFieldCell setPlaceholder:self.username_placeholder];
+            if ([_activity respondsToSelector:@selector(usernameNomenclatureForSignInScreen)]) {
+                OSKUsernameNomenclature nomenclature = [_activity usernameNomenclatureForSignInScreen];
+                if (nomenclature & OSKUsernameNomenclature_Email) {
+                    [textFieldCell setKeyboardType:UIKeyboardTypeEmailAddress];
+                }
+                else if (nomenclature & OSKUsernameNomenclature_Username) {
+                    [textFieldCell setKeyboardType:UIKeyboardTypeDefault];
+                }
+            } else {
+                [textFieldCell setKeyboardType:UIKeyboardTypeEmailAddress];
+            }
         }
         else if (indexPath.row == PASSWORD_ROW) {
+            [textFieldCell setKeyboardType:UIKeyboardTypeDefault];
             [textFieldCell setUseSecureInput:YES];
             [textFieldCell setText:self.password];
             [textFieldCell setPlaceholder:self.password_placeholder];
@@ -147,6 +159,22 @@
         [self setPassword:text];
     }
     [self updateDoneButton];
+}
+
+- (void)usernamePasswordCellDidTapReturn:(OSKUsernamePasswordCell *)cell {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    if (indexPath.section == TEXT_FIELD_SECTION) {
+        if (indexPath.row == USERNAME_ROW) {
+            NSIndexPath *passwordIndexPath = [NSIndexPath indexPathForRow:PASSWORD_ROW inSection:TEXT_FIELD_SECTION];
+            OSKUsernamePasswordCell *passwordCell = (OSKUsernamePasswordCell *)[self.tableView cellForRowAtIndexPath:passwordIndexPath];
+            [passwordCell.textField becomeFirstResponder];
+        }
+        else if (indexPath.row == PASSWORD_ROW) {
+            if (self.username.length && self.password.length && self.isAttemptingSignIn == NO) {
+                [self doneButtonPressed:nil];
+            }
+        }
+    }
 }
 
 #pragma mark - Buttons
@@ -202,6 +230,23 @@
     _activity = activity;
     _delegate = delegate;
     self.title = [_activity.class activityName];
+    
+    if ([_activity respondsToSelector:@selector(usernameNomenclatureForSignInScreen)]) {
+        OSKUsernameNomenclature nomenclature = [_activity usernameNomenclatureForSignInScreen];
+        if (nomenclature & OSKUsernameNomenclature_Username && nomenclature & OSKUsernameNomenclature_Email) {
+            OSKPresentationManager *presMan = [OSKPresentationManager sharedInstance];
+            NSString *username = presMan.localizedText_Username;
+            NSString *email = presMan.localizedText_Email;
+            NSString *placeholder = [NSString stringWithFormat:@"%@ | %@", username, email];
+            [self setUsername_placeholder:placeholder];
+        }
+        else if (nomenclature & OSKUsernameNomenclature_Email) {
+            [self setUsername_placeholder:[OSKPresentationManager sharedInstance].localizedText_Email];
+        }
+        else if (nomenclature & OSKUsernameNomenclature_Username) {
+            [self setUsername_placeholder:[OSKPresentationManager sharedInstance].localizedText_Username];
+        }
+    }
 }
 
 #pragma mark - Authenticate

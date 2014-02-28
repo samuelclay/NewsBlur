@@ -8,6 +8,8 @@
 
 #import "OSKActivity.h"
 
-@interface OSK1PasswordSearchActivity : OSKActivity
+#import "OSKURLSchemeActivity.h"
+
+@interface OSK1PasswordSearchActivity : OSKActivity <OSKURLSchemeActivity>
 
 @end

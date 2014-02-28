@@ -8,6 +8,8 @@
 
 @import Foundation;
 
+@class OSKMicroblogPostContentItem;
+
 typedef NS_ENUM(NSInteger, OSKMicroblogSyntaxHighlightingStyle) {
     OSKMicroblogSyntaxHighlightingStyle_Twitter,
     OSKMicroblogSyntaxHighlightingStyle_LinksOnly,
@@ -15,9 +17,16 @@ typedef NS_ENUM(NSInteger, OSKMicroblogSyntaxHighlightingStyle) {
 
 @protocol OSKMicrobloggingActivity <NSObject>
 
+@property (assign, nonatomic) NSInteger remainingCharacterCount;
+
 - (NSInteger)maximumCharacterCount;
 - (NSInteger)maximumImageCount;
-- (OSKMicroblogSyntaxHighlightingStyle)syntaxHighlightingStyle;
 - (NSInteger)maximumUsernameLength;
+- (NSInteger)updateRemainingCharacterCount:(OSKMicroblogPostContentItem *)contentItem urlEntities:(NSArray *)urlEntities;
+- (OSKMicroblogSyntaxHighlightingStyle)syntaxHighlightingStyle;
+
+@optional
+
+- (BOOL)allowLinkShortening; // OSK assumes YES.
 
 @end

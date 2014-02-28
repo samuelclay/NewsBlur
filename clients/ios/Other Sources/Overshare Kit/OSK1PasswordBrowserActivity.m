@@ -21,6 +21,12 @@
     return self;
 }
 
+#pragma mark - OSKURLSchemeActivity
+
+- (BOOL)targetApplicationSupportsXCallbackURL {
+    return NO;
+}
+
 #pragma mark - Methods for OSKActivity Subclasses
 
 + (NSString *)supportedContentItemType {
@@ -61,8 +67,8 @@
     return NO;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_None;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_URLScheme;
 }
 
 - (BOOL)isReadyToPerform {

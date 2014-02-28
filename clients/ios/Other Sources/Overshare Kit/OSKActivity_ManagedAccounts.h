@@ -12,6 +12,11 @@ typedef NS_ENUM(NSInteger, OSKManagedAccountAuthenticationViewControllerType) {
     OSKManagedAccountAuthenticationViewControllerType_OneOfAKindCustomBespokeViewController,
 };
 
+typedef NS_ENUM(NSInteger, OSKUsernameNomenclature) {
+    OSKUsernameNomenclature_Email       = 1 << 0,
+    OSKUsernameNomenclature_Username    = 1 << 1,
+};
+
 @class OSKApplicationCredential;
 @class OSKManagedAccount;
 
@@ -55,6 +60,11 @@ typedef void(^OSKManagedAccountAuthenticationHandler)(OSKManagedAccount *account
 ///-----------------------------------------------
 
 @optional
+
+/**
+ The value returned from this method is used to configure the UI for sign in screens.
+ */
+- (OSKUsernameNomenclature)usernameNomenclatureForSignInScreen;
 
 /**
  Authenticates a new managed account without a view controller. 

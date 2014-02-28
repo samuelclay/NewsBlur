@@ -92,8 +92,8 @@
     return NO;
 }
 
-+ (OSKPublishingViewControllerType)publishingViewControllerType {
-    return OSKPublishingViewControllerType_None;
++ (OSKPublishingMethod)publishingMethod {
+    return OSKPublishingMethod_None;
 }
 
 - (BOOL)isReadyToPerform {
@@ -122,8 +122,7 @@
 }
 
 - (OSKActivityOperation *)operationForActivityWithCompletion:(OSKActivityCompletionHandler)completion {
-    OSKActivityOperation *op = nil;
-    return op;
+    return nil;
 }
 
 #pragma mark - Convenience
