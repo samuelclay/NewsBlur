@@ -579,7 +579,6 @@
         // reset the storyDetailViewController components
         self.storyPageControl.currentPage.webView.hidden = YES;
         self.storyPageControl.nextPage.webView.hidden = YES;
-        self.storyPageControl.bottomSize.hidden = NO;
         self.storyPageControl.navigationItem.rightBarButtonItems = nil;
         [self.storyPageControl hidePages];
         NSInteger unreadCount = appDelegate.unreadCount;
