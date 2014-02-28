@@ -214,6 +214,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             if (story && story.get('selected') && story.story_view) {
                 this.$el.html(story.story_view.el);
                 story.story_view.setElement(story.story_view.el);
+                story.story_view.render();
                 return true;
             }
         }, this));

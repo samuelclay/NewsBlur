@@ -10588,7 +10588,7 @@ form.opml_import_form input {
 }
 
 .NB-module-search-input.NB-active input {
-    background: white url('/media/embed/reader/clos.gif') no-repeat right 4px;
+    background: white url('/media/embed/reader/close.gif') no-repeat right 4px;
 }
 .NB-module-search-input input.NB-active {
     background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 4px;
