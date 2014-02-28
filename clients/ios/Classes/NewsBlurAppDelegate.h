@@ -47,7 +47,7 @@
 @class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;

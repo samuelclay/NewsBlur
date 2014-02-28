@@ -643,6 +643,10 @@
     return appCredential;
 }
 
+- (BOOL)osk_automaticallyShortenURLsWhenRecommended {
+    return NO;
+}
+
 - (void)showShareView:(NSString *)type
             setUserId:(NSString *)userId 
           setUsername:(NSString *)username 

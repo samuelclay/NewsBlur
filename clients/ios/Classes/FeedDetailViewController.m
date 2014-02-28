@@ -1699,9 +1699,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)changeActiveFeedDetailRow {
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
+    int offset = 1;
+    if ([[self.storyTitlesTable visibleCells] count] <= 4) {
+        offset = 0;
+    }
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
-    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];
+    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
 
     [storyTitlesTable selectRowAtIndexPath:indexPath 
                                   animated:YES 

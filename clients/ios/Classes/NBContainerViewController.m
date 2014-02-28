@@ -407,8 +407,8 @@
     NSInteger savedStoryTitlesYCoordinate = [userPreferences integerForKey:@"storyTitlesYCoordinate"];
     NSString *storyTitlesPosition = [userPreferences stringForKey:@"story_titles_position"];
     if ([storyTitlesPosition isEqualToString:@"titles_on_bottom"]) {
-        if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate >= 890) {
-            savedStoryTitlesYCoordinate = 800;
+        if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate > 920) {
+            savedStoryTitlesYCoordinate = 920;
         }
         self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
         self.storyTitlesOnLeft = NO;
@@ -475,7 +475,7 @@
     CGRect vb = [self.view bounds];
     
     if (!self.storyTitlesOnLeft) {
-        if (self.storyTitlesYCoordinate > 890) {
+        if (self.storyTitlesYCoordinate > 920) {
             NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
             // save coordinate
             [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
@@ -515,11 +515,11 @@
 
         if (self.storyTitlesYCoordinate == 1004) {
             return;
-        } else if (self.storyTitlesYCoordinate > 890) {
+        } else if (self.storyTitlesYCoordinate > 920) {
             // save coordinate
-            [userPreferences setInteger:890 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences setInteger:920 forKey:@"storyTitlesYCoordinate"];
             [userPreferences synchronize];
-            self.storyTitlesYCoordinate = 890;
+            self.storyTitlesYCoordinate = 920;
         }
 
         [userPreferences setValue:@"titles_on_bottom" forKey:@"story_titles_position"];
