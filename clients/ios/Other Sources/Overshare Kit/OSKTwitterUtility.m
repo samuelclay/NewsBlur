@@ -166,12 +166,7 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
                 
             }
             else
-            {
-                NSString *responseString = nil;
-                if (responseData) {
-                    responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-                }
-                
+            {                
                 OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
                        (long)statusCode,
                        responseString);
