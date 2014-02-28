@@ -108,6 +108,7 @@
             }
         }
     }
+    self.storyLocationsCount = [self.activeFeedStoryLocations count];
 }
 
 - (NSInteger)indexOfNextUnreadStory {

@@ -1429,6 +1429,12 @@ heightForHeaderInSection:(NSInteger)section {
     }
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController.storiesModule.storiesCollection
+         calculateStoryLocations];
+        [appDelegate.dashboardViewController.storiesModule reloadData];
+    }
 }
 
 - (void)showExplainerOnEmptyFeedlist {
