@@ -1275,6 +1275,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         UIInterfaceOrientationIsPortrait(orientation) &&
         !self.isDashboardModule;
 }
+
 - (void)checkScroll {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
@@ -1286,7 +1287,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (maximumOffset - currentOffset <= 500.0 ||
         (appDelegate.inFindingStoryMode)) {
-        if (storiesCollection.isRiverView) {
+        if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
             [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
         } else {
             [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];

@@ -217,7 +217,7 @@
     
     if (readFilterPref) {
         return readFilterPref;
-    } else if (self.isRiverView || self.isSocialRiverView) {
+    } else if (self.activeFolder && (self.isRiverView || self.isSocialRiverView)) {
         if (readFilterFolderPrefDefault) {
             return readFilterFolderPrefDefault;
         } else {
