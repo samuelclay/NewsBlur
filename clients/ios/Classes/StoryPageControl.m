@@ -301,6 +301,11 @@
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad &&
+//        appDelegate.masterContainerViewController.originalViewIsVisible) {
+//        return;
+//    }
+    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
         [self refreshPages];

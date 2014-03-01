@@ -1461,6 +1461,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
+    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     

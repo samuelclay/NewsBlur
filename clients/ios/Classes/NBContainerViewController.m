@@ -54,6 +54,7 @@
 @property (readwrite) BOOL isSharingStory;
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
+@property (readwrite) BOOL originalViewIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
 
@@ -75,6 +76,7 @@
 @synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
+@synthesize originalViewIsVisible;
 @synthesize keyboardIsShown;
 @synthesize storyNavigationController;
 @synthesize storyTitlesYCoordinate;
@@ -209,7 +211,7 @@
     
     if (!self.feedDetailIsVisible) {
         [self layoutDashboardScreen];
-    } else {
+    } else if (!self.originalViewIsVisible) {
         [self layoutFeedDetailScreen];
     }
 }
@@ -219,7 +221,7 @@
 
     if (!self.feedDetailIsVisible) {
         [self layoutDashboardScreen];
-    } else {
+    } else if (!self.originalViewIsVisible) {
         [self layoutFeedDetailScreen];
     }
 }
@@ -696,6 +698,8 @@
 
     CGRect vb = [self.view bounds];
     
+    self.originalViewIsVisible = YES;
+    
     if (resetLayout) {
         [self addChildViewController:self.originalNavigationController];
         [self.originalNavigationController.view setHidden:NO];
@@ -724,14 +728,16 @@
                      animations:^
      {
          if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-             self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
+             self.storyNavigationController.view.transform = CGAffineTransformMakeTranslation(-100, 0);
+ //             self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
              self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
              self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
          } else {
              self.masterNavigationController.view.frame = CGRectMake(-100, 0, self.masterWidth, vb.size.height);
-             self.storyNavigationController.view.frame = CGRectMake(-100 + self.masterWidth - 1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
+             self.storyNavigationController.view.transform = CGAffineTransformMakeTranslation(-95, 0);
+//             self.storyNavigationController.view.frame = CGRectMake(-100 + self.masterWidth - 1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
          }
-         
+        
          self.originalNavigationController.view.frame = CGRectMake(0, 0,
                                                                    CGRectGetWidth(vb),
                                                                    CGRectGetHeight(vb));
@@ -747,7 +753,8 @@
     NSLog(@"Transition from Original View");
     
     [self.originalViewController viewWillDisappear:YES];
-    
+    self.originalViewIsVisible = NO;
+
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
@@ -764,7 +771,7 @@
 - (void)interactiveTransitionFromOriginalView:(CGFloat)percentage {
     CGRect vb = [self.view bounds];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-
+    
     if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
 //        CGRect originalNavFrame = self.originalNavigationController.view.frame;
 //        originalNavFrame.origin.x = vb.size.width * percentage;
@@ -789,7 +796,7 @@
         CGRect feedDetailFrame = self.masterNavigationController.view.frame;
         feedDetailFrame.origin.x = -1 * (1-percentage) * 100;
         self.masterNavigationController.view.frame = feedDetailFrame;
-        
+
         CGRect storyNavFrame = self.storyNavigationController.view.frame;
         storyNavFrame.origin.x = self.masterWidth - 1 + -1 * (1-percentage) * 100;
         self.storyNavigationController.view.frame = storyNavFrame;
@@ -808,10 +815,11 @@
     [self.view insertSubview:self.dashboardViewController.view atIndex:0];
     [self.view addSubview:self.masterNavigationController.view];
 
+    
     CGRect storyNavFrame = self.storyNavigationController.view.frame;
     storyNavFrame.origin.x = self.masterWidth - 1 + storyNavFrame.size.width * percentage;
     self.storyNavigationController.view.frame = storyNavFrame;
-    
+
     CGRect dashboardFrame = self.dashboardViewController.view.frame;
     dashboardFrame.origin.x = self.masterWidth + -1 * (1-percentage) * dashboardFrame.size.width/6;
     self.dashboardViewController.view.frame = dashboardFrame;
@@ -866,7 +874,7 @@
             self.leftBorder.hidden = NO;
             [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, self.storyTitlesYCoordinate);
-                self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
+                self.feedDetailViewController.view.frame = CGRectMake(vb.size.width,
                                                                       self.storyTitlesYCoordinate, 
                                                                       vb.size.width, 
                                                                       vb.size.height - storyTitlesYCoordinate);
@@ -878,7 +886,7 @@
     } else {
         // CASE: story titles on left
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 
+            self.storyNavigationController.view.frame = CGRectMake(vb.size.width,
                                                                    0, 
                                                                    self.storyNavigationController.view.frame.size.width, 
                                                                    self.storyNavigationController.view.frame.size.height);

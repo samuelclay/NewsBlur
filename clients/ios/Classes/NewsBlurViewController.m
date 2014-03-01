@@ -1466,6 +1466,7 @@ heightForHeaderInSection:(NSInteger)section {
         id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:self.currentRowAtIndexPath.row];
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+        if (![cell respondsToSelector:@selector(setPositiveCount:)]) return;
         [cell setPositiveCount:[[unreadCounts objectForKey:@"ps"] intValue]];
         [cell setNeutralCount:[[unreadCounts objectForKey:@"nt"] intValue]];
         [cell setNegativeCount:[[unreadCounts objectForKey:@"ng"] intValue]];
