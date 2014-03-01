@@ -267,6 +267,7 @@
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
+    [webView setMediaPlaybackRequiresUserAction:NO];
     [webView loadHTMLString:htmlString baseURL:baseURL];
 
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
