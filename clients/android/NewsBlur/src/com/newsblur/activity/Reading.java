@@ -589,6 +589,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 
     private void updateOverlayText() {
         ReadingItemFragment item = getReadingFragment();
+        if ((item == null) || (this.overlayText == null)) return;
         if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
             this.overlayText.setBackgroundResource(R.drawable.selector_overlay_bg_text);
             this.overlayText.setText(R.string.overlay_text);
