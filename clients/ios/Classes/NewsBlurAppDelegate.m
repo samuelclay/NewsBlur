@@ -210,6 +210,9 @@
 	return YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    self.title = @"All";
+}
 
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -1130,14 +1133,14 @@
     }
     
     if (feedDetailView == feedDetailViewController) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
+                                                                          style: UIBarButtonItemStyleBordered
+                                                                         target: nil
+                                                                         action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToFeedDetail];
         } else {
-            UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                              style: UIBarButtonItemStyleBordered 
-                                                                             target: nil 
-                                                                             action: nil];
-            [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
             UINavigationController *navController = self.navigationController;
             [navController pushViewController:feedDetailViewController animated:YES];
         }

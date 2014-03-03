@@ -3463,7 +3463,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sclay/projects/newsblur/clients/ios/Other\\ Sources/Overshare\\ Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK/\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3505,7 +3505,7 @@
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sclay/projects/newsblur/clients/ios/Other\\ Sources/Overshare\\ Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK/\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
