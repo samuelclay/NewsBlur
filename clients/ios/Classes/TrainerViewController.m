@@ -73,7 +73,14 @@
     if (!feedLoaded) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"Loading trainer...";
-        NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+        NSString *feedId;
+        if (appDelegate.storiesCollection.activeFeed) {
+            feedId = [NSString stringWithFormat:@"%@",
+                      [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+        } else if (appDelegate.activeStory) {
+            feedId = [NSString stringWithFormat:@"%@",
+                      [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+        }
 
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
