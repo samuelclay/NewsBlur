@@ -33,6 +33,7 @@
     BOOL isOnline;
     BOOL isShowingFetching;
     BOOL isDashboardModule;
+    BOOL inDoubleTap;
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;

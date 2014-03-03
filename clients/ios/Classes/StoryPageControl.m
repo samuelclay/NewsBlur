@@ -301,7 +301,7 @@
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-//    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad &&
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
 //        appDelegate.masterContainerViewController.originalViewIsVisible) {
 //        return;
 //    }

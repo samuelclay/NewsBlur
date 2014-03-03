@@ -20,6 +20,7 @@
 @property (readonly) BOOL storyTitlesOnLeft;
 @property (readwrite) BOOL interactiveOriginalTransition;
 @property (readonly) int storyTitlesYCoordinate;
+@property (readwrite) BOOL originalViewIsVisible;
 @property (nonatomic) CALayer *leftBorder;
 @property (nonatomic) CALayer *rightBorder;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;

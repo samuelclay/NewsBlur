@@ -54,7 +54,6 @@
 @property (readwrite) BOOL isSharingStory;
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
-@property (readwrite) BOOL originalViewIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
 @property (readwrite) UIDeviceOrientation rotatingToOrientation;
 

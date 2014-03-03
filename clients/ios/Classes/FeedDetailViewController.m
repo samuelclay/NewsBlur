@@ -113,8 +113,34 @@
     longpress.delegate = self;
     [self.storyTitlesTable addGestureRecognizer:longpress];
 
+    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
+                                                initWithTarget:self action:nil];
+    doubleTapGesture.numberOfTapsRequired = 2;
+    [self.storyTitlesTable addGestureRecognizer:doubleTapGesture];
+    doubleTapGesture.delegate = self;
+
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..." inView:self.view];
     [self.view addSubview:self.notifier];
+}
+
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    //    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    inDoubleTap = (touch.tapCount == 2);
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    //    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
+        CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
+        NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
+        NSDictionary *story = [self getStoryAtRow:indexPath.row];
+        [appDelegate
+         showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
+        inDoubleTap = NO;
+    }
+    return YES;
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
@@ -1186,6 +1212,13 @@
             [appDelegate openDashboardRiverForStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
         } else {
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
+            NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
+            NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+            if (appDelegate.activeStory &&
+                [[story objectForKey:@"story_hash"]
+                 isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
+                return;
+            }
             [self loadStory:cell atRow:indexPath.row];
         }
     }
