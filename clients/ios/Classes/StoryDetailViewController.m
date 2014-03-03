@@ -103,10 +103,28 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
 //    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        BOOL openOriginal = NO;
+        BOOL showText = NO;
         if (gestureRecognizer.numberOfTouches == 2) {
-            [self fetchTextView];
+            NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
+            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            }
         } else {
+            NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
+            if ([doubleTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([doubleTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            }
+        }
+        if (openOriginal) {
             [self showOriginalStory:gestureRecognizer];
+        } else if (showText) {
+            [self fetchTextView];
         }
         inDoubleTap = NO;
     }

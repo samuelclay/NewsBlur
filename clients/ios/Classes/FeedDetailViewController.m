@@ -136,8 +136,30 @@
         CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
         NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
         NSDictionary *story = [self getStoryAtRow:indexPath.row];
-        [appDelegate
-         showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        BOOL openOriginal = NO;
+        BOOL showText = NO;
+        if (gestureRecognizer.numberOfTouches == 2) {
+            NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
+            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            }
+        } else {
+            NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
+            if ([doubleTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([doubleTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            }
+        }
+        if (openOriginal) {
+            [appDelegate
+             showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
+        } else if (showText) {
+            [appDelegate.storyDetailViewController fetchTextView];
+        }
         inDoubleTap = NO;
     }
     return YES;

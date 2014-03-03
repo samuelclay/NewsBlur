@@ -169,7 +169,7 @@ NSString * const OSKTwitterImageSizeLimitKey = @"photo_size_limit";
             {                
                 OSKLog(@"[OSKTwitterUtility] Error received when trying to create a new tweet. Server responded with status code %li and response: %@",
                        (long)statusCode,
-                       responseString);
+                       responseData);
                 
                 NSError *error = [NSError errorWithDomain:@"com.secondgear.PhotosPlus.Errors" code:statusCode userInfo:nil];
                 dispatch_async(dispatch_get_main_queue(), ^{
