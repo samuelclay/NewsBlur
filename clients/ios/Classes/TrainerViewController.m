@@ -73,15 +73,7 @@
     if (!feedLoaded) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"Loading trainer...";
-        NSString *feedId;
-        if (appDelegate.storiesCollection.activeFeed) {
-            feedId = [NSString stringWithFormat:@"%@",
-                      [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-        } else if (appDelegate.activeStory) {
-            feedId = [NSString stringWithFormat:@"%@",
-                      [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-        }
-
+        NSString *feedId = [self feedId];
         NSURL *url = [NSURL URLWithString:[NSString
                                            stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
                                            NEWSBLUR_URL, feedId]];
@@ -112,6 +104,18 @@
     } else {
         [self renderTrainer];
     }
+}
+
+- (NSString *)feedId {
+    NSString *feedId;
+    if (appDelegate.storiesCollection.activeFeed) {
+        feedId = [NSString stringWithFormat:@"%@",
+                  [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+    } else if (appDelegate.activeStory) {
+        feedId = [NSString stringWithFormat:@"%@",
+                  [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    }
+    return feedId;
 }
 
 - (void)renderTrainer {
@@ -241,10 +245,10 @@
 }
 
 - (NSString *)makeFeedAuthors {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
     NSString *feedAuthors = @"";
     NSArray *authorArray = appDelegate.storiesCollection.activePopularAuthors;
-    
+    NSString *feedId = [self feedId];
+
     if ([authorArray count] > 0) {
         NSMutableArray *authorStrings = [NSMutableArray array];
         for (NSArray *authorObj in authorArray) {
@@ -281,8 +285,7 @@
 
 
 - (NSString *)makeStoryTags {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
-                                                          objectForKey:@"story_feed_id"]];
+    NSString *feedId = [self feedId];
     NSString *storyTags = @"";
     
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
@@ -319,7 +322,7 @@
 }
 
 - (NSString *)makeFeedTags {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+    NSString *feedId = [self feedId];
     NSString *feedTags = @"";
     NSArray *tagArray = appDelegate.storiesCollection.activePopularTags;
     

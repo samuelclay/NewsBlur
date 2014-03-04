@@ -1880,6 +1880,26 @@
     }
 }
 
+- (void)toggleStorySaved {
+    bool isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
+    if (isSaved) {
+        [self.storyPageControl markStoryAsUnsaved];
+    } else {
+        [self.storyPageControl markStoryAsSaved];
+    }
+}
+
+- (void)toggleStoryUnread {
+    bool isRead = [[self.activeStory objectForKey:@"read_status"] boolValue];
+    if (isRead) {
+        [self.storyPageControl markStoryAsUnread];
+    } else {
+        [self.storyPageControl markStoryAsRead];
+        [self.feedDetailViewController redrawUnreadStory];
+    }
+}
+
+
 #pragma mark -
 #pragma mark Story functions
 

@@ -139,12 +139,18 @@
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
         BOOL showText = NO;
+        BOOL markUnread = NO;
+        BOOL saveStory = NO;
         if (gestureRecognizer.numberOfTouches == 2) {
             NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
             if ([twoFingerTap isEqualToString:@"open_original_story"]) {
                 openOriginal = YES;
             } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
                 showText = YES;
+            } else if ([twoFingerTap isEqualToString:@"mark_unread"]) {
+                markUnread = YES;
+            } else if ([twoFingerTap isEqualToString:@"save_story"]) {
+                saveStory = YES;
             }
         } else {
             NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
@@ -152,6 +158,10 @@
                 openOriginal = YES;
             } else if ([doubleTap isEqualToString:@"show_original_text"]) {
                 showText = YES;
+            } else if ([doubleTap isEqualToString:@"mark_unread"]) {
+                markUnread = YES;
+            } else if ([doubleTap isEqualToString:@"save_story"]) {
+                saveStory = YES;
             }
         }
         if (openOriginal) {
@@ -159,6 +169,10 @@
              showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
         } else if (showText) {
             [appDelegate.storyDetailViewController fetchTextView];
+        } else if (markUnread) {
+            [appDelegate toggleStoryUnread];
+        } else if (saveStory) {
+            [appDelegate toggleStorySaved];
         }
         inDoubleTap = NO;
     }

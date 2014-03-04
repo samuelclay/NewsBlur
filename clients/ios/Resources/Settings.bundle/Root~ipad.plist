@@ -280,6 +280,8 @@
 				<string>Open original story</string>
 				<string>Show original text</string>
 				<string>Do nothing</string>
+				<string>Save story</string>
+				<string>Mark as unread</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>open_original_story</string>
@@ -287,6 +289,8 @@
 			<array>
 				<string>open_original_story</string>
 				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
 				<string>nothing</string>
 			</array>
 			<key>Key</key>
@@ -303,6 +307,8 @@
 			<array>
 				<string>Open original story</string>
 				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
@@ -311,6 +317,8 @@
 			<array>
 				<string>open_original_story</string>
 				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
 				<string>nothing</string>
 			</array>
 			<key>Key</key>

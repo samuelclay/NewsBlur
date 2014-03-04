@@ -61,6 +61,7 @@
     self.activeFeed = nil;
     self.activeFolder = nil;
     self.activeFolderFeeds = nil;
+    self.activeClassifiers = [NSMutableDictionary dictionary];
     
     self.transferredFromDashboard = NO;
     self.isRiverView = NO;
@@ -73,6 +74,7 @@
     [self setStories:fromCollection.activeFeedStories];
     [self setFeedUserProfiles:fromCollection.activeFeedUserProfiles];
     self.activeFolderFeeds = fromCollection.activeFolderFeeds;
+    self.activeClassifiers = fromCollection.activeClassifiers;
     
 }
 
