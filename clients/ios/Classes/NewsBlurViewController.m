@@ -464,7 +464,6 @@ static UIFont *userLabelFont;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
-    [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
     if (appDelegate.activeUsername) {
@@ -1522,8 +1521,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)loadAvatars {
+    NSLog(@"loadAvatars pre");
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
+        NSLog(@"loadAvatars start");
         for (NSString *feed_id in [appDelegate.dictSocialFeeds allKeys]) {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
@@ -1536,7 +1537,9 @@ heightForHeaderInSection:(NSInteger)section {
             [appDelegate saveFavicon:faviconImage feedId:feed_id];
         }
         
+        NSLog(@"loadAvatars end");
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"loadAvatars post");
             [self.feedTitlesTable reloadData];
         });
     });
@@ -1545,30 +1548,36 @@ heightForHeaderInSection:(NSInteger)section {
 
 
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+    __block NSString *responseString = [request responseString];
     
+    NSLog(@"saveAndDrawFavicons pre");
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
+        NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions
+                                 error:&error];
+        
+        NSLog(@"saveAndDrawFavicons start");
         for (id feed_id in results) {
-            NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 
-            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
-            [appDelegate.dictFeeds setValue:feed forKey:feed_id];
+//            NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 
+//            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
+//            [appDelegate.dictFeeds setValue:feed forKey:feed_id];
             
-            NSString *favicon = [feed objectForKey:@"favicon"];
+            if (![appDelegate.dictFeeds objectForKey:feed_id]) continue;
+            NSString *favicon = [results objectForKey:feed_id];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
                 NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
         }
-
+        
+        NSLog(@"saveAndDrawFavicons end");
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"saveAndDrawFavicons post");
             [self.feedTitlesTable reloadData];
             [self loadAvatars];
         });
@@ -1715,6 +1724,7 @@ heightForHeaderInSection:(NSInteger)section {
             if (![request.userInfo objectForKey:@"feedId"]) {
                 [self.appDelegate startOfflineQueue];
             }
+            [self loadFavicons];
         });
     });
 }

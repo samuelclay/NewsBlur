@@ -2164,9 +2164,7 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        [self.cachedFavicons setObject:image forKey:filename block:^(TMCache *cache, NSString *key, id object) {
-            
-        }];
+        [self.cachedFavicons setObject:image forKey:filename];
     }
 }
 
