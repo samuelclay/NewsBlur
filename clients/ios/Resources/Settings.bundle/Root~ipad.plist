@@ -279,9 +279,9 @@
 			<array>
 				<string>Open original story</string>
 				<string>Show original text</string>
-				<string>Do nothing</string>
-				<string>Save story</string>
 				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>open_original_story</string>
