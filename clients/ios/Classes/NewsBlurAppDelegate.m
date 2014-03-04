@@ -1881,7 +1881,7 @@
 }
 
 - (void)toggleStorySaved {
-    bool isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
+    BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     if (isSaved) {
         [self.storyPageControl markStoryAsUnsaved];
     } else {
@@ -1890,8 +1890,8 @@
 }
 
 - (void)toggleStoryUnread {
-    bool isRead = [[self.activeStory objectForKey:@"read_status"] boolValue];
-    if (isRead) {
+    BOOL isUnread = [self.storiesCollection isStoryUnread:self.activeStory];
+    if (!isUnread) {
         [self.storyPageControl markStoryAsUnread];
     } else {
         [self.storyPageControl markStoryAsRead];

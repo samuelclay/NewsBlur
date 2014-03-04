@@ -1830,7 +1830,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if ([request responseStatusCode] != 200) {
         return [self failedMarkAsRead:request];
     }
-    
+
+    if ([[appDelegate.storyPageControl.currentPage.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[request.userInfo objectForKey:@"story_hash"]]) {
+        [appDelegate markActiveStoryRead];
+    }
     [appDelegate.storyPageControl refreshHeaders];
 }
 
@@ -1839,6 +1843,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
     
     [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
+    [appDelegate.storyPageControl refreshHeaders];
 }
 
 - (void)markStoryAsUnread:(NSDictionary *)story {
@@ -1875,7 +1880,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return [self failedMarkAsUnread:request];
     }
     
-    appDelegate.storyPageControl.currentPage.isRecentlyUnread = YES;
+    if ([[appDelegate.storyPageControl.currentPage.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[request.userInfo objectForKey:@"story_hash"]]) {
+        [appDelegate markActiveStoryUnread];
+        [self redrawUnreadStory];
+        appDelegate.storyPageControl.currentPage.isRecentlyUnread = YES;
+    }
     [appDelegate.storyPageControl refreshHeaders];
 }
 

@@ -833,7 +833,7 @@
     if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
         
         [appDelegate markActiveStoryRead];
-        [self.currentPage refreshHeader];
+        [self refreshHeaders];
         [appDelegate.feedDetailViewController redrawUnreadStory];
         
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
@@ -978,7 +978,7 @@
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     currentPage.isRecentlyUnread = YES;
-    [currentPage refreshHeader];
+    [self refreshHeaders];
     [self setNextPreviousButtons];
     [self.currentPage flashCheckmarkHud:@"unread"];
 }
