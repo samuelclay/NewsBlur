@@ -149,10 +149,6 @@
     
     if (self.interactionsPage == 1) {
         appDelegate.userInteractionsArray = confirmedInteractions;
-        if (![confirmedInteractions count]) {
-            appDelegate.dashboardViewController.segmentedButton.selectedSegmentIndex = 1;
-            [appDelegate.dashboardViewController tapSegmentedButton:nil];
-        }
     } else {
         appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }

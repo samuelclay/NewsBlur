@@ -47,11 +47,17 @@
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "PocketAPI.h"
+#import "ADNLogin.h"
+#import "OvershareKit.h"
+#import "NBBarButtonItem.h"
+#import "TMCache.h"
+#import "StoriesCollection.h"
+#import "NSString+HTML.h"
+#import <float.h>
 
 @implementation NewsBlurAppDelegate
 
 #define CURRENT_DB_VERSION 31
-#define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @synthesize window;
 
@@ -88,13 +94,12 @@
 @synthesize firstTimeUserAddNewsBlurViewController;
 
 @synthesize feedDetailPortraitYCoordinate;
+@synthesize cachedFavicons;
+@synthesize cachedStoryImages;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
 @synthesize hasNoSites;
-@synthesize isRiverView;
-@synthesize isSocialView;
-@synthesize isSocialRiverView;
 @synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
@@ -107,32 +112,14 @@
 @synthesize activeComment;
 @synthesize activeShareType;
 
-@synthesize activeFeed;
-@synthesize activeClassifiers;
-@synthesize activePopularTags;
-@synthesize activePopularAuthors;
-@synthesize activeFolder;
-@synthesize activeFolderFeeds;
-@synthesize activeFeedStories;
-@synthesize activeFeedStoryLocations;
-@synthesize activeFeedStoryLocationIds;
-@synthesize activeFeedUserProfiles;
+@synthesize storiesCollection;
+
 @synthesize activeStory;
-@synthesize storyCount;
-@synthesize storyLocationsCount;
-@synthesize visibleUnreadCount;
 @synthesize savedStoriesCount;
-@synthesize totalUnfetchedStoryCount;
-@synthesize remainingUnfetchedStoryCount;
-@synthesize latestFetchedStoryDate;
-@synthesize latestCachedImageDate;
-@synthesize totalUncachedImagesCount;
-@synthesize remainingUncachedImagesCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
-@synthesize recentlyReadStoryLocations;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
 @synthesize unreadStoryHashes;
@@ -158,19 +145,27 @@
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
 @synthesize backgroundCompletionHandler;
+@synthesize cacheImagesOperationQueue;
+
+@synthesize totalUnfetchedStoryCount;
+@synthesize remainingUnfetchedStoryCount;
+@synthesize latestFetchedStoryDate;
+@synthesize latestCachedImageDate;
+@synthesize totalUncachedImagesCount;
+@synthesize remainingUncachedImagesCount;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
-    
+    self.storiesCollection = [StoriesCollection new];
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [ASIHTTPRequest setDefaultUserAgentString:[NSString stringWithFormat:@"NewsBlur iPad App v%@",
                                                    currentiPhoneVersion]];
@@ -186,26 +181,38 @@
     
     
     [window makeKeyAndVisible];
-//    [self performSelectorOnMainThread:@selector(showSplashView) withObject:nil waitUntilDone:NO];
     
-    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
-    [[UIToolbar appearance] setBarTintColor:UIColorFromRGB(0xE0E3DB)];
+    [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0xE3E6E0)];
+    [[UIToolbar appearance] setBarTintColor:      UIColorFromRGB(0xE3E6E0)];
     [[UISegmentedControl appearance] setTintColor:UIColorFromRGB(0x8F918B)];
 //    [[UISegmentedControl appearance] setBackgroundColor:UIColorFromRGB(0x8F918B)];
     
     [self createDatabaseConnection];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        [self.cachedStoryImages removeAllObjects:^(TMCache *cache) {}];
         [self.feedsViewController loadOfflineFeeds:NO];
+//        [self setupReachability];
+        cacheImagesOperationQueue = [NSOperationQueue new];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        } else {
+            cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        }
     });
 
     [[PocketAPI sharedAPI] setConsumerKey:@"16638-05adf4465390446398e53b8b"];
-
 //    [self showFirstTimeUser];
+    
+    cachedFavicons = [[TMCache alloc] initWithName:@"NBFavicons"];
+    cachedStoryImages = [[TMCache alloc] initWithName:@"NBStoryImages"];
 
 	return YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    self.title = @"All";
+}
 
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -248,71 +255,6 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
 }
 
-- (void)showSplashView {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    splashView = [[UIImageView alloc] init];
-//    int rotate = 0;
-//    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-//        NSLog(@"UPSIDE DOWN");
-//        rotate = -2;
-//    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
-//        rotate = -1;
-//    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
-//        rotate = 1;
-//    }
-//    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
-        UIInterfaceOrientationIsLandscape(orientation)) {
-        splashView.frame = CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width);
-        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        splashView.frame = self.view.frame;
-        splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
-    } else if (IS_IPHONE_5) {
-        splashView.frame = CGRectMake(0, 0, self.window.frame.size.width, 568);
-        splashView.image = [UIImage imageNamed:@"Default-568h.png"];
-    } else {
-        splashView.frame = self.window.frame;
-        splashView.image = [UIImage imageNamed:@"Default.png"];
-    }
-    
-    //    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    splashView.alpha = 1.0;
-    [window.rootViewController.view addSubview:splashView];
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:.6];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
-//    splashView.alpha = 0;
-    splashView.frame = CGRectMake(0, -1 * splashView.frame.size.height, splashView.frame.size.width, splashView.frame.size.height);
-    //    splashView.frame = CGRectMake(-60, -80, 440, 728);
-    [UIView commitAnimations];
-    [self setupReachability];
-}
-
-- (void)viewDidLoad {
-    self.visibleUnreadCount = 0;
-    self.savedStoriesCount = 0;
-    self.totalUnfetchedStoryCount = 0;
-    self.remainingUnfetchedStoryCount = 0;
-    self.latestFetchedStoryDate = 0;
-    self.latestCachedImageDate = 0;
-    self.totalUncachedImagesCount = 0;
-    self.remainingUncachedImagesCount = 0;
-}
-
-- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
-    [splashView removeFromSuperview];
-}
-
-//- (void)applicationDidBecomeActive:(UIApplication *)application {
-//    [[NSNotificationCenter defaultCenter] postNotificationName:AppDidBecomeActiveNotificationName object:nil];
-//}
-//
-//- (void)applicationWillTerminate:(UIApplication *)application {
-//    [[NSNotificationCenter defaultCenter] postNotificationName:AppWillTerminateNotificationName object:nil];
-//}
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
@@ -324,32 +266,45 @@
     }
 }
 
+- (void)didReceiveMemoryWarning {
+	// Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+    
+	// Release any cached data, images, etc that aren't in use.
+    [cachedStoryImages removeAllObjects];
+}
+
 - (void)setupReachability {
     Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
                                                object:nil];
-    reach.reachableBlock = ^(Reachability *reach) {
-        NSLog(@"Reachable: %@", reach);
-    };
-    reach.unreachableBlock = ^(Reachability *reach) {
-        NSLog(@"Un-Reachable: %@", reach);
-    };
+//    reach.reachableBlock = ^(Reachability *reach) {
+//        NSLog(@"Reachable: %@", reach);
+//    };
+//    reach.unreachableBlock = ^(Reachability *reach) {
+//        NSLog(@"Un-Reachable: %@", reach);
+//    };
     [reach startNotifier];
 }
 
 - (void)reachabilityChanged:(id)something {
-    NSLog(@"Reachability changed: %@", something);
+//    NSLog(@"Reachability changed: %@", something);
+    Reachability* reach = [Reachability reachabilityWithHostname:NEWSBLUR_HOST];
+
+    if (reach.isReachable && feedsViewController.isOffline) {
+        [feedsViewController fetchFeedList:NO];
+    }
 }
 
 #pragma mark -
 #pragma mark Social Views
 
 - (NSDictionary *)getUser:(NSInteger)userId {
-    for (int i = 0; i < self.activeFeedUserProfiles.count; i++) {
-        if ([[[self.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == userId) {
-            return [self.activeFeedUserProfiles objectAtIndex:i];
+    for (int i = 0; i < storiesCollection.activeFeedUserProfiles.count; i++) {
+        if ([[[storiesCollection.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == userId) {
+            return [storiesCollection.activeFeedUserProfiles objectAtIndex:i];
         }
     }
     
@@ -482,7 +437,225 @@
     [self.friendsListViewController loadSuggestedFriendsList];
 }
 
-- (void)showShareView:(NSString *)type 
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender {
+    NSString *authorName = [activeStory objectForKey:@"story_authors"];
+    NSString *text = [activeStory objectForKey:@"story_content"];
+    NSString *title = [[activeStory objectForKey:@"story_title"] stringByDecodingHTMLEntities];
+    NSArray *images = [activeStory objectForKey:@"image_urls"];
+    NSURL *url = [NSURL URLWithString:[activeStory objectForKey:@"story_permalink"]];
+    NSString *feedId = [NSString stringWithFormat:@"%@", [activeStory objectForKey:@"story_feed_id"]];
+    NSDictionary *feed = [self getFeed:feedId];
+    NSString *feedTitle = [feed objectForKey:@"feed_title"];
+    
+    return [self showSendTo:vc
+                     sender:sender
+                    withUrl:url
+                 authorName:authorName
+                       text:text
+                      title:title
+                  feedTitle:feedTitle
+                     images:images];
+}
+
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender
+           withUrl:(NSURL *)url
+        authorName:(NSString *)authorName
+              text:(NSString *)text
+             title:(NSString *)title
+         feedTitle:(NSString *)feedTitle
+            images:(NSArray *)images {
+    OSKShareableContent *content = [[OSKShareableContent alloc] init];
+    
+    text = text ? text : @"";
+    content.title = [NSString stringWithFormat:@"%@", title];
+    
+    OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
+    microblogPost.text = [NSString stringWithFormat:@"%@ %@", title, [url absoluteString]];
+    microblogPost.images = [activeStory objectForKey:@"story_images"];;
+    content.microblogPostItem = microblogPost;
+    
+    OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyTextToPasteboard.text = text;
+    copyTextToPasteboard.alternateActivityName = @"Copy Text";
+    content.pasteboardItem = copyTextToPasteboard;
+    
+    OSKCopyToPasteboardContentItem *copyURLToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyURLToPasteboard.text = [url absoluteString];
+    copyURLToPasteboard.alternateActivityName = @"Copy URL";
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+    } else {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+    }
+    
+    OSKCopyToPasteboardContentItem *copyTitleToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+    copyTitleToPasteboard.text = title;
+    copyTitleToPasteboard.alternateActivityName = @"Copy Title";
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+    } else {
+        copyURLToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+    }
+    
+    content.additionalItems = @[copyURLToPasteboard, copyTitleToPasteboard];
+    
+    OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
+    NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+    emailItem.body = [NSString stringWithFormat:@"<br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@", [url absoluteString], title, maybeFeedTitle, text];
+    emailItem.subject = title;
+    emailItem.isHTML = YES;
+    content.emailItem = emailItem;
+    
+    OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
+    smsItem.body = [NSString stringWithFormat:@"%@\n%@", title, [url absoluteString]];;
+    content.smsItem = smsItem;
+    
+    OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
+    readLater.url = url;
+    content.readLaterItem = readLater;
+    
+    OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
+    toDoList.title = [NSString stringWithFormat:@"Read \"%@\"", title];
+    toDoList.notes = [NSString stringWithFormat:@"%@\n\n%@", text, [url absoluteString]];
+    content.toDoListItem = toDoList;
+    
+    OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
+    linkBookmarking.url = readLater.url;
+    linkBookmarking.title = title;
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    NSMutableArray *tags = [NSMutableArray arrayWithObject:appName];
+    [tags addObjectsFromArray:[activeStory objectForKey:@"story_tags"]];
+    linkBookmarking.tags = tags;
+    linkBookmarking.markToRead = YES;
+    content.linkBookmarkItem = linkBookmarking;
+    
+    OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
+    browserItem.url = readLater.url;
+    content.webBrowserItem = browserItem;
+    
+    OSKPasswordManagementAppSearchContentItem *passwordSearchItem = [[OSKPasswordManagementAppSearchContentItem alloc] init];
+    passwordSearchItem.query = [url host];
+    content.passwordSearchItem = passwordSearchItem;
+    
+    if (images.count) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = images;
+        content.airDropItem = airDrop;
+    }
+    else if ([url absoluteString].length) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = @[[url absoluteString]];
+        content.airDropItem = airDrop;
+    }
+    else if (text.length) {
+        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
+        airDrop.items = @[text];
+        content.airDropItem = airDrop;
+    }
+    
+    
+    OSKActivityCompletionHandler completionHandler = ^(OSKActivity *activity, BOOL successful, NSError *error){
+        if (!successful) return;
+        
+        NSString *activityType = [activity.class activityType];
+        NSString *_completedString;
+        
+        if ([activityType isEqualToString:OSKActivityType_iOS_Twitter]) {
+            _completedString = @"Posted";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Facebook]) {
+            _completedString = @"Posted";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Email]) {
+            _completedString = @"Sent";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_SMS]) {
+            _completedString = @"Sent";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_CopyToPasteboard]) {
+            _completedString = @"Copied";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Instapaper]) {
+            _completedString = @"Saved to Instapaper";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Pocket]) {
+            _completedString = @"Saved to Pocket";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Readability]) {
+            _completedString = @"Saved to Readability";
+        } else if ([activityType isEqualToString:OSKActivityType_API_Pinboard]) {
+            _completedString = @"Saved to Pinboard";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_AirDrop]) {
+            _completedString = @"Airdropped";
+        } else if ([activityType isEqualToString:OSKActivityType_iOS_Safari]) {
+            return;
+        } else if ([activityType isEqualToString:OSKActivityType_URLScheme_Chrome]) {
+            return;
+        } else {
+            _completedString = @"Saved";
+        }
+        [MBProgressHUD hideHUDForView:vc.view animated:NO];
+        MBProgressHUD *storyHUD = [MBProgressHUD showHUDAddedTo:vc.view animated:YES];
+        storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+        storyHUD.mode = MBProgressHUDModeCustomView;
+        storyHUD.removeFromSuperViewOnHide = YES;
+        storyHUD.labelText = _completedString;
+        [storyHUD hide:YES afterDelay:1];
+    };
+    
+    [[OSKActivitiesManager sharedInstance] setCustomizationsDelegate:self];
+    
+    NSDictionary *options = @{OSKPresentationOption_ActivityCompletionHandler: completionHandler};
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController showSendToPopover:vc];
+        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:self.masterContainerViewController popoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        } else {
+            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+        }
+
+    } else {
+        [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
+                                                       presentingViewController:vc options:options];
+    }
+}
+
+
+- (OSKApplicationCredential *)applicationCredentialForActivityType:(NSString *)activityType {
+    OSKApplicationCredential *appCredential = nil;
+    if ([activityType isEqualToString:OSKActivityType_iOS_Facebook]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"230426707030569"
+                         applicationSecret:@"b819827cab9a66faf41478cf9c405195"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_AppDotNet]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"7Y482n6JErhDeSDA6TY7Qv29mU22G2v2"
+                         applicationSecret:@"4rFFMKG68fWnAQA8W6puxTaYBkupuCBH"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_Pocket]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"16638-05adf4465390446398e53b8b"
+                         applicationSecret:@"16638-05adf4465390446398e53b8b"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_Readability]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"samuelclay"
+                         applicationSecret:@"ktLQc88S9WCE8PfvZ4u4q995Q3HMzg6Q"
+                         appName:@"NewsBlur"];
+    }
+    else if ([activityType isEqualToString:OSKActivityType_API_GooglePlus]) {
+        appCredential = [[OSKApplicationCredential alloc]
+                         initWithOvershareApplicationKey:@"598270143373.apps.googleusercontent.com"
+                         applicationSecret:@"gizh7veBOZS9_SdltRIyOhnB"
+                         appName:@"NewsBlur"];
+    }
+
+    return appCredential;
+}
+
+- (BOOL)osk_automaticallyShortenURLsWhenRecommended {
+    return NO;
+}
+
+- (void)showShareView:(NSString *)type
             setUserId:(NSString *)userId 
           setUsername:(NSString *)username 
       setReplyId:(NSString *)replyId {
@@ -502,6 +675,19 @@
     }
 
     [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+}
+
+- (void)showSendToManagement {
+    OSKAccountManagementViewController *manager = [[OSKAccountManagementViewController alloc] initWithIgnoredActivityClasses:nil optionalBespokeActivityClasses:nil];
+    OSKNavigationController *navController = [[OSKNavigationController alloc] initWithRootViewController:manager];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [navController setModalPresentationStyle:UIModalPresentationFormSheet];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController presentViewController:navController animated:YES completion:nil];
+    } else {
+        [self.navigationController presentViewController:navController animated:YES completion:nil];
+    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -639,29 +825,42 @@
 }
 
 - (void)loadFeedDetailView {
-    [self setStories:nil];
-    [self setFeedUserProfiles:nil];
+    [self loadFeedDetailView:YES];
+}
+
+- (void)loadFeedDetailView:(BOOL)transition {
+    [storiesCollection setStories:nil];
+    [storiesCollection setFeedUserProfiles:nil];
     self.inFeedDetail = YES;    
     popoverHasFeedView = YES;
-    
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
-                                      initWithTitle: @"All"
-                                      style: UIBarButtonItemStyleBordered
-                                      target: nil
-                                      action: nil];
-    [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+
     [feedDetailViewController resetFeedDetail];
+    if (feedDetailViewController == dashboardViewController.storiesModule) {
+        feedDetailViewController.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
+    } else if (feedDetailViewController == feedDetailViewController) {
+        feedDetailViewController.storiesCollection = storiesCollection;
+    }
+    
+    if (transition) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
+                                          initWithTitle: @"All"
+                                          style: UIBarButtonItemStyleBordered
+                                          target: nil
+                                          action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToFeedDetail];
+        } else {
+            [navigationController pushViewController:feedDetailViewController
+                                            animated:YES];
+        }
+    }
     
     [self flushQueuedReadStories:NO withCallback:^{
         [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     }];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionToFeedDetail];
-    } else {
-        [navigationController pushViewController:feedDetailViewController
-                                        animated:YES];
-    }
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -680,7 +879,7 @@
     NSDictionary *feed = [self getFeed:feedId];
     
     if (social) {
-        self.isSocialView = YES;
+        storiesCollection.isSocialView = YES;
         self.inFindingStoryMode = YES;
   
         if (feed == nil) {
@@ -693,13 +892,13 @@
             self.isTryFeedView = YES;
 
         }
-        [self setIsSocialView:NO];
+        storiesCollection.isSocialView = NO;
         [self setInFindingStoryMode:NO];
     }
             
     self.tryFeedStoryId = contentId;
-    self.activeFeed = feed;
-    self.activeFolder = nil;
+    storiesCollection.activeFeed = feed;
+    storiesCollection.activeFolder = nil;
     
     [self loadFeedDetailView];
     
@@ -723,16 +922,14 @@
         }
     }
 
-    self.isSocialRiverView = NO;
-    self.isRiverView = YES;
     self.inFindingStoryMode = YES;
-    self.isSocialView = NO;
+    [storiesCollection reset];
+    storiesCollection.isRiverView = YES;
     
     self.tryFeedStoryId = contentId;
-    self.activeFeed = nil;
-    self.activeFolder = @"saved_stories";
+    storiesCollection.activeFolder = @"saved_stories";
     
-    [self loadRiverFeedDetailView];
+    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"saved_stories"];
     
     if (showHUD) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -760,22 +957,6 @@
         return YES;
     } else {
         return NO;
-    }
-}
-
-- (NSString *)orderKey {
-    if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:order", self.activeFolder];
-    } else {
-        return [NSString stringWithFormat:@"%@:order", [self.activeFeed objectForKey:@"id"]];
-    }
-}
-
-- (NSString *)readFilterKey {
-    if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:read_filter", self.activeFolder];
-    } else {
-        return [NSString stringWithFormat:@"%@:read_filter", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
@@ -869,27 +1050,137 @@
     }
 }
 
-- (void)loadRiverFeedDetailView {
-    [self setStories:nil];
-    [self setFeedUserProfiles:nil];
+- (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
+    self.readStories = [NSMutableArray array];
+    NSMutableArray *feeds = [NSMutableArray array];
+    BOOL transferFromDashboard = [folder isEqualToString:@"river_dashboard"];
+    
     self.inFeedDetail = YES;
+    [feedDetailView resetFeedDetail];
+    if (feedDetailView == dashboardViewController.storiesModule) {
+        feedDetailView.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
+    } else if (feedDetailView == feedDetailViewController) {
+        feedDetailView.storiesCollection = storiesCollection;
+    }
 
-    [feedDetailViewController resetFeedDetail];
-    
-    [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailViewController fetchRiverPage:1 withCallback:nil];
-    }];
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionToFeedDetail];
+    [feedDetailView.storiesCollection reset];
+
+    if (transferFromDashboard) {
+        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
+        [feedDetailView.storiesCollection transferStoriesFromCollection:dashboardCollection];
+        feedDetailView.storiesCollection.isRiverView = YES;
+        feedDetailView.storiesCollection.transferredFromDashboard = YES;
+        [feedDetailView.storiesCollection setActiveFolder:@"everything"];
     } else {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
+        if ([folder isEqualToString:@"river_global"]) {
+            feedDetailView.storiesCollection.isSocialRiverView = YES;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"river_global"];
+        } else if ([folder isEqualToString:@"river_blurblogs"]) {
+            feedDetailView.storiesCollection.isSocialRiverView = YES;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            // add all the feeds from every NON blurblog folder
+            [feedDetailView.storiesCollection setActiveFolder:@"river_blurblogs"];
+            for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+                if ([folderName isEqualToString:@"river_blurblogs"]) { // remove all blurblugs which is a blank folder name
+                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                    for (int l=0; l < [folderFeeds count]; l++) {
+                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                    }
+                }
+            }
+        } else if ([folder isEqualToString:@"everything"]) {
+            feedDetailView.storiesCollection.isRiverView = YES;
+            // add all the feeds from every NON blurblog folder
+            [feedDetailView.storiesCollection setActiveFolder:@"everything"];
+            for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
+                if (![folderName isEqualToString:@"river_blurblogs"]) {
+                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                    for (int l=0; l < [folderFeeds count]; l++) {
+                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                    }
+                }
+            }
+            [self.folderCountCache removeAllObjects];
+        } else if ([folder isEqualToString:@"saved_stories"]) {
+            feedDetailView.storiesCollection.isRiverView = YES;
+            [feedDetailView.storiesCollection setActiveFolder:folder];
+        } else {
+            feedDetailView.storiesCollection.isRiverView = YES;
+            NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
+            
+            [feedDetailView.storiesCollection setActiveFolder:folderName];
+            NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+            NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+            for (int l=0; l < [activeFeedLocations count]; l++) {
+                [feeds addObject:[originalFolder objectAtIndex:[[activeFeedLocations objectAtIndex:l] intValue]]];
+            }
+            
+        }
+        feedDetailView.storiesCollection.activeFolderFeeds = feeds;
+        if (!self.feedsViewController.viewShowingAllFeeds) {
+            for (id feedId in feeds) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                [self.feedsViewController.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+            }
+        }
+    }
+    
+    if (feedDetailView.storiesCollection.activeFolder) {
+        [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
+    }
+    
+    if (feedDetailView == feedDetailViewController) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
+                                                                          style: UIBarButtonItemStyleBordered
+                                                                         target: nil
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:feedDetailViewController animated:YES];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.masterContainerViewController transitionToFeedDetail];
+        } else {
+            UINavigationController *navController = self.navigationController;
+            [navController pushViewController:feedDetailViewController animated:YES];
+        }
+    }
+    
+    if (!transferFromDashboard) {
+        [self flushQueuedReadStories:NO withCallback:^{
+            [feedDetailView fetchRiver];
+        }];
+    } else {
+        [feedDetailView reloadData];
+    }
+}
+
+- (void)openDashboardRiverForStory:(NSString *)contentId
+                  showFindingStory:(BOOL)showHUD {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        if (self.feedsViewController.popoverController) {
+            [self.feedsViewController.popoverController dismissPopoverAnimated:NO];
+        }
+    }
+    
+    self.inFindingStoryMode = YES;
+    [storiesCollection reset];
+    storiesCollection.isRiverView = YES;
+    
+    self.tryFeedStoryId = contentId;
+    storiesCollection.activeFolder = @"everything";
+    
+    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
+    
+    if (showHUD) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.storyPageControl showShareHUD:@"Finding story..."];
+        } else {
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
+            HUD.labelText = @"Finding story...";
+        }
     }
 }
 
@@ -910,7 +1201,7 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     NSMutableArray *newFeedStories = [NSMutableArray array];
     
-    for (NSDictionary *story in self.activeFeedStories) {
+    for (NSDictionary *story in storiesCollection.activeFeedStories) {
         NSString *storyFeedId = [NSString stringWithFormat:@"%@",
                                  [story objectForKey:@"story_feed_id"]];
         if (![storyFeedId isEqualToString:feedIdStr]) {
@@ -933,7 +1224,7 @@
                                                                     [zero copy], [zero copy], nil]
                                              forKeys:[NSArray arrayWithObjects:
                                                       @"author", @"feed", @"tags", @"title", nil]];
-        NSDictionary *classifiers = [self.activeClassifiers objectForKey:feedIdStr];
+        NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
         
         for (NSString *title in [classifiers objectForKey:@"titles"]) {
             if ([[intelligence objectForKey:@"title"] intValue] <= 0 &&
@@ -973,7 +1264,7 @@
         [newFeedStories addObject:newStory];
     }
     
-    self.activeFeedStories = newFeedStories;
+    storiesCollection.activeFeedStories = newFeedStories;
 }
 
 - (void)changeActiveFeedDetailRow {
@@ -981,43 +1272,20 @@
 }
 
 - (void)loadStoryDetailView {
-    NSString *feedTitle;
-    if (self.isRiverView) {
-        if ([self.activeFolder isEqualToString:@"river_blurblogs"]) {
-            feedTitle = @"All Shared Stories";
-        } else if ([self.activeFolder isEqualToString:@"river_global"]) {
-            feedTitle = @"Global Shared Stories";
-        } else if ([self.activeFolder isEqualToString:@"everything"]) {
-            feedTitle = @"All Stories";
-        } else if ([self.activeFolder isEqualToString:@"saved_stories"]) {
-            feedTitle = @"Saved Stories";
-        } else {
-            feedTitle = self.activeFolder;
-        }
-    } else {
-        feedTitle = [activeFeed objectForKey:@"feed_title"];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UINavigationController *navController = self.navigationController;
+        [navController pushViewController:storyPageControl animated:YES];
+        navController.navigationItem.hidesBackButton = YES;
     }
     
-    NSInteger activeStoryLocation = [self locationOfActiveStory];
+    NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
-        //        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
+        [self.storyPageControl animateIntoPlace:YES];
     }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ([feedTitle length] >= 12) {
-            feedTitle = [NSString stringWithFormat:@"%@...", [feedTitle substringToIndex:MIN(9, [feedTitle length])]];
-        }
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStylePlain target: nil action: nil];
-        [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:storyPageControl animated:YES];
-        [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
-        navController.navigationItem.hidesBackButton = YES;
-    }
-    
+        
     [MBProgressHUD hideHUDForView:self.storyPageControl.view animated:YES];
 }
 
@@ -1069,24 +1337,29 @@
             return;
     } else {
         self.activeOriginalStoryURL = url;
-        UINavigationController *navController = [[UINavigationController alloc]
-                                                 initWithRootViewController:self.originalStoryViewController];
-        navController.navigationBar.translucent = NO;
-        self.originalStoryViewNavController = navController;
-
+        
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController presentViewController:self.originalStoryViewNavController
-                                                             animated:YES completion:nil];
+            [self.masterContainerViewController transitionToOriginalView];
         } else {
-            [self.navigationController presentViewController:self.originalStoryViewNavController
-                                                    animated:YES completion:nil];
+            if ([[navigationController viewControllers]
+                 containsObject:originalStoryViewController]) {
+                return;
+            }
+            [navigationController pushViewController:originalStoryViewController
+                                            animated:YES];
+            [originalStoryViewController view]; // Force viewDidLoad
+            [originalStoryViewController loadInitialStory];
         }
     }
 }
 
 - (void)closeOriginalStory {
-    if (![self.presentedViewController isBeingDismissed]) {
-        [originalStoryViewNavController dismissViewControllerAnimated:YES completion:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController transitionFromOriginalView];
+    } else {
+        if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
+            [navigationController popToViewController:storyPageControl animated:YES];
+        }
     }
 }
 
@@ -1095,160 +1368,6 @@
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {
         [self.navigationController popViewControllerAnimated:YES];
-    }
-}
-
-#pragma mark - Story Traversal
-
-- (BOOL)isStoryUnread:(NSDictionary *)story {
-    BOOL readStatusUnread = [[story objectForKey:@"read_status"] intValue] == 0;
-    BOOL storyHashUnread = [[self.unreadStoryHashes
-                             objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-    BOOL recentlyRead = [[self.recentlyReadStories
-                          objectForKey:[story objectForKey:@"story_hash"]] boolValue];
-    
-//    NSLog(@"isUnread: (%d || %d) && %d (%@ / %@)", readStatusUnread, storyHashUnread,
-//          !recentlyRead, [[story objectForKey:@"story_title"] substringToIndex:10],
-//          [story objectForKey:@"story_hash"]);
-
-    return (readStatusUnread || storyHashUnread) && !recentlyRead;
-}
-
-- (NSInteger)indexOfNextUnreadStory {
-    NSInteger location = [self locationOfNextUnreadStory];
-    return [self indexFromLocation:location];
-}
-
-- (NSInteger)locationOfNextUnreadStory {
-    NSInteger activeLocation = [self locationOfActiveStory];
-
-    for (NSInteger i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
-        NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
-        NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-        if ([self isStoryUnread:story]) {
-            return i;
-        }
-    }
-    if (activeLocation > 0) {
-        for (NSInteger i=activeLocation-1; i >= 0; i--) {
-            NSInteger storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
-            NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
-            if ([self isStoryUnread:story]) {
-                return i;
-            }
-        }
-    }
-    return -1;
-}
-
-- (NSInteger)indexOfNextStory {
-    NSInteger location = [self locationOfNextStory];
-    return [self indexFromLocation:location];
-}
-
-- (NSInteger)locationOfNextStory {
-    NSInteger activeLocation = [self locationOfActiveStory];
-    NSInteger nextStoryLocation = activeLocation + 1;
-    if (nextStoryLocation < [self.activeFeedStoryLocations count]) {
-        return nextStoryLocation;
-    }
-    return -1;
-}
-
-- (NSInteger)indexOfActiveStory {
-    for (NSInteger i=0; i < self.storyCount; i++) {
-        NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-- (NSInteger)indexOfStoryId:(id)storyId {
-    for (int i=0; i < self.storyCount; i++) {
-        NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"id"] == storyId) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-- (NSInteger)locationOfStoryId:(id)storyId {
-    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-- (NSInteger)locationOfActiveStory {
-    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([[activeFeedStoryLocationIds objectAtIndex:i]
-             isEqualToString:[self.activeStory objectForKey:@"id"]]) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-- (NSInteger)indexFromLocation:(NSInteger)location {
-    if (location == -1) return -1;
-    return [[activeFeedStoryLocations objectAtIndex:location] intValue];
-}
-
-- (void)pushReadStory:(id)storyId {
-    if ([self.readStories lastObject] != storyId) {
-        [self.readStories addObject:storyId];
-    }
-}
-
-- (id)popReadStory {
-    if (storyCount == 0) {
-        return nil;
-    } else {
-        [self.readStories removeLastObject];
-        id lastStory = [self.readStories lastObject];
-        return lastStory;
-    }
-}
-
-- (NSString *)activeOrder {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
-    NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
-    
-    if (orderPref) {
-        return orderPref;
-    } else if (orderPrefDefault) {
-        return orderPrefDefault;
-    } else {
-        return @"newest";
-    }
-}
-
-- (NSString *)activeReadFilter {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *readFilterFeedPrefDefault = [userPreferences stringForKey:@"default_feed_read_filter"];
-    NSString *readFilterFolderPrefDefault = [userPreferences stringForKey:@"default_folder_read_filter"];
-    NSString *readFilterPref = [userPreferences stringForKey:[self readFilterKey]];
-    
-    if (readFilterPref) {
-        return readFilterPref;
-    } else if (self.isRiverView || self.isSocialRiverView) {
-        if (readFilterFolderPrefDefault) {
-            return readFilterFolderPrefDefault;
-        } else {
-            return @"unread";
-        }
-    } else {
-        if (readFilterFeedPrefDefault) {
-            return readFilterFeedPrefDefault;
-        } else {
-            return @"all";
-        }
     }
 }
 
@@ -1270,7 +1389,7 @@
 }
 
 - (NSInteger)unreadCount {
-    if (self.isRiverView || self.isSocialRiverView) {
+    if (storiesCollection.isRiverView || storiesCollection.isSocialRiverView) {
         return [self unreadCountForFolder:nil];
     } else { 
         return [self unreadCountForFeed:nil];
@@ -1311,7 +1430,7 @@
         }
 
     } else {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [self.activeFeed objectForKey:@"id"]];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
         feed = [self.dictUnreadCounts objectForKey:feedIdStr];
     }
     
@@ -1331,21 +1450,21 @@
     NSArray *folder;
     
     if ([folderName isEqual:@"river_blurblogs"] ||
-        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
+        (!folderName && [storiesCollection.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
     } else if ([folderName isEqual:@"river_global"] ||
-               (!folderName && [self.activeFolder isEqual:@"river_global"])) {
+               (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [self.activeFolder isEqual:@"everything"])) {
+               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
         for (id feedId in self.dictUnreadCounts) {
             total += [self unreadCountForFeed:feedId];
         }
     } else {
         if (!folderName) {
-            folder = [self.dictFolders objectForKey:self.activeFolder];
+            folder = [self.dictFolders objectForKey:storiesCollection.activeFolder];
         } else {
             folder = [self.dictFolders objectForKey:folderName];
         }
@@ -1364,7 +1483,7 @@
     NSDictionary *feedCounts;
     
     if (!feedId) {
-        feedId = [self.activeFeed objectForKey:@"id"];
+        feedId = [storiesCollection.activeFeed objectForKey:@"id"];
     }
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     feedCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
@@ -1388,15 +1507,15 @@
     }
     
     if ([folderName isEqual:@"river_blurblogs"] ||
-        (!folderName && [self.activeFolder isEqual:@"river_blurblogs"])) {
+        (!folderName && [storiesCollection.activeFolder isEqual:@"river_blurblogs"])) {
         for (id feedId in self.dictSocialFeeds) {
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
     } else if ([folderName isEqual:@"river_global"] ||
-            (!folderName && [self.activeFolder isEqual:@"river_global"])) {
+            (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [self.activeFolder isEqual:@"everything"])) {
+               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
                 [counts addCounts:[self splitUnreadCountForFeed:feedId]];
@@ -1404,7 +1523,7 @@
         }
     } else {
         if (!folderName) {
-            folder = [self.dictFolders objectForKey:self.activeFolder];
+            folder = [self.dictFolders objectForKey:storiesCollection.activeFolder];
         } else {
             folder = [self.dictFolders objectForKey:folderName];
         }
@@ -1427,31 +1546,8 @@
 
 #pragma mark - Story Management
 
-- (void)addStories:(NSArray *)stories {
-    self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
-    self.storyCount = [self.activeFeedStories count];
-    [self calculateStoryLocations];
-    self.storyLocationsCount = [self.activeFeedStoryLocations count];
-}
-
-- (void)setStories:(NSArray *)activeFeedStoriesValue {
-    self.activeFeedStories = activeFeedStoriesValue;
-    self.storyCount = [self.activeFeedStories count];
-    self.recentlyReadFeeds = [NSMutableSet set];
-    [self calculateStoryLocations];
-    self.storyLocationsCount = [self.activeFeedStoryLocations count];
-}
-
-- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
-    self.activeFeedUserProfiles = activeFeedUserProfilesValue;
-}
-
-- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue {
-    self.activeFeedUserProfiles = [self.activeFeedUserProfiles arrayByAddingObjectsFromArray:activeFeedUserProfilesValue];
-}
-
 - (void)markActiveStoryRead {
-    NSInteger activeLocation = [self locationOfActiveStory];
+    NSInteger activeLocation = [storiesCollection locationOfActiveStory];
     if (activeLocation == -1) {
         return;
     }
@@ -1459,17 +1555,17 @@
     // changes the story layout in story feed detail
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
  
-    NSInteger activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
-    
+    NSInteger activeIndex = [[storiesCollection.activeFeedStoryLocations
+                              objectAtIndex:activeLocation] intValue];
     NSDictionary *feed;
     NSDictionary *friendFeed;
     id feedId;
     NSString *feedIdStr;
-    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    NSDictionary *story = [storiesCollection.activeFeedStories objectAtIndex:activeIndex];
     NSMutableArray *otherFriendShares = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
     NSMutableArray *otherFriendComments = [[self.activeStory objectForKey:@"commented_by_friends"] mutableCopy];
     
-    if (self.isSocialView) {
+    if (storiesCollection.isSocialView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];        
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
@@ -1480,8 +1576,9 @@
         NSLog(@"otherFriendFeeds is %@", otherFriendComments);
         
         // make sure we set the active feed
-        self.activeFeed = feed;
-    } else if (self.isSocialRiverView && [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
+        storiesCollection.activeFeed = feed;
+    } else if (storiesCollection.isSocialRiverView &&
+               [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
         feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
@@ -1492,39 +1589,39 @@
         NSLog(@"otherFriendFeeds is %@", otherFriendComments);
     
         // make sure we set the active feed
-        self.activeFeed = feed;
+        storiesCollection.activeFeed = feed;
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         feed = [self.dictFeeds objectForKey:feedIdStr];
         
         // make sure we set the active feed
-        self.activeFeed = feed;
+        storiesCollection.activeFeed = feed;
     }
     
     // decrement all other friend feeds if they have the same story
-    if (self.isSocialView || self.isSocialRiverView) {
+    if (storiesCollection.isSocialView || storiesCollection.isSocialRiverView) {
         for (int i = 0; i < otherFriendShares.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendShares objectAtIndex:i]];   
             friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
-            [self markStoryRead:story feed:friendFeed];
+            [storiesCollection markStoryRead:story feed:friendFeed];
         }
         
         for (int i = 0; i < otherFriendComments.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendComments objectAtIndex:i]];   
             friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
-            [self markStoryRead:story feed:friendFeed];
+            [storiesCollection markStoryRead:story feed:friendFeed];
         }
     }
 
-    [self markStoryRead:story feed:feed];
-    self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
+    [storiesCollection markStoryRead:story feed:feed];
+    self.activeStory = [storiesCollection.activeFeedStories objectAtIndex:activeIndex];
 }
 
 - (void)markActiveStoryUnread {
-    NSInteger activeLocation = [self locationOfActiveStory];
+    NSInteger activeLocation = [storiesCollection locationOfActiveStory];
     if (activeLocation == -1) {
         return;
     }
@@ -1532,17 +1629,17 @@
     // changes the story layout in story feed detail
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
     
-    NSInteger activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
-    
+    NSInteger activeIndex = [[storiesCollection.activeFeedStoryLocations
+                              objectAtIndex:activeLocation] intValue];
     NSDictionary *feed;
     NSDictionary *friendFeed;
     id feedId;
     NSString *feedIdStr;
-    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    NSDictionary *story = [storiesCollection.activeFeedStories objectAtIndex:activeIndex];
     NSMutableArray *otherFriendShares = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
     NSMutableArray *otherFriendComments = [[self.activeStory objectForKey:@"commented_by_friends"] mutableCopy];
     
-    if (self.isSocialView) {
+    if (storiesCollection.isSocialView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
@@ -1553,8 +1650,9 @@
         NSLog(@"otherFriendFeeds is %@", otherFriendComments);
         
         // make sure we set the active feed
-        self.activeFeed = feed;
-    } else if (self.isSocialRiverView && [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
+        storiesCollection.activeFeed = feed;
+    } else if (storiesCollection.isSocialRiverView &&
+               [[self.activeStory objectForKey:@"friend_user_ids"] count]) {
         feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
@@ -1565,41 +1663,41 @@
         NSLog(@"otherFriendFeeds is %@", otherFriendComments);
         
         // make sure we set the active feed
-        self.activeFeed = feed;
+        storiesCollection.activeFeed = feed;
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         feed = [self.dictFeeds objectForKey:feedIdStr];
         
         // make sure we set the active feed
-        self.activeFeed = feed;
+        storiesCollection.activeFeed = feed;
     }
     
     // decrement all other friend feeds if they have the same story
-    if (self.isSocialView || self.isSocialRiverView) {
+    if (storiesCollection.isSocialView || storiesCollection.isSocialRiverView) {
         for (int i = 0; i < otherFriendShares.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendShares objectAtIndex:i]];
             friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
-            [self markStoryUnread:story feed:friendFeed];
+            [storiesCollection markStoryUnread:story feed:friendFeed];
         }
         
         for (int i = 0; i < otherFriendComments.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendComments objectAtIndex:i]];
             friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
-            [self markStoryUnread:story feed:friendFeed];
+            [storiesCollection markStoryUnread:story feed:friendFeed];
         }
     }
     
-    [self markStoryUnread:story feed:feed];
+    [storiesCollection markStoryUnread:story feed:feed];
 
-    self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
+    self.activeStory = [storiesCollection.activeFeedStories objectAtIndex:activeIndex];
 }
 
 - (NSDictionary *)markVisibleStoriesRead {
     NSMutableDictionary *feedsStories = [NSMutableDictionary dictionary];
-    for (NSDictionary *story in self.activeFeedStories) {
+    for (NSDictionary *story in storiesCollection.activeFeedStories) {
         if ([[story objectForKey:@"read_status"] intValue] != 0) {
             continue;
         }
@@ -1610,188 +1708,23 @@
         }
         NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
         [stories addObject:[story objectForKey:@"story_hash"]];
-        [self markStoryRead:story feed:feed];
+        [storiesCollection markStoryRead:story feed:feed];
     }   
     return feedsStories;
-}
-
-- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [self getFeed:feedIdStr];
-    NSDictionary *story = nil;
-    for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
-            story = s;
-            break;
-        }
-    }
-    [self markStoryRead:story feed:feed];
-}
-
-- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    if (!feed) {
-        feedIdStr = @"0";
-    }
-    
-    NSMutableDictionary *newStory = [story mutableCopy];
-    [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-    
-    // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
-    if ([[self.activeStory objectForKey:@"story_hash"]
-         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
-        self.activeStory = newStory;
-    }
-    
-    // If not a feed, then don't bother updating local feed.
-    if (!feed) return;
-    
-    self.visibleUnreadCount -= 1;
-    if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
-        [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
-    }
-    
-    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
-    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
-    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    if (score > 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] - 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
-    } else if (score == 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] - 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
-    } else if (score < 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] - 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
-    }
-    [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            NSString *storyHash = [newStory objectForKey:@"story_hash"];
-            [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-             [newStory JSONRepresentation],
-             storyHash];
-            [db executeUpdate:@"DELETE FROM unread_hashes WHERE story_hash = ?",
-             storyHash];
-            [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
-             [newUnreadCounts objectForKey:@"ps"],
-             [newUnreadCounts objectForKey:@"nt"],
-             [newUnreadCounts objectForKey:@"ng"],
-             feedIdStr];
-        }];
-    });
-    
-    NSInteger location = [self locationOfStoryId:[story objectForKey:@"id"]];
-    [self.recentlyReadStories setObject:[NSNumber numberWithBool:YES]
-                                 forKey:[story objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations addObject:[NSNumber numberWithInteger:location]];
-    [self.unreadStoryHashes removeObjectForKey:[story objectForKey:@"story_hash"]];
-
-}
-
-- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [self getFeed:feedIdStr];
-    NSDictionary *story = nil;
-    for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
-            story = s;
-            break;
-        }
-    }
-    [self markStoryUnread:story feed:feed];
-}
-
-- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    if (!feed) {
-        feedIdStr = @"0";
-    }
-
-    NSMutableDictionary *newStory = [story mutableCopy];
-    [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
-    
-    // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
-
-    // If not a feed, then don't bother updating local feed.
-    if (!feed) return;
-
-    self.visibleUnreadCount += 1;
-//    if ([self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
-        [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
-//    }
-    
-    NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
-    NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
-    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    if (score > 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ps"] intValue] + 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
-    } else if (score == 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"nt"] intValue] + 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
-    } else if (score < 0) {
-        int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] + 1);
-        [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
-    }
-    [self.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
-    
-    [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        NSString *storyHash = [newStory objectForKey:@"story_hash"];
-        [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
-         [newStory JSONRepresentation],
-         storyHash];
-        [db executeUpdate:@"INSERT INTO unread_hashes "
-         "(story_hash, story_feed_id, story_timestamp) VALUES (?, ?, ?)",
-         storyHash, feedIdStr, [newStory objectForKey:@"story_timestamp"]];
-        [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
-         [newUnreadCounts objectForKey:@"ps"],
-         [newUnreadCounts objectForKey:@"nt"],
-         [newUnreadCounts objectForKey:@"ng"],
-         feedIdStr];
-    }];
-    
-    NSInteger location = [self locationOfStoryId:[story objectForKey:@"id"]];
-    [self.recentlyReadStories removeObjectForKey:[story objectForKey:@"story_hash"]];
-    [self.recentlyReadStoryLocations removeObject:[NSNumber numberWithInteger:location]];
 }
 
 #pragma mark -
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([self.activeFolder isEqual:@"everything"]) {
+    if ([storiesCollection.activeFolder isEqual:@"everything"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
             }        
         }
     } else {
-        for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
+        for (id feedId in [self.dictFolders objectForKey:storiesCollection.activeFolder]) {
             [self markFeedAllRead:feedId];
         }
     }
@@ -1947,63 +1880,28 @@
     }
 }
 
-#pragma mark -
-#pragma mark Story Saving
-
-- (void)markStory:story asSaved:(BOOL)saved {
-    NSMutableDictionary *newStory = [story mutableCopy];
-    [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
-    if (saved) {
-        [newStory setValue:[Utilities formatLongDateFromTimestamp:nil] forKey:@"starred_date"];
+- (void)toggleStorySaved {
+    BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
+    if (isSaved) {
+        [self.storyPageControl markStoryAsUnsaved];
     } else {
-        [newStory removeObjectForKey:@"starred_date"];
-    }
-    
-    if ([[newStory objectForKey:@"story_hash"]
-         isEqualToString:[self.activeStory objectForKey:@"story_hash"]]) {
-        self.activeStory = newStory;
-    }
-    
-    // make the story as read in self.activeFeedStories
-    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    for (int i = 0; i < [newActiveFeedStories count]; i++) {
-        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
-        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
-        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
-            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
-            break;
-        }
-    }
-    self.activeFeedStories = newActiveFeedStories;
-    
-    if (saved) {
-        self.savedStoriesCount += 1;
-    } else {
-        self.savedStoriesCount -= 1;
+        [self.storyPageControl markStoryAsSaved];
     }
 }
+
+- (void)toggleStoryUnread {
+    BOOL isUnread = [self.storiesCollection isStoryUnread:self.activeStory];
+    if (!isUnread) {
+        [self.storyPageControl markStoryAsUnread];
+    } else {
+        [self.storyPageControl markStoryAsRead];
+        [self.feedDetailViewController redrawUnreadStory];
+    }
+}
+
 
 #pragma mark -
 #pragma mark Story functions
-
-- (void)calculateStoryLocations {
-    self.visibleUnreadCount = 0;
-    self.activeFeedStoryLocations = [NSMutableArray array];
-    self.activeFeedStoryLocationIds = [NSMutableArray array];
-    for (int i=0; i < self.storyCount; i++) {
-        NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
-        NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score >= self.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
-            NSNumber *location = [NSNumber numberWithInt:i];
-            [self.activeFeedStoryLocations addObject:location];
-            [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"id"]];
-            if ([[story objectForKey:@"read_status"] intValue] == 0) {
-                self.visibleUnreadCount += 1;
-            }
-        }
-    }
-}
 
 + (NSInteger)computeStoryScore:(NSDictionary *)intelligence {
     NSInteger score = 0;
@@ -2058,7 +1956,9 @@
 
 - (NSDictionary *)getFeed:(NSString *)feedId {
     NSDictionary *feed;
-    if (self.isSocialView || self.isSocialRiverView || [feedId startsWith:@"social:"]) {
+    if (storiesCollection.isSocialView ||
+        storiesCollection.isSocialRiverView ||
+        [feedId startsWith:@"social:"]) {
         feed = [self.dictActiveFeeds objectForKey:feedId];
         // this is to catch when a user is already subscribed
         if (!feed) {
@@ -2149,7 +2049,9 @@
 
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect {
     UIView *gradientView;
-    if (self.isRiverView || self.isSocialView || self.isSocialRiverView) {
+    if (storiesCollection.isRiverView ||
+        storiesCollection.isSocialView ||
+        storiesCollection.isSocialRiverView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
@@ -2179,7 +2081,7 @@
         titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-        UIImage *titleImage = [Utilities getImage:feedIdStr];
+        UIImage *titleImage = [self getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
@@ -2201,17 +2103,21 @@
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
     UILabel *titleLabel = [[UILabel alloc] init];
-    if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_blurblogs"]) {
+    if (storiesCollection.isSocialRiverView &&
+        [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Shared Stories"];
-    } else if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_global"]) {
+    } else if (storiesCollection.isSocialRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
-    } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
-    } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
-    } else if (self.isRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];
-    } else if (self.isSocialView) {
+    } else if (storiesCollection.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
+    } else if (storiesCollection.isSocialView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     } else {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
@@ -2225,22 +2131,26 @@
     titleLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.center = CGPointMake(0, -2);
-    if (!self.isSocialView) {
+    if (!storiesCollection.isSocialView) {
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_global"]) {
+        if (storiesCollection.isSocialRiverView &&
+            [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
-        } else if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_blurblogs"]) {
+        } else if (storiesCollection.isSocialRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-        } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-        } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"clock.png"];
-        } else if (self.isRiverView) {
+        } else if (storiesCollection.isRiverView) {
             titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
         } else {
-            titleImage = [Utilities getImage:feedIdStr];
+            titleImage = [self getFavicon:feedIdStr];
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -2251,11 +2161,37 @@
     return titleLabel;
 }
 
+- (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
+    if (image && filename && ![image isKindOfClass:[NSNull class]] &&
+        [filename class] != [NSNull class]) {
+        [self.cachedFavicons setObject:image forKey:filename];
+    }
+}
+
+- (UIImage *)getFavicon:(NSString *)filename {
+    return [self getFavicon:filename isSocial:NO];
+}
+
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial {
+    UIImage *image = [self.cachedFavicons objectForKey:filename];
+    
+    if (image) {
+        return image;
+    } else {
+        if (isSocial) {
+            //            return [UIImage imageNamed:@"user_light.png"];
+            return nil;
+        } else {
+            return [UIImage imageNamed:@"world.png"];
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark Classifiers
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
-    int authorScore = [[[[self.activeClassifiers objectForKey:feedId]
+    int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
     if (authorScore > 0) {
@@ -2265,14 +2201,14 @@
     } else {
         authorScore = 1;
     }
-    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
     if (!authors) authors = [NSMutableDictionary dictionary];
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
-    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
@@ -2301,7 +2237,7 @@
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
     NSLog(@"toggleTagClassifier: %@", tag);
-    int tagScore = [[[[self.activeClassifiers objectForKey:feedId]
+    int tagScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
     
@@ -2313,14 +2249,14 @@
         tagScore = 1;
     }
     
-    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
     if (!tags) tags = [NSMutableDictionary dictionary];
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
-    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
@@ -2349,7 +2285,7 @@
 
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
     NSLog(@"toggle Title: %@ (%@) / %ld", title, feedId, (long)score);
-    NSInteger titleScore = [[[[self.activeClassifiers objectForKey:feedId]
+    NSInteger titleScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"titles"]
                              objectForKey:title] intValue];
     
@@ -2365,14 +2301,14 @@
         }
     }
     
-    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *titles = [[feedClassifiers objectForKey:@"titles"] mutableCopy];
     if (!titles) titles = [NSMutableDictionary dictionary];
     [titles setObject:[NSNumber numberWithInteger:titleScore] forKey:title];
     [feedClassifiers setObject:titles forKey:@"titles"];
-    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
@@ -2400,7 +2336,7 @@
 }
 
 - (void)toggleFeedClassifier:(NSString *)feedId {
-    int feedScore = [[[[self.activeClassifiers objectForKey:feedId]
+    int feedScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                        objectForKey:@"feeds"]
                       objectForKey:feedId] intValue];
     
@@ -2412,13 +2348,13 @@
         feedScore = 1;
     }
     
-    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
     NSMutableDictionary *feeds = [[feedClassifiers objectForKey:@"feeds"] mutableCopy];
     [feeds setObject:[NSNumber numberWithInt:feedScore] forKey:feedId];
     [feedClassifiers setObject:feeds forKey:@"feeds"];
-    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPageControl refreshHeaders];
     [self.trainerViewController refresh];
     
@@ -2622,20 +2558,14 @@
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-    NSString *faviconsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"favicons"];
-    NSString *avatarsDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"avatars"];
-
     if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory withIntermediateDirectories:NO attributes:nil error:&error];
+        [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory
+                                  withIntermediateDirectories:NO
+                                                   attributes:nil
+                                                        error:&error];
     }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:faviconsDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:faviconsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
-    }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:avatarsDirectory]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:avatarsDirectory withIntermediateDirectories:NO attributes:nil error:&error];
-    }
-    
-    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+
+//    NSLog(@"Create db %d: %@", [db lastErrorCode], [db lastErrorMessage]);
 }
 
 - (void)cancelOfflineQueue {
@@ -2652,7 +2582,7 @@
         offlineQueue = [NSOperationQueue new];
     }
     offlineQueue.name = @"Offline Queue";
-    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
+//    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
     [offlineQueue cancelAllOperations];
     [offlineQueue setMaxConcurrentOperationCount:1];
     OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
@@ -2665,7 +2595,7 @@
     
     [offlineQueue addOperation:operationFetchStories];
     
-    NSLog(@"Done start offline fetch stories");
+//    NSLog(@"Done start offline fetch stories");
 }
 
 - (void)startOfflineFetchImages {
@@ -2748,7 +2678,7 @@
 
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
     if (self.hasQueuedReadStories || forceCheck) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                                  (unsigned long)NULL), ^(void) {
             [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSMutableDictionary *hashes = [NSMutableDictionary dictionary];
@@ -2813,10 +2743,10 @@
     NSArray *feedIds;
     int cached = 0;
     
-    if (isRiverView) {
-        feedIds = activeFolderFeeds;
-    } else if (activeFeed) {
-        feedIds = @[[activeFeed objectForKey:@"id"]];
+    if (storiesCollection.isRiverView) {
+        feedIds = storiesCollection.activeFolderFeeds;
+    } else if (storiesCollection.activeFeed) {
+        feedIds = @[[storiesCollection.activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
                      "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (\"%@\")",
@@ -2837,7 +2767,7 @@
         cached++;
     }
     
-    NSLog(@"Pre-cached %d images", cached);
+//    NSLog(@"Pre-cached %d images", cached);
 }
 
 - (void)cleanImageCache {

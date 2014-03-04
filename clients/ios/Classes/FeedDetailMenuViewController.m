@@ -12,6 +12,7 @@
 #import "NBContainerViewController.h"
 #import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
+#import "StoriesCollection.h"
 
 @implementation FeedDetailMenuViewController
 
@@ -58,7 +59,7 @@
     [orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [orderSegmentedControl setSelectedSegmentIndex:0];
-    if ([appDelegate.activeOrder isEqualToString:@"oldest"]) {
+    if ([appDelegate.storiesCollection.activeOrder isEqualToString:@"oldest"]) {
         [orderSegmentedControl setSelectedSegmentIndex:1];
     }
     
@@ -69,7 +70,7 @@
     [readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [readFilterSegmentedControl setSelectedSegmentIndex:0];
-    if ([appDelegate.activeReadFilter isEqualToString:@"unread"]) {
+    if ([appDelegate.storiesCollection.activeReadFilter isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
 }
@@ -87,24 +88,25 @@
 }
 
 - (void)buildMenuOptions {
-    BOOL everything = appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"];
+    BOOL everything = appDelegate.storiesCollection.isRiverView &&
+                      [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
 
     NSMutableArray *options = [NSMutableArray array];
     
-    //    NSString *title = appDelegate.isRiverView ?
-    //                        appDelegate.activeFolder :
-    //                        [appDelegate.activeFeed objectForKey:@"feed_title"];
+    //    NSString *title = appDelegate.storiesCollection.isRiverView ?
+    //                        appDelegate.storiesCollection.activeFolder :
+    //                        [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
     
     if (!everything) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
-                                appDelegate.isRiverView ?
+                                appDelegate.storiesCollection.isRiverView ?
                                 @"this entire folder" :
                                 @"this site"];
         [options addObject:[deleteText uppercaseString]];
         [options addObject:[@"Move to another folder" uppercaseString]];
     }
     
-    if (!appDelegate.isRiverView) {
+    if (!appDelegate.storiesCollection.isRiverView) {
         [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
@@ -119,7 +121,8 @@
 {
     [self buildMenuOptions];
     int filterOptions = 2;
-    if (appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+    if (appDelegate.storiesCollection.isSocialRiverView ||
+        appDelegate.storiesCollection.isSocialView) {
         filterOptions = 1;
     }
     
@@ -229,9 +232,9 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     if ([sender selectedSegmentIndex] == 0) {
-        [userPreferences setObject:@"newest" forKey:[appDelegate orderKey]];
+        [userPreferences setObject:@"newest" forKey:[appDelegate.storiesCollection orderKey]];
     } else {
-        [userPreferences setObject:@"oldest" forKey:[appDelegate orderKey]];
+        [userPreferences setObject:@"oldest" forKey:[appDelegate.storiesCollection orderKey]];
     }
     
     [userPreferences synchronize];
@@ -243,9 +246,9 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([sender selectedSegmentIndex] == 0) {
-        [userPreferences setObject:@"all" forKey:[appDelegate readFilterKey]];
+        [userPreferences setObject:@"all" forKey:[appDelegate.storiesCollection readFilterKey]];
     } else {
-        [userPreferences setObject:@"unread" forKey:[appDelegate readFilterKey]];
+        [userPreferences setObject:@"unread" forKey:[appDelegate.storiesCollection readFilterKey]];
     }
     
     [userPreferences synchronize];

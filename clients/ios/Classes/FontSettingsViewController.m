@@ -192,20 +192,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
-        if (isSaved) {
-            [appDelegate.storyPageControl markStoryAsUnsaved];
-        } else {
-            [appDelegate.storyPageControl markStoryAsSaved];
-        }
+        [appDelegate toggleStorySaved];
     } else if (indexPath.row == 1) {
-        bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
-        if (isRead) {
-            [appDelegate.storyPageControl markStoryAsUnread];
-        } else {
-            [appDelegate.storyPageControl markStoryAsRead];
-            [appDelegate.feedDetailViewController redrawUnreadStory];
-        }
+        [appDelegate toggleStoryUnread];
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 3) {

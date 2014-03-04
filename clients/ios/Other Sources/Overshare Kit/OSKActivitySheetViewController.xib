@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OSKActivitySheetViewController">
+            <connections>
+                <outlet property="cancelButton" destination="XeX-v9-iq6" id="HMh-gq-vbZ"/>
+                <outlet property="cancellationView" destination="Obo-3g-SCW" id="DXX-Sf-e0F"/>
+                <outlet property="collectionViewContainer" destination="3eK-gk-Rv9" id="b0v-oo-dJQ"/>
+                <outlet property="pageControl" destination="zfv-cs-01a" id="XRy-uN-GXz"/>
+                <outlet property="sheetContainerView" destination="1" id="2rp-q0-HIZ"/>
+                <outlet property="titleLabel" destination="Zz1-nr-c4H" id="Eu5-F4-UEP"/>
+                <outlet property="topShadowLine" destination="lsl-bw-0VW" id="oVh-RL-KwS"/>
+                <outlet property="view" destination="SFf-8h-RsQ" id="1wR-dj-Mjs"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="SFf-8h-RsQ">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" id="Obo-3g-SCW" userLabel="Cancellation View">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="500"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view contentMode="scaleToFill" placeholderIntrinsicWidth="320" placeholderIntrinsicHeight="408" id="1" userLabel="Sheet Container">
+                    <rect key="frame" x="0.0" y="144" width="320" height="416"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" id="lsl-bw-0VW" userLabel="Shadow Line">
+                            <rect key="frame" x="0.0" y="-1" width="320" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        </view>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share bears share with Overshare Kit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zz1-nr-c4H" userLabel="Title Label">
+                            <rect key="frame" x="16" y="8" width="288" height="40"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" id="zfv-cs-01a">
+                            <rect key="frame" x="16" y="327" width="288" height="37"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        </pageControl>
+                        <view contentMode="scaleToFill" id="3eK-gk-Rv9" userLabel="Collection View Container">
+                            <rect key="frame" x="0.0" y="56" width="320" height="288"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="XeX-v9-iq6" userLabel="Cancel Button" customClass="OSKBorderedButton">
+                            <rect key="frame" x="-1" y="364" width="322" height="53"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                            <state key="normal" title="Cancel"/>
+                            <connections>
+                                <action selector="cancelButtonPressed:" destination="-1" eventType="touchUpInside" id="Elq-NL-UVT"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.95871350364963503" alpha="1" colorSpace="calibratedWhite"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+</document>
