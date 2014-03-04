@@ -898,10 +898,10 @@
         }];
     }
     
-    if (self.feedDetailViewController.storiesCollection.transferredFromDashboard) {
-        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
-        [dashboardCollection transferStoriesFromCollection:feedDetailViewController.storiesCollection];
-        [self.dashboardViewController.storiesModule fadeSelectedCell];
+    if (feedDetailViewController.storiesCollection.transferredFromDashboard) {
+        [dashboardViewController.storiesModule.storiesCollection
+         transferStoriesFromCollection:feedDetailViewController.storiesCollection];
+        [dashboardViewController.storiesModule fadeSelectedCell];
     }
 }
 
