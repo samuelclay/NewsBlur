@@ -839,6 +839,8 @@
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     
+    [appDelegate.dashboardViewController.storiesModule reloadData];
+    
     // adding dashboardViewController and masterNavigationController
     [self.view insertSubview:self.dashboardViewController.view atIndex:0];
     [self.view addSubview:self.masterNavigationController.view];

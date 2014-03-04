@@ -136,6 +136,7 @@
         CGPoint p = [gestureRecognizer locationInView:self.storyTitlesTable];
         NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:p];
         NSDictionary *story = [self getStoryAtRow:indexPath.row];
+        if (!story) return YES;
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
         BOOL showText = NO;
@@ -304,7 +305,8 @@
     }
     
     self.finishedAnimatingIn = YES;
-    if ([storiesCollection.activeFeedStories count]) {
+    if ([storiesCollection.activeFeedStories count] ||
+        self.isDashboardModule) {
         [self.storyTitlesTable reloadData];
     }
     NSLog(@"Detail did appear");
@@ -379,7 +381,9 @@
     self.isShowingFetching = NO;
 //    self.feedPage = 1;
     appDelegate.activeStory = nil;
-    [appDelegate.storyPageControl resetPages];
+    if (!self.isDashboardModule) {
+        [appDelegate.storyPageControl resetPages];
+    }
     [self.notifier hideIn:0];
     [self cancelRequests];
     [self beginOfflineTimer];
@@ -1030,6 +1034,7 @@
 
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
+        fleuron.tag = 99;
         [cell.contentView addSubview:fleuron];
         cell.backgroundColor = [UIColor clearColor];
         return cell;
@@ -1061,6 +1066,7 @@
         return [self makeLoadingCell];
     }
     
+    
     if (storiesCollection.isRiverView || storiesCollection.isSocialView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
@@ -1074,6 +1080,12 @@
                                           reuseIdentifier:cellIdentifier];
     }
     
+    for (UIView *view in cell.contentView.subviews) {
+        if ([view isKindOfClass:[UIImageView class]] && ((UIImageView *)view).tag == 99) {
+            [view removeFromSuperview];
+            break;
+        }
+    }
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     
     id feedId = [story objectForKey:@"story_feed_id"];
@@ -1167,7 +1179,7 @@
         cell.isRiverOrSocial = YES;
     }
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !self.isDashboardModule) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
@@ -1390,7 +1402,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
-    NSInteger row = [[[storiesCollection activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
+    if (indexPathRow >= [[storiesCollection activeFeedStoryLocations] count]) return nil;
+    id location = [[storiesCollection activeFeedStoryLocations] objectAtIndex:indexPathRow];
+    if (!location) return nil;
+    NSInteger row = [location intValue];
     return [storiesCollection.activeFeedStories objectAtIndex:row];
 }
 
