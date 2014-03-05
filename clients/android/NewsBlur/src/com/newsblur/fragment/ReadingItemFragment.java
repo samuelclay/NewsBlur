@@ -15,7 +15,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -201,6 +204,14 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
+
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(view));
+        web.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return gestureDetector.onTouchEvent(motionEvent);
+            }
+        });
 
 		return view;
 	}
@@ -529,4 +540,45 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		this.previouslySavedShareText = previouslySavedShareText;
 	}
 
+    private class ImmersiveViewDetector extends GestureDetector.SimpleOnGestureListener {
+        private View view;
+        // TODO detect if in immersive view  - left/right swipe needs this - really whether previous view was immersive
+        private boolean inImmersiveView = false;
+
+        public ImmersiveViewDetector(View view) {
+            this.view = view;
+            inImmersiveView = (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
+            Log.d("mark", ""+inImmersiveView);
+            Log.d("mark", ""+view.getSystemUiVisibility());
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            if (inImmersiveView) {
+                showSystemUI();
+            } else {
+                hideSystemUI();
+            }
+
+            inImmersiveView = !inImmersiveView;
+
+            return super.onSingleTapUp(e);
+        }
+
+       private void hideSystemUI() {
+            view.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        }
+
+        private void showSystemUI() {
+            // Some layout/drawing artifacts as we don't use the FLAG_LAYOUT flags but otherwise the overlays wouldn't appear
+            // and the action bar would overlap the content
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+    }
 }
