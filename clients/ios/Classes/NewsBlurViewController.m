@@ -265,6 +265,15 @@ static UIFont *userLabelFont;
 - (void)fadeSelectedCell {
     [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
                                         animated:YES];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+        NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
+        if (!indexPath) return;
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                    withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -839,24 +848,41 @@ static UIFont *userLabelFont;
 
     FeedTableCell *cell = (FeedTableCell *)[self.feedTitlesTable cellForRowAtIndexPath:indexPath];
     if (!cell.highlighted) return;
+
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-    NSDictionary *feed = isSocial ?
-                        [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
-                        [appDelegate.dictFeeds objectForKey:feedIdStr];
 
-    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:[feed objectForKey:@"feed_title"]
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Cancel"
-                                                 destructiveButtonTitle:@"Mark site as read"
-                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
-    markReadSheet.accessibilityValue = feedIdStr;
-    [markReadSheet showInView:self.view];
-    
     [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
+
+    if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
+        NSDictionary *feed = isSocial ?
+                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                            [appDelegate.dictFeeds objectForKey:feedIdStr];
+
+        UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:[feed objectForKey:@"feed_title"]
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"Cancel"
+                                                     destructiveButtonTitle:@"Mark site as read"
+                                                          otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+        markReadSheet.accessibilityValue = feedIdStr;
+        [markReadSheet showInView:self.view];
+    } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
+        [self markFeedRead:feedId cutoffDays:0];
+        
+        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+            [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+        }
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                    withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
+    }
+    
 }
 
 - (void)highlightCell:(FeedTableCell *)cell {
@@ -864,6 +890,14 @@ static UIFont *userLabelFont;
 }
 - (void)unhighlightCell:(FeedTableCell *)cell {
     [cell setHighlighted:NO];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+        NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                    withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -1062,7 +1096,9 @@ static UIFont *userLabelFont;
     }
 
     // If all feeds are already showing, no need to remember this one.
-    if (!self.viewShowingAllFeeds) {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (!self.viewShowingAllFeeds &&
+        [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
@@ -1215,8 +1251,10 @@ heightForHeaderInSection:(NSInteger)section {
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read
         [self markFeedRead:feedId cutoffDays:0];
-        
-        [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+            [self.stillVisibleFeeds setObject:indexPath forKey:feedId];
+        }
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];

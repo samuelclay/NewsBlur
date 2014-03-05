@@ -1120,7 +1120,9 @@
             
         }
         feedDetailView.storiesCollection.activeFolderFeeds = feeds;
-        if (!self.feedsViewController.viewShowingAllFeeds) {
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        if (!self.feedsViewController.viewShowingAllFeeds &&
+            [preferences boolForKey:@"show_feeds_after_being_read"]) {
             for (id feedId in feeds) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
                 [self.feedsViewController.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];

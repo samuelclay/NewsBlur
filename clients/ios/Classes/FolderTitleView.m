@@ -243,16 +243,23 @@
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (section < 2) return;
-    
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *longPressTitle = [preferences stringForKey:@"long_press_feed_title"];
+
     NSString *folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
-    
-    UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Cancel"
-                                                 destructiveButtonTitle:@"Mark folder as read"
-                                                      otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
-    markReadSheet.accessibilityValue = folderTitle;
-    [markReadSheet showInView:appDelegate.feedsViewController.view];
+    NSArray *feedIds = [appDelegate.dictFolders objectForKey:folderTitle];
+
+    if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
+        UIActionSheet *markReadSheet = [[UIActionSheet alloc] initWithTitle:folderTitle
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"Cancel"
+                                                     destructiveButtonTitle:@"Mark folder as read"
+                                                          otherButtonTitles:@"1 day", @"3 days", @"7 days", @"14 days", nil];
+        markReadSheet.accessibilityValue = folderTitle;
+        [markReadSheet showInView:appDelegate.feedsViewController.view];
+    } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
+        [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
