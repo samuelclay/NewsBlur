@@ -78,11 +78,26 @@
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 
+- (void)syncStoryAsRead:(NSDictionary *)story;
+- (void)syncStoryAsUnread:(NSDictionary *)story;
+
+- (void)toggleStoryUnread;
+- (void)toggleStoryUnread:(NSDictionary *)story;
+- (void)markStoryRead:(NSDictionary *)story;
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStoryUnread:(NSDictionary *)story;
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
-- (void)markStory:story asSaved:(BOOL)saved;
 
+- (void)markStory:story asSaved:(BOOL)saved;
+- (void)toggleStorySaved;
+- (void)toggleStorySaved:(NSDictionary *)story;
+- (void)syncStoryAsSaved:(NSDictionary *)story;
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)syncStoryAsUnsaved:(NSDictionary *)story;
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 
 @end
