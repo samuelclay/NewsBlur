@@ -1858,10 +1858,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return [self failedMarkAsRead:request];
     }
 
-    if ([[appDelegate.storyPageControl.currentPage.activeStory objectForKey:@"story_hash"]
-         isEqualToString:[request.userInfo objectForKey:@"story_hash"]]) {
-        [appDelegate markActiveStoryRead];
-    }
     [appDelegate.storyPageControl refreshHeaders];
 }
 
