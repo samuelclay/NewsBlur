@@ -1905,6 +1905,8 @@
             [storyPageControl refreshHeaders];
         }
     }
+    [storyPageControl setNextPreviousButtons];
+    originalStoryCount += 1;
 }
 
 - (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
