@@ -1912,8 +1912,10 @@
 - (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
     if (![storyPageControl failedMarkAsUnread:request]) {
         [feedDetailViewController failedMarkAsUnread:request];
+        [dashboardViewController.storiesModule failedMarkAsUnread:request];
     }
     [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
 }
 
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
@@ -1924,8 +1926,10 @@
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
     if (![storyPageControl failedMarkAsSaved:request]) {
         [feedDetailViewController failedMarkAsSaved:request];
+        [dashboardViewController.storiesModule failedMarkAsSaved:request];
     }
     [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
 }
 
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
@@ -1936,8 +1940,10 @@
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
     if (![storyPageControl failedMarkAsUnsaved:request]) {
         [feedDetailViewController failedMarkAsUnsaved:request];
+        [dashboardViewController.storiesModule failedMarkAsUnsaved:request];
     }
     [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
 }
 
 

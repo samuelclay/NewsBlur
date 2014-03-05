@@ -653,7 +653,7 @@
 }
 
 - (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
-    [self markStory:request.userInfo asSaved:YES];
+    [self markStory:request.userInfo asSaved:NO];
     
     [appDelegate failedMarkAsSaved:request];
 }
@@ -692,6 +692,7 @@
 }
 
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+    [self markStory:request.userInfo asSaved:YES];
     [appDelegate failedMarkAsUnsaved:request];
 }
 
