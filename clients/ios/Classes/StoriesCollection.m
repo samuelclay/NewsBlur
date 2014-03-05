@@ -436,6 +436,7 @@
         int unreads = MAX(0, [[newUnreadCounts objectForKey:@"ng"] intValue] + 1);
         [newUnreadCounts setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
+    if (!newUnreadCounts) return;
     [appDelegate.dictUnreadCounts setObject:newUnreadCounts forKey:feedIdStr];
     
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {

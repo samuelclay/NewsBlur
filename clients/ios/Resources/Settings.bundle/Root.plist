@@ -78,7 +78,7 @@
 			<key>Key</key>
 			<string>story_list_preview_description</string>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -157,6 +157,22 @@
 			</array>
 			<key>Key</key>
 			<string>story_font_size</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Feed list</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show feeds after being read</string>
+			<key>Key</key>
+			<string>show_feeds_after_being_read</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -303,6 +319,58 @@
 			</array>
 			<key>Key</key>
 			<string>two_finger_double_tap</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a feed/folder title for a couple seconds.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press feed/folder</string>
+			<key>Titles</key>
+			<array>
+				<string>Mark read X days back...</string>
+				<string>Mark everything read</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>mark_read_choose_days</string>
+			<key>Values</key>
+			<array>
+				<string>mark_read_choose_days</string>
+				<string>mark_read_immediate</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>long_press_feed_title</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a story title for a couple seconds.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press story title</string>
+			<key>Titles</key>
+			<array>
+				<string>Send to third-party</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Train story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>open_send_to</string>
+			<key>Values</key>
+			<array>
+				<string>open_send_to</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>train_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>long_press_story_title</string>
 		</dict>
 		<dict>
 			<key>FooterText</key>

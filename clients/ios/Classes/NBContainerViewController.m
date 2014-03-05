@@ -18,6 +18,7 @@
 #import "InteractionCell.h"
 #import "ActivityCell.h"
 #import "FeedTableCell.h"
+#import "FeedDetailTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
@@ -368,6 +369,12 @@
                                                  animated:NO];
     } else if ([sender class] == [FeedTableCell class]) {
         FeedTableCell *cell = (FeedTableCell *)sender;
+        [popoverController presentPopoverFromRect:cell.bounds
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny
+                                         animated:YES];
+    } else if ([sender class] == [FeedDetailTableCell class]) {
+        FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
         [popoverController presentPopoverFromRect:cell.bounds
                                            inView:cell
                          permittedArrowDirections:UIPopoverArrowDirectionAny

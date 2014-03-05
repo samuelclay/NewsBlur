@@ -1467,9 +1467,21 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (indexPath == nil) return;
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
-    appDelegate.activeStory = story;
     
-    [appDelegate showSendTo:self sender:cell];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
+//    NSDictionary *originalActiveStory = [appDelegate.activeStory copy];
+    appDelegate.activeStory = story;
+    if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
+        [appDelegate showSendTo:self sender:cell];
+    } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
+        [appDelegate toggleStoryUnread];
+    } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
+        [appDelegate toggleStorySaved];
+    } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
+        [appDelegate openTrainStory:cell];
+    }
+//    appDelegate.activeStory = originalActiveStory;
 }
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
