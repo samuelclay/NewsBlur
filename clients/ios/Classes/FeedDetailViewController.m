@@ -172,8 +172,10 @@
             [appDelegate.storyDetailViewController fetchTextView];
         } else if (markUnread) {
             [storiesCollection toggleStoryUnread:story];
+            [self reloadData];
         } else if (saveStory) {
             [storiesCollection toggleStorySaved:story];
+            [self reloadData];
         }
         inDoubleTap = NO;
     }

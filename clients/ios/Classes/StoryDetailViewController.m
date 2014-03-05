@@ -137,8 +137,10 @@
             [self fetchTextView];
         } else if (markUnread) {
             [appDelegate.storiesCollection toggleStoryUnread];
+            [appDelegate.feedDetailViewController reloadData];
         } else if (saveStory) {
             [appDelegate.storiesCollection toggleStorySaved];
+            [appDelegate.feedDetailViewController reloadData];
         }
         inDoubleTap = NO;
     }

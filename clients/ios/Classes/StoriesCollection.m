@@ -418,6 +418,11 @@
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     
+    if ([[appDelegate.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
+        appDelegate.activeStory = newStory;
+    }
+    
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
@@ -430,10 +435,6 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
-    if ([[appDelegate.activeStory objectForKey:@"story_hash"]
-         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
-        appDelegate.activeStory = newStory;
-    }
     
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;
@@ -508,6 +509,11 @@
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
     
+    if ([[appDelegate.activeStory objectForKey:@"story_hash"]
+         isEqualToString:[newStory objectForKey:@"story_hash"]]) {
+        appDelegate.activeStory = newStory;
+    }
+    
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
@@ -520,7 +526,7 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
-    
+
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;
     

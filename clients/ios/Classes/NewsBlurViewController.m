@@ -418,6 +418,7 @@ static UIFont *userLabelFont;
     
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
+    appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
 
     self.isOffline = NO;
     NSString *responseString = [request responseString];   

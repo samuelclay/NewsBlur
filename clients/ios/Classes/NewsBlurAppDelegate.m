@@ -1887,8 +1887,8 @@
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
-        if (![[page.activeStory objectForKey:@"story_hash"]
-              isEqualToString:[story objectForKey:@"story_hash"]]) {
+        if ([[page.activeStory objectForKey:@"story_hash"]
+             isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = NO;
             [storyPageControl refreshHeaders];
         }
@@ -1899,8 +1899,8 @@
     for (StoryDetailViewController *page in @[storyPageControl.previousPage,
                                               storyPageControl.currentPage,
                                               storyPageControl.nextPage]) {
-        if (![[page.activeStory objectForKey:@"story_hash"]
-              isEqualToString:[story objectForKey:@"story_hash"]]) {
+        if ([[page.activeStory objectForKey:@"story_hash"]
+             isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
             [storyPageControl refreshHeaders];
         }
