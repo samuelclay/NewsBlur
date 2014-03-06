@@ -131,7 +131,9 @@
 
 - (void)refreshStories {
     [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
-        [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+        });
     }];
 }
 
