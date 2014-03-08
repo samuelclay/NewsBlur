@@ -15,7 +15,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -182,7 +181,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-		view = inflater.inflate(R.layout.fragment_readingitem, null);
+        view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 
@@ -205,7 +204,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
 
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(view));
+        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+        // fragments
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
         web.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -542,14 +543,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
     private class ImmersiveViewDetector extends GestureDetector.SimpleOnGestureListener {
         private View view;
-        // TODO detect if in immersive view  - left/right swipe needs this - really whether previous view was immersive
         private boolean inImmersiveView = false;
 
         public ImmersiveViewDetector(View view) {
             this.view = view;
+
             inImmersiveView = (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
-            Log.d("mark", ""+inImmersiveView);
-            Log.d("mark", ""+view.getSystemUiVisibility());
         }
 
         @Override
