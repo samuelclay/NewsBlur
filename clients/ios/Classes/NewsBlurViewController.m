@@ -963,6 +963,10 @@ static UIFont *userLabelFont;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
         }
+    } else if ([notification.object isEqual:@"story_list_preview_images"]) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.dashboardViewController.storiesModule reloadData];
+        }
     }
 }
 

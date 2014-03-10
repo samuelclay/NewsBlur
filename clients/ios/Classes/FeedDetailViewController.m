@@ -187,6 +187,10 @@
 }
 
 - (void)reloadData {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
+    self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
+
     [self.storyTitlesTable reloadData];
 }
 
