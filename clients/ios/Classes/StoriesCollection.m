@@ -441,7 +441,7 @@
     }
     self.activeFeedStories = newActiveFeedStories;
     
-    // If not a feed, then don't bother updating local feed.
+    // If not a feed, then don't bother updating local feed
     if (!feed) return;
     
     self.visibleUnreadCount -= 1;
@@ -450,6 +450,7 @@
     }
     
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
+    if (!unreadCounts) return; // Not subscribed
     NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
     NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
