@@ -164,6 +164,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	public void onDestroy() {
 		getActivity().unregisterReceiver(receiver);
         web.setOnTouchListener(null);
+        view.setOnTouchListener(null);
 		super.onDestroy();
 	}
 
@@ -206,20 +207,26 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
 
+        setupImmersiveViewGestureDetector();
+
+		return view;
+	}
+
+    private void setupImmersiveViewGestureDetector() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
             // fragments
             final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
-            web.setOnTouchListener(new View.OnTouchListener() {
+            View.OnTouchListener touchListener = new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     return gestureDetector.onTouchEvent(motionEvent);
                 }
-            });
+            };
+            web.setOnTouchListener(touchListener);
+            view.setOnTouchListener(touchListener);
         }
-
-		return view;
-	}
+    }
 	
 	private void setupSaveButton() {
 		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
