@@ -720,7 +720,11 @@
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
-        [self markStoryAsRead];
+        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
+            [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
+            [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
+        }
+        [appDelegate.feedDetailViewController redrawUnreadStory];
     }
 }
 
@@ -827,74 +831,10 @@
     }
 }
 
-- (void)markStoryAsRead {
-    if (!appDelegate.activeStory) return;
-    
-    if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
-        
-        [appDelegate markActiveStoryRead];
-        [self refreshHeaders];
-        [appDelegate.feedDetailViewController redrawUnreadStory];
-        
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeStory objectForKey:@"story_hash"]
-                       forKey:@"story_hash"];
-        [request setUserInfo:@{@"story_feed_id":[appDelegate.activeStory
-                                                 objectForKey:@"story_feed_id"],
-                                @"story_hash":[appDelegate.activeStory
-                                               objectForKey:@"story_hash"]}];
-        [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
-    }
-}
-
-- (void)finishMarkAsRead:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailedMarkStoryRead:request];
-    }
-    
-    //    NSString *responseString = [request responseString];
-    //    NSDictionary *results = [[NSDictionary alloc]
-    //                             initWithDictionary:[responseString JSONValue]];
-    //    NSLog(@"results in mark as read is %@", results);
-}
-
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request {
-    //    [self informError:@"Failed to mark story as read"];
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
-}
-
 - (IBAction)openSendToDialog:(id)sender {
     [self endTouchDown:sender];
 
     [appDelegate showSendTo:self sender:sender];
-}
-
-- (void)markStoryAsSaved {
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
 }
 
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
@@ -902,31 +842,20 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate.storiesCollection markStory:appDelegate.activeStory asSaved:YES];
+    [appDelegate.storiesCollection markStory:request.userInfo asSaved:YES];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
-- (void)markStoryAsUnsaved {
-    //    [appDelegate markActiveStoryUnread];
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+- (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
+    }
+
+    [self informError:@"Failed to save story"];
+    return YES;
 }
 
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
@@ -934,74 +863,32 @@
         return [self requestFailed:request];
     }
     
-    [appDelegate.storiesCollection markStory:appDelegate.activeStory asSaved:NO];
+    [appDelegate.storiesCollection markStory:[request.userInfo objectForKey:@"story"] asSaved:NO];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     [self refreshHeaders];
     [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 
-- (void)markStoryAsUnread {
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"story_hash"]
-                       forKey:@"story_id"];
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"story_feed_id"]
-                       forKey:@"feed_id"];
-        
-        [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-        [request setDidFailSelector:@selector(failedMarkAsUnread:)];
-        [request setDelegate:self];
-        [request setUserInfo:appDelegate.activeStory];
-        [request startAsynchronous];
+
+- (BOOL)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
     }
+    
+    [self informError:@"Failed to unsave story"];
+    return YES;
 }
 
-- (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsUnread:request];
+- (BOOL)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    if (![[request.userInfo objectForKey:@"story_hash"]
+          isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
+        return NO;
     }
     
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc]
-                             initWithDictionary:[responseString JSONValue]];
-    
-    if ([[results objectForKey:@"code"] intValue] < 0) {
-        return [self requestFailed:[results objectForKey:@"message"]];
-    }
-    
-    [appDelegate markActiveStoryUnread];
-    [appDelegate.feedDetailViewController redrawUnreadStory];
-    currentPage.isRecentlyUnread = YES;
-    [self refreshHeaders];
-    [self setNextPreviousButtons];
-    [self.currentPage flashCheckmarkHud:@"unread"];
+    [self informError:@"Failed to unread story"];
+    return YES;
 }
-
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
-    
-    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
-    if (!dequeued) {
-        [self informError:@"Failed to unread story"];
-        [appDelegate.storiesCollection markStoryRead:storyHash feedId:storyFeedId];
-    } else {
-        [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
-        [appDelegate markActiveStoryUnread];
-        [appDelegate.feedDetailViewController redrawUnreadStory];
-        [self setNextPreviousButtons];
-        [self.currentPage flashCheckmarkHud:@"unread"];
-    }
-    
-    [self refreshHeaders];
-}
-
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate.masterContainerViewController hidePopover];

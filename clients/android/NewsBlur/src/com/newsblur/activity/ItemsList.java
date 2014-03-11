@@ -38,10 +38,9 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected int currentState;
-	private Menu menu;
 	
 	protected boolean stopLoading = false;
-	
+
 	@Override
 	protected void onCreate(Bundle bundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -54,7 +53,6 @@ public abstract class ItemsList extends NbFragmentActivity implements ActionComp
         // our intel state is entirely determined by the state of the Main view
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 	}
 
     protected void onResume() {

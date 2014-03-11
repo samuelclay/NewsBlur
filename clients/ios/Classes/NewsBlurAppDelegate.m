@@ -1619,6 +1619,7 @@
     }
 
     [storiesCollection markStoryRead:story feed:feed];
+    [storiesCollection syncStoryAsRead:story];
     self.activeStory = [storiesCollection.activeFeedStories objectAtIndex:activeIndex];
 }
 
@@ -1882,23 +1883,67 @@
     }
 }
 
-- (void)toggleStorySaved {
-    BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
-    if (isSaved) {
-        [self.storyPageControl markStoryAsUnsaved];
-    } else {
-        [self.storyPageControl markStoryAsSaved];
+- (void)finishMarkAsRead:(NSDictionary *)story {
+    for (StoryDetailViewController *page in @[storyPageControl.previousPage,
+                                              storyPageControl.currentPage,
+                                              storyPageControl.nextPage]) {
+        if ([[page.activeStory objectForKey:@"story_hash"]
+             isEqualToString:[story objectForKey:@"story_hash"]]) {
+            page.isRecentlyUnread = NO;
+            [storyPageControl refreshHeaders];
+        }
     }
 }
 
-- (void)toggleStoryUnread {
-    BOOL isUnread = [self.storiesCollection isStoryUnread:self.activeStory];
-    if (!isUnread) {
-        [self.storyPageControl markStoryAsUnread];
-    } else {
-        [self.storyPageControl markStoryAsRead];
-        [self.feedDetailViewController redrawUnreadStory];
+- (void)finishMarkAsUnread:(NSDictionary *)story {
+    for (StoryDetailViewController *page in @[storyPageControl.previousPage,
+                                              storyPageControl.currentPage,
+                                              storyPageControl.nextPage]) {
+        if ([[page.activeStory objectForKey:@"story_hash"]
+             isEqualToString:[story objectForKey:@"story_hash"]]) {
+            page.isRecentlyUnread = YES;
+            [storyPageControl refreshHeaders];
+        }
     }
+    [storyPageControl setNextPreviousButtons];
+    originalStoryCount += 1;
+}
+
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
+    if (![storyPageControl failedMarkAsUnread:request]) {
+        [feedDetailViewController failedMarkAsUnread:request];
+        [dashboardViewController.storiesModule failedMarkAsUnread:request];
+    }
+    [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
+}
+
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
+    [storyPageControl finishMarkAsSaved:request];
+    [feedDetailViewController finishMarkAsSaved:request];
+}
+
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
+    if (![storyPageControl failedMarkAsSaved:request]) {
+        [feedDetailViewController failedMarkAsSaved:request];
+        [dashboardViewController.storiesModule failedMarkAsSaved:request];
+    }
+    [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
+}
+
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
+    [storyPageControl finishMarkAsUnsaved:request];
+    [feedDetailViewController finishMarkAsUnsaved:request];
+}
+
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
+    if (![storyPageControl failedMarkAsUnsaved:request]) {
+        [feedDetailViewController failedMarkAsUnsaved:request];
+        [dashboardViewController.storiesModule failedMarkAsUnsaved:request];
+    }
+    [feedDetailViewController reloadData];
+    [dashboardViewController.storiesModule reloadData];
 }
 
 
@@ -1974,6 +2019,15 @@
     }
     
     return feed;
+}
+
+- (NSDictionary *)getStory:(NSString *)storyHash {
+    for (NSDictionary *story in storiesCollection.activeFeedStories) {
+        if ([[story objectForKey:@"story_hash"] isEqualToString:storyHash]) {
+            return story;
+        }
+    }
+    return nil;
 }
 
 #pragma mark -

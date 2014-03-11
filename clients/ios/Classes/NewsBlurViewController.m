@@ -418,6 +418,7 @@ static UIFont *userLabelFont;
     
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
+    appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
 
     self.isOffline = NO;
     NSString *responseString = [request responseString];   
@@ -795,7 +796,7 @@ static UIFont *userLabelFont;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 114)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
@@ -961,6 +962,10 @@ static UIFont *userLabelFont;
         [self.feedTitlesTable reloadData];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule.storyTitlesTable reloadData];
+        }
+    } else if ([notification.object isEqual:@"story_list_preview_images"]) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.dashboardViewController.storiesModule reloadData];
         }
     }
 }

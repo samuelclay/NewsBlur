@@ -91,6 +91,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 		
 		itemList.setOnScrollListener(this);
@@ -122,6 +123,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), SocialFeedReading.class);
 		i.putExtra(Reading.EXTRA_USERID, userId);
 		i.putExtra(Reading.EXTRA_USERNAME, username);

@@ -29,7 +29,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class AllStoriesItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class AllStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
     private String[] feedIds;
 	private int currentState;
@@ -54,6 +54,7 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
@@ -108,6 +109,7 @@ public class AllStoriesItemListFragment extends StoryItemListFragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), AllStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_FEED_IDS, feedIds);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);

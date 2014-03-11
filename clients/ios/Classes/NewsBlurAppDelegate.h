@@ -306,13 +306,19 @@
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
-- (void)toggleStorySaved;
-- (void)toggleStoryUnread;
+- (void)finishMarkAsRead:(NSDictionary *)story;
+- (void)finishMarkAsUnread:(NSDictionary *)story;
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 
 + (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
+- (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;

@@ -136,9 +136,11 @@
         } else if (showText) {
             [self fetchTextView];
         } else if (markUnread) {
-            [appDelegate toggleStoryUnread];
+            [appDelegate.storiesCollection toggleStoryUnread];
+            [appDelegate.feedDetailViewController reloadData];
         } else if (saveStory) {
-            [appDelegate toggleStorySaved];
+            [appDelegate.storiesCollection toggleStorySaved];
+            [appDelegate.feedDetailViewController reloadData];
         }
         inDoubleTap = NO;
     }

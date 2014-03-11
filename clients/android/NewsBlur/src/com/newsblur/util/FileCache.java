@@ -3,17 +3,14 @@ package com.newsblur.util;
 import java.io.File;
 
 import android.content.Context;
+import android.util.Log;
 
 public class FileCache {
 
 	private File cacheDir;
 
 	public FileCache(Context context) {
-		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "NewsblurCache");
-		} else {
-			cacheDir = context.getCacheDir();
-		}
+        cacheDir = context.getCacheDir();
 		if (!cacheDir.exists()) {
 			cacheDir.mkdirs();
 		}
@@ -34,4 +31,22 @@ public class FileCache {
 			}
 		}
 	}
+
+    /**
+     * Looks for and cleans up any remains of the old, mis-located legacy cache directory.
+     */
+    public static void cleanUpOldCache(Context context) {
+        try {
+            File dir = new File(android.os.Environment.getExternalStorageDirectory(), "NewsblurCache");
+            if (!dir.exists()) return;
+            File[] files = dir.listFiles();
+            if (files == null) return;
+            for (File f : files) {
+                f.delete();
+            }
+            dir.delete();
+        } catch (Exception e) {
+            Log.e(FileCache.class.getName(), "exception cleaning up legacy cache", e);
+        }
+    }
 }

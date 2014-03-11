@@ -46,6 +46,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
@@ -95,6 +96,7 @@ public class SavedStoriesItemListFragment extends ItemListFragment implements Lo
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), SavedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
         i.putExtra(Reading.EXTRA_DEFAULT_FEED_VIEW, defaultFeedView);

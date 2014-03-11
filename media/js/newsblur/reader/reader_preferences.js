@@ -103,7 +103,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('option', { value: 'Asia/Gaza' }, '(GMT+02:00) Gaza'),
                                     $.make('option', { value: 'Africa/Blantyre' }, '(GMT+02:00) Harare, Pretoria'),
                                     $.make('option', { value: 'Asia/Jerusalem' }, '(GMT+02:00) Jerusalem'),
-                                    $.make('option', { value: 'Europe/Minsk' }, '(GMT+02:00) Minsk'),
+                                    $.make('option', { value: 'Europe/Minsk' }, '(GMT+02:00) Minsk, Kyiv'),
                                     $.make('option', { value: 'Asia/Damascus' }, '(GMT+02:00) Syria'),
                                     $.make('option', { value: 'Europe/Moscow' }, '(GMT+03:00) Moscow, St. Petersburg'),
                                     $.make('option', { value: 'Africa/Addis_Ababa' }, '(GMT+03:00) Nairobi'),

@@ -55,6 +55,10 @@ public class PrefsUtils {
             // wipe the local DB
             BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
             databaseHelper.dropAndRecreateTables();
+            // in case this is the first time we have run since moving the cache to the new location,
+            // blow away the old version entirely. This line can be removed some time well after
+            // v61+ is widely deployed
+            FileCache.cleanUpOldCache(context);
             // store the current version
             prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
         }
