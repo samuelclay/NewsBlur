@@ -36,17 +36,31 @@
                     android:layout_centerVertical="true"/>
 
             <TextView
-                android:id="@+id/row_item_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:layout_toRightOf="@id/row_item_sidebar"
-                android:maxLines="2"
-                android:ellipsize="end"
-                android:gravity="left"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:textSize="14sp" />
+                    android:id="@+id/row_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_toRightOf="@id/row_item_sidebar"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:textSize="14sp"/>
+
+            <TextView
+                    android:id="@+id/row_item_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:layout_toRightOf="@id/row_item_sidebar"
+                    android:layout_below="@+id/row_item_title"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:textSize="14sp"/>
 
 
         </RelativeLayout>

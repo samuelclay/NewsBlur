@@ -21,7 +21,7 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 
 	private Cursor cursor;
 	private final Feed feed;
-	private int storyTitleUnread, storyTitleRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
+	private int storyTitleUnread, storyTitleRead, storyContentUnread, storyContentRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
 
 	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
@@ -30,6 +30,8 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 
         storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
         storyTitleRead = context.getResources().getColor(R.color.story_title_read);
+        storyContentUnread = context.getResources().getColor(R.color.story_content_unread);
+        storyContentRead = context.getResources().getColor(R.color.story_content_read);
         storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
 		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
 		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
@@ -66,6 +68,7 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
             ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentUnread);
 			
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.BOLD);
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.BOLD);
@@ -77,10 +80,12 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
             ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentRead);
 			
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.NORMAL);
-			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}

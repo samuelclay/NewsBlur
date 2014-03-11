@@ -76,7 +76,8 @@ public class DatabaseConstants {
 	public static final String STORY_TITLE = "title";
 	public static final String STORY_DATE = "date";
 	public static final String STORY_SHARED_DATE = "sharedDate";
-	public static final String STORY_CONTENT = "content";
+    public static final String STORY_CONTENT = "content";
+    public static final String STORY_SHORT_CONTENT = "content";
 	public static final String STORY_COMMENT_COUNT = "comment_count";
 	public static final String STORY_FEED_ID = "feed_id";
 	public static final String STORY_INTELLIGENCE_AUTHORS = "intelligence_authors";
