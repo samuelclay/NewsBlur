@@ -796,7 +796,7 @@ static UIFont *userLabelFont;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 114)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
