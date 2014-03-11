@@ -366,6 +366,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this callback is a good API-level-independent way to tell when the root view size/layout changes
         super.onWindowFocusChanged(hasFocus);
         enableOverlays();
+
+        // Ensure that we come out of immersive view if the activity no longer has focus
+        if (!hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
     }
 
 	/**

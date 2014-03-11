@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -162,6 +163,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(receiver);
+        web.setOnTouchListener(null);
 		super.onDestroy();
 	}
 
@@ -204,15 +206,17 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
 
-        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
-        // fragments
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
-        web.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return gestureDetector.onTouchEvent(motionEvent);
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+            // fragments
+            final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
+            web.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return gestureDetector.onTouchEvent(motionEvent);
+                }
+            });
+        }
 
 		return view;
 	}
@@ -543,23 +547,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
     private class ImmersiveViewDetector extends GestureDetector.SimpleOnGestureListener {
         private View view;
-        private boolean inImmersiveView = false;
 
         public ImmersiveViewDetector(View view) {
             this.view = view;
-
-            inImmersiveView = (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
         }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if (inImmersiveView) {
+            if ((view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0) {
                 showSystemUI();
             } else {
                 hideSystemUI();
             }
-
-            inImmersiveView = !inImmersiveView;
 
             return super.onSingleTapUp(e);
         }
