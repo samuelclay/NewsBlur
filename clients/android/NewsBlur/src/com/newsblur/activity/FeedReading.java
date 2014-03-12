@@ -3,8 +3,8 @@ package com.newsblur.activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -35,9 +35,9 @@ public class FeedReading extends Reading {
         feedCursor.close();
         setTitle(feed.title);
 
-        readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, classifier, defaultFeedView);
+        readingAdapter = new FeedReadingAdapter(getFragmentManager(), feed, classifier, defaultFeedView);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override

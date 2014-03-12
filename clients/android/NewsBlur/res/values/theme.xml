@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-	<style name="NewsBlurTheme" parent="@style/Theme.Sherlock.Light" >
-		<item name="actionBarStyle">@style/actionbar</item>
+	<style name="NewsBlurTheme" parent="@android:style/Theme.Holo.Light" >
     	<item name="android:actionBarStyle">@style/actionbar</item>
 	</style>
 </resources>

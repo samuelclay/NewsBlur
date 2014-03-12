@@ -8,14 +8,12 @@
         <item name="android:padding">10dp</item>
     </style>
 
-    <style name="actionbar" parent="Widget.Sherlock.Light.ActionBar">
+    <style name="actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@drawable/actionbar_background</item>
-        <item name="background">@drawable/actionbar_background</item>
         <item name="android:titleTextStyle">@style/actionbarTitleText</item>
-        <item name="titleTextStyle">@style/actionbarTitleText</item>
     </style>
 
-    <style name="actionbarTitleText" parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
+    <style name="actionbarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/darkgray</item>
     </style>
 

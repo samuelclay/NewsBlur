@@ -8,7 +8,7 @@ import android.webkit.WebViewClient;
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
 
-public class AddFacebook extends NbFragmentActivity {
+public class AddFacebook extends NbActivity {
 
 	public static final int FACEBOOK_AUTHED = 0x21;
 	private WebView webview;

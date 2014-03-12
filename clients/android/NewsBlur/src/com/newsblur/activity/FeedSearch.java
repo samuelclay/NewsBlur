@@ -1,6 +1,6 @@
 package com.newsblur.activity;
 
 
-public class FeedSearch extends NbFragmentActivity {
+public class FeedSearch extends NbActivity {
 
 }

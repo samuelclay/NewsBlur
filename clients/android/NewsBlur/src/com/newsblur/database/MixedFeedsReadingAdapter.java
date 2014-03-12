@@ -3,8 +3,8 @@ package com.newsblur.database;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 
 import com.newsblur.activity.ReadingAdapter;
 import com.newsblur.domain.Classifier;

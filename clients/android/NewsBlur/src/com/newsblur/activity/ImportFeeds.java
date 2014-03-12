@@ -8,7 +8,7 @@ import android.webkit.WebViewClient;
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
 
-public class ImportFeeds extends NbFragmentActivity {
+public class ImportFeeds extends NbActivity {
 	
 	private WebView webContainer;
 

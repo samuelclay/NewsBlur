@@ -1,19 +1,19 @@
 package com.newsblur.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
 
 /**
  * Show progress screen while registering request is being processed. This
- * Activity doesn't extend NbFragmentActivity because it is one of the few
+ * Activity doesn't extend NbActivity because it is one of the few
  * Activities that will be shown while the user is still logged out.
  */
-public class RegisterProgress extends SherlockFragmentActivity {
+public class RegisterProgress extends Activity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";
@@ -23,7 +23,7 @@ public class RegisterProgress extends SherlockFragmentActivity {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_loginprogress);
 		
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 		
 		if (fragmentManager.findFragmentByTag(currentTag ) == null) {
 			final String username = getIntent().getStringExtra("username");

@@ -2,11 +2,11 @@ package com.newsblur.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivityFragment;
@@ -16,7 +16,7 @@ import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.PrefsUtils;
 
-public class Profile extends NbFragmentActivity {
+public class Profile extends NbActivity {
 
 	private FragmentManager fragmentManager;
 	private String detailsTag = "details";
@@ -33,11 +33,11 @@ public class Profile extends NbFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		apiManager = new APIManager(this);
 		userId = getIntent().getStringExtra(USER_ID);
 		
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
 		if (fragmentManager.findFragmentByTag(detailsTag) == null) {
 			FragmentTransaction detailsTransaction = fragmentManager.beginTransaction();

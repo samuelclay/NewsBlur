@@ -1,17 +1,17 @@
 package com.newsblur.activity;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
@@ -21,7 +21,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbFragmentActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
+public class Main extends NbActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
 
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
@@ -43,7 +43,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 		setContentView(R.layout.activity_main);
 		setupActionBar();
 
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
 		
@@ -76,7 +76,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
      */
 	private void triggerFirstSync() {
         PrefsUtils.updateLastSyncTime(this);
-		setSupportProgressBarIndeterminateVisibility(true);
+		setProgressBarIndeterminateVisibility(true);
         setRefreshEnabled(false);
 		
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
@@ -90,7 +90,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
      */
     private void triggerRefresh() {
         PrefsUtils.updateLastSyncTime(this);
-		setSupportProgressBarIndeterminateVisibility(true);
+		setProgressBarIndeterminateVisibility(true);
         setRefreshEnabled(false);
 
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
@@ -100,14 +100,14 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 	}
 
 	private void setupActionBar() {
-		actionBar = getSupportActionBar();
+		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		this.menu = menu;
 		return true;
@@ -128,7 +128,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
 			return true;
 		} else if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
-			newFragment.show(getSupportFragmentManager(), "dialog");
+			newFragment.show(getFragmentManager(), "dialog");
 		} else if (item.getItemId() == R.id.menu_settings) {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
@@ -154,7 +154,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
     @Override
 	public void updateAfterSync() {
 		folderFeedList.hasUpdated();
-		setSupportProgressBarIndeterminateVisibility(false);
+		setProgressBarIndeterminateVisibility(false);
         setRefreshEnabled(true);
 	}
 
@@ -173,7 +173,7 @@ public class Main extends NbFragmentActivity implements StateChangedListener, Sy
         // TODO: the progress bar is activated manually elsewhere in this activity. this
         //       interface method may be redundant.
 		if (syncRunning) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
             setRefreshEnabled(false);
 		}
 	}

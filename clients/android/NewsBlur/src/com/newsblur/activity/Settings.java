@@ -1,18 +1,18 @@
 package com.newsblur.activity;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.util.PrefConstants;
 
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 
-public class Settings extends SherlockPreferenceActivity {
+public class Settings extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         super.getPreferenceManager().setSharedPreferencesName(PrefConstants.PREFERENCES);
         addPreferencesFromResource(R.layout.activity_settings);
     }

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -56,7 +56,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.allsocialstories_itemslist, menu);
         return true;
     }
@@ -64,7 +64,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
 			String[] feeds = new String[feedIds.size()];
 			feedIds.toArray(feeds);
             FeedUtils.updateSocialFeeds(this, this, feeds, page, getStoryOrder(), PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME));

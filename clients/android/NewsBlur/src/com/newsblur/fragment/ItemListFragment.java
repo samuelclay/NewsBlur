@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.database.Cursor;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.Loader;
+import android.app.Fragment;
+import android.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;

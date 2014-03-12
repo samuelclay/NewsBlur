@@ -11,13 +11,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -25,9 +28,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -41,7 +41,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -107,12 +107,12 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
         this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
 
@@ -197,7 +197,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.reading, menu);
 		return true;
 	}
@@ -229,14 +229,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
-            newFragment.show(getSupportFragmentManager(), "dialog");
+            newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
 			FeedUtils.shareStory(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
-			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
+			textSize.show(getFragmentManager(), TEXT_SIZE);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
@@ -266,7 +266,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void updateCursor() {
-        getSupportLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     // interface OnPageChangeListener
