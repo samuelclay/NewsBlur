@@ -1198,7 +1198,7 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
-    return 32;
+    return 36;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {

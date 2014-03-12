@@ -297,29 +297,9 @@ static UIFont *indicatorFont = nil;
          context:nil];
     }
     
-    int storyAuthorDateY = r.size.height - 18;
-    if (cell.isShort) {
-//        storyAuthorDateY += 13;
-    }
-    
-    // story author style
-    if (cell.isRead) {
-        textColor = UIColorFromRGB(0x959595);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
-    } else {
-        textColor = UIColorFromRGB(0xA6A8A2);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-    }
-    if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x959595);
-    }
-    
-    [cell.storyAuthor
-     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width) / 2 - 10, 15.0)
-     withAttributes:@{NSFontAttributeName: font,
-                      NSForegroundColorAttributeName: textColor,
-                      NSParagraphStyleAttributeName: paragraphStyle}];
     // story date
+    int storyAuthorDateY = r.size.height - 18;
+    
     if (cell.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
         font = [UIFont fontWithName:@"Helvetica" size:10];
@@ -338,13 +318,35 @@ static UIFont *indicatorFont = nil;
     
     paragraphStyle.alignment = NSTextAlignmentRight;
     NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
+    CGSize dateSize = [date sizeWithAttributes:@{NSFontAttributeName: font,
+                                                 NSForegroundColorAttributeName: textColor,
+                                                 NSParagraphStyleAttributeName: paragraphStyle}];
     [date
-     drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0)
+     drawInRect:CGRectMake(0, storyAuthorDateY, rect.size.width + leftMargin, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
-    // feed bar
     
+    // Story author
+    if (cell.isRead) {
+        textColor = UIColorFromRGB(0x959595);
+        font = [UIFont fontWithName:@"Helvetica" size:10];
+    } else {
+        textColor = UIColorFromRGB(0xA6A8A2);
+        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+    }
+    if (cell.highlighted || cell.selected) {
+        textColor = UIColorFromRGB(0x959595);
+    }
+    
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    [cell.storyAuthor
+     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, rect.size.width - dateSize.width - 12, 15.0)
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
+
+    // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBarTopBorder CGColor]));
     if (cell.isRead) {
         CGContextSetAlpha(context, 0.15);
