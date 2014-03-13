@@ -837,7 +837,7 @@
     [feedDetailViewController resetFeedDetail];
     if (feedDetailViewController == dashboardViewController.storiesModule) {
         feedDetailViewController.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
-    } else if (feedDetailViewController == feedDetailViewController) {
+    } else {
         feedDetailViewController.storiesCollection = storiesCollection;
     }
     
