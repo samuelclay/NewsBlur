@@ -892,6 +892,7 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
+        new_story_guids = [s.get('guid') for s in stories]
         
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
@@ -899,8 +900,9 @@ class Feed(models.Model):
                           len(stories),
                           len(existing_stories.keys())))
         @timelimit(2)
-        def _1(story, story_content, existing_stories):
-            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+        def _1(story, story_content, existing_stories, new_story_guids):
+            existing_story, story_has_changed = self._exists_story(story, story_content, 
+                                                                   existing_stories, new_story_guids)
             return existing_story, story_has_changed
         
         for story in stories:
@@ -917,7 +919,8 @@ class Feed(models.Model):
             replace_story_date = False
             
             try:
-                existing_story, story_has_changed = _1(story, story_content, existing_stories)
+                existing_story, story_has_changed = _1(story, story_content, 
+                                                       existing_stories, new_story_guids)
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
                 existing_story = None
@@ -1275,7 +1278,7 @@ class Feed(models.Model):
             link = entry.get('id')
         return link
     
-    def _exists_story(self, story=None, story_content=None, existing_stories=None):
+    def _exists_story(self, story, story_content, existing_stories, new_story_guids):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
@@ -1312,7 +1315,7 @@ class Feed(models.Model):
             # Title distance + content distance, checking if story changed
             story_title_difference = abs(levenshtein_distance(story.get('title'),
                                                               existing_story.story_title))
-            
+
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
             if (seq
