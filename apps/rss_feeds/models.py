@@ -1283,7 +1283,7 @@ class Feed(models.Model):
         story_has_changed = False
         story_link = self.get_permalink(story)
         existing_stories_guids = existing_stories.keys()
-        # story_pub_date = story.get('published')
+        story_pub_date = story.get('published')
         # story_published_now = story.get('published_now', False)
         # start_date = story_pub_date - datetime.timedelta(hours=8)
         # end_date = story_pub_date + datetime.timedelta(hours=8)
@@ -1315,10 +1315,18 @@ class Feed(models.Model):
                   story.get('guid') != existing_story.story_guid):
                   # Story coming up later
                   continue
+                  
             # Title distance + content distance, checking if story changed
             story_title_difference = abs(levenshtein_distance(story.get('title'),
                                                               existing_story.story_title))
-
+            
+            title_ratio = difflib.SequenceMatcher(None, story.get('title', ""),
+                                                  existing_story.story_title).ratio()
+            if title_ratio < .75: continue
+            
+            story_timedelta = existing_story.story_date - story_pub_date
+            if abs(story_timedelta.days) >= 1: continue
+            
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
             if (seq
