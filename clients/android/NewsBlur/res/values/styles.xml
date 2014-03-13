@@ -10,11 +10,6 @@
 
     <style name="actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@drawable/actionbar_background</item>
-        <item name="android:titleTextStyle">@style/actionbarTitleText</item>
-    </style>
-
-    <style name="actionbarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/darkgray</item>
     </style>
 
 </resources>
