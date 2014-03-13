@@ -91,7 +91,7 @@ class FetchFeed:
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-        except (TypeError, ValueError, KeyError), e:
+        except (TypeError, ValueError, KeyError, EOFError), e:
             logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
                           (self.feed.title[:30], e))
             self.fpf = feedparser.parse(address, agent=USER_AGENT)
