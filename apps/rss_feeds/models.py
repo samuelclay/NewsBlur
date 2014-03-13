@@ -1348,7 +1348,7 @@ class Feed(models.Model):
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
                     if settings.DEBUG:
-                        logging.debug(" ---> Content difference - %s/%s" % (len(story_content), len(existing_story_content)))
+                        logging.debug(" ---> Content difference - %s (%s)/%s (%s)" % (story.get('title'), len(story_content), existing_story.story_title, len(existing_story_content)))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
                     if settings.DEBUG:
