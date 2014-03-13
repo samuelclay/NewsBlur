@@ -562,28 +562,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             if ((view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0) {
-                showSystemUI();
+                ViewUtils.showSystemUI(view);
             } else {
-                hideSystemUI();
+                ViewUtils.hideSystemUI(view);
             }
 
             return super.onSingleTapUp(e);
-        }
-
-       private void hideSystemUI() {
-            view.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        }
-
-        private void showSystemUI() {
-            // Some layout/drawing artifacts as we don't use the FLAG_LAYOUT flags but otherwise the overlays wouldn't appear
-            // and the action bar would overlap the content
-            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
     }
 }
