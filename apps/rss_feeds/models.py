@@ -1326,14 +1326,14 @@ class Feed(models.Model):
             if story_title_difference > 0 and content_ratio > .98:
                 story_in_system = existing_story
                 if story_title_difference > 0 or content_ratio < 1.0:
-                    if settings.DEBUG and False:
+                    if settings.DEBUG:
                         logging.debug(" ---> Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                     story_has_changed = True
                     break
             
             # More restrictive content distance, still no story match
             if not story_in_system and content_ratio > .98:
-                if settings.DEBUG and False:
+                if settings.DEBUG:
                     logging.debug(" ---> Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                 story_in_system = existing_story
                 story_has_changed = True
@@ -1341,11 +1341,11 @@ class Feed(models.Model):
                 
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
-                    if settings.DEBUG and False:
+                    if settings.DEBUG:
                         logging.debug(" ---> Content difference - %s/%s" % (story_content, existing_story_content))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
-                    if settings.DEBUG and False:
+                    if settings.DEBUG:
                         logging.debug(" ---> Permalink difference - %s/%s" % (story_link, existing_story.story_permalink))
                     story_has_changed = True
                 # if story_pub_date != existing_story.story_date:
