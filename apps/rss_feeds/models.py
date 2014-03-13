@@ -1311,7 +1311,10 @@ class Feed(models.Model):
                 continue
             elif story.get('guid') == existing_story.story_guid:
                 story_in_system = existing_story
-            
+            elif (existing_story.story_guid in new_story_guids and
+                  story.get('guid') != existing_story.story_guid):
+                  # Story coming up later
+                  continue
             # Title distance + content distance, checking if story changed
             story_title_difference = abs(levenshtein_distance(story.get('title'),
                                                               existing_story.story_title))
