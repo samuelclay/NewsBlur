@@ -1108,8 +1108,10 @@ def find_friends(request):
     profiles = []
     
     if '@' in query:
-        email = re.search(r'[\w\.-]+@[\w\.-]+', query).group(0)
-        profiles = MSocialProfile.objects.filter(email__iexact=email)[:limit]
+        results = re.search(r'[\w\.-]+@[\w\.-]+', query)
+        if results:
+            email = results.group(0)
+            profiles = MSocialProfile.objects.filter(email__iexact=email)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
     if not profiles:
