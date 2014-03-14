@@ -284,7 +284,8 @@ class Profile(models.Model):
             }
             paypal = PayPalInterface(**paypal_opts)
             transaction = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   txn_type='subscr_payment')[0]
+                                                   txn_type='subscr_payment'
+                                                   ).order_by('-payment_date')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
             try:
                 refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
