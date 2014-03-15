@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -60,8 +59,8 @@ public class Story implements Serializable {
 	@SerializedName("story_title")
 	public String title;
 
-	@SerializedName("story_date")
-	public Date date;
+	@SerializedName("story_timestamp")
+	public long timestamp;
 
 	@SerializedName("shared_date")
 	public Date sharedDate;
@@ -100,7 +99,7 @@ public class Story implements Serializable {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
 		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
-		values.put(DatabaseConstants.STORY_DATE, date.getTime());
+		values.put(DatabaseConstants.STORY_TIMESTAMP, timestamp);
 		values.put(DatabaseConstants.STORY_SHARED_DATE, sharedDate != null ? sharedDate.getTime() : new Date().getTime());
 		values.put(DatabaseConstants.STORY_SHORTDATE, shortDate);
 		values.put(DatabaseConstants.STORY_LONGDATE, longDate);
@@ -141,7 +140,7 @@ public class Story implements Serializable {
             }
         }
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
-		story.date = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
+		story.timestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
 		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE)));
 		story.shortDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORTDATE));
 		story.longDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_LONGDATE));

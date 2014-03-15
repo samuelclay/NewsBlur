@@ -15,6 +15,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,6 +44,8 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.NonfocusScrollview;
+
+import java.util.Date;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -308,7 +311,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
         itemTitle.setText(Html.fromHtml(story.title));
-		itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.date));
+        Log.d("mark", story.timestamp + "");
+        Log.d("mark", new Date(story.timestamp).toString());
+		itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);

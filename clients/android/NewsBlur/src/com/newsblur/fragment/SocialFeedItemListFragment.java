@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		Cursor cursor = getActivity().getContentResolver().query(uri, null, DatabaseConstants.getStorySelectionFromState(currentState), null, DatabaseConstants.getStorySharedSortOrder(storyOrder));
 		
-		groupFroms = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_DATE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
+		groupFroms = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
 		groupTos = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_content, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
 
         adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFroms, groupTos, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
