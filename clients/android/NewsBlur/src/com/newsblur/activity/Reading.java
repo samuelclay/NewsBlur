@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -39,6 +40,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
+import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
 public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -209,6 +211,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         Story story = readingAdapter.getStory(pager.getCurrentItem());
         if (story == null ) { return false; }
         menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
+        menu.findItem(R.id.menu_reading_fullscreen).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         return true;
     }
 
@@ -248,7 +251,10 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
             this.markStoryUnread(story);
             return true;
-		} else {
+		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
+            ViewUtils.hideSystemUI(getWindow().getDecorView());
+            return true;
+        } else {
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -366,6 +372,11 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this callback is a good API-level-independent way to tell when the root view size/layout changes
         super.onWindowFocusChanged(hasFocus);
         enableOverlays();
+
+        // Ensure that we come out of immersive view if the activity no longer has focus
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && !hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
     }
 
 	/**

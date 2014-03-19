@@ -127,4 +127,19 @@ public class ViewUtils {
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
 
+    public static void showSystemUI(View view) {
+        // Some layout/drawing artifacts as we don't use the FLAG_LAYOUT flags but otherwise the overlays wouldn't appear
+        // and the action bar would overlap the content
+        view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
+    public static void hideSystemUI(View view) {
+        view.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
 }
