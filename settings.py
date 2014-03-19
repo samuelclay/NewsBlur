@@ -112,6 +112,10 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'apps.profile.middleware.DBProfilerMiddleware',
+    'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
+    'utils.redis_raw_log_middleware.RedisDumpMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -622,9 +626,6 @@ REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379,
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    # MIDDLEWARE_CLASSES += ('apps.profile.middleware.SQLLogToConsoleMiddleware',)
-    # MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
-    # MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
