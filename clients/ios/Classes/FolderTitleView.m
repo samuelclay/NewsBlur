@@ -49,7 +49,7 @@
     
     if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = counts.ps;
@@ -59,7 +59,7 @@
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
     } else if ([folderName isEqual:@"saved_stories"]) {
-        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = appDelegate.savedStoriesCount;
@@ -155,7 +155,7 @@
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
 
         // Add collapse button to all folders except Everything
         if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
@@ -169,7 +169,7 @@
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 1, 29, 29)];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 3, 29, 29)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -221,7 +221,7 @@
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 6, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 8, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

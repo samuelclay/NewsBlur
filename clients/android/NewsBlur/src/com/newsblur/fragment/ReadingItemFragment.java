@@ -47,6 +47,8 @@ import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.NonfocusScrollview;
 
+import java.util.Date;
+
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
@@ -331,7 +333,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
         itemTitle.setText(Html.fromHtml(story.title));
-		itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.date));
+        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);

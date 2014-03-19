@@ -796,6 +796,7 @@ static UIFont *userLabelFont;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
+        [appDelegate.feedsMenuViewController view]; // Force viewDidLoad
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 38 * [appDelegate.feedsMenuViewController.menuOptions count])];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsBarButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
@@ -1198,7 +1199,7 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
-    return 32;
+    return 36;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {

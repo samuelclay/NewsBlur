@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -26,10 +25,8 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
-import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -84,8 +81,8 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		Cursor cursor = contentResolver.query(FeedProvider.MULTIFEED_STORIES_URI, null, DatabaseConstants.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.getStorySortOrder(storyOrder));
 		getActivity().startManagingCursor(cursor);
 
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_DATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
+		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
+		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_feedtitle, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 

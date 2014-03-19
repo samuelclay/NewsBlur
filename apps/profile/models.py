@@ -284,7 +284,8 @@ class Profile(models.Model):
             }
             paypal = PayPalInterface(**paypal_opts)
             transaction = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   txn_type='subscr_payment')[0]
+                                                   txn_type='subscr_payment'
+                                                   ).order_by('-payment_date')[0]
             refund = paypal.refund_transaction(transaction.txn_id)
             try:
                 refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
@@ -820,7 +821,12 @@ class RNewUserQueue:
             return
         
         user_id = cls.pop_user()
-        user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except user.DoesNotExist:
+            logging.debug("~FRCan't activate free account, can't find user ~SB%s~SN. ~FB%s still in queue." % (user_id, count-1))
+            return
+            
         logging.user(user, "~FBActivating free account. %s still in queue." % (count-1))
 
         user.profile.activate_free()

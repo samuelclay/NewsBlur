@@ -632,11 +632,12 @@ def api_share_new_story(request):
     if not story_content or not story_title:
         ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
         original_story = ti.fetch(return_document=True)
-        story_url = original_story['url']
-        if not story_content:
-            story_content = original_story['content']
-        if not story_title:
-            story_title = original_story['title']
+        if original_story:
+            story_url = original_story['url']
+            if not story_content:
+                story_content = original_story['content']
+            if not story_title:
+                story_title = original_story['title']
 
     story_content = lxml.html.fromstring(story_content)
     story_content.make_links_absolute(story_url)
@@ -704,11 +705,12 @@ def api_save_new_story(request):
     if not story_content or not story_title:
         ti = TextImporter(feed=original_feed, story_url=story_url, request=request)
         original_story = ti.fetch(return_document=True)
-        story_url = original_story['url']
-        if not story_content:
-            story_content = original_story['content']
-        if not story_title:
-            story_title = original_story['title']
+        if original_story:
+            story_url = original_story['url']
+            if not story_content:
+                story_content = original_story['content']
+            if not story_title:
+                story_title = original_story['title']
     try:
         story_db = {
             "user_id": user.pk,
