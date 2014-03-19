@@ -41,7 +41,7 @@ class LastSeenMiddleware(object):
 class DBProfilerMiddleware:
     def process_request(self, request): 
         setattr(request, 'activated_segments', [])
-        if random.random() < .1:
+        if random.random() < .01:
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
     
