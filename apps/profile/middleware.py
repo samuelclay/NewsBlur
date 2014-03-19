@@ -57,6 +57,8 @@ class DBProfilerMiddleware:
         return response
     
     def _save_times(self, db_times):
+        if not db_times: return
+        
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         pipe = r.pipeline()
         minute = round_time(round_to=60)
