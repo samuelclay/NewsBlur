@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_reading_fullscreen"
-        android:icon="@drawable/newsblur_share"
+        android:icon="@drawable/fullscreen"
         android:showAsAction="always"
         android:title="@string/menu_fullscreen"
         android:visible="false"/>
