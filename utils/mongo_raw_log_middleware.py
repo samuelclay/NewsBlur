@@ -10,7 +10,9 @@ from bson.errors import InvalidBSON
 
 class MongoDumpMiddleware(object):    
     def activated(self, request):
-        return (settings.DEBUG or 'db_profiler' in request.activated_segments)
+        return (settings.DEBUG or 
+                (hasattr(request, 'activated_segments') and
+                 'db_profiler' in request.activated_segments))
     
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if not self.activated(request): return

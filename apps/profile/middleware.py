@@ -71,8 +71,14 @@ class DBProfilerMiddleware:
 
 
 class SQLLogToConsoleMiddleware:
+    def activated(self, request):
+        return (settings.DEBUG or 
+                (hasattr(request, 'activated_segments') and
+                 'db_profiler' in request.activated_segments))
+
     def process_response(self, request, response): 
-        if (settings.DEBUG or 'db_profiler' in request.activated_segments) and connection.queries:
+        if not self.activated(request): return response
+        if connection.queries:
             time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             for query in queries:
