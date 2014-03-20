@@ -10,9 +10,12 @@ class NBMuninGraph(MuninGraph):
             'graph_title' : 'NewsBlur DB Times',
             'graph_vlabel' : 'Database times (seconds)',
             'graph_args' : '-l 0',
-            'sql_avg.label': 'SQL avg times (5m)',
-            'mongo_avg.label': 'Mongo avg times (5m)',
-            'redis_avg.label': 'Redis avg times (5m)',
+            'sql_avg.label' : 'SQL avg times (5m)',
+            'sql_avg.draw' : 'LINE1',
+            'mongo_avg.label' : 'Mongo avg times (5m)',
+            'mongo_avg.draw' : 'LINE1',
+            'redis_avg.label' :'Redis avg times (5m)',
+            'redis_avg.draw' : 'LINE1',
         }
 
     def calculate_metrics(self):
