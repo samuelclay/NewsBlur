@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefsUtils;
 
 public class NbActivity extends Activity {
@@ -13,6 +14,7 @@ public class NbActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle bundle) {
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
 		super.onCreate(bundle);
 
 		if(bundle == null) {
@@ -25,8 +27,8 @@ public class NbActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
 		super.onResume();
-		
 		finishIfNotLoggedIn();
 	}
 
@@ -40,6 +42,7 @@ public class NbActivity extends Activity {
 	
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onSave");
 		savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey);
 		super.onSaveInstanceState(savedInstanceState);
 	}

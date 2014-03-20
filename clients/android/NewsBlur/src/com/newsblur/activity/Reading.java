@@ -127,9 +127,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
-
 	}
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
+        // this ensures that at least one callback happens after activity re-create.
+        getLoaderManager().restartLoader(0, null, this);
+    }
 
 	@Override
 	public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
