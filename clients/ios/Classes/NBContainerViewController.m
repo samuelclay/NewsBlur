@@ -729,6 +729,9 @@
         [self.originalViewController loadInitialStory];
     }
 
+    self.originalViewController.navigationItem.titleView.alpha = 1;
+    self.originalViewController.navigationItem.leftBarButtonItem.customView.alpha = 1;
+    
     [UIView animateWithDuration:.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^
@@ -809,7 +812,7 @@
 //    self.originalNavigationController.navigationBar.alpha = 1 - percentage;
 //    NSLog(@"Original subviews; %@", self.originalNavigationController.view.subviews);
     self.originalViewController.navigationItem.titleView.alpha = 1 - percentage;
-    
+    self.originalViewController.navigationItem.leftBarButtonItem.customView.alpha = 1 - percentage;
 //    CGRect leftBorderFrame = leftBorder.frame;
 //    leftBorderFrame.origin.x = storyNavFrame.origin.x - 1;
 //    leftBorder.frame = leftBorderFrame;
