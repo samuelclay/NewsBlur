@@ -17,10 +17,11 @@ public class NbActivity extends Activity {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
 		super.onCreate(bundle);
 
-		if(bundle == null) {
-			uniqueLoginKey = PrefsUtils.getUniqueLoginKey(this);
-		} else {
+		if (bundle != null) {
 			uniqueLoginKey = bundle.getString(UNIQUE_LOGIN_KEY);
+		} 
+        if (uniqueLoginKey == null) {
+			uniqueLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		}
 		finishIfNotLoggedIn();
 	}

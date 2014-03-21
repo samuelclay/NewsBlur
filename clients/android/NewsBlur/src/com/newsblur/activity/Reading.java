@@ -51,6 +51,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
 	private static final String TEXT_SIZE = "textsize";
+    private static final String BUNDLE_POSITION = "position";
+    private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -109,7 +111,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 		fragmentManager = getFragmentManager();
 
-		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_POSITION)) {
+            passedPosition = savedInstanceBundle.getInt(BUNDLE_POSITION);
+        } else {
+            passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        }
+
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
+            startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
+        }
+
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -128,6 +139,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
 	}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (pager != null) {
+            outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
+        }
+        if (startingUnreadCount != 0) {
+            outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -153,9 +174,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 stories = cursor;
             }
 
+            // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-                // if this is the first time we've found a cursor, we know the onCreate chain is done
-                this.startingUnreadCount = getUnreadCount();
+
+                // don't blow away the value if the value was restored on create
+                if (this.startingUnreadCount == 0 ) {
+                    this.startingUnreadCount = getUnreadCount();
+                }
+
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
