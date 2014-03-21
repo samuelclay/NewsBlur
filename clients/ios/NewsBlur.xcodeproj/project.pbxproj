@@ -510,6 +510,7 @@
 		FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */; };
 		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
+		FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
@@ -1353,6 +1354,7 @@
 		FF88F10C1811BAEC007FEE78 /* unread_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green.png; sourceTree = "<group>"; };
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
+		FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios7_back_button@2x.png"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFAD89C018AC45A100D68567 /* StoriesCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCollection.h; sourceTree = "<group>"; };
 		FFAD89C118AC45A100D68567 /* StoriesCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCollection.m; sourceTree = "<group>"; };
@@ -1771,6 +1773,7 @@
 			isa = PBXGroup;
 			children = (
 				FFCDD8F917F50C08000C6483 /* drag_icon.png */,
+				FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */,
 				FFB9BE3F17F4B65B00FE0A36 /* logos */,
 				FFE816AC17E29D71008AF4B0 /* big_world_white.png */,
 				FFE816AA17E280BD008AF4B0 /* ftux_tree.png */,
@@ -3100,6 +3103,7 @@
 				FF688E4E16E6B3E1003B7B42 /* traverse_done.png in Resources */,
 				FF191E4F18A323F400473252 /* Images.xcassets in Resources */,
 				FF688E4F16E6B3E1003B7B42 /* traverse_done@2x.png in Resources */,
+				FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */,
 				FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */,
 				FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */,
 				FF2611CB18C00CA70055FF4D /* osk-safariIcon-76.png in Resources */,
