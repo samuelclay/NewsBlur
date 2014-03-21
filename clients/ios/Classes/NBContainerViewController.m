@@ -412,7 +412,7 @@
 - (void)setupStoryTitlesPosition {
     // set default y coordinate for feedDetailY from saved preferences
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSInteger savedStoryTitlesYCoordinate = [userPreferences integerForKey:@"storyTitlesYCoordinate"];
+    int savedStoryTitlesYCoordinate = (int)[userPreferences integerForKey:@"storyTitlesYCoordinate"];
     NSString *storyTitlesPosition = [userPreferences stringForKey:@"story_titles_position"];
     if ([storyTitlesPosition isEqualToString:@"titles_on_bottom"]) {
         if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate > 920) {

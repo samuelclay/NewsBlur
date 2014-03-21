@@ -276,6 +276,26 @@ static UIFont *userLabelFont;
     }
 }
 
+- (void)fadeFeed:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
+                                        animated:YES];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
+        for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
+            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+            id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+            if ([feedIdStr isEqualToString:[NSString stringWithFormat:@"%@", cellFeedId]]) {
+                [self.feedTitlesTable beginUpdates];
+                [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                            withRowAnimation:UITableViewRowAnimationFade];
+                [self.feedTitlesTable endUpdates];
+                break;
+            }
+        }
+    }
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
@@ -1168,7 +1188,7 @@ static UIFont *userLabelFont;
             viewForHeaderInSection:(NSInteger)section {
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, kFolderTitleHeight);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
-    folderTitle.section = section;
+    folderTitle.section = (int)section;
     
     return folderTitle;
 }

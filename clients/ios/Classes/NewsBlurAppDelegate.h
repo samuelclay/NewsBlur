@@ -287,6 +287,7 @@
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
+- (void)refreshFeedCount:(id)feedId;
 
 - (void)populateDictUnreadCounts;
 - (NSInteger)unreadCount;
@@ -314,7 +315,7 @@
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
 - (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 
-+ (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
++ (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;

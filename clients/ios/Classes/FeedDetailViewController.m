@@ -266,7 +266,7 @@
         [self.storyTitlesTable reloadData];
     }
     
-    appDelegate.originalStoryCount = [appDelegate unreadCount];
+    appDelegate.originalStoryCount = (int)[appDelegate unreadCount];
     
     if ((storiesCollection.isSocialRiverView ||
          storiesCollection.isSocialView ||
@@ -805,7 +805,7 @@
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] integerValue];
+    storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] intValue];
     NSString *responseString = [request responseString];
     NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -1164,7 +1164,7 @@
     
     // undread indicator
     
-    NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
     
     cell.isRead = ![storiesCollection isStoryUnread:story];
@@ -1451,6 +1451,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [storiesCollection toggleStoryUnread:story];
         [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                      withRowAnimation:UITableViewRowAnimationFade];
+        if (self.isDashboardModule) {
+            [appDelegate refreshFeedCount:[story objectForKey:@"story_feed_id"]];
+        }
     }
 }
 

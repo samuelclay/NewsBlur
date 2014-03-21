@@ -124,6 +124,7 @@ UIActionSheetDelegate> {
 - (IBAction)showInteractionsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
+- (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)resetToolbar;

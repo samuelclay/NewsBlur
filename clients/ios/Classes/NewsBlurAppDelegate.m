@@ -1016,6 +1016,10 @@
     [request startAsynchronous];
 }
 
+- (void)refreshFeedCount:(id)feedId {
+    [feedsViewController fadeFeed:feedId];
+}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 1) { // this is logout
         if (buttonIndex == 0) {
@@ -1950,8 +1954,8 @@
 #pragma mark -
 #pragma mark Story functions
 
-+ (NSInteger)computeStoryScore:(NSDictionary *)intelligence {
-    NSInteger score = 0;
++ (int)computeStoryScore:(NSDictionary *)intelligence {
+    int score = 0;
     int title = [[intelligence objectForKey:@"title"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
@@ -1962,7 +1966,7 @@
     if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
     
-    if (score == 0) score = [[intelligence objectForKey:@"feed"] integerValue];
+    if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
 
 //    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
