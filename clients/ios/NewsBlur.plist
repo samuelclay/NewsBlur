@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>http://dev.newsblur.com/ios/NewsBlur.ipa</string>
+					<string>https://www.newsblur.com/ios/NewsBlur.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -19,7 +19,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://www.newsblur.com/media/ios/Resources/logos/logo_512.png</string>
+					<string>https://www.newsblur.com/media/ios/Resources/logos/logo_512.png</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -27,7 +27,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://www.newsblur.com/media/ios/Resources/logos/logo_58.png</string>
+					<string>https://www.newsblur.com/media/ios/Resources/logos/logo_58.png</string>
 				</dict>
 			</array>
 			<key>metadata</key>
@@ -35,7 +35,7 @@
 				<key>bundle-identifier</key>
 				<string>com.newsblur.NewsBlur</string>
 				<key>bundle-version</key>
-				<string>3.0.4</string>
+				<string>4.0.1</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

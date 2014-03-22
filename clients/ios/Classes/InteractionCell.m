@@ -111,7 +111,7 @@
             txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n \n%@", username, title, comment]; 
+        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@.", username, title];
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];

@@ -14,7 +14,7 @@
 @class ASIHTTPRequest;
 
 @interface StoryDetailViewController : BaseViewController
-<UIScrollViewDelegate> {
+<UIScrollViewDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -24,6 +24,7 @@
     NSInteger pageIndex;
     BOOL pullingScrollview;
     BOOL inTextView;
+    BOOL inDoubleTap;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

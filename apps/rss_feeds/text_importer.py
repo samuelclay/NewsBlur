@@ -58,7 +58,10 @@ class TextImporter:
         except readability.Unparseable:
             return
         
-        title = original_text_doc.title()
+        try:
+            title = original_text_doc.title()
+        except TypeError:
+            title = ""
         url = resp.url
         
         if content:

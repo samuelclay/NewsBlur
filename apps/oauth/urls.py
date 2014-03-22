@@ -14,6 +14,8 @@ urlpatterns = patterns('',
 
     # Django OAuth Toolkit
     url(r'^status/?$', views.ifttt_status, name="ifttt-status"),
+    url(r'^authorize/?$', op_views.AuthorizationView.as_view(), name="oauth-authorize"),
+    url(r'^token/?$', op_views.TokenView.as_view(), name="oauth-token"),
     url(r'^oauth2/authorize/?$', op_views.AuthorizationView.as_view(), name="ifttt-authorize"),
     url(r'^oauth2/token/?$', op_views.TokenView.as_view(), name="ifttt-token"),
     url(r'^user/info/?$', views.api_user_info, name="ifttt-user-info"),

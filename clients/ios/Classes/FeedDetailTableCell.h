@@ -17,10 +17,14 @@
     NSString *storyTitle;
     NSString *storyAuthor;
     NSString *storyDate;
+    NSString *storyContent;
+    NSString *storyImageUrl;
+    UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
     BOOL isStarred;
     BOOL isShared;
+    BOOL inDashboard;
     
     // River view    
     NSString *siteTitle;
@@ -45,6 +49,9 @@
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
+@property (nonatomic) NSString *storyContent;
+@property (nonatomic) NSString *storyImageUrl;
+@property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
 @property (nonatomic) UIColor *feedColorBar;
@@ -54,13 +61,18 @@
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
+@property (readwrite) BOOL inDashboard;
 
 - (void)setupGestures;
 
 @end
 
-@interface FeedDetailTableCellView : UIView
+@interface FeedDetailTableCellView : UIView {
+    UIImage *storyImage;
+}
 
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) FeedDetailTableCell *cell;
+@property (nonatomic) UIImage *storyImage;
 
 @end

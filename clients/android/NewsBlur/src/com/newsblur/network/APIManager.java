@@ -15,8 +15,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -48,6 +46,7 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
+import com.newsblur.serialization.StoryTypeAdapter;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
@@ -69,6 +68,7 @@ public class APIManager {
                 .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
                 .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
                 .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
+                .registerTypeAdapter(Story.class, new StoryTypeAdapter())
                 .create();
 
         String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");

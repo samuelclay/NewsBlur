@@ -77,7 +77,7 @@ public class SocialItemViewBinder implements ViewBinder {
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
 			((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TIMESTAMP)) {
             ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));
             return true;
         }

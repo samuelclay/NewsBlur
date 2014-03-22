@@ -469,7 +469,7 @@ class UserSubscription(models.Model):
         missing_count += len(missing_rs)        
         new_count = len(new_rs)
         new_total = new_count + missing_count
-        logging.user(user, "~FBTrimming ~FR%s~FB/%s (~SB%s sub'ed ~SN+ ~SB%s unsub'ed~SN saved) user read stories..." %
+        logging.user(user, "~FBTrimming ~FR%s~FB/%s (~SB%s sub'ed ~SN+ ~SB%s unsub'ed~SN saved)" %
                      (old_count - new_total, old_count, new_count, missing_count))
         
         

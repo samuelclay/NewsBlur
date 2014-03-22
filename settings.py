@@ -105,7 +105,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
-    'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
@@ -113,6 +112,10 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'apps.profile.middleware.DBProfilerMiddleware',
+    'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
+    'utils.redis_raw_log_middleware.RedisDumpMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -409,7 +412,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=8),
+        'schedule': datetime.timedelta(minutes=1),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -623,8 +626,6 @@ REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379,
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 

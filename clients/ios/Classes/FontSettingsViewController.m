@@ -13,6 +13,7 @@
 #import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
+#import "StoriesCollection.h"
 
 @implementation FontSettingsViewController
 
@@ -192,20 +193,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
-        if (isSaved) {
-            [appDelegate.storyPageControl markStoryAsUnsaved];
-        } else {
-            [appDelegate.storyPageControl markStoryAsSaved];
-        }
+        [appDelegate.storiesCollection toggleStorySaved];
+        [appDelegate.feedDetailViewController reloadData];
+        [appDelegate.storyPageControl refreshHeaders];
     } else if (indexPath.row == 1) {
-        bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
-        if (isRead) {
-            [appDelegate.storyPageControl markStoryAsUnread];
-        } else {
-            [appDelegate.storyPageControl markStoryAsRead];
-            [appDelegate.feedDetailViewController redrawUnreadStory];
-        }
+        [appDelegate.storiesCollection toggleStoryUnread];
+        [appDelegate.feedDetailViewController reloadData];
+        [appDelegate.storyPageControl refreshHeaders];
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 3) {

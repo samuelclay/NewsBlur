@@ -892,6 +892,7 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
+        new_story_guids = [s.get('guid') for s in stories]
         
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
@@ -899,8 +900,9 @@ class Feed(models.Model):
                           len(stories),
                           len(existing_stories.keys())))
         @timelimit(2)
-        def _1(story, story_content, existing_stories):
-            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+        def _1(story, story_content, existing_stories, new_story_guids):
+            existing_story, story_has_changed = self._exists_story(story, story_content, 
+                                                                   existing_stories, new_story_guids)
             return existing_story, story_has_changed
         
         for story in stories:
@@ -917,7 +919,8 @@ class Feed(models.Model):
             replace_story_date = False
             
             try:
-                existing_story, story_has_changed = _1(story, story_content, existing_stories)
+                existing_story, story_has_changed = _1(story, story_content, 
+                                                       existing_stories, new_story_guids)
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
                 existing_story = None
@@ -1275,12 +1278,12 @@ class Feed(models.Model):
             link = entry.get('id')
         return link
     
-    def _exists_story(self, story=None, story_content=None, existing_stories=None):
+    def _exists_story(self, story, story_content, existing_stories, new_story_guids):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
         existing_stories_guids = existing_stories.keys()
-        # story_pub_date = story.get('published')
+        story_pub_date = story.get('published')
         # story_published_now = story.get('published_now', False)
         # start_date = story_pub_date - datetime.timedelta(hours=8)
         # end_date = story_pub_date + datetime.timedelta(hours=8)
@@ -1308,10 +1311,21 @@ class Feed(models.Model):
                 continue
             elif story.get('guid') == existing_story.story_guid:
                 story_in_system = existing_story
-            
+            elif (existing_story.story_guid in new_story_guids and
+                  story.get('guid') != existing_story.story_guid):
+                  # Story coming up later
+                  continue
+                  
             # Title distance + content distance, checking if story changed
             story_title_difference = abs(levenshtein_distance(story.get('title'),
                                                               existing_story.story_title))
+            
+            title_ratio = difflib.SequenceMatcher(None, story.get('title', ""),
+                                                  existing_story.story_title).ratio()
+            if title_ratio < .75: continue
+            
+            story_timedelta = existing_story.story_date - story_pub_date
+            if abs(story_timedelta.days) >= 1: continue
             
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
@@ -1326,14 +1340,14 @@ class Feed(models.Model):
             if story_title_difference > 0 and content_ratio > .98:
                 story_in_system = existing_story
                 if story_title_difference > 0 or content_ratio < 1.0:
-                    if settings.DEBUG and False:
+                    if settings.DEBUG:
                         logging.debug(" ---> Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                     story_has_changed = True
                     break
             
             # More restrictive content distance, still no story match
             if not story_in_system and content_ratio > .98:
-                if settings.DEBUG and False:
+                if settings.DEBUG:
                     logging.debug(" ---> Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                 story_in_system = existing_story
                 story_has_changed = True
@@ -1341,11 +1355,11 @@ class Feed(models.Model):
                 
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
-                    if settings.DEBUG and False:
-                        logging.debug(" ---> Content difference - %s/%s" % (story_content, existing_story_content))
+                    if settings.DEBUG:
+                        logging.debug(" ---> Content difference - %s (%s)/%s (%s)" % (story.get('title'), len(story_content), existing_story.story_title, len(existing_story_content)))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
-                    if settings.DEBUG and False:
+                    if settings.DEBUG:
                         logging.debug(" ---> Permalink difference - %s/%s" % (story_link, existing_story.story_permalink))
                     story_has_changed = True
                 # if story_pub_date != existing_story.story_date:

@@ -24,6 +24,7 @@
 #import "DataUtilities.h"
 #import "JSON.h"
 #import "StringHelper.h"
+#import "StoriesCollection.h"
 
 @implementation StoryDetailViewController
 
@@ -62,7 +63,7 @@
                         error:nil];
     
     self.webView.scalesPageToFit = YES;
-    self.webView.multipleTouchEnabled = NO;
+//    self.webView.multipleTouchEnabled = NO;
     
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -70,9 +71,80 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+
+//    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
+//                                              initWithTarget:self action:@selector(showOriginalStory:)];
+//    [self.webView addGestureRecognizer:pinchGesture];
     
+    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
+                                                initWithTarget:self action:nil];
+    doubleTapGesture.numberOfTapsRequired = 2;
+    [self.webView addGestureRecognizer:doubleTapGesture];
+    doubleTapGesture.delegate = self;
+    
+    UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
+                                                      initWithTarget:self
+                                                      action:nil];
+    doubleDoubleTapGesture.numberOfTouchesRequired = 2;
+    doubleDoubleTapGesture.numberOfTapsRequired = 2;
+    [self.webView addGestureRecognizer:doubleDoubleTapGesture];
+    doubleDoubleTapGesture.delegate = self;
+
     self.pageIndex = -2;
     self.inTextView = NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+//    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
+    inDoubleTap = (touch.tapCount == 2);
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+//    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        BOOL openOriginal = NO;
+        BOOL showText = NO;
+        BOOL markUnread = NO;
+        BOOL saveStory = NO;
+        if (gestureRecognizer.numberOfTouches == 2) {
+            NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
+            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            } else if ([twoFingerTap isEqualToString:@"mark_unread"]) {
+                markUnread = YES;
+            } else if ([twoFingerTap isEqualToString:@"save_story"]) {
+                saveStory = YES;
+            }
+        } else {
+            NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
+            if ([doubleTap isEqualToString:@"open_original_story"]) {
+                openOriginal = YES;
+            } else if ([doubleTap isEqualToString:@"show_original_text"]) {
+                showText = YES;
+            } else if ([doubleTap isEqualToString:@"mark_unread"]) {
+                markUnread = YES;
+            } else if ([doubleTap isEqualToString:@"save_story"]) {
+                saveStory = YES;
+            }
+        }
+        if (openOriginal) {
+            [self showOriginalStory:gestureRecognizer];
+        } else if (showText) {
+            [self fetchTextView];
+        } else if (markUnread) {
+            [appDelegate.storiesCollection toggleStoryUnread];
+            [appDelegate.feedDetailViewController reloadData];
+        } else if (saveStory) {
+            [appDelegate.storiesCollection toggleStorySaved];
+            [appDelegate.feedDetailViewController reloadData];
+        }
+        inDoubleTap = NO;
+    }
+    return YES;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -86,16 +158,9 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-//    Class viewClass = [appDelegate.navigationController.visibleViewController class];
-//    if (viewClass == [appDelegate.feedDetailViewController class] ||
-//        viewClass == [appDelegate.feedsViewController class]) {
-////        self.activeStoryId = nil;
-//        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
-//    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-//    [appDelegate.shareViewController.commentField resignFirstResponder];
 }
 
 #pragma mark -
@@ -119,7 +184,7 @@
 }
 
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation {
-    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
+    if (!force && self.activeStoryId == [self.activeStory objectForKey:@"story_hash"]) {
         NSLog(@"Already drawn story.");
 //        return;
     }
@@ -168,7 +233,8 @@
         }
     }
     
-    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+    NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
+                            appDelegate.storiesCollection.isSocialView) ?
                             @"NB-river" : @"NB-non-river";
     
     // set up layout values based on iPad/iPhone
@@ -180,6 +246,7 @@
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
+                    "<script src=\"fitvid.js\"></script>"
                     "<script src=\"storyDetailView.js\"></script>"
                     "<script src=\"fastTouch.js\"></script>"];
     
@@ -234,6 +301,7 @@
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
+    [webView setMediaPlaybackRequiresUserAction:NO];
     [webView loadHTMLString:htmlString baseURL:baseURL];
 
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
@@ -257,20 +325,21 @@
         }
     }
     
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+    if (appDelegate.storiesCollection.isRiverView ||
+        appDelegate.storiesCollection.isSocialView) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
 
-    self.activeStoryId = [self.activeStory objectForKey:@"id"];
+    self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
     self.inTextView = NO;
 }
 
 - (void)showStory {
-    id storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate pushReadStory:storyId];
+    id storyId = [self.activeStory objectForKey:@"story_hash"];
+    [appDelegate.storiesCollection pushReadStory:storyId];
     [appDelegate resetShareComments];
 }
 
@@ -298,7 +367,7 @@
         NSString *author = [NSString stringWithFormat:@"%@",
                             [self.activeStory objectForKey:@"story_authors"]];
         if (author && [author class] != [NSNull class]) {
-            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
             storyAuthor = [NSString stringWithFormat:@"<span class=\"NB-middot\">&middot;</span><a href=\"http://ios.newsblur.com/classify-author/%@\" "
@@ -314,7 +383,7 @@
         if ([tagArray count] > 0) {
             NSMutableArray *tagStrings = [NSMutableArray array];
             for (NSString *tag in tagArray) {
-                int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
                 NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
@@ -338,7 +407,7 @@
     }
     
     NSString *storyUnread = @"";
-    if (self.isRecentlyUnread && [appDelegate isStoryUnread:self.activeStory]) {
+    if (self.isRecentlyUnread && [appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
@@ -346,8 +415,9 @@
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
     NSString *storyPermalink = [self.activeStory objectForKey:@"story_permalink"];
-    NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                            objectForKey:@"titles"];
+    NSMutableDictionary *titleClassifiers = [[appDelegate.storiesCollection.activeClassifiers
+                                              objectForKey:feedId]
+                                             objectForKey:@"titles"];
     for (NSString *titleClassifier in titleClassifiers) {
         if ([storyTitle containsString:titleClassifier]) {
             int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
@@ -918,7 +988,8 @@
 
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex {
     if (activeStoryIndex >= 0) {
-        self.activeStory = [[appDelegate.activeFeedStories objectAtIndex:activeStoryIndex] mutableCopy];
+        self.activeStory = [[appDelegate.storiesCollection.activeFeedStories
+                             objectAtIndex:activeStoryIndex] mutableCopy];
     } else {
         self.activeStory = [appDelegate.activeStory mutableCopy];
     }
@@ -1020,10 +1091,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
                         
-            for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
-                NSString *userId = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"]];
+            for (int i = 0; i < appDelegate.storiesCollection.activeFeedUserProfiles.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@", [[appDelegate.storiesCollection.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"]];
                 if ([userId isEqualToString:appDelegate.activeUserProfileId]){
-                    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"username"]];
+                    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [[appDelegate.storiesCollection.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"username"]];
                     break;
                 }
             }
@@ -1048,11 +1119,43 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
+- (void)showOriginalStory:(UIGestureRecognizer *)gesture {
+    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
+                                       objectForKey:@"story_permalink"]];
+    [appDelegate.masterContainerViewController hidePopover];
+
+    if (!gesture || [gesture isKindOfClass:[UITapGestureRecognizer class]]) {
+        [appDelegate showOriginalStory:url];
+        return;
+    }
+    
+    if ([gesture isKindOfClass:[UIPinchGestureRecognizer class]] &&
+        gesture.state == UIGestureRecognizerStateChanged &&
+        [gesture numberOfTouches] >= 2) {
+        CGPoint touch1 = [gesture locationOfTouch:0 inView:self.view];
+        CGPoint touch2 = [gesture locationOfTouch:1 inView:self.view];
+        CGPoint slope = CGPointMake(touch2.x-touch1.x, touch2.y-touch1.y);
+        CGFloat distance = sqrtf(slope.x*slope.x + slope.y*slope.y);
+        CGFloat scale = [(UIPinchGestureRecognizer *)gesture scale];
+        
+//        NSLog(@"Gesture: %f - %f", [(UIPinchGestureRecognizer *)gesture scale], distance);
+        
+        if ((distance < 150 && scale <= 1.5) ||
+            (distance < 500 && scale <= 1.2)) {
+            return;
+        }
+        [appDelegate showOriginalStory:url];
+        gesture.enabled = NO;
+        gesture.enabled = YES;
+    }
+}
+
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
     CGRect frame = CGRectZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1078,7 +1181,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
     
-    if ([appDelegate.activeFeedStories count] &&
+    if ([appDelegate.storiesCollection.activeFeedStories count] &&
         self.activeStoryId &&
         ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
@@ -1092,7 +1195,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // see if it's a tryfeed for animation
     if (!self.webView.hidden &&
         appDelegate.tryFeedCategory &&
-        [[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
+        ([[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId] ||
+         [[self.activeStory objectForKey:@"story_hash"] isEqualToString:appDelegate.tryFeedStoryId])) {
         [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
@@ -1194,18 +1298,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
-        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
-        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
-        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"id"]];
+    for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
+        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"story_hash"]];
+        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_hash"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStory];
         } else {
-            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
+            [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
         }
     }
     
-    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     [self refreshComments:@"like"];
@@ -1259,7 +1363,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGRect frame = CGRectZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1286,7 +1391,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[appDelegate.activeFeed 
+    [request setPostValue:[appDelegate.storiesCollection.activeFeed
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 
@@ -1306,8 +1411,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.storyHUD hide:YES afterDelay:1];
     appDelegate.storyPageControl.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
-//    [appDelegate.feedDetailViewController resetFeedDetail];
-//    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
 - (void)refreshComments:(NSString *)replyId {
@@ -1393,6 +1496,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth {
+    NSLog(@"changeWebViewWidth: %@", NSStringFromCGRect(self.view.frame));
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     
@@ -1403,7 +1507,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         contentWidthClass = @"NB-iphone";
     }
-    NSString *riverClass = (appDelegate.isRiverView || appDelegate.isSocialView) ?
+    NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
+                            appDelegate.storiesCollection.isSocialView) ?
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:

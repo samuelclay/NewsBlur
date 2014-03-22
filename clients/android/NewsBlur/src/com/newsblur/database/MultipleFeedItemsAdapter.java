@@ -22,7 +22,7 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
 	private Cursor cursor;
 	private ImageLoader imageLoader;
-	private int storyTitleUnread, storyAuthorUnread, storyTitleRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
+	private int storyTitleUnread, storyContentUnread, storyAuthorUnread, storyTitleRead, storyContentRead, storyAuthorRead, storyDateUnread, storyDateRead, storyFeedUnread, storyFeedRead;
     private boolean ignoreReadStatus;
 
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags, boolean ignoreReadStatus) {
@@ -30,9 +30,11 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
 
-		storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
-		storyTitleRead = context.getResources().getColor(R.color.story_title_read);
-		storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
+        storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
+        storyTitleRead = context.getResources().getColor(R.color.story_title_read);
+        storyContentUnread = context.getResources().getColor(R.color.story_content_unread);
+        storyContentRead = context.getResources().getColor(R.color.story_content_read);
+        storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
 		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
 		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
 		storyDateRead = context.getResources().getColor(R.color.story_date_read);
@@ -82,7 +84,8 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);
-			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentUnread);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.BOLD);
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.BOLD);
@@ -96,12 +99,14 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedRead);
-			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTextColor(storyContentRead);
 			
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.NORMAL);
-			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
+            ((TextView) v.findViewById(R.id.row_item_content)).setTypeface(null, Typeface.NORMAL);
 
 			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(125);
 			borderOne.getBackground().setAlpha(125);

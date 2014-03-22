@@ -540,13 +540,14 @@ def switch_forked_mongoengine():
         # run('git checkout -b dev origin/dev')
 
 def setup_logrotate(clear=True):
+    if clear:
+        run('find /srv/newsblur/logs/*.log | xargs tee')
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
     sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
     sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
-    sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
-    if clear:
-        run('find /srv/newsblur/logs/*.log | xargs tee')
+    with settings(warn_only=True):
+        sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
     sudo('logrotate -f /etc/logrotate.d/newsblur')
 
 def setup_ulimit():

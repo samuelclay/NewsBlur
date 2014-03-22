@@ -10,12 +10,15 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -43,6 +46,8 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.NonfocusScrollview;
+
+import java.util.Date;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -160,6 +165,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(receiver);
+        web.setOnTouchListener(null);
+        view.setOnTouchListener(null);
 		super.onDestroy();
 	}
 
@@ -179,7 +186,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-		view = inflater.inflate(R.layout.fragment_readingitem, null);
+        view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 
@@ -202,8 +209,26 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
 
+        setupImmersiveViewGestureDetector();
+
 		return view;
 	}
+
+    private void setupImmersiveViewGestureDetector() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+            // fragments
+            final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
+            View.OnTouchListener touchListener = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return gestureDetector.onTouchEvent(motionEvent);
+                }
+            };
+            web.setOnTouchListener(touchListener);
+            view.setOnTouchListener(touchListener);
+        }
+    }
 	
 	private void setupSaveButton() {
 		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
@@ -308,7 +333,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
         itemTitle.setText(Html.fromHtml(story.title));
-		itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.date));
+        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
@@ -529,4 +554,22 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		this.previouslySavedShareText = previouslySavedShareText;
 	}
 
+    private class ImmersiveViewDetector extends GestureDetector.SimpleOnGestureListener {
+        private View view;
+
+        public ImmersiveViewDetector(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            if ((view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0) {
+                ViewUtils.showSystemUI(view);
+            } else {
+                ViewUtils.hideSystemUI(view);
+            }
+
+            return super.onSingleTapUp(e);
+        }
+    }
 }

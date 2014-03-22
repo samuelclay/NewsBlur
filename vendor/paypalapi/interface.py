@@ -11,10 +11,10 @@ from pprint import pformat
 
 import requests
 
-from paypalapi.settings import PayPalConfig
-from paypalapi.response import PayPalResponse
-from paypalapi.exceptions import PayPalError, PayPalAPIResponseError
-from paypalapi.compat import is_py3
+from vendor.paypalapi.settings import PayPalConfig
+from vendor.paypalapi.response import PayPalResponse
+from vendor.paypalapi.exceptions import PayPalError, PayPalAPIResponseError
+from vendor.paypalapi.compat import is_py3
 
 if is_py3:
     #noinspection PyUnresolvedReferences
