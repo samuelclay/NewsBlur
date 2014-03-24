@@ -260,6 +260,17 @@
           optional: true
           example: "h=a1b2c3&h=d4e5f6"
 
+    - url: /reader/river_stories
+      method: GET
+      short_desc: "Stories by story_hash."
+      long_desc: 
+        - "Retrieve up to 100 stories when specifying by story_hash."
+        - "Used this in conjunction with `unread_story_hashes` to store stories for offline use."
+      params:
+        - key: h
+          desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
+          example: "h=468:a1b2c3&h=7531:d4e5f6"
+
     - url: /reader/unread_story_hashes
       method: GET
       short_desc: "The story_hashes of all unread stories."
