@@ -255,10 +255,6 @@
           optional: true
           default: unread
           example: all
-        - key: h
-          desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
-          optional: true
-          example: "h=a1b2c3&h=d4e5f6"
 
     - url: /reader/river_stories
       method: GET
@@ -269,6 +265,7 @@
       params:
         - key: h
           desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
+          required: true
           example: "h=468:a1b2c3&h=7531:d4e5f6"
 
     - url: /reader/unread_story_hashes
