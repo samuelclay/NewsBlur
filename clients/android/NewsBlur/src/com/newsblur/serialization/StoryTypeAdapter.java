@@ -23,9 +23,8 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
 
     private Gson gson;
 
-    // the HTML parser puts placeholders for images and other content when parsing to text, but we
-    // want to remove them.
-    private final static Pattern HtmlPlaceholders = Pattern.compile("\\uFFFC");
+    // any characters we don't want in the short description, such as newlines or placeholders
+    private final static Pattern ShortContentExcludes = Pattern.compile("[\\uFFFC\\u000A\\u000B\\u000C\\u000D]");
 
     public StoryTypeAdapter() {
         this.gson = new GsonBuilder()
@@ -48,8 +47,8 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
             int length = 200;
             if (parsed.length() < 200) { length = parsed.length(); }
             story.shortContent = parsed.subSequence(0, length).toString();
-            Matcher m = HtmlPlaceholders.matcher(story.shortContent);
-            story.shortContent = m.replaceAll("");
+            Matcher m = ShortContentExcludes .matcher(story.shortContent);
+            story.shortContent = m.replaceAll(" ").trim();
         }
         
         return story;
