@@ -8,7 +8,6 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.Html;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -68,7 +67,7 @@ public class Story implements Serializable {
     @SerializedName("story_content")
     public String content;
 
-    @SerializedName("story_short_content")
+    // this isn't actually a serialized feed, but created client-size in StoryTypeAdapter
     public String shortContent;
 
 	@SerializedName("story_authors")
@@ -104,6 +103,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_SHORTDATE, shortDate);
 		values.put(DatabaseConstants.STORY_LONGDATE, longDate);
         values.put(DatabaseConstants.STORY_CONTENT, content);
+        values.put(DatabaseConstants.STORY_SHORT_CONTENT, shortContent);
 		values.put(DatabaseConstants.STORY_PERMALINK, permalink);
 		values.put(DatabaseConstants.STORY_COMMENT_COUNT, commentCount);
 		values.put(DatabaseConstants.STORY_SHARE_COUNT, shareCount);
@@ -133,12 +133,7 @@ public class Story implements Serializable {
 		Story story = new Story();
 		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
 		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
-        if (story.content != null) {
-            String shortContent = Html.fromHtml(story.content).toString();
-            if (shortContent.length() >= 200) {
-                story.shortContent = shortContent.substring(0, 200);
-            }
-        }
+		story.shortContent = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORT_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.timestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_TIMESTAMP));
 		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE)));

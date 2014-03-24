@@ -25,7 +25,7 @@
     <color name="story_title_unread">#333333</color>
     <color name="story_title_read">#808080</color>
     <color name="story_content_unread">#404040</color>
-    <color name="story_content_read">#848484</color>
+    <color name="story_content_read">#909090</color>
     <color name="story_feed_unread">#606060</color>
     <color name="story_feed_read">#A0A0A0</color>
     <color name="story_author_unread">#959595</color>
