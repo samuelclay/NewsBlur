@@ -1168,7 +1168,7 @@ def mark_story_hashes_as_read(request):
     story_hashes = request.REQUEST.getlist('story_hash')
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes)
-
+    
     if friend_ids:
         socialsubs = MSocialSubscription.objects.filter(
                         user_id=request.user.pk,
@@ -1179,7 +1179,6 @@ def mark_story_hashes_as_read(request):
                 socialsub.save()
             r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
 
-    
     # Also count on original subscription
     for feed_id in feed_ids:
         usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
@@ -1194,7 +1193,46 @@ def mark_story_hashes_as_read(request):
     logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s" % (
                  hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids))
 
-    return dict(code=1, story_hashes=story_hashes, feed_ids=feed_ids, friend_user_ids=friend_ids)
+    return dict(code=1, story_hashes=story_hashes, 
+                feed_ids=feed_ids, friend_user_ids=friend_ids)
+
+@ajax_login_required
+@json.json_view
+@required_params('story_hash')
+def mark_story_hash_as_unread(request):
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    story_hash = request.REQUEST.get('story_hash')
+    feed_id, _ = MStory.split_story_hash(story_hash)
+    story, _ = MStory.find_story(feed_id, story_hash)
+    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    if message:
+        data = dict(code=-1, message=message)
+        return data
+    
+    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
+
+    if friend_ids:
+        socialsubs = MSocialSubscription.objects.filter(
+                        user_id=request.user.pk,
+                        subscription_user_id__in=friend_ids)
+        for socialsub in socialsubs:
+            if not socialsub.needs_unread_recalc:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+
+    # Also count on original subscription
+    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+    if usersubs:
+        usersub = usersubs[0]
+        if not usersub.needs_unread_recalc:
+            usersub.needs_unread_recalc = True
+            usersub.save()
+        r.publish(request.user.username, 'feed:%s' % feed_id)
+    
+    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
+
+    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
 
 @ajax_login_required
 @json.json_view
@@ -1277,8 +1315,8 @@ def mark_social_stories_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_unread(request):
-    story_id = request.REQUEST['story_id']
-    feed_id = int(request.REQUEST['feed_id'])
+    story_id = request.REQUEST.get('story_id', None)
+    feed_id = int(request.REQUEST.get('feed_id', 0))
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -1314,17 +1352,10 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
 
-    if story.story_date < request.user.profile.unread_cutoff:
+    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    if message:
         data['code'] = -1
-        if request.user.profile.is_premium:
-            data['message'] = "Story is more than %s days old, cannot mark as unread." % (
-                                settings.DAYS_OF_UNREAD)
-        elif story.story_date > request.user.profile.unread_cutoff_premium:
-            data['message'] = "Story is more than %s days old. Premiums can mark unread up to 30 days." % (
-                                settings.DAYS_OF_UNREAD_FREE)
-        else:
-            data['message'] = "Story is more than %s days old, cannot mark as unread." % (
-                                settings.DAYS_OF_UNREAD_FREE)
+        data['message'] = message
         return data
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
@@ -1332,9 +1363,7 @@ def mark_story_as_unread(request):
                                                                story_guid_hash=story.guid_hash)
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
-
-    RUserStory.mark_unread(user_id=request.user.pk, story_feed_id=feed_id,
-                           story_hash=story.story_hash)
+    RUserStory.mark_story_hashes_unread(user_id=request.user.pk, story_hashes=story.story_hash)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
