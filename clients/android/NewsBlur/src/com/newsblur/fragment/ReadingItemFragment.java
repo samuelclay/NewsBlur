@@ -570,7 +570,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
             if (ViewUtils.isSystemUIHidden(view)) {
                 ViewUtils.showSystemUI(view);
-            } else {
+            } else if (PrefsUtils.enterImmersiveReadingModeOnSingleTap(getActivity())) {
                 ViewUtils.hideSystemUI(view);
             }
 
