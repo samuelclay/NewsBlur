@@ -1363,7 +1363,7 @@ def mark_story_as_unread(request):
                                                                story_guid_hash=story.guid_hash)
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
-    RUserStory.mark_story_hashes_unread(user_id=request.user.pk, story_hashes=story.story_hash)
+    RUserStory.mark_story_hash_unread(user_id=request.user.pk, story_hash=story.story_hash)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
