@@ -290,4 +290,9 @@ public class PrefsUtils {
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;
     }
+
+    public static boolean enterImmersiveReadingModeOnSingleTap(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.READING_ENTER_IMMERSIVE_SINGLE_TAP, false);
+    }
 }
