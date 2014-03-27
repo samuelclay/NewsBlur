@@ -67,4 +67,12 @@ public class NewsblurWebview extends WebView {
             loadUrl(script);
         }
 	}
+
+    /**
+     * http://stackoverflow.com/questions/5994066/webview-ontouch-handling-when-the-user-does-not-click-a-link
+     */
+    public boolean wasLinkClicked() {
+        WebView.HitTestResult result = getHitTestResult();
+        return (result != null && result.getExtra() != null);
+    }
 }

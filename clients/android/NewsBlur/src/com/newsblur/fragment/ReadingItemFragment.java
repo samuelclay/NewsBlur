@@ -563,9 +563,14 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if ((view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0) {
+            if (web.wasLinkClicked()) {
+                // Clicked a link so ignore immersive view
+                return super.onSingleTapUp(e);
+            }
+
+            if (ViewUtils.isSystemUIHidden(view)) {
                 ViewUtils.showSystemUI(view);
-            } else {
+            } else if (PrefsUtils.enterImmersiveReadingModeOnSingleTap(getActivity())) {
                 ViewUtils.hideSystemUI(view);
             }
 

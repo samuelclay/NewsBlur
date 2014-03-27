@@ -19,6 +19,15 @@
             android:defaultValue="@string/default_read_filter_value" />
 
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/settings_reading">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="immersive_enter_single_tap"
+            android:title="@string/settings_immersive_enter_single_tap" >
+        </CheckBoxPreference>
+
+    </PreferenceCategory>
     <PreferenceCategory 
         android:title="@string/settings_social">
         <CheckBoxPreference

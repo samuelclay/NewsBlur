@@ -43,4 +43,5 @@ public class PrefConstants {
     public static final String FOLDER_DEFAULT_FEED_VIEW_PREFIX = "folder_default_feed_view_";
 
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";
+    public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
 }

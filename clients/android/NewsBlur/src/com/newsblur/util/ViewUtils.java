@@ -142,4 +142,8 @@ public class ViewUtils {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+
+    public static boolean isSystemUIHidden(View view) {
+        return (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
+    }
 }
