@@ -10,6 +10,11 @@ import com.newsblur.domain.Story;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import android.text.Html;
+import android.util.Log;
 
 /**
  * Created by mark on 15/03/2014.
@@ -17,6 +22,9 @@ import java.util.Date;
 public class StoryTypeAdapter implements JsonDeserializer<Story> {
 
     private Gson gson;
+
+    // any characters we don't want in the short description, such as newlines or placeholders
+    private final static Pattern ShortContentExcludes = Pattern.compile("[\\uFFFC\\u000A\\u000B\\u000C\\u000D]");
 
     public StoryTypeAdapter() {
         this.gson = new GsonBuilder()
@@ -29,8 +37,20 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
     @Override
     public Story deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         Story story = gson.fromJson(jsonElement, Story.class);
+
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;
+        
+        // populate the shortContent field
+        if (story.content != null) {
+            CharSequence parsed = Html.fromHtml(story.content).toString();
+            int length = 200;
+            if (parsed.length() < 200) { length = parsed.length(); }
+            story.shortContent = parsed.subSequence(0, length).toString();
+            Matcher m = ShortContentExcludes .matcher(story.shortContent);
+            story.shortContent = m.replaceAll(" ").trim();
+        }
+        
         return story;
     }
 }
