@@ -3,7 +3,7 @@ package com.newsblur.view;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;

@@ -12,7 +12,7 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;

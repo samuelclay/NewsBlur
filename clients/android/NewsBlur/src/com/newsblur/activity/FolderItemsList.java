@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 import android.util.Log;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -69,7 +69,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.itemslist, menu);
 		return true;
 	}
@@ -77,7 +77,7 @@ public class FolderItemsList extends ItemsList implements MarkAllReadDialogListe
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
 
 			String[] feeds = new String[feedIds.size()];
 			feedIds.toArray(feeds);

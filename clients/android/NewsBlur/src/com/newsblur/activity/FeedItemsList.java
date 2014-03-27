@@ -4,13 +4,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -106,7 +106,7 @@ public class FeedItemsList extends ItemsList {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
 		return true;
 	}
@@ -114,7 +114,7 @@ public class FeedItemsList extends ItemsList {
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
             FeedUtils.updateFeed(this, this, feedId, page, getStoryOrder(), PrefsUtils.getReadFilterForFeed(this, feedId));
 		}
 	}

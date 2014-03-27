@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -75,7 +75,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
 
             String[] feedIdArray = new String[feedIds.size()];
             feedIds.toArray(feedIdArray);
@@ -92,7 +92,7 @@ public class AllStoriesItemsList extends ItemsList implements MarkAllReadDialogL
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.allstories_itemslist, menu);
 		return true;
 	}

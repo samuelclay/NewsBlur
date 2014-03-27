@@ -2,7 +2,7 @@ package com.newsblur.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter;
 
 import java.util.List;
 

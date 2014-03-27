@@ -12,13 +12,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -26,9 +29,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
@@ -43,7 +43,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.NonfocusScrollview.ScrollChangeListener;
 
-public abstract class Reading extends NbFragmentActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, FeedUtils.ActionCompletionListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -53,6 +53,8 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	public static final String EXTRA_FEED_IDS = "feed_ids";
     public static final String EXTRA_DEFAULT_FEED_VIEW = "default_feed_view";
 	private static final String TEXT_SIZE = "textsize";
+    private static final String BUNDLE_POSITION = "position";
+    private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
 
     private static final int OVERLAY_RANGE_TOP_DP = 40;
     private static final int OVERLAY_RANGE_BOT_DP = 60;
@@ -109,12 +111,21 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         this.overlayText = (Button) findViewById(R.id.reading_overlay_text);
         this.overlaySend = (Button) findViewById(R.id.reading_overlay_send);
 
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
-		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_POSITION)) {
+            passedPosition = savedInstanceBundle.getInt(BUNDLE_POSITION);
+        } else {
+            passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        }
+
+        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
+            startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
+        }
+
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
         defaultFeedView = (DefaultFeedView)getIntent().getSerializableExtra(EXTRA_DEFAULT_FEED_VIEW);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
         contentResolver = getContentResolver();
 
@@ -129,9 +140,25 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
-
 	}
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (pager != null) {
+            outState.putInt(BUNDLE_POSITION, pager.getCurrentItem());
+        }
+        if (startingUnreadCount != 0) {
+            outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
+        // this ensures that at least one callback happens after activity re-create.
+        getLoaderManager().restartLoader(0, null, this);
+    }
 
 	@Override
 	public abstract Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle);
@@ -149,9 +176,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
                 stories = cursor;
             }
 
+            // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
-                // if this is the first time we've found a cursor, we know the onCreate chain is done
-                this.startingUnreadCount = getUnreadCount();
+
+                // don't blow away the value if the value was restored on create
+                if (this.startingUnreadCount == 0 ) {
+                    this.startingUnreadCount = getUnreadCount();
+                }
+
                 // set up the pager after the unread count, so the first mark-read doesn't happen too quickly
                 setupPager();
             }
@@ -199,7 +231,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.reading, menu);
 		return true;
 	}
@@ -232,14 +264,14 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(getReadingFragment(), story, getReadingFragment().previouslySavedShareText);
-            newFragment.show(getSupportFragmentManager(), "dialog");
+            newFragment.show(getFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_shared) {
 			FeedUtils.shareStory(story, this);
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this));
-			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
+			textSize.show(getFragmentManager(), TEXT_SIZE);
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
@@ -272,7 +304,7 @@ public abstract class Reading extends NbFragmentActivity implements OnPageChange
     }
 
     private void updateCursor() {
-        getSupportLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     // interface OnPageChangeListener

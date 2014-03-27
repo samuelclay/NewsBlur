@@ -28,7 +28,6 @@
     
     <string name="description_login_button">Press to log in.</string>
     <string name="description_login_logo">NewsBlur Logo</string>
-    <string name="description_favicon">The feed\'s favicon</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>

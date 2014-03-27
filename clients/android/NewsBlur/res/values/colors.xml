@@ -37,8 +37,6 @@
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
     
-    <color name="darkgreen">#134c00</color>
-
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="item_header_border">#C2C5BE</color>
@@ -53,8 +51,6 @@
     
     <color name="positive">#6EA74A</color>
     <color name="positive_drop_shadow">#417E53</color>
-    
-    <color name="highlight">#fef7ab</color>
     
     <color name="neutral">#B3B6AD</color>
     <color name="neutral_drop_shadow">#93968D</color>

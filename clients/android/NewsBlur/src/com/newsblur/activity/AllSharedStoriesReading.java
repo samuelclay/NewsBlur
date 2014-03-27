@@ -2,8 +2,8 @@ package com.newsblur.activity;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
@@ -25,9 +25,9 @@ public class AllSharedStoriesReading extends Reading {
         feedIds = getIntent().getStringArrayExtra(Reading.EXTRA_FEED_IDS);
         setTitle(getResources().getString(R.string.all_shared_stories));
 
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override

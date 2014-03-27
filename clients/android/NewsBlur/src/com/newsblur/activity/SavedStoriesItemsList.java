@@ -8,11 +8,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -50,7 +50,7 @@ public class SavedStoriesItemsList extends ItemsList {
 	@Override
 	public void triggerRefresh(int page) {
 		if (!stopLoading) {
-			setSupportProgressBarIndeterminateVisibility(true);
+			setProgressBarIndeterminateVisibility(true);
             FeedUtils.updateSavedStories(this, this, page);
 		}
 	}
@@ -63,7 +63,7 @@ public class SavedStoriesItemsList extends ItemsList {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.savedstories_itemslist, menu);
         return true;
 	}
