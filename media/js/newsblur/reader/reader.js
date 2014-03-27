@@ -4218,6 +4218,11 @@
                 this.apply_tipsy_titles();
             } 
             NEWSBLUR.log(["Setting refresh interval to every " + this.flags.refresh_interval + " seconds."]);
+            if (this.socket && !this.socket.socket.connected) {
+                // force disconnected since it's probably in a bad reconnect state.
+                console.log(["Forcing socket disconnection..."]);
+                this.socket.socket.disconnect();
+            }
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {

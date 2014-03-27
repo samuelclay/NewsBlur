@@ -786,6 +786,27 @@ class RUserStory:
         # p2.execute()
         
         return list(feed_ids), list(friend_ids)
+
+    @classmethod
+    def mark_story_hash_unread(cls, user_id, story_hash, r=None, s=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if not s:
+            s = redis.Redis(connection_pool=settings.REDIS_POOL)
+        # if not r2:
+        #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+        
+        friend_ids = set()
+        feed_id, _ = MStory.split_story_hash(story_hash)
+
+        # Find other social feeds with this story to update their counts
+        friend_key = "F:%s:F" % (user_id)
+        share_key = "S:%s" % (story_hash)
+        friends_with_shares = [int(f) for f in s.sinter(share_key, friend_key)]
+        friend_ids.update(friends_with_shares)
+        cls.mark_unread(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=r)
+        
+        return feed_id, list(friend_ids)
         
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
@@ -816,25 +837,46 @@ class RUserStory:
                 redis_commands(social_read_story_key)
     
     @staticmethod
-    def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        h = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        # h2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
+    def story_can_be_marked_read_by_user(story, user):
+        message = None
+        if story.story_date < user.profile.unread_cutoff:
+            if user.profile.is_premium:
+                message = "Story is more than %s days old, cannot mark as unread." % (
+                          settings.DAYS_OF_UNREAD)
+            elif story.story_date > user.profile.unread_cutoff_premium:
+                message = "Story is more than %s days old. Premiums can mark unread up to 30 days." % (
+                          settings.DAYS_OF_UNREAD_FREE)
+            else:
+                message = "Story is more than %s days old, cannot mark as unread." % (
+                          settings.DAYS_OF_UNREAD_FREE)
+        return message
+        
+    @staticmethod
+    def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
 
-        h.srem('RS:%s' % user_id, story_hash)
-        # h2.srem('RS:%s' % user_id, story_hash)
-        h.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
-        # h2.srem('RS:%s:%s' % (user_id, story_feed_id), story_hash)
+        story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
+        
+        if not story_hash: return
+        
+        def redis_commands(key):
+            r.srem(key, story_hash)
+            # r2.srem(key, story_hash)
+            r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+            # r2.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
 
-        # Find other social feeds with this story to update their counts
-        friend_key = "F:%s:F" % (user_id)
-        share_key = "S:%s" % (story_hash)
-        friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
-
-        if friends_with_shares:
-            for social_user_id in friends_with_shares:
-                h.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
-                # h2.srem('RS:%s:B:%s' % (user_id, social_user_id), story_hash)
+        all_read_stories_key = 'RS:%s' % (user_id)
+        redis_commands(all_read_stories_key)
+        
+        read_story_key = 'RS:%s:%s' % (user_id, story_feed_id)
+        redis_commands(read_story_key)
+        
+        if social_user_ids:
+            for social_user_id in social_user_ids:
+                social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
+                redis_commands(social_read_story_key)
     
     @staticmethod
     def get_stories(user_id, feed_id, r=None):

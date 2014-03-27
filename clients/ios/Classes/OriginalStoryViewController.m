@@ -69,6 +69,14 @@
                                         barItemWithImage:[UIImage imageNamed:@"barbutton_sendto.png"]
                                         target:self
                                         action:@selector(doOpenActionSheet:)];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
+                                                 target:self
+                                                 action:@selector(closeOriginalView)];
+        self.navigationItem.leftBarButtonItem = closeButton;
+    }
+    
     backBarButton = [UIBarButtonItem
                      barItemWithImage:[UIImage imageNamed:@"barbutton_back.png"]
                      target:self
@@ -310,6 +318,10 @@
                       title:title
                   feedTitle:nil
                      images:nil];
+}
+
+- (void)closeOriginalView {
+    [appDelegate closeOriginalStory];
 }
 
 @end

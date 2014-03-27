@@ -21,6 +21,7 @@ UIGestureRecognizerDelegate> {
     UIWebView *webView;
     UIBarButtonItem *backBarButton;
     UILabel *titleView;
+    UIBarButtonItem *closeButton;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -33,5 +34,6 @@ UIGestureRecognizerDelegate> {
 - (IBAction)webViewGoForward:(id)sender;
 - (IBAction)webViewRefresh:(id)sender;
 - (void)updateTitle:(UIWebView*)aWebView;
+- (void)closeOriginalView;
 
 @end

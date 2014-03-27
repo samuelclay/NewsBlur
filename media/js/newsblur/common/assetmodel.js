@@ -216,7 +216,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         story.set('read_status', 0);
 
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/mark_story_as_unread', {
+            this.make_request('/reader/mark_story_hash_as_unread', {
+                story_hash: story.get('story_hash'),
                 story_id: story_id,
                 feed_id: feed_id
             }, null, error_callback, {});

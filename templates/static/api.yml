@@ -255,10 +255,18 @@
           optional: true
           default: unread
           example: all
+
+    - url: /reader/river_stories
+      method: GET
+      short_desc: "Stories by story_hash."
+      long_desc: 
+        - "Retrieve up to 100 stories when specifying by story_hash."
+        - "Used this in conjunction with `unread_story_hashes` to store stories for offline use."
+      params:
         - key: h
           desc: "Pass up to 100 story_hashes. Use with unread_story_hashes."
-          optional: true
-          example: "h=a1b2c3&h=d4e5f6"
+          required: true
+          example: "h=468:a1b2c3&h=7531:d4e5f6"
 
     - url: /reader/unread_story_hashes
       method: GET
@@ -296,6 +304,26 @@
           required: true
           example: >
             story_hash=123:a1d62b&story_hash=1456789:4e3c12
+
+    - url: /reader/mark_story_hash_as_unread
+      method: POST
+      short_desc: "Mark a story as unread."
+      long_desc: 
+        - "Mark a single story as unread using its unique story_hash."
+        - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
+        - >
+            If a story is too old to mark as read, look for (and display to the user) the 
+            `message` parameter returned back to you.
+      tips:
+        - >
+            This endpoint is newer than all of the other mark as read endpoints, so use this one.
+            The other endpoints are maintained for old clients to use.
+      params:
+        - key: story_hash
+          desc: "A story hash to mark as unread."
+          required: true
+          example: >
+            story_hash=123:a1d62b
           
     - url: /reader/mark_story_as_read
       method: POST

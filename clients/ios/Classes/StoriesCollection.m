@@ -110,7 +110,7 @@
             }
         }
     }
-    self.storyLocationsCount = [self.activeFeedStoryLocations count];
+    self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
 - (NSInteger)indexOfNextUnreadStory {
@@ -256,17 +256,17 @@
 
 - (void)addStories:(NSArray *)stories {
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
-    self.storyCount = [self.activeFeedStories count];
+    self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
-    self.storyLocationsCount = [self.activeFeedStoryLocations count];
+    self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
-    self.storyCount = [self.activeFeedStories count];
+    self.storyCount = (int)[self.activeFeedStories count];
     appDelegate.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
-    self.storyLocationsCount = [self.activeFeedStoryLocations count];
+    self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
