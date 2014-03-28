@@ -61,6 +61,8 @@ public class PrefsUtils {
             FileCache.cleanUpOldCache(context);
             // store the current version
             prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
+            // also make sure we auto-trigger an update, since all data are now gone
+            prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
         }
 
     }
