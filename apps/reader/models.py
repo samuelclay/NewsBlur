@@ -662,7 +662,7 @@ class UserSubscription(models.Model):
                                                     usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     include_timestamps=True,
-                                                    cutoff_date=self.user.profile.unread_cutoff)
+                                                    cutoff_date=date_delta)
 
             feed_scores['neutral'] = len(unread_story_hashes)
             if feed_scores['neutral']:
