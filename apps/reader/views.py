@@ -1198,44 +1198,6 @@ def mark_story_hashes_as_read(request):
 
 @ajax_login_required
 @json.json_view
-@required_params('story_hash')
-def mark_story_hash_as_unread(request):
-    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    story_hash = request.REQUEST.get('story_hash')
-    feed_id, _ = MStory.split_story_hash(story_hash)
-    story, _ = MStory.find_story(feed_id, story_hash)
-    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
-    if message:
-        data = dict(code=-1, message=message)
-        return data
-    
-    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
-
-    if friend_ids:
-        socialsubs = MSocialSubscription.objects.filter(
-                        user_id=request.user.pk,
-                        subscription_user_id__in=friend_ids)
-        for socialsub in socialsubs:
-            if not socialsub.needs_unread_recalc:
-                socialsub.needs_unread_recalc = True
-                socialsub.save()
-            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
-
-    # Also count on original subscription
-    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
-    if usersubs:
-        usersub = usersubs[0]
-        if not usersub.needs_unread_recalc:
-            usersub.needs_unread_recalc = True
-            usersub.save()
-        r.publish(request.user.username, 'feed:%s' % feed_id)
-    
-    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
-
-    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
-
-@ajax_login_required
-@json.json_view
 def mark_feed_stories_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
@@ -1337,20 +1299,8 @@ def mark_story_as_unread(request):
         logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
         return dict(code=-1, message="Story not found.")
     
-    if usersub and story.story_date < usersub.mark_read_date:
-        # Story is outside the mark as read range, so invert all stories before.
-        newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
-                                       story_date__gte=story.story_date,
-                                       story_date__lte=usersub.mark_read_date
-                                       ).only('story_hash')
-        newer_stories = [s.story_hash for s in newer_stories]
-        usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
-        usersub.needs_unread_recalc = True
-        usersub.save()
-        
-        # Mark stories as read only after the mark_read_date has been moved, otherwise
-        # these would be ignored.
-        data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+    if usersub:
+        data = usersub.invert_read_stories_after_unread_story(story, request)
 
     message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
     if message:
@@ -1371,7 +1321,46 @@ def mark_story_as_unread(request):
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
     return data
+
+@ajax_login_required
+@json.json_view
+@required_params('story_hash')
+def mark_story_hash_as_unread(request):
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    story_hash = request.REQUEST.get('story_hash')
+    feed_id, _ = MStory.split_story_hash(story_hash)
+    story, _ = MStory.find_story(feed_id, story_hash)
+    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    if message:
+        data = dict(code=-1, message=message)
+        return data
     
+    # Also count on original subscription
+    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+    if usersubs:
+        usersub = usersubs[0]
+        if not usersub.needs_unread_recalc:
+            usersub.needs_unread_recalc = True
+            usersub.save()
+        data = usersub.invert_read_stories_after_unread_story(story, request)
+        r.publish(request.user.username, 'feed:%s' % feed_id)
+
+    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
+
+    if friend_ids:
+        socialsubs = MSocialSubscription.objects.filter(
+                        user_id=request.user.pk,
+                        subscription_user_id__in=friend_ids)
+        for socialsub in socialsubs:
+            if not socialsub.needs_unread_recalc:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+
+    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
+
+    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
+
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
