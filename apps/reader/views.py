@@ -1759,12 +1759,25 @@ def iframe_buster(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
-    code      = 1
-    feed_id   = int(request.REQUEST['feed_id'])
-    story_id  = request.REQUEST['story_id']
-    user_tags = request.REQUEST.getlist('user_tags')
-    message   = ""
-    story, _  = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    return _mark_story_as_starred(request)
+    
+@required_params('story_hash')
+@ajax_login_required
+@json.json_view
+def mark_story_hash_as_starred(request):
+    return _mark_story_as_starred(request)
+    
+def _mark_story_as_starred(request):
+    code       = 1
+    feed_id    = int(request.REQUEST.get('feed_id', 0))
+    story_id   = request.REQUEST.get('story_id', None)
+    story_hash = request.REQUEST.get('story_hash', None)
+    user_tags  = request.REQUEST.getlist('user_tags')
+    message    = ""
+    if story_hash:
+        story, _   = MStory.find_story(story_hash=story_hash)
+    else:
+        story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     
     if not story:
         return {'code': -1, 'message': "Could not find story to save."}
@@ -1807,13 +1820,25 @@ def mark_story_as_starred(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_unstarred(request):
-    code     = 1
-    story_id = request.POST['story_id']
-    starred_counts = None
+    return _mark_story_as_unstarred(request)
     
-    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
-    if not starred_story:
-        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
+@required_params('story_hash')
+@ajax_login_required
+@json.json_view
+def mark_story_hash_as_unstarred(request):
+    return _mark_story_as_unstarred(request)
+
+def _mark_story_as_unstarred(request):
+    code     = 1
+    story_id = request.POST.get('story_id', None)
+    story_hash = request.REQUEST.get('story_hash', None)
+    starred_counts = None
+    starred_story = None
+    
+    if story_id:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
+    if not story_id or not starred_story:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_hash or story_id)
     if starred_story:
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))

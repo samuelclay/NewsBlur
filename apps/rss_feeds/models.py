@@ -1739,11 +1739,14 @@ class MStory(mongo.Document):
         return extra_stories_count
         
     @classmethod
-    def find_story(cls, story_feed_id, story_id, original_only=False):
+    def find_story(cls, story_feed_id=None, story_id=None, story_hash=None, original_only=False):
         from apps.social.models import MSharedStory
         original_found = False
+        if story_hash:
+            story_id = story_hash
         story_hash = cls.ensure_story_hash(story_id, story_feed_id)
-
+        if not story_feed_id:
+            feed_id, _ = cls.split_story_hash(story_hash)
         if isinstance(story_id, ObjectId):
             story = cls.objects(id=story_id).limit(1).first()
         else:
