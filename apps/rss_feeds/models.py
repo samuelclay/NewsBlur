@@ -1746,7 +1746,7 @@ class MStory(mongo.Document):
             story_id = story_hash
         story_hash = cls.ensure_story_hash(story_id, story_feed_id)
         if not story_feed_id:
-            feed_id, _ = cls.split_story_hash(story_hash)
+            story_feed_id, _ = cls.split_story_hash(story_hash)
         if isinstance(story_id, ObjectId):
             story = cls.objects(id=story_id).limit(1).first()
         else:
