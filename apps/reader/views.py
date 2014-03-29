@@ -433,7 +433,7 @@ def refresh_feeds(request):
     if True or settings.DEBUG or check_fetch_status:
         logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
             len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
-        
+
     return {
         'feeds': feeds, 
         'social_feeds': social_feeds,

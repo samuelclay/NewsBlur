@@ -4218,9 +4218,9 @@
                 this.apply_tipsy_titles();
             } 
             NEWSBLUR.log(["Setting refresh interval to every " + this.flags.refresh_interval + " seconds."]);
-            if (this.socket && !this.socket.socket.connected) {
+            if (this.socket && !this.socket.socket.connected && !this.socket.socket.connecting) {
                 // force disconnected since it's probably in a bad reconnect state.
-                console.log(["Forcing socket disconnection..."]);
+                console.log(["Forcing socket disconnection...", this.socket.socket]);
                 this.socket.socket.disconnect();
             }
         },
