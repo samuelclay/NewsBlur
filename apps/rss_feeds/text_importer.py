@@ -93,7 +93,8 @@ class TextImporter:
         try:
             r = requests.get(url, headers=self.headers, verify=False)
         except (AttributeError, SocketError, requests.ConnectionError, 
-                requests.models.MissingSchema, requests.sessions.InvalidSchema), e:
+                requests.models.MissingSchema, requests.sessions.InvalidSchema,
+                requests.exceptions.LocationParseError), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r
