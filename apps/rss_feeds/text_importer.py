@@ -1,5 +1,6 @@
 import requests
 import zlib
+from requests.packages.urllib3.exceptions import LocationParseError
 from django.conf import settings
 from socket import error as SocketError
 from mongoengine.queryset import NotUniqueError
@@ -94,7 +95,7 @@ class TextImporter:
             r = requests.get(url, headers=self.headers, verify=False)
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
-                requests.exceptions.LocationParseError), e:
+                LocationParseError), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r
