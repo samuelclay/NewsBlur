@@ -19,10 +19,11 @@ p, div, table {
     margin: 0px !important;
     clear: both;
     max-width: 100% !important;
+    margin: 0px !important;
 }
 
-div + p {
-    margin: 0px !important;
+p {
+    margin-bottom: 0.6em !important;
 }
 
 img {
@@ -34,7 +35,6 @@ img, video, embed, object, iframe, div {
     max-width: 100% !important;
 	height: auto !important;	
 }
-
 
 a {
 	color: #405BA8;	
@@ -50,16 +50,12 @@ code {
     word-wrap: break-word !important;
 }
 
-blockquote {
+pre, blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #C2C5BE;
     color: rgba(10, 12, 38, .8);
-    padding: 10px 1.5em;
-    margin: 20px 0;
-}
-
-pre {
-    width: 100%;
+    padding: 0.6em;
+    margin: 0.6em;
 }
 
 ins { 
