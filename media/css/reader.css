@@ -1506,6 +1506,7 @@ body {
 }
 .NB-story-pane-west #story_titles .NB-story-title {
     padding-right: 4px;
+    padding-left: 32px;
 }
 .NB-view-river #story_titles .NB-story-title {
     padding-left: 148px;
@@ -1537,7 +1538,9 @@ body {
     left: 0;
     top: 2px;
 }
-
+.NB-story-pane-west #story_titles .NB-story-title .NB-storytitles-sentiment {
+    left: 4px;
+}
 #story_titles .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
     background-size: 8px;
@@ -1703,6 +1706,9 @@ body {
     background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 13px 6px;
     background-size: 8px;
 }
+.NB-story-pane-west #story_titles .NB-story-title .NB-story-manage-icon {
+    left: 4px;
+}
 
 #story_titles .NB-story-title:hover .NB-story-manage-icon {
     display: block;
@@ -1750,7 +1756,7 @@ body {
 }
 .NB-story-pane-west #story_titles .NB-story-title .story_date {
     position: static;
-    margin: 0 0 4px 0;
+    margin: 0 0 4px 4px;
     color: #888C9B;
     top: 0;
     left: 0;
