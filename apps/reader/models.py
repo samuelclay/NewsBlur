@@ -544,6 +544,27 @@ class UserSubscription(models.Model):
             
         return data
     
+    def invert_read_stories_after_unread_story(self, story, request=None):
+        data = dict(code=1)
+        if story.story_date > self.mark_read_date: 
+            return data
+            
+        # Story is outside the mark as read range, so invert all stories before.
+        newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
+                                       story_date__gte=story.story_date,
+                                       story_date__lte=self.mark_read_date
+                                       ).only('story_hash')
+        newer_stories = [s.story_hash for s in newer_stories]
+        self.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
+        self.needs_unread_recalc = True
+        self.save()
+        
+        # Mark stories as read only after the mark_read_date has been moved, otherwise
+        # these would be ignored.
+        data = self.mark_story_ids_as_read(newer_stories, request=request)
+        
+        return data
+        
     def calculate_feed_scores(self, silent=False, stories=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
@@ -641,13 +662,13 @@ class UserSubscription(models.Model):
                                                     usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
                                                     include_timestamps=True,
-                                                    cutoff_date=self.user.profile.unread_cutoff)
+                                                    cutoff_date=date_delta)
 
             feed_scores['neutral'] = len(unread_story_hashes)
             if feed_scores['neutral']:
                 oldest_unread_story_date = datetime.datetime.fromtimestamp(unread_story_hashes[-1][1])
         
-        if not silent:
+        if not silent or settings.DEBUG:
             logging.user(self.user, '~FBUnread count (~SB%s~SN%s): ~SN(~FC%s~FB/~FC%s~FB/~FC%s~FB) ~SBto~SN (~FC%s~FB/~FC%s~FB/~FC%s~FB)' % (self.feed_id, '/~FMtrained~FB' if self.is_trained else '', ong, ont, ops, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
 
         self.unread_count_positive = feed_scores['positive']

@@ -1758,7 +1758,7 @@ class MSharedStory(mongo.Document):
             'shared_date': relative_timesince(self.shared_date),
             'date': self.shared_date,
             'replies': [reply.canonical() for reply in self.replies],
-            'liking_users': self.liking_users,
+            'liking_users': self.liking_users and list(self.liking_users),
             'source_user_id': self.source_user_id,
         }
         return comments

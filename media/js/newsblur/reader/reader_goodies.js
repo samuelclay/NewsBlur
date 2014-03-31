@@ -163,6 +163,17 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/unofficial-newsblur-reade/hnegmjknmfninedmmlhndnjlblopjgad?utm_campaign=en&utm_source=en-ha-na-us-bk-webstr&utm_medium=ha'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Unofficial browser extension'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'This extension displays all of your unread stories and unread counts.'
+              ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
                   href: NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip'
               }, 'Add to Safari'),
               $.make('div', { className: 'NB-goodies-safari' }),

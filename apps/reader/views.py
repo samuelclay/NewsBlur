@@ -433,7 +433,7 @@ def refresh_feeds(request):
     if True or settings.DEBUG or check_fetch_status:
         logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
             len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
-        
+
     return {
         'feeds': feeds, 
         'social_feeds': social_feeds,
@@ -1198,44 +1198,6 @@ def mark_story_hashes_as_read(request):
 
 @ajax_login_required
 @json.json_view
-@required_params('story_hash')
-def mark_story_hash_as_unread(request):
-    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    story_hash = request.REQUEST.get('story_hash')
-    feed_id, _ = MStory.split_story_hash(story_hash)
-    story, _ = MStory.find_story(feed_id, story_hash)
-    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
-    if message:
-        data = dict(code=-1, message=message)
-        return data
-    
-    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
-
-    if friend_ids:
-        socialsubs = MSocialSubscription.objects.filter(
-                        user_id=request.user.pk,
-                        subscription_user_id__in=friend_ids)
-        for socialsub in socialsubs:
-            if not socialsub.needs_unread_recalc:
-                socialsub.needs_unread_recalc = True
-                socialsub.save()
-            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
-
-    # Also count on original subscription
-    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
-    if usersubs:
-        usersub = usersubs[0]
-        if not usersub.needs_unread_recalc:
-            usersub.needs_unread_recalc = True
-            usersub.save()
-        r.publish(request.user.username, 'feed:%s' % feed_id)
-    
-    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
-
-    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
-
-@ajax_login_required
-@json.json_view
 def mark_feed_stories_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
@@ -1337,20 +1299,8 @@ def mark_story_as_unread(request):
         logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
         return dict(code=-1, message="Story not found.")
     
-    if usersub and story.story_date < usersub.mark_read_date:
-        # Story is outside the mark as read range, so invert all stories before.
-        newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
-                                       story_date__gte=story.story_date,
-                                       story_date__lte=usersub.mark_read_date
-                                       ).only('story_hash')
-        newer_stories = [s.story_hash for s in newer_stories]
-        usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
-        usersub.needs_unread_recalc = True
-        usersub.save()
-        
-        # Mark stories as read only after the mark_read_date has been moved, otherwise
-        # these would be ignored.
-        data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+    if usersub:
+        data = usersub.invert_read_stories_after_unread_story(story, request)
 
     message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
     if message:
@@ -1371,7 +1321,46 @@ def mark_story_as_unread(request):
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
     return data
+
+@ajax_login_required
+@json.json_view
+@required_params('story_hash')
+def mark_story_hash_as_unread(request):
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    story_hash = request.REQUEST.get('story_hash')
+    feed_id, _ = MStory.split_story_hash(story_hash)
+    story, _ = MStory.find_story(feed_id, story_hash)
+    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    if message:
+        data = dict(code=-1, message=message)
+        return data
     
+    # Also count on original subscription
+    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+    if usersubs:
+        usersub = usersubs[0]
+        if not usersub.needs_unread_recalc:
+            usersub.needs_unread_recalc = True
+            usersub.save()
+        data = usersub.invert_read_stories_after_unread_story(story, request)
+        r.publish(request.user.username, 'feed:%s' % feed_id)
+
+    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user.pk, story_hash)
+
+    if friend_ids:
+        socialsubs = MSocialSubscription.objects.filter(
+                        user_id=request.user.pk,
+                        subscription_user_id__in=friend_ids)
+        for socialsub in socialsubs:
+            if not socialsub.needs_unread_recalc:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+
+    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
+
+    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
+
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
@@ -1423,7 +1412,7 @@ def mark_feed_as_read(request):
         logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
         r.publish(request.user.username, 'refresh:%s' % ','.join(feed_ids))
         
-    return dict(code=code, errors=errors)
+    return dict(code=code, errors=errors, cutoff_date=cutoff_date, direction=direction)
 
 def _parse_user_info(user):
     return {
@@ -1770,12 +1759,25 @@ def iframe_buster(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_starred(request):
-    code      = 1
-    feed_id   = int(request.REQUEST['feed_id'])
-    story_id  = request.REQUEST['story_id']
-    user_tags = request.REQUEST.getlist('user_tags')
-    message   = ""
-    story, _  = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    return _mark_story_as_starred(request)
+    
+@required_params('story_hash')
+@ajax_login_required
+@json.json_view
+def mark_story_hash_as_starred(request):
+    return _mark_story_as_starred(request)
+    
+def _mark_story_as_starred(request):
+    code       = 1
+    feed_id    = int(request.REQUEST.get('feed_id', 0))
+    story_id   = request.REQUEST.get('story_id', None)
+    story_hash = request.REQUEST.get('story_hash', None)
+    user_tags  = request.REQUEST.getlist('user_tags')
+    message    = ""
+    if story_hash:
+        story, _   = MStory.find_story(story_hash=story_hash)
+    else:
+        story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     
     if not story:
         return {'code': -1, 'message': "Could not find story to save."}
@@ -1818,13 +1820,25 @@ def mark_story_as_starred(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_unstarred(request):
-    code     = 1
-    story_id = request.POST['story_id']
-    starred_counts = None
+    return _mark_story_as_unstarred(request)
     
-    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
-    if not starred_story:
-        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_id)
+@required_params('story_hash')
+@ajax_login_required
+@json.json_view
+def mark_story_hash_as_unstarred(request):
+    return _mark_story_as_unstarred(request)
+
+def _mark_story_as_unstarred(request):
+    code     = 1
+    story_id = request.POST.get('story_id', None)
+    story_hash = request.REQUEST.get('story_hash', None)
+    starred_counts = None
+    starred_story = None
+    
+    if story_id:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
+    if not story_id or not starred_story:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_hash or story_id)
     if starred_story:
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))

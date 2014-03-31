@@ -305,30 +305,11 @@
           example: >
             story_hash=123:a1d62b&story_hash=1456789:4e3c12
 
-    - url: /reader/mark_story_hash_as_unread
-      method: POST
-      short_desc: "Mark a story as unread."
-      long_desc: 
-        - "Mark a single story as unread using its unique story_hash."
-        - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
-        - >
-            If a story is too old to mark as read, look for (and display to the user) the 
-            `message` parameter returned back to you.
-      tips:
-        - >
-            This endpoint is newer than all of the other mark as read endpoints, so use this one.
-            The other endpoints are maintained for old clients to use.
-      params:
-        - key: story_hash
-          desc: "A story hash to mark as unread."
-          required: true
-          example: >
-            story_hash=123:a1d62b
-          
     - url: /reader/mark_story_as_read
       method: POST
       short_desc: "Mark a story as read (deprecated)."
       long_desc: 
+        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
         - "Mark stories as read (deprecated)."
         - "Multiple story ids can be sent at once."
         - "Each story must be from the same feed."
@@ -350,6 +331,7 @@
       method: POST
       short_desc: "Mark stories from multiple feeds as read (deprecated)."
       long_desc: 
+        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
         - "Multiple feeds can be sent."
@@ -366,6 +348,7 @@
       method: POST
       short_desc: "Mark stories from a blurblog as read (deprecated)."
       long_desc: 
+        - "<b>Deprecated! Just send the `story_hash` to `mark_story_hashes_as_read`.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
         - "Multiple feeds can be sent."
@@ -392,7 +375,27 @@
           desc: "Feed id that the story is from."
           required: true
           example: "42"
-  
+
+    - url: /reader/mark_story_hash_as_unread
+      method: POST
+      short_desc: "Mark a story as unread."
+      long_desc: 
+        - "Mark a single story as unread using its unique story_hash."
+        - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
+        - >
+            If a story is too old to mark as read, look for (and display to the user) the 
+            `message` parameter returned back to you.
+      tips:
+        - >
+            This endpoint is newer than all of the other mark as read endpoints, so use this one.
+            The other endpoints are maintained for old clients to use.
+      params:
+        - key: story_hash
+          desc: "A story hash to mark as unread."
+          required: true
+          example: >
+            story_hash=123:a1d62b
+
     - url: /reader/mark_story_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."
@@ -407,6 +410,17 @@
           desc: "Feed id that the story is from."
           required: true
           example: "42"
+
+    - url: /reader/mark_story_hash_as_starred
+      method: POST
+      short_desc: "Mark a story as starred (saved)."
+      long_desc: 
+        - "Mark a story as starred (saved)."
+      params:
+        - key: story_hash
+          desc: "Story to save, specified by hash."
+          required: true
+          example: "64:a295ed"
   
     - url: /reader/mark_story_as_unstarred
       method: POST
@@ -423,6 +437,17 @@
           required: true
           example: "42"
   
+    - url: /reader/mark_story_hash_as_unstarred
+      method: POST
+      short_desc: "Mark a story as unstarred (unsaved)."
+      long_desc: 
+        - "Mark a story as unstarred (unsaved)."
+      params:
+        - key: story_hash
+          desc: "Story to unsave, specified by hash."
+          required: true
+          example: "64:a295ed"
+
     - url: /reader/mark_feed_as_read
       method: POST
       short_desc: "Mark a list of feeds as read."

@@ -50,8 +50,8 @@
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
-      console.log("Req: " + feed_id + ", etag: " + etag + "/" + docs.color);
-      if (!err && etag && docs && docs.color === etag) {
+      console.log("Req: " + feed_id + ", etag: " + etag + "/" + (docs != null ? docs.color : void 0));
+      if (!err && etag && docs && (docs != null ? docs.color : void 0) === etag) {
         return res.send(304);
       } else if (!err && docs && docs.data) {
         res.header('etag', docs.color);

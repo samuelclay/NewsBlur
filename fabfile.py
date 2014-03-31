@@ -1177,7 +1177,7 @@ def deploy_full(fast=False):
 @parallel
 def kill_gunicorn():
     with cd(env.NEWSBLUR_PATH):
-        sudo('pkill -9 -u %s -f gunicorn_django -e' % env.user)
+        sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
 def deploy_code(copy_assets=False, full=False, fast=False):

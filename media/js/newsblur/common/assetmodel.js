@@ -243,9 +243,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (callback) callback(data);
         };
 
-        this.make_request('/reader/mark_story_as_starred', {
-            story_id:  story_id,
-            feed_id:   story.get('story_feed_id'),
+        this.make_request('/reader/mark_story_hash_as_starred', {
+            story_hash: story.get('story_hash'),
             user_tags: story.get('user_tags')
         }, pre_callback);
     },
@@ -267,8 +266,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (callback) callback(data);
         };
 
-        this.make_request('/reader/mark_story_as_unstarred', {
-            story_id: story_id
+        this.make_request('/reader/mark_story_hash_as_unstarred', {
+            story_hash: story.get('story_hash')
         }, pre_callback);
     },
     
