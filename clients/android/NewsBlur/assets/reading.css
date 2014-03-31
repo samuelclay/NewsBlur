@@ -19,7 +19,6 @@ p, div, table {
     margin: 0px !important;
     clear: both;
     max-width: 100% !important;
-    overflow: hidden;
 }
 
 div + p {
@@ -32,6 +31,7 @@ img {
 
 img, video, embed, object, iframe, div {
 	width: auto;
+    max-width: 100% !important;
 	height: auto !important;	
 }
 
@@ -45,6 +45,11 @@ a:visited {
 	color: #405BA8;
 }
 
+code {
+    background-color: #F0F0F0 !important;
+    word-wrap: break-word !important;
+}
+
 blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #C2C5BE;
@@ -55,10 +60,6 @@ blockquote {
 
 pre {
     width: 100%;
-}
-
-pre, code {
-    overflow: auto;
 }
 
 ins { 
