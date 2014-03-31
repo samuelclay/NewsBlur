@@ -45,12 +45,12 @@ a:visited {
 }
 
 code {
-    background-color: #F0F0F0 !important;
+    background-color: #F2F2F2;
     word-wrap: break-word !important;
 }
 
 pre, blockquote {
-    background-color: #F0F0F0;
+    background-color: #F2F2F2;
     border-left: 1px solid #C2C5BE;
     color: rgba(10, 12, 38, .8);
     padding: 0.6em;
