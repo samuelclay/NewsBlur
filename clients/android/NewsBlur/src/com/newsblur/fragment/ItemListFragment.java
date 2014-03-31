@@ -111,6 +111,13 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_story, menu);
+
+        Story story = adapter.getStory(((AdapterView.AdapterContextMenuInfo) (menuInfo)).position);
+        if (story.read) {
+            menu.removeItem(R.id.menu_mark_story_as_read);
+        } else {
+            menu.removeItem(R.id.menu_mark_story_as_unread);
+        }
     }
     
     @Override
