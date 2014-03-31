@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
+from mongoengine.queryset import NotUniqueError
 from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
@@ -659,12 +660,15 @@ def api_share_new_story(request):
             "comments": comments,
             "has_comments": bool(comments),
         }
-        shared_story = MSharedStory.objects.create(**story_db)
-        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=user.pk)
-        for socialsub in socialsubs:
-            socialsub.needs_unread_recalc = True
-            socialsub.save()
-        logging.user(request, "~BM~FYSharing story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
+        try:
+            shared_story = MSharedStory.objects.create(**story_db)
+            socialsubs = MSocialSubscription.objects.filter(subscription_user_id=user.pk)
+            for socialsub in socialsubs:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            logging.user(request, "~BM~FYSharing story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
+        except NotUniqueError:
+            logging.user(request, "~BM~FY~SBAlready~SN shared story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     else:
         logging.user(request, "~BM~FY~SBAlready~SN shared story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     
