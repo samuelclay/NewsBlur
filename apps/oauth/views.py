@@ -679,14 +679,15 @@ def api_share_new_story(request):
     except MSocialSubscription.DoesNotExist:
         socialsub = None
     
-    if socialsub:
+    if socialsub and shared_story:
         socialsub.mark_story_ids_as_read([shared_story.story_hash], 
                                           shared_story.story_feed_id, 
                                           request=request)
-    else:
+    elif shared_story:
         RUserStory.mark_read(user.pk, shared_story.story_feed_id, shared_story.story_hash)
-
-    shared_story.publish_update_to_subscribers()
+    
+    if shared_story:
+        shared_story.publish_update_to_subscribers()
     
     return {"data": [{
         "id": shared_story and shared_story.story_guid,
