@@ -16,7 +16,6 @@ body {
 
 p, div, table {
 	line-height: 1.5em;
-    margin: 0px !important;
     clear: both;
     max-width: 100% !important;
     margin: 0px !important;
