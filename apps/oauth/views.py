@@ -648,10 +648,11 @@ def api_share_new_story(request):
                                                story_feed_id=original_feed and original_feed.pk or 0,
                                                story_guid=story_url).limit(1).first()
     if not shared_story:
+        title_max = MSharedStory._fields['story_title'].max_length
         story_db = {
             "story_guid": story_url,
             "story_permalink": story_url,
-            "story_title": story_title or "[Untitled]",
+            "story_title": story_title and story_title[:title_max] or "[Untitled]",
             "story_feed_id": original_feed and original_feed.pk or 0,
             "story_content": story_content,
             "story_author": story_author,
