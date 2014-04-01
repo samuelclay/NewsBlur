@@ -25,14 +25,11 @@ p {
     margin-bottom: 0.6em !important;
 }
 
-img {
-    margin: 10px auto;
-}
-
-img, video, embed, object, iframe, div {
+img, video, embed, object, iframe, div, figure {
 	width: auto;
     max-width: 100% !important;
 	height: auto !important;	
+    margin: 0px !important;
 }
 
 a {
