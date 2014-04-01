@@ -94,6 +94,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return this;
     },
     
+    setElement: function($el) {
+        Backbone.View.prototype.setElement.call(this, $el);
+        if (this.share_view) this.share_view.setElement($el);
+    },
+    
     render_starred_tags: function() {
         if (this.model.get('starred')) {
             this.save_view.toggle_feed_story_save_dialog();
