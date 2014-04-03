@@ -8594,9 +8594,10 @@ form.opml_import_form input {
   line-height: 30px;
   text-decoration: none;
 }
-.NB-modal-account .NB-preference-premium .NB-block {
+.NB-modal-account .NB-block {
     margin: 8px 0;
     display: block;
+    overflow: hidden;
 }
 .NB-account-payments {
     margin: 0;
@@ -8632,6 +8633,13 @@ form.opml_import_form input {
 .NB-account-payments .NB-account-payment-provider {
     float: left;
     width: 100px;
+}
+.NB-modal-account .NB-error {
+    clear: both;
+    margin-top: 12px;
+}
+.NB-modal-account .NB-account-premium-cancel {
+    margin-top: 0;
 }
 
 /* ================ */

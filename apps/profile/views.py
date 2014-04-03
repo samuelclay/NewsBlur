@@ -251,22 +251,33 @@ def stripe_form(request):
             user.email = zebra_form.cleaned_data['email']
             user.save()
             
-            try:
-                customer = stripe.Customer.create(**{
-                    'card': zebra_form.cleaned_data['stripe_token'],
-                    'plan': zebra_form.cleaned_data['plan'],
-                    'email': user.email,
-                    'description': user.username,
-                })
-            except stripe.CardError:
-                error = "This card was declined."
+            # Are they changing their existing card?
+            if user.profile.stripe_id:
+                customer = stripe.Customer.retrieve(user.profile.stripe_id)
+                try:
+                    card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
+                except stripe.CardError:
+                    error = "This card was declined."
+                else:
+                    customer.default_card = card.id
+                    customer.save()
+                    success_updating = True
             else:
-                user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
-                user.profile.stripe_id = customer.id
-                user.profile.save()
-                user.profile.activate_premium() # TODO: Remove, because webhooks are slow
-
-                success_updating = True
+                try:
+                    customer = stripe.Customer.create(**{
+                        'card': zebra_form.cleaned_data['stripe_token'],
+                        'plan': zebra_form.cleaned_data['plan'],
+                        'email': user.email,
+                        'description': user.username,
+                    })
+                except stripe.CardError:
+                    error = "This card was declined."
+                else:
+                    user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                    user.profile.stripe_id = customer.id
+                    user.profile.save()
+                    user.profile.activate_premium() # TODO: Remove, because webhooks are slow
+                    success_updating = True
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
@@ -342,7 +353,9 @@ def payment_history(request):
 def cancel_premium(request):
     canceled = request.user.profile.cancel_premium()
     
-    return {'code': 1 if canceled else -1}
+    return {
+        'code': 1 if canceled else -1, 
+    }
 
 @staff_member_required
 @ajax_login_required
