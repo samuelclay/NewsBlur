@@ -16,7 +16,7 @@ Django>=1.5,<1.6
 dop==0.1.4
 Fabric==1.6.0
 gunicorn==0.17.2
-psycopg2==2.5.2
+# psycopg2==2.5.2
 httplib2==0.8
 iconv==1.0
 kombu==2.5.7
