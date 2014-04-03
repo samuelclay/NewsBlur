@@ -2,6 +2,7 @@ build.xml
 local.properties
 *.java.swp
 *.xml.swp
+*.css.swp
 *.iml
 out/
 bin/

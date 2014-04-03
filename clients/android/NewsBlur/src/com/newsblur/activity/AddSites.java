@@ -60,7 +60,7 @@ public class AddSites extends NbActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent i) {
-		if (resultCode == RESULT_OK) {
+		if ((resultCode == RESULT_OK) && (sitesList != null)) {
 			sitesList.setGoogleReaderImported();
 		}
 	}
