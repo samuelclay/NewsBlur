@@ -1729,10 +1729,10 @@ class MStory(mongo.Document):
                 return extra_stories_count
                 
             extra_stories = MStory.objects(story_feed_id=feed_id, 
-                                           story_date__lte=story_trim_date,
-                                           share_count__not__gte=1)
+                                           story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             for story in extra_stories:
+                if story.share_count: continue
                 story.delete()
             if verbose:
                 existing_story_count = MStory.objects(story_feed_id=feed_id).count()
