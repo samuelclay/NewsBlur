@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import logout as logout_user
 from django.contrib.auth import login as login_user
+from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -15,7 +16,7 @@ from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
 from apps.reader.forms import SignupForm
@@ -318,11 +319,22 @@ def payment_history(request):
         user = User.objects.get(pk=user_id)
 
     history = PaymentHistory.objects.filter(user=user)
-
+    statistics = {
+        "last_seen_date": user.profile.last_seen_on,
+        "timezone": unicode(user.profile.timezone),
+        "stripe_id": user.profile.stripe_id,
+        "profile": user.profile,
+        "feeds": UserSubscription.objects.filter(user=user).count(),
+        "email": user.email,
+        "read_story_count": RUserStory.read_story_count(user.pk),
+        "feed_opens": UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum'],
+    }
+    
     return {
         'is_premium': user.profile.is_premium,
         'premium_expire': user.profile.premium_expire,
-        'payments': history
+        'payments': history,
+        'statistics': statistics,
     }
 
 @ajax_login_required

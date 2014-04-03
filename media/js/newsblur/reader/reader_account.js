@@ -123,7 +123,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 $.make('div', { className: 'NB-tab NB-tab-premium' }, [
                     $.make('div', { className: 'NB-preference NB-preference-premium' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            (!NEWSBLUR.Globals.is_premium && $.make('a', { className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' }, 'Go Premium!')),
+                            (!NEWSBLUR.Globals.is_premium && $.make('div', [
+                            $.make('div', 'You have a free account. Please consider upgrading to support NewsBlur.')
+                                $.make('a', { 
+                                    className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal' 
+                                }, 'Go Premium!')
+                            ]),
                             (NEWSBLUR.Globals.is_premium && $.make('div', [
                                 'Thank you! You have a ',
                                 $.make('b', 'premium account'),
