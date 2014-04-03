@@ -143,7 +143,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-renew' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-block' }, 'Your premium account will expire on:'),
+                            $.make('div', { className: 'NB-block' }, 'Your premium account will renew on:'),
                             $.make('div', { className: 'NB-block' }, [
                                 $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                                 ' ',

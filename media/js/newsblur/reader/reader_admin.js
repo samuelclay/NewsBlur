@@ -84,7 +84,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             
             $statistics.append($.make('dl', [
                 $.make('dt', 'Stripe Id:'),
-                $.make('dd', data.statistics.stripe_ip),
+                $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
                 $.make('dt', 'Last seen:'),
                 $.make('dd', data.statistics.last_seen_date),
                 $.make('dt', 'Timezone:'),

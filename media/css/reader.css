@@ -10623,9 +10623,6 @@ form.opml_import_form input {
     padding: 12px;
 }
 
-.NB-module-search-input.NB-active input {
-    background: white url('/media/embed/reader/close.png') no-repeat right 4px;
-}
 .NB-module-search-input input.NB-active {
     background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 4px;
 }
