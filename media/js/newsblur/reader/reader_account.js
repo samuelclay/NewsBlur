@@ -261,12 +261,21 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
     
     cancel_premium: function() {
+        var $cancel = $(".NB-account-premium-cancel", this.$modal);
+        $cancel.attr('disabled', 'disabled');
+        $cancel.text("Cancelling...");
+        
+        var post_cancel = function(message) {
+            $cancel.removeAttr('disabled');
+            $cancel.text("Cancel subscription renewal");
+            $(".NB-preference-premium-cancel .NB-error").remove();
+            $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", { className: "NB-error" }, message).fadeIn(500));
+        };
+
         this.model.cancel_premium_subscription(_.bind(function(data) {
-            $(".NB-preference-premium-cancel .NB-error").remove();
-            $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", { className: "NB-error" }, "Your subscription will no longer automatically renew.").fadeIn(500));
+            post_cancel("Your subscription will no longer automatically renew.");
         }, this), _.bind(function(data) {
-            $(".NB-preference-premium-cancel .NB-error").remove();
-            $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", { className: "NB-error" }, data.message || "Could not cancel your membership. Contact support.").fadeIn(500));
+            post_cancel(data.message || "You have no active subscriptions.");
         }, this));
     },
     
