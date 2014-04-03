@@ -253,6 +253,7 @@ class MFeedback(mongo.Document):
             for feedback in data:
                 # Convert unicode to strings.
                 fb = dict([(str(k), v) for k, v in feedback.items()])
+                fb['url'] = fb['url'].replace('?utm_medium=widget&utm_source=widget_newsblur', "")
                 cls.objects.create(**fb)
     
     @classmethod
