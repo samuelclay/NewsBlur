@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -50,11 +49,11 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup viewGroup) {
-		View v = super.getView(position, view, viewGroup);
+	public void bindView(View v, Context context, Cursor cursor) {
+        super.bindView(v, context, cursor);
+
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
-		cursor.moveToPosition(position);
 
 		if (!TextUtils.equals(feed.faviconColor, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
 			borderOne.setBackgroundColor(Color.parseColor(feed.faviconColor));
@@ -89,8 +88,6 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
-
-		return v;
 	}
 	
 	@Override

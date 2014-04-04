@@ -171,9 +171,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 						values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
 						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(info.id)).build(), values, null, null);
 						folderAdapter.notifyDataSetChanged();
-						Toast.makeText(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT).show();
+						UIUtils.safeToast(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT);
 					} else {
-						Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
+						UIUtils.safeToast(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG);
 					}	
 				}
 			}.execute(Long.toString(info.id));

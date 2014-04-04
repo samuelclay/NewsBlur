@@ -52,6 +52,7 @@ pre, blockquote {
     color: rgba(10, 12, 38, .8);
     padding: 0.6em;
     margin: 0.6em;
+    word-wrap: break-word !important;
 }
 
 ins { 
