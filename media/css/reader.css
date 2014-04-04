@@ -1506,6 +1506,7 @@ body {
 }
 .NB-story-pane-west #story_titles .NB-story-title {
     padding-right: 4px;
+    padding-left: 32px;
 }
 .NB-view-river #story_titles .NB-story-title {
     padding-left: 148px;
@@ -1537,7 +1538,9 @@ body {
     left: 0;
     top: 2px;
 }
-
+.NB-story-pane-west #story_titles .NB-story-title .NB-storytitles-sentiment {
+    left: 4px;
+}
 #story_titles .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
     background-size: 8px;
@@ -1703,6 +1706,9 @@ body {
     background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 13px 6px;
     background-size: 8px;
 }
+.NB-story-pane-west #story_titles .NB-story-title .NB-story-manage-icon {
+    left: 4px;
+}
 
 #story_titles .NB-story-title:hover .NB-story-manage-icon {
     display: block;
@@ -1750,7 +1756,7 @@ body {
 }
 .NB-story-pane-west #story_titles .NB-story-title .story_date {
     position: static;
-    margin: 0 0 4px 0;
+    margin: 0 0 4px 4px;
     color: #888C9B;
     top: 0;
     left: 0;
@@ -6648,6 +6654,28 @@ form.opml_import_form input {
 .NB-modal-admin .NB-modal-submit-button {
     float: left;
 }
+.NB-modal-admin dl {
+    font-size: 12px;
+}
+.NB-modal-admin dt {
+    display: block;
+    float: left;
+    width: 85px;
+    padding: 0 15px 0 0;
+    position: relative;
+    color: #888;
+    text-align: right;
+    line-height: 16px;
+}
+.NB-modal-admin dd {
+    color: #000;
+    margin-left: 100px;
+    padding-bottom: 5px;
+    min-height: 16px;
+    line-height: 16px;
+    word-wrap: break-word;
+    overflow: hidden;
+}
 
 /* ===================== */
 /* = Email Story Modal = */
@@ -8566,9 +8594,10 @@ form.opml_import_form input {
   line-height: 30px;
   text-decoration: none;
 }
-.NB-modal-account .NB-preference-premium .NB-block {
+.NB-modal-account .NB-block {
     margin: 8px 0;
     display: block;
+    overflow: hidden;
 }
 .NB-account-payments {
     margin: 0;
@@ -8604,6 +8633,13 @@ form.opml_import_form input {
 .NB-account-payments .NB-account-payment-provider {
     float: left;
     width: 100px;
+}
+.NB-modal-account .NB-error {
+    clear: both;
+    margin-top: 12px;
+}
+.NB-modal-account .NB-account-premium-cancel {
+    margin-top: 0;
 }
 
 /* ================ */
@@ -10587,9 +10623,6 @@ form.opml_import_form input {
     padding: 12px;
 }
 
-.NB-module-search-input.NB-active input {
-    background: white url('/media/embed/reader/close.gif') no-repeat right 4px;
-}
 .NB-module-search-input input.NB-active {
     background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 4px;
 }

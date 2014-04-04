@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
+from mongoengine.queryset import NotUniqueError
 from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
 from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
@@ -647,10 +648,11 @@ def api_share_new_story(request):
                                                story_feed_id=original_feed and original_feed.pk or 0,
                                                story_guid=story_url).limit(1).first()
     if not shared_story:
+        title_max = MSharedStory._fields['story_title'].max_length
         story_db = {
             "story_guid": story_url,
             "story_permalink": story_url,
-            "story_title": story_title or "[Untitled]",
+            "story_title": story_title and story_title[:title_max] or "[Untitled]",
             "story_feed_id": original_feed and original_feed.pk or 0,
             "story_content": story_content,
             "story_author": story_author,
@@ -659,12 +661,15 @@ def api_share_new_story(request):
             "comments": comments,
             "has_comments": bool(comments),
         }
-        shared_story = MSharedStory.objects.create(**story_db)
-        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=user.pk)
-        for socialsub in socialsubs:
-            socialsub.needs_unread_recalc = True
-            socialsub.save()
-        logging.user(request, "~BM~FYSharing story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
+        try:
+            shared_story = MSharedStory.objects.create(**story_db)
+            socialsubs = MSocialSubscription.objects.filter(subscription_user_id=user.pk)
+            for socialsub in socialsubs:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            logging.user(request, "~BM~FYSharing story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
+        except NotUniqueError:
+            logging.user(request, "~BM~FY~SBAlready~SN shared story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     else:
         logging.user(request, "~BM~FY~SBAlready~SN shared story from ~SB~FCIFTTT~FY: ~SB%s: %s" % (story_url, comments))
     
@@ -674,14 +679,15 @@ def api_share_new_story(request):
     except MSocialSubscription.DoesNotExist:
         socialsub = None
     
-    if socialsub:
+    if socialsub and shared_story:
         socialsub.mark_story_ids_as_read([shared_story.story_hash], 
                                           shared_story.story_feed_id, 
                                           request=request)
-    else:
+    elif shared_story:
         RUserStory.mark_read(user.pk, shared_story.story_feed_id, shared_story.story_hash)
-
-    shared_story.publish_update_to_subscribers()
+    
+    if shared_story:
+        shared_story.publish_update_to_subscribers()
     
     return {"data": [{
         "id": shared_story and shared_story.story_guid,

@@ -218,17 +218,17 @@
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
             if (center) {
-                $windows.toggleClass('NB-narrow-content', center.width() < 780);
+                var narrow = center.width() < 780;
+                $windows.toggleClass('NB-narrow-content', narrow);
+                this.flags.narrow_content = !!narrow;
                 content_width = center.width() + (west ? west.width() : 0);
             }
             
             if ((north && north.width() < 640) ||
                 (content_width && content_width < 780)) {
                 $windows.addClass('NB-narrow');
-                this.flags.narrow_content = true;
             } else {
                 $windows.removeClass('NB-narrow');
-                this.flags.narrow_content = false;
             }
             
             this.apply_tipsy_titles();

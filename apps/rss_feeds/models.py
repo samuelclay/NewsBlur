@@ -1713,9 +1713,9 @@ class MStory(mongo.Document):
             feed = feed_id
         
         stories = cls.objects(
-            story_feed_id=feed_id,
-        ).order_by('-story_date')
-        
+            story_feed_id=feed_id
+        ).only('story_date').order_by('-story_date')
+                
         if stories.count() > cutoff:
             logging.debug('   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN...' %
                           (unicode(feed)[:30], stories.count(), cutoff))
@@ -1725,16 +1725,21 @@ class MStory(mongo.Document):
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
                 return extra_stories_count
                 
-            extra_stories = MStory.objects(story_feed_id=feed_id, 
-                                           story_date__lte=story_trim_date)
+            extra_stories = cls.objects(story_feed_id=feed_id, 
+                                        story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
+            shared_story_count = 0
             for story in extra_stories:
+                if story.share_count: 
+                    shared_story_count += 1
+                    continue
                 story.delete()
             if verbose:
-                existing_story_count = MStory.objects(story_feed_id=feed_id).count()
-                logging.debug("   ---> Deleted %s stories, %s left." % (
+                existing_story_count = cls.objects(story_feed_id=feed_id).count()
+                logging.debug("   ---> Deleted %s stories, %s (%s shared) left." % (
                                 extra_stories_count,
-                                existing_story_count))
+                                existing_story_count,
+                                shared_story_count))
 
         return extra_stories_count
         

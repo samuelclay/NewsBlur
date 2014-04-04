@@ -963,6 +963,12 @@ class RUserStory:
         p.execute()
         # p2.execute()
     
+    @classmethod
+    def read_story_count(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        key = "RS:%s" % user_id
+        count = r.scard(key)
+        return count
 
 class UserSubscriptionFolders(models.Model):
     """

@@ -93,6 +93,11 @@ class Profile(models.Model):
             print " ---> You must pass confirm=True to delete this user."
             return
         
+        try:
+            self.cancel_premium()
+        except:
+            logging.user(self.user, "~BR~SK~FWError cancelling premium renewal for: %s" % self.user.username)
+        
         from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
         from apps.social.models import MActivity, MInteraction
         try:
