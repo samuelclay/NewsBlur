@@ -251,8 +251,11 @@ def stripe_form(request):
             user.email = zebra_form.cleaned_data['email']
             user.save()
             
+            current_premium = (user.profile.is_premium and 
+                               user.profile.premium_expire and
+                               user.profile.premium_expire > datetime.datetime.now())
             # Are they changing their existing card?
-            if user.profile.stripe_id:
+            if user.profile.stripe_id and current_premium:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
                     card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
