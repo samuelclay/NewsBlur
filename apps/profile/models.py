@@ -208,7 +208,7 @@ class Profile(models.Model):
         self.user.save()
         self.send_new_user_queue_email()
         
-    def setup_premium_history(self):
+    def setup_premium_history(self, alt_email=None):
         existing_history = PaymentHistory.objects.filter(user=self.user)
         if existing_history.count():
             print " ---> Deleting existing history: %s payments" % existing_history.count()
@@ -220,6 +220,13 @@ class Profile(models.Model):
         if not paypal_payments.count():
             paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
                                                        txn_type='subscr_payment')
+        if alt_email and not paypal_payments.count():
+            paypal_payments = PayPalIPN.objects.filter(payer_email=alt_email,
+                                                       txn_type='subscr_payment')
+            if paypal_payments.count():
+                # Make sure this doesn't happen again, so let's use Paypal's email.
+                self.user.email = alt_email
+                self.user.save()
         for payment in paypal_payments:
             PaymentHistory.objects.create(user=self.user,
                                           payment_date=payment.payment_date,
