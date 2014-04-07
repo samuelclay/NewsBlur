@@ -1496,6 +1496,7 @@ body {
     text-decoration: none;
     color: #272727;
     line-height: 14px;
+    font-size: 12px;
 /*    background-color: white;
     border-top: 1px solid #E7EDF6;
     border-bottom: 1px solid #FFF;
@@ -1618,13 +1619,43 @@ body {
 #story_titles .NB-story-title .story_title .NB-storytitles-author {
     padding-left: 12px;
     color: #808080;
-    font-size: 9px;
+    font-size: 10px;
 }
 
 #story_titles .NB-story-title.NB-selected .story_title .NB-storytitles-author {
 /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
 }
 
+#story_titles .NB-storytitles-content-preview {
+    color: #737C75;
+    font-size: 11px;
+    line-height: 2.2em;
+    overflow: hidden;
+    font-weight: normal;
+    height: 20px;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: -webkit-box;
+
+}
+.NB-story-pane-west #story_titles .NB-storytitles-content-preview {
+    -webkit-line-clamp: 2;
+    line-height: 14px;
+    height: 36px;
+    padding: 6px 0 0;
+}
+
+.NB-story-layout-list #story_titles .NB-selected .NB-storytitles-content-preview {
+    display: none;
+}
+#story_titles .read .NB-storytitles-content-preview {
+    color: #A2B2A5;
+}
 #story_titles .NB-storytitles-shares {
     position: absolute;
     height: 16px;
@@ -1663,7 +1694,7 @@ body {
     position: absolute;
 }
 .NB-story-pane-west #story_titles .NB-story-title .NB-story-feed {
-    left: -22px;
+    left: -18px;
 }
 .NB-view-river #story_titles .NB-story-title .NB-story-feed {
     display: block;
@@ -1673,9 +1704,12 @@ body {
     top: -2px;
     left: 0;
     vertical-align: text-bottom;
-    opacity: .6;
+    opacity: .65;
     height: 16px;
     width: 16px;
+}
+#story_titles .NB-story-title.read .feed_favicon {
+    opacity: .4;
 }
 #story_titles .NB-story-title .NB-story-feed .feed_title {
     display: block;
@@ -1753,16 +1787,18 @@ body {
     right: 4px;
     width: 200px;
     top: 5px;
+    font-size: 11px;
 }
 .NB-story-pane-west #story_titles .NB-story-title .story_date {
     position: static;
     margin: 0 0 4px 4px;
-    color: #888C9B;
+    color: #9197B1;
     top: 0;
     left: 0;
     right: 0;
     display: block;
-    font-size: 9px;
+    font-size: 10px;
+    font-weight: normal;
     clear: both;
 }
 #story_titles .NB-story-title.NB-selected .story_date {

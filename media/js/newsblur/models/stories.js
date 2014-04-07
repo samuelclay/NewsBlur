@@ -33,6 +33,13 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return score_name;
     },
     
+    content_preview: function() {
+        var content = this.get('story_content');
+        content = content && Inflector.stripTags(content);
+        
+        return _.string.prune(content, 150, "...");
+    },
+    
     formatted_short_date: function() {
         var timestamp = this.get('story_timestamp');
         var dateformat = NEWSBLUR.assets.preference('dateformat');
@@ -181,7 +188,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         
         return tags || [];
     },
-        
+    
     unused_story_tags: function() {
         var tags = _.reduce(this.get('user_tags') || [], function(m, t) {
             return _.without(m, t);

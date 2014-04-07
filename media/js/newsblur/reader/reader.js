@@ -477,6 +477,10 @@
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated',  NEWSBLUR.Globals.is_authenticated);
             this.$s.$body.toggleClass('NB-pref-hide-changes', !!this.model.preference('hide_story_changes'));
+            this.$s.$body.removeClass('NB-story-layout-full')
+                         .removeClass('NB-story-layout-split')
+                         .removeClass('NB-story-layout-list')
+                         .addClass('NB-story-layout-'+NEWSBLUR.assets.preference('story_layout'));
         },
         
         hide_splash_page: function() {
@@ -1479,7 +1483,7 @@
             
             this.switch_to_correct_view();
             this.make_feed_title_in_stories();
-            
+            this.add_body_classes();
             
             _.defer(function() {
                 NEWSBLUR.app.story_titles.scroll_to_selected_story();
