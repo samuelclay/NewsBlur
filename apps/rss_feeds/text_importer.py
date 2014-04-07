@@ -47,8 +47,9 @@ class TextImporter:
             text = resp.text
         except (LookupError, TypeError):
             text = resp.content
-
-        if resp.encoding and resp.encoding != 'utf-8':
+        
+        charset_declared = 'charset' in resp.headers.get('content-type', "")
+        if resp.encoding and resp.encoding != 'utf-8' and not charset_declared:
             try:
                 text = text.encode(resp.encoding)
             except (LookupError, UnicodeEncodeError):
