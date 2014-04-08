@@ -2506,6 +2506,13 @@
                  .removeClass('NB-theme-size-xl');
             $body.addClass('NB-theme-size-' + NEWSBLUR.Preferences['story_size']);
             
+            $body.removeClass('NB-line-spacing-xs')
+                 .removeClass('NB-line-spacing-s')
+                 .removeClass('NB-line-spacing-m')
+                 .removeClass('NB-line-spacing-l')
+                 .removeClass('NB-line-spacing-xl');
+            $body.addClass('NB-line-spacing-' + NEWSBLUR.Preferences['story_line_spacing']);
+            
             if (reset_stories) {
                 this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             }
