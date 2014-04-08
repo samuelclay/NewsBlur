@@ -3982,6 +3982,106 @@ background: transparent;
     display: none;
 }
 
+.NB-style-popover-container .popover-content {
+    padding: 0;
+}
+
+#story_taskbar .NB-taskbar-options-container {
+    float: right;
+    margin: 3px 24px 0 0;
+}
+#story_taskbar .NB-taskbar-options {
+    cursor: pointer;
+    float: right;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 4px 1px 8px;
+    line-height: 14px;
+    margin: 3px 0 0;
+}
+#story_taskbar .NB-taskbar-options:hover,
+#story_taskbar .NB-taskbar-options.NB-active {
+    background-color: rgba(0, 0, 0, .1);
+}
+#story_taskbar .NB-taskbar-options .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 3px;
+    background-size: 8px;
+    margin: 0 0 0 4px;
+}
+
+.NB-taskbar-options-popover-font-icon {
+    background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
+}
+
+.NB-style-popover .NB-options-font-size li {
+    width: 45px;
+    padding: 2px 0;
+    line-height: 16px;
+    font-weight: bold;
+}
+.NB-style-popover li.NB-options-font-size-xs {
+    font-size: 9px;
+    padding: 3px 0 1px;
+}
+.NB-style-popover .NB-options-font-size-s {
+    font-size: 10px;
+}
+.NB-style-popover li.NB-options-font-size-m {
+    font-size: 12px;
+    padding: 3px 0 1px;
+}
+.NB-style-popover .NB-options-font-size-l {
+    font-size: 13px;
+}
+.NB-style-popover li.NB-options-font-size-xl {
+    font-size: 15px;
+}
+
+.NB-style-popover .NB-options-font-family li {
+    width: 114px;
+    padding: 3px 0;
+    font-size: 13px;
+    line-height: 15px;
+}
+.NB-style-popover li.NB-options-font-family-sans-serif {
+    font-size: 12px;
+}
+.NB-style-popover .NB-options-font-family-serif {
+    font-family: Georgia, serif;
+}
+
+.NB-style-popover .NB-story-titles-pane-option {
+    width: 72px;
+    font-size: 12px;
+    padding: 4px 0;
+}
+.NB-style-popover .NB-options-story-titles-pane-south {
+    width: 84px;
+}
+
+.NB-style-popover .NB-story-titles-pane-option .NB-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 0 2px 0 0;
+    vertical-align: text-bottom;
+}
+.NB-options-story-titles-pane-north .NB-icon {
+    background: transparent url("/media/embed/reader/layout_top.png") no-repeat center center;
+}
+.NB-options-story-titles-pane-west .NB-icon {
+    background: transparent url("/media/embed/reader/layout_left.png") no-repeat center center;
+}
+.NB-options-story-titles-pane-south .NB-icon {
+    background: transparent url("/media/embed/reader/layout_bottom.png") no-repeat center center;
+}
 
 /* ======================= */
 /* = Pane Customizations = */

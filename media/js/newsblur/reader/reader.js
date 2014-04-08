@@ -47,7 +47,8 @@
                 $taskbar: $('.NB-taskbar-view'),
                 $feed_floater: $('.NB-feed-story-view-floater'),
                 $feedbar: $('.NB-feedbar'),
-                $add_button: $('.NB-task-add')
+                $add_button: $('.NB-task-add'),
+                $taskbar_options: $('.NB-taskbar-options')
             };
             this.flags = {
                 'bouncing_callout': false,
@@ -2439,6 +2440,12 @@
         open_user_admin_modal: function(options) {
             $.modal.close(function() {
                 NEWSBLUR.user_admin = new NEWSBLUR.ReaderUserAdmin(options);
+            });
+        },
+        
+        open_story_options_popover: function() {
+            NEWSBLUR.StoryOptionsPopover.create({
+                anchor: this.$s.$taskbar_options
             });
         },
         
@@ -5428,6 +5435,10 @@
             $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-layout-list' }, function($t, $p){
                 e.preventDefault();
                 self.switch_story_layout('list');
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-taskbar-options' }, function($t, $p){
+                e.preventDefault();
+                self.open_story_options_popover();
             }); 
             $.targetIs(e, { tagSelector: '.NB-intelligence-slider-control' }, function($t, $p){
                 e.preventDefault();

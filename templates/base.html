@@ -99,7 +99,15 @@
   </script>
   
   {% include_stylesheets "common" %}
-    
+  
+  {% if user_profile.is_premium %}
+    {% if debug %}
+        <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6565292/731824/css/fonts.css" />
+    {% else %}
+        <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6565292/711824/css/fonts.css" />
+    {% endif %}
+  {% endif %}
+  
   <script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);
