@@ -33,11 +33,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return score_name;
     },
     
-    content_preview: function() {
-        var content = this.get('story_content');
+    content_preview: function(attribute) {
+        var content = this.get(attribute || 'story_content');
         content = content && Inflector.stripTags(content);
         
-        return _.string.prune(content, 150, "...");
+        return _.string.prune(_.string.trim(content), 150, "...");
     },
     
     formatted_short_date: function() {
