@@ -568,6 +568,17 @@
             if (story) {
                 story.set('selected', true);
             }
+            
+            if (NEWSBLUR.assets.preference('story_layout') == 'full' &&
+                !this.model.flags['no_more_stories']) {
+                var visible = NEWSBLUR.assets.stories.visible();
+                var visible_count = visible.length;
+                var visible_index = visible.indexOf(this.active_story);
+                
+                if (visible_index >= visible_count - 3) {
+                    this.load_page_of_feed_stories();
+                }
+            }
         },
         
         show_next_unread_story: function() {
