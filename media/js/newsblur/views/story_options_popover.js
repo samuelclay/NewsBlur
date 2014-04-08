@@ -59,9 +59,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
-                $.make('ul', { className: 'segmented-control NB-options-font-family' }, [
+                $.make('ul', { className: 'segmented-control-vertical NB-options-font-family' }, [
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active' }, 'Helvetica'),
-                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif' }, 'Georgia')
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif' }, 'Palatino / Georgia'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-gotham' }, 'Gotham Narrow'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-sentinel' }, 'Sentinel'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-whitney' }, 'Whitney'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-chronicle' }, 'Chronicle')
                 ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
@@ -108,6 +112,14 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.update_font_family('serif');
         } else if ($target.hasClass("NB-options-font-family-sans-serif")) {
             this.update_font_family('sans-serif');
+        } else if ($target.hasClass("NB-options-font-family-gotham")) {
+            this.update_font_family('gotham');
+        } else if ($target.hasClass("NB-options-font-family-sentinel")) {
+            this.update_font_family('sentinel');
+        } else if ($target.hasClass("NB-options-font-family-whitney")) {
+            this.update_font_family('whitney');
+        } else if ($target.hasClass("NB-options-font-family-chronicle")) {
+            this.update_font_family('chronicle');
         }
         
         this.show_correct_options();

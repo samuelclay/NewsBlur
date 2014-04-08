@@ -2491,14 +2491,13 @@
         
         apply_story_styling: function(reset_stories) {
             var $body = this.$s.$body;
-            $body.removeClass('NB-theme-sans-serif');
-            $body.removeClass('NB-theme-serif');
-            
-            if (NEWSBLUR.Preferences['story_styling'] == 'sans-serif') {
-                $body.addClass('NB-theme-sans-serif');
-            } else if (NEWSBLUR.Preferences['story_styling'] == 'serif') {
-                $body.addClass('NB-theme-serif');
-            }
+            $body.removeClass('NB-theme-sans-serif')
+                 .removeClass('NB-theme-serif')
+                 .removeClass('NB-theme-gotham')
+                 .removeClass('NB-theme-sentinel')
+                 .removeClass('NB-theme-whitney')
+                 .removeClass('NB-theme-chronicle');
+            $body.addClass('NB-theme-'+NEWSBLUR.Preferences['story_styling']);
             
             $body.removeClass('NB-theme-size-xs')
                  .removeClass('NB-theme-size-s')
