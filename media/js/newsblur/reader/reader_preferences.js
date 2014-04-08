@@ -454,6 +454,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'When opening a site'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showcontentpreview-1', type: 'radio', name: 'show_content_preview', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-showcontentpreview-1' }, [
+                                    'Show a preview of the story'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showcontentpreview-0', type: 'radio', name: 'show_content_preview', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showcontentpreview-0' }, [
+                                    'Don\'t show a preview, only show the story title.'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Story content preview'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -913,6 +932,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=show_content_preview]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_content_preview) {
                 $(this).attr('checked', true);
                 return false;
             }
