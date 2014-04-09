@@ -386,55 +386,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.')
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-singlestory-1', type: 'radio', name: 'feed_view_single_story', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-singlestory-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_linespacing.png' }),
-                                    'Show all stories'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-singlestory-2', type: 'radio', name: 'feed_view_single_story', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-singlestory-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_horizontalrule.png' }),
-                                    'Show a single story at a time'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-pane-position' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-1', type: 'radio', name: 'story_pane_anchor', value: 'north' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_top.png' }),
-                                    'Top'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-2', type: 'radio', name: 'story_pane_anchor', value: 'west' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_left.png' }),
-                                    'Left'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-3', type: 'radio', name: 'story_pane_anchor', value: 'south' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-3' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_bottom.png' }),
-                                    'Bottom'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Story titles pane'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -690,48 +641,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Truncate stories'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-styling-1', type: 'radio', name: 'story_styling', value: 'sans-serif' }),
-                                $.make('label', { 'for': 'NB-preference-story-styling-1', className: 'NB-preference-story-styling-sans-serif' }, 'Lucida Grande, sans serif')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-styling-2', type: 'radio', name: 'story_styling', value: 'serif' }),
-                                $.make('label', { 'for': 'NB-preference-story-styling-2', className: 'NB-preference-story-styling-serif' }, 'Georgia, serif')
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view font family'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-size' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-1', type: 'radio', name: 'story_size', value: 'xs' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-1', className: 'NB-preference-story-size-xs' }, 'Extra small')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-2', type: 'radio', name: 'story_size', value: 's' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-2', className: 'NB-preference-story-size-s' }, 'Small')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-3', type: 'radio', name: 'story_size', value: 'm' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-3', className: 'NB-preference-story-size-m' }, 'Medium')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-4', type: 'radio', name: 'story_size', value: 'l' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-4', className: 'NB-preference-story-size-l' }, 'Large')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-5', type: 'radio', name: 'story_size', value: 'xl' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-5', className: 'NB-preference-story-size-xl' }, 'Extra large')
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view text size'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -894,12 +803,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=story_pane_anchor]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_pane_anchor) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
         $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
                 $(this).attr('checked', true);
@@ -972,12 +875,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=feed_view_single_story]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.feed_view_single_story) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
         $('input[name=animations]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
                 $(this).attr('checked', true);
@@ -1004,18 +901,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_contextmenus]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_contextmenus) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=story_styling]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=story_size]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_size) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -1163,9 +1048,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.app.feed_list.make_feeds();
               NEWSBLUR.app.feed_list.make_social_feeds();
-            }
-            if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
-              NEWSBLUR.reader.apply_resizable_layout(true);
             }
             if (self.original_preferences['ssl'] != form['ssl']) {
                 NEWSBLUR.reader.check_and_load_ssl();

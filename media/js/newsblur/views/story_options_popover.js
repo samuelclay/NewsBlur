@@ -252,6 +252,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.assets.preference('feed_view_single_story', setting);
         NEWSBLUR.app.story_list.render();
         _.defer(function() {
+            NEWSBLUR.reader.resize_window();
             if (NEWSBLUR.reader.active_story) {
                 NEWSBLUR.reader.active_story.set('selected', false).set('selected', true);
             }
