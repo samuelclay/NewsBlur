@@ -20,7 +20,8 @@
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/settings_reading">
+        android:title="@string/settings_reading"
+        android:key="reading">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="immersive_enter_single_tap"
