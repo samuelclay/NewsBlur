@@ -18,7 +18,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-font-family-option": "change_font_family",
         "click .NB-font-size-option": "change_font_size",
         "click .NB-line-spacing-option": "change_line_spacing",
-        "click .NB-story-titles-pane-option": "change_story_titles_pane"
+        "click .NB-story-titles-pane-option": "change_story_titles_pane",
+        "click .NB-single-story-option": "change_single_story"
     },
     
     initialize: function(options) {
@@ -42,7 +43,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Story Titles Pane'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout'),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north' }, [
                         $.make('div', { className: 'NB-icon' }),
@@ -56,7 +57,18 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('div', { className: 'NB-icon' }),
                         'Bottom'
                     ])
+                ]),
+                $.make('ul', { className: 'segmented-control NB-options-single-story' }, [
+                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-off NB-active' }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'All Stories'
+                    ]),
+                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-on' }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Single Story'
+                    ])
                 ])
+
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
@@ -96,6 +108,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var font_size = NEWSBLUR.assets.preference('story_size');
         var line_spacing = NEWSBLUR.assets.preference('story_line_spacing');
         var titles_layout_pane = NEWSBLUR.assets.preference('story_pane_anchor');
+        var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
@@ -107,6 +120,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$('.NB-story-titles-pane-option').removeClass('NB-active');
         this.$('.NB-options-story-titles-pane-'+titles_layout_pane).addClass('NB-active');
+        this.$('.NB-single-story-option').removeClass('NB-active');
+        this.$('.NB-options-single-story-'+(single_story?'on':'off')).addClass('NB-active');
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -219,6 +234,28 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.assets.preference('story_pane_anchor', setting);
         NEWSBLUR.assets.preference('story_titles_pane_size', pane_size);
         NEWSBLUR.reader.apply_resizable_layout(true);
+    },
+    
+    change_single_story: function(e) {
+        var $target = $(e.currentTarget);
+        
+        if ($target.hasClass("NB-options-single-story-off")) {
+            this.update_single_story(0);
+        } else if ($target.hasClass("NB-options-single-story-on")) {
+            this.update_single_story(1);
+        }
+        
+        this.show_correct_options();
+    },
+    
+    update_single_story: function(setting) {
+        NEWSBLUR.assets.preference('feed_view_single_story', setting);
+        NEWSBLUR.app.story_list.render();
+        _.defer(function() {
+            if (NEWSBLUR.reader.active_story) {
+                NEWSBLUR.reader.active_story.set('selected', false).set('selected', true);
+            }
+        });
     }
     
     

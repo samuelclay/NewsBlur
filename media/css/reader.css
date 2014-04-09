@@ -4247,6 +4247,28 @@ background: transparent;
     background: transparent url("/media/embed/reader/layout_bottom.png") no-repeat center center;
 }
 
+.NB-style-popover .NB-options-single-story {
+    margin-top: 6px;
+}
+.NB-style-popover .NB-single-story-option {
+    width: 116px;
+    font-size: 12px;
+    padding: 4px 0;
+}
+.NB-style-popover .NB-single-story-option .NB-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 0 2px 0 0;
+    vertical-align: bottom;
+}
+.NB-options-single-story-off .NB-icon {
+    background: transparent url("/media/embed/icons/silk/text_linespacing.png") no-repeat center center;
+}
+.NB-options-single-story-on .NB-icon {
+    background: transparent url("/media/embed/icons/silk/text_horizontalrule.png") no-repeat center center;
+}
+
 /* ======================= */
 /* = Pane Customizations = */
 /* ======================= */
