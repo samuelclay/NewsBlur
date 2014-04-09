@@ -2285,7 +2285,7 @@ body {
 }
 .NB-feed-story .NB-feed-story-sentiment {
     position: absolute;
-    top: 1px;
+    top: 3px;
     left: -19px;
     width: 16px;
     height: 16px;
@@ -2330,7 +2330,7 @@ body {
     height: 22px;
     left: -28px;
     position: absolute;
-    top: 0;
+    top: 2px;
     width: 28px;
 }
 .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon {

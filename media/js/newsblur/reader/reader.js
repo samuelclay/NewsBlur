@@ -3363,7 +3363,7 @@
                         top = toplevel ? 3 : 3;
                     } else if (type == 'story') {
                         left = 7;
-                        top = 1;
+                        top = 3;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
                             $align = $('.NB-storytitles-sentiment,.NB-feed-story-sentiment', $item);
