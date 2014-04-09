@@ -4192,6 +4192,9 @@ background: transparent;
     line-height: 15px;
     text-transform: none;
 }
+.NB-style-popover .NB-options-font-family li.NB-disabled {
+    color: #AEAEAE;
+}
 .NB-style-popover li.NB-options-font-family-sans-serif {
     font-size: 12px;
 }
@@ -4219,6 +4222,24 @@ background: transparent;
     font-family: 'Chronicle Display A', 'Chronicle Display B'; 
     font-weight: 400; 
     font-style: normal;
+}
+.NB-style-popover .NB-premium-only .NB-tag {
+    float: right;
+    font-size: 8px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
+    color: white;
+    background-color: #7CBA84;
+    border-radius: 3px;
+    padding: 1px 4px;
+    line-height: 10px;
+    margin: 2px 4px 0;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+}
+.NB-style-popover .NB-premium-explainer {
+    font-size: 10px;
+    text-align: center;
+    margin: 2px 0 0;
 }
 
 .NB-style-popover .NB-story-titles-pane-option {

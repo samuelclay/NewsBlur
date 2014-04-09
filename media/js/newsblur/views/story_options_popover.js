@@ -19,7 +19,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-font-size-option": "change_font_size",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
-        "click .NB-single-story-option": "change_single_story"
+        "click .NB-single-story-option": "change_single_story",
+        "click .NB-premium-link": "open_premium_modal"
     },
     
     initialize: function(options) {
@@ -75,11 +76,27 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('ul', { className: 'segmented-control-vertical NB-options-font-family' }, [
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active' }, 'Helvetica'),
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif' }, 'Palatino / Georgia'),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham' }, 'Gotham Narrow'),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel' }, 'Sentinel'),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney' }, 'Whitney'),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle' }, 'Chronicle')
-                ])
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham' }, [
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        'Gotham Narrow'
+                    ]),
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel' }, [
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        'Sentinel'
+                    ]),
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney' }, [
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        'Whitney'
+                    ]),
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle' }, [
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        'Chronicle'
+                    ])
+                ]),
+                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }, [
+                    'Premium fonts require a ',
+                    $.make('spam', { className: 'NB-splash-link NB-premium-link' }, 'premium account')
+                ]))
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Size'),
@@ -126,7 +143,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
         if (!NEWSBLUR.Globals.is_premium) {
-            this.$(". NB-premium-only").addClass('NB-disabled').attr('disabled', 'disabled');
+            this.$(".NB-premium-only").addClass('NB-disabled').attr('disabled', 'disabled');
         }
     },
 
@@ -142,14 +159,16 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.update_font_family('serif');
         } else if ($target.hasClass("NB-options-font-family-sans-serif")) {
             this.update_font_family('sans-serif');
-        } else if ($target.hasClass("NB-options-font-family-gotham")) {
-            this.update_font_family('gotham');
-        } else if ($target.hasClass("NB-options-font-family-sentinel")) {
-            this.update_font_family('sentinel');
-        } else if ($target.hasClass("NB-options-font-family-whitney")) {
-            this.update_font_family('whitney');
-        } else if ($target.hasClass("NB-options-font-family-chronicle")) {
-            this.update_font_family('chronicle');
+        } else if (NEWSBLUR.Globals.is_premium) {
+            if ($target.hasClass("NB-options-font-family-gotham")) {
+                this.update_font_family('gotham');
+            } else if ($target.hasClass("NB-options-font-family-sentinel")) {
+                this.update_font_family('sentinel');
+            } else if ($target.hasClass("NB-options-font-family-whitney")) {
+                this.update_font_family('whitney');
+            } else if ($target.hasClass("NB-options-font-family-chronicle")) {
+                this.update_font_family('chronicle');
+            }
         }
         
         this.show_correct_options();
@@ -257,6 +276,12 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 NEWSBLUR.reader.active_story.set('selected', false).set('selected', true);
             }
         });
+    },
+    
+    open_premium_modal: function(e) {
+      this.close(e, function() {
+          NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
+      });
     }
     
     
