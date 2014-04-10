@@ -139,6 +139,7 @@
             this.setup_howitworks_hovers();
             this.setup_unfetched_feed_check();
             this.switch_story_layout();
+            this.load_delayed_stylesheets();
         },
 
         // ========
@@ -482,6 +483,21 @@
                          .removeClass('NB-story-layout-split')
                          .removeClass('NB-story-layout-list')
                          .addClass('NB-story-layout-'+NEWSBLUR.assets.preference('story_layout'));
+        },
+        
+        load_delayed_stylesheets: function() {
+            _.delay(function() {
+                var $stylesheets = $("head link");
+                $stylesheets.each(function() {
+                    var $ss = $(this);
+                    if (!$ss.attr('delay')) return;
+                    $("head").append($.make('link', {
+                        rel: $ss.attr('rel'),
+                        type: $ss.attr('type'),
+                        href: $ss.attr('delay')
+                    }));
+                });
+            }, 500);
         },
         
         hide_splash_page: function() {
