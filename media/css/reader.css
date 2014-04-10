@@ -1996,11 +1996,13 @@ body {
 }
 
 .NB-theme-serif .NB-feed-story-content,
+.NB-theme-serif .NB-feed-story-comments,
 .NB-theme-serif .NB-feed-story-header {
     font-family: "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", Georgia, serif;
 }
 
 .NB-theme-gotham .NB-feed-story-content,
+.NB-theme-gotham .NB-feed-story-comments,
 .NB-theme-gotham .NB-feed-story-header {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B'; 
     font-weight: 400; 
@@ -2008,6 +2010,7 @@ body {
 }
 
 .NB-theme-sentinel .NB-feed-story-content,
+.NB-theme-sentinel .NB-feed-story-comments,
 .NB-theme-sentinel .NB-feed-story-header {
     font-family: 'Sentinel A', 'Sentinel B'; 
     font-weight: 400; 
@@ -2015,6 +2018,7 @@ body {
 }
 
 .NB-theme-whitney .NB-feed-story-content,
+.NB-theme-whitney .NB-feed-story-comments,
 .NB-theme-whitney .NB-feed-story-header {
     font-family: 'Whitney A', 'Whitney B'; 
     font-weight: 400; 
@@ -2022,6 +2026,7 @@ body {
 }
 
 .NB-theme-chronicle .NB-feed-story-content,
+.NB-theme-chronicle .NB-feed-story-comments,
 .NB-theme-chronicle .NB-feed-story-header {
     font-family: 'Chronicle Display A', 'Chronicle Display B'; 
     font-weight: 400; 
