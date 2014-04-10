@@ -130,6 +130,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-tafiti' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Tafiti')
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://apps.microsoft.com/windows/en-us/app/bluree/35b1d32a-5abb-479a-8fd1-bbed4fa0172e'
+              }, 'Download Bluree for Windows 8'),
+              $.make('div', { className: 'NB-goodies-bluree' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Bluree')
+            ]),
             $.make('fieldset', [
                 $.make('legend', 'Browser Extensions for NewsBlur')
             ]),
