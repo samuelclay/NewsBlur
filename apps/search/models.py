@@ -118,83 +118,73 @@ class SearchFeed:
     @classmethod
     def create_elasticsearch_mapping(cls):
         cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
-            
         settings =  {
             "index" : {
-              "analysis": {
-                 "filter": {
-                    "nGram_filter": {
-                       "type": "nGram",
-                       "min_gram": 2,
-                       "max_gram": 20,
-                       "token_chars": [
-                          "letter",
-                          "digit",
-                          "punctuation",
-                          "symbol"
-                       ]
-                    }
-                 },
-                 "analyzer": {
-                    "nGram_analyzer": {
-                       "type": "custom",
-                       "tokenizer": "whitespace",
-                       "filter": [
-                          "lowercase",
-                          "asciifolding",
-                          "nGram_filter"
-                       ]
+                "analysis": {
+                    "analyzer": {
+                        "edgengram_analyzer": {
+                            "filter": ["edgengram"],
+                            "tokenizer": "lowercase",
+                            "type": "custom"
+                        },
+                        "ngram_analyzer": {
+                            "filter": ["ngram"],
+                            "tokenizer": "lowercase",
+                            "type": "custom"
+                        }
                     },
-                    "whitespace_analyzer": {
-                       "type": "custom",
-                       "tokenizer": "whitespace",
-                       "filter": [
-                          "lowercase",
-                          "asciifolding"
-                       ]
+                    "filter": {
+                        "edgengram": {
+                            "max_gram": "15",
+                            "min_gram": "2",
+                            "type": "edgeNGram"
+                        },
+                        "ngram": {
+                            "max_gram": "15",
+                            "min_gram": "3",
+                            "type": "nGram"
+                        }
+                    },
+                    "tokenizer": {
+                        "edgengram_tokenizer": {
+                            "max_gram": "15",
+                            "min_gram": "2",
+                            "side": "front",
+                            "type": "edgeNGram"
+                        },
+                        "ngram_tokenizer": {
+                            "max_gram": "15",
+                            "min_gram": "3",
+                            "type": "nGram"
+                        }
                     }
-                 }
-              }
-          }
+                }
+            }
         }
         cls.ES.indices.create_index("%s-index" % cls.name, settings)
 
-        mapping = { 
-            'address': {
-                'boost': 3.0,
-                'index': 'analyzed',
-                'store': 'yes',
-                'type': 'string',
-                "term_vector" : "with_positions_offsets",
-                "index_analyzer": "nGram_analyzer",
-                "search_analyzer": "whitespace_analyzer"
+        mapping = {
+            "address": {
+                "analyzer": "edgengram_analyzer",
+                "store": True,
+                "term_vector": "with_positions_offsets",
+                "type": "string"
             },
-            'title': {
-                'boost': 2.0,
-                'index': 'analyzed',
-                'store': 'yes',
-                'type': 'string',
-                "term_vector" : "with_positions_offsets",
+            "feed_id": {
+                "store": True,
+                "type": "string"
             },
-            'link': {
-                'boost': 1.0,
-                'index': 'analyzed',
-                'store': 'yes',
-                'type': 'string',
-                "term_vector" : "with_positions_offsets",
-                "index_analyzer": "nGram_analyzer",
-                "search_analyzer": "whitespace_analyzer"
+            "num_subscribers": {
+                "index": "analyzed",
+                "store": True,
+                "type": "long"
             },
-            'num_subscribers': {
-                'boost': 1.0,
-                'index': 'not_analyzed',
-                'store': 'yes',
-                'type': 'integer',
-            },
-            'feed_id': {
-                'store': 'yes',
-                'type': 'integer',
-            },
+            "title": {
+                "analyzer": "edgengram_analyzer",
+                "store": True,
+                "term_vector": "with_positions_offsets",
+                "type": "string"
+            }
         }
         cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
         
@@ -215,21 +205,21 @@ class SearchFeed:
         cls.ES.indices.refresh()
         
         logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
-        q = MatchQuery('address.partial', text, type='phrase')
+        q = MatchQuery('address', text)
         print q.serialize(), cls.index_name(), cls.type_name()
         results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                 doc_types=[cls.type_name()])
 
         if not results.total:
             logging.info("~FGSearch ~FCfeeds~FG by title: ~SB%s" % text)
-            q = PrefixQuery('title', text)
+            q = MatchQuery('title', text, operator="and")
             print q.serialize()
             results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                     doc_types=[cls.type_name()])
             
         if not results.total:
             logging.info("~FGSearch ~FCfeeds~FG by link: ~SB%s" % text)
-            q = PrefixQuery('link.partial', text)
+            q = MatchQuery('link', text)
             print q.serialize()
             results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                     doc_types=[cls.type_name()])
