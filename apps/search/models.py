@@ -205,7 +205,7 @@ class SearchFeed:
         cls.ES.indices.refresh()
         
         logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
-        q = MatchQuery('address', text)
+        q = MatchQuery('address', text, operator="and", type="phrase")
         print q.serialize(), cls.index_name(), cls.type_name()
         results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                 doc_types=[cls.type_name()])
@@ -219,7 +219,7 @@ class SearchFeed:
             
         if not results.total:
             logging.info("~FGSearch ~FCfeeds~FG by link: ~SB%s" % text)
-            q = MatchQuery('link', text)
+            q = MatchQuery('link', text, operator="and")
             print q.serialize()
             results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
                                     doc_types=[cls.type_name()])
