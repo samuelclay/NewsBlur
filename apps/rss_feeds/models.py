@@ -28,7 +28,7 @@ from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from apps.rss_feeds.text_importer import TextImporter
-from apps.search.models import SearchStarredStory, SearchFeed
+from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -40,7 +40,6 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
-from vendor.haystack.query import SearchQuerySet
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -234,7 +233,21 @@ class Feed(models.Model):
                 return feed
         
         return self
-
+    
+    @classmethod
+    def index_all_for_search(cls, offset=0):
+        SearchFeed.create_elasticsearch_mapping()
+        
+        last_pk = cls.objects.latest('pk').pk
+        for f in xrange(offset, last_pk, 1000):
+            print " ---> %s / %s (%.2s%%)" % (f, last_pk, float(f)/last_pk*100)
+            feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
+                                        active=True,
+                                        active_subscribers__gte=1)\
+                                .values_list('pk')
+            for feed_id, in feeds:
+                Feed.objects.get(pk=feed_id).index_for_search()
+        
     def index_for_search(self):
         if self.num_subscribers > 1 and not self.branch_from_feed:
             SearchFeed.index(feed_id=self.pk, 
@@ -260,12 +273,15 @@ class Feed(models.Model):
     
     @classmethod
     def autocomplete(self, prefix, limit=5):
-        results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
-        
-        if len(results) < limit:
-            results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
-        
-        return list(set([int(f.pk) for f in results]))
+        results = SearchFeed.query(prefix)
+        feed_ids = [result.feed_id for result in results[:5]]
+
+        # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
+        # 
+        # if len(results) < limit:
+        #     results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
+        # 
+        return feed_ids
         
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
@@ -1700,6 +1716,16 @@ class MStory(mongo.Document):
         self.remove_from_redis()
         
         super(MStory, self).delete(*args, **kwargs)
+
+    def index_for_search(self):
+        story_content = zlib.decompress(self.story_content_z)
+        SearchStory.index(user_id=self.user_id, 
+                          story_id=self.story_guid, 
+                          story_title=self.story_title, 
+                          story_content=story_content, 
+                          story_author=self.story_author_name, 
+                          story_date=self.story_date,
+                          db_id=str(self.id))
     
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
@@ -1992,16 +2018,6 @@ class MStarredStory(mongo.Document):
 
         # self.index_for_search()
         
-    def index_for_search(self):
-        story_content = zlib.decompress(self.story_content_z)
-        SearchStarredStory.index(user_id=self.user_id, 
-                                 story_id=self.story_guid, 
-                                 story_title=self.story_title, 
-                                 story_content=story_content, 
-                                 story_author=self.story_author_name, 
-                                 story_date=self.story_date,
-                                 db_id=str(self.id))
-    
     @classmethod
     def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):
         stories_db = cls.objects(

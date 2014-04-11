@@ -1,16 +1,22 @@
 import pyes
-from pyes.query import FilteredQuery, FuzzyQuery, TextQuery, PrefixQuery
-from pyes.filters import RangeFilter
-from pyes.utils import ESRange
+from pyes.query import FuzzyQuery, MatchQuery, PrefixQuery
 from django.conf import settings
 from django.contrib.auth.models import User
 from utils import log as logging
 
-class SearchStarredStory:
+class SearchStory:
     
     ES = pyes.ES(settings.ELASTICSEARCH_HOSTS)
-    name = "starred-stories"
+    name = "stories"
     
+    @classmethod
+    def index_name(cls):
+        return "%s-index" % cls.name
+        
+    @classmethod
+    def type_name(cls):
+        return "%s-type" % cls.name
+        
     @classmethod
     def create_elasticsearch_mapping(cls):
         cls.ES.create_index("%s-index" % cls.name)
@@ -74,21 +80,22 @@ class SearchStarredStory:
         user = User.objects.get(pk=user_id)
         cls.ES.refresh()
         q = pyes.query.StringQuery(text)
-        results = cls.ES.search(q)
-        logging.user(user, "~FGSearch ~FCsaved stories~FG for: ~SB%s" % text)
+        print q.serialized(), cls.index_name, cls.type_name
+        results = cls.ES.search(q, indices=cls.index_name, doc_types=[cls.type_name])
+        logging.user(user, "~FGSearch ~FCstories~FG for: ~SB%s" % text)
         
         if not results.total:
-            logging.user(user, "~FGSearch ~FCsaved stories~FG by title: ~SB%s" % text)
+            logging.user(user, "~FGSearch ~FCstories~FG by title: ~SB%s" % text)
             q = FuzzyQuery('title', text)
             results = cls.ES.search(q)
             
         if not results.total:
-            logging.user(user, "~FGSearch ~FCsaved stories~FG by content: ~SB%s" % text)
+            logging.user(user, "~FGSearch ~FCstories~FG by content: ~SB%s" % text)
             q = FuzzyQuery('content', text)
             results = cls.ES.search(q)
             
         if not results.total:
-            logging.user(user, "~FGSearch ~FCsaved stories~FG by author: ~SB%s" % text)
+            logging.user(user, "~FGSearch ~FCstories~FG by author: ~SB%s" % text)
             q = FuzzyQuery('author', text)
             results = cls.ES.search(q)
             
@@ -101,43 +108,57 @@ class SearchFeed:
     name = "feeds"
     
     @classmethod
+    def index_name(cls):
+        return "%s-index" % cls.name
+        
+    @classmethod
+    def type_name(cls):
+        return "%s-type" % cls.name
+        
+    @classmethod
     def create_elasticsearch_mapping(cls):
-        try:
-            cls.ES.delete_index("%s-index" % cls.name)
-        except pyes.TypeMissingException:
-            print "Index missing, can't delete: %s-index" % cls.name
+        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
             
         settings =  {
             "index" : {
-              "analysis" : {
-                "analyzer" : {
-                  "url_analyzer" : {
-                    "type" : "custom",
-                    "tokenizer" : "urls",
-                    "filter"    : ["stop", "url_stop"]
-                  }
-                },
-                "tokenizer": {
-                    "urls": {
-                        "type": "uax_url_email",
-                        "max_token_length": 255,
+              "analysis": {
+                 "filter": {
+                    "nGram_filter": {
+                       "type": "nGram",
+                       "min_gram": 2,
+                       "max_gram": 20,
+                       "token_chars": [
+                          "letter",
+                          "digit",
+                          "punctuation",
+                          "symbol"
+                       ]
                     }
-                },
-                "filter" : {
-                  "url_stop" : {
-                    "type" : "stop",
-                    "stopwords" : ["http", "https"]
-                  },
-                  "url_ngram" : {
-                    "type" : "nGram",
-                    "min_gram" : 2,
-                    "max_gram" : 20,
-                  }
-                }
+                 },
+                 "analyzer": {
+                    "nGram_analyzer": {
+                       "type": "custom",
+                       "tokenizer": "whitespace",
+                       "filter": [
+                          "lowercase",
+                          "asciifolding",
+                          "nGram_filter"
+                       ]
+                    },
+                    "whitespace_analyzer": {
+                       "type": "custom",
+                       "tokenizer": "whitespace",
+                       "filter": [
+                          "lowercase",
+                          "asciifolding"
+                       ]
+                    }
+                 }
               }
-            }
           }
-        cls.ES.create_index("%s-index" % cls.name, settings)
+        }
+        cls.ES.indices.create_index("%s-index" % cls.name, settings)
+
         mapping = { 
             'address': {
                 'boost': 3.0,
@@ -145,7 +166,8 @@ class SearchFeed:
                 'store': 'yes',
                 'type': 'string',
                 "term_vector" : "with_positions_offsets",
-                "analyzer": "url_analyzer",
+                "index_analyzer": "nGram_analyzer",
+                "search_analyzer": "whitespace_analyzer"
             },
             'title': {
                 'boost': 2.0,
@@ -160,7 +182,8 @@ class SearchFeed:
                 'store': 'yes',
                 'type': 'string',
                 "term_vector" : "with_positions_offsets",
-                "analyzer": "url_analyzer",
+                "index_analyzer": "nGram_analyzer",
+                "search_analyzer": "whitespace_analyzer"
             },
             'num_subscribers': {
                 'boost': 1.0,
@@ -173,7 +196,7 @@ class SearchFeed:
                 'type': 'integer',
             },
         }
-        cls.ES.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
+        cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
         
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
@@ -188,21 +211,27 @@ class SearchFeed:
         
     @classmethod
     def query(cls, text):
-        cls.ES.refresh()
+        cls.ES.default_indices = cls.index_name()
+        cls.ES.indices.refresh()
         
-        sub_filter = RangeFilter(qrange=ESRange('num_subscribers', 2))
         logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
-        q = TextQuery('address', text)
-        results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
+        q = MatchQuery('address.partial', text, type='phrase')
+        print q.serialize(), cls.index_name(), cls.type_name()
+        results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
+                                doc_types=[cls.type_name()])
 
         if not results.total:
             logging.info("~FGSearch ~FCfeeds~FG by title: ~SB%s" % text)
             q = PrefixQuery('title', text)
-            results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
+            print q.serialize()
+            results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
+                                    doc_types=[cls.type_name()])
             
         if not results.total:
             logging.info("~FGSearch ~FCfeeds~FG by link: ~SB%s" % text)
-            q = TextQuery('link.partial', text)
-            results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
+            q = PrefixQuery('link.partial', text)
+            print q.serialize()
+            results = cls.ES.search(query=q, sort="num_subscribers:desc", size=5,
+                                    doc_types=[cls.type_name()])
             
         return results
