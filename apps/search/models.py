@@ -1,7 +1,6 @@
 import pyes
 from pyes.query import FuzzyQuery, MatchQuery
 from django.conf import settings
-from django.contrib.auth.models import User
 from utils import log as logging
 
 class SearchStory:
@@ -70,27 +69,25 @@ class SearchStory:
         cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
         
     @classmethod
-    def query(cls, user_id, text):
-        user = User.objects.get(pk=user_id)
-        cls.ES.refresh()
-        q = pyes.query.StringQuery(text)
-        print q.serialized(), cls.index_name, cls.type_name
+    def query(cls, feed_ids, query):
+        cls.ES.indices.refresh()
+        q = pyes.query.StringQuery(query)
         results = cls.ES.search(q, indices=cls.index_name, doc_types=[cls.type_name])
-        logging.user(user, "~FGSearch ~FCstories~FG for: ~SB%s" % text)
+        logging.info("~FGSearch ~FCstories~FG for: ~SB%s" % query)
         
         if not results.total:
-            logging.user(user, "~FGSearch ~FCstories~FG by title: ~SB%s" % text)
-            q = FuzzyQuery('title', text)
+            logging.info("~FGSearch ~FCstories~FG by title: ~SB%s" % query)
+            q = FuzzyQuery('title', query)
             results = cls.ES.search(q)
             
         if not results.total:
-            logging.user(user, "~FGSearch ~FCstories~FG by content: ~SB%s" % text)
-            q = FuzzyQuery('content', text)
+            logging.info("~FGSearch ~FCstories~FG by content: ~SB%s" % query)
+            q = FuzzyQuery('content', query)
             results = cls.ES.search(q)
             
         if not results.total:
-            logging.user(user, "~FGSearch ~FCstories~FG by author: ~SB%s" % text)
-            q = FuzzyQuery('author', text)
+            logging.info("~FGSearch ~FCstories~FG by author: ~SB%s" % query)
+            q = FuzzyQuery('author', query)
             results = cls.ES.search(q)
             
         return results

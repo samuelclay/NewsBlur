@@ -1189,6 +1189,8 @@ class Feed(models.Model):
         return stories
         
     def find_stories(self, query, offset=0, limit=25):
+        SearchStory.query(feed_ids=[self.pk], query=query)
+
         stories_db = MStory.objects(
             Q(story_feed_id=self.pk) &
             (Q(story_title__icontains=query) |
