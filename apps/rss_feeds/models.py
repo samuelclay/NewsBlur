@@ -236,7 +236,8 @@ class Feed(models.Model):
     
     @classmethod
     def index_all_for_search(cls, offset=0):
-        SearchFeed.create_elasticsearch_mapping()
+        if not offset:
+            SearchFeed.create_elasticsearch_mapping()
         
         last_pk = cls.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):
