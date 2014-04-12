@@ -285,7 +285,6 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
-    'vendor.haystack',
     'oauth2_provider',
     'corsheaders',
 )
@@ -628,18 +627,6 @@ JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
-
-# ============
-# = Haystack =
-# ============
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
-        'INDEX_NAME': 'haystack',
-    },
-}
 
 # =======
 # = AWS =
