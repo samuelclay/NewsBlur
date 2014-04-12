@@ -1717,15 +1717,30 @@ class MStory(mongo.Document):
         
         super(MStory, self).delete(*args, **kwargs)
 
+    @classmethod
+    def index_all_for_search(cls, offset=0):
+        SearchStory.create_elasticsearch_mapping()
+        
+        last_pk = Feed.objects.latest('pk').pk
+        for f in xrange(offset, last_pk, 1000):
+            print " ---> %s / %s (%.2s%%)" % (f, last_pk, float(f)/last_pk*100)
+            feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
+                                        active=True,
+                                        active_subscribers__gte=1)\
+                                .values_list('pk')
+            for feed_id, in feeds:
+                stories = cls.objects.filter(story_feed_id=feed_id)
+                for story in stories:
+                    story.index_for_search()
+
     def index_for_search(self):
+        if not self.story_content_z: return
         story_content = zlib.decompress(self.story_content_z)
-        SearchStory.index(user_id=self.user_id, 
-                          story_id=self.story_guid, 
+        SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
                           story_content=story_content, 
                           story_author=self.story_author_name, 
-                          story_date=self.story_date,
-                          db_id=str(self.id))
+                          story_date=self.story_date)
     
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):

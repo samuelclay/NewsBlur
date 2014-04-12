@@ -1,5 +1,5 @@
 import pyes
-from pyes.query import FuzzyQuery, MatchQuery, PrefixQuery
+from pyes.query import FuzzyQuery, MatchQuery
 from django.conf import settings
 from django.contrib.auth.models import User
 from utils import log as logging
@@ -19,7 +19,8 @@ class SearchStory:
         
     @classmethod
     def create_elasticsearch_mapping(cls):
-        cls.ES.create_index("%s-index" % cls.name)
+        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
+        cls.ES.indices.create_index("%s-index" % cls.name)
         mapping = { 
             'title': {
                 'boost': 2.0,
@@ -41,10 +42,10 @@ class SearchStory:
                 'store': 'yes',
                 'type': 'string',   
             },
-            'db_id': {
+            'story_hash': {
                 'index': 'not_analyzed',
                 'store': 'yes',
-                'type': 'string',   
+                'type': 'string',
             },
             'feed_id': {
                 'store': 'yes',
@@ -53,27 +54,20 @@ class SearchStory:
             'date': {
                 'store': 'yes',
                 'type': 'date',
-            },
-            'user_ids': {
-                'index': 'not_analyzed',
-                'store': 'yes',
-                'type': 'integer',
-                'index_name': 'user_id'
             }
         }
-        cls.ES.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
+        cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
         
     @classmethod
-    def index(cls, user_id, story_id, story_title, story_content, story_author, story_date, db_id):
+    def index(cls, story_hash, story_title, story_content, story_author, story_date):
         doc = {
+            "story_hash": story_hash,
             "content": story_content,
             "title": story_title,
             "author": story_author,
             "date": story_date,
-            "user_ids": user_id,
-            "db_id": db_id,
         }
-        cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_id)
+        cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
         
     @classmethod
     def query(cls, user_id, text):
