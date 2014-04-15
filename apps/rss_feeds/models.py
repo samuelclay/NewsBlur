@@ -260,6 +260,15 @@ class Feed(models.Model):
                              link=self.feed_link,
                              num_subscribers=self.num_subscribers)
     
+    def index_stories_for_search(self):
+        if self.search_indexed: return
+
+        self.search_indexed = True
+        self.save()
+            
+        stories = MStory.objects(story_feed_id=self.pk)
+        for story in stories:
+            story.index_for_search()
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
@@ -960,6 +969,7 @@ class Feed(models.Model):
                        story_tags = story_tags
                 )
                 s.extract_image_urls()
+                s.index_for_search()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -1022,6 +1032,7 @@ class Feed(models.Model):
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
+                existing_story.index_for_search()
                 
                 try:
                     existing_story.save()
@@ -1752,8 +1763,9 @@ class MStory(mongo.Document):
                     story.index_for_search()
 
     def index_for_search(self):
-        if not self.story_content_z: return
-        story_content = zlib.decompress(self.story_content_z)
+        story_content = ""
+        if self.story_content_z:
+            story_content = zlib.decompress(self.story_content_z)
         SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
                           story_content=prep_for_search(story_content), 

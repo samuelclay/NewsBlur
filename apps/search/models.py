@@ -22,7 +22,7 @@ class SearchStory:
         cls.ES.indices.create_index("%s-index" % cls.name)
         mapping = { 
             'title': {
-                'boost': 2.0,
+                'boost': 3.0,
                 'index': 'analyzed',
                 'store': 'no',
                 'type': 'string',
@@ -34,6 +34,7 @@ class SearchStory:
                 'store': 'no',
                 'type': 'string',
                 'analyzer': 'snowball',
+                "_source" : {"enabled" : False},
             },
             'author': {
                 'boost': 1.0,
@@ -76,10 +77,11 @@ class SearchStory:
         string_q = pyes.query.StringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids)
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
-        results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()])
+        results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
+                                 partial_fields={})
         logging.info("~FGSearch ~FCstories~FG for: ~SB%s (across %s feed%s)" % 
                      (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
-
+        
         return [r.get_id() for r in results]
 
 
