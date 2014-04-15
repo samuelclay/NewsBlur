@@ -1676,6 +1676,7 @@
             }
             
             var visible_only = this.model.view_setting(this.active_feed, 'read_filter') == 'unread';
+            if (NEWSBLUR.reader.flags.search) visible_only = false;
             var feeds;
             if (visible_only) {
                 feeds = _.pluck(this.active_folder.feeds_with_unreads(), 'id');
