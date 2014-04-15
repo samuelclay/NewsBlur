@@ -1,5 +1,5 @@
 import pyes
-from pyes.query import FuzzyQuery, MatchQuery
+from pyes.query import MatchQuery
 from django.conf import settings
 from utils import log as logging
 
@@ -24,46 +24,43 @@ class SearchStory:
             'title': {
                 'boost': 2.0,
                 'index': 'analyzed',
-                'store': 'yes',
+                'store': 'no',
                 'type': 'string',
-                "term_vector" : "with_positions_offsets"
+                'analyzer': 'snowball',
             },
             'content': {
                 'boost': 1.0,
                 'index': 'analyzed',
-                'store': 'yes',
+                'store': 'no',
                 'type': 'string',
-                "term_vector" : "with_positions_offsets"
+                'analyzer': 'snowball',
             },
             'author': {
                 'boost': 1.0,
                 'index': 'analyzed',
-                'store': 'yes',
+                'store': 'no',
                 'type': 'string',   
-            },
-            'story_hash': {
-                'index': 'not_analyzed',
-                'store': 'yes',
-                'type': 'string',
+                'analyzer': 'keyword',
             },
             'feed_id': {
-                'store': 'yes',
+                'store': 'no',
                 'type': 'integer'
             },
             'date': {
-                'store': 'yes',
+                'store': 'no',
                 'type': 'date',
             }
         }
         cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
         
     @classmethod
-    def index(cls, story_hash, story_title, story_content, story_author, story_date):
+    def index(cls, story_hash, story_title, story_content, story_author, story_feed_id, 
+              story_date):
         doc = {
-            "story_hash": story_hash,
             "content": story_content,
             "title": story_title,
             "author": story_author,
+            "feed_id": story_feed_id,
             "date": story_date,
         }
         cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
@@ -71,26 +68,15 @@ class SearchStory:
     @classmethod
     def query(cls, feed_ids, query):
         cls.ES.indices.refresh()
-        q = pyes.query.StringQuery(query)
-        results = cls.ES.search(q, indices=cls.index_name, doc_types=[cls.type_name])
-        logging.info("~FGSearch ~FCstories~FG for: ~SB%s" % query)
-        
-        if not results.total:
-            logging.info("~FGSearch ~FCstories~FG by title: ~SB%s" % query)
-            q = FuzzyQuery('title', query)
-            results = cls.ES.search(q)
-            
-        if not results.total:
-            logging.info("~FGSearch ~FCstories~FG by content: ~SB%s" % query)
-            q = FuzzyQuery('content', query)
-            results = cls.ES.search(q)
-            
-        if not results.total:
-            logging.info("~FGSearch ~FCstories~FG by author: ~SB%s" % query)
-            q = FuzzyQuery('author', query)
-            results = cls.ES.search(q)
-            
-        return results
+
+        string_q = pyes.query.StringQuery(query, default_operator="AND")
+        feed_q = pyes.query.TermsQuery('feed_id', feed_ids)
+        q = pyes.query.BoolQuery(must=[string_q, feed_q])
+        results = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()])
+        logging.info("~FGSearch ~FCstories~FG for: ~SB%s (across %s feed%s)" % 
+                     (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
+
+        return [r.get_id() for r in results]
 
 
 class SearchFeed:

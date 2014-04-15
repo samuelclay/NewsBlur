@@ -40,6 +40,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
+from utils.story_functions import prep_for_search
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -1179,25 +1180,34 @@ class Feed(models.Model):
     
     @classmethod
     def find_feed_stories(cls, feed_ids, query, offset=0, limit=25):
+        story_ids = SearchStory.query(feed_ids=feed_ids, query=query)
         stories_db = MStory.objects(
-            Q(story_feed_id__in=feed_ids) &
-            (Q(story_title__icontains=query) |
-             Q(story_author_name__icontains=query) |
-             Q(story_tags__icontains=query))
+            story_hash__in=story_ids
         ).order_by('-story_date')[offset:offset+limit]
+
+        # stories_db = MStory.objects(
+        #     Q(story_feed_id__in=feed_ids) &
+        #     (Q(story_title__icontains=query) |
+        #      Q(story_author_name__icontains=query) |
+        #      Q(story_tags__icontains=query))
+        # ).order_by('-story_date')[offset:offset+limit]
         stories = cls.format_stories(stories_db)
         
         return stories
         
     def find_stories(self, query, offset=0, limit=25):
-        SearchStory.query(feed_ids=[self.pk], query=query)
-
+        story_ids = SearchStory.query(feed_ids=[self.pk], query=query)
         stories_db = MStory.objects(
-            Q(story_feed_id=self.pk) &
-            (Q(story_title__icontains=query) |
-             Q(story_author_name__icontains=query) |
-             Q(story_tags__icontains=query))
+            story_hash__in=story_ids
         ).order_by('-story_date')[offset:offset+limit]
+        
+        # stories_db = MStory.objects(
+        #     Q(story_feed_id=self.pk) &
+        #     (Q(story_title__icontains=query) |
+        #      Q(story_author_name__icontains=query) |
+        #      Q(story_tags__icontains=query))
+        # ).order_by('-story_date')[offset:offset+limit]
+        
         stories = self.format_stories(stories_db, self.pk)
         
         return stories
@@ -1722,7 +1732,8 @@ class MStory(mongo.Document):
 
     @classmethod
     def index_all_for_search(cls, offset=0):
-        SearchStory.create_elasticsearch_mapping()
+        if not offset:
+            SearchStory.create_elasticsearch_mapping()
         
         last_pk = Feed.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):
@@ -1741,8 +1752,9 @@ class MStory(mongo.Document):
         story_content = zlib.decompress(self.story_content_z)
         SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
-                          story_content=story_content, 
+                          story_content=prep_for_search(story_content), 
                           story_author=self.story_author_name, 
+                          story_feed_id=self.story_feed_id, 
                           story_date=self.story_date)
     
     @classmethod
