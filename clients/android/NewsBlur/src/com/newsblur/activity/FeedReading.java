@@ -44,6 +44,7 @@ public class FeedReading extends Reading {
     protected int getUnreadCount() {
         Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
         Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+        if (feedCursor.getCount() == 0) return 0;
         Feed feed = Feed.fromCursor(feedCursor);
         feedCursor.close();
         return FeedUtils.getFeedUnreadCount(feed, this.currentState);
