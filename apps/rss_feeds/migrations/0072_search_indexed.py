@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Feed.search_indexed'
         db.add_column('feeds', 'search_indexed',
-                      self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True),
+                      self.gf('django.db.models.fields.NullBooleanField')(default=None, null=True, blank=True),
                       keep_default=False)
 
 
@@ -65,7 +65,7 @@ class Migration(SchemaMigration):
             'premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             's3_icon': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
             's3_page': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
-            'search_indexed': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'search_indexed': ('django.db.models.fields.NullBooleanField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         u'rss_feeds.feeddata': {

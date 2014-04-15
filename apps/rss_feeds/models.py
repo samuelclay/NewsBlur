@@ -81,7 +81,7 @@ class Feed(models.Model):
     favicon_not_found = models.BooleanField(default=False)
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
-    search_indexed = models.NullBooleanField(null=True, blank=True)
+    search_indexed = models.NullBooleanField(default=None, null=True, blank=True)
 
 
     class Meta:
