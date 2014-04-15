@@ -81,6 +81,8 @@ class Feed(models.Model):
     favicon_not_found = models.BooleanField(default=False)
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
+    search_indexed = models.NullBooleanField(null=True, blank=True)
+
 
     class Meta:
         db_table="feeds"
@@ -1043,6 +1045,7 @@ class Feed(models.Model):
         from apps.social.models import MSharedStory
 
         existing_story.remove_from_redis()
+        existing_story.remove_from_search_index()
         
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
@@ -1727,6 +1730,7 @@ class MStory(mongo.Document):
     
     def delete(self, *args, **kwargs):
         self.remove_from_redis()
+        self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
 
@@ -1757,6 +1761,9 @@ class MStory(mongo.Document):
                           story_feed_id=self.story_feed_id, 
                           story_date=self.story_date)
     
+    def remove_from_search_index(self):
+        SearchStory.remove(self.story_hash)
+        
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
