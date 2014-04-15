@@ -432,6 +432,7 @@ def setup_python():
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def pip():
+    pull()
     with cd(env.NEWSBLUR_PATH):
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
