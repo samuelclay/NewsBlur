@@ -1008,7 +1008,7 @@ def load_river_stories__redis(request):
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['read_status'] = 0
-        if read_filter == 'all':
+        if read_filter == 'all' or query:
             if (unread_feed_story_hashes is not None and 
                 story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
