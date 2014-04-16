@@ -13,4 +13,10 @@
     <item android:id="@+id/menu_mark_story_as_unread"
           android:title="@string/menu_mark_unread" />
 
+    <item android:id="@+id/menu_save_story"
+          android:title="@string/menu_save_story" />
+
+    <item android:id="@+id/menu_unsave_story"
+        android:title="@string/menu_unsave_story" />
+
 </menu>
