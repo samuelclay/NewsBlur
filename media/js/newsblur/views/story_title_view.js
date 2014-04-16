@@ -142,6 +142,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var pruned_description = this.model.content_preview();
         
         if (pruned_title.substr(0, 30) == pruned_description.substr(0, 30)) return false;
+        if (pruned_description.length < 30) return false;
         
         return pruned_description;
     },

@@ -65,6 +65,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
                 tipsy.disable();
                 tipsy.hide();
             });
+            this.retry();
         } else {
             progress = Math.floor(parseFloat(message) * 100);
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
@@ -129,6 +130,13 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             e.stopPropagation();
             return false;
         }
+    },
+    
+    retry: function() {
+        if (!NEWSBLUR.reader.flags.search) return;
+        
+        NEWSBLUR.reader.flags.search = null;
+        this.search();
     },
     
     search: function() {

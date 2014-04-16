@@ -933,6 +933,7 @@ def load_river_stories__redis(request):
                                                                      cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
+            mstories = []
             message = "You must be a premium subscriber to search."
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,

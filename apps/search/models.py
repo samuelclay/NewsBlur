@@ -80,7 +80,7 @@ class MUserSearch(mongo.Document):
         
         duration = time.time() - start
         logging.user(user, "~FCIndexed ~SB%s/%s feeds~SN for ~SB~FB%s~FC~SN in ~FM~SB%s~FC~SN sec." % 
-                     (processed, total, user.username, round(duration)))
+                     (processed, total, user.username, round(duration, 2)))
         r.publish(user.username, 'search_index_complete:done')
         
         self.subscriptions_indexed = True
