@@ -240,7 +240,7 @@ class Feed(models.Model):
     @classmethod
     def index_all_for_search(cls, offset=0):
         if not offset:
-            SearchFeed.create_elasticsearch_mapping()
+            SearchFeed.create_elasticsearch_mapping(delete=True)
         
         last_pk = cls.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):
@@ -1748,7 +1748,7 @@ class MStory(mongo.Document):
     @classmethod
     def index_all_for_search(cls, offset=0):
         if not offset:
-            SearchStory.create_elasticsearch_mapping()
+            SearchStory.create_elasticsearch_mapping(delete=True)
         
         last_pk = Feed.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):

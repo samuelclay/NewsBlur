@@ -33,6 +33,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
 try:
@@ -508,6 +509,7 @@ def load_single_feed(request, feed_id):
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     message                 = None
+    user_search             = None
     
     dupe_feed_id = None
     user_profiles = []
@@ -526,6 +528,8 @@ def load_single_feed(request, feed_id):
     
     if query:
         if user.profile.is_premium:
+            user_search = MUserSearch.get_user(user.pk)
+            user_search.touch_search_date()
             stories = feed.find_stories(query, offset=offset, limit=limit)
         else:
             stories = []
@@ -654,6 +658,7 @@ def load_single_feed(request, feed_id):
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
                 updated=last_update,
+                user_search=user_search,
                 feed_id=feed.pk,
                 elapsed_time=round(float(timediff), 2),
                 message=message)
@@ -903,6 +908,7 @@ def load_river_stories__redis(request):
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
+    user_search       = None
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -914,6 +920,8 @@ def load_river_stories__redis(request):
         stories = Feed.format_stories(mstories)
     elif query:
         if user.profile.is_premium:
+            user_search = MUserSearch.get_user(user.pk)
+            user_search.touch_search_date()
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                        read_filter='all')
             feed_ids = [sub.feed_id for sub in usersubs]
@@ -1041,6 +1049,7 @@ def load_river_stories__redis(request):
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
+                user_search=user_search, 
                 user_profiles=user_profiles)
     
 

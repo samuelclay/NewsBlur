@@ -384,34 +384,6 @@ class Profile(models.Model):
     def import_reader_starred_items(self, count=20):
         importer = GoogleReaderImporter(self.user)
         importer.import_starred_items(count=count)
-    
-    # Should be run as a background task
-    def index_subscriptions_for_search(self):
-        start = time.time()
-        not_found = 0
-        processed = 0
-        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        
-        subscriptions = UserSubscription.objects.filter(user=self.user)
-        total = subscriptions.count()
-        logging.user(self.user, "~FCIndexing ~SB%s feeds~SN for ~SB~FB%s~FC~SN..." % 
-                     (total, self.user.username))
-        
-        for sub in subscriptions:
-            try:
-                feed = sub.feed
-            except Feed.DoesNotExist:
-                not_found += 1
-                continue
-            
-            feed.index_stories_for_search()
-            processed += 1
-            
-            r.publish(self.user.username, 'search_index_complete:%.4s' % (float(processed)/total))
-        
-        duration = time.time() - start
-        logging.user(self.user, "~FCIndexed ~SB%s/%s feeds~SN for ~SB~FB%s~FC~SN in ~FM~SB%s~FC~SN sec." % 
-                     (processed, total, self.user.username, round(duration)))
                      
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:

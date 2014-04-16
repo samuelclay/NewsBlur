@@ -10521,10 +10521,9 @@ form.opml_import_form input {
     border-radius: 16px;
     border: 1px solid rgba(0, 0, 0, .1);
     font-weight: bold;
+    background: transparent;
     width: 82%;
     padding: 2px 18px 1px 18px;
-    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 4px 3px;
-    background-size: 12px;
     margin: 0;
     display: block;
     font-size: 11px;
@@ -10539,6 +10538,15 @@ form.opml_import_form input {
     background-color: white;
 }
 
+.NB-search-icon {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+}
 .NB-search-close {
     display: none;
     position: absolute;

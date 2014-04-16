@@ -20,6 +20,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         
         var $view = $(_.template('\
             <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%= search %>" />\
+            <div class="NB-search-icon"></div>\
             <div class="NB-search-close"></div>\
         ', {
             search: NEWSBLUR.reader.flags['search']
@@ -28,6 +29,46 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         this.$el.html($view);
         
         return this;
+    },
+    
+    // ============
+    // = Indexing =
+    // ============
+    
+    update_indexing_progress: function(message) {
+        var $input = this.$('input');
+        var $icon = this.$('.NB-search-icon');
+        console.log(["update_indexing_progress", message]);
+
+        if (message == "start") {
+            $icon.tipsy({
+                title: function() { return "Hang tight, indexing..."; },
+                gravity: 'nw',
+                fade: true,
+                trigger: 'manual',
+                offset: 4
+            });
+            var tipsy = $icon.data('tipsy');
+            _.defer(function() {
+                tipsy.enable();
+                tipsy.show();
+            });
+            _.delay(function() {
+                tipsy.disable();
+                tipsy.hide();
+            }, 3000);
+        } else if (message == "done") {
+            $input.attr('style', null);
+            var tipsy = $icon.data('tipsy');
+            _.defer(function() {
+                if (!tipsy) return;
+                tipsy.disable();
+                tipsy.hide();
+            });
+        } else {
+            progress = Math.floor(parseFloat(message) * 100);
+            NEWSBLUR.utils.attach_loading_gradient($input, progress);
+        }
     },
     
     // ==========

@@ -1,7 +1,91 @@
+import time
+import datetime
 import pyes
+import redis
+import mongoengine as mongo
 from pyes.query import MatchQuery
 from django.conf import settings
+from django.contrib.auth.models import User
+from apps.search.tasks import IndexSubscriptionsForSearch
 from utils import log as logging
+
+class MUserSearch(mongo.Document):
+    '''Search index state of a user's subscriptions.'''
+    user_id                  = mongo.IntField(unique=True)
+    last_search_date         = mongo.DateTimeField()
+    subscriptions_indexed    = mongo.BooleanField()
+    subscriptions_indexing   = mongo.BooleanField()
+    
+    meta = {
+        'collection': 'user_search',
+        'indexes': ['user_id'],
+        'index_drop_dups': True,
+        'allow_inheritance': False,
+    }
+    
+    @classmethod
+    def get_user(cls, user_id):
+        try:
+            user_search = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            user_search = cls.objects.create(user_id=user_id)
+        
+        return user_search
+    
+    def touch_search_date(self):
+        if not self.subscriptions_indexed and not self.subscriptions_indexing:
+            self.schedule_index_subscriptions_for_search()
+            self.subscriptions_indexing = True
+
+        self.last_search_date = datetime.datetime.now()
+        self.save()
+
+    def schedule_index_subscriptions_for_search(self):
+        IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id))
+        
+    # Should be run as a background task
+    def index_subscriptions_for_search(self):
+        from apps.rss_feeds.models import Feed
+        from apps.reader.models import UserSubscription
+        
+        SearchStory.create_elasticsearch_mapping()
+        
+        start = time.time()
+        not_found = 0
+        processed = 0
+        user = User.objects.get(pk=self.user_id)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(user.username, 'search_index_complete:start')
+        throttle = time.time()
+        
+        subscriptions = UserSubscription.objects.filter(user=user)
+        total = subscriptions.count()
+        logging.user(user, "~FCIndexing ~SB%s feeds~SN for ~SB~FB%s~FC~SN..." % 
+                     (total, user.username))
+        
+        for sub in subscriptions:
+            try:
+                feed = sub.feed
+            except Feed.DoesNotExist:
+                not_found += 1
+                continue
+            
+            feed.index_stories_for_search()
+            processed += 1
+            
+            # Throttle notifications to client as to not flood them
+            if time.time() - throttle > 0.05:
+                r.publish(user.username, 'search_index_complete:%.4s' % (float(processed)/total))
+                throttle = time.time()
+        
+        duration = time.time() - start
+        logging.user(user, "~FCIndexed ~SB%s/%s feeds~SN for ~SB~FB%s~FC~SN in ~FM~SB%s~FC~SN sec." % 
+                     (processed, total, user.username, round(duration)))
+        r.publish(user.username, 'search_index_complete:done')
+        
+        self.subscriptions_indexed = True
+        self.subscriptions_indexing = False
+        self.save()
 
 class SearchStory:
     
@@ -17,9 +101,10 @@ class SearchStory:
         return "%s-type" % cls.name
         
     @classmethod
-    def create_elasticsearch_mapping(cls):
-        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
-        cls.ES.indices.create_index("%s-index" % cls.name)
+    def create_elasticsearch_mapping(cls, delete=False):
+        if delete:
+            cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
+        cls.ES.indices.create_index_if_missing("%s-index" % cls.name)
         mapping = { 
             'title': {
                 'boost': 3.0,
@@ -99,8 +184,9 @@ class SearchFeed:
         return "%s-type" % cls.name
         
     @classmethod
-    def create_elasticsearch_mapping(cls):
-        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
+    def create_elasticsearch_mapping(cls, delete=False):
+        if delete:
+            cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
         settings =  {
             "index" : {
                 "analysis": {
@@ -144,7 +230,7 @@ class SearchFeed:
                 }
             }
         }
-        cls.ES.indices.create_index("%s-index" % cls.name, settings)
+        cls.ES.indices.create_index_if_missing("%s-index" % cls.name, settings)
 
         mapping = {
             "address": {
