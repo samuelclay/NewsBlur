@@ -364,6 +364,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.social.tasks",
                                "apps.reader.tasks",
                                "apps.feed_import.tasks",
+                               "apps.search.tasks",
                                "apps.statistics.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
