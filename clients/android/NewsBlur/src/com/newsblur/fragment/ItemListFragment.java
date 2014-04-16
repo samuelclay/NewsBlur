@@ -3,13 +3,13 @@ package com.newsblur.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.app.Fragment;
 import android.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -27,6 +27,7 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
+import com.newsblur.network.APIManager;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.StoryOrder;
@@ -118,21 +119,28 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         } else {
             menu.removeItem(R.id.menu_mark_story_as_unread);
         }
+
+        if (story.starred) {
+            menu.removeItem(R.id.menu_save_story);
+        } else {
+            menu.removeItem(R.id.menu_unsave_story);
+        }
     }
     
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         Story story = adapter.getStory(menuInfo.position);
+        Activity activity = getActivity();
 
         switch (item.getItemId()) {
         case R.id.menu_mark_story_as_read:
-            FeedUtils.markStoryAsRead(story, getActivity());
+            FeedUtils.markStoryAsRead(story, activity);
             hasUpdated();
             return true;
 
         case R.id.menu_mark_story_as_unread:
-            FeedUtils.markStoryUnread(story, getActivity());
+            FeedUtils.markStoryUnread(story, activity);
             hasUpdated();
             return true;
 
@@ -144,12 +152,20 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
                     storiesToMarkAsRead.add(s);
                 }
             }
-            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
+            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, activity);
             hasUpdated();
             return true;
 
         case R.id.menu_shared:
-            FeedUtils.shareStory(story, getActivity());
+            FeedUtils.shareStory(story, activity);
+            return true;
+
+        case R.id.menu_save_story:
+            FeedUtils.saveStory(story, activity, new APIManager(activity), null);
+            return true;
+
+        case R.id.menu_unsave_story:
+            FeedUtils.unsaveStory(story, activity, new APIManager(activity), null);
             return true;
 
         default:
