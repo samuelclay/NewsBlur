@@ -168,7 +168,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
-            NEWSBLUR.app.active_search = this.search_view;
             this.$(".NB-search-container").html(this.search_view.$el);
         }
         return $folder;

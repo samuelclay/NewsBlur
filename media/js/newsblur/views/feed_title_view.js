@@ -125,7 +125,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();
-            NEWSBLUR.app.active_search = this.search_view;
             $(".NB-search-container", $feed).html(this.search_view.$el);
         }
         
