@@ -3187,7 +3187,7 @@ body {
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
-    padding: 7px 4px;
+    padding: 9px 4px;
     height: 100%;
     float: right;
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px center;
@@ -3207,7 +3207,7 @@ body {
 }
 
 .NB-sideoption .NB-sideoption-title {
-    padding: 7px 24px 8px 8px;
+    padding: 9px 24px 8px 8px;
     color: white;
     text-shadow: none;
     height: 32px;

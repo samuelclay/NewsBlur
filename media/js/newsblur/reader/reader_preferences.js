@@ -655,6 +655,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Show all comments'
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-story-button-placement' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-button-placement-1', type: 'radio', name: 'story_button_placement', value: 'bottom' }),
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-1' }, 'Always show Train/Save/Share buttons below stories')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-button-placement-2', type: 'radio', name: 'story_button_placement', value: 'right' }),
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-2' }, 'Show buttons on the right (when there is room)')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Story button placement'
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
@@ -911,6 +926,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=story_button_placement]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.story_button_placement) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=keyboard_verticalarrows]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.keyboard_verticalarrows) {
                 $(this).attr('checked', true);
@@ -1042,6 +1063,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
+            NEWSBLUR.reader.adjust_for_narrow_window();
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.sidebar_header.count();
             if (self.original_preferences['feed_order'] != form['feed_order'] ||
