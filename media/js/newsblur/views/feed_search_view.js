@@ -7,7 +7,9 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         "blur .NB-story-title-search-input" : "blur_search",
         "keyup input[name=feed_search]"     : "keyup",
         "keydown input[name=feed_search]"   : "keydown",
-        "click .NB-search-close"            : "close_search"
+        "click .NB-search-close"            : "close_search",
+        "mouseenter"                        : "mouseenter",
+        "mouseleave"                        : "mouseleave"
     },
     
     initialize: function(options) {
@@ -19,6 +21,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         // if (!NEWSBLUR.Globals.is_staff) return this;
         if (NEWSBLUR.app.active_search) {
             NEWSBLUR.app.active_search.blur_search();
+            NEWSBLUR.app.active_search.remove();
         }
         NEWSBLUR.app.active_search = this;
         var $view = $(_.template('\
@@ -34,6 +37,16 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         return this;
     },
     
+    remove: function() {
+        var $icon = this.$('.NB-search-icon');
+        var tipsy = $icon.data('tipsy');
+        if (tipsy) {
+            tipsy.disable();
+            tipsy.hide();
+        }
+        Backbone.View.prototype.remove.call(this);
+    },
+    
     // ============
     // = Indexing =
     // ============
@@ -43,22 +56,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         var $icon = this.$('.NB-search-icon');
 
         if (message == "start") {
-            $icon.tipsy({
-                title: function() { return "Hang tight, indexing..."; },
-                gravity: 'nw',
-                fade: true,
-                trigger: 'manual',
-                offset: 4
-            });
-            var tipsy = $icon.data('tipsy');
-            _.defer(function() {
-                tipsy.enable();
-                tipsy.show();
-            });
-            _.delay(function() {
-                tipsy.disable();
-                tipsy.hide();
-            }, 6 * 1000);
+            this.show_indexing_tooltip(true);
         } else if (message == "done") {
             $input.attr('style', null);
             var tipsy = $icon.data('tipsy');
@@ -69,9 +67,34 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             });
             this.retry();
         } else {
+            this.show_indexing_tooltip(false);
             progress = Math.floor(parseFloat(message) * 100);
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
         }
+    },
+    
+    show_indexing_tooltip: function(show) {
+        var $icon = this.$('.NB-search-icon');
+        var tipsy = $icon.data('tipsy');
+        
+        if (tipsy) return;
+        
+        $icon.tipsy({
+            title: function() { return "Hang tight, indexing..."; },
+            gravity: 'nw',
+            fade: true,
+            trigger: 'manual',
+            offset: 4
+        });
+        var tipsy = $icon.data('tipsy');
+        _.defer(function() {
+            tipsy.enable();
+            if (show) tipsy.show();
+        });
+        _.delay(function() {
+            tipsy.hide();
+        }, 3 * 1000);
+
     },
     
     // ==========
@@ -164,6 +187,24 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         NEWSBLUR.reader.flags.searching = false;
         
         NEWSBLUR.reader.reload_feed();
+    },
+    
+    mouseenter: function(e) {
+        var $icon = this.$('.NB-search-icon');
+        var tipsy = $icon.data('tipsy');
+        
+        if (!tipsy) return;
+        
+        tipsy.show();
+    },
+    
+    mouseleave: function(e) {
+        var $icon = this.$('.NB-search-icon');
+        var tipsy = $icon.data('tipsy');
+        
+        if (!tipsy) return;
+        
+        tipsy.hide();
     }
     
 });
