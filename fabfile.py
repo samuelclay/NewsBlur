@@ -88,7 +88,7 @@ def list_do():
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        cost = int(sizes[droplet.size_id]) * 10
+        cost = int(sizes.get(droplet.size_id, 96)) * 10
         role_costs[roledef] += cost
         total_cost += cost
     
