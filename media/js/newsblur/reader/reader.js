@@ -221,6 +221,9 @@
             }
             if (center) {
                 var narrow = center.width() < 780;
+                if (NEWSBLUR.assets.preference('story_button_placement') == "bottom") {
+                    narrow = true;
+                }
                 $windows.toggleClass('NB-narrow-content', narrow);
                 this.flags.narrow_content = !!narrow;
                 content_width = center.width() + (west ? west.width() : 0);
