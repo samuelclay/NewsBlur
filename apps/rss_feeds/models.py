@@ -1198,7 +1198,7 @@ class Feed(models.Model):
                                       offset=offset, limit=limit)
         stories_db = MStory.objects(
             story_hash__in=story_ids
-        ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
+        ).order_by('-story_date' if order == "newest" else 'story_date')
         stories = cls.format_stories(stories_db)
         
         return stories
@@ -1208,7 +1208,7 @@ class Feed(models.Model):
                                       offset=offset, limit=limit)
         stories_db = MStory.objects(
             story_hash__in=story_ids
-        ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
+        ).order_by('-story_date' if order == "newest" else 'story_date')
         stories = self.format_stories(stories_db, self.pk)
         
         return stories
