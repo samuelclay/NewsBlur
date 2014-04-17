@@ -156,14 +156,15 @@ class SearchStory:
         cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
         
     @classmethod
-    def query(cls, feed_ids, query):
+    def query(cls, feed_ids, query, order, offset, limit):
         cls.ES.indices.refresh()
-
+        
+        sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.StringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids)
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
-                                 partial_fields={})
+                                 partial_fields={}, sort=sort, start=offset, size=offset+limit)
         logging.info("~FGSearch ~FCstories~FG for: ~SB%s (across %s feed%s)" % 
                      (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         

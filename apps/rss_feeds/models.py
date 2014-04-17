@@ -1193,35 +1193,22 @@ class Feed(models.Model):
         return stories
     
     @classmethod
-    def find_feed_stories(cls, feed_ids, query, offset=0, limit=25):
-        story_ids = SearchStory.query(feed_ids=feed_ids, query=query)
+    def find_feed_stories(cls, feed_ids, query, order="newest", offset=0, limit=25):
+        story_ids = SearchStory.query(feed_ids=feed_ids, query=query, order=order, 
+                                      offset=offset, limit=limit)
         stories_db = MStory.objects(
             story_hash__in=story_ids
-        ).order_by('-story_date')[offset:offset+limit]
-
-        # stories_db = MStory.objects(
-        #     Q(story_feed_id__in=feed_ids) &
-        #     (Q(story_title__icontains=query) |
-        #      Q(story_author_name__icontains=query) |
-        #      Q(story_tags__icontains=query))
-        # ).order_by('-story_date')[offset:offset+limit]
+        ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
         stories = cls.format_stories(stories_db)
         
         return stories
         
-    def find_stories(self, query, offset=0, limit=25):
-        story_ids = SearchStory.query(feed_ids=[self.pk], query=query)
+    def find_stories(self, query, order="newest", offset=0, limit=25):
+        story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
+                                      offset=offset, limit=limit)
         stories_db = MStory.objects(
             story_hash__in=story_ids
-        ).order_by('-story_date')[offset:offset+limit]
-        
-        # stories_db = MStory.objects(
-        #     Q(story_feed_id=self.pk) &
-        #     (Q(story_title__icontains=query) |
-        #      Q(story_author_name__icontains=query) |
-        #      Q(story_tags__icontains=query))
-        # ).order_by('-story_date')[offset:offset+limit]
-        
+        ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
         
         return stories

@@ -530,7 +530,7 @@ def load_single_feed(request, feed_id):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            stories = feed.find_stories(query, offset=offset, limit=limit)
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -925,7 +925,7 @@ def load_river_stories__redis(request):
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                        read_filter='all')
             feed_ids = [sub.feed_id for sub in usersubs]
-            stories = Feed.find_feed_stories(feed_ids, query, offset=offset, limit=limit)
+            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
