@@ -19,8 +19,8 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         // if (!NEWSBLUR.Globals.is_staff) return this;
         if (NEWSBLUR.app.active_search) {
             NEWSBLUR.app.active_search.blur_search();
-            NEWSBLUR.app.active_search = this;
         }
+        NEWSBLUR.app.active_search = this;
         var $view = $(_.template('\
             <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%= search %>" />\
             <div class="NB-search-icon"></div>\
@@ -58,7 +58,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             _.delay(function() {
                 tipsy.disable();
                 tipsy.hide();
-            }, 3000);
+            }, 6 * 1000);
         } else if (message == "done") {
             $input.attr('style', null);
             var tipsy = $icon.data('tipsy');

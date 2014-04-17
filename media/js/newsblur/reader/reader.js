@@ -4165,7 +4165,9 @@
                         this.update_interactions_count();
                     } else if (_.string.startsWith(message, "search_index_complete:")) {
                         message = message.replace('search_index_complete:', '');
-                        NEWSBLUR.app.active_search.update_indexing_progress(message);
+                        if (NEWSBLUR.app.active_search) {
+                            NEWSBLUR.app.active_search.update_indexing_progress(message);
+                        }
                     } else if (_.string.startsWith(message, "refresh:")) {
                         var feeds = message.replace('refresh:', '').split(",");
                         this.force_feeds_refresh(null, false, feeds);

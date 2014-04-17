@@ -86,6 +86,34 @@ class MUserSearch(mongo.Document):
         self.subscriptions_indexed = True
         self.subscriptions_indexing = False
         self.save()
+    
+    @classmethod
+    def remove_all(cls):
+        for user_search in cls.objects.all():
+            user_search.remove()
+    
+    def remove(self):
+        from apps.rss_feeds.models import Feed
+        from apps.reader.models import UserSubscription
+
+        user = User.objects.get(pk=self.user_id)
+        subscriptions = UserSubscription.objects.filter(user=self.user_id, 
+                                                        feed__search_indexed=True)
+        total = subscriptions.count()
+        removed = 0
+        
+        for sub in subscriptions:
+            try:
+                feed = sub.feed
+            except Feed.DoesNotExist:
+                continue
+            feed.search_indexed = False
+            feed.save()
+            removed += 1
+            
+        logging.user(user, "~FCRemoved ~SB%s/%s feed's search indexes~SN for ~SB~FB%s~FC~SN." % 
+                     (removed, total, user.username))
+        self.delete()
 
 class SearchStory:
     
@@ -119,7 +147,6 @@ class SearchStory:
                 'store': 'no',
                 'type': 'string',
                 'analyzer': 'snowball',
-                "_source" : {"enabled" : False},
             },
             'author': {
                 'boost': 1.0,
@@ -137,7 +164,10 @@ class SearchStory:
                 'type': 'date',
             }
         }
-        cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
+        cls.ES.indices.put_mapping("%s-type" % cls.name, {
+            'properties': mapping,
+            '_source': {'enabled': False},
+        }, ["%s-index" % cls.name])
         
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_author, story_feed_id, 
@@ -157,6 +187,7 @@ class SearchStory:
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit):
+        cls.create_elasticsearch_mapping()
         cls.ES.indices.refresh()
         
         sort     = "date:desc" if order == "newest" else "date:asc"
@@ -256,7 +287,10 @@ class SearchFeed:
                 "type": "string"
             }
         }
-        cls.ES.indices.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
+        cls.ES.indices.put_mapping("%s-type" % cls.name, {
+            'properties': mapping,
+            '_source': {'enabled': False},
+        }, ["%s-index" % cls.name])
         
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
