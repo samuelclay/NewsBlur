@@ -525,14 +525,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
     NSString *action = @"";
-    NSString *feedId;
-    if (appDelegate.storiesCollection.isSocialView || appDelegate.storiesCollection.isSocialRiverView) {
-        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
-                                                    objectForKey:@"story_feed_id"]];
-    } else {
-        feedId = [NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed
-                                                    objectForKey:@"id"]];
-    }
+    NSString *feedId = [self feedId];
     
     if ([urlComponents count] > 1) {
         action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
