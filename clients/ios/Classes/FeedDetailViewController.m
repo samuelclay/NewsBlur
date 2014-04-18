@@ -1269,7 +1269,8 @@
             FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
             NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            if (appDelegate.activeStory &&
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+                appDelegate.activeStory &&
                 [[story objectForKey:@"story_hash"]
                  isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
                 return;

@@ -921,7 +921,7 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
-        new_story_guids = [s.get('guid') for s in stories]
+        new_story_hashes = [s.get('story_hash') for s in stories]
         
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
@@ -929,9 +929,9 @@ class Feed(models.Model):
                           len(stories),
                           len(existing_stories.keys())))
         @timelimit(2)
-        def _1(story, story_content, existing_stories, new_story_guids):
+        def _1(story, story_content, existing_stories, new_story_hashes):
             existing_story, story_has_changed = self._exists_story(story, story_content, 
-                                                                   existing_stories, new_story_guids)
+                                                                   existing_stories, new_story_hashes)
             return existing_story, story_has_changed
         
         for story in stories:
@@ -949,7 +949,7 @@ class Feed(models.Model):
             
             try:
                 existing_story, story_has_changed = _1(story, story_content, 
-                                                       existing_stories, new_story_guids)
+                                                       existing_stories, new_story_hashes)
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
                 existing_story = None
@@ -988,9 +988,9 @@ class Feed(models.Model):
                             existing_story, _ = MStory.find_story(existing_story.story_feed_id,
                                                                   existing_story.id,
                                                                   original_only=True)
-                    elif existing_story and existing_story.story_guid:
+                    elif existing_story and existing_story.story_hash:
                         existing_story, _ = MStory.find_story(existing_story.story_feed_id,
-                                                              existing_story.story_guid,
+                                                              existing_story.story_hash,
                                                               original_only=True)
                     else:
                         raise MStory.DoesNotExist
@@ -1012,7 +1012,7 @@ class Feed(models.Model):
                 # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                 # if existing_story.story_title != story.get('title'):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                if existing_story.story_guid != story.get('guid'):
+                if existing_story.story_hash != story.get('story_hash'):
                     self.update_story_with_new_guid(existing_story, story.get('guid'))
 
                 if settings.DEBUG and False:
@@ -1308,11 +1308,11 @@ class Feed(models.Model):
             link = entry.get('id')
         return link
     
-    def _exists_story(self, story, story_content, existing_stories, new_story_guids):
+    def _exists_story(self, story, story_content, existing_stories, new_story_hashes):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
-        existing_stories_guids = existing_stories.keys()
+        existing_stories_hashes = existing_stories.keys()
         story_pub_date = story.get('published')
         # story_published_now = story.get('published_now', False)
         # start_date = story_pub_date - datetime.timedelta(hours=8)
@@ -1322,7 +1322,22 @@ class Feed(models.Model):
             content_ratio = 0
             # existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
+
+            if isinstance(existing_story.id, unicode):
+                # Correcting a MongoDB bug
+                existing_story.story_guid = existing_story.id
             
+            if story.get('story_hash') == existing_story.story_hash:
+                story_in_system = existing_story
+            elif (story.get('story_hash') in existing_stories_hashes and 
+                story.get('story_hash') != existing_story.story_hash):
+                # Story already exists but is not this one
+                continue
+            elif (existing_story.story_hash in new_story_hashes and
+                  story.get('story_hash') != existing_story.story_hash):
+                  # Story coming up later
+                continue
+
             if 'story_latest_content_z' in existing_story:
                 existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
             elif 'story_latest_content' in existing_story:
@@ -1334,17 +1349,6 @@ class Feed(models.Model):
             else:
                 existing_story_content = u''
                 
-            if isinstance(existing_story.id, unicode):
-                existing_story.story_guid = existing_story.id
-            if (story.get('guid') in existing_stories_guids and 
-                story.get('guid') != existing_story.story_guid):
-                continue
-            elif story.get('guid') == existing_story.story_guid:
-                story_in_system = existing_story
-            elif (existing_story.story_guid in new_story_guids and
-                  story.get('guid') != existing_story.story_guid):
-                  # Story coming up later
-                  continue
                   
             # Title distance + content distance, checking if story changed
             story_title_difference = abs(levenshtein_distance(story.get('title'),
@@ -1692,10 +1696,18 @@ class MStory(mongo.Document):
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
 
+    @classmethod
+    def guid_hash_unsaved(self, guid):
+        return hashlib.sha1(guid).hexdigest()[:6]
+
     @property
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id, self.guid_hash)
-
+    
+    @classmethod
+    def feed_guid_hash_unsaved(cls, feed_id, guid):
+        return "%s:%s" % (feed_id, cls.guid_hash_unsaved(guid))
+    
     @property
     def decoded_story_title(self):
         h = HTMLParser.HTMLParser()

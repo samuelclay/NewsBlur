@@ -788,7 +788,8 @@
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
-    if ((nextIndex == -1 && unreadCount > 0) ||
+    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+    if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[UIImage imageNamed:@"traverse_next.png"]
@@ -986,12 +987,14 @@
     FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
     NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
+    BOOL pageFinished = self.appDelegate.feedDetailViewController.pageFinished;
+
     [self.loadingIndicator stopAnimating];
     
     [self endTouchDown:sender];
 //    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
-    if (nextLocation == -1 && unreadCount > 0 &&
+    if (nextLocation == -1 && unreadCount > 0 && !pageFinished &&
         appDelegate.storiesCollection.feedPage < 100) {
         [self.loadingIndicator startAnimating];
         self.circularProgressView.hidden = YES;

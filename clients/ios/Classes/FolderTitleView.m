@@ -145,10 +145,24 @@
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(didSelectSectionHeader:)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionTapped:)
+                    forControlEvents:UIControlEventTouchDown];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchUpOutside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchCancel];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController
+                              action:@selector(sectionUntappedOutside:)
+                    forControlEvents:UIControlEventTouchDragOutside];
     [customView addSubview:invisibleHeaderButton];
     
     if (!appDelegate.hasNoSites) {

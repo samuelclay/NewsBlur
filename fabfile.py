@@ -88,7 +88,7 @@ def list_do():
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        cost = int(sizes[droplet.size_id]) * 10
+        cost = int(sizes.get(droplet.size_id, 96)) * 10
         role_costs[roledef] += cost
         total_cost += cost
     
@@ -930,7 +930,9 @@ def setup_munin():
         sudo('/etc/init.d/spawn_fcgi_munin_html stop')
         sudo('/etc/init.d/spawn_fcgi_munin_html start')
         sudo('update-rc.d spawn_fcgi_munin_html defaults')
-    sudo('/etc/init.d/munin-node restart')
+    sudo('/etc/init.d/munin-node stop')
+    time.sleep(2)
+    sudo('/etc/init.d/munin-node start')
     with settings(warn_only=True):
         sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
         sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
@@ -949,7 +951,10 @@ def setup_db_munin():
         run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
-    sudo('/etc/init.d/munin-node restart')
+    sudo('/etc/init.d/munin-node stop')
+    time.sleep(2)
+    sudo('/etc/init.d/munin-node start')
+
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
@@ -1043,7 +1048,7 @@ def setup_do(name, size=2, image=None):
     ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
     region_id = doapi.regions()[0].id
     if not image:
-        IMAGE_NAME = "Ubuntu 13.04 x64"
+        IMAGE_NAME = "Ubuntu 13.10 x64"
         images = dict((s.name, s.id) for s in doapi.images())
         image_id = images[IMAGE_NAME]
     else:

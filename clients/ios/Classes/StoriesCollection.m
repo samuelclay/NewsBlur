@@ -40,6 +40,7 @@
     if (self = [super init]) {
         self.visibleUnreadCount = 0;
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.activeClassifiers = [NSMutableDictionary dictionary];
     }
 
     return self;
