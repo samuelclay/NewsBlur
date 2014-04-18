@@ -245,27 +245,47 @@
 }
 
 - (NSString *)makeFeedAuthors {
+    NSString *feedId = [self feedId];
     NSString *feedAuthors = @"";
     NSArray *authorArray = appDelegate.storiesCollection.activePopularAuthors;
-    NSString *feedId = [self feedId];
+    NSMutableArray *userAuthorArray = [NSMutableArray array];
+    for (NSString *trainedAuthor in [[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
+                                      objectForKey:@"authors"] allKeys]) {
+        BOOL found = NO;
+        for (NSArray *classifierAuthor in authorArray) {
+            if ([trainedAuthor isEqualToString:[classifierAuthor objectAtIndex:0]]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [userAuthorArray addObject:@[trainedAuthor, [NSNumber numberWithInt:0]]];
+        }
+    }
+    NSArray *authors = [userAuthorArray arrayByAddingObjectsFromArray:authorArray];
 
-    if ([authorArray count] > 0) {
+    if ([authors count] > 0) {
         NSMutableArray *authorStrings = [NSMutableArray array];
-        for (NSArray *authorObj in authorArray) {
+        for (NSArray *authorObj in authors) {
             NSString *author = [authorObj objectAtIndex:0];
             int authorCount = [[authorObj objectAtIndex:1] intValue];
             int authorScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"authors"]
                              objectForKey:author] intValue];
+            NSString *authorCountString = @"";
+            if (authorCount) {
+                authorCountString = [NSString stringWithFormat:@"<span class=\"NB-classifier-count\">&times;&nbsp; %d</span>",
+                                  authorCount];
+            }
             NSString *authorHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
                                     "  <a href=\"http://ios.newsblur.com/classify-author/%@\" "
                                     "     class=\"NB-story-author %@\">%@</a>"
-                                    "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                    "  %@"
                                     "</div>",
                                     author,
                                     authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
                                     [self makeClassifier:author withType:@"author" score:authorScore],
-                                    authorCount];
+                                    authorCountString];
             [authorStrings addObject:authorHtml];
         }
         feedAuthors = [NSString
@@ -325,24 +345,44 @@
     NSString *feedId = [self feedId];
     NSString *feedTags = @"";
     NSArray *tagArray = appDelegate.storiesCollection.activePopularTags;
-    
-    if ([tagArray count] > 0) {
+    NSMutableArray *userTagArray = [NSMutableArray array];
+    for (NSString *trainedTag in [[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
+                                   objectForKey:@"tags"] allKeys]) {
+        BOOL found = NO;
+        for (NSArray *classifierTag in tagArray) {
+            if ([trainedTag isEqualToString:[classifierTag objectAtIndex:0]]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found) {
+            [userTagArray addObject:@[trainedTag, [NSNumber numberWithInt:0]]];
+        }
+    }
+    NSArray *tags = [userTagArray arrayByAddingObjectsFromArray:tagArray];
+
+    if ([tags count] > 0) {
         NSMutableArray *tagStrings = [NSMutableArray array];
-        for (NSArray *tagObj in tagArray) {
+        for (NSArray *tagObj in tags) {
             NSString *tag = [tagObj objectAtIndex:0];
             int tagCount = [[tagObj objectAtIndex:1] intValue];
             int tagScore = [[[[appDelegate.storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"tags"]
                              objectForKey:tag] intValue];
+            NSString *tagCountString = @"";
+            if (tagCount) {
+                tagCountString = [NSString stringWithFormat:@"<span class=\"NB-classifier-count\">&times;&nbsp; %d</span>",
+                                  tagCount];
+            }
             NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
                                  "  <a href=\"http://ios.newsblur.com/classify-tag/%@\" "
                                  "     class=\"NB-story-tag %@\">%@</a>"
-                                 "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                 "  %@"
                                  "</div>",
                                  tag,
                                  tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
                                  [self makeClassifier:tag withType:@"Tag" score:tagScore],
-                                 tagCount];
+                                 tagCountString];
             [tagStrings addObject:tagHtml];
         }
         feedTags = [NSString
