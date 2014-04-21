@@ -197,13 +197,13 @@ class BackupMongo(Task):
 
 class ScheduleImmediateFetches(Task):
     
-    def run(self, feed_ids, user_id, **kwargs):
+    def run(self, feed_ids, user_id=None, **kwargs):
         from apps.rss_feeds.models import Feed
         
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
         
-        Feed.schedule_feed_fetches_immediately(feed_ids, user_id)
+        Feed.schedule_feed_fetches_immediately(feed_ids, user_id=user_id)
 
 
 class SchedulePremiumSetup(Task):
