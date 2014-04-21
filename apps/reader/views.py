@@ -259,7 +259,7 @@ def load_feeds(request):
     if len(scheduled_feeds) > 0 and request.user.is_authenticated():
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
-        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
 
     starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
     if not starred_count and len(starred_counts):
@@ -344,7 +344,7 @@ def load_feeds_flat(request):
     if len(scheduled_feeds) > 0 and request.user.is_authenticated():
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
-        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
     
     flat_folders = []
     if folders:
