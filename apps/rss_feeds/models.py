@@ -323,7 +323,9 @@ class Feed(models.Model):
         else:
             logging.debug(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
                          len(feed_ids))
-
+        
+        if len(feed_ids) > 100:
+            logging.debug(" ---> ~SN~FMFeeds scheduled: %s" % feed_ids)
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
