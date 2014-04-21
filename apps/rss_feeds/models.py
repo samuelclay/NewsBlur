@@ -310,18 +310,27 @@ class Feed(models.Model):
                 self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
         
     @classmethod
-    def schedule_feed_fetches_immediately(cls, feed_ids):
+    def schedule_feed_fetches_immediately(cls, feed_ids, user_id=None):
         if settings.DEBUG:
             logging.info(" ---> ~SN~FMSkipping the scheduling immediate fetch of ~SB%s~SN feeds (in DEBUG)..." % 
                         len(feed_ids))
             return
-        logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
-                     len(feed_ids))
         
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            logging.user(user, "~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
+                         len(feed_ids))
+        else:
+            logging.debug(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
+                         len(feed_ids))
+
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
-            feed.count_subscribers()
-            feed.schedule_feed_fetch_immediately(verbose=False)
+            if feed.active_subscribers <= 0:
+                feed.count_subscribers()
+            if not feed.active or feed.next_scheduled_update < day_ago:
+                feed.schedule_feed_fetch_immediately(verbose=False)
             
     @property
     def favicon_fetching(self):
