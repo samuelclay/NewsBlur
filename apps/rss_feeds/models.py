@@ -1792,6 +1792,7 @@ class MStory(mongo.Document):
         SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
                           story_content=prep_for_search(story_content), 
+                          story_tags=self.story_tags, 
                           story_author=self.story_author_name, 
                           story_feed_id=self.story_feed_id, 
                           story_date=self.story_date)

@@ -123,7 +123,7 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     
-    ES = pyes.ES(settings.ELASTICSEARCH_HOSTS)
+    ES = pyes.ES(settings.ELASTICSEARCH_STORY_HOSTS)
     name = "stories"
     
     @classmethod
@@ -154,6 +154,13 @@ class SearchStory:
                 'type': 'string',
                 'analyzer': 'snowball',
             },
+            'tags': {
+                'boost': 2.0,
+                'index': 'analyzed',
+                'store': 'no',
+                'type': 'string',
+                'analyzer': 'snowball',
+            },
             'author': {
                 'boost': 1.0,
                 'index': 'analyzed',
@@ -176,11 +183,12 @@ class SearchStory:
         }, ["%s-index" % cls.name])
         
     @classmethod
-    def index(cls, story_hash, story_title, story_content, story_author, story_feed_id, 
+    def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
               story_date):
         doc = {
             "content"   : story_content,
             "title"     : story_title,
+            "tags"      : ', '.join(story_tags),
             "author"    : story_author,
             "feed_id"   : story_feed_id,
             "date"      : story_date,
@@ -214,7 +222,7 @@ class SearchStory:
 
 class SearchFeed:
     
-    ES = pyes.ES(settings.ELASTICSEARCH_HOSTS)
+    ES = pyes.ES(settings.ELASTICSEARCH_FEED_HOSTS)
     name = "feeds"
     
     @classmethod

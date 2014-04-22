@@ -256,6 +256,9 @@ def setup_db(engine=None, skip_common=False):
         setup_redis()
     elif engine == "redis_slave":
         setup_redis(slave=True)
+    elif engine == "elasticsearch":
+        setup_elasticsearch()
+        setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
     done()
@@ -963,6 +966,11 @@ def enable_celerybeat():
     put('config/supervisor_celeryd_work_queue.conf', '/etc/supervisor/conf.d/celeryd_work_queue.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
     put('config/supervisor_celeryd_beat_feeds.conf', '/etc/supervisor/conf.d/celeryd_beat_feeds.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+
+def setup_db_search():
+    put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
