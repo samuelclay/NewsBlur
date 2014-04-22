@@ -128,7 +128,15 @@ NEWSBLUR.utils = {
     }, function(feed, type) {
         return "" + feed.id + '-' + type;
     }),
-  
+    
+    attach_loading_gradient: function($elem, percentage) {
+        $elem.css('background', '-moz-linear-gradient(left,  #b1d2f9 0%, #b1d2f9 '+percentage+'%, #fcfcfc '+percentage+'%, #fcfcfc 100%)'); // FF3.6+
+        $elem.css('background', '-webkit-gradient(linear, left top, right top, color-stop(0%,#b1d2f9), color-stop('+percentage+'%,#b1d2f9), color-stop('+percentage+'%,#fcfcfc), color-stop(100%,#fcfcfc))'); // Chrome,Safari4+
+        $elem.css('background', '-webkit-linear-gradient(left,  #b1d2f9 0%,#b1d2f9 '+percentage+'%,#fcfcfc '+percentage+'%,#fcfcfc 100%)'); // Chrome10+,Safari5.1+
+        $elem.css('background', 'linear-gradient(to right,  #b1d2f9 0%,#b1d2f9 '+percentage+'%,#fcfcfc '+percentage+'%,#fcfcfc 100%)');
+        $elem.css("filter", "progid:DXImageTransform.Microsoft.gradient( startColorstr='#b1d2f9', endColorstr='#fcfcfc',GradientType=1 )");
+    },
+    
     is_feed_social: function(feed_id) {
         return _.string.include(feed_id, 'social:');
     },

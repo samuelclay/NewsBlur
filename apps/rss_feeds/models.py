@@ -14,6 +14,7 @@ from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
 from BeautifulSoup import BeautifulSoup
+from pyes.exceptions import NotFoundException
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -40,6 +41,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
+from utils.story_functions import prep_for_search
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -80,6 +82,8 @@ class Feed(models.Model):
     favicon_not_found = models.BooleanField(default=False)
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
+    search_indexed = models.NullBooleanField(default=None, null=True, blank=True)
+
 
     class Meta:
         db_table="feeds"
@@ -237,7 +241,7 @@ class Feed(models.Model):
     @classmethod
     def index_all_for_search(cls, offset=0):
         if not offset:
-            SearchFeed.create_elasticsearch_mapping()
+            SearchFeed.create_elasticsearch_mapping(delete=True)
         
         last_pk = cls.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):
@@ -247,9 +251,9 @@ class Feed(models.Model):
                                         active_subscribers__gte=1)\
                                 .values_list('pk')
             for feed_id, in feeds:
-                Feed.objects.get(pk=feed_id).index_for_search()
+                Feed.objects.get(pk=feed_id).index_feed_for_search()
         
-    def index_for_search(self):
+    def index_feed_for_search(self):
         if self.num_subscribers > 1 and not self.branch_from_feed:
             SearchFeed.index(feed_id=self.pk, 
                              title=self.feed_title, 
@@ -257,6 +261,15 @@ class Feed(models.Model):
                              link=self.feed_link,
                              num_subscribers=self.num_subscribers)
     
+    def index_stories_for_search(self):
+        if self.search_indexed: return
+
+        self.search_indexed = True
+        self.save()
+            
+        stories = MStory.objects(story_feed_id=self.pk)
+        for story in stories:
+            story.index_story_for_search()
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
@@ -968,6 +981,8 @@ class Feed(models.Model):
                        story_tags = story_tags
                 )
                 s.extract_image_urls()
+                if self.search_indexed:
+                    s.index_story_for_search()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -1030,6 +1045,8 @@ class Feed(models.Model):
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
+                if self.search_indexed:
+                    existing_story.index_story_for_search()
                 
                 try:
                     existing_story.save()
@@ -1053,6 +1070,7 @@ class Feed(models.Model):
         from apps.social.models import MSharedStory
 
         existing_story.remove_from_redis()
+        existing_story.remove_from_search_index()
         
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
@@ -1189,24 +1207,31 @@ class Feed(models.Model):
         return stories
     
     @classmethod
-    def find_feed_stories(cls, feed_ids, query, offset=0, limit=25):
+    def find_feed_stories(cls, feed_ids, query, order="newest", offset=0, limit=25):
+        story_ids = SearchStory.query(feed_ids=feed_ids, query=query, order=order, 
+                                      offset=offset, limit=limit)
         stories_db = MStory.objects(
-            Q(story_feed_id__in=feed_ids) &
-            (Q(story_title__icontains=query) |
-             Q(story_author_name__icontains=query) |
-             Q(story_tags__icontains=query))
-        ).order_by('-story_date')[offset:offset+limit]
+            story_hash__in=story_ids
+        ).order_by('-story_date' if order == "newest" else 'story_date')
         stories = cls.format_stories(stories_db)
         
         return stories
         
-    def find_stories(self, query, offset=0, limit=25):
-        stories_db = MStory.objects(
-            Q(story_feed_id=self.pk) &
-            (Q(story_title__icontains=query) |
-             Q(story_author_name__icontains=query) |
-             Q(story_tags__icontains=query))
-        ).order_by('-story_date')[offset:offset+limit]
+    def find_stories(self, query, order="newest", offset=0, limit=25, blackout=True):
+        if blackout:
+            stories_db = MStory.objects(
+                Q(story_feed_id=self.pk) &
+                (Q(story_title__icontains=query) |
+                 Q(story_author_name__icontains=query) |
+                 Q(story_tags__icontains=query))
+            ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
+        else:
+            story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
+                                          offset=offset, limit=limit)
+            stories_db = MStory.objects(
+                story_hash__in=story_ids
+            ).order_by('-story_date' if order == "newest" else 'story_date')
+
         stories = self.format_stories(stories_db, self.pk)
         
         return stories
@@ -1738,19 +1763,44 @@ class MStory(mongo.Document):
     
     def delete(self, *args, **kwargs):
         self.remove_from_redis()
+        self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
 
-    def index_for_search(self):
-        story_content = zlib.decompress(self.story_content_z)
-        SearchStory.index(user_id=self.user_id, 
-                          story_id=self.story_guid, 
+    @classmethod
+    def index_all_for_search(cls, offset=0):
+        if not offset:
+            SearchStory.create_elasticsearch_mapping(delete=True)
+        
+        last_pk = Feed.objects.latest('pk').pk
+        for f in xrange(offset, last_pk, 1000):
+            print " ---> %s / %s (%.2s%%)" % (f, last_pk, float(f)/last_pk*100)
+            feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
+                                        active=True,
+                                        active_subscribers__gte=1)\
+                                .values_list('pk')
+            for feed_id, in feeds:
+                stories = cls.objects.filter(story_feed_id=feed_id)
+                for story in stories:
+                    story.index_story_for_search()
+
+    def index_story_for_search(self):
+        story_content = ""
+        if self.story_content_z:
+            story_content = zlib.decompress(self.story_content_z)
+        SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
-                          story_content=story_content, 
+                          story_content=prep_for_search(story_content), 
                           story_author=self.story_author_name, 
-                          story_date=self.story_date,
-                          db_id=str(self.id))
+                          story_feed_id=self.story_feed_id, 
+                          story_date=self.story_date)
     
+    def remove_from_search_index(self):
+        try:
+            SearchStory.remove(self.story_hash)
+        except NotFoundException:
+            pass
+        
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
@@ -2039,8 +2089,6 @@ class MStarredStory(mongo.Document):
         self.story_hash = self.feed_guid_hash
         
         return super(MStarredStory, self).save(*args, **kwargs)
-
-        # self.index_for_search()
         
     @classmethod
     def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):

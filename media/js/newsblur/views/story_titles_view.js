@@ -5,7 +5,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-premium-only a" : function(e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_feedchooser_modal();
+            NEWSBLUR.reader.open_feedchooser_modal({premium_only: true});
         }
     },
     

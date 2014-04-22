@@ -10,7 +10,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import time
 import s3
 
-COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
+COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics user_search feedback"
 if False:
     COLLECTIONS += " starred_stories"
 

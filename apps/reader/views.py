@@ -33,6 +33,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts
+from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics
 # from apps.search.models import SearchStarredStory
 try:
@@ -508,6 +509,7 @@ def load_single_feed(request, feed_id):
     query                   = request.REQUEST.get('query')
     include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
     message                 = None
+    user_search             = None
     
     dupe_feed_id = None
     user_profiles = []
@@ -526,7 +528,10 @@ def load_single_feed(request, feed_id):
     
     if query:
         if user.profile.is_premium:
-            stories = feed.find_stories(query, offset=offset, limit=limit)
+            user_search = MUserSearch.get_user(user.pk)
+            user_search.touch_search_date()
+            blackout = not user.is_staff
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit, blackout=blackout)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -654,6 +659,7 @@ def load_single_feed(request, feed_id):
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
                 updated=last_update,
+                user_search=user_search,
                 feed_id=feed.pk,
                 elapsed_time=round(float(timediff), 2),
                 message=message)
@@ -903,6 +909,7 @@ def load_river_stories__redis(request):
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
+    user_search       = None
     offset = (page-1) * limit
     limit = page * limit - 1
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
@@ -914,10 +921,12 @@ def load_river_stories__redis(request):
         stories = Feed.format_stories(mstories)
     elif query:
         if user.profile.is_premium:
+            user_search = MUserSearch.get_user(user.pk)
+            user_search.touch_search_date()
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                        read_filter='all')
             feed_ids = [sub.feed_id for sub in usersubs]
-            stories = Feed.find_feed_stories(feed_ids, query, offset=offset, limit=limit)
+            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
@@ -925,6 +934,7 @@ def load_river_stories__redis(request):
                                                                      cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
+            mstories = []
             message = "You must be a premium subscriber to search."
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
@@ -999,7 +1009,7 @@ def load_river_stories__redis(request):
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story['read_status'] = 0
-        if read_filter == 'all':
+        if read_filter == 'all' or query:
             if (unread_feed_story_hashes is not None and 
                 story['story_hash'] not in unread_feed_story_hashes):
                 story['read_status'] = 1
@@ -1041,6 +1051,7 @@ def load_river_stories__redis(request):
                 stories=stories,
                 classifiers=classifiers, 
                 elapsed_time=timediff, 
+                user_search=user_search, 
                 user_profiles=user_profiles)
     
 
