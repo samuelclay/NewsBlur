@@ -14,6 +14,7 @@ from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
 from BeautifulSoup import BeautifulSoup
+from pyes.exceptions import NotFoundException
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -250,9 +251,9 @@ class Feed(models.Model):
                                         active_subscribers__gte=1)\
                                 .values_list('pk')
             for feed_id, in feeds:
-                Feed.objects.get(pk=feed_id).index_for_search()
+                Feed.objects.get(pk=feed_id).index_feed_for_search()
         
-    def index_for_search(self):
+    def index_feed_for_search(self):
         if self.num_subscribers > 1 and not self.branch_from_feed:
             SearchFeed.index(feed_id=self.pk, 
                              title=self.feed_title, 
@@ -268,7 +269,7 @@ class Feed(models.Model):
             
         stories = MStory.objects(story_feed_id=self.pk)
         for story in stories:
-            story.index_for_search()
+            story.index_story_for_search()
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)
@@ -980,7 +981,8 @@ class Feed(models.Model):
                        story_tags = story_tags
                 )
                 s.extract_image_urls()
-                s.index_for_search()
+                if self.search_indexed:
+                    s.index_story_for_search()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -1043,7 +1045,8 @@ class Feed(models.Model):
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
                 existing_story.extract_image_urls()
-                existing_story.index_for_search()
+                if self.search_indexed:
+                    existing_story.index_story_for_search()
                 
                 try:
                     existing_story.save()
@@ -1770,9 +1773,9 @@ class MStory(mongo.Document):
             for feed_id, in feeds:
                 stories = cls.objects.filter(story_feed_id=feed_id)
                 for story in stories:
-                    story.index_for_search()
+                    story.index_story_for_search()
 
-    def index_for_search(self):
+    def index_story_for_search(self):
         story_content = ""
         if self.story_content_z:
             story_content = zlib.decompress(self.story_content_z)
@@ -1784,7 +1787,10 @@ class MStory(mongo.Document):
                           story_date=self.story_date)
     
     def remove_from_search_index(self):
-        SearchStory.remove(self.story_hash)
+        try:
+            SearchStory.remove(self.story_hash)
+        except NotFoundException:
+            continue
         
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
@@ -2074,8 +2080,6 @@ class MStarredStory(mongo.Document):
         self.story_hash = self.feed_guid_hash
         
         return super(MStarredStory, self).save(*args, **kwargs)
-
-        # self.index_for_search()
         
     @classmethod
     def find_stories(cls, query, user_id, tag=None, offset=0, limit=25):
