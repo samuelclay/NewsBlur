@@ -155,6 +155,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     protected void onResume() {
         super.onResume();
+        this.stopLoading = false;
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
         getLoaderManager().restartLoader(0, null, this);
@@ -293,10 +294,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
+		enableMainProgress(false);
+        this.requestedPage = false;
         if (this.stopLoading) { return; }
 
-        this.requestedPage = false;
-		enableMainProgress(false);
         if (noMoreData) {
 		    this.noMoreApiPages = true;
         }
@@ -418,6 +419,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
+        if (AppConstants.VERBOSE_LOG) {
+            Log.d(this.getClass().getName(), String.format("story %d of %d selected, noMore pages: %b, requestedPg: %b, stopLoad: %b", position, stories.getCount(), noMoreApiPages, requestedPage, stopLoading));
+        }
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
 		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
@@ -425,6 +429,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             enableMainProgress(true);
 			triggerRefresh(currentApiPage);
 		}
+        
+        if (noMoreApiPages || stopLoading) {
+        // if we terminated because we are well and truly done, break any search loops and stop progress indication
+            enableMainProgress(false);
+            if (this.unreadSearchLatch != null) {
+                this.unreadSearchLatch.countDown();
+            }
+        }
 	}
 
 	protected void enableMainProgress(boolean enabled) {
@@ -452,9 +464,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected abstract void triggerRefresh(int page);
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         this.stopLoading = true;
-        super.onStop();
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
+        super.onPause();
     }
 
     private void markStoryRead(Story story) {
@@ -525,10 +540,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             unreadSearch:while (!unreadFound) {
                 Story story = readingAdapter.getStory(candidate);
 
+                if (this.stopLoading) {
+                    // this activity was ended before we finished. just stop.
+                    break unreadSearch;
+                } 
+
                 if (story == null) {
                     if (this.noMoreApiPages) {
                         // this is odd. if there were no unreads, how was the button even enabled?
-                        Log.e(this.getClass().getName(), "Ran out of stories while looking for unreads.");
+                        Log.w(this.getClass().getName(), "Ran out of stories while looking for unreads.");
                         break unreadSearch;
                     } 
                 } else {
@@ -550,10 +570,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                         continue unreadSearch;
                     } else {
                         Log.e(this.getClass().getName(), "Timed out waiting for next API page while looking for unreads.");
+                        error = true;
                         break unreadSearch;
                     }
                 } catch (InterruptedException ie) {
                     Log.e(this.getClass().getName(), "Interrupted waiting for next API page while looking for unreads.");
+                    error = true;
                     break unreadSearch;
                 }
 
@@ -564,6 +586,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                         Toast.makeText(Reading.this, R.string.toast_unread_search_error, Toast.LENGTH_LONG).show();
                     }
                 });
+                return;
             }
             if (unreadFound) {
                 final int page = candidate;
@@ -572,7 +595,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                         pager.setCurrentItem(page, true);
                     }
                 });
+                return;
             }
+            Log.w(this.getClass().getName(), "got neither errors nor unreads nor null response looking for unreads");
         }
     }
 
