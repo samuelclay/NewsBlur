@@ -339,6 +339,7 @@ class Feed(models.Model):
         
         if len(feed_ids) > 100:
             logging.debug(" ---> ~SN~FMFeeds scheduled: %s" % feed_ids)
+            return # TODO: Remove
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
