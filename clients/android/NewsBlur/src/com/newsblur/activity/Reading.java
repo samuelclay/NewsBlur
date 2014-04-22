@@ -294,10 +294,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     public void actionCompleteCallback(boolean noMoreData) {
+		enableMainProgress(false);
+        this.requestedPage = false;
         if (this.stopLoading) { return; }
 
-        this.requestedPage = false;
-		enableMainProgress(false);
         if (noMoreData) {
 		    this.noMoreApiPages = true;
         }
@@ -419,14 +419,20 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * load is not needed and all latches are tripped.
      */
     private void checkStoryCount(int position) {
+        if (AppConstants.VERBOSE_LOG) {
+            Log.d(this.getClass().getName(), String.format("story %d of %d selected, noMore pages: %b, requestedPg: %b, stopLoad: %b", position, stories.getCount(), noMoreApiPages, requestedPage, stopLoading));
+        }
         // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
 		if (((position + AppConstants.READING_STORY_PRELOAD) >= stories.getCount()) && !noMoreApiPages && !requestedPage && !stopLoading) {
 			currentApiPage += 1;
 			requestedPage = true;
             enableMainProgress(true);
 			triggerRefresh(currentApiPage);
-		} else {
-            //if we decide not to load any more, double ensure that the unread search isn't waiting on us
+		}
+        
+        if (noMoreApiPages || stopLoading) {
+        // if we terminated because we are well and truly done, break any search loops and stop progress indication
+            enableMainProgress(false);
             if (this.unreadSearchLatch != null) {
                 this.unreadSearchLatch.countDown();
             }
@@ -458,9 +464,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected abstract void triggerRefresh(int page);
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         this.stopLoading = true;
-        super.onStop();
+        if (this.unreadSearchLatch != null) {
+            this.unreadSearchLatch.countDown();
+        }
+        super.onPause();
     }
 
     private void markStoryRead(Story story) {
@@ -531,14 +540,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             unreadSearch:while (!unreadFound) {
                 Story story = readingAdapter.getStory(candidate);
 
+                if (this.stopLoading) {
+                    // this activity was ended before we finished. just stop.
+                    break unreadSearch;
+                } 
+
                 if (story == null) {
                     if (this.noMoreApiPages) {
                         // this is odd. if there were no unreads, how was the button even enabled?
                         Log.w(this.getClass().getName(), "Ran out of stories while looking for unreads.");
-                        break unreadSearch;
-                    } 
-                    if (this.stopLoading) {
-                        // this activity was ended before we finished. just stop.
                         break unreadSearch;
                     } 
                 } else {
