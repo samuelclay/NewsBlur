@@ -167,6 +167,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		getActivity().unregisterReceiver(receiver);
         web.setOnTouchListener(null);
         view.setOnTouchListener(null);
+        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
 		super.onDestroy();
 	}
 
@@ -218,7 +219,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
             // fragments
-            final GestureDetector gestureDetector = new GestureDetector(getActivity(), new ImmersiveViewDetector(getActivity().getWindow().getDecorView()));
+            ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
+            final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
             View.OnTouchListener touchListener = new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -227,6 +229,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             };
             web.setOnTouchListener(touchListener);
             view.setOnTouchListener(touchListener);
+
+            getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
         }
     }
 	
@@ -554,10 +558,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		this.previouslySavedShareText = previouslySavedShareText;
 	}
 
-    private class ImmersiveViewDetector extends GestureDetector.SimpleOnGestureListener {
+    private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
         private View view;
 
-        public ImmersiveViewDetector(View view) {
+        public ImmersiveViewHandler(View view) {
             this.view = view;
         }
 
@@ -575,6 +579,15 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             }
 
             return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public void onSystemUiVisibilityChange(int i) {
+            // If immersive view has been exited via a system gesture we want to ensure that it gets resized
+            // in the same way as using tap to exit.
+            if (ViewUtils.immersiveViewExitedViaSystemGesture(view)) {
+                ViewUtils.showSystemUI(view);
+            }
         }
     }
 }

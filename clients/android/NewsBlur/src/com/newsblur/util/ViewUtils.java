@@ -146,4 +146,11 @@ public class ViewUtils {
     public static boolean isSystemUIHidden(View view) {
         return (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
     }
+
+    public static boolean immersiveViewExitedViaSystemGesture(View view) {
+        return view.getSystemUiVisibility() == (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
 }
