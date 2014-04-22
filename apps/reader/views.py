@@ -530,7 +530,8 @@ def load_single_feed(request, feed_id):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
+            blackout = not user.is_staff
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit, blackout=blackout)
         else:
             stories = []
             message = "You must be a premium subscriber to search."

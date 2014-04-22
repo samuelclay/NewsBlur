@@ -90,9 +90,14 @@ class MUserSearch(mongo.Document):
     
     @classmethod
     def remove_all(cls):
-        for user_search in cls.objects.all():
+        user_searches = cls.objects.all()
+        logging.info(" ---> ~SN~FRRemoving ~SB%s~SN user searches..." % user_searches.count())
+        for user_search in user_searches:
             user_search.remove()
-    
+            
+        logging.info(" ---> ~FRRemoving stories search index...")
+        SearchStory.drop()
+        
     def remove(self):
         from apps.rss_feeds.models import Feed
         from apps.reader.models import UserSubscription
@@ -187,6 +192,10 @@ class SearchStory:
         cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
         
     @classmethod
+    def drop(cls):
+        cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, None)
+        
+    @classmethod
     def query(cls, feed_ids, query, order, offset, limit):
         cls.create_elasticsearch_mapping()
         cls.ES.indices.refresh()
@@ -197,7 +206,7 @@ class SearchStory:
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
                                  partial_fields={}, sort=sort, start=offset, size=limit)
-        logging.info("~FGSearch ~FCstories~FG for: ~SB%s (across %s feed%s)" % 
+        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across %s feed%s)" % 
                      (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
         return [r.get_id() for r in results]
