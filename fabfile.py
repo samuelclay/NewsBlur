@@ -969,11 +969,6 @@ def enable_celerybeat():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
-def setup_db_search():
-    put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
-    sudo('supervisorctl reread')
-    sudo('supervisorctl update')
-
 def setup_db_mdadm():
     sudo('apt-get -y install xfsprogs mdadm')
     sudo('yes | mdadm --create /dev/md0 --level=0 -c256 --raid-devices=4 /dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi')
@@ -1007,6 +1002,11 @@ def setup_elasticsearch():
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
 
+def setup_db_search():
+    put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    
 # ================
 # = Setup - Task =
 # ================
