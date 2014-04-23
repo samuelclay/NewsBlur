@@ -18,7 +18,6 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     },
     
     render: function() {
-        // if (!NEWSBLUR.Globals.is_staff) return this;
         if (NEWSBLUR.app.active_search) {
             NEWSBLUR.app.active_search.blur_search();
             NEWSBLUR.app.active_search.remove();

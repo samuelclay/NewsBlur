@@ -165,8 +165,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         if (this.options.feedbar) {
             this.show_collapsed_folder_count();
-        }
-        if (this.options.feedbar && NEWSBLUR.Globals.is_staff) {
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();

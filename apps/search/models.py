@@ -38,10 +38,9 @@ class MUserSearch(mongo.Document):
         return user_search
     
     def touch_search_date(self):
-        # Blackout
-        # if not self.subscriptions_indexed and not self.subscriptions_indexing:
-        #     self.schedule_index_subscriptions_for_search()
-        #     self.subscriptions_indexing = True
+        if not self.subscriptions_indexed and not self.subscriptions_indexing:
+            self.schedule_index_subscriptions_for_search()
+            self.subscriptions_indexing = True
 
         self.last_search_date = datetime.datetime.now()
         self.save()
