@@ -186,6 +186,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         NEWSBLUR.reader.reload_feed({
             search: query
         });
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     },
     
     close_search: function() {

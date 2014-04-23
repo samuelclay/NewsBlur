@@ -148,6 +148,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         } else if (unread_view_score >= 0 && counts['ng']) {
             hidden_stories = counts['ng'];
         }
+        if (NEWSBLUR.reader.flags.search) {
+            hidden_stories = false;
+        }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             'No stories to read',
             $.make('div', { className: 'NB-world' }),

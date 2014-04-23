@@ -1787,7 +1787,7 @@ class MStory(mongo.Document):
                     story.index_story_for_search()
 
     def index_story_for_search(self):
-        story_content = ""
+        story_content = self.story_content or ""
         if self.story_content_z:
             story_content = zlib.decompress(self.story_content_z)
         SearchStory.index(story_hash=self.story_hash, 
