@@ -1,5 +1,6 @@
 import time
 import datetime
+import pymongo
 import pyes
 import redis
 import celery
@@ -29,7 +30,8 @@ class MUserSearch(mongo.Document):
     @classmethod
     def get_user(cls, user_id):
         try:
-            user_search = cls.objects.get(user_id=user_id)
+            user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
+                                     .get(user_id=user_id)
         except cls.DoesNotExist:
             user_search = cls.objects.create(user_id=user_id)
         
@@ -37,9 +39,9 @@ class MUserSearch(mongo.Document):
     
     def touch_search_date(self):
         # Blackout
-        # if not self.subscriptions_indexed and not self.subscriptions_indexing:
-        #     self.schedule_index_subscriptions_for_search()
-        #     self.subscriptions_indexing = True
+        if not self.subscriptions_indexed and not self.subscriptions_indexing:
+            self.schedule_index_subscriptions_for_search()
+            self.subscriptions_indexing = True
 
         self.last_search_date = datetime.datetime.now()
         self.save()
