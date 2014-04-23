@@ -4148,7 +4148,7 @@
                 this.socket.removeAllListeners(NEWSBLUR.Globals.username);
                 this.socket.on('user:update', _.bind(function(username, message) {
                     if (this.flags.social_view) return;
-                    if (_.string.contains(message, 'feed:')) {
+                    if (_.string.startsWith(message, 'feed:')) {
                         feed_id = parseInt(message.replace('feed:', ''), 10);
                         var active_feed_ids = [];
                         if (this.active_folder && this.active_folder.length) {
@@ -4159,7 +4159,7 @@
                             NEWSBLUR.log(['Real-time user update', username, feed_id]);
                             this.feed_unread_count(feed_id);
                         }
-                    } else if (_.string.contains(message, 'social:')) {
+                    } else if (_.string.startsWith(message, 'social:')) {
                         if (message != this.active_feed) {
                             NEWSBLUR.log(['Real-time user update', username, message]);
                             this.feed_unread_count(message);

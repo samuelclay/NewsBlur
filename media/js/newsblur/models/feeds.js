@@ -230,6 +230,18 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         });
     },
     
+    // ============
+    // = Counters =
+    // ============
+    
+    search_indexed: function() {
+        var indexed = this.select(function(feed) {
+            return feed.get('search_indexed');
+        }).length;
+
+        return indexed;
+    },
+    
     // ==========
     // = Events =
     // ==========

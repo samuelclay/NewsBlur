@@ -328,6 +328,10 @@ CELERY_ROUTES = {
         "queue": "search_indexer",
         "binding_key": "search_indexer"
     },
+    "search-indexer-tasker": {
+        "queue": "search_indexer_tasker",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_QUEUES = {
     "work_queue": {
@@ -360,10 +364,15 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_feeds_task"
     },
-    "search_indexer_task": {
-        "exchange": "search_indexer_task",
+    "search_indexer": {
+        "exchange": "search_indexer",
         "exchange_type": "direct",
-        "binding_key": "search_indexer_task"
+        "binding_key": "search_indexer"
+    },
+    "search_indexer_tasker": {
+        "exchange": "search_indexer_tasker",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer_tasker"
     },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"

@@ -66,9 +66,16 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
                 tipsy.hide();
             });
             this.retry();
-        } else {
+        } else if (_.string.startsWith(message, 'feeds:')) {
+            var feed_ids = message.replace('feeds:', '').split(',');
+            _.each(feed_ids, function(feed_id) {
+                var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id, 10));
+                feed.set('search_indexed', true);
+            });
             this.show_indexing_tooltip(false);
-            progress = Math.floor(parseFloat(message) * 100);
+            var indexed = NEWSBLUR.assets.feeds.search_indexed();
+            var total = NEWSBLUR.assets.feeds.length;
+            progress = Math.ceil(indexed / total * 100);
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
         }
     },

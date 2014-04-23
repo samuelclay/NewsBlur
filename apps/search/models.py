@@ -2,12 +2,15 @@ import time
 import datetime
 import pyes
 import redis
+import celery
 import mongoengine as mongo
 from pyes.query import MatchQuery
 from django.conf import settings
 from django.contrib.auth.models import User
 from apps.search.tasks import IndexSubscriptionsForSearch
+from apps.search.tasks import IndexSubscriptionsChunkForSearch
 from utils import log as logging
+from utils.feed_functions import chunks
 
 class MUserSearch(mongo.Document):
     '''Search index state of a user's subscriptions.'''
@@ -42,7 +45,8 @@ class MUserSearch(mongo.Document):
         self.save()
 
     def schedule_index_subscriptions_for_search(self):
-        IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id))
+        IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), 
+                                                queue='search_indexer_tasker')
         
     # Should be run as a background task
     def index_subscriptions_for_search(self):
@@ -52,42 +56,57 @@ class MUserSearch(mongo.Document):
         SearchStory.create_elasticsearch_mapping()
         
         start = time.time()
-        not_found = 0
-        processed = 0
         user = User.objects.get(pk=self.user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(user.username, 'search_index_complete:start')
-        throttle = time.time()
         
-        subscriptions = UserSubscription.objects.filter(user=user)
+        subscriptions = UserSubscription.objects.filter(user=user).only('feed')
         total = subscriptions.count()
-        logging.user(user, "~FCIndexing ~SB%s feeds~SN for ~SB~FB%s~FC~SN..." % 
-                     (total, user.username))
         
+        feed_ids = []
         for sub in subscriptions:
             try:
-                feed = sub.feed
+                feed_ids.append(sub.feed.pk)
             except Feed.DoesNotExist:
-                not_found += 1
                 continue
-            
-            feed.index_stories_for_search()
-            processed += 1
-            
-            # Throttle notifications to client as to not flood them
-            if time.time() - throttle > 0.05:
-                r.publish(user.username, 'search_index_complete:%.4s' % (float(processed)/total))
-                throttle = time.time()
+        
+        feed_id_chunks = [c for c in chunks(feed_ids, 6)]
+        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % 
+                     (total, len(feed_id_chunks)))
+        
+        tasks = [IndexSubscriptionsChunkForSearch().s(feed_ids=feed_id_chunk,
+                                                      user_id=self.user_id
+                                                      ).set(queue='search_indexer')
+                 for feed_id_chunk in feed_id_chunks]
+        group = celery.group(*tasks)
+        res = group.apply_async(queue='search_indexer')
+        res.join_native()
         
         duration = time.time() - start
-        logging.user(user, "~FCIndexed ~SB%s/%s feeds~SN for ~SB~FB%s~FC~SN in ~FM~SB%s~FC~SN sec." % 
-                     (processed, total, user.username, round(duration, 2)))
+        logging.user(user, "~FCIndexed ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
+                     (total, round(duration, 2)))
         r.publish(user.username, 'search_index_complete:done')
         
         self.subscriptions_indexed = True
         self.subscriptions_indexing = False
         self.save()
     
+    def index_subscriptions_chunk_for_search(self, feed_ids):
+        from apps.rss_feeds.models import Feed
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=self.user_id)
+
+        logging.user(user, "~FCIndexing %s feeds..." % len(feed_ids))
+
+        for feed_id in feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if not feed: continue
+            
+            feed.index_stories_for_search()
+            
+        r.publish(user.username, 'search_index_complete:feeds:%s' % 
+                  ','.join([str(f) for f in feed_ids]))
+        
     @classmethod
     def remove_all(cls):
         user_searches = cls.objects.all()
@@ -201,7 +220,7 @@ class SearchStory:
         
     @classmethod
     def drop(cls):
-        cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, None)
+        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit):
