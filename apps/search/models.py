@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from apps.search.tasks import IndexSubscriptionsForSearch
 from apps.search.tasks import IndexSubscriptionsChunkForSearch
+from apps.search.tasks import IndexFeedsForSearch
 from utils import log as logging
 from utils.feed_functions import chunks
 
@@ -28,12 +29,15 @@ class MUserSearch(mongo.Document):
     }
     
     @classmethod
-    def get_user(cls, user_id):
+    def get_user(cls, user_id, create=True):
         try:
             user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
                                      .get(user_id=user_id)
         except cls.DoesNotExist:
-            user_search = cls.objects.create(user_id=user_id)
+            if create:
+                user_search = cls.objects.create(user_id=user_id)
+            else:
+                user_search = None
         
         return user_search
     
@@ -107,6 +111,33 @@ class MUserSearch(mongo.Document):
             
         r.publish(user.username, 'search_index_complete:feeds:%s' % 
                   ','.join([str(f) for f in feed_ids]))
+    
+    @classmethod
+    def schedule_index_feeds_for_search(cls, feed_ids, user_id):
+        user_search = cls.get_user(user_id, create=False)
+        if (not user_search or 
+            not user_search.subscriptions_indexed or 
+            user_search.subscriptions_indexing):
+            # User hasn't searched before.
+            return
+        
+        if not isinstance(feed_ids, list):
+            feed_ids = [feed_ids]
+        IndexFeedsForSearch.apply_async(kwargs=dict(feed_ids=feed_ids, user_id=user_id), 
+                                        queue='search_indexer')
+    
+    @classmethod
+    def index_feeds_for_search(cls, feed_ids, user_id):
+        from apps.rss_feeds.models import Feed
+        user = User.objects.get(pk=user_id)
+
+        logging.user(user, "~SB~FCIndexing %s~FC by request..." % feed_ids)
+
+        for feed_id in feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if not feed: continue
+            
+            feed.index_stories_for_search()
         
     @classmethod
     def remove_all(cls):

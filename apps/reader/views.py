@@ -1460,7 +1460,7 @@ def add_url(request):
         if feed:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(request.user.username, 'reload:%s' % feed.pk)
-        
+            MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
         
     return dict(code=code, message=message, feed=feed)
 
