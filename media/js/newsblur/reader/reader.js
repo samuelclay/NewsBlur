@@ -1707,7 +1707,8 @@
               return NEWSBLUR.app.taskbar_info.show_stories_error(data);
             }
             
-            if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
+            if (this.active_feed && _.isString(this.active_feed) &&
+                this.active_feed.indexOf('river:') != -1) {
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
@@ -1812,7 +1813,8 @@
               return NEWSBLUR.app.taskbar_info.show_stories_error(data);
             }
             
-            if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
+            if (this.active_feed && _.isString(this.active_feed) &&
+                this.active_feed.indexOf('river:') != -1) {
                 this.flags['opening_feed'] = false;
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(first_load);
                 // this.show_story_titles_above_intelligence_level({'animate': false});
