@@ -256,6 +256,9 @@ def setup_db(engine=None, skip_common=False):
         setup_redis()
     elif engine == "redis_slave":
         setup_redis(slave=True)
+    elif engine == "elasticsearch":
+        setup_elasticsearch()
+        setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
     done()
@@ -998,7 +1001,14 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
+        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head' % ES_VERSION)
 
+def setup_db_search():
+    put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
+    put('config/supervisor_celeryd_search_indexer_tasker.conf', '/etc/supervisor/conf.d/celeryd_search_indexer_tasker.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    
 # ================
 # = Setup - Task =
 # ================

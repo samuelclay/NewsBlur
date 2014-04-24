@@ -530,8 +530,7 @@ def load_single_feed(request, feed_id):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            blackout = not user.is_staff
-            stories = feed.find_stories(query, order=order, offset=offset, limit=limit, blackout=blackout)
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -1461,7 +1460,7 @@ def add_url(request):
         if feed:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(request.user.username, 'reload:%s' % feed.pk)
-        
+            MUserSearch.schedule_index_feeds_for_search(feed.pk, request.user.pk)
         
     return dict(code=code, message=message, feed=feed)
 

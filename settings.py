@@ -324,6 +324,14 @@ CELERY_ROUTES = {
         "queue": "beat_tasks",
         "binding_key": "beat_tasks"
     },
+    "search-indexer": {
+        "queue": "search_indexer",
+        "binding_key": "search_indexer"
+    },
+    "search-indexer-tasker": {
+        "queue": "search_indexer_tasker",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_QUEUES = {
     "work_queue": {
@@ -355,6 +363,16 @@ CELERY_QUEUES = {
         "exchange": "beat_feeds_task",
         "exchange_type": "direct",
         "binding_key": "beat_feeds_task"
+    },
+    "search_indexer": {
+        "exchange": "search_indexer",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer"
+    },
+    "search_indexer_tasker": {
+        "exchange": "search_indexer_tasker",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer_tasker"
     },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
@@ -412,7 +430,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=10),
+        'schedule': datetime.timedelta(minutes=5),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -477,7 +495,8 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db_search:9200']
+ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
+ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
 
 # ===============
 # = Social APIs =

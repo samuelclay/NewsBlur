@@ -156,6 +156,7 @@ class Feed(models.Model):
             'subs': self.num_subscribers,
             'is_push': self.is_push,
             'fetched_once': self.fetched_once,
+            'search_indexed': self.search_indexed,
             'not_yet_fetched': not self.fetched_once, # Legacy. Doh.
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
@@ -982,8 +983,6 @@ class Feed(models.Model):
                        story_tags = story_tags
                 )
                 s.extract_image_urls()
-                if self.search_indexed:
-                    s.index_story_for_search()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -991,6 +990,8 @@ class Feed(models.Model):
                     ret_values['error'] += 1
                     if settings.DEBUG:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
+                if self.search_indexed:
+                    s.index_story_for_search()
             elif existing_story and story_has_changed:
                 # update story
                 original_content = None
@@ -1045,10 +1046,7 @@ class Feed(models.Model):
                 # Leads to incorrect unread story counts.
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
-                existing_story.extract_image_urls()
-                if self.search_indexed:
-                    existing_story.index_story_for_search()
-                
+                existing_story.extract_image_urls()                
                 try:
                     existing_story.save()
                     ret_values['updated'] += 1
@@ -1060,6 +1058,8 @@ class Feed(models.Model):
                     ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRValidationError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                if self.search_indexed:
+                    existing_story.index_story_for_search()
             else:
                 ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -1218,20 +1218,12 @@ class Feed(models.Model):
         
         return stories
         
-    def find_stories(self, query, order="newest", offset=0, limit=25, blackout=True):
-        if blackout:
-            stories_db = MStory.objects(
-                Q(story_feed_id=self.pk) &
-                (Q(story_title__icontains=query) |
-                 Q(story_author_name__icontains=query) |
-                 Q(story_tags__icontains=query))
-            ).order_by('-story_date' if order == "newest" else 'story_date')[offset:offset+limit]
-        else:
-            story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
-                                          offset=offset, limit=limit)
-            stories_db = MStory.objects(
-                story_hash__in=story_ids
-            ).order_by('-story_date' if order == "newest" else 'story_date')
+    def find_stories(self, query, order="newest", offset=0, limit=25):
+        story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
+                                      offset=offset, limit=limit)
+        stories_db = MStory.objects(
+            story_hash__in=story_ids
+        ).order_by('-story_date' if order == "newest" else 'story_date')
 
         stories = self.format_stories(stories_db, self.pk)
         
@@ -1786,12 +1778,13 @@ class MStory(mongo.Document):
                     story.index_story_for_search()
 
     def index_story_for_search(self):
-        story_content = ""
+        story_content = self.story_content or ""
         if self.story_content_z:
             story_content = zlib.decompress(self.story_content_z)
         SearchStory.index(story_hash=self.story_hash, 
                           story_title=self.story_title, 
                           story_content=prep_for_search(story_content), 
+                          story_tags=self.story_tags, 
                           story_author=self.story_author_name, 
                           story_feed_id=self.story_feed_id, 
                           story_date=self.story_date)
