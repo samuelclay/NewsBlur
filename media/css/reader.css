@@ -2796,6 +2796,7 @@ body {
     font-size: 10px;
     color: #9D9D9D;
     float: left;
+    margin-right: 4px;
 }
 .NB-story-comment .NB-story-comment-likes {
     overflow: hidden;
