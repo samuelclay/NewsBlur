@@ -10662,6 +10662,9 @@ form.opml_import_form input {
     height: 34px;
     font-size: 22px;
 }
+.NB-static-oauth .NB-static-form-username-label label {
+    padding-top: 0;
+}
 
 .NB-static-oauth input[type=submit].NB-static-form-submit {
     margin: 24px 0 0 0;

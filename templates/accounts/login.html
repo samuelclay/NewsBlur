@@ -23,15 +23,19 @@
 </div>
 
 <div class="NB-static-form-wrapper" style="overflow:hidden">
-    <form method="post" class="NB-static-form" action="{% url 'django.contrib.auth.views.login' %}">
+    <form method="post" class="NB-static-form" action="{% url 'login' %}">
         {% if form.errors %}
-        <p class="NB-error error">Your username and password didn't match.<br />Please try again.</p>
+        <p class="NB-error error">
+            {% for field, error in form.errors.items %}
+                {{ error.as_text|cut:"* " }}
+                <br />
+            {% endfor %}</p>
         {% else %}{% if next %}
         <p class="NB-error error">Please login to continue.</p>
         {% endif %}{% endif %}
 
         {% csrf_token %}
-        <div class="NB-static-form-label">{{ form.username.label_tag }}</div>
+        <div class="NB-static-form-label NB-static-form-username-label">{{ form.username.label_tag }}</div>
         <div class="NB-static-form-input">{{ form.username }}</div>
         <div class="NB-static-form-label">{{ form.password.label_tag }}</div>
         <div class="NB-static-form-input">{{ form.password }}</div>

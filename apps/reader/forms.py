@@ -52,7 +52,7 @@ class LoginForm(forms.Form):
                         self.user_cache = authenticate(username=email_user.username, password=email_user.username)
             if self.user_cache is None:
                 logging.info(" ***> [%s] Bad Login" % username)
-                raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                raise forms.ValidationError(_("Whoopsy-daisy, wrong password. Try again."))
         elif username and not user:
             raise forms.ValidationError(_("That username is not registered. Please try again."))
             

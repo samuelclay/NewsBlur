@@ -19,7 +19,7 @@ from apps.profile.models import Profile, PaymentHistory, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
-from apps.reader.forms import SignupForm
+from apps.reader.forms import SignupForm, LoginForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -82,6 +82,22 @@ def get_preference(request):
     return response
 
 @csrf_protect
+def login(request):
+    form = LoginForm()
+
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            login_user(request, form.get_user())
+            logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
+            return HttpResponseRedirect(request.POST['next'] or reverse('index'))
+
+    return render_to_response('accounts/login.html', {
+        'form': form,
+        'next': request.REQUEST.get('next', "")
+    }, context_instance=RequestContext(request))
+    
+@csrf_protect
 def signup(request):
     form = SignupForm()
 
@@ -92,7 +108,7 @@ def signup(request):
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP~FW")
             new_user.profile.activate_free()
-            return HttpResponseRedirect(request.POST['next'])
+            return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
     return render_to_response('accounts/signup.html', {
         'form': form,
