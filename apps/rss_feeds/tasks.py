@@ -216,3 +216,9 @@ class SchedulePremiumSetup(Task):
         
         Feed.setup_feeds_for_premium_subscribers(feed_ids)
         
+class ScheduleCountTagsForUser(Task):
+    
+    def run(self, user_id):
+        from apps.rss_feeds.models import MStarredStory
+        
+        MStarredStory.count_tags_for_user(user_id)

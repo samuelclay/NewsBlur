@@ -27,7 +27,7 @@ from django.template.defaultfilters import slugify
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
-from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
+from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
@@ -2208,6 +2208,10 @@ class MStarredStoryCounts(mongo.Document):
         
         return counts
     
+    @classmethod
+    def schedule_count_tags_for_user(cls, user_id):
+        ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
+        
     @classmethod
     def count_tags_for_user(cls, user_id):
         all_tags = MStarredStory.objects(user_id=user_id,
