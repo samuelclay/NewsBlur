@@ -581,10 +581,12 @@ def load_single_feed(request, feed_id):
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
                                        .only('story_hash', 'starred_date', 'user_tags')
-        shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                              story_feed_id=feed_id, 
-                                              story_hash__in=story_hashes)\
-                                     .only('story_hash', 'shared_date', 'comments')
+        shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
+        shared_stories = []
+        if shared_story_hashes:
+            shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                                  story_hash__in=shared_story_hashes)\
+                                         .only('story_hash', 'shared_date', 'comments')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags))
                                 for story in starred_stories])
@@ -781,9 +783,12 @@ def load_starred_stories(request):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
-    shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                          story_hash__in=story_hashes)\
-                                 .only('story_hash', 'shared_date', 'comments')
+    shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
+    shared_stories = []
+    if shared_story_hashes:
+        shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                              story_hash__in=shared_story_hashes)\
+                                     .only('story_hash', 'shared_date', 'comments')
     shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                    comments=story.comments))
                            for story in shared_stories])

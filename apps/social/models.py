@@ -1399,7 +1399,7 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    'shared_date', 'story_guid', 'story_feed_id'],
+                    'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
@@ -1676,7 +1676,21 @@ class MSharedStory(mongo.Document):
             shared_story.publish_update_to_subscribers()
         
         return shared
-            
+
+    @staticmethod
+    def check_shared_story_hashes(user_id, story_hashes, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        pipeline = r.pipeline()
+        
+        for story_hash in story_hashes:
+            feed_id, guid_hash = MStory.split_story_hash(story_hash)
+            share_key = "S:%s:%s" % (feed_id, guid_hash)
+            pipeline.sismember(share_key, user_id)
+        shared_hashes = pipeline.execute()
+        
+        return [story_hash for s, story_hash in enumerate(story_hashes) if shared_hashes[s]]
+
     @classmethod
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
