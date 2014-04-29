@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
+import com.newsblur.util.PrefsUtils;
 
 public class FeedItemsAdapter extends StoryItemsAdapter {
 
@@ -88,6 +89,10 @@ public class FeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
+
+        if (!PrefsUtils.isShowContentPreviews(context)) {
+            v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
+        }
 	}
 	
 	@Override
