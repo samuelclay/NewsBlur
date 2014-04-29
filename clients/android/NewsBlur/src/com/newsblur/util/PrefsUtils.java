@@ -297,4 +297,9 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.READING_ENTER_IMMERSIVE_SINGLE_TAP, false);
     }
+
+    public static boolean isShowContentPreviews(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
+    }
 }

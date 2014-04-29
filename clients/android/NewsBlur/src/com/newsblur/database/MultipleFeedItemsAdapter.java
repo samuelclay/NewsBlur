@@ -16,6 +16,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefsUtils;
 
 public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 
@@ -111,6 +112,10 @@ public class MultipleFeedItemsAdapter extends StoryItemsAdapter {
 			borderOne.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
+
+        if (!PrefsUtils.isShowContentPreviews(context)) {
+            v.findViewById(R.id.row_item_content).setVisibility(View.GONE);
+        }
 	}
 	
 	@Override

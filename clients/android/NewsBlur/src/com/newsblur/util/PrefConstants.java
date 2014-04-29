@@ -44,4 +44,6 @@ public class PrefConstants {
 
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";
     public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
+
+    public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
 }
