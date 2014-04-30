@@ -1566,7 +1566,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             
             _.each(this.classifiers[feed_id].titles, function(classifier_score, classifier_title) {
                 if (intelligence.title <= 0 && 
-                    story.get('story_title', '').indexOf(classifier_title) != -1) {
+                    story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
                     intelligence.title = classifier_score;
                 }
             });
