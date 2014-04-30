@@ -44,7 +44,7 @@
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:gravity="left"
-                    android:paddingBottom="2dp"
+                    android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:textSize="14sp"/>
 
@@ -59,7 +59,7 @@
                     android:ellipsize="end"
                     android:gravity="left"
                     android:paddingBottom="4dp"
-                    android:paddingTop="2dp"
+                    android:paddingTop="0dp"
                     android:textSize="14sp"/>
 
         </RelativeLayout>
