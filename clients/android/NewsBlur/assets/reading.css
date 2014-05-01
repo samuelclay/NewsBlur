@@ -17,6 +17,7 @@ body {
 p, div, table {
 	line-height: 1.5em;
     clear: both;
+	width: auto !important;
     max-width: 100% !important;
     margin: 0px !important;
 }
@@ -25,8 +26,8 @@ p {
     margin-bottom: 0.6em !important;
 }
 
-img, video, embed, object, iframe, div, figure {
-	width: auto;
+img, video, embed, object, iframe, div, figure, dl, dt {
+	width: auto !important;
     max-width: 100% !important;
 	height: auto !important;	
     margin: 0px !important;
