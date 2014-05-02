@@ -70,6 +70,8 @@
 	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">Cancel</string>
 	<string name="alert_dialog_close">Close</string>
+	<string name="alert_dialog_done">Done</string>
+	<string name="alert_dialog_openimage">Open image</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -252,11 +253,24 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
             // as anchors, not images, and may not point to the corresponding image URL.
-            String altText = imageAltTexts.get(result.getExtra());
+            final String imageURL = result.getExtra();
+            final String altText = imageAltTexts.get(imageURL);
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(result.getExtra());
+                builder.setTitle(imageURL);
                 builder.setMessage(altText);
+                builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(imageURL));
+                        startActivity(i);
+                    }
+                });
+                builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ; // do nothing
+                    }
+                });
                 builder.show();
             }
         } else {
