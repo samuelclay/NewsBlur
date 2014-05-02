@@ -19,7 +19,8 @@ p, div, table {
     clear: both;
 	width: auto !important;
     max-width: 100% !important;
-    margin: 0px !important;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 
 p {
@@ -30,7 +31,8 @@ img, video, embed, object, iframe, div, figure, dl, dt {
 	width: auto !important;
     max-width: 100% !important;
 	height: auto !important;	
-    margin: 0px !important;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 
 a {
