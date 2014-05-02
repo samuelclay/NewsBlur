@@ -3,6 +3,9 @@
 # Use the Google Closure Compiler to minify JavaScript
 javascript_compressor: closure
 
+# YUI for CSS (not cssmin)
+css_compressor: yui
+
 # Compile JavaScript templates (JSTs) and wrap with this Underscore.js 
 # micro-templating string function.
 template_function: _.template
@@ -53,6 +56,7 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
+        - media/js/vendor/date.format.js
         - media/js/vendor/tag-it.js
         - media/js/vendor/chart.js
         - media/js/vendor/audio.js

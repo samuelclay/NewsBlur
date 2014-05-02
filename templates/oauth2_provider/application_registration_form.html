@@ -1,0 +1,10 @@
+{% extends "oauth2_provider/application_form.html" %}
+
+{% load i18n %}
+{% load url from future %}
+
+{% block app-form-title %}{% trans "Register a new application" %}{% endblock app-form-title %}
+
+{% block app-form-action-url %}{% url 'oauth2_provider:register' %}{% endblock app-form-action-url %}
+
+{% block app-form-back-url %}{% url "oauth2_provider:list" %}"{% endblock app-form-back-url %}

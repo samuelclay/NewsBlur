@@ -529,6 +529,28 @@ blockquote {
     }
 }
 
+// ===========
+// = Privacy =
+// ===========
+
+.NB-warning-private {
+  margin: 92px 0;
+  padding: 24px;
+  font-size: 18px;
+  color: rgba(0, 0, 0, .3);
+  font-weight: bold;
+  text-align: center;
+}
+
+.NB-warning-private .NB-icon-lock {
+  background: transparent url('/media/embed/icons/circular/g_icn_lock.png') no-repeat center 0;
+  background-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin: 0 12px 0 0;
+  opacity: .5;
+}
 // =========
 // = Story =
 // =========

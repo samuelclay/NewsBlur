@@ -28,7 +28,6 @@
     
     <string name="description_login_button">Press to log in.</string>
     <string name="description_login_logo">NewsBlur Logo</string>
-    <string name="description_favicon">The feed\'s favicon</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
@@ -103,6 +102,7 @@
     <string name="menu_mark_previous_stories_as_read">Mark previous as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
+    <string name="menu_fullscreen">Full screen</string>
 
     <string name="toast_error_loading_stories">Error loading stories</string>
     
@@ -119,6 +119,7 @@
 
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_story_unread_error">Error marking story as unread</string>
+    <string name="toast_story_read_error">Error marking story as unread</string>
 
     <string name="toast_unread_search_error">Could not load next unread story</string>
 
@@ -175,7 +176,7 @@
     <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
-    <string name="settings_default_story_order">Default Story Order</string>
+    <string name="settings_cat_story_list">Story List</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -201,6 +202,9 @@
     </string-array>
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
+    <string name="settings_reading">Reading</string>
+    <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
+    <string name="settings_show_content_preview">Show Content Preview</string>
 
     <string name="story">Story</string>
     <string name="text">Text</string>

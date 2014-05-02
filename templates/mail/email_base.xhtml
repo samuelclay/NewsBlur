@@ -67,7 +67,7 @@
                                 <tr>
                                     <td>
                                         <p style="font-size:12px;"> 
-                                            不想收到来自 NewsZeit 的通知或消息？ 您可以选择<a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=optout" style="text-decoration:none;">取消邮件通知</a>。
+                                            不想收到来自 NewsZeit 的通知或消息？ 您可以选择<a href="http://{% current_domain %}{% url "profile-email-optout" %}?next=optout" style="text-decoration:none;">取消邮件通知</a>。
                                         </p>
                                     </td>
                                 </tr>

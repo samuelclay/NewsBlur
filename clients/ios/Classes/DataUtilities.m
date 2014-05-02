@@ -8,6 +8,7 @@
 
 #import "DataUtilities.h"
 #import "NewsBlurAppDelegate.h"
+#import "StoriesCollection.h"
 
 @implementation DataUtilities
 
@@ -40,9 +41,9 @@
     NSDictionary *comment = [newComment objectForKey:@"comment"];
     NSArray *userProfiles = [newComment objectForKey:@"user_profiles"];
     
-    appDelegate.activeFeedUserProfiles = [DataUtilities 
-                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
-                                          withNewUserProfiles:userProfiles];
+    appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
+                                                            updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles
+                                                            withNewUserProfiles:userProfiles];
     
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [comment objectForKey:@"user_id"]];
     BOOL foundComment = NO;

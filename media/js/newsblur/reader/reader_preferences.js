@@ -103,7 +103,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('option', { value: 'Asia/Gaza' }, '(GMT+02:00) Gaza'),
                                     $.make('option', { value: 'Africa/Blantyre' }, '(GMT+02:00) Harare, Pretoria'),
                                     $.make('option', { value: 'Asia/Jerusalem' }, '(GMT+02:00) Jerusalem'),
-                                    $.make('option', { value: 'Europe/Minsk' }, '(GMT+02:00) Minsk'),
+                                    $.make('option', { value: 'Europe/Minsk' }, '(GMT+02:00) Minsk, Kyiv'),
                                     $.make('option', { value: 'Asia/Damascus' }, '(GMT+02:00) Syria'),
                                     $.make('option', { value: 'Europe/Moscow' }, '(GMT+03:00) Moscow, St. Petersburg'),
                                     $.make('option', { value: 'Africa/Addis_Ababa' }, '(GMT+03:00) Nairobi'),
@@ -142,6 +142,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('option', { value: 'Pacific/Chatham' }, '(GMT+12:45) Chatham Islands'),
                                     $.make('option', { value: 'Pacific/Tongatapu' }, '(GMT+13:00) Nuku\'alofa'),
                                     $.make('option', { value: 'Pacific/Kiritimati' }, '(GMT+14:00) Kiritimati')
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-dateformat-1', type: 'radio', name: 'dateformat', value: '12' }),
+                                $.make('label', { 'for': 'NB-preference-dateformat-1' }, [
+                                    'Use 12-hour clock'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-dateformat-2', type: 'radio', name: 'dateformat', value: '24' }),
+                                $.make('label', { 'for': 'NB-preference-dateformat-2' }, [
+                                    'Use 24-hour clock'
                                 ])
                             ])
                         ]),
@@ -373,55 +387,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, '你可以为每个站点分别设置而覆盖此选项。')
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-singlestory-1', type: 'radio', name: 'feed_view_single_story', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-singlestory-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_linespacing.png' }),
-                                    '显示所有文章'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-singlestory-2', type: 'radio', name: 'feed_view_single_story', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-singlestory-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/text_horizontalrule.png' }),
-                                    '一次显示一篇文章'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed 视图'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-pane-position' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-1', type: 'radio', name: 'story_pane_anchor', value: 'north' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_top.png' }),
-                                    '上方'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-2', type: 'radio', name: 'story_pane_anchor', value: 'west' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_left.png' }),
-                                    '左侧'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-pane-position-3', type: 'radio', name: 'story_pane_anchor', value: 'south' }),
-                                $.make('label', { 'for': 'NB-preference-story-pane-position-3' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/layout_bottom.png' }),
-                                    '下方'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            '文章标题窗格'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -438,7 +403,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            '当打开一个站点时'
+                            '当打开站点时'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showcontentpreview-1', type: 'radio', name: 'show_content_preview', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-showcontentpreview-1' }, [
+                                    '显示文章预览'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showcontentpreview-0', type: 'radio', name: 'show_content_preview', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showcontentpreview-0' }, [
+                                    '不显示预览，只显示文章标题'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            '文章内容预览'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
@@ -685,61 +669,34 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             '截短文章'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-styling-1', type: 'radio', name: 'story_styling', value: 'sans-serif' }),
-                                $.make('label', { 'for': 'NB-preference-story-styling-1', className: 'NB-preference-story-styling-sans-serif' }, 'Lucida Grande, sans serif')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-styling-2', type: 'radio', name: 'story_styling', value: 'serif' }),
-                                $.make('label', { 'for': 'NB-preference-story-styling-2', className: 'NB-preference-story-styling-serif' }, 'Georgia, serif')
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed 视图的字体'
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-size' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-1', type: 'radio', name: 'story_size', value: 'xs' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-1', className: 'NB-preference-story-size-xs' }, '超小')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-2', type: 'radio', name: 'story_size', value: 's' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-2', className: 'NB-preference-story-size-s' }, '小')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-3', type: 'radio', name: 'story_size', value: 'm' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-3', className: 'NB-preference-story-size-m' }, '中')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-4', type: 'radio', name: 'story_size', value: 'l' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-4', className: 'NB-preference-story-size-l' }, '大')
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-size-5', type: 'radio', name: 'story_size', value: 'xl' }),
-                                $.make('label', { 'for': 'NB-preference-story-size-5', className: 'NB-preference-story-size-xl' }, '超大')
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed 视图的文字大小'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, '同时显示好友的评论和其他公开的评论')
+                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, 'Show from both friends and the public')
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, '只显示来自好友的评论')
+                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, 'Only show comments from friends')
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             '显示所有评论'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-story-button-placement' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-button-placement-1', type: 'radio', name: 'story_button_placement', value: 'bottom' }),
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-1' }, '始终在文章下方显示 训练/保存/分享 按钮')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-button-placement-2', type: 'radio', name: 'story_button_placement', value: 'right' }),
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-2' }, '在右侧显示按钮（当有空间的时候）')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            '文章按钮摆放'
                         ])
                     ])
                 ]),
@@ -889,12 +846,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=story_pane_anchor]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_pane_anchor) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
         $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
                 $(this).attr('checked', true);
@@ -931,6 +882,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_content_preview]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_content_preview) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=doubleclick_feed]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_feed) {
                 $(this).attr('checked', true);
@@ -961,14 +918,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=feed_view_single_story]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.feed_view_single_story) {
+        $('input[name=animations]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=animations]', $modal).each(function() {
-            if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
+        $('input[name=dateformat]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.dateformat) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -991,20 +948,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=story_styling]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=story_size]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.story_size) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
         $('input[name=hide_public_comments]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.hide_public_comments) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=story_button_placement]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.story_button_placement) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -1140,15 +1091,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
+            NEWSBLUR.reader.adjust_for_narrow_window();
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.sidebar_header.count();
             if (self.original_preferences['feed_order'] != form['feed_order'] ||
                 self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.app.feed_list.make_feeds();
               NEWSBLUR.app.feed_list.make_social_feeds();
-            }
-            if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
-              NEWSBLUR.reader.apply_resizable_layout(true);
             }
             if (self.original_preferences['ssl'] != form['ssl']) {
                 NEWSBLUR.reader.check_and_load_ssl();

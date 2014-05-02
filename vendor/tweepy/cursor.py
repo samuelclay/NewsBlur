@@ -53,8 +53,9 @@ class CursorIterator(BaseIterator):
 
     def __init__(self, method, args, kargs):
         BaseIterator.__init__(self, method, args, kargs)
-        self.next_cursor = -1
-        self.prev_cursor = 0
+        start_cursor = kargs.pop('cursor', None)
+        self.next_cursor = start_cursor or -1
+        self.prev_cursor = start_cursor or 0
         self.count = 0
 
     def next(self):
@@ -84,9 +85,13 @@ class IdIterator(BaseIterator):
         BaseIterator.__init__(self, method, args, kargs)
         self.max_id = kargs.get('max_id')
         self.since_id = kargs.get('since_id')
+        self.count = 0
 
     def next(self):
         """Fetch a set of items with IDs less than current set."""
+        if self.limit and self.limit == self.count:
+            raise StopIteration
+
         # max_id is inclusive so decrement by one
         # to avoid requesting duplicate items.
         max_id = self.since_id - 1 if self.max_id else None
@@ -95,16 +100,21 @@ class IdIterator(BaseIterator):
             raise StopIteration
         self.max_id = data.max_id
         self.since_id = data.since_id
+        self.count += 1
         return data
 
     def prev(self):
         """Fetch a set of items with IDs greater than current set."""
+        if self.limit and self.limit == self.count:
+            raise StopIteration
+
         since_id = self.max_id
         data = self.method(since_id = since_id, *self.args, **self.kargs)
         if len(data) == 0:
             raise StopIteration
         self.max_id = data.max_id
         self.since_id = data.since_id
+        self.count += 1
         return data
 
 class PageIterator(BaseIterator):

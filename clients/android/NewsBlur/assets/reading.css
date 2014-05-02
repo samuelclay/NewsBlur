@@ -2,9 +2,10 @@ body {
 	background-color: #FFF;
     overflow: hidden;
     line-height: 1.5em;
-    margin: 0;
     width: 100%;
     max-width: 100%;
+    margin: 0px !important;
+    padding: 0px !important;
 }
 
 .NB-story {
@@ -15,26 +16,21 @@ body {
 
 p, div, table {
 	line-height: 1.5em;
-    margin: 0px 0px 20px 0;
     clear: both;
     max-width: 100% !important;
-    overflow: hidden;
+    margin: 0px !important;
 }
 
-div + p {
-    margin: 20px 0px 20px 0;
+p {
+    margin-bottom: 0.6em !important;
 }
 
-img {
-    margin: 20px auto;
-}
-
-img, video, embed, object, iframe, div {
-	max-width: 95% !important;
+img, video, embed, object, iframe, div, figure {
 	width: auto;
+    max-width: 100% !important;
 	height: auto !important;	
+    margin: 0px !important;
 }
-
 
 a {
 	color: #405BA8;	
@@ -45,20 +41,18 @@ a:visited {
 	color: #405BA8;
 }
 
-blockquote {
-    background-color: #F0F0F0;
+code {
+    background-color: #F2F2F2;
+    word-wrap: break-word !important;
+}
+
+pre, blockquote {
+    background-color: #F2F2F2;
     border-left: 1px solid #C2C5BE;
     color: rgba(10, 12, 38, .8);
-    padding: 10px 1.5em;
-    margin: 20px 0;
-}
-
-pre {
-    width: 100%;
-}
-
-pre, code {
-    overflow: auto;
+    padding: 0.6em;
+    margin: 0.6em;
+    word-wrap: break-word !important;
 }
 
 ins { 

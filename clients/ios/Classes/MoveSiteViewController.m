@@ -11,6 +11,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "StringHelper.h"
+#import "StoriesCollection.h"
 
 @implementation MoveSiteViewController
 
@@ -77,7 +78,7 @@
     for (UIView *subview in [self.titleLabel subviews]) {
         [subview removeFromSuperview];
     }
-    UIView *label = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+    UIView *label = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
     label.frame = CGRectMake(8,
                              0, 
                              200, 
@@ -94,28 +95,28 @@
 
 
 - (void)reload {
-    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] ||
-                      [appDelegate.activeFolder isEqual:@"everything"];
+    BOOL isTopLevel = [[appDelegate.storiesCollection.activeFolder trim] isEqualToString:@""] ||
+                      [appDelegate.storiesCollection.activeFolder isEqual:@"everything"];
     NSInteger row = 0;
     [toFolderInput setText:@""];
     
-    if (appDelegate.isRiverView) {
-        NSString *parentFolderName = [appDelegate extractParentFolderName:appDelegate.activeFolder];
+    if (appDelegate.storiesCollection.isRiverView) {
+        NSString *parentFolderName = [appDelegate extractParentFolderName:appDelegate.storiesCollection.activeFolder];
         row = [[self pickerFolders] 
                indexOfObject:parentFolderName];
         fromFolderInput.text = parentFolderName;
     } else {
-        fromFolderInput.text = isTopLevel ? @"— Top Level —" : appDelegate.activeFolder;
+        fromFolderInput.text = isTopLevel ? @"— Top Level —" : appDelegate.storiesCollection.activeFolder;
         row = isTopLevel ? 
                 0 :
-                [[self pickerFolders] indexOfObject:appDelegate.activeFolder];
+                [[self pickerFolders] indexOfObject:appDelegate.storiesCollection.activeFolder];
     }
     self.folders = [NSMutableArray array];
     [folderPicker reloadAllComponents];
     [folderPicker selectRow:row inComponent:0 animated:NO];
     
     moveButton.enabled = NO;
-    moveButton.title = appDelegate.isRiverView ? @"Move Folder to Folder" : @"Move Site to Folder";
+    moveButton.title = appDelegate.storiesCollection.isRiverView ? @"Move Folder to Folder" : @"Move Site to Folder";
 }
 
 - (IBAction)doCancelButton {
@@ -123,7 +124,7 @@
 }
 
 - (IBAction)doMoveButton {
-    if (appDelegate.isRiverView) {
+    if (appDelegate.storiesCollection.isRiverView) {
         [self moveFolder];
     } else {
         [self moveSite];
@@ -146,7 +147,7 @@
     NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+    [request setPostValue:[appDelegate.storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -173,7 +174,7 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        appDelegate.activeFolder = [toFolderInput text];
+        appDelegate.storiesCollection.activeFolder = [toFolderInput text];
         [appDelegate.moveSiteViewController dismissViewControllerAnimated:YES completion:nil];
         [appDelegate reloadFeedsView:NO];
     }
@@ -191,7 +192,7 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *folderName = [appDelegate extractFolderName:appDelegate.activeFolder];
+    NSString *folderName = [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder];
     NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
     NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"in_folder"]; 
@@ -250,8 +251,8 @@
         if ([folder isEqualToString:@"river_global"]) continue;
         if ([folder isEqualToString:@"saved_stories"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
-        if (appDelegate.isRiverView) {
-            if (![folder containsString:appDelegate.activeFolder]) {
+        if (appDelegate.storiesCollection.isRiverView) {
+            if (![folder containsString:appDelegate.storiesCollection.activeFolder]) {
                 [self.folders addObject:folder];
             }
         } else {

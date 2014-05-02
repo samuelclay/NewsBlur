@@ -10,12 +10,15 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,16 +36,18 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.network.domain.StoryTextResponse;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.NonfocusScrollview;
+
+import java.util.Date;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -160,6 +165,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(receiver);
+        web.setOnTouchListener(null);
+        view.setOnTouchListener(null);
+        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
 		super.onDestroy();
 	}
 
@@ -179,7 +187,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-		view = inflater.inflate(R.layout.fragment_readingitem, null);
+        view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 
@@ -202,8 +210,29 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         NonfocusScrollview scrollView = (NonfocusScrollview) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(this.activity);
 
+        setupImmersiveViewGestureDetector();
+
 		return view;
 	}
+
+    private void setupImmersiveViewGestureDetector() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+            // fragments
+            ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
+            final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
+            View.OnTouchListener touchListener = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return gestureDetector.onTouchEvent(motionEvent);
+                }
+            };
+            web.setOnTouchListener(touchListener);
+            view.setOnTouchListener(touchListener);
+
+            getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
+        }
+    }
 	
 	private void setupSaveButton() {
 		final Button saveButton = (Button) view.findViewById(R.id.save_story_button);
@@ -308,7 +337,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		}
 
         itemTitle.setText(Html.fromHtml(story.title));
-		itemDate.setText(story.longDate);
+        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
             itemAuthors.setText("•   " + story.authors);
@@ -408,9 +437,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		float currentSize = PrefsUtils.getTextSize(getActivity());
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=1; maximum-scale=1; minimum-scale=1; user-scalable=0; target-densityDpi=medium-dpi\" />");
+		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
+		builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body><div class=\"NB-story\">");
 		builder.append(storyText);
@@ -529,4 +558,36 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		this.previouslySavedShareText = previouslySavedShareText;
 	}
 
+    private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
+        private View view;
+
+        public ImmersiveViewHandler(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            if (web.wasLinkClicked()) {
+                // Clicked a link so ignore immersive view
+                return super.onSingleTapUp(e);
+            }
+
+            if (ViewUtils.isSystemUIHidden(view)) {
+                ViewUtils.showSystemUI(view);
+            } else if (PrefsUtils.enterImmersiveReadingModeOnSingleTap(getActivity())) {
+                ViewUtils.hideSystemUI(view);
+            }
+
+            return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public void onSystemUiVisibilityChange(int i) {
+            // If immersive view has been exited via a system gesture we want to ensure that it gets resized
+            // in the same way as using tap to exit.
+            if (ViewUtils.immersiveViewExitedViaSystemGesture(view)) {
+                ViewUtils.showSystemUI(view);
+            }
+        }
+    }
 }

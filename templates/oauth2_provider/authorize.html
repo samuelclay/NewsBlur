@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block bodyclass %}NB-static NB-static-oauth{% endblock %}
+
+{% load i18n %}
+{% block content %}
+
+<div class="NB-static-title">
+    Authorize {{ application.name }}
+</div>
+
+    <div class="NB-static-form-wrapper block-center">
+        {% if not error %}
+            <form id="authorizationForm" method="post" class="NB-static-form">
+                <h3 class="block-center-heading">{{ application.name }} would like to access your NewsBlur account</h3>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+
+                <p>{{ application.name }} is requesting these permissions:</p>
+                <ul>
+                    {% for scope in scopes_descriptions %}
+                        <li>{{ scope }}</li>
+                    {% endfor %}
+                </ul>
+
+                {{ form.errors }}
+                {{ form.non_field_errors }}
+
+                <div class="control-group">
+                    <div class="controls">
+                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-grey" value="Deny" style="float: right"/>
+                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-green" name="allow" value="Authorize" style="float: left" />
+                    </div>
+                </div>
+            </form>
+
+        {% else %}
+            <h2>Error: {{ error.error }}</h2>
+            <p>{{ error.description }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -6,11 +6,11 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         _.bindAll(this, 'render');
         if (!this.options.stale) {
             if (this.model) {
-                this.model.bind('change:ps', this.render);
-                this.model.bind('change:nt', this.render);
-                this.model.bind('change:ng', this.render);
+                this.model.bind('change:ps', this.render, this);
+                this.model.bind('change:nt', this.render, this);
+                this.model.bind('change:ng', this.render, this);
             } else if (this.collection) {
-                this.collection.bind('change:counts', this.render);
+                this.collection.bind('change:counts', this.render, this);
             }
         }
     },

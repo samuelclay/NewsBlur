@@ -1106,10 +1106,18 @@ def ignore_follower(request):
 def find_friends(request):
     query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
-    profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
+    profiles = []
+    
+    if '@' in query:
+        results = re.search(r'[\w\.-]+@[\w\.-]+', query)
+        if results:
+            email = results.group(0)
+            profiles = MSocialProfile.objects.filter(email__iexact=email)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
-    if not profiles:
+    if not profiles and request.user.is_staff:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]

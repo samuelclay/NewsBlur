@@ -71,6 +71,26 @@
 			<string>default_feed_read_filter</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview descriptions</string>
+			<key>Key</key>
+			<string>story_list_preview_description</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Preview images</string>
+			<key>Key</key>
+			<string>story_list_preview_images</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Text Size</string>
 			<key>Type</key>
@@ -224,97 +244,117 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Sharing services</string>
+			<string>Gestures</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>IASKCellImage</key>
-			<string>InstapaperActivityIcon</string>
+			<key>FooterText</key>
+			<string></string>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Show Instapaper</string>
-			<key>Key</key>
-			<string>enable_instapaper</string>
+			<string>Double tap story</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
 			<key>DefaultValue</key>
-			<true/>
+			<string>open_original_story</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>double_tap_story</string>
 		</dict>
 		<dict>
-			<key>IASKCellImage</key>
-			<string>InstapaperActivityIcon</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
+			<key>FooterText</key>
+			<string>Double tap with two fingers to use this gesture.</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Email/username</string>
-			<key>Key</key>
-			<string>instapaper_username</string>
-			<key>KeyboardType</key>
-			<string>EmailAddress</string>
-			<key>AutocorrectionType</key>
-			<string>no</string>
-		</dict>
-		<dict>
-			<key>IASKCellImage</key>
-			<string>InstapaperActivityIcon</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Password</string>
-			<key>Key</key>
-			<string>instapaper_password</string>
-			<key>IsSecure</key>
-			<true/>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-			<key>AutocorrectionType</key>
-			<string>no</string>
-		</dict>
-		<dict>
-			<key>IASKCellImage</key>
-			<string>PocketActivity</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Pocket</string>
-			<key>Key</key>
-			<string>enable_pocket</string>
+			<string>Two finger double tap</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
 			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>IASKCellImage</key>
-			<string>Readability-activity-iPhone</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Readability</string>
+			<string>show_original_text</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
 			<key>Key</key>
-			<string>enable_readability</string>
-			<key>DefaultValue</key>
-			<true/>
+			<string>two_finger_double_tap</string>
 		</dict>
 		<dict>
-			<key>IASKCellImage</key>
-			<string>PinboardActivityImage</string>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a feed/folder title for a couple seconds.</string>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Show Pinboard</string>
+			<string>Long press feed/folder</string>
+			<key>Titles</key>
+			<array>
+				<string>Mark read X days back...</string>
+				<string>Mark everything read</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>mark_read_choose_days</string>
+			<key>Values</key>
+			<array>
+				<string>mark_read_choose_days</string>
+				<string>mark_read_immediate</string>
+				<string>nothing</string>
+			</array>
 			<key>Key</key>
-			<string>enable_pinboard</string>
-			<key>DefaultValue</key>
-			<true/>
+			<string>long_press_feed_title</string>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>Reading Stories</string>
+			<key>FooterText</key>
+			<string>Also known as tap-and-hold, just hold down a story title for a couple seconds.</string>
 			<key>Type</key>
-			<string>PSGroupSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press story title</string>
+			<key>Titles</key>
+			<array>
+				<string>Send to third-party</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Train story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>open_send_to</string>
+			<key>Values</key>
+			<array>
+				<string>open_send_to</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>train_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>long_press_story_title</string>
 		</dict>
 		<dict>
 			<key>FooterText</key>
@@ -337,6 +377,12 @@
 			</array>
 			<key>Key</key>
 			<string>story_detail_swipe_left_edge</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Reading Stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>Type</key>

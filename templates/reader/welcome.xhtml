@@ -90,7 +90,9 @@
                     <div class="NB-module-header-signup">注册</div>
                 </div>
                 <div class="NB-login">
-                    <form method="post" action="{% url "login" %}">
+                    <form method="post" action="{% url "welcome-login" %}">
+                        {% csrf_token %}
+
                         <div>
                             {{ login_form.username.label_tag }}
                             {{ login_form.username }}
@@ -117,7 +119,9 @@
                 </div>
             
                 <div class="NB-signup">
-                    <form method="post" action="{% url "signup" %}">
+                    <form method="post" action="{% url "welcome-signup" %}">
+                        {% csrf_token %}
+
                         <div>
                             {{ signup_form.username.label_tag }}
                             {{ signup_form.username }}
@@ -208,6 +212,11 @@
                     <td class="NB-last">搜索站点的文章，以及收藏和共享的文章</td>
                 </tr>
                <tr>
+                    <td class="NB-bold">保存文章时加标签</td>
+                    <td>只能保存文章</td>
+                    <td class="NB-last">可以给文章加标签</td>
+                </tr>
+                <tr>
                     <td class="NB-bold">Zeitblog 隐私保护</td>
                     <td>你的共享和评论内容是公开的</td>
                     <td class="NB-last">可以设置为公开、受限访问或者私有</td>
@@ -276,7 +285,7 @@
             <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>基于 <a href="http://www.newsblur.com/">NewsBlur<a> 的开源代码开发和部署。<a href="http://www.newsblur.com/">NewsBlur<a>
             由
             <a href="http://twitter.com/samuelclay" class="NB-splash-link">
-                <img src="http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_reasonably_small.jpg" class="NB-twitter-avatar">
+                <img src="https://pbs.twimg.com/profile_images/1382021023/Campeche_Steps_reasonably_small.jpg" class="NB-twitter-avatar">
                 @samuelclay
             </a>开发，并以MIT License开放源代码。Thank <a href="http://twitter.com/samuelclay" class="NB-splash-link">
                 @samuelclay

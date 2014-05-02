@@ -8,7 +8,7 @@ import os
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),
-                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'),)
+                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'))
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
 STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
@@ -64,12 +64,13 @@ LANGUAGE_CODE         = 'en-us'
 SITE_ID               = 1
 USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
-LOGIN_URL             = '/reader/login'
+LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
+STATIC_URL             = '/media/'
+STATIC_ROOT             = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX    = '/media/admin/'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = False
 HOMEPAGE_USERNAME     = 'popular'
@@ -100,19 +101,40 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
-    'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'apps.profile.middleware.DBProfilerMiddleware',
+    'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
+    'utils.redis_raw_log_middleware.RedisDumpMiddleware',
 )
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'View new unread stories, saved stories, and shared stories.',
+        'write': 'Create new saved stories, shared stories, and subscriptions.',
+        'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
+    },
+    'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10 # 10 years
+}
 
 # ===========
 # = Logging =
@@ -264,7 +286,8 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
-    'vendor.haystack',
+    'oauth2_provider',
+    'corsheaders',
 )
 
 # ==========
@@ -302,6 +325,14 @@ CELERY_ROUTES = {
         "queue": "beat_tasks",
         "binding_key": "beat_tasks"
     },
+    "search-indexer": {
+        "queue": "search_indexer",
+        "binding_key": "search_indexer"
+    },
+    "search-indexer-tasker": {
+        "queue": "search_indexer_tasker",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_QUEUES = {
     "work_queue": {
@@ -334,6 +365,16 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_feeds_task"
     },
+    "search_indexer": {
+        "exchange": "search_indexer",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer"
+    },
+    "search_indexer_tasker": {
+        "exchange": "search_indexer_tasker",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
 
@@ -342,6 +383,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.social.tasks",
                                "apps.reader.tasks",
                                "apps.feed_import.tasks",
+                               "apps.search.tasks",
                                "apps.statistics.tasks",)
 CELERYD_CONCURRENCY         = 3
 CELERY_IGNORE_RESULT        = True
@@ -453,7 +495,8 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['app:9200']
+ELASTICSEARCH_FEED_HOSTS = ['app:9200']
+ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
 
 # ===============
 # = Social APIs =
@@ -521,9 +564,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 if DEBUG:
     TEMPLATE_LOADERS = (
-        ('django.template.loaders.filesystem.Loader',
-         'django.template.loaders.app_directories.Loader',
-        ),
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
     )
 else:
     TEMPLATE_LOADERS = (
@@ -603,22 +645,8 @@ REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379,
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
-
-# ============
-# = Haystack =
-# ============
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
-        'INDEX_NAME': 'haystack',
-    },
-}
 
 # =======
 # = AWS =

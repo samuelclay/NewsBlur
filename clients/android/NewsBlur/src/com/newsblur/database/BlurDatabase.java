@@ -3,8 +3,6 @@ package com.newsblur.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.Cursor;
-import android.util.Log;
 
 public class BlurDatabase extends SQLiteOpenHelper {
 
@@ -88,7 +86,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_HASH + TEXT + ", " +
 		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
 		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
-		DatabaseConstants.STORY_DATE + TEXT + ", " +
+		DatabaseConstants.STORY_SHORT_CONTENT + TEXT + ", " +
+		DatabaseConstants.STORY_TIMESTAMP + INTEGER + ", " +
 		DatabaseConstants.STORY_SHARED_DATE + INTEGER + ", " +
 		DatabaseConstants.STORY_SHORTDATE + TEXT + ", " +
 		DatabaseConstants.STORY_LONGDATE + TEXT + ", " +
@@ -109,6 +108,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
 		DatabaseConstants.STORY_READ + INTEGER + ", " +
 		DatabaseConstants.STORY_STARRED + INTEGER + ", " +
+		DatabaseConstants.STORY_STARRED_DATE + INTEGER + ", " +
 		DatabaseConstants.STORY_TITLE + TEXT;
 
 	private final String STORY_SQL = "CREATE TABLE " + DatabaseConstants.STORY_TABLE + " (" + STORY_TABLES_COLS + ")";

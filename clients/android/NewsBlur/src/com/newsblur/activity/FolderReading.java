@@ -2,8 +2,8 @@ package com.newsblur.activity;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -24,9 +24,9 @@ public class FolderReading extends Reading {
         folderName = getIntent().getStringExtra(Reading.EXTRA_FOLDERNAME);
         setTitle(folderName);       
 
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), defaultFeedView);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), getContentResolver(), defaultFeedView);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override

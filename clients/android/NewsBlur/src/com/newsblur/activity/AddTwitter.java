@@ -8,7 +8,7 @@ import android.webkit.WebViewClient;
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
 
-public class AddTwitter extends NbFragmentActivity {
+public class AddTwitter extends NbActivity {
 
 	public static final int TWITTER_AUTHED = 0x20;
 	private WebView webview;

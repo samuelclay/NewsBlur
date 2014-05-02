@@ -55,8 +55,14 @@ public class PrefsUtils {
             // wipe the local DB
             BlurDatabase databaseHelper = new BlurDatabase(context.getApplicationContext());
             databaseHelper.dropAndRecreateTables();
+            // in case this is the first time we have run since moving the cache to the new location,
+            // blow away the old version entirely. This line can be removed some time well after
+            // v61+ is widely deployed
+            FileCache.cleanUpOldCache(context);
             // store the current version
             prefs.edit().putString(AppConstants.LAST_APP_VERSION, version).commit();
+            // also make sure we auto-trigger an update, since all data are now gone
+            prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
         }
 
     }
@@ -242,7 +248,14 @@ public class PrefsUtils {
     
     public static float getTextSize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
+        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
+        // some users have wacky, pre-migration values stored that won't render.  If the value is below our
+        // minimum size, soft reset to the defaul size.
+        if (storedValue < AppConstants.READING_FONT_SIZE[0]) {
+            return 1.0f;
+        } else {
+            return storedValue;
+        }
     }
 
     public static void setTextSize(Context context, float size) {
@@ -278,5 +291,15 @@ public class PrefsUtils {
 
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;
+    }
+
+    public static boolean enterImmersiveReadingModeOnSingleTap(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.READING_ENTER_IMMERSIVE_SINGLE_TAP, false);
+    }
+
+    public static boolean isShowContentPreviews(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
 }

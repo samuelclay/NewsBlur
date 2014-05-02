@@ -101,6 +101,30 @@ class MClassifierFeed(mongo.Document):
             feed = User.objects.get(pk=self.social_user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
     
+
+def compute_story_score(story, classifier_titles, classifier_authors, classifier_tags, classifier_feeds):
+    intelligence = {
+        'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+        'author': apply_classifier_authors(classifier_authors, story),
+        'tags': apply_classifier_tags(classifier_tags, story),
+        'title': apply_classifier_titles(classifier_titles, story),
+    }
+    score = 0
+    score_max = max(intelligence['title'],
+                    intelligence['author'],
+                    intelligence['tags'])
+    score_min = min(intelligence['title'],
+                    intelligence['author'],
+                    intelligence['tags'])
+    if score_max > 0:
+        score = score_max
+    elif score_min < 0:
+        score = score_min
+
+    if score == 0:
+        score = intelligence['feed']
+    
+    return score
     
 def apply_classifier_titles(classifiers, story):
     score = 0

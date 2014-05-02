@@ -24,18 +24,19 @@
 
     <color name="story_title_unread">#333333</color>
     <color name="story_title_read">#808080</color>
+    <color name="story_content_unread">#404040</color>
+    <color name="story_content_read">#909090</color>
     <color name="story_feed_unread">#606060</color>
     <color name="story_feed_read">#A0A0A0</color>
     <color name="story_author_unread">#959595</color>
     <color name="story_author_read">#C0C0C0</color>
     <color name="story_date_unread">#262C6C</color>
     <color name="story_date_read">#BABDD1</color>
+    <color name="story_comment_divider">#F0F0F0</color>
     
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
     
-    <color name="darkgreen">#134c00</color>
-
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="item_header_border">#C2C5BE</color>
@@ -50,8 +51,6 @@
     
     <color name="positive">#6EA74A</color>
     <color name="positive_drop_shadow">#417E53</color>
-    
-    <color name="highlight">#fef7ab</color>
     
     <color name="neutral">#B3B6AD</color>
     <color name="neutral_drop_shadow">#93968D</color>

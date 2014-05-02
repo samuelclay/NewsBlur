@@ -94,6 +94,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return this;
     },
     
+    setElement: function($el) {
+        Backbone.View.prototype.setElement.call(this, $el);
+        if (this.share_view) this.share_view.setElement($el);
+    },
+    
     render_starred_tags: function() {
         if (this.model.get('starred')) {
             this.save_view.toggle_feed_story_save_dialog();
@@ -156,16 +161,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-manage-icon"></div>\
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
-                <% if (story.get("long_parsed_date")) { %>\
-                    <div class="NB-feed-story-date">\
-                        <% if (story.has_modifications()) { %>\
-                            <div class="NB-feed-story-hide-changes" \
-                                 title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
-                            </div>\
-                        <% } %>\
-                        <%= story.get("long_parsed_date") %>\
-                    </div>\
-                <% } %>\
+                <div class="NB-feed-story-date">\
+                    <% if (story.has_modifications()) { %>\
+                        <div class="NB-feed-story-hide-changes" \
+                             title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %> story modifications">\
+                        </div>\
+                    <% } %>\
+                    <%= story.formatted_long_date() %>\
+                </div>\
                 <% if (story.get("story_authors")) { %>\
                     <div class="NB-feed-story-author-wrapper">\
                         <span class="NB-middot">&middot;</span>\
@@ -263,8 +266,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var feed_titles = classifiers && classifiers.titles || [];
         
         _.each(feed_titles, function(score, title_classifier) {
-            if (title.indexOf(title_classifier) != -1) {
-                title = title.replace(title_classifier, '<span class="NB-score-'+score+'">'+title_classifier+'</span>');
+            if (!title_classifier || title.toLowerCase().indexOf(title_classifier.toLowerCase()) != -1) {
+                var pos = title.toLowerCase().indexOf(title_classifier.toLowerCase());
+                title = title.substr(0, pos) + '<span class="NB-score-'+score+'">'+title.substr(pos, title_classifier.length)+'</span>' + title.substr(pos + title_classifier.length);
             }
         });
         

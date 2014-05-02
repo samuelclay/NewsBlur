@@ -199,32 +199,18 @@ public class FeedUtils {
     }
 
     public static void markStoryUnread(final Story story, final Context context) {
-        // TODO: update DB, too
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (!result.isError()) {
-                    Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
-                }
-            }
-        }.execute();
+        setStoryReadState(story, context, false);
     }
 
-    /**
-     * Mark a single story as read on both the local DB and on the server.
-     */
     public static void markStoryAsRead(final Story story, final Context context) {
-        if (story.read) { return; }
+        setStoryReadState(story, context, true);
+    }
+
+    private static void setStoryReadState(final Story story, final Context context, final boolean read) {
+        if (story.read == read) { return; }
 
         // it is imperative that we are idempotent.  query the DB for a fresh copy of the story
-        // to ensure it isn't already marked as read.  if so, do not update feed counts
+        // to ensure it isn't already in the requested state.  if so, do not update feed counts
         Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
         Cursor cursor = context.getContentResolver().query(storyUri, null, null, null, null);
         if (cursor.getCount() < 1) {
@@ -233,14 +219,14 @@ public class FeedUtils {
         }
         Story freshStory = Story.fromCursor(cursor);
         cursor.close();
-        if (freshStory.read) { return; }
+        if (freshStory.read == read) { return; }
 
         // update the local object to show as read even before requeried
         story.read = true;
 
         // first, update unread counts in the local DB
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
-        appendStoryReadOperations(story, updateOps);
+        appendStoryReadOperations(story, updateOps, read);
         try {
             context.getContentResolver().applyBatch(FeedProvider.AUTHORITY, updateOps);
         } catch (Exception e) {
@@ -252,12 +238,23 @@ public class FeedUtils {
             @Override
             protected NewsBlurResponse doInBackground(Void... arg) {
                 APIManager apiManager = new APIManager(context);
-                return apiManager.markStoryAsRead(story.storyHash);
+                if (read) {
+                    return apiManager.markStoryAsRead(story.storyHash);
+                } else {
+                    return apiManager.markStoryAsUnread(story.feedId, story.storyHash);
+                }
             }
             @Override
             protected void onPostExecute(NewsBlurResponse result) {
                 if (result.isError()) {
                     Log.e(FeedUtils.class.getName(), "Could not update unread counts via API: " + result.getErrorMessage());
+                    Toast.makeText(context, result.getErrorMessage(context.getString(read ? R.string.toast_story_read_error : R.string.toast_story_unread_error)), Toast.LENGTH_LONG).show();
+                } else {
+                    if (read) {
+                        ; // no toast on successful mark-read
+                    } else {
+                        Toast.makeText(context, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }.execute();
@@ -274,7 +271,7 @@ public class FeedUtils {
         ArrayList<ContentProviderOperation> updateOps = new ArrayList<ContentProviderOperation>();
 
         for (Story story : stories) {
-            appendStoryReadOperations(story, updateOps);
+            appendStoryReadOperations(story, updateOps, true);
             storyHashes.add(story.storyHash);
         }
 
@@ -308,17 +305,20 @@ public class FeedUtils {
         }
     }
 
-	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations) {
+	private static void appendStoryReadOperations(Story story, List<ContentProviderOperation> operations, boolean read) {
 		String[] selectionArgs; 
 		ContentValues emptyValues = new ContentValues();
 		emptyValues.put(DatabaseConstants.FEED_ID, story.feedId);
 
+        // our magic ContentProvider uses a select arg to get the increment/decrement operator for these URIs
+        String incDec = read ? "- 1" : "+ 1";
+
 		if (story.getIntelligenceTotal() > 0) {
-			selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId } ; 
+			selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId, incDec } ; 
 		} else if (story.getIntelligenceTotal() == 0) {
-			selectionArgs = new String[] { DatabaseConstants.FEED_NEUTRAL_COUNT, story.feedId } ;
+			selectionArgs = new String[] { DatabaseConstants.FEED_NEUTRAL_COUNT, story.feedId, incDec } ;
 		} else {
-			selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
+			selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId, incDec } ;
 		}
 		operations.add(ContentProviderOperation.newUpdate(FeedProvider.FEED_COUNT_URI).withValues(emptyValues).withSelection("", selectionArgs).build());
 
@@ -334,18 +334,18 @@ public class FeedUtils {
         for (String id : socialIds) {
             String[] socialSelectionArgs; 
             if (story.getIntelligenceTotal() > 0) {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, id } ; 
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, id, incDec } ; 
             } else if (story.getIntelligenceTotal() == 0) {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, id } ;
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, id, incDec } ;
             } else {
-                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, id } ;
+                socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, id, incDec } ;
             }
             operations.add(ContentProviderOperation.newUpdate(FeedProvider.SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
         }
 
 		Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
 		ContentValues values = new ContentValues();
-		values.put(DatabaseConstants.STORY_READ, true);
+		values.put(DatabaseConstants.STORY_READ, read);
 
 		operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
 	}

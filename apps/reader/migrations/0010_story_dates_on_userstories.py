@@ -3,12 +3,11 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from apps.reader.models import MUserStory
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
+        from apps.reader.models import MUserStory
         userstories = MUserStory.objects.all()
         print "%s userstories" % userstories.count()
         

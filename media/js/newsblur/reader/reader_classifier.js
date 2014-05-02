@@ -563,7 +563,7 @@ var classifier_prototype = {
         var titles = _.keys(this.user_classifiers.titles);
         
         _.each(titles, _.bind(function(title) {
-            if (!existing_title || existing_title.indexOf(title) != -1) {
+            if (!existing_title || existing_title.toLowerCase().indexOf(title.toLowerCase()) != -1) {
                 var $title = this.make_classifier(title, title, 'title');
                 $titles.push($title);
             }
