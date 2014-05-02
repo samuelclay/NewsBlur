@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -16,12 +17,14 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,6 +51,10 @@ import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.NonfocusScrollview;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -73,6 +80,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
     private Reading activity;
     private DefaultFeedView selectedFeedView;
     private String originalText;
+    private HashMap<String,String> imageAltTexts;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
@@ -190,6 +198,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
         view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
+        registerForContextMenu(web);
 
         if (selectedFeedView == DefaultFeedView.TEXT) {
             loadOriginalText();
@@ -231,6 +240,27 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
             view.setOnTouchListener(touchListener);
 
             getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        HitTestResult result = web.getHitTestResult();
+        if (result.getType() == HitTestResult.IMAGE_TYPE ||
+            result.getType() == HitTestResult.SRC_ANCHOR_TYPE ||
+            result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
+            // if the long-pressed item was an image, see if we can pop up a little dialogue
+            // that presents the alt text.  Note that images wrapped in links tend to get detected
+            // as anchors, not images, and may not point to the corresponding image URL.
+            String altText = imageAltTexts.get(result.getExtra());
+            if (altText != null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(result.getExtra());
+                builder.setMessage(altText);
+                builder.show();
+            }
+        } else {
+            super.onCreateContextMenu(menu, v, menuInfo);
         }
     }
 	
@@ -445,6 +475,20 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append(storyText);
 		builder.append("</div></body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
+
+        // Find images with alt tags and cache the text for use on long-press
+        //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
+        //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
+        //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
+        imageAltTexts = new HashMap<String,String>();
+        Matcher imgTagMatcher1 = Pattern.compile("<img[^>]*src=\"([^\"]*)\"[^>]*alt=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(storyText);
+        while (imgTagMatcher1.find()) {
+            imageAltTexts.put(imgTagMatcher1.group(1), imgTagMatcher1.group(2));
+        }
+        Matcher imgTagMatcher2 = Pattern.compile("<img[^>]*alt=\"([^\"]*)\"[^>]*src=\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(storyText);
+        while (imgTagMatcher2.find()) {
+            imageAltTexts.put(imgTagMatcher2.group(2), imgTagMatcher2.group(1));
+        }
 	}
 
 	private class TextSizeReceiver extends BroadcastReceiver {
