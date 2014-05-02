@@ -496,7 +496,7 @@ SESSION_REDIS_DB = 5
 # =================
 
 ELASTICSEARCH_FEED_HOSTS = ['app:9200']
-ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
+ELASTICSEARCH_STORY_HOSTS = ['app:9200']
 
 # ===============
 # = Social APIs =
