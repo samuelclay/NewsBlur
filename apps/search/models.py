@@ -261,7 +261,7 @@ class SearchStory:
         
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.StringQuery(query, default_operator="AND")
-        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids)
+        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
                                  partial_fields={}, sort=sort, start=offset, size=limit)
