@@ -105,10 +105,14 @@ class UserSubscription(models.Model):
         
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
-                     include_timestamps=False, group_by_feed=True, cutoff_date=None):
+                     include_timestamps=False, group_by_feed=True, cutoff_date=None,
+                     across_all_feeds=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
+        
+        if not feed_ids and not across_all_feeds:
+            return story_hashes
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
@@ -257,13 +261,15 @@ class UserSubscription(models.Model):
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
                      all_feed_ids=None):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        across_all_feeds = False
         
         if order == 'oldest':
             range_func = rt.zrange
         else:
             range_func = rt.zrevrange
         
-        if not feed_ids:
+        if feed_ids is None:
+            across_all_feeds = True
             feed_ids = []
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
@@ -290,7 +296,8 @@ class UserSubscription(models.Model):
                                         include_timestamps=True,
                                         group_by_feed=False,
                                         usersubs=usersubs,
-                                        cutoff_date=cutoff_date)
+                                        cutoff_date=cutoff_date,
+                                        across_all_feeds=across_all_feeds)
         if not story_hashes:
             return [], []
         
