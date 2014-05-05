@@ -2213,19 +2213,22 @@ class MStarredStoryCounts(mongo.Document):
         ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
         
     @classmethod
-    def count_tags_for_user(cls, user_id):
-        all_tags = MStarredStory.objects(user_id=user_id,
-                                         user_tags__exists=True).item_frequencies('user_tags')
-        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
-                           key=itemgetter(1), 
-                           reverse=True)
+    def count_tags_for_user(cls, user_id, total_only=False):
+        user_tags = []
+        if not total_only:
+            all_tags = MStarredStory.objects(user_id=user_id,
+                                             user_tags__exists=True).item_frequencies('user_tags')
+            user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
+                               key=itemgetter(1), 
+                               reverse=True)
                            
-        cls.objects(user_id=user_id).delete()
-        for tag, count in dict(user_tags).items():
-            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
+            cls.objects(user_id=user_id).delete()
+            for tag, count in dict(user_tags).items():
+                cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
         
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects.create(user_id=user_id, tag="", count=total_stories_count)
+        cls.objects.filter(user_id=user_id, tag="").update_one(set__count=total_stories_count,
+                                                               upsert=True)
         
         return dict(total=total_stories_count, tags=user_tags)
     

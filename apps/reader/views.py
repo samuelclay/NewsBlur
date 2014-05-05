@@ -1848,6 +1848,7 @@ def _mark_story_as_starred(request):
             pass
 
     # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+    MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
     starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     
     if created:
@@ -1903,6 +1904,7 @@ def _mark_story_as_unstarred(request):
             except MStarredStoryCounts.DoesNotExist:
                 pass
         # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+        MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:
         code = -1
