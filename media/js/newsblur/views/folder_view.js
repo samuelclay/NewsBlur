@@ -106,7 +106,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         this.check_collapsed({skip_animation: true});
         this.update_hidden();
-        this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
+        if (this.options.depth > 0) {
+            // Only attach to visible folders. Top level has no folder, so wrongly attaches to first child.
+            this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
+        }
         
         return this;
     },
