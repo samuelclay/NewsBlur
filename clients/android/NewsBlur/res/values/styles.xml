@@ -24,4 +24,20 @@
         <item name="android:background">@drawable/dark_list_background</item>
     </style>
 
+    <style name="selectorFolderBackground">
+        <item name="android:background">@drawable/selector_folder_background</item>
+    </style>
+
+    <style name="selectorFolderBackground.dark">
+        <item name="android:background">@drawable/dark_selector_folder_background</item>
+    </style>
+
+    <style name="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_background</item>
+    </style>
+
+    <style name="selectorFeedBackground.dark">
+        <item name="android:background">@drawable/dark_selector_feed_background</item>
+    </style>
+
 </resources>

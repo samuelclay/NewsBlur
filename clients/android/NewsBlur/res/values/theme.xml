@@ -3,10 +3,14 @@
 	<style name="NewsBlurTheme" parent="@android:style/Theme.Holo.Light" >
     	<item name="android:actionBarStyle">@style/actionbar</item>
         <item name="android:expandableListViewStyle">@style/expandableListView</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
         <item name="android:actionBarStyle">@style/actionbar.dark</item>
         <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
     </style>
 </resources>

@@ -2,6 +2,8 @@
 <resources>
     <attr name="flow" format="string" />
     <attr name="defaultImageSize" format="integer" />
+    <attr name="selectorFolderBackground" format="string" />
+    <attr name="selectorFeedBackground" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

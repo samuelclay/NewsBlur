@@ -17,6 +17,7 @@
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
     <color name="feed_background">#F7F8F5</color>
+    <color name="dark_feed_background">#1A1A1A</color>
     <color name="feed_background_end">#303030</color>
     <color name="feed_background_start">#505050</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
