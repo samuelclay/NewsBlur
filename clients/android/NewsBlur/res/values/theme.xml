@@ -2,5 +2,11 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 	<style name="NewsBlurTheme" parent="@android:style/Theme.Holo.Light" >
     	<item name="android:actionBarStyle">@style/actionbar</item>
+        <item name="android:expandableListViewStyle">@style/expandableListView</item>
 	</style>
+
+    <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
+        <item name="android:actionBarStyle">@style/actionbar.dark</item>
+        <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
+    </style>
 </resources>
