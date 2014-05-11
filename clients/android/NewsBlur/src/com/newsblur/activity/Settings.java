@@ -2,6 +2,7 @@ package com.newsblur.activity;
 
 import com.newsblur.R;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtils;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ public class Settings extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        PrefsUtils.applyThemePreference(this);
+
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         super.getPreferenceManager().setSharedPreferencesName(PrefConstants.PREFERENCES);
