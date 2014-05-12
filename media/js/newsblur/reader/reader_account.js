@@ -147,7 +147,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             $.make('div', { className: 'NB-block' }, [
                                 $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                                 ' ',
-                                NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
+                                (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
+                                (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
                             ]),
                             $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Change your credit card')
                         ]),
