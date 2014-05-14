@@ -68,7 +68,7 @@
         android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/folder_text"
+        style="?selectorRowFeedName"
         android:textSize="14sp"
         android:textStyle="bold" />
 

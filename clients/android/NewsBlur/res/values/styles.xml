@@ -40,4 +40,21 @@
         <item name="android:background">@drawable/dark_selector_feed_background</item>
     </style>
 
+    <style name="selectorRowFolderName">
+        <item name="android:textColor">@color/folder_text</item>
+        <item name="android:shadowColor">@color/white</item>
+    </style>
+
+    <style name="selectorRowFolderName.dark">
+        <item name="android:textColor">@color/dark_folder_text</item>
+        <item name="android:shadowColor">@color/white</item>
+    </style>
+
+    <style name="selectorRowFeedName">
+        <item name="android:textColor">@color/folder_text</item>
+    </style>
+
+    <style name="selectorRowFeedName.dark">
+        <item name="android:textColor">@color/dark_folder_text</item>
+    </style>
 </resources>
