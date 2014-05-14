@@ -6,6 +6,7 @@
     <attr name="selectorFeedBackground" format="string" />
     <attr name="selectorRowFolderName" format="string" />
     <attr name="selectorRowFeedName" format="string" />
+    <attr name="actionbarBackground" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

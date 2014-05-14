@@ -57,4 +57,12 @@
     <style name="selectorRowFeedName.dark">
         <item name="android:textColor">@color/dark_folder_text</item>
     </style>
+
+    <style name="actionbarBackground">
+        <item name="android:background">@drawable/actionbar_background</item>
+    </style>
+
+    <style name="actionbarBackground.dark">
+        <item name="android:background">@drawable/dark_actionbar_background</item>
+    </style>
 </resources>
