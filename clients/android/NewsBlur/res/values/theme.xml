@@ -8,6 +8,10 @@
         <item name="selectorRowFolderName">@style/selectorRowFolderName</item>
         <item name="selectorRowFeedName">@style/selectorRowFeedName</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
+        <item name="listBackground">@style/listBackground</item>
+        <item name="itemBackground">@style/itemBackground</item>
+        <item name="loadingText">@style/loadingText</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -17,6 +21,9 @@
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorRowFolderName">@style/selectorRowFolderName.dark</item>
         <item name="selectorRowFeedName">@style/selectorRowFeedName.dark</item>
-        <item name="actionbarBackground">@style/actionbarBackground.dark</item>
+        <item name="listBackground">@style/listBackground.dark</item>
+        <item name="itemBackground">@style/itemBackground.dark</item>
+        <item name="loadingText">@style/loadingText.dark</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
     </style>
 </resources>

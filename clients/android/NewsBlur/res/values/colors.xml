@@ -30,6 +30,9 @@
     <color name="story_background">#F7F8F5</color>
     <color name="story_background_end">#FFFDEF</color>
     <color name="story_background_start">#DFDDCF</color>
+    <color name="dark_story_background">#1A1A1A</color>
+    <color name="dark_story_background_end">#4C4C4C</color>
+    <color name="dark_story_background_start">#1A1A1A</color>
 
     <color name="story_title_unread">#333333</color>
     <color name="story_title_read">#808080</color>
@@ -50,6 +53,7 @@
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="item_header_border">#C2C5BE</color>
     <color name="item_background">#FFF</color>
+    <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
     
     <color name="half_black">#7000</color>

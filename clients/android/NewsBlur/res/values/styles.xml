@@ -65,4 +65,36 @@
     <style name="actionbarBackground.dark">
         <item name="android:background">@drawable/dark_actionbar_background</item>
     </style>
+
+    <style name="listBackground">
+        <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="listBackground.dark">
+        <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="itemBackground">
+        <item name="android:background">@color/item_background</item>
+    </style>
+
+    <style name="itemBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
+    <style name="loadingText">
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="loadingText.dark">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="selectorStoryBackground">
+        <item name="android:background">@drawable/selector_story_background</item>
+    </style>
+
+    <style name="selectorStoryBackground.dark">
+        <item name="android:background">@drawable/dark_selector_story_background</item>
+    </style>
 </resources>
