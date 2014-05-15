@@ -244,11 +244,17 @@ class SearchStory:
             "feed_id"   : story_feed_id,
             "date"      : story_date,
         }
-        cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+        try:
+            cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
     
     @classmethod
     def remove(cls, story_hash):
-        cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+        try:
+            cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
         
     @classmethod
     def drop(cls):
@@ -263,8 +269,13 @@ class SearchStory:
         string_q = pyes.query.StringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
-        results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
-                                 partial_fields={}, sort=sort, start=offset, size=limit)
+        try:
+            results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
+                                     partial_fields={}, sort=sort, start=offset, size=limit)
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
+            return []
+
         logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across %s feed%s)" % 
                      (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
@@ -370,12 +381,19 @@ class SearchFeed:
             "link"              : link,
             "num_subscribers"   : num_subscribers,
         }
-        cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, feed_id)
+        try:
+            cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, feed_id)
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
         
     @classmethod
     def query(cls, text):
-        cls.ES.default_indices = cls.index_name()
-        cls.ES.indices.refresh()
+        try:
+            cls.ES.default_indices = cls.index_name()
+            cls.ES.indices.refresh()
+        except pyes.exceptions.NoServerAvailable:
+            logging.debug(" ***> ~FRNo search server available.")
+            return []
         
         logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
         q = MatchQuery('address', text, operator="and", type="phrase")

@@ -1397,6 +1397,7 @@ class Feed(models.Model):
             # More restrictive content distance, still no story match
             if not story_in_system and content_ratio > .98:
                 if settings.DEBUG:
+                    import pdb; pdb.set_trace()
                     logging.debug(" ---> Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio))
                 story_in_system = existing_story
                 story_has_changed = True
@@ -1405,6 +1406,7 @@ class Feed(models.Model):
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
                     if settings.DEBUG:
+                        import pdb; pdb.set_trace()
                         logging.debug(" ---> Content difference - %s (%s)/%s (%s)" % (story.get('title'), len(story_content), existing_story.story_title, len(existing_story_content)))
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
