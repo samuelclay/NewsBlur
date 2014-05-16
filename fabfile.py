@@ -745,14 +745,16 @@ def upgrade_pil():
         sudo('pip install --upgrade pillow')
         # celery_stop()
         sudo('apt-get remove -y python-imaging')
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 def downgrade_pil():
     with cd(env.NEWSBLUR_PATH):
         sudo('apt-get install -y python-imaging')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
         pull()
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 # ==============
 # = Setup - DB =
