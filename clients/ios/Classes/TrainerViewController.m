@@ -109,7 +109,7 @@
 - (NSString *)feedId {
     NSString *feedId;
     if (appDelegate.storiesCollection.activeFeed &&
-        ![appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
+        !appDelegate.storiesCollection.isSocialView) {
         feedId = [NSString stringWithFormat:@"%@",
                   [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
     } else if (appDelegate.activeStory) {

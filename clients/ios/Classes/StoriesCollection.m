@@ -413,11 +413,28 @@
         }
     }
     [self markStoryRead:story feed:feed];
+    
+    NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
+    if ([otherFriendShares count]) {
+        NSLog(@"Shared by friends: %@", otherFriendShares);
+    }
+    
+    // decrement all other friend feeds if they have the same story
+    if (![feedIdStr hasPrefix:@"social:"]) {
+        for (int i = 0; i < otherFriendShares.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendShares objectAtIndex:i]];
+            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+            [self markStoryRead:story feed:feed];
+        }
+    }
 }
 
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    if (!feed) {
+    NSString *feedIdStr;
+    if (feed) {
+        feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    } else {
         feedIdStr = @"0";
     }
     
@@ -505,6 +522,21 @@
         }
     }
     [self markStoryUnread:story feed:feed];
+    
+    NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
+    if ([otherFriendShares count]) {
+        NSLog(@"Shared by friends: %@", otherFriendShares);
+    }
+    
+    // decrement all other friend feeds if they have the same story
+    if (![feedIdStr hasPrefix:@"social:"]) {
+        for (int i = 0; i < otherFriendShares.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendShares objectAtIndex:i]];
+            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+            [self markStoryUnread:story feed:feed];
+        }
+    }
 }
 
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
@@ -668,9 +700,7 @@
     [appDelegate failedMarkAsSaved:request];
 }
 
-- (void)syncStoryAsUnsaved:(NSDictionary *)story {
-    //    [appDelegate markActiveStoryUnread];
-    
+- (void)syncStoryAsUnsaved:(NSDictionary *)story {    
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
