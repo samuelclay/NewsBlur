@@ -22,7 +22,7 @@ class IconImporter(object):
         self.feed = feed
         self.force = force
         self.page_data = page_data
-        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
+        self.feed_icon = MFeedIcon.get_feed(feed_id=self.feed.pk)
     
     def save(self):
         if not self.force and self.feed.favicon_not_found:
@@ -165,8 +165,8 @@ class IconImporter(object):
                 # Load AND bitmap
                 image_file.seek(offset)
                 string = image_file.read(size)
-                mask = Image.fromstring('1', image.size, string, 'raw',
-                                        ('1;I', stride, -1))
+                mask = Image.frombytes('1', image.size, string, 'raw',
+                                       ('1;I', stride, -1))
 
                 image = image.convert('RGBA')
                 image.putalpha(mask)

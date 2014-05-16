@@ -738,9 +738,10 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
+
 def upgrade_pil():
     with cd(env.NEWSBLUR_PATH):
-        sudo('easy_install pillow')
+        sudo('pip install pillow')
         # celery_stop()
         pull()
         sudo('apt-get remove -y python-imaging')

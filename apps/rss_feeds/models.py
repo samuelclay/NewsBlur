@@ -1623,6 +1623,19 @@ class MFeedIcon(mongo.Document):
         'allow_inheritance' : False,
     }
     
+    @classmethod
+    def get_feed(cls, feed_id, create=True):
+        try:
+            feed_icon = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY)\
+                                   .get(feed_id=feed_id)
+        except cls.DoesNotExist:
+            if create:
+                feed_icon = cls.objects.create(feed_id=feed_id)
+            else:
+                feed_icon = None
+        
+        return feed_icon
+            
     def save(self, *args, **kwargs):
         if self.icon_url:
             self.icon_url = unicode(self.icon_url)
