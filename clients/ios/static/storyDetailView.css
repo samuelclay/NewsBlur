@@ -53,7 +53,9 @@
 }
 
 /* Line spacing */
-
+.NB-story {
+    line-height: 1.5em;
+}
 .NB-line-spacing-xs .NB-story {
     line-height: 1.2em;
 }
