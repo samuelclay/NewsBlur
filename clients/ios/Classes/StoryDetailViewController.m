@@ -202,7 +202,7 @@
     if ([userPreferences stringForKey:@"fontStyle"]){
         fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
     } else {
-        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
+        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-helvetica"];
     }
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
     
@@ -1220,12 +1220,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([fontStyle isEqualToString:@"Helvetica"]) {
-        [userPreferences setObject:@"NB-san-serif" forKey:@"fontStyle"];
-        fontStyleStr = @"NB-san-serif";
-    } else {
-        [userPreferences setObject:@"NB-serif" forKey:@"fontStyle"];
-        fontStyleStr = @"NB-serif";
+        fontStyleStr = @"NB-helvetica";
+    } else if ([fontStyle isEqualToString:@"Palatino"]) {
+        fontStyleStr = @"NB-palatino";
+    } else if ([fontStyle isEqualToString:@"Georgia"]) {
+        fontStyleStr = @"NB-georgia";
+    } else if ([fontStyle isEqualToString:@"Avenir"]) {
+        fontStyleStr = @"NB-avenir";
+    } else if ([fontStyle isEqualToString:@"AvenirNext"]) {
+        fontStyleStr = @"NB-avenirnext";
     }
+    [userPreferences setObject:fontStyleStr forKey:@"fontStyle"];
     [userPreferences synchronize];
     
     jsString = [NSString stringWithFormat:@

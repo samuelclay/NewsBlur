@@ -8,39 +8,47 @@
 .NB-xs .NB-story,
 .NB-xs .NB-story-comment,
 .NB-xs .NB-header {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .NB-small .NB-story,
 .NB-small .NB-story-comment,
 .NB-small .NB-header {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .NB-medium .NB-story,
 .NB-medium .NB-story-comment,
 .NB-medium .NB-header {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .NB-large .NB-story,
 .NB-large .NB-story-comment,
 .NB-large .NB-header {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .NB-xl .NB-story,
 .NB-xl .NB-story-comment,
 .NB-xl .NB-header {
-    font-size: 17px;
+    font-size: 18px;
 }
 
-.NB-san-serif {
-    font-family: Helvetica;
+.NB-avenir {
+    font-family: "Avenir-Book";
 }
-
-.NB-serif {
-    font-family: georgia;
+.NB-avenirnext {
+    font-family: "AvenirNextCondensed-Regular";
+}
+.NB-georgia {
+    font-family: "Georgia";
+}
+.NB-palatino {
+    font-family: "Palatino";
+}
+.NB-helvetica {
+    font-family: "Helvetica";
 }
 
 /**

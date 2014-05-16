@@ -1465,6 +1465,7 @@
         total = 0;
     } else if ([folderName isEqual:@"everything"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
+        // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
             total += [self unreadCountForFeed:feedId];
         }
