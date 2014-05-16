@@ -741,9 +741,9 @@ def upgrade_django():
 
 def upgrade_pil():
     with cd(env.NEWSBLUR_PATH):
-        sudo('pip install pillow')
-        # celery_stop()
         pull()
+        sudo('pip install --upgrade pillow')
+        # celery_stop()
         sudo('apt-get remove -y python-imaging')
         kill()
 
