@@ -808,6 +808,7 @@
     UINavigationController *navController = self.navigationController;
     trainerViewController.feedTrainer = NO;
     trainerViewController.storyTrainer = YES;
+    trainerViewController.feedLoaded = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showTrainingPopover:sender];
     } else {

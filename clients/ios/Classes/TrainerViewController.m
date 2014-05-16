@@ -108,7 +108,8 @@
 
 - (NSString *)feedId {
     NSString *feedId;
-    if (appDelegate.storiesCollection.activeFeed) {
+    if (appDelegate.storiesCollection.activeFeed &&
+        ![appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
         feedId = [NSString stringWithFormat:@"%@",
                   [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
     } else if (appDelegate.activeStory) {
