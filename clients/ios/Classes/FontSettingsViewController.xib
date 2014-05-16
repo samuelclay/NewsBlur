@@ -8,6 +8,7 @@
             <connections>
                 <outlet property="fontSizeSegment" destination="28" id="34"/>
                 <outlet property="fontStyleSegment" destination="11" id="32"/>
+                <outlet property="lineSpacingSegment" destination="4iD-hO-qU2" id="K0A-P6-riY"/>
                 <outlet property="menuTableView" destination="35" id="38"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
@@ -43,6 +44,20 @@
                     </segments>
                     <connections>
                         <action selector="changeFontSize:" destination="-1" eventType="valueChanged" id="29"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="4iD-hO-qU2">
+                    <rect key="frame" x="3" y="123" width="234" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="11pt"/>
+                        <segment title="12pt"/>
+                        <segment title="14pt"/>
+                        <segment title="16pt"/>
+                        <segment title="18pt"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeLineSpacing:" destination="-1" eventType="valueChanged" id="3hE-hD-2Aq"/>
                     </connections>
                 </segmentedControl>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="35">

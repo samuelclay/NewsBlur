@@ -22,6 +22,7 @@
 @synthesize appDelegate;
 @synthesize fontStyleSegment;
 @synthesize fontSizeSegment;
+@synthesize lineSpacingSegment;
 @synthesize menuTableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -64,7 +65,7 @@
     if([userPreferences stringForKey:@"story_font_size"]){
         NSString *fontSize = [userPreferences stringForKey:@"story_font_size"];
         if ([fontSize isEqualToString:@"xs"]) {
-            [fontSizeSegment setSelectedSegmentIndex:0]; 
+            [fontSizeSegment setSelectedSegmentIndex:0];
         } else if ([fontSize isEqualToString:@"small"]) {
             [fontSizeSegment setSelectedSegmentIndex:1];
         } else if ([fontSize isEqualToString:@"medium"]) {
@@ -73,6 +74,21 @@
             [fontSizeSegment setSelectedSegmentIndex:3];
         } else if ([fontSize isEqualToString:@"xl"]) {
             [fontSizeSegment setSelectedSegmentIndex:4];
+        }
+    }
+    
+    if([userPreferences stringForKey:@"story_line_spacing"]){
+        NSString *lineSpacing = [userPreferences stringForKey:@"story_line_spacing"];
+        if ([lineSpacing isEqualToString:@"xs"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:0];
+        } else if ([lineSpacing isEqualToString:@"small"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:1];
+        } else if ([lineSpacing isEqualToString:@"medium"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:2];
+        } else if ([lineSpacing isEqualToString:@"large"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:3];
+        } else if ([lineSpacing isEqualToString:@"xl"]) {
+            [lineSpacingSegment setSelectedSegmentIndex:4];
         }
     }
     
@@ -129,6 +145,27 @@
     [userPreferences synchronize];
 }
 
+- (IBAction)changeLineSpacing:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [appDelegate.storyPageControl changeLineSpacing:@"xs"];
+        [userPreferences setObject:@"xs" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [appDelegate.storyPageControl changeLineSpacing:@"small"];
+        [userPreferences setObject:@"small" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [appDelegate.storyPageControl changeLineSpacing:@"medium"];
+        [userPreferences setObject:@"medium" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [appDelegate.storyPageControl changeLineSpacing:@"large"];
+        [userPreferences setObject:@"large" forKey:@"story_line_spacing"];
+    } else if ([sender selectedSegmentIndex] == 4) {
+        [appDelegate.storyPageControl changeLineSpacing:@"xl"];
+        [userPreferences setObject:@"xl" forKey:@"story_line_spacing"];
+    }
+    [userPreferences synchronize];
+}
+
 - (void)setHelvetica {
     [fontStyleSegment setSelectedSegmentIndex:0];
     [appDelegate.storyPageControl setFontStyle:@"Helvetica"];
@@ -160,7 +197,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 7;
+    return 8;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -173,6 +210,8 @@
         return [self makeFontSelectionTableCell];
     } else if (indexPath.row == 6) {
         return [self makeFontSizeTableCell];
+    } else if (indexPath.row == 7) {
+        return [self makeLineSpacingTableCell];
     }
     
     if (cell == nil) {
@@ -324,7 +363,26 @@
     
     [cell addSubview:fontSizeSegment];
     
-    return cell;    
+    return cell;
+}
+
+- (UITableViewCell *)makeLineSpacingTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    
+    lineSpacingSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xs"] forSegmentAtIndex:0];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_s"] forSegmentAtIndex:1];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_m"] forSegmentAtIndex:2];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
+    [lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
+    [lineSpacingSegment setTintColor:UIColorFromRGB(0x738570)];
+    
+    [cell addSubview:lineSpacingSegment];
+    
+    return cell;
 }
 
 

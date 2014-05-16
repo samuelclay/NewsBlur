@@ -2,9 +2,8 @@
  * Font Size Style
  */
 
-.NB-story {
-    line-height: 1.5em;
-}
+/* Font size */
+
 .NB-xs .NB-story,
 .NB-xs .NB-story-comment,
 .NB-xs .NB-header {
@@ -35,6 +34,8 @@
     font-size: 18px;
 }
 
+/* Font name */
+
 .NB-avenir {
     font-family: "Avenir-Book";
 }
@@ -49,6 +50,24 @@
 }
 .NB-helvetica {
     font-family: "Helvetica";
+}
+
+/* Line spacing */
+
+.NB-line-spacing-xs .NB-story {
+    line-height: 1.2em;
+}
+.NB-line-spacing-small .NB-story {
+    line-height: 1.35em;
+}
+.NB-line-spacing-medium .NB-story {
+    line-height: 1.5em;
+}
+.NB-line-spacing-large .NB-story {
+    line-height: 1.65em;
+}
+.NB-line-spacing-xl .NB-story {
+    line-height: 1.8em;
 }
 
 /**

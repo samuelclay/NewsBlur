@@ -514,6 +514,11 @@
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
+		FFB7050A1925921F0052101C /* line_spacing_l.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705051925921F0052101C /* line_spacing_l.png */; };
+		FFB7050B1925921F0052101C /* line_spacing_m.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705061925921F0052101C /* line_spacing_m.png */; };
+		FFB7050C1925921F0052101C /* line_spacing_s.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705071925921F0052101C /* line_spacing_s.png */; };
+		FFB7050D1925921F0052101C /* line_spacing_xl.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705081925921F0052101C /* line_spacing_xl.png */; };
+		FFB7050E1925921F0052101C /* line_spacing_xs.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705091925921F0052101C /* line_spacing_xs.png */; };
 		FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FC1727098D001D132F /* menu_icn_mail.png */; };
 		FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */; };
 		FFB9BE4717F4B65B00FE0A36 /* logo_120.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4017F4B65B00FE0A36 /* logo_120.png */; };
@@ -1359,6 +1364,11 @@
 		FFAD89C018AC45A100D68567 /* StoriesCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCollection.h; sourceTree = "<group>"; };
 		FFAD89C118AC45A100D68567 /* StoriesCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCollection.m; sourceTree = "<group>"; };
 		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
+		FFB705051925921F0052101C /* line_spacing_l.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_l.png; sourceTree = "<group>"; };
+		FFB705061925921F0052101C /* line_spacing_m.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_m.png; sourceTree = "<group>"; };
+		FFB705071925921F0052101C /* line_spacing_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_s.png; sourceTree = "<group>"; };
+		FFB705081925921F0052101C /* line_spacing_xl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_xl.png; sourceTree = "<group>"; };
+		FFB705091925921F0052101C /* line_spacing_xs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_xs.png; sourceTree = "<group>"; };
 		FFB757FC1727098D001D132F /* menu_icn_mail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_mail.png; sourceTree = "<group>"; };
 		FFB757FD1727098D001D132F /* menu_icn_mail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_mail@2x.png"; sourceTree = "<group>"; };
 		FFB9BE4017F4B65B00FE0A36 /* logo_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_120.png; sourceTree = "<group>"; };
@@ -1772,6 +1782,11 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFB705051925921F0052101C /* line_spacing_l.png */,
+				FFB705061925921F0052101C /* line_spacing_m.png */,
+				FFB705071925921F0052101C /* line_spacing_s.png */,
+				FFB705081925921F0052101C /* line_spacing_xl.png */,
+				FFB705091925921F0052101C /* line_spacing_xs.png */,
 				FFCDD8F917F50C08000C6483 /* drag_icon.png */,
 				FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */,
 				FFB9BE3F17F4B65B00FE0A36 /* logos */,
@@ -2887,6 +2902,7 @@
 				433323C215895E280025064D /* orange_button.png in Resources */,
 				433323C5158963BB0025064D /* orange_button@2x.png in Resources */,
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
+				FFB7050D1925921F0052101C /* line_spacing_xl.png in Resources */,
 				43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */,
 				FF26119018C00CA70055FF4D /* osk-appDotNetIcon-29.png in Resources */,
 				FF26117318C00CA70055FF4D /* Chrome-Icon-29@2x.png in Resources */,
@@ -2981,6 +2997,7 @@
 				43BC458B15D9F75700205B69 /* twitter_button.png in Resources */,
 				FF2611B918C00CA70055FF4D /* osk-navbarButton-highlighted.png in Resources */,
 				43BC458C15D9F75700205B69 /* twitter_button@2x.png in Resources */,
+				FFB7050A1925921F0052101C /* line_spacing_l.png in Resources */,
 				43BC459215D9F76000205B69 /* facebook_button_on.png in Resources */,
 				FF2611C718C00CA70055FF4D /* osk-readabilityIcon-60@2x.png in Resources */,
 				FF2611A318C00CA70055FF4D /* osk-flickrIcon-76.png in Resources */,
@@ -3072,8 +3089,10 @@
 				FF26117D18C00CA70055FF4D /* GooglePlus-Icon-29@2x.png in Resources */,
 				FF22FE4A16E413C30046165A /* disclosure_border@2x.png in Resources */,
 				FF2611DE18C00CA70055FF4D /* Riposte-Icon-76@2x.png in Resources */,
+				FFB7050B1925921F0052101C /* line_spacing_m.png in Resources */,
 				FF22FE4B16E413C30046165A /* disclosure@2x.png in Resources */,
 				FF322237185BC1CE004078AA /* logo_80.png in Resources */,
+				FFB7050E1925921F0052101C /* line_spacing_xs.png in Resources */,
 				FF22FE4E16E41EB40046165A /* disclosure_down.png in Resources */,
 				FF26119618C00CA70055FF4D /* osk-appStoreIcon-76@2x.png in Resources */,
 				FF22FE4F16E41EB40046165A /* disclosure_down@2x.png in Resources */,
@@ -3152,6 +3171,7 @@
 				FFDD848016E887D3000AA0A2 /* g_icn_hidden.png in Resources */,
 				FFDD848116E887D3000AA0A2 /* g_icn_hidden@2x.png in Resources */,
 				FF26118E18C00CA70055FF4D /* osk-airDropIcon-76.png in Resources */,
+				FFB7050C1925921F0052101C /* line_spacing_s.png in Resources */,
 				FFDD848216E887D3000AA0A2 /* g_icn_unread.png in Resources */,
 				FF2611D218C00CA70055FF4D /* Pocket-Icon-29@2x.png in Resources */,
 				FF26117418C00CA70055FF4D /* Chrome-Icon-60@2x.png in Resources */,

@@ -196,6 +196,7 @@
     NSString *footerString;
     NSString *fontStyleClass = @"";
     NSString *fontSizeClass = @"NB-";
+    NSString *lineSpacingClass = @"NB-line-spacing-";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -205,6 +206,12 @@
         fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-helvetica"];
     }
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
+    
+    if ([userPreferences stringForKey:@"story_line_spacing"]){
+        lineSpacingClass = [lineSpacingClass stringByAppendingString:[userPreferences stringForKey:@"story_line_spacing"]];
+    } else {
+        lineSpacingClass = [lineSpacingClass stringByAppendingString:@"medium"];
+    }
     
     int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
@@ -271,16 +278,19 @@
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
                             "    <div class=\"%@\" id=\"NB-font-style\">"
-                            "       <div class=\"%@\" id=\"NB-font-size\">"
-                            "           <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "           %@" // shareBar
-                            "           <div id=\"NB-story\" class=\"NB-story\">%@</div>"
-                            "           %@" // share
-                            "           <div id=\"NB-comments-wrapper\">"
-                            "               %@" // friends comments
-                            "           </div>"
-                            "           %@"
-                            "       </div>" // font-size
+                            "    <div class=\"%@\" id=\"NB-font-size\">"
+                            "    <div class=\"%@\" id=\"NB-line-spacing\">"
+                            "        <div id=\"NB-header-container\">%@</div>" // storyHeader
+                            "            %@" // shareBar
+                            "            <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                            "            %@" // share
+                            "            <div id=\"NB-comments-wrapper\">"
+                            "                %@" // friends comments
+                            "            </div>"
+                            "            %@"
+                            "        </div>" // storyHeader
+                            "    </div>" // line-spacing
+                            "    </div>" // font-size
                             "    </div>" // font-style
                             "</body>"
                             "</html>",
@@ -289,6 +299,7 @@
                             riverClass,
                             fontStyleClass,
                             fontSizeClass,
+                            lineSpacingClass,
                             storyHeader,
                             shareBarString,
                             storyContent,
@@ -1171,8 +1182,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
+    [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
 
 }
 
@@ -1180,6 +1192,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [self changeFontSize:[userPreferences stringForKey:@"story_font_size"]];
+    [self changeLineSpacing:[userPreferences stringForKey:@"story_line_spacing"]];
     
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
         self.activeStoryId &&
@@ -1243,6 +1256,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)changeFontSize:(NSString *)fontSize {
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', 'NB-%@')",
                           fontSize];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+- (void)changeLineSpacing:(NSString *)lineSpacing {
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-line-spacing').setAttribute('class', 'NB-line-spacing-%@')",
+                          lineSpacing];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }

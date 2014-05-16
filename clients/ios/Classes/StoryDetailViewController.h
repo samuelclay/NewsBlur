@@ -57,6 +57,7 @@
 - (void)checkTryFeedStory;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
+- (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)refreshComments:(NSString *)replyId;
 
 - (void)openShareDialog;

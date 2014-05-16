@@ -107,6 +107,7 @@
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
+- (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)showShareHUD:(NSString *)msg;
 
 - (IBAction)showOriginalSubview:(id)sender;
