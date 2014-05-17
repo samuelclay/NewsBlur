@@ -47,14 +47,14 @@
                     </connections>
                 </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="4iD-hO-qU2">
-                    <rect key="frame" x="3" y="123" width="234" height="30"/>
+                    <rect key="frame" x="3" y="123" width="234" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
-                        <segment title="11pt"/>
-                        <segment title="12pt"/>
-                        <segment title="14pt"/>
-                        <segment title="16pt"/>
-                        <segment title="18pt"/>
+                        <segment title="" image="line_spacing_xs.png"/>
+                        <segment title="" image="line_spacing_s.png"/>
+                        <segment title="" image="line_spacing_m.png"/>
+                        <segment title="" image="line_spacing_l.png"/>
+                        <segment title="" image="line_spacing_xl.png"/>
                     </segments>
                     <connections>
                         <action selector="changeLineSpacing:" destination="-1" eventType="valueChanged" id="3hE-hD-2Aq"/>
@@ -74,4 +74,11 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
     </objects>
+    <resources>
+        <image name="line_spacing_l.png" width="32" height="32"/>
+        <image name="line_spacing_m.png" width="32" height="32"/>
+        <image name="line_spacing_s.png" width="32" height="32"/>
+        <image name="line_spacing_xl.png" width="32" height="32"/>
+        <image name="line_spacing_xs.png" width="32" height="32"/>
+    </resources>
 </document>
