@@ -296,8 +296,6 @@
 - (NSInteger)unreadCountForFolder:(NSString *)folderName;
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
-- (void)markActiveStoryRead;
-- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
 
 - (void)markActiveFolderAllRead;

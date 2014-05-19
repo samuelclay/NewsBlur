@@ -923,6 +923,7 @@
     [self hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
+    self.storyPageControl.traverseView.hidden = YES;
     
     // adding shareViewController
     [self addChildViewController:self.shareNavigationController];
@@ -955,6 +956,7 @@
     [self hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = NO;
+    self.storyPageControl.traverseView.hidden = NO;
     
     if ([self.shareViewController.commentField isFirstResponder] && self.keyboardIsShown) {
         self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
@@ -982,6 +984,7 @@
             [self.shareNavigationController.view removeFromSuperview];
         }];
     }
+    
 }
 
 - (void)dragStoryToolbar:(int)yCoordinate {

@@ -934,7 +934,7 @@
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
-        BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+        BOOL singlePage = webpageHeight - 250 <= viewportHeight;
         BOOL atBottom = bottomPosition < 200;
         BOOL atTop = topPosition < 10;
         if (!atTop && !atBottom) {
