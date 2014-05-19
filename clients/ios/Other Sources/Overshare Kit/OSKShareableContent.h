@@ -8,6 +8,7 @@
 
 @import Foundation;
 
+@class OSKFacebookContentItem;
 @class OSKMicroblogPostContentItem;
 @class OSKBlogPostContentItem;
 @class OSKEmailContentItem;
@@ -55,6 +56,11 @@
  @see OSKShareableContentItem.h
  */
 @interface OSKShareableContent : NSObject
+
+/**
+ Content patterned after Facebook posts.
+ */
+@property (strong, nonatomic) OSKFacebookContentItem *facebookItem;
 
 /**
  Content patterned after microblog posts like Twitter or App.net updates.

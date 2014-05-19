@@ -266,6 +266,7 @@ extern NSString * const OSKPresentationOption_PresentationEndingHandler;
 - (UIColor *)color_separators;
 - (UIColor *)color_action;
 - (UIColor *)color_text;
+- (UIColor *)color_textViewBackground;
 - (UIColor *)color_pageIndicatorColor_current;
 - (UIColor *)color_pageIndicatorColor_other;
 - (UIColor *)color_cancelButtonColor_BackgroundHighlighted;

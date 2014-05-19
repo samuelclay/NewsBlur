@@ -9,6 +9,7 @@
 @import UIKit;
 
 extern NSString * const OSKShareableContentItemType_MicroblogPost;
+extern NSString * const OSKShareableContentItemType_Facebook;
 extern NSString * const OSKShareableContentItemType_BlogPost;
 extern NSString * const OSKShareableContentItemType_Email;
 extern NSString * const OSKShareableContentItemType_SMS;
@@ -101,11 +102,11 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 @end
 
 ///---------------------------------------------------
-/// @name Microblog Posts (Twitter, App.net, Facebook)
+/// @name Microblog Posts (Twitter, App.net)
 ///---------------------------------------------------
 
 /**
- Content for sharing to microblogging services like Twitter, Facebook, or App.net.
+ Content for sharing to microblogging services like Twitter or App.net.
  */
 @interface OSKMicroblogPostContentItem : OSKShareableContentItem
 
@@ -119,6 +120,43 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
  
  @discussion Not all activities support multiple images. Those that do not will simply
  ignore all but the first image in the array when creating a new post.
+ */
+@property (strong, nonatomic) NSArray *images;
+
+/**
+ The latitude component of the user's geolocation.
+ */
+@property (nonatomic, assign) double latitude;
+
+/**
+ The longitude component of the user's geolocation.
+ */
+@property (nonatomic, assign) double longitude;
+
+@end
+
+///---------------------------------------------------
+/// @name Facebook
+///---------------------------------------------------
+
+/**
+ Text content. The user should be provided an opportunity to edit this text prior to 
+ publishing, per Facebook's API terms.
+ */
+@interface OSKFacebookContentItem : OSKShareableContentItem
+
+/**
+ The plain-text content of the outgoing post. Must not be nil.
+ */
+@property (copy, nonatomic) NSString *text;
+
+/**
+ Facebook link posts require a URL separate from the post text.
+ */
+@property (copy, nonatomic) NSURL *link;
+
+/**
+ An optional array of `<UIImage>` objects to be attached to the outgoing post.
  */
 @property (strong, nonatomic) NSArray *images;
 
@@ -284,9 +322,16 @@ extern NSString * const OSKShareableContentItemType_TextEditing;
 @interface OSKCopyToPasteboardContentItem : OSKShareableContentItem
 
 /**
- Plain text content for copying & pasting.
+ Plain text content for copying & pasting. Setting this property will set all
+ other properties to nil.
  */
 @property (copy, nonatomic) NSString *text;
+
+/**
+ Image content for copying & pasting. Setting this property will set all
+ other properties to nil. 
+ */
+@property (copy, nonatomic) NSArray *images;
 
 @end
 

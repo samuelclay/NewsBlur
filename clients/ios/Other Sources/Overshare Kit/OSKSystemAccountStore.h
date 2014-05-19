@@ -72,6 +72,22 @@
 - (void)renewCredentialsForAccount:(ACAccount *)account
                         completion:(void(^)(ACAccountCredentialRenewResult renewResult, NSError *error))completion;
 
+/**
+ Returns the most recent active system account's identifier, for a given activity type;
+ 
+ @param accountTypeIdentifier The iOS account type identifier (See ACAccountType.h)
+ */
+- (NSString *)lastUsedAccountIdentifierForType:(NSString *)accountTypeIdentifier;
+
+/**
+ Registers an account identifer as the the current active account for a given activity type.
+ 
+ @param account The identifier of the system account to be registered.
+ 
+ @param accountTypeIdentifier The iOS account type identifier (See ACAccountType.h)
+ */
+- (void)setLastUsedAccountIdentifier:(NSString *)identifier forType:(NSString *)accountTypeIdentifier;
+
 @end
 
 

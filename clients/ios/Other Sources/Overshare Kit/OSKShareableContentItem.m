@@ -9,6 +9,7 @@
 #import "OSKShareableContentItem.h"
 
 NSString * const OSKShareableContentItemType_MicroblogPost = @"OSKShareableContentItemType_MicroblogPost";
+NSString * const OSKShareableContentItemType_Facebook = @"OSKShareableContentItemType_Facebook";
 NSString * const OSKShareableContentItemType_BlogPost = @"OSKShareableContentItemType_BlogPost";
 NSString * const OSKShareableContentItemType_Email = @"OSKShareableContentItemType_Email";
 NSString * const OSKShareableContentItemType_SMS = @"OSKShareableContentItemType_SMS";
@@ -43,6 +44,14 @@ NSString * const OSKShareableContentItemType_TextEditing = @"OSKShareableContent
 
 - (NSString *)itemType {
     return OSKShareableContentItemType_MicroblogPost;
+}
+
+@end
+
+@implementation OSKFacebookContentItem
+
+- (NSString *)itemType {
+    return OSKShareableContentItemType_Facebook;
 }
 
 @end
@@ -83,6 +92,20 @@ NSString * const OSKShareableContentItemType_TextEditing = @"OSKShareableContent
 
 - (NSString *)itemType {
     return OSKShareableContentItemType_CopyToPasteboard;
+}
+
+- (void)setText:(NSString *)text {
+    _text = [text copy];
+    if (_text) {
+        [self setImages:nil];
+    }
+}
+
+- (void)setImages:(NSArray *)images {
+    _images = [images copy];
+    if (_images) {
+        [self setText:nil];
+    }
 }
 
 @end

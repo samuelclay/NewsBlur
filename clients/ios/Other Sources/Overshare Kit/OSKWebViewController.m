@@ -10,6 +10,7 @@
 
 #import "OSKActivityIndicatorItem.h"
 #import "OSKPresentationManager.h"
+#import "OSKRPSTPasswordManagementAppService.h"
 
 @interface OSKWebViewController () <UIWebViewDelegate>
 
@@ -17,6 +18,7 @@
 @property (strong, nonatomic) NSURL *initialURL;
 @property (strong, nonatomic) OSKActivityIndicatorItem *activityIndicatorView;
 @property (assign, nonatomic) BOOL viewHasAppeared;
+@property (assign, nonatomic) BOOL showOnePasswordButton;
 
 @end
 
@@ -26,6 +28,9 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         _initialURL = URL;
+        if ([self.class queryForOnePasswordSearch] != nil) {
+            _showOnePasswordButton = [OSKRPSTPasswordManagementAppService passwordManagementAppIsAvailable];
+        }
     }
     return self;
 }
@@ -36,7 +41,18 @@
     self.view.backgroundColor = [[OSKPresentationManager sharedInstance] color_opaqueBackground];
     
     NSString *cancelTitle = [[OSKPresentationManager sharedInstance] localizedText_Cancel];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:cancelTitle style:UIBarButtonItemStylePlain target:self action:@selector(cancelButtonPressed:)];
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithTitle:cancelTitle style:UIBarButtonItemStylePlain target:self action:@selector(cancelButtonPressed:)];
+    
+    if (self.showOnePasswordButton) {
+        NSString *pwTitle = @"1Password";
+        UIBarButtonItem *onePWItem = [[UIBarButtonItem alloc] initWithTitle:pwTitle style:UIBarButtonItemStylePlain target:self action:@selector(onePasswordButtonTapped:)];
+        UIBarButtonItem *space1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        self.navigationItem.leftBarButtonItems = @[cancelItem, space1, onePWItem];
+        self.title = @"";
+    } else {
+        self.navigationItem.leftBarButtonItems = @[cancelItem];
+    }
+    
     self.activityIndicatorView = [self spinnerViewItem];
     self.navigationItem.rightBarButtonItem = self.activityIndicatorView;
     
@@ -125,6 +141,21 @@
                 [storage deleteCookie:cookie];
             }
         }
+    }
+}
+
+#pragma mark - One Password
+
++ (NSString *)queryForOnePasswordSearch {
+    // Subclasses may override
+    return nil;
+}
+
+- (void)onePasswordButtonTapped:(id)sender {
+    NSString *query = [self.class queryForOnePasswordSearch];
+    if (query) {
+        NSURL *URL = [OSKRPSTPasswordManagementAppService passwordManagementAppCompleteURLForSearchQuery:query];
+        [[UIApplication sharedApplication] openURL:URL];
     }
 }
 

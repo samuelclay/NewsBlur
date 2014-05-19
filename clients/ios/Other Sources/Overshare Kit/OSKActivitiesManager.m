@@ -34,6 +34,7 @@
 #import "OSKPocketActivity.h"
 #import "OSKReadabilityActivity.h"
 #import "OSKSafariActivity.h"
+#import "OSKSaveToCameraRollActivity.h"
 #import "OSKSMSActivity.h"
 #import "OSKThingsActivity.h"
 #import "OSKTwitterActivity.h"
@@ -122,8 +123,13 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
         }
         else if ([item.itemType isEqualToString:OSKShareableContentItemType_MicroblogPost]) {
             activitiesToAdd = [self builtInActivitiesForMicroblogPostItem:(OSKMicroblogPostContentItem *)item
-                                                  excludedActivityTypes:excludedActivityTypes
-                                                      requireOperations:requireOperations];
+                                                    excludedActivityTypes:excludedActivityTypes
+                                                        requireOperations:requireOperations];
+        }
+        else if ([item.itemType isEqualToString:OSKShareableContentItemType_Facebook]) {
+            activitiesToAdd = [self builtInActivitiesForFacebookItem:(OSKFacebookContentItem *)item
+                                               excludedActivityTypes:excludedActivityTypes
+                                                   requireOperations:requireOperations];
         }
         else if ([item.itemType isEqualToString:OSKShareableContentItemType_BlogPost]) {
             activitiesToAdd = [self builtInActivitiesForBlogPostItem:(OSKBlogPostContentItem *)item
@@ -218,6 +224,10 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
     additionals = [self contentItemsOfType:OSKShareableContentItemType_Email inArray:content.additionalItems];
     [sortedItems addObjectsFromArray:additionals];
     
+    if (content.facebookItem) { [sortedItems addObject:content.facebookItem]; }
+    additionals = [self contentItemsOfType:OSKShareableContentItemType_Facebook inArray:content.additionalItems];
+    [sortedItems addObjectsFromArray:additionals];
+    
     if (content.microblogPostItem) { [sortedItems addObject:content.microblogPostItem]; }
     additionals = [self contentItemsOfType:OSKShareableContentItemType_MicroblogPost inArray:content.additionalItems];
     [sortedItems addObjectsFromArray:additionals];
@@ -289,13 +299,6 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
                                                     item:item];
     if (twitter) { [activities addObject:twitter]; }
     
-    OSKFacebookActivity *facebook = [self validActivityForType:[OSKFacebookActivity activityType]
-                                                       class:[OSKFacebookActivity class]
-                                               excludedTypes:excludedActivityTypes
-                                           requireOperations:requireOperations
-                                                        item:item];
-    if (facebook) { [activities addObject:facebook]; }
-    
     OSKAppDotNetActivity *appDotNet = [self validActivityForType:[OSKAppDotNetActivity activityType]
                                                        class:[OSKAppDotNetActivity class]
                                                excludedTypes:excludedActivityTypes
@@ -309,6 +312,19 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
                                                  requireOperations:requireOperations
                                                               item:item];
     if (googlePlus) { [activities addObject:googlePlus]; }
+    
+    return activities;
+}
+
+- (NSArray *)builtInActivitiesForFacebookItem:(OSKFacebookContentItem *)item excludedActivityTypes:(NSArray *)excludedActivityTypes requireOperations:(BOOL)requireOperations {
+    NSMutableArray *activities = [[NSMutableArray alloc] init];
+    
+    OSKFacebookActivity *facebook = [self validActivityForType:[OSKFacebookActivity activityType]
+                                                         class:[OSKFacebookActivity class]
+                                                 excludedTypes:excludedActivityTypes
+                                             requireOperations:requireOperations
+                                                          item:item];
+    if (facebook) { [activities addObject:facebook]; }
     
     return activities;
 }
@@ -390,7 +406,16 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
 }
 
 - (NSArray *)builtInActivitiesForPhotosharingItem:(OSKPhotoSharingContentItem *)item excludedActivityTypes:(NSArray *)excludedActivityTypes requireOperations:(BOOL)requireOperations {
-    return nil;
+    NSMutableArray *activities = [[NSMutableArray alloc] init];
+    
+    OSKSaveToCameraRollActivity *saveToCameraRoll = [self validActivityForType:[OSKSaveToCameraRollActivity activityType]
+                                                                         class:[OSKSaveToCameraRollActivity class]
+                                                                 excludedTypes:excludedActivityTypes
+                                                             requireOperations:requireOperations
+                                                                          item:item];
+    if (saveToCameraRoll) { [activities addObject:saveToCameraRoll]; }
+    
+    return activities;
 }
 
 - (NSArray *)builtInActivitiesForReadLaterItem:(OSKReadLaterContentItem *)item excludedActivityTypes:(NSArray *)excludedActivityTypes requireOperations:(BOOL)requireOperations {
@@ -648,7 +673,7 @@ static NSString * OSKActivitiesManagerPersistentExclusionsKey = @"OSKActivitiesM
         else if ([activityType isEqualToString:OSKActivityType_API_GooglePlus]) {
             appCredential = [[OSKApplicationCredential alloc]
                              initWithOvershareApplicationKey:OSKApplicationCredential_GooglePlus_Key
-                             applicationSecret:OSKApplicationCredential_Readability_Secret
+                             applicationSecret:nil
                              appName:@"Overshare"];
         }
     }

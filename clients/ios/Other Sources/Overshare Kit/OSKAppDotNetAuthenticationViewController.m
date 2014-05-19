@@ -123,6 +123,12 @@ static NSString * OSKAppDotNetAuthentication_Scopes_Key = @"scope";
     [self setDelegate:delegate];
 }
 
+#pragma mark - One Password
+
++ (NSString *)queryForOnePasswordSearch {
+    return @"App.net";
+}
+
 @end
 
 

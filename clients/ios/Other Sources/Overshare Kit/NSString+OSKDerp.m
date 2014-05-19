@@ -31,19 +31,19 @@
 @implementation NSString (OSKDerp)
 
 -(NSString *)osk_derp_stringByEscapingPercents{
-    NSString *result = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-																					(CFStringRef)self,
+    NSString *result = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+																					(__bridge CFStringRef)self,
 																					NULL,
 																					CFSTR("!*'();:@&=+$,/?%#[]"),
-																					kCFStringEncodingUTF8));
+																					kCFStringEncodingUTF8);
 	return result;
 }
 
 -(NSString *)osk_derp_stringByUnscapingPercents{
-    NSString *result = (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
-																									(CFStringRef)self,
+    NSString *result = (__bridge_transfer NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
+																									(__bridge CFStringRef)self,
 																									CFSTR(""),
-																									kCFStringEncodingUTF8));
+																									kCFStringEncodingUTF8);
 	return result;
 }
 

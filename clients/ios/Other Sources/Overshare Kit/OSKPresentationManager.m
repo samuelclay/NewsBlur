@@ -40,7 +40,7 @@
 NSString * const OSKPresentationOption_ActivityCompletionHandler = @"OSKPresentationOption_ActivityCompletionHandler";
 NSString * const OSKPresentationOption_PresentationEndingHandler = @"OSKPresentationOption_PresentationEndingHandler";
 
-static CGFloat OSKPresentationManagerActivitySheetPresentationDuration = 0.3f;
+static CGFloat OSKPresentationManagerActivitySheetPresentationDuration = 0.33f;
 static CGFloat OSKPresentationManagerActivitySheetDismissalDuration = 0.16f;
 
 static NSInteger OSKTextViewFontSize_Phone = 18.0f;
@@ -68,6 +68,8 @@ static NSInteger OSKTextViewFontSize_Pad = 20.0f;
 @property (assign, nonatomic, readonly) BOOL isPresentingViaPopover;
 
 @end
+
+#define USE_UNDOCUMENTED_ANIMATION_CURVE 0
 
 @implementation OSKPresentationManager
 
@@ -187,13 +189,41 @@ static NSInteger OSKTextViewFontSize_Pad = 20.0f;
         [sheet viewWillAppear:YES];
         [self.parentMostViewController.view addSubview:sheet.view];
         
-        [UIView animateWithDuration:OSKPresentationManagerActivitySheetPresentationDuration delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-            [sheet.view setFrame:targetFrame];
-            [self.shadowView setAlpha:1.0];
-        } completion:^(BOOL finished) {
-            [sheet viewDidAppear:YES];
-            [self setIsAnimating:NO];
-        }];
+#if USE_UNDOCUMENTED_ANIMATION_CURVE == 1
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:OSKPresentationManagerActivitySheetPresentationDuration];
+        [UIView setAnimationCurve:7]; // This is the curve used by action sheets and the keyboard on iOS 7.0 and later.
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [sheet.view setFrame:targetFrame];
+        [UIView commitAnimations];
+        
+        [UIView
+         animateWithDuration:OSKPresentationManagerActivitySheetPresentationDuration
+         delay:0
+         options:UIViewAnimationOptionCurveLinear
+         animations:^{
+             [self.shadowView setAlpha:1.0];
+         } completion:^(BOOL finished) {
+             [sheet viewDidAppear:YES];
+             [self setIsAnimating:NO];
+         }];
+#else
+        [UIView
+         animateWithDuration:OSKPresentationManagerActivitySheetPresentationDuration
+         delay:0
+         options:UIViewAnimationOptionCurveEaseOut
+         animations:^{
+             [sheet.view setFrame:targetFrame];
+             [self.shadowView setAlpha:1.0];
+         } completion:^(BOOL finished) {
+             [sheet viewDidAppear:YES];
+             [self setIsAnimating:NO];
+         }];
+#endif
+        
+        
+        
     } else {
         OSKLog(@"Attempting to present a second activity sheet while the first is still visible.");
     }
@@ -597,6 +627,21 @@ willRepositionPopoverToRect:(inout CGRect *)rect
             color = OSKDefaultColor_LightStyle_TextColor;
         } else {
             color = OSKDefaultColor_DarkStyle_TextColor;
+        }
+    }
+    return color;
+}
+
+- (UIColor *)color_textViewBackground {
+    UIColor *color;
+    if ([self.colorDelegate respondsToSelector:@selector(osk_color_textViewBackground)]) {
+        color = [self.colorDelegate osk_color_textViewBackground];
+    } else {
+        OSKActivitySheetViewControllerStyle style = [self sheetStyle];
+        if (style == OSKActivitySheetViewControllerStyle_Light) {
+            color = OSKDefaultColor_LightStyle_OpaqueBGColor;
+        } else {
+            color = OSKDefaultColor_DarkStyle_OpaqueBGColor;
         }
     }
     return color;

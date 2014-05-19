@@ -23,7 +23,7 @@
     }];
 }
 
-+ (void)postContentItem:(OSKMicroblogPostContentItem *)item toSystemAccount:(ACAccount *)account options:(NSDictionary *)options completion:(void(^)(BOOL success, NSError *error))completion {
++ (void)postContentItem:(OSKFacebookContentItem *)item toSystemAccount:(ACAccount *)account options:(NSDictionary *)options completion:(void(^)(BOOL success, NSError *error))completion {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self renewCredentials:(ACAccount *)account completion:^(BOOL theSuccess, NSError *theError) {
             if (theSuccess) {
@@ -41,7 +41,7 @@
     });
 }
 
-+ (void)_postContentItem:(OSKMicroblogPostContentItem *)item toSystemAccount:(ACAccount *)account options:(NSDictionary *)options completion:(void(^)(BOOL success, NSError *error))completion {
++ (void)_postContentItem:(OSKFacebookContentItem *)item toSystemAccount:(ACAccount *)account options:(NSDictionary *)options completion:(void(^)(BOOL success, NSError *error))completion {
     SLRequestHandler requestHandler = ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
         if (responseData != nil) {
             
@@ -105,10 +105,13 @@
     }
 }
 
-+ (SLRequest *)plainTextMessageRequestForContentItem:(OSKMicroblogPostContentItem *)item options:(NSDictionary *)options account:(ACAccount *)account {
++ (SLRequest *)plainTextMessageRequestForContentItem:(OSKFacebookContentItem *)item options:(NSDictionary *)options account:(ACAccount *)account {
     SLRequest *feedRequest = nil;
     
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{@"message": item.text.copy}];
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{@"message" : item.text.copy}];
+    if (item.link.absoluteString) {
+        [parameters setObject:item.link.absoluteString forKey:@"link"];
+    }
     [parameters setObject:[self _queryParameterForAudience:options[ACFacebookAudienceKey]] forKey:@"privacy"];
     NSURL *feedURL = [NSURL URLWithString:@"https://graph.facebook.com/me/feed"];
     feedRequest = [SLRequest
@@ -121,10 +124,11 @@
     return feedRequest;
 }
 
-+ (SLRequest *)photoUploadRequestForContentItem:(OSKMicroblogPostContentItem *)item options:(NSDictionary *)options image:(UIImage *)image account:(ACAccount *)account {
++ (SLRequest *)photoUploadRequestForContentItem:(OSKFacebookContentItem *)item options:(NSDictionary *)options image:(UIImage *)image account:(ACAccount *)account {
     SLRequest *feedRequest = nil;
     
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{@"message": item.text.copy}];
+    NSDictionary* parametersDictionary = [item.text length] > 0 ? @{@"message": item.text.copy} : @{};
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:parametersDictionary];
     [parameters setObject:[self _queryParameterForAudience:options[ACFacebookAudienceKey]] forKey:@"privacy"];
     NSURL *feedURL = [NSURL URLWithString:@"https://graph.facebook.com/me/photos"];
     feedRequest = [SLRequest

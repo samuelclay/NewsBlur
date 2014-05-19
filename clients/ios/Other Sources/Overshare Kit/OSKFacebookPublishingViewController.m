@@ -15,22 +15,32 @@
 #import "OSKBorderedButton.h"
 #import "OSKFacebookActivity.h"
 #import "OSKFacebookAudienceChooserViewController.h"
-#import "OSKMicrobloggingActivity.h"
+#import "OSKFacebookSharing.h"
 #import "OSKSystemAccountStore.h"
 #import "OSKShareableContentItem.h"
 #import "OSKPresentationManager.h"
-#import "OSKTextView.h"
+#import "OSKMicrobloggingTextView.h"
 #import "UIImage+OSKUtilities.h"
+#import "UIColor+OSKUtility.h"
 
-@interface OSKFacebookPublishingViewController () <OSKTextViewDelegate, OSKAccountChooserViewControllerDelegate, OSKFacebookAudienceChooserDelegate>
+@interface OSKFacebookPublishingViewController ()
+<
+    OSKUITextViewSubstituteDelegate,
+    OSKMicrobloggingTextViewAttachmentsDelegate,
+    OSKAccountChooserViewControllerDelegate,
+    OSKFacebookAudienceChooserDelegate,
+    UIWebViewDelegate
+>
 
-@property (weak, nonatomic) IBOutlet OSKTextView *textView;
+@property (weak, nonatomic) IBOutlet OSKMicrobloggingTextView *textView;
 
 @property (strong, nonatomic) OSKFacebookActivity *activity;
-@property (strong, nonatomic) OSKMicroblogPostContentItem *contentItem;
+@property (strong, nonatomic) OSKFacebookContentItem *contentItem;
 @property (strong, nonatomic) UIView *keyboardToolbar;
 @property (strong, nonatomic) UIButton *accountButton; // Used on iPhone
 @property (strong, nonatomic) UIButton *audienceButton; // Used on iPhone
+@property (strong, nonatomic) UIWebView *snapshotWebView;
+@property (assign, nonatomic) BOOL hasLoadedWebSnapshot;
 
 @end
 
@@ -46,6 +56,14 @@
 @implementation OSKFacebookPublishingViewController
 
 @synthesize oskPublishingDelegate = _oskPublishingDelegate;
+
+#pragma mark - NSObject
+
+- (void)dealloc {
+    [_snapshotWebView stopLoading];
+    [_snapshotWebView setDelegate:nil];
+    _snapshotWebView = nil;
+}
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -78,18 +96,34 @@
 }
 
 - (void)setupTextView {
-    [self.textView setTextViewDelegate:self];
-    [self.textView setSyntaxHighlighting:[self.activity syntaxHighlightingStyle]];
+    [self.textView setOskDelegate:self];
+    [self.textView setOskAttachmentsDelegate:self];
+    [self.textView setSyntaxHighlighting:[self.activity syntaxHighlighting]];
     [self.textView setText:self.contentItem.text];
     
     [self updateDoneButton];
     
-    NSUInteger numberOfImages = self.contentItem.images.count;
-    if (numberOfImages > 0) {
-        NSUInteger numberOfImagesToShow = MIN(MIN([self.activity maximumImageCount], 3), numberOfImages);
-        NSArray *imagesToShow = [self.contentItem.images subarrayWithRange:NSMakeRange(0, numberOfImagesToShow)];
-        OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImages:imagesToShow];
+    if (self.contentItem.link) {
+        UIImage *linkPlaceholderImage = nil;
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            linkPlaceholderImage = [UIImage imageNamed:@"osk_linkPlaceholder_pad.png"];
+        } else {
+            linkPlaceholderImage = [UIImage imageNamed:@"osk_linkPlaceholder_phone.png"];
+        }
+        UIColor *accentColor = [[OSKPresentationManager sharedInstance].color_textViewBackground osk_contrastingColor];
+        linkPlaceholderImage = [UIImage osk_maskedImage:linkPlaceholderImage color:accentColor];
+        OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImages:@[linkPlaceholderImage]];
         [self.textView setOskAttachment:attachment];
+        
+        [self generateWebPageSnapshotForLink:self.contentItem.link];
+    } else {
+        NSUInteger numberOfImages = self.contentItem.images.count;
+        if (numberOfImages > 0) {
+            NSUInteger numberOfImagesToShow = MIN(MIN([self.activity maximumImageCount], 3), numberOfImages);
+            NSArray *imagesToShow = [self.contentItem.images subarrayWithRange:NSMakeRange(0, numberOfImagesToShow)];
+            OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImages:imagesToShow];
+            [self.textView setOskAttachment:attachment];
+        }
     }
 }
 
@@ -202,14 +236,25 @@
     [self updateAudienceButton];
 }
 
-#pragma mark - OSKTextView Delegate
+#pragma mark - OSKUITextViewSubstituteDelegate
 
-- (void)textViewDidChange:(OSKTextView *)textView {
+- (void)textViewDidChange:(OSKUITextViewSubstitute *)textView {
     [self.contentItem setText:textView.attributedText.string];
     [self updateDoneButton];
 }
 
-- (void)textViewDidTapRemoveAttachment:(OSKTextView *)textView {
+#pragma mark - OSKTextViewAttachmentsDelegate
+
+- (BOOL)textView:(OSKMicrobloggingTextView *)textView shouldAllowAttachmentsToBeEdited:(OSKTextViewAttachment *)attachment {
+    BOOL isALinkPost = (self.contentItem.link != nil);
+    return (isALinkPost == NO);
+}
+
+- (BOOL)textViewShouldUseBorderedAttachmentView:(OSKMicrobloggingTextView *)textView {
+    return (self.hasLoadedWebSnapshot);
+}
+
+- (void)textViewDidTapRemoveAttachment:(OSKMicrobloggingTextView *)textView {
     [textView removeAttachment];
     [self.contentItem setImages:nil];
     [self updateDoneButton];
@@ -295,9 +340,14 @@
 - (void)showSystemAccountChooser {
     OSKSystemAccountStore *store = [OSKSystemAccountStore sharedInstance];
     OSKActivity <OSKActivity_SystemAccounts> *activity = (OSKActivity <OSKActivity_SystemAccounts> *)self.activity;
-    NSArray *accounts = [store accountsForAccountTypeIdentifier:[activity.class systemAccountTypeIdentifier]];
+    NSString *systemAccountTypeIdentifier = [activity.class systemAccountTypeIdentifier];
+    NSArray *accounts = [store accountsForAccountTypeIdentifier:systemAccountTypeIdentifier];
     ACAccount *activeAccount = activity.activeSystemAccount;
-    OSKAccountChooserViewController *chooser = [[OSKAccountChooserViewController alloc] initWithSystemAccounts:accounts activeAccount:activeAccount delegate:self];
+    OSKAccountChooserViewController *chooser = [[OSKAccountChooserViewController alloc]
+                                                initWithSystemAccounts:accounts
+                                                activeAccount:activeAccount
+                                                accountTypeIdentifier:systemAccountTypeIdentifier
+                                                delegate:self];
     [self.navigationController pushViewController:chooser animated:YES];
 }
 
@@ -362,7 +412,7 @@
 
 - (void)preparePublishingViewForActivity:(OSKActivity *)activity delegate:(id <OSKPublishingViewControllerDelegate>)oskPublishingDelegate {
     [self setActivity:(OSKFacebookActivity *)activity];
-    [self setContentItem:(OSKMicroblogPostContentItem *)self.activity.contentItem];
+    [self setContentItem:(OSKFacebookContentItem *)self.activity.contentItem];
     [self setOskPublishingDelegate:oskPublishingDelegate];
     self.title = [self.activity.class activityName];
 }
@@ -380,7 +430,60 @@
     [self setNewCurrentAudience:audience];
 }
 
+#pragma mark - Web Page Snapshot
+
+- (void)generateWebPageSnapshotForLink:(NSURL *)link {
+    if (self.snapshotWebView == nil) {
+        self.snapshotWebView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        self.snapshotWebView.delegate = self;
+        self.snapshotWebView.suppressesIncrementalRendering = NO;
+        self.snapshotWebView.scalesPageToFit = YES;
+        [self.snapshotWebView loadRequest:[NSURLRequest requestWithURL:link]];
+    }
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    if (self.hasLoadedWebSnapshot == NO) {
+        [self setHasLoadedWebSnapshot:YES];
+        // Wait a second or two for page load animations to finish,
+        // especially for sites like Twitter or an Apple product announcement.
+        __weak OSKFacebookPublishingViewController *weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [weakSelf grabSnapShotFromLoadedWebView:webView];
+        });
+    }
+}
+
+- (void)grabSnapShotFromLoadedWebView:(UIWebView *)webView {
+    
+    CGFloat snapshotWidth = webView.frame.size.width;
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(snapshotWidth, snapshotWidth), YES, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [webView.layer renderInContext:context];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    OSKTextViewAttachment *attachment = [[OSKTextViewAttachment alloc] initWithImages:@[image]];
+    [self.textView setOskAttachment:attachment];
+    
+    [self.snapshotWebView setDelegate:nil];
+    [self.snapshotWebView stopLoading];
+    [self setSnapshotWebView:nil];
+}
+
 @end
+
+
+
+
 
 
 

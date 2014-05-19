@@ -18,7 +18,11 @@
     OSKShareableContent *content = [[OSKShareableContent alloc] init];
     
     content.title = text;
-        
+    
+    OSKFacebookContentItem *facebook = [[OSKFacebookContentItem alloc] init];
+    facebook.text = text;
+    content.facebookItem = facebook;
+    
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
     microblogPost.text = text;
     content.microblogPostItem = microblogPost;
@@ -59,6 +63,10 @@
     content.title = absoluteString;
     
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    
+    OSKFacebookContentItem *facebook = [[OSKFacebookContentItem alloc] init];
+    facebook.link = url;
+    content.facebookItem = facebook;
     
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
     microblogPost.text = absoluteString;
@@ -117,6 +125,24 @@
     
     content.title = [NSString stringWithFormat:@"Post by %@: “%@”", authorName, text];
     
+    NSURL *URLforCanonicalURL = nil;
+    if (canonicalURL) {
+        URLforCanonicalURL = [NSURL URLWithString:canonicalURL];
+    }
+    
+    OSKFacebookContentItem *facebook = [[OSKFacebookContentItem alloc] init];
+    if (authorName) {
+        facebook.text = [NSString stringWithFormat:@"Check out this post by %@: ", authorName];
+    }
+    if (canonicalURL) {
+        facebook.link = URLforCanonicalURL;
+    }
+    else if (images) {
+        // Image posts cannot be link posts and vice versa.
+        facebook.images = images;
+    }
+    content.facebookItem = facebook;
+    
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
     microblogPost.text = [NSString stringWithFormat:@"“%@” (Via @%@) %@ ", text, authorName, canonicalURL];
     microblogPost.images = images;
@@ -149,27 +175,24 @@
     smsItem.attachments = images;
     content.smsItem = smsItem;
     
-    if (canonicalURL) {
-        NSURL *URLforCanonicalURL = [NSURL URLWithString:canonicalURL];
-        if (URLforCanonicalURL) {
-            OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
-            readLater.url = URLforCanonicalURL;
-            readLater.title = [NSString stringWithFormat:@"Post by %@", authorName];
-            readLater.description = text;
-            content.readLaterItem = readLater;
-            
-            OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
-            linkBookmarking.url = URLforCanonicalURL;
-            linkBookmarking.notes = [NSString stringWithFormat:@"%@\n\n%@", text, canonicalURL];
-            NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-            linkBookmarking.tags = @[appName];
-            linkBookmarking.markToRead = YES;
-            content.linkBookmarkItem = linkBookmarking;
-            
-            OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
-            browserItem.url = URLforCanonicalURL;
-            content.webBrowserItem = browserItem;
-        }
+    if (URLforCanonicalURL) {
+        OSKReadLaterContentItem *readLater = [[OSKReadLaterContentItem alloc] init];
+        readLater.url = URLforCanonicalURL;
+        readLater.title = [NSString stringWithFormat:@"Post by %@", authorName];
+        readLater.description = text;
+        content.readLaterItem = readLater;
+        
+        OSKLinkBookmarkContentItem *linkBookmarking = [[OSKLinkBookmarkContentItem alloc] init];
+        linkBookmarking.url = URLforCanonicalURL;
+        linkBookmarking.notes = [NSString stringWithFormat:@"%@\n\n%@", text, canonicalURL];
+        NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+        linkBookmarking.tags = @[appName];
+        linkBookmarking.markToRead = YES;
+        content.linkBookmarkItem = linkBookmarking;
+        
+        OSKWebBrowserContentItem *browserItem = [[OSKWebBrowserContentItem alloc] init];
+        browserItem.url = URLforCanonicalURL;
+        content.webBrowserItem = browserItem;
     }
     
     OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
@@ -207,47 +230,89 @@
 + (instancetype)contentFromImages:(NSArray *)images caption:(NSString *)caption {
     OSKShareableContent *content = [[OSKShareableContent alloc] init];
     
-    content.title = (caption.length) ? caption : @"Share";
+    // CONTENT TITLE
     
-    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    if (caption.length) {
+        [content setTitle:caption];
+    }
+    else if (images.count) {
+        NSString *title = (images.count == 1) ? @"Share Image" : @"Share Images";
+        [content setTitle:title];
+    }
+    else {
+        [content setTitle:@"Share"];
+    }
+    
+    // FACEBOOK
+    
+    OSKFacebookContentItem *facebook = [[OSKFacebookContentItem alloc] init];
+    facebook.text = caption;
+    facebook.images = images;
+    content.facebookItem = facebook;
+    
+    // MICROBLOG POST
     
     OSKMicroblogPostContentItem *microblogPost = [[OSKMicroblogPostContentItem alloc] init];
     microblogPost.text = caption;
     microblogPost.images = images;
     content.microblogPostItem = microblogPost;
     
-    OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
-    copyTextToPasteboard.text = caption;
-    content.pasteboardItem = copyTextToPasteboard;
+    // COPY TO PASTEBOARD
+    
+    if (images.count) {
+        OSKCopyToPasteboardContentItem *copyImageToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+        NSString *name = (images.count == 1) ? @"Copy Image" : @"Copy Images";
+        [copyImageToPasteboard setAlternateActivityName:name];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            copyImageToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-76.png"];
+        } else {
+            copyImageToPasteboard.alternateActivityIcon = [UIImage imageNamed:@"osk-copyIcon-purple-60.png"];
+        }
+        [copyImageToPasteboard setImages:images];
+        content.pasteboardItem = copyImageToPasteboard;
+    }
+    
+    if (caption.length) {
+        OSKCopyToPasteboardContentItem *copyTextToPasteboard = [[OSKCopyToPasteboardContentItem alloc] init];
+        [copyTextToPasteboard setAlternateActivityName:@"Copy Text"];
+        copyTextToPasteboard.text = caption;
+        if (content.pasteboardItem) {
+            content.additionalItems = @[copyTextToPasteboard];
+        } else {
+            content.pasteboardItem = copyTextToPasteboard;
+        }
+    }
+    
+    // EMAIL
     
     OSKEmailContentItem *emailItem = [[OSKEmailContentItem alloc] init];
     emailItem.body = caption;
     emailItem.attachments = images.copy;
     content.emailItem = emailItem;
     
+    // SMS
+    
     OSKSMSContentItem *smsItem = [[OSKSMSContentItem alloc] init];
     smsItem.body = caption;
     smsItem.attachments = images;
     content.smsItem = smsItem;
+    
+    // PHOTOSHARING
 	
 	OSKPhotoSharingContentItem *photoItem = [[OSKPhotoSharingContentItem alloc] init];
 	photoItem.images = images;
 	photoItem.caption = caption;
 	content.photoSharingItem = photoItem;
     
-    OSKToDoListEntryContentItem *toDoList = [[OSKToDoListEntryContentItem alloc] init];
-    toDoList.title = [NSString stringWithFormat:@"Look into stuff from %@", appName];
-    toDoList.notes = caption;
-    content.toDoListItem = toDoList;
+    // TODO LIST
+    
+    // No to-do lists accept images at this time.
+    
+    // AIRDROP
     
     if (images.count) {
         OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
         airDrop.items = images;
-        content.airDropItem = airDrop;
-    }
-    else if (caption.length) {
-        OSKAirDropContentItem *airDrop = [[OSKAirDropContentItem alloc] init];
-        airDrop.items = @[caption];
         content.airDropItem = airDrop;
     }
     

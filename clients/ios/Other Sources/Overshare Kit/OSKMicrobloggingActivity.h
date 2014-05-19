@@ -8,12 +8,9 @@
 
 @import Foundation;
 
-@class OSKMicroblogPostContentItem;
+#import "OSKSyntaxHighlighting.h"
 
-typedef NS_ENUM(NSInteger, OSKMicroblogSyntaxHighlightingStyle) {
-    OSKMicroblogSyntaxHighlightingStyle_Twitter,
-    OSKMicroblogSyntaxHighlightingStyle_LinksOnly,
-};
+@class OSKMicroblogPostContentItem;
 
 @protocol OSKMicrobloggingActivity <NSObject>
 
@@ -23,7 +20,7 @@ typedef NS_ENUM(NSInteger, OSKMicroblogSyntaxHighlightingStyle) {
 - (NSInteger)maximumImageCount;
 - (NSInteger)maximumUsernameLength;
 - (NSInteger)updateRemainingCharacterCount:(OSKMicroblogPostContentItem *)contentItem urlEntities:(NSArray *)urlEntities;
-- (OSKMicroblogSyntaxHighlightingStyle)syntaxHighlightingStyle;
+- (OSKSyntaxHighlighting)syntaxHighlighting;
 
 @optional
 

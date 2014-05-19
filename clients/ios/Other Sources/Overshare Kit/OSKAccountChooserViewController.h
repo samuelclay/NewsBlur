@@ -32,6 +32,7 @@
 
 - (instancetype)initWithSystemAccounts:(NSArray *)systemAccounts
                          activeAccount:(ACAccount *)account
+                 accountTypeIdentifier:(NSString *)accountTypeIdentifier
                               delegate:(id <OSKAccountChooserViewControllerDelegate>)delegate;
 
 @end
