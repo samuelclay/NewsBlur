@@ -328,6 +328,7 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

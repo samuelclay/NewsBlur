@@ -47,7 +47,17 @@
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
     
-    if (isFolderCollapsed) {
+    if ([folderName isEqual:@"saved_stories"]) {
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = appDelegate.savedStoriesCount;
+        unreadCount.blueCount = appDelegate.savedStoriesCount;
+        
+        [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
+    } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
         unreadCount.appDelegate = appDelegate;
@@ -58,18 +68,7 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
-    } else if ([folderName isEqual:@"saved_stories"]) {
-        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
-        unreadCount.appDelegate = appDelegate;
-        unreadCount.opaque = NO;
-        unreadCount.psCount = appDelegate.savedStoriesCount;
-        unreadCount.blueCount = appDelegate.savedStoriesCount;
-        
-        [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
-        countWidth = [unreadCount offsetWidth];
-        [self addSubview:unreadCount];
     }
-    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 

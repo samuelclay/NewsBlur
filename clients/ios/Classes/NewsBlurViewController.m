@@ -1102,7 +1102,7 @@ static UIFont *userLabelFont;
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial];
+    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];

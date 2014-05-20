@@ -450,6 +450,7 @@
 		FF3964B8192A9AF3004BEE1A /* UIImage+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D0192A9AF3004BEE1A /* UIImage+OSKUtilities.m */; };
 		FF3964B9192A9AF3004BEE1A /* UIView+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D2192A9AF3004BEE1A /* UIView+OSKUtilities.m */; };
 		FF3964BA192A9AF3004BEE1A /* UIViewController+OSKUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3963D4192A9AF3004BEE1A /* UIViewController+OSKUtilities.m */; };
+		FF3964BC192BED0A004BEE1A /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3964BB192BED0A004BEE1A /* tag.png */; };
 		FF41309D162CEC7100DDB6A7 /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309C162CEC7100DDB6A7 /* time.png */; };
 		FF4130A0162CECAE00DDB6A7 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = FF41309F162CECAE00DDB6A7 /* email.png */; };
 		FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */; };
@@ -1297,6 +1298,7 @@
 		FF3963D2192A9AF3004BEE1A /* UIView+OSKUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OSKUtilities.m"; sourceTree = "<group>"; };
 		FF3963D3192A9AF3004BEE1A /* UIViewController+OSKUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OSKUtilities.h"; sourceTree = "<group>"; };
 		FF3963D4192A9AF3004BEE1A /* UIViewController+OSKUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OSKUtilities.m"; sourceTree = "<group>"; };
+		FF3964BB192BED0A004BEE1A /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tag.png; sourceTree = "<group>"; };
 		FF41309C162CEC7100DDB6A7 /* time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = time.png; sourceTree = "<group>"; };
 		FF41309F162CECAE00DDB6A7 /* email.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = email.png; sourceTree = "<group>"; };
 		FF4130A1162E10CF00DDB6A7 /* MenuTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewCell.h; sourceTree = "<group>"; };
@@ -1807,6 +1809,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF3964BB192BED0A004BEE1A /* tag.png */,
 				FFB705051925921F0052101C /* line_spacing_l.png */,
 				FFB705061925921F0052101C /* line_spacing_m.png */,
 				FFB705071925921F0052101C /* line_spacing_s.png */,
@@ -3100,6 +3103,7 @@
 				FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */,
 				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
 				FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */,
+				FF3964BC192BED0A004BEE1A /* tag.png in Resources */,
 				FF29708B16DD7AA400E92F85 /* segment_active.png in Resources */,
 				FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */,
 				FF29708E16DD7C8A00E92F85 /* segment_left_selected.png in Resources */,

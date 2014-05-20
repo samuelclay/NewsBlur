@@ -2089,6 +2089,10 @@
 }
 
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial {
+    return [self getFavicon:filename isSocial:isSocial isSaved:NO];
+}
+
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved {
     UIImage *image = [self.cachedFavicons objectForKey:filename];
     
     if (image) {
@@ -2097,6 +2101,8 @@
         if (isSocial) {
             //            return [UIImage imageNamed:@"user_light.png"];
             return nil;
+        } else if (isSaved) {
+            return [UIImage imageNamed:@"tag.png"];            
         } else {
             return [UIImage imageNamed:@"world.png"];
         }

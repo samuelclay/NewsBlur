@@ -208,8 +208,12 @@ static UIFont *textFont = nil;
 }
 
 - (void)redrawUnreadCounts {
-    cell.unreadCount.psCount = cell.positiveCount;
-    cell.unreadCount.ntCount = cell.neutralCount;
+    if (cell.isSaved) {
+        cell.unreadCount.blueCount = cell.positiveCount;
+    } else {
+        cell.unreadCount.psCount = cell.positiveCount;
+        cell.unreadCount.ntCount = cell.neutralCount;
+    }
     [cell.unreadCount setNeedsLayout];
 }
 
