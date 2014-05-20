@@ -36,7 +36,7 @@ static UIFont *indicatorFont = nil;
 @synthesize siteFavicon;
 @synthesize isRead;
 @synthesize isShared;
-@synthesize isStarred;
+@synthesize isSaved;
 @synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
@@ -84,7 +84,7 @@ static UIFont *indicatorFont = nil;
         unreadIcon = @"g_icn_unread.png";
     }
     
-    UIColor *shareColor = self.isStarred ?
+    UIColor *shareColor = self.isSaved ?
                             UIColorFromRGB(0xF69E89) :
                             UIColorFromRGB(0xA4D97B);
     UIColor *readColor = self.isRead ?
@@ -236,7 +236,7 @@ static UIFont *indicatorFont = nil;
         storyTitleY = 12 + riverPadding - (theSize.height/font.pointSize*2);
     }
     int storyTitleX = leftMargin;
-    if (cell.isStarred) {
+    if (cell.isSaved) {
         UIImage *savedIcon = [UIImage imageNamed:@"clock"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;

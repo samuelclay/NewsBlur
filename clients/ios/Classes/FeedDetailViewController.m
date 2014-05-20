@@ -1117,7 +1117,7 @@
     
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
-    cell.isStarred = [[story objectForKey:@"starred"] boolValue];
+    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
     cell.storyImageUrl = nil;
     if (self.showImagePreview &&
@@ -1244,7 +1244,7 @@
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = ![storiesCollection isStoryUnread:appDelegate.activeStory];
     cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
-    cell.isStarred = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
+    cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];
 }
 

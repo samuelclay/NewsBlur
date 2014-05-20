@@ -894,7 +894,10 @@ static UIFont *userLabelFont;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-
+    BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
+    
+    if (isSaved) return;
+    
     [self performSelector:@selector(highlightCell:) withObject:cell afterDelay:0.0];
 
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
@@ -1105,6 +1108,7 @@ static UIFont *userLabelFont;
     cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
     cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
+    cell.isSaved       = isSaved;
     
     [cell setNeedsDisplay];
     

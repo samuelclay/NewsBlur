@@ -23,6 +23,7 @@ static UIFont *textFont = nil;
 @synthesize negativeCount = _negativeCount;
 @synthesize negativeCountStr;
 @synthesize isSocial;
+@synthesize isSaved;
 @synthesize unreadCount;
 
 + (void) initialize{
@@ -78,6 +79,11 @@ static UIFont *textFont = nil;
 }
 
 - (void)setupGestures {
+    if (self.isSaved) {
+        self.shouldDrag = NO;
+        return;
+    }
+    
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:self.isSocial ? @"menu_icn_fetch_subscribers.png" : @"train.png"
                      firstColor:UIColorFromRGB(0xA4D97B)
@@ -137,7 +143,7 @@ static UIFont *textFont = nil;
     }
     
     [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
-                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
+                        listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
 
     
     UIColor *textColor = cell.highlighted || cell.selected ?
@@ -184,7 +190,6 @@ static UIFont *textFont = nil;
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
-
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
@@ -203,8 +208,6 @@ static UIFont *textFont = nil;
 }
 
 - (void)redrawUnreadCounts {
-//    [cell.unreadCount drawInRect:self.frame ps:cell.positiveCount nt:cell.neutralCount
-//                        listType:(cell.isSocial ? NBFeedListSocial : NBFeedListFeed)];
     cell.unreadCount.psCount = cell.positiveCount;
     cell.unreadCount.ntCount = cell.neutralCount;
     [cell.unreadCount setNeedsLayout];
