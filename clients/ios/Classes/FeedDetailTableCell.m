@@ -155,7 +155,7 @@ static UIFont *indicatorFont = nil;
                 alpha = 0.34f;
             }
             [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
-            rect.size.width -= r.size.height;
+            rect.size.width -= imageFrame.size.width;
         }
     }
     
@@ -289,7 +289,8 @@ static UIFont *indicatorFont = nil;
         }
         
         [cell.storyContent
-         drawWithRect:CGRectMake(storyTitleX, storyContentY, storyContentWidth, contentSize.height)
+         drawWithRect:CGRectMake(storyTitleX, storyContentY,
+                                 rect.size.width - storyTitleX + leftMargin, contentSize.height)
          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
          attributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,

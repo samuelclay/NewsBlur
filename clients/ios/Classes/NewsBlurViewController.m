@@ -585,7 +585,9 @@ static UIFont *userLabelFont;
             if ([[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
             NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
             NSDictionary *savedTag = @{@"ps": [userTag objectForKey:@"count"],
-                                       @"feed_title": [userTag objectForKey:@"tag"]};
+                                       @"feed_title": [userTag objectForKey:@"tag"],
+                                       @"id": [userTag objectForKey:@"tag"],
+                                       @"tag": [userTag objectForKey:@"tag"]};
             [savedStories addObject:savedTagId];
             [savedStoryDict setObject:savedTag forKey:savedTagId];
             [appDelegate.dictUnreadCounts setObject:@{@"ps": [userTag objectForKey:@"count"],
@@ -1144,9 +1146,16 @@ static UIFont *userLabelFont;
     if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         appDelegate.storiesCollection.isSocialView = YES;
+        appDelegate.storiesCollection.isSavedView = NO;
+    } else if ([appDelegate isSavedFeed:feedIdStr]) {
+        feed = [appDelegate.dictSavedStoryTags objectForKey:feedIdStr];
+        appDelegate.storiesCollection.isSocialView = NO;
+        appDelegate.storiesCollection.isSavedView = YES;
+        appDelegate.storiesCollection.activeSavedStoryTag = [feed objectForKey:@"tag"];
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
         appDelegate.storiesCollection.isSocialView = NO;
+        appDelegate.storiesCollection.isSavedView = NO;
     }
 
     // If all feeds are already showing, no need to remember this one.

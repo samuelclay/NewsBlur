@@ -1117,6 +1117,7 @@
             [self.folderCountCache removeAllObjects];
         } else if ([folder isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isRiverView = YES;
+            feedDetailView.storiesCollection.isSavedView = YES;
             [feedDetailView.storiesCollection setActiveFolder:folder];
         } else {
             feedDetailView.storiesCollection.isRiverView = YES;
@@ -1967,7 +1968,8 @@
     UIView *gradientView;
     if (storiesCollection.isRiverView ||
         storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
+        storiesCollection.isSocialRiverView ||
+        storiesCollection.isSavedView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
@@ -2028,8 +2030,9 @@
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
-    } else if (storiesCollection.isRiverView &&
-               [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+    } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+        titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
+    } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
@@ -2060,8 +2063,9 @@
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-        } else if (storiesCollection.isRiverView &&
-                   [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+        } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+            titleImage = [UIImage imageNamed:@"tag.png"];
+        } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (storiesCollection.isRiverView) {
             titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
