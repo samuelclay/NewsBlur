@@ -542,7 +542,7 @@
                             @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
                             NEWSBLUR_URL,
                             storiesCollection.feedPage,
-                            storiesCollection.activeSavedStoryTag];
+                            [storiesCollection.activeSavedStoryTag urlEncode]];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
                             NEWSBLUR_URL,

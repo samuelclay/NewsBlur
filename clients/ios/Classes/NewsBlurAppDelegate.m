@@ -1115,14 +1115,13 @@
                 }
             }
             [self.folderCountCache removeAllObjects];
-        } else if ([folder isEqualToString:@"saved_stories"]) {
-            feedDetailView.storiesCollection.isRiverView = YES;
-            feedDetailView.storiesCollection.isSavedView = YES;
-            [feedDetailView.storiesCollection setActiveFolder:folder];
         } else {
             feedDetailView.storiesCollection.isRiverView = YES;
             NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
             
+            if ([folderName isEqualToString:@"saved_stories"]) {
+                feedDetailView.storiesCollection.isSavedView = YES;
+            }
             [feedDetailView.storiesCollection setActiveFolder:folderName];
             NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
             NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
