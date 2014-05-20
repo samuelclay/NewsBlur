@@ -489,7 +489,6 @@ static UIFont *userLabelFont;
 
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
@@ -545,6 +544,7 @@ static UIFont *userLabelFont;
     NSArray *sortedArray;
     
     // Set up dictSocialProfile and userActivitiesArray
+    appDelegate.dictUnreadCounts = [NSMutableDictionary dictionary];
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
@@ -554,6 +554,7 @@ static UIFont *userLabelFont;
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *savedStoryDict = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *tempActiveFeeds = [[NSMutableDictionary alloc] init];
     appDelegate.dictActiveFeeds = tempActiveFeeds;
     
@@ -577,8 +578,23 @@ static UIFont *userLabelFont;
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     
+    appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
     if (appDelegate.savedStoriesCount) {
-        [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
+        NSMutableArray *savedStories = [NSMutableArray array];
+        for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
+            if ([[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
+            NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
+            NSDictionary *savedTag = @{@"ps": [userTag objectForKey:@"count"],
+                                       @"feed_title": [userTag objectForKey:@"tag"]};
+            [savedStories addObject:savedTagId];
+            [savedStoryDict setObject:savedTag forKey:savedTagId];
+            [appDelegate.dictUnreadCounts setObject:@{@"ps": [userTag objectForKey:@"count"],
+                                                      @"nt": [NSNumber numberWithInt:0],
+                                                      @"ng": [NSNumber numberWithInt:0]}
+                                             forKey:savedTagId];
+        }
+        [allFolders setValue:savedStories forKey:@"saved_stories"];
+        appDelegate.dictSavedStoryTags = savedStoryDict;
     }
     
     appDelegate.dictFolders = allFolders;
@@ -1035,7 +1051,7 @@ static UIFont *userLabelFont;
     }
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
-    
+
     return [[appDelegate.dictFolders objectForKey:folderName] count];
 }
 
@@ -1045,6 +1061,7 @@ static UIFont *userLabelFont;
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+    BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
@@ -1059,6 +1076,8 @@ static UIFont *userLabelFont;
         return cell;
     } else if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
+    } else if (isSaved) {
+        CellIdentifier = @"SavedCellIdentifier";
     } else {
         CellIdentifier = @"FeedCellIdentifier";
     }
@@ -1071,8 +1090,13 @@ static UIFont *userLabelFont;
         cell.appDelegate = appDelegate;
     }
     
+    if (isSaved) {
+        NSLog(@"Saved: %@", [appDelegate.dictSavedStoryTags objectForKey:feedIdStr]);
+    }
     NSDictionary *feed = isSocial ?
                          [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                         isSaved ?
+                         [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
     cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial];
@@ -1406,7 +1430,9 @@ heightForHeaderInSection:(NSInteger)section {
         feedId = [NSString stringWithFormat:@"%@",feedId];
     }
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
-
+    if ([appDelegate isSavedFeed:feedId]) {
+        NSLog(@"is visible: %@? %@", feedId, unreadCounts);
+    }
     NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedId];
     if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
@@ -1585,10 +1611,8 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)loadAvatars {
-    NSLog(@"loadAvatars pre");
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
-        NSLog(@"loadAvatars start");
         for (NSString *feed_id in [appDelegate.dictSocialFeeds allKeys]) {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
@@ -1601,9 +1625,7 @@ heightForHeaderInSection:(NSInteger)section {
             [appDelegate saveFavicon:faviconImage feedId:feed_id];
         }
         
-        NSLog(@"loadAvatars end");
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"loadAvatars post");
             [self.feedTitlesTable reloadData];
         });
     });
@@ -1614,7 +1636,6 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
     __block NSString *responseString = [request responseString];
     
-    NSLog(@"saveAndDrawFavicons pre");
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
         NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
@@ -1624,7 +1645,6 @@ heightForHeaderInSection:(NSInteger)section {
                                  options:kNilOptions
                                  error:&error];
         
-        NSLog(@"saveAndDrawFavicons start");
         for (id feed_id in results) {
 //            NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 
 //            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
@@ -1639,9 +1659,7 @@ heightForHeaderInSection:(NSInteger)section {
             }
         }
         
-        NSLog(@"saveAndDrawFavicons end");
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"saveAndDrawFavicons post");
             [self.feedTitlesTable reloadData];
             [self loadAvatars];
         });

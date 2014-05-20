@@ -172,7 +172,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && ![folderName isEqual:@"saved_stories"]) {
+        if (section != 0 && section != 2) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];

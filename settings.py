@@ -57,6 +57,7 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 DEBUG                 = False
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
+DEBUG_QUERIES         = False
 MANAGERS              = ADMINS
 PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'
 TIME_ZONE             = 'GMT'

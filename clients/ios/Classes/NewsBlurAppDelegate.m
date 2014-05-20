@@ -129,6 +129,7 @@
 @synthesize dictFeeds;
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
+@synthesize dictSavedStoryTags;
 @synthesize dictSocialProfile;
 @synthesize dictUserProfile;
 @synthesize dictSocialServices;
@@ -714,6 +715,7 @@
 - (void)showLogin {
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
+    self.dictSavedStoryTags = nil;
     self.dictFolders = nil;
     self.dictFoldersArray = nil;
     self.userActivitiesArray = nil;
@@ -952,6 +954,10 @@
     return NO;
 }
 
+- (BOOL)isSavedFeed:(NSString *)feedIdStr {
+    return [feedIdStr startsWith:@"saved:"];
+}
+
 - (BOOL)isPortrait {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -1100,12 +1106,12 @@
             // add all the feeds from every NON blurblog folder
             [feedDetailView.storiesCollection setActiveFolder:@"everything"];
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
-                if (![folderName isEqualToString:@"river_blurblogs"]) {
-                    NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-                    NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
-                    for (int l=0; l < [folderFeeds count]; l++) {
-                        [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
-                    }
+                if ([folderName isEqualToString:@"river_blurblogs"]) continue;
+                if ([folderName isEqualToString:@"saved_stories"]) continue;
+                NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
                 }
             }
             [self.folderCountCache removeAllObjects];
@@ -1380,9 +1386,7 @@
 
 #pragma mark - Unread Counts
 
-- (void)populateDictUnreadCounts {
-    self.dictUnreadCounts = [NSMutableDictionary dictionary];
-    
+- (void)populateDictUnreadCounts {    
     [self.database inDatabase:^(FMDatabase *db) {
         FMResultSet *cursor = [db executeQuery:@"SELECT * FROM unread_counts"];
         
