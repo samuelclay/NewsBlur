@@ -1235,8 +1235,7 @@
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = @"All Stories";
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
-                feedTitle = [NSString stringWithFormat:@"Saved Stories - %@",
-                             storiesCollection.activeSavedStoryTag];
+                feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
             } else {
