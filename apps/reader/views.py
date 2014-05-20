@@ -358,8 +358,10 @@ def load_feeds_flat(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
-    starred_count = MStarredStory.objects(user_id=user.pk).count()
-    
+    starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
+    if not starred_count and len(starred_counts):
+        starred_count = MStarredStory.objects(user_id=user.pk).count()
+
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
@@ -378,6 +380,7 @@ def load_feeds_flat(request):
         "iphone_version": iphone_version,
         "categories": categories,
         'starred_count': starred_count,
+        'starred_counts': starred_counts,
     }
     return data
 
