@@ -2206,7 +2206,8 @@ class MStarredStoryCounts(mongo.Document):
     @classmethod
     def user_counts(cls, user_id, include_total=False, try_counting=True):
         counts = cls.objects.filter(user_id=user_id)
-        counts = [{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts]
+        counts = sorted([{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts],
+                        key=lambda x: x['tag'].lower())
         
         if counts == [] and try_counting:
             cls.count_tags_for_user(user_id)
@@ -2232,7 +2233,7 @@ class MStarredStoryCounts(mongo.Document):
             all_tags = MStarredStory.objects(user_id=user_id,
                                              user_tags__exists=True).item_frequencies('user_tags')
             user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
-                               key=itemgetter(1), 
+                               key=lambda x: x[0].lower(), 
                                reverse=True)
                            
             cls.objects(user_id=user_id).delete()
