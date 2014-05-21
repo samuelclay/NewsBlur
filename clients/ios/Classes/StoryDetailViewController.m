@@ -249,8 +249,6 @@
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    
-                    
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
@@ -261,14 +259,19 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/share\"><div>"
-                         "      <span class=\"NB-icon\"></span> Share this story"
-                         "    </div></a>"
-                         "  </div>"
                          "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
                          "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                         "      <span class=\"NB-icon\"></span> Train this story"
+                         "      <span class=\"NB-icon\"></span> Train"
+                         "    </div></a>"
+                         "  </div>"
+                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
+                         "    <a href=\"http://ios.newsblur.com/share\"><div>"
+                         "      <span class=\"NB-icon\"></span> Share"
+                         "    </div></a>"
+                         "  </div>"
+                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button'>"
+                         "    <a href=\"http://ios.newsblur.com/save\"><div>"
+                         "      <span class=\"NB-icon\"></span> Save"
                          "    </div></a>"
                          "  </div>"
                          "</div></div>"];
@@ -1088,6 +1091,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [self openShareDialog];
             return NO;
         } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
+            [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
+                         yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                               width:[[urlComponents objectAtIndex:4] intValue]
+                              height:[[urlComponents objectAtIndex:5] intValue]];
+            return NO;
+        } else if ([action isEqualToString:@"save"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
                                width:[[urlComponents objectAtIndex:4] intValue]
