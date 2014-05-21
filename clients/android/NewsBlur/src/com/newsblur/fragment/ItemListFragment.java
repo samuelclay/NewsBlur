@@ -114,9 +114,7 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         inflater.inflate(R.menu.context_story, menu);
 
         Story story = adapter.getStory(((AdapterView.AdapterContextMenuInfo) (menuInfo)).position);
-        if (story.read) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-        } else {
+        if (!story.read) {
             menu.removeItem(R.id.menu_mark_story_as_unread);
         }
 
@@ -127,6 +125,17 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         }
     }
     
+    private void markStoriesAsRead(List<Story> stories) {
+        List<Story> storiesToMarkAsRead = new ArrayList<Story>();
+        for(Story s : stories) {
+            if(! s.read) {
+                storiesToMarkAsRead.add(s);
+            }
+        }
+        FeedUtils.markStoriesAsRead(storiesToMarkAsRead, getActivity());
+        hasUpdated();
+    }
+    
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
@@ -134,10 +143,6 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
         Activity activity = getActivity();
 
         switch (item.getItemId()) {
-        case R.id.menu_mark_story_as_read:
-            FeedUtils.markStoryAsRead(story, activity);
-            hasUpdated();
-            return true;
 
         case R.id.menu_mark_story_as_unread:
             FeedUtils.markStoryUnread(story, activity);
@@ -145,15 +150,11 @@ public abstract class ItemListFragment extends Fragment implements OnScrollListe
             return true;
 
         case R.id.menu_mark_previous_stories_as_read:
-            List<Story> previousStories = adapter.getPreviousStories(menuInfo.position);
-            List<Story> storiesToMarkAsRead = new ArrayList<Story>();
-            for(Story s : previousStories) {
-                if(! s.read) {
-                    storiesToMarkAsRead.add(s);
-                }
-            }
-            FeedUtils.markStoriesAsRead(storiesToMarkAsRead, activity);
-            hasUpdated();
+        	markStoriesAsRead(adapter.getPreviousStories(menuInfo.position));
+            return true;
+
+        case R.id.menu_mark_next_stories_as_read:
+        	markStoriesAsRead(adapter.getNextStories(menuInfo.position));
             return true;
 
         case R.id.menu_shared:
