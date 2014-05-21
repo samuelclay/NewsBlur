@@ -403,6 +403,10 @@
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
+
+    [currentPage refreshSideoptions];
+    [nextPage refreshSideoptions];
+    [previousPage refreshSideoptions];
 }
 - (void)resizeScrollView {
     NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;

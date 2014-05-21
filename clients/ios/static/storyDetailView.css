@@ -607,7 +607,8 @@ a.NB-show-profile {
     text-transform: uppercase;
 }
 
-.NB-button.active a {
+.NB-button.active a,
+.NB-button.NB-button-active a {
     text-shadow: none;
 }
 
@@ -631,7 +632,8 @@ a.NB-show-profile {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     line-height: 1.5em;
 }
-.NB-button:active div {
+.NB-button:active div,
+.NB-button.NB-button-active div {
     background: -webkit-gradient(
         linear, left top, left bottom,
         from(#6C6D69),
@@ -645,7 +647,8 @@ a.NB-show-profile {
     box-shadow: none;
 }
 
-.NB-button.NB-share-button:active div {
+.NB-button.NB-share-button:active div,
+.NB-button.NB-share-button.NB-button-active div {
     color: darkgrey;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
 }

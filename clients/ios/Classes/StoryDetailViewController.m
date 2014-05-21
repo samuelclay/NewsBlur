@@ -256,25 +256,7 @@
                     "<script src=\"storyDetailView.js\"></script>"
                     "<script src=\"fastTouch.js\"></script>"];
     
-    sharingHtmlString = [NSString stringWithFormat:@
-                         "<div class='NB-share-header'></div>"
-                         "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                         "      <span class=\"NB-icon\"></span> Train"
-                         "    </div></a>"
-                         "  </div>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/share\"><div>"
-                         "      <span class=\"NB-icon\"></span> Share"
-                         "    </div></a>"
-                         "  </div>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/save\"><div>"
-                         "      <span class=\"NB-icon\"></span> Save"
-                         "    </div></a>"
-                         "  </div>"
-                         "</div></div>"];
+    sharingHtmlString = [self getSideoptions];
 
     NSString *storyHeader = [self getHeader];
     NSString *htmlString = [NSString stringWithFormat:@
@@ -285,14 +267,13 @@
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "            %@" // shareBar
-                            "            <div id=\"NB-story\" class=\"NB-story\">%@</div>"
-                            "            %@" // share
-                            "            <div id=\"NB-comments-wrapper\">"
-                            "                %@" // friends comments
-                            "            </div>"
-                            "            %@"
-                            "        </div>" // storyHeader
+                            "        %@" // shareBar
+                            "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                            "        <div id=\"NB-sideoptions-container\">%@</div>"
+                            "        <div id=\"NB-comments-wrapper\">"
+                            "            %@" // friends comments
+                            "        </div>"
+                            "        %@"
                             "    </div>" // line-spacing
                             "    </div>" // font-size
                             "    </div>" // font-style
@@ -467,6 +448,39 @@
                              storyTags,
                              storyStarred];
     return storyHeader;
+}
+
+- (NSString *)getSideoptions {
+    BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
+    BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
+    
+    NSString *sideoptions = [NSString stringWithFormat:@
+                             "<div class='NB-sideoptions'>"
+                             "<div class='NB-share-header'></div>"
+                             "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/train\"><div>"
+                             "      <span class=\"NB-icon\"></span> Train"
+                             "    </div></a>"
+                             "  </div>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button %@'>"
+                             "    <a href=\"http://ios.newsblur.com/share\"><div>"
+                             "      <span class=\"NB-icon\"></span> %@"
+                             "    </div></a>"
+                             "  </div>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
+                             "    <a href=\"http://ios.newsblur.com/save\"><div>"
+                             "      <span class=\"NB-icon\"></span> %@"
+                             "    </div></a>"
+                             "  </div>"
+                             "</div></div></div>",
+                             isShared ? @"NB-button-active" : @"",
+                             isShared ? @"Shared" : @"Share",
+                             isSaved ? @"NB-button-active" : @"",
+                             isSaved ? @"Saved" : @"Save"
+                             ];
+    
+    return sideoptions;
 }
 
 - (NSString *)getAvatars:(NSString *)key {
@@ -1096,11 +1110,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                width:[[urlComponents objectAtIndex:4] intValue]
                               height:[[urlComponents objectAtIndex:5] intValue]];
             return NO;
-        } else if ([action isEqualToString:@"save"] && [urlComponents count] > 5) {
-            [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
-                         yCoordinate:[[urlComponents objectAtIndex:3] intValue]
-                               width:[[urlComponents objectAtIndex:4] intValue]
-                              height:[[urlComponents objectAtIndex:5] intValue]];
+        } else if ([action isEqualToString:@"save"]) {
+            [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
             return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -1488,6 +1499,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    sleep(1);
     
     [self flashCheckmarkHud:shareType];
+    [self refreshSideoptions];
 }
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
@@ -1563,10 +1575,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)refreshHeader {
     NSString *headerString = [[[self getHeader] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
-                                                stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').innerHTML = '%@';",
                           headerString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
+}
 
+- (void)refreshSideoptions {
+    NSString *sideoptionsString = [[[self getSideoptions] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-sideoptions-container').innerHTML = '%@';",
+                          sideoptionsString];
+    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];

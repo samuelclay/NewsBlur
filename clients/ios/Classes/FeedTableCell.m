@@ -116,6 +116,7 @@ static UIFont *textFont = nil;
     backgroundColor = cell.highlighted || cell.selected ?
                       UIColorFromRGB(0xFFFFD2) :
                       cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
+                      cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);
 
     [backgroundColor set];
