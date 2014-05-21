@@ -314,4 +314,10 @@ public class PrefsUtils {
             activity.setTheme(R.style.NewsBlurDarkTheme);
         }
     }
+
+    public static boolean isLightThemeSelected(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String theme = prefs.getString(PrefConstants.THEME, "light");
+        return theme.equals("light");
+    }
 }

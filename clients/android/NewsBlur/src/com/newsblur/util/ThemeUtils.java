@@ -1,7 +1,6 @@
 package com.newsblur.util;
 
 import android.content.Context;
-import android.graphics.Color;
 
 import com.newsblur.R;
 
@@ -11,42 +10,86 @@ import com.newsblur.R;
 public class ThemeUtils {
 
     public static int getStoryTitleUnreadColor(Context context) {
-        return context.getResources().getColor(R.color.story_title_unread);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_title_unread);
+        } else {
+            return getColor(context, R.color.dark_story_title_unread);
+        }
+    }
+
+    private static int getColor(Context context, int id) {
+        return context.getResources().getColor(id);
     }
 
     public static int getStoryTitleReadColor(Context context) {
-        return context.getResources().getColor(R.color.story_title_read);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_title_read);
+        } else {
+            return getColor(context, R.color.story_title_read);
+        }
     }
 
     public static int getStoryContentUnreadColor(Context context) {
-        return context.getResources().getColor(R.color.story_content_unread);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_content_unread);
+        } else {
+            return getColor(context, R.color.story_content_unread);
+        }
     }
 
     public static int getStoryContentReadColor(Context context) {
-        return context.getResources().getColor(R.color.story_content_read);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_content_read);
+        } else {
+            return getColor(context, R.color.story_content_read);
+        }
     }
 
     public static int getStoryAuthorUnreadColor(Context context) {
-        return context.getResources().getColor(R.color.story_author_unread);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_author_unread);
+        } else {
+            return getColor(context, R.color.story_author_unread);
+        }
     }
 
     public static int getStoryAuthorReadColor(Context context) {
-        return context.getResources().getColor(R.color.story_author_read);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_author_read);
+        } else {
+            return getColor(context, R.color.story_author_read);
+        }
     }
 
     public static int getStoryDateUnreadColor(Context context) {
-        return context.getResources().getColor(R.color.story_date_unread);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_date_unread);
+        } else {
+            return getColor(context, R.color.dark_story_date_unread);
+        }
     }
 
     public static int getStoryDateReadColor(Context context) {
-        return context.getResources().getColor(R.color.story_date_read);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_date_read);
+        } else {
+            return getColor(context, R.color.story_date_read);
+        }
     }
 
     public static int getStoryFeedUnreadColor(Context context) {
-        return context.getResources().getColor(R.color.story_feed_unread);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_feed_unread);
+        } else {
+            return getColor(context, R.color.dark_story_feed_unread);
+        }
     }
 
     public static int getStoryFeedReadColor(Context context) {
-        return context.getResources().getColor(R.color.story_feed_read);
+        if (PrefsUtils.isLightThemeSelected(context)) {
+            return getColor(context, R.color.story_feed_read);
+        } else {
+            return getColor(context, R.color.story_feed_read);
+        }
     }
 }
