@@ -5,8 +5,8 @@
     #import <SystemConfiguration/SystemConfiguration.h>
     #import <MobileCoreServices/MobileCoreServices.h>
 
-#define DEBUG 1
-//#define PROD_DEBUG 1
+//#define DEBUG
+//#define PROD_DEBUG
 
 #ifdef DEBUG
     #define BACKGROUND_REFRESH_SECONDS -5
