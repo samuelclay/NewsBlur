@@ -313,6 +313,7 @@ def setup_installs():
         'libncurses5-dev',
         'libdbd-pg-perl',
         'libssl-dev',
+        'libffi-dev',
         'make',
         'pgbouncer',
         'python-setuptools',
