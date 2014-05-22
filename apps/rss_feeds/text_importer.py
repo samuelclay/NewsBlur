@@ -7,6 +7,7 @@ from mongoengine.queryset import NotUniqueError
 from vendor.readability import readability
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
+from OpenSSL.SSL import Error as OpenSSLError
 
 class TextImporter:
     
@@ -27,7 +28,6 @@ class TextImporter:
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
             ),
-            'Connection': 'close',
         }
     
     def fetch(self, skip_save=False, return_document=False):
@@ -94,9 +94,10 @@ class TextImporter:
             url = self.story.story_permalink
         try:
             r = requests.get(url, headers=self.headers, verify=False)
+            r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
-                LocationParseError), e:
+                LocationParseError, OpenSSLError), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r
