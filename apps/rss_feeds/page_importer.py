@@ -13,6 +13,7 @@ from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit
+from OpenSSL.SSL import Error as OpenSSLError
 # from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
@@ -81,7 +82,7 @@ class PageImporter(object):
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except (AttributeError, SocketError), e:
+                    except (AttributeError, SocketError, OpenSSLError), e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return
