@@ -14,6 +14,7 @@ name = "newsblur"
 timeout = 120
 max_requests = 1000
 x_forwarded_for_header = "X-Forwarded-For"
+forwarded_allow_ips = "*"
 
 if GIGS_OF_MEMORY > NUM_CPUS:
     workers = NUM_CPUS

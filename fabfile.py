@@ -596,7 +596,7 @@ def setup_nginx():
         run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
         run('rm nginx-%s.tar.gz' % NGINX_VERSION)
         with cd('nginx-%s' % NGINX_VERSION):
-            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module ')
             run('make')
             sudo('make install')
     config_nginx()
