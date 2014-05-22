@@ -1506,7 +1506,7 @@ class Feed(models.Model):
         
         self.min_to_decay = total
         delta = self.next_scheduled_update - datetime.datetime.now()
-        minutes_to_next_fetch = delta.total_seconds() / 60
+        minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
         if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
