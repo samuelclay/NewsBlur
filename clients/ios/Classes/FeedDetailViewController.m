@@ -270,14 +270,14 @@
     
     if ((storiesCollection.isSocialRiverView ||
          storiesCollection.isSocialView ||
-         [storiesCollection.activeFolder isEqualToString:@"saved_stories"])) {
+         storiesCollection.isSavedView)) {
         settingsBarButton.enabled = NO;
     } else {
         settingsBarButton.enabled = YES;
     }
     
     if (storiesCollection.isSocialRiverView ||
-        [storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+        storiesCollection.isSavedView) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -537,6 +537,12 @@
                             NEWSBLUR_URL,
                             [storiesCollection.activeFeed objectForKey:@"user_id"],
                             storiesCollection.feedPage];
+    } else if (storiesCollection.isSavedView) {
+        theFeedDetailURL = [NSString stringWithFormat:
+                            @"%@/reader/starred_stories/?page=%d&v=2&tag=%@",
+                            NEWSBLUR_URL,
+                            storiesCollection.feedPage,
+                            [storiesCollection.activeSavedStoryTag urlEncode]];
     } else {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/reader/feed/%@/?page=%d",
                             NEWSBLUR_URL,
@@ -730,9 +736,9 @@
                                 NEWSBLUR_URL,
                                 storiesCollection.feedPage];
         }
-    } else if ([storiesCollection.activeFolder isEqual:@"saved_stories"]) {
+    } else if (storiesCollection.isSavedView) {
         theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/starred_stories/?page=%d",
+                            @"%@/reader/starred_stories/?page=%d&v=2",
                             NEWSBLUR_URL,
                             storiesCollection.feedPage];
     } else {
@@ -817,13 +823,15 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
     if (!(storiesCollection.isRiverView ||
+          storiesCollection.isSavedView ||
           storiesCollection.isSocialView ||
           storiesCollection.isSocialRiverView)
         && request.tag != [feedId intValue]) {
         return;
     }
     if (storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
+        storiesCollection.isSocialRiverView ||
+        storiesCollection.isSavedView) {
         NSArray *newFeeds = [results objectForKey:@"feeds"];
         for (int i = 0; i < newFeeds.count; i++){
             NSString *feedKey = [NSString stringWithFormat:@"%@", [[newFeeds objectAtIndex:i] objectForKey:@"id"]];
@@ -835,6 +843,7 @@
 
     NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
     if (storiesCollection.isRiverView ||
+        storiesCollection.isSavedView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         for (id key in [newClassifiers allKeys]) {
@@ -1073,7 +1082,9 @@
     }
     
     
-    if (storiesCollection.isRiverView || storiesCollection.isSocialView) {
+    if (storiesCollection.isRiverView ||
+        storiesCollection.isSocialView ||
+        storiesCollection.isSavedView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
@@ -1097,7 +1108,8 @@
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     
-    if (storiesCollection.isSocialView || storiesCollection.isSocialRiverView) {
+    if (storiesCollection.isSocialView ||
+        storiesCollection.isSocialRiverView) {
         feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
         // this is to catch when a user is already subscribed
         if (!feed) {
@@ -1117,7 +1129,7 @@
     
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
-    cell.isStarred = [[story objectForKey:@"starred"] boolValue];
+    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
     cell.storyImageUrl = nil;
     if (self.showImagePreview &&
@@ -1180,6 +1192,7 @@
     
     cell.isRiverOrSocial = NO;
     if (storiesCollection.isRiverView ||
+        storiesCollection.isSavedView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         cell.isRiverOrSocial = YES;
@@ -1221,6 +1234,8 @@
                 feedTitle = @"Global Shared Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = @"All Stories";
+            } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+                feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
             } else {
@@ -1244,7 +1259,7 @@
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
     cell.isRead = ![storiesCollection isStoryUnread:appDelegate.activeStory];
     cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
-    cell.isStarred = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
+    cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
     [cell setNeedsDisplay];
 }
 
@@ -1305,6 +1320,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (storyCount && indexPath.row == storyCount) {
         return 40;
     } else if (storiesCollection.isRiverView ||
+               storiesCollection.isSavedView ||
                storiesCollection.isSocialView ||
                storiesCollection.isSocialRiverView) {
         NSInteger height = kTableViewRiverRowHeight;

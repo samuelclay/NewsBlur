@@ -241,15 +241,14 @@
     }
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
-                            appDelegate.storiesCollection.isSocialView) ?
+                            appDelegate.storiesCollection.isSocialView ||
+                            appDelegate.storiesCollection.isSavedView) ?
                             @"NB-river" : @"NB-non-river";
     
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    
-                    
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
@@ -257,20 +256,7 @@
                     "<script src=\"storyDetailView.js\"></script>"
                     "<script src=\"fastTouch.js\"></script>"];
     
-    sharingHtmlString = [NSString stringWithFormat:@
-                         "<div class='NB-share-header'></div>"
-                         "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/share\"><div>"
-                         "      <span class=\"NB-icon\"></span> Share this story"
-                         "    </div></a>"
-                         "  </div>"
-                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
-                         "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                         "      <span class=\"NB-icon\"></span> Train this story"
-                         "    </div></a>"
-                         "  </div>"
-                         "</div></div>"];
+    sharingHtmlString = [self getSideoptions];
 
     NSString *storyHeader = [self getHeader];
     NSString *htmlString = [NSString stringWithFormat:@
@@ -281,14 +267,13 @@
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "            %@" // shareBar
-                            "            <div id=\"NB-story\" class=\"NB-story\">%@</div>"
-                            "            %@" // share
-                            "            <div id=\"NB-comments-wrapper\">"
-                            "                %@" // friends comments
-                            "            </div>"
-                            "            %@"
-                            "        </div>" // storyHeader
+                            "        %@" // shareBar
+                            "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                            "        <div id=\"NB-sideoptions-container\">%@</div>"
+                            "        <div id=\"NB-comments-wrapper\">"
+                            "            %@" // friends comments
+                            "        </div>"
+                            "        %@"
                             "    </div>" // line-spacing
                             "    </div>" // font-size
                             "    </div>" // font-style
@@ -337,7 +322,8 @@
     }
     
     if (appDelegate.storiesCollection.isRiverView ||
-        appDelegate.storiesCollection.isSocialView) {
+        appDelegate.storiesCollection.isSocialView ||
+        appDelegate.storiesCollection.isSavedView) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
@@ -462,6 +448,39 @@
                              storyTags,
                              storyStarred];
     return storyHeader;
+}
+
+- (NSString *)getSideoptions {
+    BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
+    BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
+    
+    NSString *sideoptions = [NSString stringWithFormat:@
+                             "<div class='NB-sideoptions'>"
+                             "<div class='NB-share-header'></div>"
+                             "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/train\"><div>"
+                             "      <span class=\"NB-icon\"></span> Train"
+                             "    </div></a>"
+                             "  </div>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button %@'>"
+                             "    <a href=\"http://ios.newsblur.com/share\"><div>"
+                             "      <span class=\"NB-icon\"></span> %@"
+                             "    </div></a>"
+                             "  </div>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
+                             "    <a href=\"http://ios.newsblur.com/save\"><div>"
+                             "      <span class=\"NB-icon\"></span> %@"
+                             "    </div></a>"
+                             "  </div>"
+                             "</div></div></div>",
+                             isShared ? @"NB-button-active" : @"",
+                             isShared ? @"Shared" : @"Share",
+                             isSaved ? @"NB-button-active" : @"",
+                             isSaved ? @"Saved" : @"Save"
+                             ];
+    
+    return sideoptions;
 }
 
 - (NSString *)getAvatars:(NSString *)key {
@@ -934,10 +953,10 @@
         int viewportHeight = self.webView.scrollView.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
-        BOOL singlePage = webpageHeight - 250 <= viewportHeight;
-        BOOL atBottom = bottomPosition < 200;
+        BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+        BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
-        if (!atTop && !atBottom) {
+        if (!atTop && !atBottom && !singlePage) {
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -1091,6 +1110,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                width:[[urlComponents objectAtIndex:4] intValue]
                               height:[[urlComponents objectAtIndex:5] intValue]];
             return NO;
+        } else if ([action isEqualToString:@"save"]) {
+            [appDelegate.storiesCollection toggleStorySaved:self.activeStory];
+            return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
@@ -1166,7 +1188,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
-            appDelegate.storiesCollection.isSocialView) {
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1389,7 +1412,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.storiesCollection.isRiverView ||
-            appDelegate.storiesCollection.isSocialView) {
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
             }
@@ -1475,6 +1499,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    sleep(1);
     
     [self flashCheckmarkHud:shareType];
+    [self refreshSideoptions];
 }
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
@@ -1533,7 +1558,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         contentWidthClass = @"NB-iphone";
     }
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
-                            appDelegate.storiesCollection.isSocialView) ?
+                            appDelegate.storiesCollection.isSocialView ||
+                            appDelegate.storiesCollection.isSavedView) ?
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
@@ -1549,10 +1575,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)refreshHeader {
     NSString *headerString = [[[self getHeader] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
-                                                stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').innerHTML = '%@';",
                           headerString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
+}
 
+- (void)refreshSideoptions {
+    NSString *sideoptionsString = [[[self getSideoptions] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-sideoptions-container').innerHTML = '%@';",
+                          sideoptionsString];
+    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];

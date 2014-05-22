@@ -19,6 +19,7 @@
 @synthesize activeClassifiers;
 @synthesize activePopularTags;
 @synthesize activePopularAuthors;
+@synthesize activeSavedStoryTag;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;
 @synthesize activeFeedStories;
@@ -33,6 +34,7 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
+@synthesize isSavedView;
 @synthesize transferredFromDashboard;
 
 
@@ -60,6 +62,7 @@
 
     self.feedPage = 1;
     self.activeFeed = nil;
+    self.activeSavedStoryTag = nil;
     self.activeFolder = nil;
     self.activeFolderFeeds = nil;
     self.activeClassifiers = [NSMutableDictionary dictionary];
@@ -68,6 +71,7 @@
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
+    self.isSavedView = NO;
 }
 
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {

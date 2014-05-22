@@ -204,8 +204,10 @@
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-            } else if (appDelegate.storiesCollection.isRiverView &&
-                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+            } else if (appDelegate.storiesCollection.isSavedView &&
+                       appDelegate.storiesCollection.activeSavedStoryTag) {
+                titleImage = [UIImage imageNamed:@"tag.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.storiesCollection.isRiverView) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
@@ -401,6 +403,10 @@
     [currentPage refreshHeader];
     [nextPage refreshHeader];
     [previousPage refreshHeader];
+
+    [currentPage refreshSideoptions];
+    [nextPage refreshSideoptions];
+    [previousPage refreshSideoptions];
 }
 - (void)resizeScrollView {
     NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
