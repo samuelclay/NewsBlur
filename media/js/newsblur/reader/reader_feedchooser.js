@@ -205,6 +205,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         // Pretend unfetched feeds are fine
         $('.NB-feed-unfetched', $feeds).removeClass('NB-feed-unfetched');
+
+        // Make sure all folders are visible
+        $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
         
         $('.unread_count_positive', $feeds).text('On');
         $('.unread_count_negative', $feeds).text('Off');
