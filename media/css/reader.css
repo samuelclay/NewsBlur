@@ -8127,7 +8127,9 @@ form.opml_import_form input {
     width: auto;
     border: 1px solid #909090;
 }
-
+.NB-modal-feedchooser .NB-feedchooser .NB-hidden {
+    display: block;
+}
 .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
     border-radius: 12px;
     border: 1px solid #F6BD44;
