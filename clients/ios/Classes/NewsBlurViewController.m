@@ -1095,9 +1095,6 @@ static UIFont *userLabelFont;
         cell.appDelegate = appDelegate;
     }
     
-    if (isSaved) {
-        NSLog(@"Saved: %@", [appDelegate.dictSavedStoryTags objectForKey:feedIdStr]);
-    }
     NSDictionary *feed = isSocial ?
                          [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
                          isSaved ?
@@ -1443,9 +1440,6 @@ heightForHeaderInSection:(NSInteger)section {
         feedId = [NSString stringWithFormat:@"%@",feedId];
     }
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedId];
-    if ([appDelegate isSavedFeed:feedId]) {
-        NSLog(@"is visible: %@? %@", feedId, unreadCounts);
-    }
     NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedId];
     if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
