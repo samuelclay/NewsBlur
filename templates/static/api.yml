@@ -458,6 +458,14 @@
           desc: "List of feed ids to mark as read."
           required: true
           example: "feed_id=12&feed_id=24"
+        - key: cutoff_timestamp
+          desc: "Timestamp for older/newer cutoff."
+          optional: true
+          example: "1400777921"
+        - key: direction
+          desc: "Older or newer stories should be marked as read. Use with `cutoff_timestamp`"
+          optional: true
+          example: "older"
       tips:
         - "To mark a folder as read, send the ids of each feed inside the folder."
     
