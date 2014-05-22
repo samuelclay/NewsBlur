@@ -222,9 +222,7 @@
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
 		FF3963D5192A9AF3004BEE1A /* ADNLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39626D192A9AF2004BEE1A /* ADNLogin.m */; };
 		FF3963D6192A9AF3004BEE1A /* ADNPassportLaunchView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39626F192A9AF2004BEE1A /* ADNPassportLaunchView.m */; };
-		FF3963D7192A9AF3004BEE1A /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396271192A9AF2004BEE1A /* GoogleOpenSource.framework */; };
 		FF3963D8192A9AF3004BEE1A /* GooglePlus.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FF396272192A9AF2004BEE1A /* GooglePlus.bundle */; };
-		FF3963D9192A9AF3004BEE1A /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396273192A9AF2004BEE1A /* GooglePlus.framework */; };
 		FF3963DA192A9AF3004BEE1A /* PocketAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = FF396278192A9AF2004BEE1A /* PocketAPI.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF3963DB192A9AF3004BEE1A /* PocketAPILogin.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39627A192A9AF2004BEE1A /* PocketAPILogin.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF3963DC192A9AF3004BEE1A /* PocketAPIOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = FF39627C192A9AF2004BEE1A /* PocketAPIOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -538,6 +536,8 @@
 		FFB9BE4B17F4B65B00FE0A36 /* logo_120~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4417F4B65B00FE0A36 /* logo_120~iphone.png */; };
 		FFB9BE4C17F4B65B00FE0A36 /* logo_76.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4517F4B65B00FE0A36 /* logo_76.png */; };
 		FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB9BE4617F4B65B00FE0A36 /* logo_120@2x.png */; };
+		FFC2CB05192E7A3000868D33 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396271192A9AF2004BEE1A /* GoogleOpenSource.framework */; };
+		FFC2CB06192E7A3000868D33 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF396273192A9AF2004BEE1A /* GooglePlus.framework */; };
 		FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC518B81768E59F00542719 /* g_icn_offline.png */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
@@ -1541,12 +1541,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
-				FF3963D9192A9AF3004BEE1A /* GooglePlus.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
 				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
 				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
-				FF3963D7192A9AF3004BEE1A /* GoogleOpenSource.framework in Frameworks */,
 				FF468E3817FCFB970080325C /* AVFoundation.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
@@ -1564,6 +1562,8 @@
 				788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */,
 				78095E3F128EF35400230C8E /* CFNetwork.framework in Frameworks */,
 				78095E43128EF37E00230C8E /* MobileCoreServices.framework in Frameworks */,
+				FFC2CB05192E7A3000868D33 /* GoogleOpenSource.framework in Frameworks */,
+				FFC2CB06192E7A3000868D33 /* GooglePlus.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3555,12 +3555,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK/",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3583,7 +3578,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "636BF6E0-B9F1-40DF-B74D-ADA8CCD57966";
+				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -3600,12 +3595,7 @@
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					Other,
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK/",
-					"$(PROJECT_DIR)/Other",
-					Sources/Overshare,
-					"Kit/Dependencies/GooglePlus-SDK",
+					"\"Other Sources/Overshare Kit/Dependencies/GooglePlus-SDK\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -3625,7 +3615,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "636BF6E0-B9F1-40DF-B74D-ADA8CCD57966";
+				PROVISIONING_PROFILE = "A0156932-124B-4F8E-8B93-EE6598D778F0";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
