@@ -50,6 +50,7 @@ class PageImporter(object):
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
             ),
+            'Connection': 'close',
         }
     
     @timelimit(15)
@@ -78,7 +79,6 @@ class PageImporter(object):
                 else:
                     try:
                         response = requests.get(feed_link, headers=self.headers)
-                        response.connection.close()
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
                     except (AttributeError, SocketError), e:
