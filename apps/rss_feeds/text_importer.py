@@ -8,6 +8,7 @@ from vendor.readability import readability
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
+from pyasn1.error import PyAsn1Error
 
 class TextImporter:
     
@@ -97,7 +98,7 @@ class TextImporter:
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError, 
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
-                LocationParseError, OpenSSLError), e:
+                LocationParseError, OpenSSLError, PyAsn1Error), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r
