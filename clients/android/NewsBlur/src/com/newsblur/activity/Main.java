@@ -16,7 +16,9 @@ import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.service.BootReceiver;
 import com.newsblur.service.SyncService;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -68,6 +70,12 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
         }
         // clear all stories from the DB, the story activities will load them.
         FeedUtils.clearStories(this);
+
+        //trigger an autosync right now, just in case
+        Intent i = new Intent(this, NBSyncService.class);
+        startService(i);
+        //also make sure the interval sync is scheduled, in case it was just now enabled
+        BootReceiver.scheduleSyncService(this);
     }
 
     /**
