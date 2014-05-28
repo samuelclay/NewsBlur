@@ -392,7 +392,7 @@ def refresh_feeds(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
-    
+    time.sleep(3)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     

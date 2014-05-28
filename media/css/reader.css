@@ -4842,6 +4842,9 @@ form.opml_import_form input {
     position: relative;
     padding: 5px 8px 4px;
 }
+.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-blue .NB-intelligence-label {
+    display: none;
+}
 .NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green .NB-intelligence-label {
     display: none;
 }
@@ -4855,11 +4858,19 @@ form.opml_import_form input {
     float: left;
     vertical-align: bottom;
 }
+.NB-intelligence-slider .NB-intelligence-slider-blue img {
+    width: 12px;
+    height: 12px;
+    margin: -1px 5px -1px 0px;
+}
 .NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green img {
-    margin: 2px 8px 1px;
+    margin: 1px 8px 2px;
+}
+.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-blue img {
+    margin: 1px 8px 2px;
 }
 .NB-extra-narrow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
-    margin: 2px 8px 1px;
+    margin: 1px 8px 2px;
 }
 
 /* ===================== */
