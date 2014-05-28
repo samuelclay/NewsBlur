@@ -558,7 +558,9 @@ a img {
 .NB-feedlist-hide-read-feeds .NB-feedlist .feed.NB-feed-self-blurblog {
     display: block;
 }
-
+.NB-intelligence-starred .NB-feedlist .feed.NB-feed-self-blurblog {
+    display: none;
+}
 .NB-feedlist .feed.NB-feed-unfetched {
 }
 
@@ -833,6 +835,9 @@ a img {
 .NB-feedlist-hide-read-feeds .NB-feedlist .feed {
   display: none;
 }
+.NB-feedlist-hide-read-feeds .NB-sidebar.unread_view_starred .unread_starred {
+  display: block;
+}
 .NB-feedlist-hide-read-feeds .NB-sidebar.unread_view_positive .unread_positive {
   display: block;
 }
@@ -889,6 +894,13 @@ a img {
 /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
+.unread_count_starred {
+    background-color: #506B9A;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+/*    text-shadow: none;*/
+}
+
 .unread_count_positive {
     background-color: #6EA74A;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
@@ -907,6 +919,11 @@ a img {
 /*    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);*/
 }
 
+.unread_view_starred .unread_count {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 .unread_view_positive .unread_count {
     padding-left: 6px;
     padding-right: 6px;
@@ -919,6 +936,9 @@ a img {
 
 /* Showing unread counts above threshold */
 
+.unread_view_starred .unread_starred .unread_count_starred {
+    display: block;
+}
 .unread_view_positive .unread_positive .unread_count_positive {
     display: block;
 }
@@ -934,6 +954,9 @@ a img {
     display: block;
 }
 
+.unread_view_starred .unread_starred {
+    font-weight: bold;
+}
 .unread_view_positive .unread_positive {
     font-weight: bold;
 }
@@ -959,6 +982,10 @@ a img {
 
 .unread_threshold_neutral .unread_negative .unread_count_negative {
     font-weight: bold;
+    display: block;
+}
+
+.NB-starred-folder .unread_starred .unread_count_positive {
     display: block;
 }
 
@@ -1401,6 +1428,9 @@ a img {
 .NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count {
     float: left;
 }
+.NB-feedbar .NB-story-title-indicator .NB-story-title-indicator-count .unread_count_starred {
+    display: none;
+}
 .NB-feedbar .NB-story-title-indicator.unread_threshold_negative {
   display: none;
 }
@@ -1513,6 +1543,10 @@ a img {
 }
 .NB-story-pane-west #story_titles .NB-story-title .NB-storytitles-sentiment {
     left: 4px;
+}
+#story_titles .NB-story-title.NB-story-starred .NB-storytitles-sentiment {
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 13px 6px;
+    background-size: 8px;
 }
 #story_titles .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
@@ -2304,6 +2338,11 @@ body {
 /*    display: none;*/
 }
   
+.NB-feed-story.NB-story-starred .NB-feed-story-sentiment {
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 4px 4px;
+    background-size: 8px;
+}
+
 .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 4px 4px;
     background-size: 8px;
@@ -3657,6 +3696,10 @@ body {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 6px 2px;
     background-size: 8px;
 }
+.NB-feeds-header-dashboard .NB-feeds-header-starred {
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 6px 2px;
+    background-size: 8px;
+}
 .NB-feeds-header-dashboard .NB-feeds-header-right {
     position: relative;
 }
@@ -3997,6 +4040,13 @@ background: transparent;
 .NB-taskbar .task_view_story.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/circular/exclamation.png');
     background-size: 16px;
+}
+.NB-taskbar .NB-task-story-next-starred .NB-task-image {
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 0 0; 
+    background-size: 8px;
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
 }
 .NB-taskbar .NB-task-story-next-positive .NB-task-image {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 0; 
@@ -4827,6 +4877,12 @@ form.opml_import_form input {
 .NB-taskbar-intelligence .NB-taskbar-intelligence-positive {
     right: -4px;
     background: transparent url(/media/embed/icons/circular/g_icn_focus.png) no-repeat 0 0;
+    background-size: 8px;
+}
+
+.NB-taskbar-intelligence .NB-taskbar-intelligence-starred {
+    right: -4px;
+    background: transparent url(/media/embed/icons/circular/g_icn_starred.png) no-repeat 0 0;
     background-size: 8px;
 }
 
