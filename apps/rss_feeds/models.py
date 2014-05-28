@@ -2183,7 +2183,8 @@ class MStarredStory(mongo.Document):
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
-    tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    tag = mongo.StringField(max_length=128)
+    feed_id = mongo.IntField()
     slug = mongo.StringField(max_length=128)
     count = mongo.IntField()
 
@@ -2199,24 +2200,29 @@ class MStarredStoryCounts(mongo.Document):
         if not secret_token:
             user = User.objects.select_related('profile').get(pk=self.user_id)
             secret_token = user.profile.secret_token
-
+        
+        slug = self.slug if self.slug else ""
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
-                                                   secret_token, self.slug)
+                                                   secret_token, slug)
     
     @classmethod
     def user_counts(cls, user_id, include_total=False, try_counting=True):
         counts = cls.objects.filter(user_id=user_id)
-        counts = sorted([{'tag': c.tag, 'count': c.count, 'feed_address': c.rss_url} for c in counts],
-                        key=lambda x: x['tag'].lower())
+        counts = sorted([{'tag': c.tag, 
+                          'count': c.count, 
+                          'feed_address': c.rss_url, 
+                          'feed_id': c.feed_id} 
+                         for c in counts],
+                        key=lambda x: (x.get('tag', '') or '').lower())
         
         if counts == [] and try_counting:
-            cls.count_tags_for_user(user_id)
+            cls.count_for_user(user_id)
             return cls.user_counts(user_id, include_total=include_total,
                                    try_counting=False)
         
         if include_total:
             for c in counts:
-                if c['tag'] == "":
+                if not c['tag'] and not c['feed_id']:
                     return counts, c['count']
             return counts, 0
         
@@ -2225,27 +2231,43 @@ class MStarredStoryCounts(mongo.Document):
     @classmethod
     def schedule_count_tags_for_user(cls, user_id):
         ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
-        
+    
     @classmethod
-    def count_tags_for_user(cls, user_id, total_only=False):
-        user_tags = []
-        if not total_only:
-            all_tags = MStarredStory.objects(user_id=user_id,
-                                             user_tags__exists=True).item_frequencies('user_tags')
-            user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
-                               key=lambda x: x[0].lower(), 
-                               reverse=True)
-                           
-            cls.objects(user_id=user_id).delete()
-            for tag, count in dict(user_tags).items():
-                cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
+    def count_for_user(cls, user_id):
+        cls.objects(user_id=user_id).delete()
         
+        user_tags = cls.count_tags_for_user(user_id)
+        user_feeds = cls.count_feeds_for_user(user_id)
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects.filter(user_id=user_id, tag="").update_one(set__count=total_stories_count,
                                                                upsert=True)
-        
-        return dict(total=total_stories_count, tags=user_tags)
+
+        return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds)
+
+    @classmethod
+    def count_tags_for_user(cls, user_id):
+        all_tags = MStarredStory.objects(user_id=user_id,
+                                         user_tags__exists=True).item_frequencies('user_tags')
+        user_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0 and k], 
+                           key=lambda x: x[0].lower(), 
+                           reverse=True)
+                           
+        for tag, count in dict(user_tags).items():
+            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
     
+        return user_tags
+    
+    @classmethod
+    def count_feeds_for_user(cls, user_id):
+        all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies('story_feed_id')
+        user_feeds = [(k, v) for k, v in all_feeds.items() if int(v) > 0 and k]
+                       
+        for feed_id, count in dict(user_feeds).items():
+            cls.objects.create(user_id=user_id, feed_id=feed_id, slug="feed:%s" % feed_id, count=count)
+        
+        return user_feeds
+    
+
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
