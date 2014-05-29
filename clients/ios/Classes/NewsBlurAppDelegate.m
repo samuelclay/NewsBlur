@@ -448,6 +448,10 @@
     NSDictionary *feed = [self getFeed:feedId];
     NSString *feedTitle = [feed objectForKey:@"feed_title"];
     
+    if ([activeStory objectForKey:@"original_text"]) {
+        text = [activeStory objectForKey:@"original_text"];
+    }
+    
     return [self showSendTo:vc
                      sender:sender
                     withUrl:url

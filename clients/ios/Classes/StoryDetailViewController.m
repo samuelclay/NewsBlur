@@ -1649,10 +1649,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return;
     }
     
-    NSString *originalText = [[[results objectForKey:@"original_text"]stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+    NSString *originalText = [[[results objectForKey:@"original_text"]
+                               stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
                               stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-story').innerHTML = '%@'; loadImages();",
                           originalText];
+    NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
+    [newActiveStory setObject:[results objectForKey:@"original_text"] forKey:@"original_text"];
+    appDelegate.activeStory = newActiveStory;
+    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
