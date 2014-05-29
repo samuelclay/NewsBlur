@@ -1810,6 +1810,7 @@ def _mark_story_as_starred(request):
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)
+        feed_id = story and story.story_feed_id
     else:
         story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     
@@ -1837,6 +1838,7 @@ def _mark_story_as_starred(request):
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
         new_user_tags = user_tags
+        MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
     else:
         starred_story = starred_story[0]
         new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
@@ -1845,26 +1847,9 @@ def _mark_story_as_starred(request):
         starred_story.save()
     
     for tag in new_user_tags:
-        try:
-            story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                          tag=tag)
-        except MStarredStoryCounts.DoesNotExist:
-            story_count = MStarredStoryCounts.objects.create(user_id=request.user.pk,
-                                                             tag=tag)
-        if not story_count.count:
-            story_count.count = 0
-        story_count.count += 1
-        story_count.save()
+        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
     for tag in removed_user_tags:
-        try:
-            story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                          tag=tag)
-            story_count.count -= 1
-            story_count.save()
-            if story_count.count <= 0:
-                story_count.delete()
-        except MStarredStoryCounts.DoesNotExist:
-            pass
+        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
 
     MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
     MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
@@ -1904,6 +1889,7 @@ def _mark_story_as_unstarred(request):
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
+        feed_id = starred_story.story_feed_id
         MActivity.remove_starred_story(user_id=request.user.pk, 
                                        story_feed_id=starred_story.story_feed_id,
                                        story_id=starred_story.story_guid)
@@ -1912,14 +1898,12 @@ def _mark_story_as_unstarred(request):
             starred_story.save()
         except NotUniqueError:
             starred_story.delete()
+        
+        MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=-1)
+
         for tag in user_tags:
             try:
-                story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                              tag=tag)
-                story_count.count -= 1
-                story_count.save()
-                if story_count.count <= 0:
-                    story_count.delete()
+                MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
             except MStarredStoryCounts.DoesNotExist:
                 pass
         # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)

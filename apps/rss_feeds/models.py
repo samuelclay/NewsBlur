@@ -2186,7 +2186,7 @@ class MStarredStoryCounts(mongo.Document):
     tag = mongo.StringField(max_length=128)
     feed_id = mongo.IntField()
     slug = mongo.StringField(max_length=128)
-    count = mongo.IntField()
+    count = mongo.IntField(default=0)
 
     meta = {
         'collection': 'starred_stories_counts',
@@ -2271,6 +2271,23 @@ class MStarredStoryCounts(mongo.Document):
         
         return user_feeds
     
+    @classmethod
+    def adjust_count(cls, user_id, feed_id=None, tag=None, amount=0):
+        params = dict(user_id=user_id)
+        if feed_id:
+            params['feed_id'] = feed_id
+        if tag:
+            params['tag'] = tag
+
+        try:
+            story_count = cls.objects.get(**params)
+        except cls.DoesNotExist:
+            story_count = cls.objects.create(**params)
+        story_count.count += amount
+        story_count.save()
+        if story_count.count <= 0:
+            story_count.delete()
+
 
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
