@@ -639,10 +639,11 @@ def api_share_new_story(request):
                 story_content = original_story['content']
             if not story_title:
                 story_title = original_story['title']
-
-    story_content = lxml.html.fromstring(story_content)
-    story_content.make_links_absolute(story_url)
-    story_content = lxml.html.tostring(story_content)
+    
+    if story_content:
+        story_content = lxml.html.fromstring(story_content)
+        story_content.make_links_absolute(story_url)
+        story_content = lxml.html.tostring(story_content)
     
     shared_story = MSharedStory.objects.filter(user_id=user.pk,
                                                story_feed_id=original_feed and original_feed.pk or 0,
