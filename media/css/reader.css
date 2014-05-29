@@ -1544,10 +1544,6 @@ a img {
 .NB-story-pane-west #story_titles .NB-story-title .NB-storytitles-sentiment {
     left: 4px;
 }
-#story_titles .NB-story-title.NB-story-starred .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 13px 6px;
-    background-size: 8px;
-}
 #story_titles .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
     background-size: 8px;
@@ -1560,6 +1556,10 @@ a img {
 
 #story_titles .NB-story-title.NB-story-negative .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 13px 6px;
+    background-size: 8px;
+}
+#story_titles .NB-story-title.NB-story-starred .NB-storytitles-sentiment {
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 13px 6px;
     background-size: 8px;
 }
 

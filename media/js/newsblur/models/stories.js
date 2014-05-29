@@ -19,7 +19,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     score: function() {
         if (NEWSBLUR.reader.flags['starred_view']) {
-            return 1;
+            return 2;
         } else {
             return NEWSBLUR.utils.compute_story_score(this);
         }
@@ -349,6 +349,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     clear_previous_stories_stack: function() {
         this.previous_stories_stack = [];
+        this.active_story = null;
     },
     
     select_previous_story: function() {

@@ -26,7 +26,7 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
     },
     
     tag_slug: function() {
-        return Inflector.sluggify(this.get('tag'));
+        return Inflector.sluggify(this.get('tag') || '');
     }
     
 });
