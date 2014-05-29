@@ -2243,8 +2243,8 @@ class MStarredStoryCounts(mongo.Document):
             user_feeds = cls.count_feeds_for_user(user_id)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects.filter(user_id=user_id, tag="").update_one(set__count=total_stories_count,
-                                                               upsert=True)
+        cls.objects(user_id=user_id, tag="").update_one(set__count=total_stories_count,
+                                                        upsert=True)
 
         return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds)
 
@@ -2257,7 +2257,8 @@ class MStarredStoryCounts(mongo.Document):
                            reverse=True)
                            
         for tag, count in dict(user_tags).items():
-            cls.objects.create(user_id=user_id, tag=tag, slug=slugify(tag), count=count)
+            cls.objects(user_id=user_id, tag=tag, slug=slugify(tag)).update_one(set__count=count,
+                                                                                upsert=True)
     
         return user_tags
     
@@ -2267,7 +2268,10 @@ class MStarredStoryCounts(mongo.Document):
         user_feeds = [(k, v) for k, v in all_feeds.items() if int(v) > 0 and k]
                        
         for feed_id, count in dict(user_feeds).items():
-            cls.objects.create(user_id=user_id, feed_id=feed_id, slug="feed:%s" % feed_id, count=count)
+            cls.objects(user_id=user_id, 
+                        feed_id=feed_id, 
+                        slug="feed:%s" % feed_id).update_one(set__count=count, 
+                                                             upsert=True)
         
         return user_feeds
     
@@ -2279,12 +2283,8 @@ class MStarredStoryCounts(mongo.Document):
         if tag:
             params['tag'] = tag
 
-        try:
-            story_count = cls.objects.get(**params)
-        except cls.DoesNotExist:
-            story_count = cls.objects.create(**params)
-        story_count.count += amount
-        story_count.save()
+        cls.objects(**params).update_one(inc__count=amount, upsert=True)
+        story_count = cls.objects.get(**params)
         if story_count.count <= 0:
             story_count.delete()
 
