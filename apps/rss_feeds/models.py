@@ -2183,7 +2183,7 @@ class MStarredStory(mongo.Document):
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
-    tag = mongo.StringField(max_length=128, unique_with=['user_id'])
+    tag = mongo.StringField(max_length=128)
     slug = mongo.StringField(max_length=128)
     count = mongo.IntField()
 

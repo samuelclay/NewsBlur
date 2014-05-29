@@ -405,7 +405,9 @@ def refresh_feeds(request):
         social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
     
     favicons_fetching = [int(f) for f in favicons_fetching if f]
-    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
+    feed_icons = {}
+    if favicons_fetching:
+        feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
     
     for feed_id, feed in feeds.items():
         if feed_id in favicons_fetching and feed_id in feed_icons:
@@ -413,7 +415,7 @@ def refresh_feeds(request):
             feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
             feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
 
-    user_subs = UserSubscription.objects.filter(user=user, active=True)
+    user_subs = UserSubscription.objects.filter(user=user, active=True).only('feed')
     sub_feed_ids = [s.feed_id for s in user_subs]
 
     if favicons_fetching:
