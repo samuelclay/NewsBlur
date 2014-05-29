@@ -732,7 +732,7 @@ def api_save_new_story(request):
         }
         story = MStarredStory.objects.create(**story_db)
         logging.user(request, "~FCStarring by ~SBIFTTT~SN: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
-        MStarredStoryCounts.count_tags_for_user(user.pk)
+        MStarredStoryCounts.count_for_user(user.pk)
     except OperationError:
         logging.user(request, "~FCAlready starred by ~SBIFTTT~SN: ~SB%s" % (story_db['story_title'][:50]))
         pass

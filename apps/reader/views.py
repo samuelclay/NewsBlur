@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 import requests
+import random
 import zlib
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -1850,8 +1851,9 @@ def _mark_story_as_starred(request):
         MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
     for tag in removed_user_tags:
         MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
-
-    MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+    
+    if random.random() < 0.01:
+        MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
     MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
     starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     

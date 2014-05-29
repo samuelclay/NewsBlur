@@ -2215,17 +2215,24 @@ class MStarredStoryCounts(mongo.Document):
                          for c in counts],
                         key=lambda x: (x.get('tag', '') or '').lower())
         
-        if counts == [] and try_counting:
+        total = 0
+        feed_total = 0
+        for c in counts:
+            if not c['tag'] and not c['feed_id']:
+                total = c['count']
+            if c['feed_id']:
+                feed_total += c['count']
+        
+        if try_counting and total != feed_total:
+            user = User.objects.get(pk=user_id)
+            logging.user(user, "~FC~SBCounting~SN saved stories (%s total vs. %s counted)..." % 
+                                (total, feed_total))
             cls.count_for_user(user_id)
             return cls.user_counts(user_id, include_total=include_total,
                                    try_counting=False)
         
         if include_total:
-            for c in counts:
-                if not c['tag'] and not c['feed_id']:
-                    return counts, c['count']
-            return counts, 0
-        
+            return counts, total
         return counts
     
     @classmethod
@@ -2243,8 +2250,8 @@ class MStarredStoryCounts(mongo.Document):
             user_feeds = cls.count_feeds_for_user(user_id)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects(user_id=user_id, tag="").update_one(set__count=total_stories_count,
-                                                        upsert=True)
+        cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
+                                                                        upsert=True)
 
         return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds)
 
@@ -2265,9 +2272,18 @@ class MStarredStoryCounts(mongo.Document):
     @classmethod
     def count_feeds_for_user(cls, user_id):
         all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies('story_feed_id')
-        user_feeds = [(k, v) for k, v in all_feeds.items() if int(v) > 0 and k]
-                       
-        for feed_id, count in dict(user_feeds).items():
+        user_feeds = dict([(k, v) for k, v in all_feeds.items() if v])
+        
+        # Clean up None'd and 0'd feed_ids, so they can be counted against the total
+        if user_feeds.get(None, False):
+            user_feeds[0] = user_feeds.get(0, 0)
+            user_feeds[0] += user_feeds.get(None)
+            del user_feeds[None]
+        if user_feeds.get(0, False):
+            user_feeds[-1] = user_feeds.get(0, 0)
+            del user_feeds[0]
+
+        for feed_id, count in user_feeds.items():
             cls.objects(user_id=user_id, 
                         feed_id=feed_id, 
                         slug="feed:%s" % feed_id).update_one(set__count=count, 
