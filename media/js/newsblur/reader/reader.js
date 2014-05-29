@@ -236,6 +236,10 @@
                 $windows.removeClass('NB-narrow');
             }
             
+            var pane = this.layout.outerLayout.panes.west;
+            pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 290);
+            pane.toggleClass("NB-extra-narrow", this.layout.outerLayout.state.west.size < 238);
+            
             this.apply_tipsy_titles();
         },
         
@@ -400,6 +404,8 @@
                 this.$s.$story_titles.append(story_titles_bin.children());
                 this.resize_window();
             }
+            
+            this.adjust_for_narrow_window();
         },
         
         apply_tipsy_titles: function() {
@@ -437,8 +443,7 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
-            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 290);
-            $pane.toggleClass("NB-extra-narrow", this.layout.outerLayout.state.west.size < 238);
+            this.adjust_for_narrow_window();
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
