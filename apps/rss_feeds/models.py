@@ -2197,6 +2197,9 @@ class MStarredStoryCounts(mongo.Document):
 
     @property
     def rss_url(self, secret_token=None):
+        if self.feed_id:
+            return
+        
         if not secret_token:
             user = User.objects.select_related('profile').get(pk=self.user_id)
             secret_token = user.profile.secret_token
