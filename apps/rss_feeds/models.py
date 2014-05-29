@@ -441,13 +441,18 @@ class Feed(models.Model):
             UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
     
     @classmethod
-    def drain_task_feeds(cls, empty=False):
+    def drain_task_feeds(cls):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        if not empty:
-            tasked_feeds = r.zrange('tasked_feeds', 0, -1)
-            logging.debug(" ---> ~FRDraining %s feeds..." % len(tasked_feeds))
-            r.sadd('queued_feeds', *tasked_feeds)
+
+        tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
+        r.sadd('queued_feeds', *tasked_feeds)
         r.zremrangebyrank('tasked_feeds', 0, -1)
+
+        errored_feeds = r.zrange('error_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s errored feeds..." % len(errored_feeds))
+        r.sadd('queued_feeds', *errored_feeds)
+        r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
