@@ -4898,13 +4898,13 @@ form.opml_import_form input {
     position: relative;
     padding: 5px 8px 4px;
 }
-.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-blue .NB-intelligence-label {
+.NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue .NB-intelligence-label {
     display: none;
 }
-.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green .NB-intelligence-label {
+.NB-narrow-pane-green .NB-intelligence-slider .NB-intelligence-slider-green .NB-intelligence-label {
     display: none;
 }
-.NB-extra-narrow .NB-intelligence-slider .NB-intelligence-slider-yellow .NB-intelligence-label {
+.NB-narrow-pane-yellow .NB-intelligence-slider .NB-intelligence-slider-yellow .NB-intelligence-label {
     display: none;
 }
 .NB-intelligence-slider img {
@@ -4919,13 +4919,13 @@ form.opml_import_form input {
     height: 12px;
     margin: -1px 5px -1px 0px;
 }
-.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-green img {
+.NB-narrow-pane-green .NB-intelligence-slider .NB-intelligence-slider-green img {
     margin: 1px 6px 2px;
 }
-.NB-narrow .NB-intelligence-slider .NB-intelligence-slider-blue img {
+.NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue img {
     margin: -1px 4px 0px;
 }
-.NB-extra-narrow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
+.NB-narrow-pane-yellow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
     margin: 1px 6px 2px;
 }
 
