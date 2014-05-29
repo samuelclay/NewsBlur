@@ -437,8 +437,8 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
-            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 240);
-            $pane.toggleClass("NB-extra-narrow", this.layout.outerLayout.state.west.size < 218);
+            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 290);
+            $pane.toggleClass("NB-extra-narrow", this.layout.outerLayout.state.west.size < 238);
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
