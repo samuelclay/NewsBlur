@@ -2223,7 +2223,7 @@ class MStarredStoryCounts(mongo.Document):
             if c['feed_id']:
                 feed_total += c['count']
         
-        if try_counting and total != feed_total:
+        if try_counting and (total != feed_total or not len(counts)):
             user = User.objects.get(pk=user_id)
             logging.user(user, "~FC~SBCounting~SN saved stories (%s total vs. %s counted)..." % 
                                 (total, feed_total))
