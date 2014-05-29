@@ -21,6 +21,7 @@
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="selectorRowFolderName">@style/selectorRowFolderName.dark</item>
         <item name="selectorRowFeedName">@style/selectorRowFeedName.dark</item>
+        <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="itemBackground">@style/itemBackground.dark</item>
         <item name="loadingText">@style/loadingText.dark</item>
