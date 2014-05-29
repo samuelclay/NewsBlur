@@ -134,6 +134,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (!is_feed_load) return;
         if (!NEWSBLUR.reader.active_feed) return;
         if (NEWSBLUR.reader.flags.search) return;
+        if (NEWSBLUR.reader.flags['feed_list_showing_starred']) return;
         NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
         
         var unread_view_name = NEWSBLUR.reader.get_unread_view_name();

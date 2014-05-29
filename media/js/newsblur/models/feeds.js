@@ -161,6 +161,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
             return !!(this.get('ng') || this.get('nt') || this.get('ps'));
         } else if (unread_view == 0) {
             return !!(this.get('nt') || this.get('ps'));
+        } else if (unread_view >= 2) {
+            var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.id);
+            return starred_feed && starred_feed.get('count');
         } else if (unread_view > 0) {
             return !!(this.get('ps'));
         }

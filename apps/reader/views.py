@@ -392,7 +392,6 @@ def refresh_feeds(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
-    time.sleep(3)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -537,6 +536,12 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif read_filter == 'starred':
+        mstories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id=feed_id
+        ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
+        stories = Feed.format_stories(mstories) 
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
                                       default_cutoff_date=user.profile.unread_cutoff)
@@ -1851,7 +1856,7 @@ def _mark_story_as_starred(request):
             pass
 
     MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
-    MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
+    MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
     starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     
     if created:
@@ -1907,7 +1912,7 @@ def _mark_story_as_unstarred(request):
             except MStarredStoryCounts.DoesNotExist:
                 pass
         # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
-        MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
+        MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:
         code = -1

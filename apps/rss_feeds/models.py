@@ -2233,11 +2233,15 @@ class MStarredStoryCounts(mongo.Document):
         ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
     
     @classmethod
-    def count_for_user(cls, user_id):
-        cls.objects(user_id=user_id).delete()
+    def count_for_user(cls, user_id, total_only=False):
+        user_tags = []
+        user_feeds = []
         
-        user_tags = cls.count_tags_for_user(user_id)
-        user_feeds = cls.count_feeds_for_user(user_id)
+        if not total_only:
+            cls.objects(user_id=user_id).delete()
+            user_tags = cls.count_tags_for_user(user_id)
+            user_feeds = cls.count_feeds_for_user(user_id)
+
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
         cls.objects.filter(user_id=user_id, tag="").update_one(set__count=total_stories_count,
                                                                upsert=True)

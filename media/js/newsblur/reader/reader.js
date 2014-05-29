@@ -1152,7 +1152,6 @@
                 'pause_feed_refreshing': false,
                 'feed_list_showing_manage_menu': false,
                 'unread_threshold_temporarily': null,
-                'feed_list_showing_starred': false,
                 'river_view': false,
                 'social_view': false,
                 'starred_view': false,
@@ -1309,7 +1308,6 @@
                     NEWSBLUR.app.story_titles.show_loading(options);
                 }
                 NEWSBLUR.app.taskbar_info.hide_stories_error();
-                // this.show_stories_progress_bar();
                 this.iframe_scroll = null;
                 this.set_correct_story_view_for_feed(feed.id);
                 this.make_feed_title_in_stories();
@@ -3906,24 +3904,33 @@
             var $slider = this.$s.$intelligence_slider;
             var real_value = value;
             
-            if (!this.flags['feed_list_showing_starred']) {
-                if (value < 0) {
-                    value = 0;
-                    if (!initial_load) {
-                        NEWSBLUR.assets.preference('hide_read_feeds', 0);
-                    }
-                    NEWSBLUR.assets.preference('unread_view', 0);
-                } else if (value == 0) {
-                    if (!initial_load) {
-                        NEWSBLUR.assets.preference('hide_read_feeds', 1);
-                    }
-                    NEWSBLUR.assets.preference('unread_view', 0);
-                } else if (value > 0) {
-                    if (!initial_load) {
-                        NEWSBLUR.assets.preference('hide_read_feeds', 1);
-                    }
-                    NEWSBLUR.assets.preference('unread_view', 1);
+            var showing_starred = this.flags['feed_list_showing_starred'];
+            this.flags['feed_list_showing_starred'] = value == 2;
+            if (!initial_load && this.flags['feed_list_showing_starred'] != showing_starred) {
+                this.reload_feed();
+            }
+
+            if (value <= -1) {
+                value = 0;
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 0);
                 }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value == 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value >= 2) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 2);
+            } else if (value > 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 1);
             }
             this.flags['unread_threshold_temporarily'] = null;
             this.switch_feed_view_unread_view(value);
@@ -3950,7 +3957,9 @@
         },
         
         move_intelligence_slider: function(direction) {
-            var value = this.model.preference('unread_view') + direction;
+            var unread_view = this.model.preference('unread_view');
+            if (!this.model.preference('hide_read_feeds')) unread_view = -1;
+            var value = unread_view + direction;
             this.slide_intelligence_slider(value);
         },
         
@@ -3991,6 +4000,7 @@
         },
         
         get_unread_view_score: function() {
+            if (this.flags['feed_list_showing_starred']) return -1;
             if (this.flags['unread_threshold_temporarily']) {
                 var score_name = this.flags['unread_threshold_temporarily'];
                 if (score_name == 'neutral') {
@@ -5486,7 +5496,6 @@
             }); 
             $.targetIs(e, { tagSelector: '.NB-intelligence-slider-control' }, function($t, $p){
                 e.preventDefault();
-                self.flags['feed_list_showing_starred'] = false;
                 var unread_value;
                 if ($t.hasClass('NB-intelligence-slider-red')) {
                     unread_value = -1;
@@ -5495,8 +5504,7 @@
                 } else if ($t.hasClass('NB-intelligence-slider-green')) {
                     unread_value = 1;
                 } else if ($t.hasClass('NB-intelligence-slider-blue')) {
-                    unread_value = 1;
-                    self.flags['feed_list_showing_starred'] = true;
+                    unread_value = 2;
                 }
                 
                 self.slide_intelligence_slider(unread_value);
