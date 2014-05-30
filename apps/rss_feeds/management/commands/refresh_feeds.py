@@ -64,6 +64,7 @@ class Command(BaseCommand):
         
         options['compute_scores'] = True
         options['quick'] = float(MStatistics.get('quick_fetch', 0))
+        options['updates_off'] = MStatistics.get('updates_off', False)
         
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         

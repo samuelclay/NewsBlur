@@ -936,7 +936,7 @@ class Feed(models.Model):
         else:
             return [Feed.get_by_id(f) for f in feed_ids][:limit]
         
-    def add_update_stories(self, stories, existing_stories, verbose=False):
+    def add_update_stories(self, stories, existing_stories, verbose=False, updates_off=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get('story_hash') for s in stories]
@@ -996,7 +996,7 @@ class Feed(models.Model):
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                 if self.search_indexed:
                     s.index_story_for_search()
-            elif existing_story and story_has_changed:
+            elif existing_story and story_has_changed and not updates_off:
                 # update story
                 original_content = None
                 try:
