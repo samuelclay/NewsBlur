@@ -3866,12 +3866,17 @@
             var $slider = this.$s.$intelligence_slider;
             var $focus = $(".NB-intelligence-slider-green", $slider);
             var $unread = $(".NB-intelligence-slider-yellow", $slider);
-            var unread_view = this.get_unread_view_score();
+            var unread_view = this.get_unread_view_name();
             var all_mode = !NEWSBLUR.assets.preference('hide_read_feeds');
+            var starred_mode = this.flags['feed_list_showing_starred'];
             if (!NEWSBLUR.assets.feeds.size()) return;
             
             var view_not_empty;
-            if (unread_view >= 1) {
+            if (unread_view == 'starred') {
+                view_not_empty = NEWSBLUR.assets.starred_feeds.any(function(feed) { 
+                    return feed.get('count');
+                });
+            } else if (unread_view == 'positive') {
                 view_not_empty = NEWSBLUR.assets.feeds.any(function(feed) { 
                     return feed.get('ps');
                 }) || NEWSBLUR.assets.social_feeds.any(function(feed) { 
@@ -3885,13 +3890,22 @@
                 });                
             }
             $(".NB-feeds-list-empty").remove();
-            if (!view_not_empty && !all_mode) {
+            console.log(["toggle_focus_in_slider", unread_view, view_not_empty, starred_mode]);
+            if (!view_not_empty && !all_mode && !starred_mode) {
                 var $empty = $.make("div", { className: "NB-feeds-list-empty" }, [
                     'You have no unread stories',
-                    unread_view >= 1 ? " in Focus mode." : ".",
+                    unread_view == 'positive' ? " in Focus mode." : ".",
                     $.make('br'),
                     $.make('br'),
-                    unread_view >= 1 ? 'Switch to All or Unread.' : ""
+                    unread_view == 'positive' ? 'Switch to All or Unread.' : ""
+                ]);
+                this.$s.$feed_list.after($empty);
+            } else if (!view_not_empty && starred_mode) {
+                var $empty = $.make("div", { className: "NB-feeds-list-empty" }, [
+                    'You have no saved stories.',
+                    $.make('br'),
+                    $.make('br'),
+                    'Switch to All or Unread.'
                 ]);
                 this.$s.$feed_list.after($empty);
             }
