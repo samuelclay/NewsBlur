@@ -1218,6 +1218,9 @@ a img {
     font-weight: bold;
     float: right;
 }
+.NB-intelligence-starred .NB-feedbar .NB-feedbar-mark-feed-read-container {
+    display: none;
+}
 .NB-feedbar .NB-feedbar-mark-feed-read,
 .NB-feedbar .NB-feedbar-mark-feed-read-expand,
 .NB-feedbar .NB-feedbar-mark-feed-read-time {
