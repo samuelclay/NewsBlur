@@ -112,6 +112,7 @@ class UpdateFeeds(Task):
         
         options = {
             'quick': float(MStatistics.get('quick_fetch', 0)),
+            'updates_off': MStatistics.get('updates_off', False),
             'compute_scores': compute_scores,
             'mongodb_replication_lag': mongodb_replication_lag,
         }

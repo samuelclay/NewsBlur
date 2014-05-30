@@ -441,13 +441,18 @@ class Feed(models.Model):
             UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
     
     @classmethod
-    def drain_task_feeds(cls, empty=False):
+    def drain_task_feeds(cls):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_POOL)
-        if not empty:
-            tasked_feeds = r.zrange('tasked_feeds', 0, -1)
-            logging.debug(" ---> ~FRDraining %s feeds..." % len(tasked_feeds))
-            r.sadd('queued_feeds', *tasked_feeds)
+
+        tasked_feeds = r.zrange('tasked_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
+        r.sadd('queued_feeds', *tasked_feeds)
         r.zremrangebyrank('tasked_feeds', 0, -1)
+
+        errored_feeds = r.zrange('error_feeds', 0, -1)
+        logging.debug(" ---> ~FRDraining %s errored feeds..." % len(errored_feeds))
+        r.sadd('queued_feeds', *errored_feeds)
+        r.zremrangebyrank('error_feeds', 0, -1)
         
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
@@ -881,6 +886,7 @@ class Feed(models.Model):
             'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
+            'updates_off': kwargs.get('updates_off'),
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
@@ -931,7 +937,7 @@ class Feed(models.Model):
         else:
             return [Feed.get_by_id(f) for f in feed_ids][:limit]
         
-    def add_update_stories(self, stories, existing_stories, verbose=False):
+    def add_update_stories(self, stories, existing_stories, verbose=False, updates_off=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get('story_hash') for s in stories]
@@ -991,7 +997,7 @@ class Feed(models.Model):
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                 if self.search_indexed:
                     s.index_story_for_search()
-            elif existing_story and story_has_changed:
+            elif existing_story and story_has_changed and not updates_off:
                 # update story
                 original_content = None
                 try:

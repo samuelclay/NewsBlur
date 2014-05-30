@@ -582,7 +582,8 @@ static UIFont *userLabelFont;
     if (appDelegate.savedStoriesCount) {
         NSMutableArray *savedStories = [NSMutableArray array];
         for (NSDictionary *userTag in [results objectForKey:@"starred_counts"]) {
-            if ([[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
+            if ([[userTag objectForKey:@"tag"] isKindOfClass:[NSNull class]] ||
+                [[userTag objectForKey:@"tag"] isEqualToString:@""]) continue;
             NSString *savedTagId = [NSString stringWithFormat:@"saved:%@", [userTag objectForKey:@"tag"]];
             NSDictionary *savedTag = @{@"ps": [userTag objectForKey:@"count"],
                                        @"feed_title": [userTag objectForKey:@"tag"],
