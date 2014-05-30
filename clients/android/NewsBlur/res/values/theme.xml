@@ -12,6 +12,8 @@
         <item name="itemBackground">@style/itemBackground</item>
         <item name="loadingText">@style/loadingText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
+        <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -26,5 +28,7 @@
         <item name="itemBackground">@style/itemBackground.dark</item>
         <item name="loadingText">@style/loadingText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
+        <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
     </style>
 </resources>

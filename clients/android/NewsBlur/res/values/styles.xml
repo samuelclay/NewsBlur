@@ -97,4 +97,20 @@
     <style name="selectorStoryBackground.dark">
         <item name="android:background">@drawable/dark_selector_story_background</item>
     </style>
+
+    <style name="rowItemHeaderBackground">
+        <item name="android:background">@drawable/row_item_header_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground.dark">
+        <item name="android:background">@drawable/dark_row_item_header_background</item>
+    </style>
+
+    <style name="rowItemFeedHeader">
+        <item name="android:background">@drawable/row_item_feed_header</item>
+    </style>
+
+    <style name="rowItemFeedHeader.dark">
+        <item name="android:background">@drawable/dark_row_item_feed_header</item>
+    </style>
 </resources>

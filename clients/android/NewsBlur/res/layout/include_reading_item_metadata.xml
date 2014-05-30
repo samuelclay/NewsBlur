@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
-        android:background="@drawable/row_item_header_background">
+        style="?rowItemHeaderBackground">
 
         <RelativeLayout
                 android:id="@+id/row_item_feed_header"
@@ -18,7 +18,7 @@
                 android:minHeight="6dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:background="@drawable/row_item_feed_header">
+                style="?rowItemFeedHeader">
 
             <ImageView
                     android:id="@+id/reading_feed_icon"

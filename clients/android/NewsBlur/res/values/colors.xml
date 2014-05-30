@@ -23,6 +23,8 @@
     <color name="dark_feed_background">#1A1A1A</color>
     <color name="feed_background_end">#303030</color>
     <color name="feed_background_start">#505050</color>
+    <color name="dark_feed_background_end">#303030</color>
+    <color name="dark_feed_background_start">#505050</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
@@ -54,6 +56,8 @@
     
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
+    <color name="dark_item_header_background_start">#505050</color>
+    <color name="dark_item_header_background_end">#303030</color>
     <color name="item_header_border">#C2C5BE</color>
     <color name="item_background">#FFF</color>
     <color name="dark_item_background">#1A1A1A</color>

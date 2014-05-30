@@ -11,6 +11,8 @@
     <attr name="itemBackground" format="string" />
     <attr name="loadingText" format="string" />
     <attr name="selectorStoryBackground" format="string" />
+    <attr name="rowItemHeaderBackground" format="string" />
+    <attr name="rowItemFeedHeader" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
