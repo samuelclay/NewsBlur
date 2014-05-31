@@ -41,6 +41,11 @@ NEWSBLUR.Collections.StarredFeeds = Backbone.Collection.extend({
             // feed.selected = false;
             feed.ps = feed.count;
         });
+        
+        // Remove below, only used for transition to tag/feed_id.
+        models = _.filter(models, function(feed) {
+            return feed['tag'];
+        });
         return models;
     },
     

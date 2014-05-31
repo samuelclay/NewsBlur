@@ -997,7 +997,7 @@ class Feed(models.Model):
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s' % (self.feed_title[:30], story.get('guid'), e))
                 if self.search_indexed:
                     s.index_story_for_search()
-            elif existing_story and story_has_changed and not updates_off:
+            elif existing_story and story_has_changed and not updates_off and ret_values['updated'] < 3:
                 # update story
                 original_content = None
                 try:

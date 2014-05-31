@@ -252,6 +252,7 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
+        setup_mongo_mms()
     elif engine == "redis":
         setup_redis()
     elif engine == "redis_slave":
@@ -883,13 +884,19 @@ def setup_mongo_mongos():
 
 def setup_mongo_mms():
     pull()
-    put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_settings.py'),
-        '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
-    with cd(env.NEWSBLUR_PATH):
-        put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
+    sudo('rm -f /etc/supervisor/conf.d/mongomms.conf')
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
-
+    with cd(env.VENDOR_PATH):
+        sudo('apt-get remove -y mongodb-mms-monitoring-agent')
+        run('curl -OL https://mms.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        sudo('dpkg -i mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        run('rm mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_config.txt'),
+            'mongo_mms_config.txt')
+        sudo("echo \"\n\" >> /etc/mongodb-mms/monitoring-agent.config")
+        sudo('cat mongo_mms_config.txt >> /etc/mongodb-mms/monitoring-agent.config')
+        sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
     redis_version = '2.6.16'
