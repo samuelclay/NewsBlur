@@ -121,4 +121,12 @@
     <style name="storyTitleUnread.dark">
         <item name="android:textColor">@color/dark_story_title_unread</item>
     </style>
+
+    <style name="readingItemMetadata">
+        <item name="android:textColor">@color/half_darkgray</item>
+    </style>
+
+    <style name="readingItemMetadata.dark">
+        <item name="android:textColor">@color/half_white</item>
+    </style>
 </resources>

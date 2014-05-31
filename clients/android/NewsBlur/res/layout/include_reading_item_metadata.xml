@@ -69,7 +69,7 @@
             android:layout_alignLeft="@id/reading_item_title"
             android:layout_marginRight="12dp"
             android:layout_marginTop="8dp"
-            android:textColor="@color/half_darkgray"
+            style="?readingItemMetadata"
             android:textSize="12sp" />
 
         <TextView
@@ -80,7 +80,7 @@
             android:layout_toRightOf="@id/reading_item_date"
             android:maxLines="1"
             android:minWidth="80dp"
-            android:textColor="@color/half_darkgray"
+            style="?readingItemMetadata"
             android:textSize="12sp"
             android:textStyle="bold"/>
 
