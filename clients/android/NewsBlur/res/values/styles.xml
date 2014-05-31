@@ -113,4 +113,12 @@
     <style name="rowItemFeedHeader.dark">
         <item name="android:background">@drawable/dark_row_item_feed_header</item>
     </style>
+
+    <style name="storyTitleUnread">
+        <item name="android:textColor">@color/story_title_unread</item>
+    </style>
+
+    <style name="storyTitleUnread.dark">
+        <item name="android:textColor">@color/dark_story_title_unread</item>
+    </style>
 </resources>

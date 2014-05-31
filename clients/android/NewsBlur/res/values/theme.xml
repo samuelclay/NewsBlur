@@ -14,6 +14,7 @@
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
+        <item name="storyTitleUnread">@style/storyTitleUnread</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -30,5 +31,6 @@
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
+        <item name="storyTitleUnread">@style/storyTitleUnread.dark</item>
     </style>
 </resources>
