@@ -17,6 +17,7 @@
         <item name="storyTitleUnread">@style/storyTitleUnread</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
         <item name="tag">@style/tag</item>
+        <item name="storyButtons">@style/storyButtons</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -36,5 +37,6 @@
         <item name="storyTitleUnread">@style/storyTitleUnread.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="tag">@style/tag.dark</item>
+        <item name="storyButtons">@style/storyButtons.dark</item>
     </style>
 </resources>

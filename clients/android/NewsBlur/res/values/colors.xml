@@ -97,6 +97,8 @@
     <color name="progress_circle_complete">#8F918B</color>
     <color name="progress_circle_remaining">#D5D7CF</color>
 
+    <color name="story_buttons_dark">#90928b</color>
+
     <!-- To use a selector on a bg color, the options must be drawables, not colors. -->
     <drawable name="toggle_bg_selected">#fdfdfd</drawable>
     <drawable name="toggle_bg_normal">#dfe1dd</drawable>

@@ -16,6 +16,7 @@
     <attr name="storyTitleUnread" format="string" />
     <attr name="readingItemMetadata" format="string" />
     <attr name="tag" format="string" />
+    <attr name="storyButtons" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

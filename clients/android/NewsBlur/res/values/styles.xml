@@ -139,4 +139,12 @@
         <item name="android:textColor">@color/tag_gray_shadow</item>
         <item name="android:background">@drawable/tag_background_dark</item>
     </style>
+
+    <style name="storyButtons">
+        <item name="android:textColor">@color/half_darkgray</item>
+    </style>
+
+    <style name="storyButtons.dark">
+        <item name="android:textColor">@color/story_buttons_dark</item>
+    </style>
 </resources>
