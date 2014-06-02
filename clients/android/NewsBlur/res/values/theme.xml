@@ -16,6 +16,7 @@
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
         <item name="storyTitleUnread">@style/storyTitleUnread</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
+        <item name="tag">@style/tag</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -34,5 +35,6 @@
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
         <item name="storyTitleUnread">@style/storyTitleUnread.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
+        <item name="tag">@style/tag.dark</item>
     </style>
 </resources>

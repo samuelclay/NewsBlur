@@ -15,6 +15,7 @@
     <attr name="rowItemFeedHeader" format="string" />
     <attr name="storyTitleUnread" format="string" />
     <attr name="readingItemMetadata" format="string" />
+    <attr name="tag" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
