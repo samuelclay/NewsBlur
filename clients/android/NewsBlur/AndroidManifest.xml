@@ -122,8 +122,6 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service android:name=".service.SyncService" />
-
         <service android:name=".service.NBSyncService" />
 
         <receiver android:name=".service.BootReceiver">

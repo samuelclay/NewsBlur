@@ -32,7 +32,6 @@ import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 
 public class FeedUtils {

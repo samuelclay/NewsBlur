@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,20 +34,10 @@ public class DeleteFeedFragment extends DialogFragment {
 		return frag;
 	}
 
-	private FragmentManager fragmentManager;
-	private SyncUpdateFragment syncFragment;	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
 		super.onCreate(savedInstanceState);
-
-		fragmentManager = super.getFragmentManager();
-		
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-		}
 	}
 
 	@Override
@@ -66,7 +55,7 @@ public class DeleteFeedFragment extends DialogFragment {
                 // called from the feed view so finish
                 Activity activity = DeleteFeedFragment.this.getActivity();
                 if (activity instanceof Main) {
-                   ((Main)activity).updateAfterSync();
+                   ((Main)activity).handleUpdate();
                 } else {
                    activity.finish();
                 }

@@ -15,20 +15,17 @@ import android.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
-import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.BootReceiver;
-import com.newsblur.service.SyncService;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
+public class Main extends NbActivity implements StateChangedListener {
 
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-	private SyncUpdateFragment syncFragment;
 	private static final String TAG = "MainActivity";
 	private Menu menu;
 
@@ -48,18 +45,9 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		fragmentManager = getFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
-		
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 
-            // for our first sync, don't just trigger a heavyweight refresh, do it in two steps
-            // so the UI appears more quickly (per the docs at newsblur.com/api)
-            if (PrefsUtils.isTimeToAutoSync(this)) {
-                triggerFirstSync();
-            }
-		}
+        //also make sure the interval sync is scheduled, in case it was just now enabled
+        BootReceiver.scheduleSyncService(this);
 	}
 
     @Override
@@ -71,40 +59,11 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
         // clear all stories from the DB, the story activities will load them.
         FeedUtils.clearStories(this);
 
-        //trigger an autosync right now, just in case
-        Intent i = new Intent(this, NBSyncService.class);
-        startService(i);
-        //also make sure the interval sync is scheduled, in case it was just now enabled
-        BootReceiver.scheduleSyncService(this);
     }
 
-    /**
-     * Triggers an initial two-phase sync, so the UI can display quickly using /reader/feeds and
-     * then call /reader/refresh_feeds to get updated counts.
-     */
-	private void triggerFirstSync() {
-        PrefsUtils.updateLastSyncTime(this);
-		setProgressBarIndeterminateVisibility(true);
-        setRefreshEnabled(false);
-		
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_TWO_STEP);
-		startService(intent);
-	}
-	
-	/**
-     * Triggers a full, manually requested refresh of feed/folder data and counts.
-     */
     private void triggerRefresh() {
-        PrefsUtils.updateLastSyncTime(this);
-		setProgressBarIndeterminateVisibility(true);
-        setRefreshEnabled(false);
-
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.EXTRA_TASK_TYPE, SyncService.TaskType.FOLDER_UPDATE_WITH_COUNT);
-		startService(intent);
+        Intent i = new Intent(this, NBSyncService.class);
+        startService(i);
 	}
 
 	private void setupActionBar() {
@@ -156,38 +115,17 @@ public class Main extends NbActivity implements StateChangedListener, SyncUpdate
 		}
 	}
 
-	/**
-     * Called after the sync service completely finishes a task.
-     */
     @Override
-	public void updateAfterSync() {
+	public void handleUpdate() {
 		folderFeedList.hasUpdated();
-		setProgressBarIndeterminateVisibility(false);
-        setRefreshEnabled(true);
-	}
-
-    /**
-     * Called when the sync service has made enough progress to update the UI but not
-     * enough to stop the progress indicator.
-     */
-    @Override
-    public void updatePartialSync() {
-        // TODO: move 2-step sync to new async lib and remove this method entirely
-        // folderFeedList.hasUpdated();
-    }
-	
-	@Override
-	public void updateSyncStatus(boolean syncRunning) {
-        // TODO: the progress bar is activated manually elsewhere in this activity. this
-        //       interface method may be redundant.
-		if (syncRunning) {
-			setProgressBarIndeterminateVisibility(true);
+        if (NBSyncService.isSyncRunning()) {
+		    setProgressBarIndeterminateVisibility(true);
             setRefreshEnabled(false);
-		}
+        } else {
+		    setProgressBarIndeterminateVisibility(false);
+            setRefreshEnabled(true);
+        }
 	}
-
-	@Override
-	public void setNothingMoreToUpdate() { }
 
     private void setRefreshEnabled(boolean enabled) {
         if (menu != null) {
