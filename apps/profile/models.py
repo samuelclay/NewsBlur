@@ -620,7 +620,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                                 email_type='premium_expire_grace')
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
-            if email.date_sent > day_ago:
+            if email.date_sent > day_ago and not force:
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return
         
@@ -652,7 +652,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                                 email_type='premium_expire')
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
-            if email.date_sent > day_ago:
+            if email.date_sent > day_ago and not force:
                 logging.user(self.user, "~FM~SBNot sending premium expire email, already sent before.")
                 return
         

@@ -148,6 +148,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     extra_classes: function() {
         var feed = this.model;
         var extra_classes = '';
+        var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(feed.id);
 
         if (feed.get('ps')) {
             extra_classes += ' unread_positive';
@@ -157,6 +158,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
         if (feed.get('ng')) {
             extra_classes += ' unread_negative';
+        }
+        if ((starred_feed && starred_feed.get('count')) || feed.is_starred()) {
+            extra_classes += ' unread_starred';
         }
 
         if (feed.is_feed()) {
@@ -188,7 +192,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (this.counts_view) {
             this.counts_view.destroy();
         }
-        this.counts_view = new NEWSBLUR.Views.UnreadCount({model: this.model}).render();
+        this.counts_view = new NEWSBLUR.Views.UnreadCount({
+            model: this.model,
+            include_starred: true
+        }).render();
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {
             this.$('.NB-story-title-indicator-count').html(this.counts_view.$el.clone());
@@ -248,7 +255,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     add_extra_classes: function() {
         var extra_classes = this.extra_classes();
-        $(this.el).removeClass("unread_positive unread_neutral unread_negative");
+        $(this.el).removeClass("unread_positive unread_neutral unread_negative unread_starred");
         $(this.el).addClass(extra_classes);
     },
     

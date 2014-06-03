@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 import requests
+import random
 import zlib
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -538,6 +539,12 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif read_filter == 'starred':
+        mstories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id=feed_id
+        ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
+        stories = Feed.format_stories(mstories) 
     elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
                                       default_cutoff_date=user.profile.unread_cutoff)
@@ -919,7 +926,7 @@ def load_river_stories__redis(request):
     code              = 1
     user_search       = None
     offset = (page-1) * limit
-    limit = page * limit - 1
+    limit = page * limit
     story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
     
     if story_hashes:
@@ -944,6 +951,12 @@ def load_river_stories__redis(request):
             stories = []
             mstories = []
             message = "You must be a premium subscriber to search."
+    elif read_filter == 'starred':
+        mstories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id__in=feed_ids
+        ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
+        stories = Feed.format_stories(mstories) 
     else:
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
@@ -981,10 +994,13 @@ def load_river_stories__redis(request):
 
     # Find starred stories
     if found_feed_ids:
-        starred_stories = MStarredStory.objects(
-            user_id=user.pk,
-            story_feed_id__in=found_feed_ids
-        ).only('story_hash', 'starred_date')
+        if read_filter == 'starred':
+            starred_stories = mstories
+        else:
+            starred_stories = MStarredStory.objects(
+                user_id=user.pk,
+                story_feed_id__in=found_feed_ids
+            ).only('story_hash', 'starred_date')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags)) 
                                 for story in starred_stories])
@@ -1012,11 +1028,13 @@ def load_river_stories__redis(request):
                                            classifier_titles=classifier_titles,
                                            classifier_tags=classifier_tags)
     
-
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
-        story['read_status'] = 0
+        if read_filter == 'starred':
+            story['read_status'] = 1
+        else:
+            story['read_status'] = 0
         if read_filter == 'all' or query:
             if (unread_feed_story_hashes is not None and 
                 story['story_hash'] not in unread_feed_story_hashes):
@@ -1795,6 +1813,7 @@ def _mark_story_as_starred(request):
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)
+        feed_id = story and story.story_feed_id
     else:
         story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     
@@ -1822,6 +1841,7 @@ def _mark_story_as_starred(request):
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
         new_user_tags = user_tags
+        MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
     else:
         starred_story = starred_story[0]
         new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
@@ -1830,29 +1850,13 @@ def _mark_story_as_starred(request):
         starred_story.save()
     
     for tag in new_user_tags:
-        try:
-            story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                          tag=tag)
-        except MStarredStoryCounts.DoesNotExist:
-            story_count = MStarredStoryCounts.objects.create(user_id=request.user.pk,
-                                                             tag=tag)
-        if not story_count.count:
-            story_count.count = 0
-        story_count.count += 1
-        story_count.save()
+        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
     for tag in removed_user_tags:
-        try:
-            story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                          tag=tag)
-            story_count.count -= 1
-            story_count.save()
-            if story_count.count <= 0:
-                story_count.delete()
-        except MStarredStoryCounts.DoesNotExist:
-            pass
-
-    MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
-    MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
+        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
+    
+    if random.random() < 0.01:
+        MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+    MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
     starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     
     if created:
@@ -1889,6 +1893,7 @@ def _mark_story_as_unstarred(request):
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
+        feed_id = starred_story.story_feed_id
         MActivity.remove_starred_story(user_id=request.user.pk, 
                                        story_feed_id=starred_story.story_feed_id,
                                        story_id=starred_story.story_guid)
@@ -1897,18 +1902,16 @@ def _mark_story_as_unstarred(request):
             starred_story.save()
         except NotUniqueError:
             starred_story.delete()
+        
+        MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=-1)
+
         for tag in user_tags:
             try:
-                story_count = MStarredStoryCounts.objects.get(user_id=request.user.pk,
-                                                              tag=tag)
-                story_count.count -= 1
-                story_count.save()
-                if story_count.count <= 0:
-                    story_count.delete()
+                MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
             except MStarredStoryCounts.DoesNotExist:
                 pass
         # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
-        MStarredStoryCounts.count_tags_for_user(request.user.pk, total_only=True)
+        MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
     else:
         code = -1

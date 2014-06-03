@@ -234,6 +234,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (data.starred_counts) {
                 self.starred_feeds.reset(data.starred_counts, {parse: true});
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (feed && feed.views) _.invoke(feed.views, 'render');
             }
             
             if (selected) {
@@ -257,6 +259,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (data.starred_counts) { 
                 self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (feed && feed.views) _.invoke(feed.views, 'render');
             }
             
             if (selected && self.starred_feeds.get(selected)) {
@@ -1101,6 +1105,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
+        if (NEWSBLUR.reader.flags['feed_list_showing_starred'] && 
+            setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
