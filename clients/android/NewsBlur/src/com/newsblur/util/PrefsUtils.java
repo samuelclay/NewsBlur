@@ -302,4 +302,9 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
+
+    public static boolean isOfflineEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
+    }
 }

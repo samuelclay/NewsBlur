@@ -18,7 +18,6 @@ import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener {
@@ -26,13 +25,11 @@ public class Main extends NbActivity implements StateChangedListener {
 	private ActionBar actionBar;
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-	private static final String TAG = "MainActivity";
 	private Menu menu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-        PrefsUtils.checkForUpgrade(this);
         PreferenceManager.setDefaultValues(this, R.layout.activity_settings, false);
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -46,25 +43,18 @@ public class Main extends NbActivity implements StateChangedListener {
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 		folderFeedList.setRetainInstance(true);
 
-        //also make sure the interval sync is scheduled, in case it was just now enabled
+        // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
 	}
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (PrefsUtils.isTimeToAutoSync(this)) {
-            triggerRefresh();
-        }
+        triggerSync();
         // clear all stories from the DB, the story activities will load them.
         FeedUtils.clearStories(this);
 
     }
-
-    private void triggerRefresh() {
-        Intent i = new Intent(this, NBSyncService.class);
-        startService(i);
-	}
 
 	private void setupActionBar() {
 		actionBar = getActionBar();
@@ -87,7 +77,8 @@ public class Main extends NbActivity implements StateChangedListener {
 			startActivity(profileIntent);
 			return true;
 		} else if (item.getItemId() == R.id.menu_refresh) {
-			triggerRefresh();
+            NBSyncService.forceFeedsFolders();
+			triggerSync();
 			return true;
 		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent intent = new Intent(this, SearchForFeeds.class);

@@ -1,14 +1,20 @@
 package com.newsblur.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
 
+/**
+ * The base class for all Activities in the NewsBlur app.  Handles enforcement of
+ * login state and tracking of sync/update broadcasts.
+ */
 public class NbActivity extends Activity {
 
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
@@ -48,7 +54,7 @@ public class NbActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onSuspend");
+        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 
         synchronized (AllActivities) {
@@ -72,6 +78,14 @@ public class NbActivity extends Activity {
 	}
 
     /**
+     * Pokes the sync service to perform any pending sync actions.
+     */
+    protected void triggerSync() {
+        Intent i = new Intent(this, NBSyncService.class);
+        startService(i);
+	}
+
+    /**
      * Called on each NB activity after the DB has been updated by the sync service. This method
      * should return as quickly as possible.
      */
@@ -86,7 +100,8 @@ public class NbActivity extends Activity {
     }
 
     /**
-     * Notify all activities in the app that the DB has been updated.
+     * Notify all activities in the app that the DB has been updated. Should only be called
+     * by the sync service, which owns updating the DB.
      */
     public static void updateAllActivities() {
         Log.d(NbActivity.class.getName(), "updating all activities . . .");
@@ -96,6 +111,15 @@ public class NbActivity extends Activity {
             }
         }
         Log.d(NbActivity.class.getName(), " . . . done updating all activities");
+    }
+
+    /**
+     * Gets the number of active/foreground NB activities. Used by the sync service to
+     * determine if the app is active so we can honour user requests not to run in
+     * the background.
+     */
+    public static int getActiveActivityCount() {
+        return AllActivities.size();
     }
 
 }

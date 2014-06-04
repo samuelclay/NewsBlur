@@ -9,10 +9,23 @@ import android.util.Log;
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.network.APIManager;
+import com.newsblur.util.PrefsUtils;
 
+/**
+ * A background service to handle synchronisation with the NB servers.
+ *
+ * It is the design goal of this service to handle all communication with the API.
+ * Activities and fragments should enqueue actions in the DB or use the methods
+ * provided herein to request an action and let the service handle things.
+ *
+ * Per the contract of the Service class, at most one instance shall be created. It
+ * will be preserved and re-used where possible.  Additionally, regularly scheduled
+ * invocations are requested via the Main activity and BootReceiver.
+ */
 public class NBSyncService extends Service {
 
-    private static boolean SyncRunning = false;
+    private volatile static boolean SyncRunning = false;
+    private volatile static boolean DoFeedsFolders = false;
 
 	private APIManager apiManager;
 
@@ -21,25 +34,35 @@ public class NBSyncService extends Service {
 		super.onCreate();
         Log.d(this.getClass().getName(), "onCreate");
 		apiManager = new APIManager(this);
+        PrefsUtils.checkForUpgrade(this);
 	}
 
+    /**
+     * Called serially, once per "start" of the service.  This serves as a wakeup call
+     * that the service should check for outstanding work.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(this.getClass().getName(), "onStartCommand");
+        if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
+            // Services actually get invoked on the main system thread, and are not
+            // allowed to do tangible work.  We spawn a thread to do so.
+            new Thread(new Runnable() {
+                public void run() {
+                    doSync();
+                }
+            }).start();
+        } else {
+            Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
+        } 
 
-        // TODO: check for sync flag or realtime flag
-
-        new Thread(new Runnable() {
-            public void run() {
-                doSync();
-            }
-        }).start();
-
-        Log.d(this.getClass().getName(), "onStartCommand complete");
-
+        // indicate to the system that the service should be alive when started, but
+        // needn't necessarily persist under memory pressure
         return Service.START_NOT_STICKY;
     }
 
+    /**
+     * Do the actual work of syncing.
+     */
     private synchronized void doSync() {
         Log.d(this.getClass().getName(), "starting sync . . .");
 
@@ -51,11 +74,18 @@ public class NBSyncService extends Service {
             SyncRunning = true;
             NbActivity.updateAllActivities();
 
-            apiManager.getFolderFeedMapping(true);
+
+            if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
+                apiManager.getFolderFeedMapping(true);
+                PrefsUtils.updateLastSyncTime(this);
+                DoFeedsFolders = false;
+            }
 
             SyncRunning = false;
             NbActivity.updateAllActivities();
 
+        } catch (Exception e) {
+            Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
             wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
@@ -64,6 +94,14 @@ public class NBSyncService extends Service {
 
     public static boolean isSyncRunning() {
         return SyncRunning;
+    }
+
+    /**
+     * Force a refresh of feed/folder data on the next sync, even if enough time
+     * hasn't passed for an autosync.
+     */
+    public static void forceFeedsFolders() {
+        DoFeedsFolders = true;
     }
 
     @Override
