@@ -33,7 +33,7 @@ public class ThemeUtils {
         if (PrefsUtils.isLightThemeSelected(context)) {
             return getColor(context, R.color.story_content_unread);
         } else {
-            return getColor(context, R.color.story_content_unread);
+            return getColor(context, R.color.dark_story_content_unread);
         }
     }
 

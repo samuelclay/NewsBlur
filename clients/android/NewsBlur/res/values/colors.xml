@@ -40,6 +40,7 @@
     <color name="dark_story_title_unread">#FFFDEF</color>
     <color name="story_title_read">#808080</color>
     <color name="story_content_unread">#404040</color>
+    <color name="dark_story_content_unread">#F7F8F5</color>
     <color name="story_content_read">#909090</color>
     <color name="story_feed_unread">#606060</color>
     <color name="dark_story_feed_unread">#F7F8F5</color>
