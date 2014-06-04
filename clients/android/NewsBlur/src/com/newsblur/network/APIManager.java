@@ -603,6 +603,7 @@ public class APIManager {
 		}
 	}
 
+    // TODO: is this unused?
 	public void refreshFeedCounts() {
 		final APIResponse response = get(APIConstants.URL_FEED_COUNTS);
 		if (!response.isError()) {

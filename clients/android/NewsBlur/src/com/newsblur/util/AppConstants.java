@@ -30,7 +30,7 @@ public class AppConstants {
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
 
     // how long to wait before auto-syncing the feed/folder list
-    public static final long AUTO_SYNC_TIME_MILLIS = 10L * 60L * 1000L;
+    public static final long AUTO_SYNC_TIME_MILLIS = 5L * 60L * 1000L;
 
     // how many total attemtps to make at a single API call
     public static final int MAX_API_TRIES = 3;
@@ -44,4 +44,7 @@ public class AppConstants {
 
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
     public static final int READING_STORY_PRELOAD = 5;
+
+    // max stories to keep in the DB unless actively being read (i.e. for offline reading)
+    public static final int MAX_STORIES_STORED = 100;
 }

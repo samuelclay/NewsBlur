@@ -106,16 +106,6 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void clearStories(final Context context) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                context.getContentResolver().delete(FeedProvider.ALL_STORIES_URI, null, null);
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     private static void handleStoryResponse(Context context, NewsBlurResponse response, Story[] stories, ActionCompletionListener receiver) {
         // the API may return both a valid stories block *and* an error, so check for stories first
         if (stories != null) {

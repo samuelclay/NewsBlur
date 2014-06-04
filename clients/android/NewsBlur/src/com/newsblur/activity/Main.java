@@ -51,9 +51,6 @@ public class Main extends NbActivity implements StateChangedListener {
     protected void onResume() {
         super.onResume();
         triggerSync();
-        // clear all stories from the DB, the story activities will load them.
-        FeedUtils.clearStories(this);
-
     }
 
 	private void setupActionBar() {

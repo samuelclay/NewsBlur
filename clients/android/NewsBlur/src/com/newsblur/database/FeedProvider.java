@@ -125,7 +125,6 @@ public class FeedProvider extends ContentProvider {
 				db.delete(DatabaseConstants.FEED_TABLE, null, null);
 				db.delete(DatabaseConstants.FOLDER_TABLE, null, null);
 				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
-				db.delete(DatabaseConstants.STORY_TABLE, null, null);
 				return 1;
 				
 			case ALL_STORIES:	

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefsUtils;
 
@@ -21,6 +22,10 @@ import com.newsblur.util.PrefsUtils;
  * Per the contract of the Service class, at most one instance shall be created. It
  * will be preserved and re-used where possible.  Additionally, regularly scheduled
  * invocations are requested via the Main activity and BootReceiver.
+ *
+ * The service will notify all running activities of an update before, during, and
+ * after sync operations are performed.  Activities can then refresh views and
+ * query this class to see if progress indicators should be active.
  */
 public class NBSyncService extends Service {
 
@@ -28,6 +33,7 @@ public class NBSyncService extends Service {
     private volatile static boolean DoFeedsFolders = false;
 
 	private APIManager apiManager;
+    private BlurDatabaseHelper dbHelper;
 
 	@Override
 	public void onCreate() {
@@ -35,6 +41,7 @@ public class NBSyncService extends Service {
         Log.d(this.getClass().getName(), "onCreate");
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
+        dbHelper = new BlurDatabaseHelper(this);
 	}
 
     /**
@@ -43,6 +50,7 @@ public class NBSyncService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -74,8 +82,11 @@ public class NBSyncService extends Service {
             SyncRunning = true;
             NbActivity.updateAllActivities();
 
+            Log.d(this.getClass().getName(), "cleaning up stories");
+            dbHelper.cleanupStories();
 
             if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
+                Log.d(this.getClass().getName(), "fetching feeds and folders");
                 apiManager.getFolderFeedMapping(true);
                 PrefsUtils.updateLastSyncTime(this);
                 DoFeedsFolders = false;

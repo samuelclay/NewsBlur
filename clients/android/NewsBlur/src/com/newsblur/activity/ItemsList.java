@@ -118,7 +118,6 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 	
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
-        FeedUtils.clearStories(this);
         updateStoryOrderPreference(newValue);
         itemListFragment.setStoryOrder(newValue);
         itemListFragment.resetPagination();
@@ -130,7 +129,6 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
-        FeedUtils.clearStories(this);
         updateReadFilterPreference(newValue);
         itemListFragment.resetPagination();
         stopLoading = false;
