@@ -16,13 +16,11 @@ import com.newsblur.util.AppConstants;
 
 /**
  * A magic subclass of ContentProvider that enhances calls to the DB for presumably more simple caller syntax.
- * 
- * TODO: the fact that most of the app uses this subclass of ContentProvider cast as such may
- *  deepy confuse future maintainers as to why the methods within magically do far, far more
- *  than suggested by the normal contract and provided args.  When time and resources permit,
- *  this paradigm could be replaced with a much more straightforward if slightly more verbose
- *  use of Plain Old Raw Queries.  Alternatively, the DB could be renormalized so that it is not
- *  necessary to use queries of such intense complexity.
+ *
+ * TODO: GET RID OF THIS CLASS.  Per the docs for ContentProfider, one is not required
+ *  or recommended for DB access unless sharing data outside of the app, which we do
+ *  not.  All DB ops should be done via BlurDatabaseHelper using straightforward, 
+ *  standard SQL.  
  */
 public class FeedProvider extends ContentProvider {
 

@@ -10,6 +10,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.PrefsUtils;
 
 /**
@@ -82,12 +83,18 @@ public class NBSyncService extends Service {
             SyncRunning = true;
             NbActivity.updateAllActivities();
 
-            Log.d(this.getClass().getName(), "cleaning up stories");
-            dbHelper.cleanupStories();
+            // clean up the DB iff the user isn't actively reading, so we don't delete out from
+            // under the UI.
+            if (NbActivity.getActiveActivityCount() < 1) {
+                Log.d(this.getClass().getName(), "cleaning up stories");
+                dbHelper.cleanupStories();
+            }
 
             if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
                 Log.d(this.getClass().getName(), "fetching feeds and folders");
                 apiManager.getFolderFeedMapping(true);
+                Log.d(this.getClass().getName(), "fetching unread hashes");
+                UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
                 PrefsUtils.updateLastSyncTime(this);
                 DoFeedsFolders = false;
             }

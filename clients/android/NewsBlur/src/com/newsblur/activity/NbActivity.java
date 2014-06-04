@@ -104,13 +104,11 @@ public class NbActivity extends Activity {
      * by the sync service, which owns updating the DB.
      */
     public static void updateAllActivities() {
-        Log.d(NbActivity.class.getName(), "updating all activities . . .");
         synchronized (AllActivities) {
             for (NbActivity activity : AllActivities) {
                 activity._handleUpdate();
             }
         }
-        Log.d(NbActivity.class.getName(), " . . . done updating all activities");
     }
 
     /**

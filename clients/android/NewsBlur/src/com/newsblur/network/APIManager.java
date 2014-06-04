@@ -44,6 +44,7 @@ import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
+import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.serialization.BooleanTypeAdapter;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.serialization.StoryTypeAdapter;
@@ -211,6 +212,11 @@ public class APIManager {
 			return null;
 		}
 	}
+
+    public UnreadStoryHashesResponse getUnreadStoryHashes() {
+        APIResponse response = get(APIConstants.URL_UNREAD_HASHES);
+        return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
+    }
 
 	public StoriesResponse getStoriesForFeed(String feedId, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ContentValues values = new ContentValues();
