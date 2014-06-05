@@ -20,6 +20,8 @@
         <item name="storyButtons">@style/storyButtons</item>
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
+        <item name="commentsHeader">@style/commentsHeader</item>
+        <item name="commentsText">@style/commentsText</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -42,5 +44,7 @@
         <item name="storyButtons">@style/storyButtons.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
+        <item name="commentsHeader">@style/commentsHeader.dark</item>
+        <item name="commentsText">@style/commentsText.dark</item>
     </style>
 </resources>

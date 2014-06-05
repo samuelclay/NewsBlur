@@ -107,7 +107,7 @@
     </style>
 
     <style name="rowItemFeedHeader">
-        <item name="android:background">@drawable/row_item_feed_header</item>
+      <item name="android:background">@drawable/row_item_feed_header</item>
     </style>
 
     <style name="rowItemFeedHeader.dark">
@@ -166,5 +166,23 @@
 
     <style name="shareBarText.dark">
         <item name="android:textColor">@color/midgray</item>
+    </style>
+
+    <style name="commentsHeader">
+        <item name="android:background">@drawable/gradient_background_default</item>
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="commentsHeader.dark">
+        <item name="android:background">@drawable/dark_gradient_background_default</item>
+        <item name="android:textColor">@color/midgray</item>
+    </style>
+
+    <style name="commentsText">
+        <item name="android:textColor">@color/darkgray</item>
+    </style>
+
+    <style name="commentsText.dark">
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>
