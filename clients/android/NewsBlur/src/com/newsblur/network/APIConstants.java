@@ -46,6 +46,7 @@ public class APIConstants {
 	public static final String URL_UNREAD_HASHES = NEWSBLUR_URL + "/reader/unread_story_hashes";
 	
 	public static final String PARAMETER_FEEDS = "f";
+	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";

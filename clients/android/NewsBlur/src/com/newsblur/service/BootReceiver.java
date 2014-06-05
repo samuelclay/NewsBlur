@@ -26,10 +26,14 @@ public class BootReceiver extends BroadcastReceiver {
     public static void scheduleSyncService(Context context) {
         Log.d(BootReceiver.class.getName(), "scheduling sync service");
 
+        // wake up to check if a sync is needed about twice as often as one actually is, to ensure
+        // we never fall more than about half a cycle behind.
+        long interval = (AppConstants.AUTO_SYNC_TIME_MILLIS / 2L);
+
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, ServiceScheduleReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, AppConstants.AUTO_SYNC_TIME_MILLIS, AppConstants.AUTO_SYNC_TIME_MILLIS, pi);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, interval, interval, pi);
     }
         
 }

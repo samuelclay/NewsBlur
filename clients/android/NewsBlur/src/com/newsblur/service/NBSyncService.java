@@ -15,12 +15,16 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.FeedFolderResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A background service to handle synchronisation with the NB servers.
@@ -45,6 +49,8 @@ public class NBSyncService extends Service {
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
 
+    private Set<String> storyHashQueue;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -52,6 +58,7 @@ public class NBSyncService extends Service {
 		apiManager = new APIManager(this);
         PrefsUtils.checkForUpgrade(this);
         dbHelper = new BlurDatabaseHelper(this);
+        storyHashQueue = new HashSet<String>();
 	}
 
     /**
@@ -106,6 +113,10 @@ public class NBSyncService extends Service {
             }
 
             SyncRunning = false;
+            NbActivity.updateAllActivities();
+
+            syncUnreads();
+
             NbActivity.updateAllActivities();
 
         } catch (Exception e) {
@@ -195,9 +206,40 @@ public class NBSyncService extends Service {
             // ignore unreads from orphaned feeds
             if( debugFeedIds.contains(feedId)) {
                 Log.d(this.getClass().getName(), "feeds " + feedId + " has unreads: " + entry.getValue().length);
+                // only fetch the reported unreads if we don't already have them
+                List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
+                Log.d(this.getClass().getName(), "feeds " + feedId + " originally had stories: " + existingHashes.size());
+                for (String newHash : entry.getValue()) {
+                    if (!existingHashes.contains(newHash)) {
+                        Log.d(this.getClass().getName(), "found new unread hash: " + newHash);
+                        storyHashQueue.add(newHash);
+                    }
+                }
             }
         }
+    }
 
+    /**
+     * The second step of syncing: fetch new unread stories.
+     */
+    private void syncUnreads() {
+        unreadsyncloop: while (storyHashQueue.size() > 0) {
+            List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
+            batchloop: for (String hash : storyHashQueue) {
+                hashBatch.add(hash);
+                if (hashBatch.size() >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break batchloop;
+            }
+            for (String hash : hashBatch) {
+                storyHashQueue.remove(hash);
+            } 
+            Log.d(this.getClass().getName(), "fetching batch of unreads with size: " + hashBatch.size());
+            StoriesResponse response = apiManager.getStoriesByHash(hashBatch);
+            if (response.isError()) {
+                Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
+                break unreadsyncloop;
+            }
+            dbHelper.insertStories(response);
+        }
     }
 
     public static boolean isSyncRunning() {

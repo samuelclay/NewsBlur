@@ -4,9 +4,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
+import com.newsblur.domain.Classifier;
+import com.newsblur.domain.Comment;
+import com.newsblur.domain.Feed;
+import com.newsblur.domain.FeedResult;
+import com.newsblur.domain.Reply;
+import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.Story;
+import com.newsblur.domain.UserProfile;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,6 +59,7 @@ public class BlurDatabaseHelper {
     }
 
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
+        if (valuesList.size() < 1) return;
         dbRW.beginTransaction();
         try {
             for(ContentValues values: valuesList) {
@@ -76,4 +88,63 @@ public class BlurDatabaseHelper {
         dbRW.delete(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null);
         dbRW.insert(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values);
     }
+
+    public List<String> getStoryHashesForFeed(String feedId) {
+        String q = "SELECT " + DatabaseConstants.STORY_HASH + 
+                   " FROM " + DatabaseConstants.STORY_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?";
+        Cursor c = dbRO.rawQuery(q, new String[]{feedId});
+        List<String> hashes = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+           hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        }
+        c.close();
+        return hashes;
+    }
+
+    public void insertStories(StoriesResponse apiResponse) {
+        // handle users
+        List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
+        for (UserProfile user : apiResponse.users) {
+            userValues.add(user.getValues());
+        }
+        bulkInsertValues(DatabaseConstants.USER_TABLE, userValues);
+
+        // TODO: StoriesResponse can only handle classifiers from /reader/feed, not /reader/river_stories,
+        //  so we can't yet make a generic digester
+
+        // handle story content
+        List<ContentValues> storyValues = new ArrayList<ContentValues>(apiResponse.stories.length);
+        for (Story story : apiResponse.stories) {
+            storyValues.add(story.getValues());
+        }
+        bulkInsertValues(DatabaseConstants.STORY_TABLE, storyValues);
+    
+        // handle comments
+        List<ContentValues> commentValues = new ArrayList<ContentValues>();
+        List<ContentValues> replyValues = new ArrayList<ContentValues>();
+        for (Story story : apiResponse.stories) {
+            for (Comment comment : story.publicComments) {
+                comment.storyId = story.id;
+                comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                commentValues.add(comment.getValues());
+                for (Reply reply : comment.replies) {
+                    reply.commentId = comment.id;
+                    replyValues.add(reply.getValues());
+                }
+            }
+            for (Comment comment : story.friendsComments) {
+                comment.storyId = story.id;
+                comment.id = TextUtils.concat(story.id, story.feedId, comment.userId).toString();
+                commentValues.add(comment.getValues());
+                for (Reply reply : comment.replies) {
+                    reply.commentId = comment.id;
+                    replyValues.add(reply.getValues());
+                }
+            }
+        }
+        bulkInsertValues(DatabaseConstants.COMMENT_TABLE, commentValues);
+        bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
+    }
+
 }

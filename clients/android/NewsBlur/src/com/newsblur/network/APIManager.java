@@ -251,6 +251,15 @@ public class APIManager {
         return storiesResponse;
 	}
 
+    public StoriesResponse getStoriesByHash(List<String> storyHashes) {
+		ValueMultimap values = new ValueMultimap();
+        for (String hash : storyHashes) {
+            values.put(APIConstants.PARAMETER_H, hash);
+        }
+        APIResponse response = get(APIConstants.URL_RIVER_STORIES, values);
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+    }
+
 	public StoriesResponse getStoriesForFeeds(String[] feedIds, int pageNumber, StoryOrder order, ReadFilter filter) {
 		final ValueMultimap values = new ValueMultimap();
 		for (String feedId : feedIds) {
