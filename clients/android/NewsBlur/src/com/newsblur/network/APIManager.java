@@ -454,84 +454,18 @@ public class APIManager {
      *        the first time, in which case it is more appropriate to make a separate,
      *        additional call to refreshFeedCounts().
      */
-    public boolean getFolderFeedMapping(boolean doUpdateCounts) {
-		
-		final ContentValues params = new ContentValues();
+    public FeedFolderResponse getFolderFeedMapping(boolean doUpdateCounts) {
+		ContentValues params = new ContentValues();
 		params.put( APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false") );
-		final APIResponse response = get(APIConstants.URL_FEEDS, params);
+		APIResponse response = get(APIConstants.URL_FEEDS, params);
+
+		if (response.isError()) {
+            Log.e(this.getClass().getName(), "Error fetching feeds: " + response.getErrorMessage());
+            return null;
+        }
 
 		// note: this response is complex enough, we have to do a custom parse in the FFR
-        final FeedFolderResponse feedUpdate = new FeedFolderResponse(response.getResponseBody(), gson);
-
-        // there is a rare issue with feeds that have no folder.  capture them for debug.
-        List<String> debugFeedIds = new ArrayList<String>();
-		
-		if (!response.isError()) {
-
-            // if the response says we aren't logged in, clear the DB and prompt for login. We test this
-            // here, since this the first sync call we make on launch if we believe we are cookied.
-            if (! feedUpdate.isAuthenticated) {
-                PrefsUtils.logout(context);
-                return false;
-            }
-
-            // this actually cleans out the feed, folder, and story tables
-            contentResolver.delete(FeedProvider.FEEDS_URI, null, null);
-
-            // data for the folder and folder-feed-mapping tables
-            List<ContentValues> folderValues = new ArrayList<ContentValues>();
-            List<ContentValues> ffmValues = new ArrayList<ContentValues>();
-			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
-				if (!TextUtils.isEmpty(entry.getKey())) {
-					String folderName = entry.getKey().trim();
-					if (!TextUtils.isEmpty(folderName)) {
-						final ContentValues values = new ContentValues();
-						values.put(DatabaseConstants.FOLDER_NAME, folderName);
-						folderValues.add(values);
-					}
-	
-					for (Long feedId : entry.getValue()) {
-                        ContentValues values = new ContentValues(); 
-                        values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-                        values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-                        ffmValues.add(values);
-                        // note all feeds that belong to some folder
-                        debugFeedIds.add(Long.toString(feedId));
-					}
-				}
-			}
-
-            // data for the feeds table
-			List<ContentValues> feedValues = new ArrayList<ContentValues>();
-			for (String feedId : feedUpdate.feeds.keySet()) {
-                // sanity-check that the returned feeds actually exist in a folder or at the root
-                // if they do not, they should neither display nor count towards unread numbers
-                if (debugFeedIds.contains(feedId)) {
-                    feedValues.add(feedUpdate.feeds.get(feedId).getValues());
-                } else {
-                    Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
-                }
-			}
-			
-			// data for the the social feeds table
-            List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
-			for (final SocialFeed feed : feedUpdate.socialFeeds) {
-				socialFeedValues.add(feed.getValues());
-			}
-			
-            bulkInsertList(FeedProvider.SOCIAL_FEEDS_URI, socialFeedValues);
-            bulkInsertList(FeedProvider.FEEDS_URI, feedValues);
-            bulkInsertList(FeedProvider.FOLDERS_URI, folderValues);
-            bulkInsertList(FeedProvider.FEED_FOLDER_MAP_URI, ffmValues);
-
-            // populate the starred stories count table
-            int starredStoriesCount = feedUpdate.starredCount;
-            ContentValues values = new ContentValues();
-            values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, starredStoriesCount);
-            contentResolver.update(FeedProvider.STARRED_STORIES_COUNT_URI, values, null, null);
-
-		}
-		return true;
+        return new FeedFolderResponse(response.getResponseBody(), gson);
 	}
 
 	public NewsBlurResponse trainClassifier(String feedId, String key, int type, int action) {

@@ -1,7 +1,6 @@
 package com.newsblur.database;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -184,11 +183,11 @@ public class BlurDatabase extends SQLiteOpenHelper {
         // TODO: Handle DB version updates using switch
     }
 
-    public void exec(String sql) {
-        getWritableDatabase().execSQL(sql);
+    public SQLiteDatabase getRO() {
+        return getReadableDatabase();
     }
 
-    public Cursor queryRO(String sql, String[] selectionArgs) {
-        return getReadableDatabase().rawQuery(sql, selectionArgs);
+    public SQLiteDatabase getRW() {
+        return getWritableDatabase();
     }
 }

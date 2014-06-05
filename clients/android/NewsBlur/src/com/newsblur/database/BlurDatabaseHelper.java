@@ -1,8 +1,13 @@
 package com.newsblur.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.newsblur.util.AppConstants;
+
+import java.util.List;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -12,14 +17,18 @@ import com.newsblur.util.AppConstants;
  */
 public class BlurDatabaseHelper {
 
-    private BlurDatabase db;
+    private BlurDatabase dbWrapper;
+    private SQLiteDatabase dbRO;
+    private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
-        db = new BlurDatabase(context);
+        dbWrapper = new BlurDatabase(context);
+        dbRO = dbWrapper.getRO();
+        dbRW = dbWrapper.getRW();
     }
 
     public void close() {
-        db.close();
+        dbWrapper.close();
     }
 
     public void cleanupStories() {
@@ -29,6 +38,42 @@ public class BlurDatabaseHelper {
                    " ORDER BY " + DatabaseConstants.STORY_TIMESTAMP + " DESC" +
                    " LIMIT -1 OFFSET " + AppConstants.MAX_STORIES_STORED +
                    ")";
-        db.exec(q);
+        dbRW.execSQL(q);
+    }
+
+    public void cleanupFeedsFolders() {
+        dbRW.delete(DatabaseConstants.FEED_TABLE, null, null);
+        dbRW.delete(DatabaseConstants.FOLDER_TABLE, null, null);
+        dbRW.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
+    }
+
+    private void bulkInsertValues(String table, List<ContentValues> valuesList) {
+        dbRW.beginTransaction();
+        try {
+            for(ContentValues values: valuesList) {
+                dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            }
+            dbRW.setTransactionSuccessful();
+        } finally {
+            dbRW.endTransaction();
+        }
+    }
+
+    public void insertFeedsFolders(List<ContentValues> feedValues,
+                                   List<ContentValues> folderValues,
+                                   List<ContentValues> ffmValues,
+                                   List<ContentValues> socialFeedValues) {
+        bulkInsertValues(DatabaseConstants.FEED_TABLE, feedValues);
+        bulkInsertValues(DatabaseConstants.FOLDER_TABLE, folderValues);
+        bulkInsertValues(DatabaseConstants.FEED_FOLDER_MAP_TABLE, ffmValues);
+        bulkInsertValues(DatabaseConstants.SOCIALFEED_TABLE, socialFeedValues);
+    }
+
+    public void updateStarredStoriesCount(int count) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STARRED_STORY_COUNT_COUNT, count);
+        // this DB just has one row and one column.  blow it away and replace it.
+        dbRW.delete(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, null);
+        dbRW.insert(DatabaseConstants.STARRED_STORY_COUNT_TABLE, null, values);
     }
 }

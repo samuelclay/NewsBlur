@@ -1,17 +1,26 @@
 package com.newsblur.service;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
+import com.newsblur.database.DatabaseConstants;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.PrefsUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * A background service to handle synchronisation with the NB servers.
@@ -91,10 +100,7 @@ public class NBSyncService extends Service {
             }
 
             if (DoFeedsFolders || PrefsUtils.isTimeToAutoSync(this)) {
-                Log.d(this.getClass().getName(), "fetching feeds and folders");
-                apiManager.getFolderFeedMapping(true);
-                Log.d(this.getClass().getName(), "fetching unread hashes");
-                UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
+                syncMetadata();
                 PrefsUtils.updateLastSyncTime(this);
                 DoFeedsFolders = false;
             }
@@ -108,6 +114,90 @@ public class NBSyncService extends Service {
             wl.release();
             Log.d(this.getClass().getName(), " . . . sync done");
         }
+    }
+
+    /**
+     * The very first step of a sync - get the feed/folder list, unread counts, and
+     * unread hashes.
+     */
+    private void syncMetadata() {
+        Log.d(this.getClass().getName(), "fetching feeds and folders");
+        FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
+
+		if (feedResponse == null) {
+            return;
+        }
+
+        // if the response says we aren't logged in, clear the DB and prompt for login. We test this
+        // here, since this the first sync call we make on launch if we believe we are cookied.
+        if (! feedResponse.isAuthenticated) {
+            PrefsUtils.logout(this);
+            return;
+        }
+
+        // there is a rare issue with feeds that have no folder.  capture them for debug.
+        List<String> debugFeedIds = new ArrayList<String>();
+
+        // clean out the feed / folder tables
+        dbHelper.cleanupFeedsFolders();
+
+        // data for the folder and folder-feed-mapping tables
+        List<ContentValues> folderValues = new ArrayList<ContentValues>();
+        List<ContentValues> ffmValues = new ArrayList<ContentValues>();
+        for (Entry<String, List<Long>> entry : feedResponse.folders.entrySet()) {
+            if (!TextUtils.isEmpty(entry.getKey())) {
+                String folderName = entry.getKey().trim();
+                if (!TextUtils.isEmpty(folderName)) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.FOLDER_NAME, folderName);
+                    folderValues.add(values);
+                }
+
+                for (Long feedId : entry.getValue()) {
+                    ContentValues values = new ContentValues(); 
+                    values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+                    values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+                    ffmValues.add(values);
+                    // note all feeds that belong to some folder
+                    debugFeedIds.add(Long.toString(feedId));
+                }
+            }
+        }
+
+        // data for the feeds table
+        List<ContentValues> feedValues = new ArrayList<ContentValues>();
+        for (String feedId : feedResponse.feeds.keySet()) {
+            // sanity-check that the returned feeds actually exist in a folder or at the root
+            // if they do not, they should neither display nor count towards unread numbers
+            if (debugFeedIds.contains(feedId)) {
+                feedValues.add(feedResponse.feeds.get(feedId).getValues());
+            } else {
+                Log.w(this.getClass().getName(), "Found and ignoring un-foldered feed: " + feedId );
+            }
+        }
+        
+        // data for the the social feeds table
+        List<ContentValues> socialFeedValues = new ArrayList<ContentValues>();
+        for (SocialFeed feed : feedResponse.socialFeeds) {
+            socialFeedValues.add(feed.getValues());
+        }
+        
+        dbHelper.insertFeedsFolders(feedValues, folderValues, ffmValues, socialFeedValues);
+
+        // populate the starred stories count table
+        dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
+
+        Log.d(this.getClass().getName(), "fetching unread hashes");
+        UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
+
+        for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
+            String feedId = entry.getKey();
+            // ignore unreads from orphaned feeds
+            if( debugFeedIds.contains(feedId)) {
+                Log.d(this.getClass().getName(), "feeds " + feedId + " has unreads: " + entry.getValue().length);
+            }
+        }
+
     }
 
     public static boolean isSyncRunning() {
@@ -125,6 +215,7 @@ public class NBSyncService extends Service {
     @Override
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
+        dbHelper.close();
     }
 
     @Override
