@@ -49,5 +49,5 @@ public class AppConstants {
     public static final int MAX_STORIES_STORED = 1000;
 
     // how many unread stories to fetch via hash at a time
-    public static final int UNREAD_FETCH_BATCH_SIZE = 5;
+    public static final int UNREAD_FETCH_BATCH_SIZE = 20;
 }

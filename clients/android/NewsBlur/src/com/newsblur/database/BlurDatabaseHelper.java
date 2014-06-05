@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
@@ -102,6 +103,19 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    public List<String> getUnreadStoryHashes() {
+        String q = "SELECT " + DatabaseConstants.STORY_HASH + 
+                   " FROM " + DatabaseConstants.STORY_TABLE +
+                   " WHERE " + DatabaseConstants.STORY_READ + " = 0" ;
+        Cursor c = dbRO.rawQuery(q, null);
+        List<String> hashes = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+           hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        }
+        c.close();
+        return hashes;
+    }
+
     public void insertStories(StoriesResponse apiResponse) {
         // handle users
         List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
@@ -145,6 +159,15 @@ public class BlurDatabaseHelper {
         }
         bulkInsertValues(DatabaseConstants.COMMENT_TABLE, commentValues);
         bulkInsertValues(DatabaseConstants.REPLY_TABLE, replyValues);
+    }
+
+    public void markStoryHashesRead(List<String> hashes) {
+        // NOTE: attempting to wrap these updates in a transaction for speed makes them silently fail
+        for (String hash : hashes) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.STORY_READ, true);
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+        }
     }
 
 }

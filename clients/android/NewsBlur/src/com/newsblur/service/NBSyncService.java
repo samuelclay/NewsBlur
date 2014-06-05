@@ -46,6 +46,8 @@ public class NBSyncService extends Service {
     private volatile static boolean SyncRunning = false;
     private volatile static boolean DoFeedsFolders = false;
 
+    private volatile static boolean HaltNow = false;
+
 	private APIManager apiManager;
     private BlurDatabaseHelper dbHelper;
 
@@ -67,6 +69,7 @@ public class NBSyncService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        HaltNow = false;
         // only perform a sync if the app is actually running or background syncs are enabled
         if (PrefsUtils.isOfflineEnabled(this) || (NbActivity.getActiveActivityCount() > 0)) {
             // Services actually get invoked on the main system thread, and are not
@@ -132,6 +135,8 @@ public class NBSyncService extends Service {
      * unread hashes.
      */
     private void syncMetadata() {
+        if (HaltNow) return;
+
         Log.d(this.getClass().getName(), "fetching feeds and folders");
         FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
 
@@ -198,25 +203,32 @@ public class NBSyncService extends Service {
         // populate the starred stories count table
         dbHelper.updateStarredStoriesCount(feedResponse.starredCount);
 
+        if (HaltNow) return;
+
         Log.d(this.getClass().getName(), "fetching unread hashes");
         UnreadStoryHashesResponse unreadHashes = apiManager.getUnreadStoryHashes();
+        
+        // note all the stories we thought were unread before. if any fail to appear in
+        // the API request for unreads, we will mark them as read
+        List<String> oldUnreadHashes = dbHelper.getUnreadStoryHashes();
 
         for (Entry<String, String[]> entry : unreadHashes.unreadHashes.entrySet()) {
             String feedId = entry.getKey();
             // ignore unreads from orphaned feeds
             if( debugFeedIds.contains(feedId)) {
-                Log.d(this.getClass().getName(), "feeds " + feedId + " has unreads: " + entry.getValue().length);
                 // only fetch the reported unreads if we don't already have them
                 List<String> existingHashes = dbHelper.getStoryHashesForFeed(feedId);
-                Log.d(this.getClass().getName(), "feeds " + feedId + " originally had stories: " + existingHashes.size());
                 for (String newHash : entry.getValue()) {
                     if (!existingHashes.contains(newHash)) {
-                        Log.d(this.getClass().getName(), "found new unread hash: " + newHash);
                         storyHashQueue.add(newHash);
                     }
+                    oldUnreadHashes.remove(newHash);
                 }
             }
         }
+
+        // mark as read any old stories that were recently read
+        dbHelper.markStoryHashesRead(oldUnreadHashes);
     }
 
     /**
@@ -224,6 +236,7 @@ public class NBSyncService extends Service {
      */
     private void syncUnreads() {
         unreadsyncloop: while (storyHashQueue.size() > 0) {
+            if (HaltNow) return;
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : storyHashQueue) {
                 hashBatch.add(hash);
@@ -232,7 +245,6 @@ public class NBSyncService extends Service {
             for (String hash : hashBatch) {
                 storyHashQueue.remove(hash);
             } 
-            Log.d(this.getClass().getName(), "fetching batch of unreads with size: " + hashBatch.size());
             StoriesResponse response = apiManager.getStoriesByHash(hashBatch);
             if (response.isError()) {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
@@ -257,6 +269,7 @@ public class NBSyncService extends Service {
     @Override
     public void onDestroy() {
         Log.d(this.getClass().getName(), "onDestroy");
+        HaltNow = true;
         dbHelper.close();
     }
 

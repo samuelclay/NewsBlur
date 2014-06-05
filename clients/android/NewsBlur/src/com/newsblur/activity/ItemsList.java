@@ -111,6 +111,13 @@ public abstract class ItemsList extends NbActivity implements ActionCompletionLi
         }
     }
 
+    @Override
+	public void handleUpdate() {
+		if (itemListFragment != null) {
+			itemListFragment.hasUpdated();
+        }
+    }
+
 	@Override
 	public void changedState(int state) {
 		itemListFragment.changeState(state);
