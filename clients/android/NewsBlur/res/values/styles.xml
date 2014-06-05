@@ -147,4 +147,24 @@
     <style name="storyButtons.dark">
         <item name="android:textColor">@color/story_buttons_dark</item>
     </style>
+
+    <style name="shareBarBackground">
+        <item name="android:background">@color/share_bar_background</item>
+    </style>
+
+    <style name="shareBarBackground.dark">
+        <item name="android:background">@color/dark_share_bar_background</item>
+    </style>
+
+    <style name="shareBarText">
+        <item name="android:textColor">@color/midgray</item>
+        <item name="android:shadowColor">@color/white</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="shareBarText.dark">
+        <item name="android:textColor">@color/midgray</item>
+    </style>
 </resources>

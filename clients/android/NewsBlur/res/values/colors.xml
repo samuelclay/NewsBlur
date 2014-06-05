@@ -63,6 +63,7 @@
     <color name="item_background">#FFF</color>
     <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
+    <color name="dark_share_bar_background">#303030</color>
     
     <color name="half_black">#7000</color>
     

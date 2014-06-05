@@ -18,6 +18,8 @@
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
         <item name="tag">@style/tag</item>
         <item name="storyButtons">@style/storyButtons</item>
+        <item name="shareBarBackground">@style/shareBarBackground</item>
+        <item name="shareBarText">@style/shareBarText</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -38,5 +40,7 @@
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
         <item name="tag">@style/tag.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="shareBarBackground">@style/shareBarBackground.dark</item>
+        <item name="shareBarText">@style/shareBarText.dark</item>
     </style>
 </resources>
