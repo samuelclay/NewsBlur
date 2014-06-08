@@ -19,6 +19,8 @@
     <color name="dark_folder_text">#FDFDFD</color>
     <color name="folder_border_top">#FDFDFD</color>
     <color name="folder_border_bottom">#B7BBAA</color>
+    <color name="dark_folder_border_top">#898989</color>
+    <color name="dark_folder_border_bottom">#434343</color>
     <color name="feed_background">#F7F8F5</color>
     <color name="dark_feed_background">#1A1A1A</color>
     <color name="feed_background_end">#303030</color>

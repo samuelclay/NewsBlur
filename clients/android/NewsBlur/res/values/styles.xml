@@ -185,4 +185,20 @@
     <style name="commentsText.dark">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="folderBorderTop">
+        <item name="android:background">@color/folder_border_top</item>
+    </style>
+
+    <style name="folderBorderTop.dark">
+        <item name="android:background">@color/dark_folder_border_top</item>
+    </style>
+
+    <style name="folderBorderBottom">
+        <item name="android:background">@color/folder_border_bottom</item>
+    </style>
+
+    <style name="folderBorderBottom.dark">
+        <item name="android:background">@color/dark_folder_border_bottom</item>
+    </style>
 </resources>

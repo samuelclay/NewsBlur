@@ -90,13 +90,13 @@
     
     <View 
         android:layout_height="1dp"
-        android:layout_width="match_parent" 
-        android:background="@color/folder_border_top"
+        android:layout_width="match_parent"
+        style="?folderBorderTop"
         android:layout_alignParentTop="true" />
     <View 
         android:layout_height="1dp"
-        android:layout_width="match_parent" 
-        android:background="@color/folder_border_bottom"
+        android:layout_width="match_parent"
+        style="?folderBorderBottom"
         android:layout_alignParentBottom="true" />
    
 </RelativeLayout>
