@@ -201,4 +201,12 @@
     <style name="folderBorderBottom.dark">
         <item name="android:background">@color/dark_folder_border_bottom</item>
     </style>
+
+    <style name="divider">
+        <item name="android:divider">@drawable/divider_light</item>
+    </style>
+
+    <style name="divider.dark">
+        <item name="android:divider">@drawable/divider_dark</item>
+    </style>
 </resources>

@@ -23,6 +23,7 @@
     <attr name="commentsText" format="string" />
     <attr name="folderBorderTop" format="string" />
     <attr name="folderBorderBottom" format="string" />
+    <attr name="divider" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />

@@ -20,7 +20,7 @@
         android:id="@+id/itemlistfragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/divider_light"
+        style="?divider"
         android:dividerHeight="2dp" />
     
 </RelativeLayout>

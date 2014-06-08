@@ -24,6 +24,7 @@
         <item name="commentsText">@style/commentsText</item>
         <item name="folderBorderTop">@style/folderBorderTop</item>
         <item name="folderBorderBottom">@style/folderBorderBottom</item>
+        <item name="divider">@style/divider</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -50,5 +51,6 @@
         <item name="commentsText">@style/commentsText.dark</item>
         <item name="folderBorderTop">@style/folderBorderTop.dark</item>
         <item name="folderBorderBottom">@style/folderBorderBottom.dark</item>
+        <item name="divider">@style/divider.dark</item>
     </style>
 </resources>

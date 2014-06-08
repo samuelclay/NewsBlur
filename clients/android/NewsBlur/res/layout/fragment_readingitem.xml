@@ -24,7 +24,7 @@
             android:id="@+id/share_bar_underline"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="@drawable/divider_light"
+            style="?divider"
             android:visibility="gone" />
 
         <com.newsblur.view.NewsblurWebview
