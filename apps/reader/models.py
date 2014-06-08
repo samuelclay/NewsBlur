@@ -1266,6 +1266,25 @@ class UserSubscriptionFolders(models.Model):
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()
+    
+    def auto_activate(self):
+        if self.user.profile.is_premium: return
+            
+        active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
+        if active_count: return
+        
+        all_feeds = self.flat()
+        if not all_feeds: return
+        
+        for feed in all_feeds[:64]:
+            try:
+                sub = UserSubscription.objects.get(user=self.user, feed=feed)
+            except UserSubscription.DoesNotExist:
+                continue
+            sub.active = True
+            sub.save()
+            if sub.feed.active_subscribers <= 0:
+                sub.feed.count_subscribers()
 
 
 class Feature(models.Model):

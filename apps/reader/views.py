@@ -314,6 +314,8 @@ def load_feeds_flat(request):
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
+    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    scheduled_feeds = []
     iphone_version = "2.1"
     
     if include_favicons == 'false': include_favicons = False
@@ -328,8 +330,9 @@ def load_feeds_flat(request):
         folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    scheduled_feeds = []
+    if not user_subs and folders:
+        folders.auto_activate()
+        user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
     for sub in user_subs:
         if update_counts and sub.needs_unread_recalc:
