@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/empty_list_view_loading"
-        style="?loadingText"
+        style="?defaultText"
         android:textSize="13dp"
         android:textStyle="italic" />
     

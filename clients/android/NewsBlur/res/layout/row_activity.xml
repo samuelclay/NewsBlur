@@ -23,7 +23,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="10dp"
-        style="?profileActivityRow"
+        style="?defaultText"
         android:textSize="10dp" />
 
     <TextView
@@ -34,7 +34,7 @@
         android:layout_marginRight="10dp"
         android:layout_toLeftOf="@id/row_activity_time"
         android:layout_toRightOf="@id/row_activity_icon"
-        style="?profileActivityRow"
+        style="?defaultText"
         android:textSize="13dp" />
 
 </RelativeLayout>

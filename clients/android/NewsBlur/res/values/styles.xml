@@ -82,11 +82,13 @@
         <item name="android:background">@color/dark_item_background</item>
     </style>
 
-    <style name="loadingText">
+    <style name="defaultText">
+        <item name="android:textColorLink">@color/linkblue</item>
         <item name="android:textColor">@color/darkgray</item>
     </style>
 
-    <style name="loadingText.dark">
+    <style name="defaultText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
@@ -178,14 +180,6 @@
         <item name="android:textColor">@color/midgray</item>
     </style>
 
-    <style name="commentsText">
-        <item name="android:textColor">@color/darkgray</item>
-    </style>
-
-    <style name="commentsText.dark">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
     <style name="folderBorderTop">
         <item name="android:background">@color/folder_border_top</item>
     </style>
@@ -228,15 +222,5 @@
     <style name="profileActivityList.dark">
         <item name="android:background">@color/dark_item_background</item>
         <item name="android:divider">@drawable/divider_dark</item>
-    </style>
-
-    <style name="profileActivityRow">
-        <item name="android:textColorLink">@color/linkblue</item>
-        <item name="android:textColor">@color/darkgray</item>
-    </style>
-
-    <style name="profileActivityRow.dark">
-        <item name="android:textColorLink">@color/dark_linkblue</item>
-        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

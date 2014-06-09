@@ -71,7 +71,7 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/comment_reply_icon"
             android:paddingBottom="3dp"
-            style="?commentsText"
+            style="?defaultText"
             android:textSize="12sp" />
 
         <ImageView
@@ -102,7 +102,7 @@
         	android:autoLink="web"
             android:layout_marginBottom="4dp"
             android:layout_toRightOf="@id/comment_user_image"
-            style="?commentsText"
+            style="?defaultText"
             android:textSize="14dp" />
 
         <TextView

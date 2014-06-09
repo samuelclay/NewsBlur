@@ -10,7 +10,7 @@
         <item name="actionbarBackground">@style/actionbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
         <item name="itemBackground">@style/itemBackground</item>
-        <item name="loadingText">@style/loadingText</item>
+        <item name="defaultText">@style/defaultText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader</item>
@@ -21,13 +21,11 @@
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
         <item name="commentsHeader">@style/commentsHeader</item>
-        <item name="commentsText">@style/commentsText</item>
         <item name="folderBorderTop">@style/folderBorderTop</item>
         <item name="folderBorderBottom">@style/folderBorderBottom</item>
         <item name="divider">@style/divider</item>
         <item name="profileCount">@style/profileCount</item>
         <item name="profileActivityList">@style/profileActivityList</item>
-        <item name="profileActivityRow">@style/profileActivityRow</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -40,7 +38,7 @@
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
         <item name="itemBackground">@style/itemBackground.dark</item>
-        <item name="loadingText">@style/loadingText.dark</item>
+        <item name="defaultText">@style/defaultText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
         <item name="rowItemFeedHeader">@style/rowItemFeedHeader.dark</item>
@@ -51,12 +49,10 @@
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.dark</item>
-        <item name="commentsText">@style/commentsText.dark</item>
         <item name="folderBorderTop">@style/folderBorderTop.dark</item>
         <item name="folderBorderBottom">@style/folderBorderBottom.dark</item>
         <item name="divider">@style/divider.dark</item>
         <item name="profileCount">@style/profileCount.dark</item>
         <item name="profileActivityList">@style/profileActivityList.dark</item>
-        <item name="profileActivityRow">@style/profileActivityRow.dark</item>
     </style>
 </resources>
