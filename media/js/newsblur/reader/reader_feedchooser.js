@@ -199,7 +199,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = feeds.size();
+        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
         
         var $feeds = new NEWSBLUR.Views.FeedList({
             feed_chooser: true
