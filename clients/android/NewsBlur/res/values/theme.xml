@@ -25,6 +25,9 @@
         <item name="folderBorderTop">@style/folderBorderTop</item>
         <item name="folderBorderBottom">@style/folderBorderBottom</item>
         <item name="divider">@style/divider</item>
+        <item name="profileCount">@style/profileCount</item>
+        <item name="profileActivityList">@style/profileActivityList</item>
+        <item name="profileActivityRow">@style/profileActivityRow</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -52,5 +55,8 @@
         <item name="folderBorderTop">@style/folderBorderTop.dark</item>
         <item name="folderBorderBottom">@style/folderBorderBottom.dark</item>
         <item name="divider">@style/divider.dark</item>
+        <item name="profileCount">@style/profileCount.dark</item>
+        <item name="profileActivityList">@style/profileActivityList.dark</item>
+        <item name="profileActivityRow">@style/profileActivityRow.dark</item>
     </style>
 </resources>

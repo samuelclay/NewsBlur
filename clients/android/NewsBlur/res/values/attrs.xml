@@ -24,6 +24,9 @@
     <attr name="folderBorderTop" format="string" />
     <attr name="folderBorderBottom" format="string" />
     <attr name="divider" format="string" />
+    <attr name="profileCount" format="string" />
+    <attr name="profileActivityList" format="string" />
+    <attr name="profileActivityRow" format="string" />
     
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
