@@ -2886,6 +2886,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
                     ])),
+                    (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mute Sites'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Temporarily turn off feeds.')
+                    ])),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')

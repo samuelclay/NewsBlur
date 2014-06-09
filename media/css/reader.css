@@ -8109,6 +8109,16 @@ form.opml_import_form input {
     border-left: 1px solid #B0B0B0;
 }
 
+.NB-modal-feedchooser.NB-feedchooser-chooser-only .NB-feedchooser-type {
+    float: none;
+    width: auto;
+    margin: 0 auto;
+}
+.NB-modal-feedchooser .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/silk/color_swatch.png');
+    background-size: 28px;
+}
+
 .NB-modal-feedchooser.NB-feedchooser-premium .NB-feedchooser-type {
     float: none;
     width: 400px;

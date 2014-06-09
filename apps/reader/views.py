@@ -1716,16 +1716,15 @@ def feeds_trainer(request):
 @json.json_view
 def save_feed_chooser(request):
     is_premium = request.user.profile.is_premium
-    if is_premium:
-        approved_feeds = []
-    else:
-        approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
+    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id]
+    if not is_premium:
+        approved_feeds = approved_feeds[:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
     for sub in usersubs:
         try:
-            if is_premium or sub.feed_id in approved_feeds:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True
@@ -1737,14 +1736,14 @@ def save_feed_chooser(request):
                 sub.save()
         except Feed.DoesNotExist:
             pass
-            
+    
     request.user.profile.queue_new_feeds()
     request.user.profile.refresh_stale_feeds(exclude_new=True)
     
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
     
-    logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
+    logging.user(request, "~BB~FW~SBFeed chooser: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
     ))
