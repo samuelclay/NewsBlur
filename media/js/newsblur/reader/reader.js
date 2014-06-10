@@ -5418,7 +5418,9 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
-                        self.open_feedchooser_modal();
+                        self.open_feedchooser_modal({
+                            'chooser_only': NEWSBLUR.Globals.is_premium
+                        });
                     });
                 }
             });  
@@ -5433,7 +5435,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-account-upgrade' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal();
+                    self.open_feedchooser_modal({'premium_only': true});
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-account-train' }, function($t, $p){

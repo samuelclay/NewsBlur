@@ -1,7 +1,7 @@
 NEWSBLUR.ReaderFeedchooser = function(options) {
     var defaults = {
         'premium_only': false,
-        'chooser_only': NEWSBLUR.Globals.is_premium
+        'chooser_only': false
     };
 
     this.options = $.extend({}, defaults, options);
@@ -52,7 +52,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                           ' ',
                           NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
                       ]),
-                      'Renew your premium subscription today.'
+                      'You can change your payment method and card details. ',
+                      (NEWSBLUR.Globals.premium_expire < new Date) ? 
+                      'This will charge your card immediately.' :
+                      'You won\'t be charged until this date.'
                   ])
               ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [

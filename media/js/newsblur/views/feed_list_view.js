@@ -217,6 +217,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_account_modal();
         } else if (next == 'chooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
+        } else if (next == 'renew') {
+            NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({'change_password': true});
         }
