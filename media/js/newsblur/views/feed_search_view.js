@@ -43,6 +43,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             tipsy.disable();
             tipsy.hide();
         }
+        NEWSBLUR.reader.$s.$story_titles_header.removeClass("NB-searching");
         Backbone.View.prototype.remove.call(this);
     },
     
@@ -120,7 +121,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = "";
         }
-        this.feedbar_view.$el.addClass("NB-searching");
+        NEWSBLUR.reader.$s.$story_titles_header.addClass("NB-searching");
     },
     
     blur_search: function() {
@@ -129,7 +130,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         
         if (query.length == 0) {
             NEWSBLUR.reader.flags.searching = false;
-            this.feedbar_view.$el.removeClass("NB-searching");
+            NEWSBLUR.reader.$s.$story_titles_header.removeClass("NB-searching");
             if (NEWSBLUR.reader.flags.search) {
                 this.close_search();
             }

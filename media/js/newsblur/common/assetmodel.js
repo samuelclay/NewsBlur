@@ -608,6 +608,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         var pre_callback = function(data) {
+            if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
+                if (first_load) {
+                    data.stories = data.stories.splice(0, 3);
+                } else {
+                    data.stories = [];
+                }
+            }
             return self.load_feed_precallback(data, 'read', callback, first_load);
         };
 
@@ -629,7 +636,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
                 if (first_load) {
-                    data.stories = data.stories.splice(0, 5);
+                    data.stories = data.stories.splice(0, 3);
                 } else {
                     data.stories = [];
                 }
