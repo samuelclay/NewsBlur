@@ -27,6 +27,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         if (NEWSBLUR.reader.active_feed == "read") {
             this.options['show_readfilter'] = false;
         }
+        if (NEWSBLUR.reader.flags['starred_view']) {
+            this.options.feed_id = "starred"; // Ignore tags
+            this.options['show_readfilter'] = false;
+        }
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
         this.render();

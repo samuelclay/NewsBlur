@@ -595,6 +595,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_stories', {
             page: page,
             query: NEWSBLUR.reader.flags.search,
+            order: this.view_setting('starred', 'order'),
             tag: tag,
             v: 2
         }, pre_callback, error_callback, {

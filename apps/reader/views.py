@@ -751,18 +751,21 @@ def load_starred_stories(request):
     limit        = int(request.REQUEST.get('limit', 10))
     page         = int(request.REQUEST.get('page', 0))
     query        = request.REQUEST.get('query')
+    order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
     story_hashes = request.REQUEST.getlist('h')[:100]
     version      = int(request.REQUEST.get('v', 1))
     now          = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message      = None
+    order_by     = '-' if order == "newest" else ""
     if page: offset = limit * (page - 1)
     
     if query:
         # results = SearchStarredStory.query(user.pk, query)                                                            
         # story_ids = [result.db_id for result in results]                                                          
         if user.profile.is_premium:
-            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit)
+            stories = MStarredStory.find_stories(query, user.pk, tag=tag, offset=offset, limit=limit,
+                                                 order=order)
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -771,7 +774,7 @@ def load_starred_stories(request):
             mstories = MStarredStory.objects(
                 user_id=user.pk,
                 user_tags__contains=tag
-            ).order_by('-starred_date')[offset:offset+limit]
+            ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
             stories = Feed.format_stories(mstories)        
         else:
             stories = []
@@ -780,12 +783,12 @@ def load_starred_stories(request):
         mstories = MStarredStory.objects(
             user_id=user.pk,
             story_hash__in=story_hashes
-        ).order_by('-starred_date')[offset:offset+limit]
+        ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
         stories = Feed.format_stories(mstories)
     else:
         mstories = MStarredStory.objects(
             user_id=user.pk
-        ).order_by('-starred_date')[offset:offset+limit]
+        ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
         stories = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
