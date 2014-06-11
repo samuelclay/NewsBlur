@@ -20,7 +20,7 @@
       'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
-      'premium_expire'          : new Date('{{ user.profile.premium_expire|date:"Y-m-d" }}'),
+      'premium_expire'          : {% if user.profile.premium_expire %}new Date('{{ user.profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}
@@ -34,7 +34,7 @@
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 100,
-      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 242 %},
+      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 258 %},
       'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
@@ -68,11 +68,14 @@
       'collapsed_folders'       : [],
       'story_styling'           : 'sans-serif',
       'story_size'              : 's',
+      'story_line_spacing'      : 'm',
       'hide_public_comments'    : false,
+      'story_button_placement'  : "right",
       'timezone'                : "{{ user_profile.timezone }}",
       'title_counts'            : true,
       'truncate_story'          : 'social',
       'autoopen_folder'         : false,
+      'show_content_preview'    : true,
       'doubleclick_feed'        : 'open',
       'doubleclick_unread'      : 'markread',
       'story_share_twitter'     : true,
@@ -98,7 +101,15 @@
   </script>
   
   {% include_stylesheets "common" %}
-    
+  
+  {% if user_profile.is_premium %}
+    {% if debug %}
+        <link rel="stylesheet" type="text/css" delay="//cloud.typography.com/6565292/731824/css/fonts.css" href="" />
+    {% else %}
+        <link rel="stylesheet" type="text/css" delay="//cloud.typography.com/6565292/711824/css/fonts.css" href="" />
+    {% endif %}
+  {% endif %}
+  
   <script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);

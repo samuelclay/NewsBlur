@@ -33,8 +33,8 @@ class TaskFeeds(Task):
                         r.zcard('scheduled_updates')))
         
         # Regular feeds
-        if tasked_feeds_size < 5000:
-            feeds = r.srandmember('queued_feeds', 5000)
+        if tasked_feeds_size < 10000:
+            feeds = r.srandmember('queued_feeds', 10000)
             Feed.task_feeds(feeds, verbose=True)
             active_count = len(feeds)
         else:
@@ -112,6 +112,7 @@ class UpdateFeeds(Task):
         
         options = {
             'quick': float(MStatistics.get('quick_fetch', 0)),
+            'updates_off': MStatistics.get('updates_off', False),
             'compute_scores': compute_scores,
             'mongodb_replication_lag': mongodb_replication_lag,
         }
@@ -197,13 +198,13 @@ class BackupMongo(Task):
 
 class ScheduleImmediateFetches(Task):
     
-    def run(self, feed_ids, **kwargs):
+    def run(self, feed_ids, user_id=None, **kwargs):
         from apps.rss_feeds.models import Feed
         
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
         
-        Feed.schedule_feed_fetches_immediately(feed_ids)
+        Feed.schedule_feed_fetches_immediately(feed_ids, user_id=user_id)
 
 
 class SchedulePremiumSetup(Task):
@@ -216,3 +217,9 @@ class SchedulePremiumSetup(Task):
         
         Feed.setup_feeds_for_premium_subscribers(feed_ids)
         
+class ScheduleCountTagsForUser(Task):
+    
+    def run(self, user_id):
+        from apps.rss_feeds.models import MStarredStoryCounts
+        
+        MStarredStoryCounts.count_for_user(user_id)

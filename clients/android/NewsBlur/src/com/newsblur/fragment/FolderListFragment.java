@@ -11,8 +11,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -57,6 +57,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private int currentState = AppConstants.STATE_SOME;
 	private SocialFeedViewBinder blogViewBinder;
 	private SharedPreferences sharedPreferences;
+    private ExpandableListView list;
 
 
 	@Override
@@ -102,7 +103,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
-        ExpandableListView list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+        list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
         list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
         list.setOnCreateContextMenuListener(this);
 
@@ -119,20 +120,19 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
         return v;
     }
 
-    private ExpandableListView getListView() {
-        return (ExpandableListView) (this.getView().findViewById(R.id.folderfeed_list));
-    }
-
 	public void checkOpenFolderPreferences() {
+        // make sure we didn't beat construction
+        if (this.list == null) return;
+
 		if (sharedPreferences == null) {
 			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		}
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
 			String groupName = folderAdapter.getGroupName(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + groupName, true)) {
-				this.getListView().expandGroup(i);
+				this.list.expandGroup(i);
 			} else {
-				this.getListView().collapseGroup(i);
+				this.list.collapseGroup(i);
 			}
 		}
 	}
@@ -171,9 +171,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 						values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
 						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(info.id)).build(), values, null, null);
 						folderAdapter.notifyDataSetChanged();
-						Toast.makeText(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT).show();
+						UIUtils.safeToast(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT);
 					} else {
-						Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
+						UIUtils.safeToast(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG);
 					}	
 				}
 			}.execute(Long.toString(info.id));
@@ -184,7 +184,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 			String feedTitle = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
 			// TODO: is there a better way to map group position onto folderName than asking the list adapter?
-            Cursor folderCursor = ((MixedExpandableListAdapter) this.getListView().getExpandableListAdapter()).getGroup(groupPosition);
+            Cursor folderCursor = ((MixedExpandableListAdapter) this.list.getExpandableListAdapter()).getGroup(groupPosition);
 			String folderName = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 			DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(info.id, feedTitle, folderName);
 			deleteFeedFragment.show(getFragmentManager(), "dialog");
@@ -194,7 +194,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			// all folder but the root All Stories one use the simple method
 			if (!folderAdapter.isFolderRoot(groupPosition)) {
 				// TODO: is there a better way to get the folder ID for a group position that asking the list view?
-                final Cursor folderCursor = ((MixedExpandableListAdapter) this.getListView().getExpandableListAdapter()).getGroup(groupPosition);
+                final Cursor folderCursor = ((MixedExpandableListAdapter) this.list.getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 				new MarkFolderAsReadTask(apiManager, resolver) {
 					@Override

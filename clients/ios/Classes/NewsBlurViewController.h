@@ -93,7 +93,7 @@ UIActionSheetDelegate> {
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
-- (void)finishLoadingFeedListWithDict:(NSDictionary *)results;
+- (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
@@ -124,6 +124,7 @@ UIActionSheetDelegate> {
 - (IBAction)showInteractionsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
+- (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)resetToolbar;

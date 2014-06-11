@@ -311,6 +311,14 @@ You got the downtime message either through email or SMS. This is the order of o
       
     e. Monitor tlnb.py and tlnbt.py for lots of reading and feed fetching.    
 
+  5. If feeds aren't fetching, check that the `tasked_feeds` queue is empty. You can drain it by running:
+  
+    ```
+    Feed.drain_task_feeds()
+    ```
+    
+    This happens when a deploy on the task servers hits faults and the task servers lose their connection without giving the tasked feeds back to the queue. Feeds that fall through this crack are automatically fixed after 24 hours, but if many feeds fall through due to a bad deploy, you'll want to accelerate that check by just draining the tasked feeds pool, adding those feeds back into the queue.
+      
 ## Author
 
  * Created by [Samuel Clay](http://www.samuelclay.com).

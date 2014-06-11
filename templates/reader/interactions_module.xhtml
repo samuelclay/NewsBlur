@@ -29,7 +29,7 @@
                 </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+                <span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago
@@ -45,7 +45,7 @@
             </div>
             {% if interaction.content %}
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-sharedstory-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+                    <span class="NB-interaction-sharedstory-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>
                 </div>
             {% endif %}
             <div class="NB-interaction-date">
@@ -58,10 +58,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
-            </div>
-            <div class="NB-interaction-content">
-                "<span class="NB-interaction-sharedstory-content">{{ interaction.content|truncatewords:16 }}</span>"
+                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>.
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago

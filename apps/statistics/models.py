@@ -170,6 +170,53 @@ class MStatistics(mongo.Document):
     def collect_statistics_for_db(cls):
         lag = db_functions.mongo_max_replication_lag(settings.MONGODB)
         cls.set('mongodb_replication_lag', lag)
+        
+        now = round_time(datetime.datetime.now(), round_to=60)
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        db_times = {}
+        latest_db_times = {}
+        
+        for db in ['sql', 'mongo', 'redis']:
+            db_times[db] = []
+            for hour in range(24):
+                start_hours_ago = now - datetime.timedelta(hours=hour+1)
+    
+                pipe = r.pipeline()
+                for m in range(60):
+                    minute = start_hours_ago + datetime.timedelta(minutes=m)
+                    key = "DB:%s:%s" % (db, minute.strftime('%s'))
+                    pipe.get("%s:c" % key)
+                    pipe.get("%s:t" % key)
+    
+                times = pipe.execute()
+    
+                counts = [int(c or 0) for c in times[::2]]
+                avgs = [float(a or 0) for a in times[1::2]]
+                if counts and avgs:
+                    count = sum(counts)
+                    avg = round(sum(avgs) / count, 3) if count else 0
+                else:
+                    count = 0
+                    avg = 0
+                
+                if hour == 0:
+                    latest_count = float(counts[-1]) if len(counts) else 0
+                    latest_avg = float(avgs[-1]) if len(avgs) else 0
+                    latest_db_times[db] = latest_avg / latest_count if latest_count else 0
+                db_times[db].append(avg)
+
+            db_times[db].reverse()
+
+        values = (
+            ('avg_sql_times',           json.encode(db_times['sql'])),
+            ('avg_mongo_times',         json.encode(db_times['mongo'])),
+            ('avg_redis_times',         json.encode(db_times['redis'])),
+            ('latest_sql_avg',          latest_db_times['sql']),
+            ('latest_mongo_avg',        latest_db_times['mongo']),
+            ('latest_redis_avg',        latest_db_times['redis']),
+        )
+        for key, value in values:
+            cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
 
 
 class MFeedback(mongo.Document):
@@ -206,6 +253,7 @@ class MFeedback(mongo.Document):
             for feedback in data:
                 # Convert unicode to strings.
                 fb = dict([(str(k), v) for k, v in feedback.items()])
+                fb['url'] = fb['url'].replace('?utm_medium=widget&utm_source=widget_newsblur', "")
                 cls.objects.create(**fb)
     
     @classmethod

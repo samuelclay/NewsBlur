@@ -2,7 +2,7 @@ package com.newsblur.network;
 
 public class APIConstants {
 
-    public static final String NEWSBLUR_URL = "https://newsblur.com";
+    public static final String NEWSBLUR_URL = "https://www.newsblur.com";
     public static final String COOKIE_DOMAIN = ".newsblur.com";
     public static final String URL_CATEGORIES = NEWSBLUR_URL + "/categories/";
     public static final String PARAMETER_CATEGORY = "category";

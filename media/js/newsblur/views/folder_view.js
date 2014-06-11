@@ -32,25 +32,36 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
 
         if (this.model && !this.options.feed_chooser) {
             // Root folder does not have a model.
-            this.model.bind('change:folder_title', this.update_title);
-            this.model.bind('change:selected', this.update_selected);
-            this.model.bind('change:selected', this.update_hidden);
-            this.collection.bind('change:feed_selected', this.update_hidden);
-            this.collection.bind('change:counts', this.update_hidden);
-            this.model.bind('delete', this.delete_folder);
+            this.model.bind('change:folder_title', this.update_title, this);
+            this.model.bind('change:selected', this.update_selected, this);
+            this.model.bind('change:selected', this.update_hidden, this);
+            this.collection.bind('change:feed_selected', this.update_hidden, this);
+            this.collection.bind('change:counts', this.update_hidden, this);
+            this.model.bind('delete', this.delete_folder, this);
             if (!this.options.feedbar) {
                 this.model.folder_view = this;
             }
         }
     },
     
+    remove: function() {
+        this.destroy();
+    },
+    
     destroy: function() {
-        console.log(["destroy", this]);
-        if (this.model) {
-            this.model.unbind(null, this);
+        if (this.folder_count) {
+            this.folder_count.destroy();
         }
-        this.$el.remove();
-        delete this.views;
+        if (this.search_view) {
+            this.search_view.remove();
+        }
+        if (this.model) {
+            this.model.unbind(null, null, this);
+            if (!this.options.feedbar) {
+                this.model.folder_view = null;
+            }
+        }
+        this.$el.empty().remove();
     },
     
     render: function() {
@@ -95,7 +106,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         this.check_collapsed({skip_animation: true});
         this.update_hidden();
-        this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
+        if (this.options.depth > 0) {
+            // Only attach to visible folders. Top level has no folder, so wrongly attaches to first child.
+            this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
+        }
         
         return this;
     },
@@ -154,8 +168,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         
         if (this.options.feedbar) {
             this.show_collapsed_folder_count();
-        }
-        if (this.options.feedbar && NEWSBLUR.Globals.is_staff) {
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
             }).render();

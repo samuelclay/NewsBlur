@@ -137,10 +137,13 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
     
     unread_counts: function() {
+        var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.id);
+        
         return {
             ps: this.get('ps') || 0,
             nt: this.get('nt') || 0,
-            ng: this.get('ng') || 0
+            ng: this.get('ng') || 0,
+            st: starred_feed && starred_feed.get('count') || 0
         };
     },
     
@@ -158,6 +161,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
             return !!(this.get('ng') || this.get('nt') || this.get('ps'));
         } else if (unread_view == 0) {
             return !!(this.get('nt') || this.get('ps'));
+        } else if (unread_view >= 2) {
+            var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.id);
+            return starred_feed && starred_feed.get('count');
         } else if (unread_view > 0) {
             return !!(this.get('ps'));
         }
@@ -228,6 +234,18 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         return this.any(function(feed) {
             return feed.get('not_yet_fetched');
         });
+    },
+    
+    // ============
+    // = Counters =
+    // ============
+    
+    search_indexed: function() {
+        var indexed = this.select(function(feed) {
+            return feed.get('search_indexed');
+        }).length;
+
+        return indexed;
     },
     
     // ==========

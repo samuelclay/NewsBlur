@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +29,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.view.FeedItemViewBinder;
 
-public class FeedItemListFragment extends StoryItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	private String feedId;
 	private int currentState;
@@ -63,8 +63,9 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_itemlist, null);
-        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
+        ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+        setupBezelSwipeDetector(itemList);
         itemList.setEmptyView(v.findViewById(R.id.empty_view));
 
         ContentResolver contentResolver = getActivity().getContentResolver();
@@ -88,8 +89,8 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
         Feed feed = Feed.fromCursor(feedCursor);
         feedCursor.close();
 
-        String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-        int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
+        String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORT_CONTENT, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TIMESTAMP, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
+        int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_content, R.id.row_item_author, R.id.row_item_date, R.id.row_item_sidebar };
 
         // create the adapter before starting the loader, since the callback updates the adapter
         adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, storiesCursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -127,6 +128,7 @@ public class FeedItemListFragment extends StoryItemListFragment implements Loade
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity().isFinishing()) return;
 		Intent i = new Intent(getActivity(), FeedReading.class);
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);

@@ -2,7 +2,7 @@ package com.newsblur.view;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -15,13 +15,18 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.StoryUtils;
+
+import java.util.Date;
 
 public class SocialItemViewBinder implements ViewBinder {
 
+    private final Context context;
 	private ImageLoader imageLoader;
     private boolean ignoreIntel;
 
 	public SocialItemViewBinder(final Context context, boolean ignoreIntel) {
+        this.context = context;
 		this.imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
         this.ignoreIntel = ignoreIntel;
 	}
@@ -72,7 +77,10 @@ public class SocialItemViewBinder implements ViewBinder {
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
 			((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
-		}
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TIMESTAMP)) {
+            ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));
+            return true;
+        }
 		return false;
 	}
 

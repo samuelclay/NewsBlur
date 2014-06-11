@@ -6,11 +6,15 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         _.bindAll(this, 'render');
         if (!this.options.stale) {
             if (this.model) {
-                this.model.bind('change:ps', this.render);
-                this.model.bind('change:nt', this.render);
-                this.model.bind('change:ng', this.render);
+                var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.model.id);
+                if (starred_feed) {
+                    starred_feed.bind('change:count', this.render, this);
+                }
+                this.model.bind('change:ps', this.render, this);
+                this.model.bind('change:nt', this.render, this);
+                this.model.bind('change:ng', this.render, this);
             } else if (this.collection) {
-                this.collection.bind('change:counts', this.render);
+                this.collection.bind('change:counts', this.render, this);
             }
         }
     },
@@ -37,11 +41,15 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         if (counts['ng']) {
             unread_class += ' unread_negative';
         }
+        if ((counts['st'] && this.options.include_starred) || (this.model && this.model.is_starred())) {
+            unread_class += ' unread_starred';
+        }
         
         this.$el.html(this.template({
           ps           : counts['ps'],
           nt           : counts['nt'],
           ng           : counts['ng'],
+          st           : this.options.include_starred && counts['st'],
           unread_class : unread_class
         }));
         
@@ -68,6 +76,11 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
           <span class="unread_count unread_count_negative <% if (ng) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
             <%= ng %>\
           </span>\
+          <% if (st) { %>\
+              <span class="unread_count unread_count_starred <% if (st) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+                <%= st %>\
+              </span>\
+          <% } %>\
         </div>\
     '),
     
@@ -78,7 +91,7 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
     center: function() {
         var count_width = this.$el.width();
         var left_buttons_offset = $('.NB-taskbar-view').outerWidth(true);
-        var right_buttons_offset = $(".NB-taskbar-layout").position().left;
+        var right_buttons_offset = $(".NB-taskbar-options-container").position().left;
         var usable_space = right_buttons_offset - left_buttons_offset;
         var left = (usable_space / 2) - (count_width / 2) + left_buttons_offset;
         

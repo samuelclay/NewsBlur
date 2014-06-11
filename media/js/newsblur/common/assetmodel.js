@@ -216,7 +216,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         story.set('read_status', 0);
 
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/mark_story_as_unread', {
+            this.make_request('/reader/mark_story_hash_as_unread', {
+                story_hash: story.get('story_hash'),
                 story_id: story_id,
                 feed_id: feed_id
             }, null, error_callback, {});
@@ -233,6 +234,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (data.starred_counts) {
                 self.starred_feeds.reset(data.starred_counts, {parse: true});
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (feed && feed.views) _.invoke(feed.views, 'render');
             }
             
             if (selected) {
@@ -242,9 +245,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (callback) callback(data);
         };
 
-        this.make_request('/reader/mark_story_as_starred', {
-            story_id:  story_id,
-            feed_id:   story.get('story_feed_id'),
+        this.make_request('/reader/mark_story_hash_as_starred', {
+            story_hash: story.get('story_hash'),
             user_tags: story.get('user_tags')
         }, pre_callback);
     },
@@ -257,6 +259,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(data) {
             if (data.starred_counts) { 
                 self.starred_feeds.reset(data.starred_counts, {parse: true, update: true});
+                var feed = self.get_feed(story.get('story_feed_id'));
+                if (feed && feed.views) _.invoke(feed.views, 'render');
             }
             
             if (selected && self.starred_feeds.get(selected)) {
@@ -266,8 +270,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (callback) callback(data);
         };
 
-        this.make_request('/reader/mark_story_as_unstarred', {
-            story_id: story_id
+        this.make_request('/reader/mark_story_hash_as_unstarred', {
+            story_hash: story.get('story_hash')
         }, pre_callback);
     },
     
@@ -591,7 +595,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_stories', {
             page: page,
             query: NEWSBLUR.reader.flags.search,
-            tag: tag
+            tag: tag,
+            v: 2
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -1118,6 +1123,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     view_setting: function(feed_id, setting, callback) {
+        if (NEWSBLUR.reader.flags['feed_list_showing_starred'] && 
+            setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
@@ -1173,7 +1180,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     get_features_page: function(page, callback) {
-        this.make_request('/reader/features', {'page': page}, callback, callback, {request_type: 'GET'});
+        this.make_request('/reader/features', {'page': page}, callback, callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_recommended_feed: function(page, refresh, unmoderated, callback, error_callback) {
@@ -1181,7 +1191,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'page'         : page, 
             'refresh'      : refresh,
             'unmoderated'  : unmoderated
-        }, callback, error_callback, {request_type: 'GET'});
+        }, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_interactions_page: function(page, callback, error_callback) {
@@ -1228,11 +1241,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     load_dashboard_graphs: function(callback, error_callback) {
-        this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {request_type: 'GET'});
+        this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     load_feedback_table: function(callback, error_callback) {
-        this.make_request('/statistics/feedback_table', {}, callback, error_callback, {request_type: 'GET'});
+        this.make_request('/statistics/feedback_table', {}, callback, error_callback, {
+            'ajax_group': 'statistics',
+            request_type: 'GET'
+        });
     },
     
     save_feed_order: function(folders, callback) {
@@ -1571,7 +1590,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             
             _.each(this.classifiers[feed_id].titles, function(classifier_score, classifier_title) {
                 if (intelligence.title <= 0 && 
-                    story.get('story_title', '').indexOf(classifier_title) != -1) {
+                    story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
                     intelligence.title = classifier_score;
                 }
             });

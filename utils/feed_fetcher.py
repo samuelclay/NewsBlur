@@ -91,10 +91,14 @@ class FetchFeed:
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-        except (TypeError, ValueError, KeyError), e:
+        except (TypeError, ValueError, KeyError, EOFError), e:
             logging.debug(u'   ***> [%-30s] ~FR%s, turning off headers.' % 
                           (self.feed.title[:30], e))
             self.fpf = feedparser.parse(address, agent=USER_AGENT)
+        except (TypeError, ValueError, KeyError, EOFError), e:
+            logging.debug(u'   ***> [%-30s] ~FR%s fetch failed: %s.' % 
+                          (self.feed.title[:30], e))
+            return FEED_ERRHTTP, None
             
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
@@ -222,23 +226,25 @@ class ProcessFeed:
 
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.utcnow()
-        story_guids = []
+        story_hashes = []
         stories = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
             if story.get('published') < start_date:
                 start_date = story.get('published')
+            story['story_hash'] = MStory.feed_guid_hash_unsaved(self.feed.pk, story.get('guid'))
             stories.append(story)
-            story_guids.append(story.get('guid'))
+            story_hashes.append(story.get('story_hash'))
 
-        existing_stories = dict((s.story_guid, s) for s in MStory.objects(
-            # story_guid__in=story_guids,
-            story_date__gte=start_date,
-            story_feed_id=self.feed.pk
-        ).limit(max(int(len(story_guids)*1.5), 10)))
+        existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+            story_hash__in=story_hashes,
+            # story_date__gte=start_date,
+            # story_feed_id=self.feed.pk
+        ))
         
         ret_values = self.feed.add_update_stories(stories, existing_stories,
-                                                  verbose=self.options['verbose'])
+                                                  verbose=self.options['verbose'],
+                                                  updates_off=self.options['updates_off'])
 
         if (hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):

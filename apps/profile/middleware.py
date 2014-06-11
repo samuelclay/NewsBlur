@@ -2,12 +2,14 @@ import datetime
 import re
 import random
 import time
+import redis
 from utils import log as logging
 from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 from django.template import Template, Context
 from apps.profile.tasks import CleanupUser
+from apps.statistics.rstats import round_time
 from utils import json_functions as json
 
 class LastSeenMiddleware(object):
@@ -36,10 +38,49 @@ class LastSeenMiddleware(object):
         
         return response
         
+class DBProfilerMiddleware:
+    def process_request(self, request): 
+        setattr(request, 'activated_segments', [])
+        if ((request.path.startswith('/reader/feed') or
+             request.path.startswith('/reader/river')) and
+            random.random() < .01):
+            request.activated_segments.append('db_profiler')
+            connection.use_debug_cursor = True
+    
+    def process_exception(self, request, exception):
+        if hasattr(request, 'sql_times_elapsed'):
+            self._save_times(request.sql_times_elapsed)
+
+    def process_response(self, request, response):
+        if hasattr(request, 'sql_times_elapsed'):
+            self._save_times(request.sql_times_elapsed)
+        return response
+    
+    def _save_times(self, db_times):
+        if not db_times: return
         
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        pipe = r.pipeline()
+        minute = round_time(round_to=60)
+        for db, duration in db_times.items():
+            key = "DB:%s:%s" % (db, minute.strftime('%s'))
+            pipe.incr("%s:c" % key)
+            pipe.expireat("%s:c" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
+            if duration:
+                pipe.incrbyfloat("%s:t" % key, duration)
+                pipe.expireat("%s:t" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
+        pipe.execute()
+
+
 class SQLLogToConsoleMiddleware:
+    def activated(self, request):
+        return (settings.DEBUG_QUERIES or 
+                (hasattr(request, 'activated_segments') and
+                 'db_profiler' in request.activated_segments))
+
     def process_response(self, request, response): 
-        if settings.DEBUG and connection.queries:
+        if not self.activated(request): return response
+        if connection.queries:
             time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             for query in queries:
@@ -54,7 +95,20 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
             t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
-            logging.debug(t.render(Context({'sqllog':queries,'count':len(queries),'time':time_elapsed})))
+            if settings.DEBUG:
+                logging.debug(t.render(Context({
+                    'sqllog': queries,
+                    'count': len(queries),
+                    'time': time_elapsed,
+                })))
+            times_elapsed = {
+                'sql': sum([float(q['time']) 
+                           for q in queries if not q.get('mongo') and 
+                                               not q.get('redis')]),
+                'mongo': sum([float(q['time']) for q in queries if q.get('mongo')]),
+                'redis': sum([float(q['time']) for q in queries if q.get('redis')]),
+            }
+            setattr(request, 'sql_times_elapsed', times_elapsed)
         return response
 
 SIMPSONS_QUOTES = [

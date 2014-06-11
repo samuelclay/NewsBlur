@@ -216,7 +216,7 @@
             var self = this;
             var $submit = $('.NB-bookmarklet-button-subscribe', this.$modal);
             var folder = $('.NB-folders').val();
-            var add_site_url = "http://"+this.domain+"{% url "api-add-site" token %}?callback=?";
+            var add_site_url = "//"+this.domain+"{% url "api-add-site" token %}?callback=?";
             
             $submit.addClass('NB-disabled').text('Fetching and parsing...');
             
@@ -273,7 +273,7 @@
             var $comments = $('textarea[name=newsblur_comment]', this.$modal);
             var $content_wrapper = $('.NB-bookmarklet-page-content-wrapper', this.$modal);
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
-            var check_story_url = "http://"+this.domain+"{% url "api-check-share-on-site" token %}?callback=?";
+            var check_story_url = "//"+this.domain+"{% url "api-check-share-on-site" token %}?callback=?";
             var data = {
                 story_url: window.location.href,
                 rss_url: this.get_page_rss_url()

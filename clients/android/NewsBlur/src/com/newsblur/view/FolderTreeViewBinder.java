@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,18 +40,20 @@ public class FolderTreeViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_POS)) {
 			int feedPositive = cursor.getInt(columnIndex);
+            if (feedPositive < 0) feedPositive = 0;
 			if (feedPositive > 0) {
 				view.setVisibility(View.VISIBLE);
-				((TextView) view).setText("" + feedPositive);
+				((TextView) view).setText(Integer.toString(feedPositive));
 			} else {
 				view.setVisibility(View.GONE);
 			}
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEUT)) {
 			int feedNeutral = cursor.getInt(columnIndex);
+            if (feedNeutral < 0) feedNeutral = 0;
 			if (feedNeutral > 0 && currentState != AppConstants.STATE_BEST) {
 				view.setVisibility(View.VISIBLE);
-				((TextView) view).setText("" + feedNeutral);
+				((TextView) view).setText(Integer.toString(feedNeutral));
 			} else {
 				view.setVisibility(View.GONE);
 			}

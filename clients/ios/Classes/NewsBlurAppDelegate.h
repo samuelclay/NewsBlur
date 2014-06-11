@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
+#import "OvershareKit.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -42,9 +43,11 @@
 @class NBContainerViewController;
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
+@class StoriesCollection;
+@class TMCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate>  {
+<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, OSKActivityCustomizations, OSKPresentationStyle>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
@@ -84,9 +87,6 @@
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
     BOOL hasNoSites;
-    BOOL isRiverView;
-    BOOL isSocialView;
-    BOOL isSocialRiverView;
     BOOL isTryFeedView;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
@@ -95,27 +95,14 @@
     BOOL hasLoadedFeedDetail;
     BOOL hasQueuedReadStories;
     NSString *tryFeedStoryId;
-    NSDictionary * activeFeed;
-    NSMutableDictionary * activeClassifiers;
-    NSArray * activePopularTags;
-    NSArray * activePopularAuthors;
-    NSString * activeFolder;
-    NSDictionary * activeComment;
-    NSString * activeShareType;
-    NSArray * activeFolderFeeds;
-    NSArray * activeFeedStories;
-    NSArray * activeFeedUserProfiles;
-    NSMutableArray * activeFeedStoryLocations;
-    NSMutableArray * activeFeedStoryLocationIds;
+    
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
-    
+    NSString * activeShareType;
+    NSDictionary * activeComment;
     int feedDetailPortraitYCoordinate;
-    int storyCount;
-    int storyLocationsCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
-    int visibleUnreadCount;
     int savedStoriesCount;
     int totalUnfetchedStoryCount;
     int remainingUnfetchedStoryCount;
@@ -124,7 +111,6 @@
     int totalUncachedImagesCount;
     int remainingUncachedImagesCount;
     NSMutableDictionary * recentlyReadStories;
-    NSMutableArray * recentlyReadStoryLocations;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     NSMutableDictionary *folderCountCache;
@@ -144,10 +130,14 @@
     FMDatabaseQueue *database;
     NSOperationQueue *offlineQueue;
     NSOperationQueue *offlineCleaningQueue;
+    NSOperationQueue *cacheImagesOperationQueue;
     NSArray *categories;
     NSDictionary *categoryFeeds;
     UIImageView *splashView;
     NSMutableDictionary *activeCachedImages;
+    
+    TMCache *cachedFavicons;
+    TMCache *cachedStoryImages;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -183,13 +173,14 @@
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
+@property (nonatomic, readwrite) StoriesCollection *storiesCollection;
+@property (nonatomic, readwrite) TMCache *cachedFavicons;
+@property (nonatomic, readwrite) TMCache *cachedStoryImages;
+
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL hasNoSites;
-@property (nonatomic, readwrite) BOOL isRiverView;
-@property (nonatomic, readwrite) BOOL isSocialView;
-@property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
@@ -198,25 +189,12 @@
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
-@property (readwrite) NSDictionary * activeFeed;
-@property (strong, readwrite) NSMutableDictionary * activeClassifiers;
-@property (strong, readwrite) NSArray * activePopularTags;
-@property (strong, readwrite) NSArray * activePopularAuthors;
-@property (readwrite) NSString * activeFolder;
-@property (readwrite) NSDictionary * activeComment;
-@property (readwrite) NSString * activeShareType;
-@property (readwrite) NSArray * activeFolderFeeds;
-@property (readwrite) NSArray * activeFeedStories;
-@property (readwrite) NSArray * activeFeedUserProfiles;
-@property (readwrite) NSMutableArray * activeFeedStoryLocations;
-@property (readwrite) NSMutableArray * activeFeedStoryLocationIds;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;
+@property (readwrite) NSDictionary * activeComment;
+@property (readwrite) NSString * activeShareType;
 @property (readwrite) int feedDetailPortraitYCoordinate;
-@property (readwrite) int storyCount;
-@property (readwrite) int storyLocationsCount;
 @property (readwrite) int originalStoryCount;
-@property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;
 @property (readwrite) int totalUnfetchedStoryCount;
 @property (readwrite) int remainingUnfetchedStoryCount;
@@ -226,7 +204,6 @@
 @property (readwrite) int latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableDictionary * recentlyReadStories;
-@property (readwrite) NSMutableArray * recentlyReadStoryLocations;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;
@@ -236,6 +213,7 @@
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
+@property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
@@ -249,13 +227,13 @@
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
 @property (nonatomic) NSOperationQueue *offlineCleaningQueue;
+@property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
-- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 
@@ -268,6 +246,15 @@
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender;
+- (void)showSendTo:(UIViewController *)vc sender:(id)sender
+           withUrl:(NSURL *)url
+        authorName:(NSString *)authorName
+              text:(NSString *)text
+             title:(NSString *)title
+         feedTitle:(NSString *)title
+            images:(NSArray *)images;
+- (void)showSendToManagement;
 - (void)showFindFriends;
 - (void)showPreferences;
 
@@ -276,9 +263,13 @@
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
+- (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
-- (void)loadRiverFeedDetailView;
+- (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
+- (void)openDashboardRiverForStory:(NSString *)contentId
+                  showFindingStory:(BOOL)showHUD;
+
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
@@ -293,32 +284,12 @@
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+- (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
-- (NSString *)orderKey;
-- (NSString *)readFilterKey;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)refreshUserProfile:(void(^)())callback;
-
-- (BOOL)isStoryUnread:(NSDictionary *)story;
-- (NSInteger)indexOfNextUnreadStory;
-- (NSInteger)locationOfNextUnreadStory;
-- (NSInteger)indexOfNextStory;
-- (NSInteger)locationOfNextStory;
-- (NSInteger)indexOfActiveStory;
-- (NSInteger)indexOfStoryId:(id)storyId;
-- (NSInteger)locationOfActiveStory;
-- (NSInteger)indexFromLocation:(NSInteger)location;
-- (void)pushReadStory:(id)storyId;
-- (id)popReadStory;
-- (NSInteger)locationOfStoryId:(id)storyId;
-- (NSString *)activeOrder;
-- (NSString *)activeReadFilter;
-
-- (void)setStories:(NSArray *)activeFeedStoriesValue;
-- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
-- (void)addStories:(NSArray *)stories;
-- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
+- (void)refreshFeedCount:(id)feedId;
 
 - (void)populateDictUnreadCounts;
 - (NSInteger)unreadCount;
@@ -327,13 +298,7 @@
 - (NSInteger)unreadCountForFolder:(NSString *)folderName;
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
-- (void)markActiveStoryRead;
-- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
-- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
-- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
-- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
-- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
 
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
@@ -342,19 +307,28 @@
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
+- (void)finishMarkAsRead:(NSDictionary *)story;
+- (void)finishMarkAsUnread:(NSDictionary *)story;
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 
-- (void)markStory:story asSaved:(BOOL)saved;
-
-- (void)calculateStoryLocations;
-+ (NSInteger)computeStoryScore:(NSDictionary *)intelligence;
++ (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSDictionary *)getFeed:(NSString *)feedId;
+- (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
+- (UIImage *)getFavicon:(NSString *)filename;
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
+- (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

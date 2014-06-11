@@ -16,7 +16,8 @@
 typedef enum {
     NBFeedListFeed = 1,
     NBFeedListSocial = 2,
-    NBFeedListFolder = 3
+    NBFeedListSaved = 3,
+    NBFeedListFolder = 4
 } NBFeedListType;
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;

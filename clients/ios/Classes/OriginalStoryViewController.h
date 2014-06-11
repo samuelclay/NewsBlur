@@ -11,53 +11,29 @@
 
 @class NewsBlurAppDelegate;
 
-static const CGFloat kNavBarHeight  = 78.0f;
-static const CGFloat kLabelHeight   = 18.0f;
-static const CGFloat kMargin        = 6.0f;
-static const CGFloat kSpacer        = 2.0f;
-static const CGFloat kLabelFontSize = 12.0f;
-static const CGFloat kAddressHeight = 30.0f;
-static const CGFloat kButtonWidth   = 68.0f;
-
 @interface OriginalStoryViewController : BaseViewController
-<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate> {
+<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate,
+UIGestureRecognizerDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
-    
-    IBOutlet UIBarButtonItem * closeButton;
+    NSString *activeUrl;
+    NSMutableArray *visitedUrls;
     UIWebView *webView;
-    
-    UIBarButtonItem* back;
-    UIBarButtonItem* forward;
-    UIBarButtonItem* refresh;
-    UIBarButtonItem* pageAction;
-    UILabel *pageTitle;
-    UITextField *pageUrl;
-    UIToolbar *toolbar;
+    UIBarButtonItem *backBarButton;
+    UILabel *titleView;
+    UIBarButtonItem *closeButton;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UINavigationBar *navBar;
-@property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet UIWebView *webView;
-@property (nonatomic) IBOutlet UIBarButtonItem* back;
-@property (nonatomic) IBOutlet UIBarButtonItem* forward;
-@property (nonatomic) IBOutlet UIBarButtonItem* refresh;
-@property (nonatomic) IBOutlet UIBarButtonItem* pageAction;
-@property (nonatomic) IBOutlet UILabel *pageTitle;
-@property (nonatomic) IBOutlet UITextField *pageUrl;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
 
-- (void)layoutNavBar;
-- (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
-- (IBAction) doCloseOriginalStoryViewController;
+- (void)loadInitialStory;
 - (IBAction) doOpenActionSheet:(id)sender;
 - (IBAction)loadAddress:(id)sender;
 - (IBAction)webViewGoBack:(id)sender;
 - (IBAction)webViewGoForward:(id)sender;
 - (IBAction)webViewRefresh:(id)sender;
 - (void)updateTitle:(UIWebView*)aWebView;
-- (void)updateAddress:(NSURLRequest*)request;
-- (void)updateButtons;
+- (void)closeOriginalView;
 
 @end

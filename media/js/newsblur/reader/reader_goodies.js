@@ -130,6 +130,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-tafiti' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Tafiti')
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://apps.microsoft.com/windows/en-us/app/bluree/35b1d32a-5abb-479a-8fd1-bbed4fa0172e'
+              }, 'Download Bluree for Windows 8'),
+              $.make('div', { className: 'NB-goodies-bluree' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Bluree')
+            ]),
             $.make('fieldset', [
                 $.make('legend', 'Browser Extensions for NewsBlur')
             ]),
@@ -158,6 +166,17 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Register NewsBlur as an RSS reader'),
               $.make('div', { className: 'NB-goodies-subtitle' }, [
                 'To use this extension, use the custom add site URL below.'
+              ])
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/unofficial-newsblur-reade/hnegmjknmfninedmmlhndnjlblopjgad?utm_campaign=en&utm_source=en-ha-na-us-bk-webstr&utm_medium=ha'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: Unofficial browser extension'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'This extension displays all of your unread stories and unread counts.'
               ])
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [

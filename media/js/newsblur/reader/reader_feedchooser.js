@@ -1,6 +1,7 @@
 NEWSBLUR.ReaderFeedchooser = function(options) {
     var defaults = {
-        'premium_only': NEWSBLUR.Globals.is_premium
+        'premium_only': false,
+        'chooser_only': false
     };
 
     this.options = $.extend({}, defaults, options);
@@ -34,9 +35,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     make_modal: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal ' + (this.options.premium_only ? "NB-feedchooser-premium" : "NB-feedchooser-standard") }, [
+        this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal ' + (this.options.premium_only ? "NB-feedchooser-premium" : this.options.chooser_only ? "NB-feedchooser-chooser-only" : "NB-feedchooser-standard") }, [
             // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
-                        $.make('div', { className: 'NB-feedchooser-type NB-right' }, [
+            (!this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-type NB-right' }, [
               (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR')),
               (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
@@ -44,14 +45,17 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                         ' for going premium!'
                   ]),
                   $.make('h2', { className: 'NB-modal-subtitle' }, [
-                      'Your premium account will expire on:',
+                      'Your premium account will renew on:',
                       $.make('br'),
                       $.make('b', { style: 'display: block; margin: 8px 0' }, [
                           $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                           ' ',
-                          NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
+                          NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)
                       ]),
-                      'Renew your premium subscription today.'
+                      'You can change your payment method and card details. ',
+                      (NEWSBLUR.Globals.premium_expire < new Date) ? 
+                      'This will charge your card immediately.' :
+                      'You won\'t be charged until this date.'
                   ])
               ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
@@ -139,9 +143,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       ])
                   ])
               ])
-            ]),
+            ])),
             (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left'}, [
-              $.make('div', { className: 'NB-feedchooser-info'}, [
+              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                         $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Free'),
                         ' Standard Account'
@@ -156,7 +160,16 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
                   $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity'),
                   $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Reset to popular sites')
-              ]),
+              ])),
+              (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
+                    $.make('h2', { className: 'NB-modal-title' }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Mute feeds',
+                        $.make('div', { className: 'NB-icon-dropdown' })
+                    ]),
+                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Turn every site on'),
+                    $.make('div', { className: 'NB-feedchooser-info-counts'})
+              ])),
               this.make_feeds(),
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
@@ -189,7 +202,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = feeds.size();
+        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
         
         var $feeds = new NEWSBLUR.Views.FeedList({
             feed_chooser: true
@@ -205,6 +218,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         // Pretend unfetched feeds are fine
         $('.NB-feed-unfetched', $feeds).removeClass('NB-feed-unfetched');
+
+        // Make sure all folders are visible
+        $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
         
         $('.unread_count_positive', $feeds).text('On');
         $('.unread_count_negative', $feeds).text('Off');
@@ -226,8 +242,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     open_modal: function() {
         var self = this;
         this.$modal.modal({
-            'minWidth': this.options.premium_only ? 460 : 900,
-            'maxWidth': this.options.premium_only ? 460 : 900,
+            'minWidth': this.options.premium_only || this.options.chooser_only ? 460 : 900,
+            'maxWidth': this.options.premium_only || this.options.chooser_only ? 460 : 900,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -313,22 +329,34 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var approved = this.approve_list.length;
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var difference = approved - this.MAX_FEEDS;
+        var muted = this.feed_count - approved;
         
         $count.text(approved + '/' + Inflector.commas(this.feed_count));
-        $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
-        $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
-
-        if (!initial_load) {
-            this.hide_autoselected_label();
-        }
-        if (approved > this.MAX_FEEDS) {
-          $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
-            difference == 1 ?
-            '1 site...' :
-            difference + ' sites...'
-          ));
+        
+        if (NEWSBLUR.Globals.is_premium) {
+            $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
+            if (muted == 0) {
+                $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
+            } else {
+                $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
+            }
+            $count.toggleClass('NB-full', muted == 0);
         } else {
-          $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these '+ approved +' sites, please');
+            $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
+            $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
+
+            if (!initial_load) {
+                this.hide_autoselected_label();
+            }
+            if (approved > this.MAX_FEEDS) {
+              $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
+                difference == 1 ?
+                '1 site...' :
+                difference + ' sites...'
+              ));
+            } else {
+              $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these '+ approved +' sites, please');
+            }
         }
     },
     

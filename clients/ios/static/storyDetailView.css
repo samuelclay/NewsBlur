@@ -2,45 +2,74 @@
  * Font Size Style
  */
 
-.NB-story {
-    line-height: 1.5em;
-}
+/* Font size */
+
 .NB-xs .NB-story,
 .NB-xs .NB-story-comment,
 .NB-xs .NB-header {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .NB-small .NB-story,
 .NB-small .NB-story-comment,
 .NB-small .NB-header {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .NB-medium .NB-story,
 .NB-medium .NB-story-comment,
 .NB-medium .NB-header {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .NB-large .NB-story,
 .NB-large .NB-story-comment,
 .NB-large .NB-header {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .NB-xl .NB-story,
 .NB-xl .NB-story-comment,
 .NB-xl .NB-header {
-    font-size: 17px;
+    font-size: 18px;
 }
 
-.NB-san-serif {
-    font-family: Helvetica;
+/* Font name */
+
+.NB-avenir {
+    font-family: "Avenir-Book";
+}
+.NB-avenirnext {
+    font-family: "AvenirNextCondensed-Regular";
+}
+.NB-georgia {
+    font-family: "Georgia";
+}
+.NB-palatino {
+    font-family: "Palatino";
+}
+.NB-helvetica {
+    font-family: "Helvetica";
 }
 
-.NB-serif {
-    font-family: georgia;
+/* Line spacing */
+.NB-story {
+    line-height: 1.5em;
+}
+.NB-line-spacing-xs .NB-story {
+    line-height: 1.2em;
+}
+.NB-line-spacing-small .NB-story {
+    line-height: 1.35em;
+}
+.NB-line-spacing-medium .NB-story {
+    line-height: 1.5em;
+}
+.NB-line-spacing-large .NB-story {
+    line-height: 1.65em;
+}
+.NB-line-spacing-xl .NB-story {
+    line-height: 1.8em;
 }
 
 /**
@@ -551,14 +580,19 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button {
-    float: left;
+    float: right;
     padding: 0px 0px 20px 0px;
-    margin: 0 0 0 0;
+    margin: 0;
     display: block;
-    width: 48%;
+    width: 28%;
 }
 .NB-button.NB-train-button {
-    float: right;
+    float: left;
+    margin-right: 0;
+}
+.NB-button.NB-save-button {
+    float: none;
+    margin: 0 auto;
 }
 
 .NB-button a {
@@ -573,7 +607,8 @@ a.NB-show-profile {
     text-transform: uppercase;
 }
 
-.NB-button.active a {
+.NB-button.active a,
+.NB-button.NB-button-active a {
     text-shadow: none;
 }
 
@@ -581,12 +616,11 @@ a.NB-show-profile {
     padding: 2px 6px 2px;
     height: 16px;
     background: -webkit-gradient(
-        linear, left top, left bottom, 
+        linear, left top, left bottom,
         from(#E9AF86),
         color-stop(0.50, #E9AF86),
         color-stop(0.50, #E5A87F),
         to(#E5A87F));
-        
     border: 1px solid transparent;
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
     border-radius: 2px;
@@ -595,15 +629,16 @@ a.NB-show-profile {
     height: auto;
     background: -webkit-gradient(
         linear, left top, left bottom, 
-        from(#DCDDD9),
-        color-stop(0.50, #DCDDD9),
-        color-stop(0.50, #D5D6D2),
-        to(#D5D6D2));
-    color: #90928B;
+        from(#ECEDE9),
+        color-stop(0.50, #ECEDE9),
+        color-stop(0.50, #E5E6E2),
+        to(#E5E6E2));
+    color: #B0B2AB;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    line-height: 1.5em;
+    line-height: 18px;
 }
-.NB-button:active div {
+.NB-button:active div,
+.NB-button.NB-button-active div {
     background: -webkit-gradient(
         linear, left top, left bottom,
         from(#6C6D69),
@@ -617,7 +652,8 @@ a.NB-show-profile {
     box-shadow: none;
 }
 
-.NB-button.NB-share-button:active div {
+.NB-button.NB-share-button:active div,
+.NB-button.NB-share-button.NB-button-active div {
     color: darkgrey;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
 }
@@ -636,18 +672,30 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button .NB-icon {
-    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAC+0lEQVRYCe1Y3U4TQRTesyVtjRipXPoe+hKaKHgpESQhMbI/xDZESWzqXyCtYZcam3ihmHgpYKIvIe+iVEWhjXQ8s93dsmd3Z6ZrSbhgkmXmfOfv25kzs0OBMaadpqafJjKcizIhx3Em+DPsCwzrB7IlW3uzdrHYyb1FIjfx4ev7SdcKc4Zh/BSR8/y6uXfoccPzA23nMH80v7yw/EPkNyZSct25bs5FFlO+HWA/xbRuG/t5H0vsip0xB/nzl+ANkNh0sZvjL3HXQ1L+SJcMa3467ssSMGrFblEEWPhiVBXKUkJouR9a+wOcsV8US5Az+SkQYs14MtaKY1EEZ/ZVFMEFZNprilFZWtToAOsbdVPXYRbrgBf1pmWUOUk+FjVwmw0DDWZ9IyU/FUKipCPXKSzZyHMKA54REk4PKqUHoyiA69avabpuY31f7dvBV63Xcyyr8kXkJ9JlLmq3+bKGRB4nB4cnlvGgmqwTox6hWq2Wn7h0vo6mM3jI/8ENvdX+/rtSrVa7Se79mYHPSboQ67HraTMlyucVtU/GxGAlJHMZe7M0Od4Ig9OBt0wUJLLARpQv2GUzJByequw2xQZyUDMDJD4S2qTmCwgdxAOeKJKaLyD0kaYHgA8UG8i4m+RtV2CSms8jxAsYCfDv0x5/+Hjv2345NSBu7VRdoOix9WBIe1G+E9n2ANpTc7GcciRQelE5MyEext/+Szi84ofd1XBm0ra7byPs/ouQMHJGZVDUGd1H73ZGSDanKl/7/hUW4A4GwwOcbdpmhd+Xh7nCctv3KldfaVG7zfojvFY/j74ZW7GMyosoFpWcjcYKbv9nx9EeYw+XzMrqcYyOFWoI+EWdNLhHgJiIZBYpqAPcpxiVFQhp49QJ/329QLEEOZOflBC+6RZNxkDbplhchtj3SsVPSuggf2RhMk6AFyZ/tnVWwGuruB0W/tp42dtBq9APf2zgp7qwSYs68A5+irFtux1gKn2rtVrqdIpM1U+ZkEryUdhIl2wUSYaJ8Q+9fxfZlVEwfwAAAABJRU5ErkJggg==") no-repeat top right;
+    background: url("share@2x.png") no-repeat 0 -1px;
     background-size: 16px;
     width: 25px;
     display: inline-block;
     height: 16px;
     margin: 0 2px 0 -12px;
     vertical-align: text-bottom;
+    opacity: .7;
 }
 
 .NB-button.NB-train-button .NB-icon {
-    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAI9SURBVFiF7Zg/aFNRFMa/c+99SRsjlurmItGCUUQncbQIbkV07RbIYtI0VsVBBAd1sYUkTbpkiIvBTRFxcXF0cPIPRQRBBEHwXwkVbO69xymgry+Jva8vzZBvPB/nuz8Oj3sPj5gZwySx0wB+jYD6aeiAqJdZqtzt+cUXC1c39VdrpevatG9tta8j5wkRkelitVwzgRBAQsg3QXVt9BN3nFATEo+C6sXClQ9CyLWBAwGIdzMI9Ms11BmI2Z7r5lk2+1xzlWujMTpdrZUeG2uuzc9dXgWA8vJSWgrZ0KbtDRwIALRpzwCYKVcWGQRmtkIbGyYyHFBHDCZw7zvtf6UAoF6vj//eWH/A4KMEem/Z3ijkF15uxwFBKlUWU0RQUngLDHsWgCbQzXyu2KRGo7F/rfX1E3y3tpLec23ap6MAEkK2rDW7/XUlvVnRWv/xyg8DAFHBAEAQDABYthVhrZmM6uCtylqzd+heeyGE/LnTEB1JoT6LZGLihN8gkFXSC3yrtuVgqVYB/LPaEJEZiyePiUwm83HX+ERCqdh9Jb0XSsXuHUwdjudzxfNRAc3lLh05lErHlIo1pVTvlPSeJsb2JLPZ7PdQC5qrIlnQolJoICW9FSKaIqIppWLN0HkhYS7kc8WHf5Vmqyvlt1pv3HbNdJ6Qkt4zHwwAIH9x/o4U8svAgUD0uof3zTXWHYj5VHfLHnCNdQYyVp8MqldrpTPW2sTAgZhZVZaXjm8yiKZdMwGARr9j+mgE1E9DB/QHYMm3tWURH1YAAAAASUVORK5CYII=") no-repeat top right;
+    background: url("train@2x.png") no-repeat 0 -1px;
     background-size: 16px;
+}
+
+.NB-button.NB-save-button .NB-icon {
+    background: url("clock@2x.png") no-repeat 0 -1px;
+    background-size: 16px;
+}
+
+.NB-iphone .NB-button.NB-share-button .NB-icon {
+    background-position-y: 1px;
+    width: 20px;
+    margin-left: -2px;
 }
 
 .NB-iphone .NB-button .NB-story-comment-like-button-wrapper,

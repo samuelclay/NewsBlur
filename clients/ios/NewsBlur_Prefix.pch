@@ -6,11 +6,16 @@
     #import <MobileCoreServices/MobileCoreServices.h>
 
 //#define DEBUG 1
+#define PROD_DEBUG 1
 
 #ifdef DEBUG
     #define BACKGROUND_REFRESH_SECONDS -5
     #define NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
     #define NEWSBLUR_HOST [NSString stringWithFormat:@"nb.local.com"]
+#elif PROD_DEBUG
+    #define BACKGROUND_REFRESH_SECONDS -5
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"http://debug.newsblur.com"]
+    #define NEWSBLUR_HOST [NSString stringWithFormat:@"debug.newsblur.com"]
 #else
     #define BACKGROUND_REFRESH_SECONDS -10*60
     #define NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]

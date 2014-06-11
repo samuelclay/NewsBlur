@@ -15,6 +15,8 @@
 #import "Utilities.h"
 #import "DataUtilities.h"
 #import "ASIHTTPRequest.h"
+#import "StoriesCollection.h"
+#import "NSString+HTML.h"
 
 @implementation ShareViewController
 
@@ -107,12 +109,13 @@
     [self adjustShareButtons];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.storyTitle.text = [appDelegate.activeStory objectForKey:@"story_title"];
+        self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
+                                stringByDecodingHTMLEntities];
         [self.commentField becomeFirstResponder];
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-        UIImage *titleImage  = [Utilities getImage:feedIdStr];
+        UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         titleImageView.hidden = YES;
@@ -274,9 +277,9 @@
         // Don't bother to reset comment field for replies while on the same story.
         // It'll get cleared out on a new story and when posting a reply.
         if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId] ||
-            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"id"]]) {
+            !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             self.activeCommentId = userId;
-            self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];
+            self.activeStoryId = [appDelegate.activeStory objectForKey:@"story_hash"];
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {
@@ -337,7 +340,7 @@
         [request addPostValue:@"appdotnet" forKey:@"post_to_services"];
     }
     
-    if (appDelegate.isSocialRiverView) {
+    if (appDelegate.storiesCollection.isSocialRiverView) {
         if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
             [request setPostValue:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
         } else if ([[appDelegate.activeStory objectForKey:@"public_user_ids"] count] > 0) {
@@ -376,9 +379,9 @@
     }
     
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
-    appDelegate.activeFeedUserProfiles = [DataUtilities 
-                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
-                                          withNewUserProfiles:userProfiles];
+    appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
+                                                            updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles
+                                                            withNewUserProfiles:userProfiles];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
 }
@@ -457,24 +460,24 @@
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
-    
+    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
-        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
+    for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
         NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStoryParsed];
         } else {
-            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
+            [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
         }
     }
     
-    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 }

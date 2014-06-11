@@ -1,9 +1,10 @@
 package com.newsblur.activity;
 
 import android.database.Cursor;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.support.v13.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
@@ -44,7 +45,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	}
 
 	public synchronized Story getStory(int position) {
-		if (stories == null || stories.getColumnCount() == 0 || position >= stories.getCount() || position < 0) {
+		if (stories == null || stories.isClosed() || stories.getColumnCount() == 0 || position >= stories.getCount() || position < 0) {
 			return null;
 		} else {
 			stories.moveToPosition(position);

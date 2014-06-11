@@ -57,6 +57,7 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 DEBUG                 = False
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
+DEBUG_QUERIES         = False
 MANAGERS              = ADMINS
 PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'
 TIME_ZONE             = 'GMT'
@@ -105,7 +106,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
-    'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
@@ -113,6 +113,10 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'apps.profile.middleware.DBProfilerMiddleware',
+    'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
+    'utils.redis_raw_log_middleware.RedisDumpMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -282,7 +286,6 @@ INSTALLED_APPS = (
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
     'vendor.zebra',
-    'vendor.haystack',
     'oauth2_provider',
     'corsheaders',
 )
@@ -322,6 +325,14 @@ CELERY_ROUTES = {
         "queue": "beat_tasks",
         "binding_key": "beat_tasks"
     },
+    "search-indexer": {
+        "queue": "search_indexer",
+        "binding_key": "search_indexer"
+    },
+    "search-indexer-tasker": {
+        "queue": "search_indexer_tasker",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_QUEUES = {
     "work_queue": {
@@ -354,6 +365,16 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "beat_feeds_task"
     },
+    "search_indexer": {
+        "exchange": "search_indexer",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer"
+    },
+    "search_indexer_tasker": {
+        "exchange": "search_indexer_tasker",
+        "exchange_type": "direct",
+        "binding_key": "search_indexer_tasker"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
 
@@ -362,6 +383,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.social.tasks",
                                "apps.reader.tasks",
                                "apps.feed_import.tasks",
+                               "apps.search.tasks",
                                "apps.statistics.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
@@ -409,7 +431,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
-        'schedule': datetime.timedelta(minutes=8),
+        'schedule': datetime.timedelta(minutes=5),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -474,7 +496,8 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db_search:9200']
+ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
+ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
 
 # ===============
 # = Social APIs =
@@ -623,22 +646,8 @@ REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379,
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.MongoDumpMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.RedisDumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
-
-# ============
-# = Haystack =
-# ============
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://%s' % ELASTICSEARCH_HOSTS[0],
-        'INDEX_NAME': 'haystack',
-    },
-}
 
 # =======
 # = AWS =

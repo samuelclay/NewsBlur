@@ -88,7 +88,7 @@ def list_do():
     total_cost = 0
     for droplet in droplets:
         roledef = re.split(r"([0-9]+)", droplet.name)[0]
-        cost = int(sizes[droplet.size_id]) * 10
+        cost = int(sizes.get(droplet.size_id, 96)) * 10
         role_costs[roledef] += cost
         total_cost += cost
     
@@ -252,10 +252,14 @@ def setup_db(engine=None, skip_common=False):
         setup_postgres(standby=True)
     elif engine.startswith("mongo"):
         setup_mongo()
+        setup_mongo_mms()
     elif engine == "redis":
         setup_redis()
     elif engine == "redis_slave":
         setup_redis(slave=True)
+    elif engine == "elasticsearch":
+        setup_elasticsearch()
+        setup_db_search()
     setup_gunicorn(supervisor=False)
     setup_db_munin()
     done()
@@ -290,7 +294,7 @@ def setup_task_image():
 
 def done():
     print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n     %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
+    print "\n\n              %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string)
     print "\n\n-----------------------------------------------------\n\n\n\n"
 
 def setup_installs():
@@ -310,6 +314,7 @@ def setup_installs():
         'libncurses5-dev',
         'libdbd-pg-perl',
         'libssl-dev',
+        'libffi-dev',
         'make',
         'pgbouncer',
         'python-setuptools',
@@ -432,6 +437,7 @@ def setup_python():
             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
 
 def pip():
+    pull()
     with cd(env.NEWSBLUR_PATH):
         sudo('easy_install -U pip')
         sudo('pip install --upgrade pip')
@@ -540,13 +546,14 @@ def switch_forked_mongoengine():
         # run('git checkout -b dev origin/dev')
 
 def setup_logrotate(clear=True):
+    if clear:
+        run('find /srv/newsblur/logs/*.log | xargs tee')
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     put('config/logrotate.mongo.conf', '/etc/logrotate.d/mongodb', use_sudo=True)
     sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb}')
     sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb}')
-    sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
-    if clear:
-        run('find /srv/newsblur/logs/*.log | xargs tee')
+    with settings(warn_only=True):
+        sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
     sudo('logrotate -f /etc/logrotate.d/newsblur')
 
 def setup_ulimit():
@@ -591,7 +598,7 @@ def setup_nginx():
         run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
         run('rm nginx-%s.tar.gz' % NGINX_VERSION)
         with cd('nginx-%s' % NGINX_VERSION):
-            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_realip_module ')
             run('make')
             sudo('make install')
     config_nginx()
@@ -733,20 +740,23 @@ def upgrade_django():
         sudo('easy_install -U django gunicorn')
         pull()
         sudo('supervisorctl reload')
+
 def upgrade_pil():
     with cd(env.NEWSBLUR_PATH):
-        sudo('easy_install pillow')
-        # celery_stop()
         pull()
+        sudo('pip install --upgrade pillow')
+        # celery_stop()
         sudo('apt-get remove -y python-imaging')
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 def downgrade_pil():
     with cd(env.NEWSBLUR_PATH):
         sudo('apt-get install -y python-imaging')
         sudo('rm -fr /usr/local/lib/python2.7/dist-packages/Pillow*')
         pull()
-        kill()
+        sudo('supervisorctl reload')
+        # kill()
 
 # ==============
 # = Setup - DB =
@@ -874,13 +884,19 @@ def setup_mongo_mongos():
 
 def setup_mongo_mms():
     pull()
-    put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_settings.py'),
-        '%s/vendor/mms-agent/settings.py' % env.NEWSBLUR_PATH)
-    with cd(env.NEWSBLUR_PATH):
-        put('config/supervisor_mongomms.conf', '/etc/supervisor/conf.d/mongomms.conf', use_sudo=True)
+    sudo('rm -f /etc/supervisor/conf.d/mongomms.conf')
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
-
+    with cd(env.VENDOR_PATH):
+        sudo('apt-get remove -y mongodb-mms-monitoring-agent')
+        run('curl -OL https://mms.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        sudo('dpkg -i mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        run('rm mongodb-mms-monitoring-agent_2.2.0.70-1_amd64.deb')
+        put(os.path.join(env.SECRETS_PATH, 'settings/mongo_mms_config.txt'),
+            'mongo_mms_config.txt')
+        sudo("echo \"\n\" >> /etc/mongodb-mms/monitoring-agent.config")
+        sudo('cat mongo_mms_config.txt >> /etc/mongodb-mms/monitoring-agent.config')
+        sudo('start mongodb-mms-monitoring-agent')
 
 def setup_redis(slave=False):
     redis_version = '2.6.16'
@@ -928,7 +944,9 @@ def setup_munin():
         sudo('/etc/init.d/spawn_fcgi_munin_html stop')
         sudo('/etc/init.d/spawn_fcgi_munin_html start')
         sudo('update-rc.d spawn_fcgi_munin_html defaults')
-    sudo('/etc/init.d/munin-node restart')
+    sudo('/etc/init.d/munin-node stop')
+    time.sleep(2)
+    sudo('/etc/init.d/munin-node start')
     with settings(warn_only=True):
         sudo('chown nginx.www-data /var/log/munin/munin-cgi*')
         sudo('chown nginx.www-data /usr/lib/cgi-bin/munin-cgi*')
@@ -947,7 +965,10 @@ def setup_db_munin():
         run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
-    sudo('/etc/init.d/munin-node restart')
+    sudo('/etc/init.d/munin-node stop')
+    time.sleep(2)
+    sudo('/etc/init.d/munin-node start')
+
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
@@ -991,7 +1012,14 @@ def setup_elasticsearch():
     with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
         run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
         sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
+        sudo('/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head' % ES_VERSION)
 
+def setup_db_search():
+    put('config/supervisor_celeryd_search_indexer.conf', '/etc/supervisor/conf.d/celeryd_search_indexer.conf', use_sudo=True)
+    put('config/supervisor_celeryd_search_indexer_tasker.conf', '/etc/supervisor/conf.d/celeryd_search_indexer_tasker.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    
 # ================
 # = Setup - Task =
 # ================
@@ -1041,7 +1069,7 @@ def setup_do(name, size=2, image=None):
     ssh_key_ids = [str(k.id) for k in doapi.all_ssh_keys()]
     region_id = doapi.regions()[0].id
     if not image:
-        IMAGE_NAME = "Ubuntu 13.04 x64"
+        IMAGE_NAME = "Ubuntu 13.10 x64"
         images = dict((s.name, s.id) for s in doapi.images())
         image_id = images[IMAGE_NAME]
     else:
@@ -1176,7 +1204,7 @@ def deploy_full(fast=False):
 @parallel
 def kill_gunicorn():
     with cd(env.NEWSBLUR_PATH):
-        sudo('pkill -9 -u %s -f gunicorn_django -e' % env.user)
+        sudo('pkill -9 -u %s -f gunicorn_django' % env.user)
                 
 @parallel
 def deploy_code(copy_assets=False, full=False, fast=False):

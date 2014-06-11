@@ -22,12 +22,11 @@ UITableViewDataSource>  {
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
 @property (nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
+@property (nonatomic) IBOutlet UISegmentedControl *lineSpacingSegment;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
 
 - (IBAction)changeFontStyle:(id)sender;
 - (IBAction)changeFontSize:(id)sender;
-- (void)setSanSerif;
-- (void)setSerif;
 - (UITableViewCell *)makeFontSelectionTableCell;
 - (UITableViewCell *)makeFontSizeTableCell;
 

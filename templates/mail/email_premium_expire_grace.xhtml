@@ -3,15 +3,16 @@
 {% load utils_tags %}
 
 {% block body %}
-    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}, your premium account is about to expire...</p>
-    <p style="line-height: 20px;">{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then.{% else %}You've recently been on NewsBlur, but a lot has changed since even then.{% endif %} We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.</p>
+    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}, your premium account is about to expire...</p>
     <p style="line-height: 20px;">Your premium account was set to expire today, but you've been given a free month grace period, so you can continue using your premium account to try out NewsBlur.</p>
+    <p style="line-height: 20px;">{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% else %}You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe you just need to renew your premium account? Let's help you do that.{% endif %} </p>
+    <p style="line-height: 20px;">Renew now: <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew">http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew</a></p>
     <p style="line-height: 20px;">Here are some easy ways to have a great time on NewsBlur:</p>
     <p style="line-height: 20px;">
         <ul style="list-style: none;">
             <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/circular/share.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}" style="text-decoration:none">Follow friends from Twitter, Facebook, and NewsBlur</a>.</li>
             <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Visit the popular blurblog: <a href="http://popular.newsblur.com" style="text-decoration:none">The People Have Spoken</a>.</li>
-            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">Renew your premium account for only $24/year</a>.</li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew" style="text-decoration:none">Renew your premium account for only $24/year</a>.</li>
         </ul>
     </p>
     

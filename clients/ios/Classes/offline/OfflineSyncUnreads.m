@@ -21,7 +21,7 @@
 - (void)main {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
-    NSLog(@"Syncing Unreads...");
+//    NSLog(@"Syncing Unreads...");
     dispatch_async(dispatch_get_main_queue(), ^{
         [appDelegate.feedsViewController showSyncingNotifier];
     });
@@ -44,13 +44,13 @@
 
 - (void)storeUnreadHashes:(NSDictionary *)results {
     if (self.isCancelled) {
-        NSLog(@"Canceled storing unread hashes");
+//        NSLog(@"Canceled storing unread hashes");
         [request cancel];
         return;
     }
     
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        NSLog(@"Storing unread story hashes...");
+//        NSLog(@"Storing unread story hashes...");
         [db executeUpdate:@"DROP TABLE unread_hashes"];
         [appDelegate setupDatabase:db];
         NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
@@ -94,7 +94,7 @@
         [cursor close];
         
         if (offlineLimitTimestamp) {
-            NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
+//            NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
             [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
         }
@@ -106,7 +106,7 @@
     appDelegate.totalUncachedImagesCount = 0;
     appDelegate.remainingUncachedImagesCount = 0;
     
-    NSLog(@"Done syncing Unreads...");
+//    NSLog(@"Done syncing Unreads...");
     [appDelegate startOfflineFetchStories];
 }
 

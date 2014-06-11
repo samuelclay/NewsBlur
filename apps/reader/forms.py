@@ -52,7 +52,7 @@ class LoginForm(forms.Form):
                         self.user_cache = authenticate(username=email_user.username, password=email_user.username)
             if self.user_cache is None:
                 logging.info(" ***> [%s] Bad Login" % username)
-                raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                raise forms.ValidationError(_("Whoopsy-daisy, wrong password. Try again."))
         elif username and not user:
             raise forms.ValidationError(_("That username is not registered. Please try again."))
             
@@ -77,7 +77,7 @@ class SignupForm(forms.Form):
                                     'invalid': "Your username may only contain letters and numbers."
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label=_(u'email address'),
+                             label=_(u'email'),
                              required=True,
                              error_messages={'required': 'Please enter an email.'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),

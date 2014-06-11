@@ -27,12 +27,13 @@
  UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    int feedPage;
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
-    BOOL isOffline;
-    BOOL isShowingOffline;
+    BOOL isOnline;
+    BOOL isShowingFetching;
+    BOOL isDashboardModule;
+    BOOL inDoubleTap;
      
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
@@ -51,22 +52,29 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, retain) StoriesCollection *storiesCollection;
 
-@property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
-@property (nonatomic, readwrite) BOOL isOffline;
-@property (nonatomic, readwrite) BOOL isShowingOffline;
+@property (nonatomic, readwrite) BOOL isOnline;
+@property (nonatomic, readwrite) BOOL isShowingFetching;
+@property (nonatomic, readwrite) BOOL isDashboardModule;
+@property (nonatomic, readwrite) BOOL showContentPreview;
+@property (nonatomic, readwrite) BOOL showImagePreview;
 
+- (void)reloadData;
 - (void)resetFeedDetail;
 - (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)loadOfflineStories;
+- (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)testForTryFeed;
+- (void)cacheStoryImages:(NSArray *)storyImageUrls;
+- (void)showStoryImage:(NSString *)imageUrl;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
@@ -77,6 +85,7 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
+- (void)fadeSelectedCell:(BOOL)deselect;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
@@ -95,4 +104,10 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
+- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
+- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+
 @end

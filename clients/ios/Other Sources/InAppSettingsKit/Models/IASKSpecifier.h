@@ -50,8 +50,10 @@
 - (NSString*)footerText;
 - (Class)viewControllerClass;
 - (SEL)viewControllerSelector;
--(Class)buttonClass;
--(SEL)buttonAction;
+- (NSString*)viewControllerStoryBoardFile;
+- (NSString*)viewControllerStoryBoardID;
+- (Class)buttonClass;
+- (SEL)buttonAction;
 - (UIImage *)cellImage;
 - (UIImage *)highlightedCellImage;
 - (BOOL)adjustsFontSizeToFitWidth;

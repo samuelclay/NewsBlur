@@ -75,6 +75,11 @@ class UpdateRecalcForSubscription(Task):
     def run(self, subscription_user_id, shared_story_id):
         user = User.objects.get(pk=subscription_user_id)
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=subscription_user_id)
+        try:
+            shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
+        except MSharedStory.DoesNotExist:
+            return
+
         logging.debug(" ---> ~FM~SNFlipping unread recalc for ~SB%s~SN subscriptions to ~SB%s's blurblog~SN" % (
             socialsubs.count(),
             user.username
@@ -83,5 +88,4 @@ class UpdateRecalcForSubscription(Task):
             socialsub.needs_unread_recalc = True
             socialsub.save()
         
-        shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
         shared_story.publish_update_to_subscribers()

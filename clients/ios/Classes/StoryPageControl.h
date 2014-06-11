@@ -34,6 +34,7 @@
 	Class popoverClass;
     
     BOOL isDraggingScrollview;
+    BOOL isAnimatedIntoPlace;
     BOOL waitingForNextUnreadFromServer;
     UIInterfaceOrientation _orientation;
 }
@@ -68,6 +69,7 @@
 @property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
+@property (assign) BOOL isAnimatedIntoPlace;
 @property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic) NSInteger scrollingToPage;
@@ -88,27 +90,24 @@
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location;
+- (void)animateIntoPlace:(BOOL)animated;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
 
 - (void)setNextPreviousButtons;
 - (void)setTextButton;
-- (void)markStoryAsRead;
-- (void)finishMarkAsRead:(ASIFormDataRequest *)request;
-- (void)markStoryAsUnread;
-- (void)finishMarkAsUnread:(ASIFormDataRequest *)request;
-- (void)markStoryAsSaved;
 - (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)markStoryAsUnsaved;
+- (BOOL)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+- (BOOL)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (BOOL)failedMarkAsUnread:(ASIFormDataRequest *)request;
 - (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
+- (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)showShareHUD:(NSString *)msg;
 
 - (IBAction)showOriginalSubview:(id)sender;

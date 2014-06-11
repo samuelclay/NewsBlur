@@ -18,3 +18,6 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# We're open-source; dont' obfuscate.
+-dontobfuscate

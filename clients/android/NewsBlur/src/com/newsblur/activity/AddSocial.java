@@ -2,8 +2,8 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.newsblur.R;
 import com.newsblur.fragment.AddSocialFragment;
 
-public class AddSocial extends NbFragmentActivity {
+public class AddSocial extends NbActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "addSocialFragment";
@@ -22,7 +22,7 @@ public class AddSocial extends NbFragmentActivity {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_addsocial);
 		
-		fragmentManager = getSupportFragmentManager();
+		fragmentManager = getFragmentManager();
 
 		if (fragmentManager.findFragmentByTag(currentTag) == null) {
 			FragmentTransaction transaction = fragmentManager.beginTransaction();

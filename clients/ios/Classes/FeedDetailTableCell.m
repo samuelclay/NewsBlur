@@ -7,11 +7,15 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import "FeedDetailViewController.h"
 #import "FeedDetailTableCell.h"
+#import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
+#import "UIImageView+AFNetworking.h"
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
+#import "TMCache.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -23,18 +27,22 @@ static UIFont *indicatorFont = nil;
 @synthesize storyTitle;
 @synthesize storyAuthor;
 @synthesize storyDate;
+@synthesize storyContent;
+@synthesize storyImageUrl;
 @synthesize storyTimestamp;
 @synthesize storyScore;
+@synthesize storyImage;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
 @synthesize isShared;
-@synthesize isStarred;
+@synthesize isSaved;
 @synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
+@synthesize inDashboard;
 
 
 #define leftMargin 30
@@ -60,6 +68,8 @@ static UIFont *indicatorFont = nil;
 
 - (void)drawRect:(CGRect)rect {
     ((FeedDetailTableCellView *)cellContent).cell = self;
+    ((FeedDetailTableCellView *)cellContent).storyImage = nil;
+    ((FeedDetailTableCellView *)cellContent).appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
 }
@@ -74,7 +84,7 @@ static UIFont *indicatorFont = nil;
         unreadIcon = @"g_icn_unread.png";
     }
     
-    UIColor *shareColor = self.isStarred ?
+    UIColor *shareColor = self.isSaved ?
                             UIColorFromRGB(0xF69E89) :
                             UIColorFromRGB(0xA4D97B);
     UIColor *readColor = self.isRead ?
@@ -82,7 +92,11 @@ static UIFont *indicatorFont = nil;
                             UIColorFromRGB(0xFFFFD2);
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    if (inDashboard) {
+        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.dashboardViewController.storiesModule];
+    } else {
+        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    }
     [self setFirstStateIconName:@"clock.png"
                      firstColor:shareColor
             secondStateIconName:nil
@@ -101,6 +115,8 @@ static UIFont *indicatorFont = nil;
 @implementation FeedDetailTableCellView
 
 @synthesize cell;
+@synthesize storyImage;
+@synthesize appDelegate;
 
 - (void)drawRect:(CGRect)r {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -108,7 +124,7 @@ static UIFont *indicatorFont = nil;
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
     }
-    
+
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGRect rect = CGRectInset(r, 12, 12);
@@ -120,6 +136,28 @@ static UIFont *indicatorFont = nil;
     [backgroundColor set];
     
     CGContextFillRect(context, r);
+    
+    if (cell.storyImageUrl) {
+        CGRect imageFrame = CGRectMake(r.size.width-r.size.height, 1,
+                                       r.size.height, r.size.height);
+        UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
+        
+        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
+        if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
+//            NSLog(@"Found cached image: %@", cell.storyTitle);
+            storyImageView.image = cachedImage;
+            [storyImageView setContentMode:UIViewContentModeScaleAspectFill];
+            [storyImageView setClipsToBounds:YES];
+            CGFloat alpha = 1.0f;
+            if (cell.highlighted || cell.selected) {
+                alpha = cell.isRead ? 0.5f : 0.85f;
+            } else if (cell.isRead) {
+                alpha = 0.34f;
+            }
+            [storyImageView.image drawInRect:imageFrame blendMode:Nil alpha:alpha];
+            rect.size.width -= imageFrame.size.width;
+        }
+    }
     
     UIColor *textColor;
     UIFont *font;
@@ -161,12 +199,20 @@ static UIFont *indicatorFont = nil;
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
-        
+
+        // site favicon
+        if (cell.isRead && !cell.hasAlpha) {
+            if (cell.isRiverOrSocial) {
+                cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
+            }
+            cell.hasAlpha = YES;
+        }
+
         [cell.siteFavicon drawInRect:CGRectMake(leftMargin, siteTitleY, 16.0, 16.0)];
 
         if (cell.isRead) {
             font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-            textColor = UIColorFromRGB(0x606060);
+            textColor = UIColorFromRGB(0x585858);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
             font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
@@ -190,7 +236,7 @@ static UIFont *indicatorFont = nil;
         storyTitleY = 12 + riverPadding - (theSize.height/font.pointSize*2);
     }
     int storyTitleX = leftMargin;
-    if (cell.isStarred) {
+    if (cell.isSaved) {
         UIImage *savedIcon = [UIImage imageNamed:@"clock"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:nil alpha:1];
         storyTitleX += 20;
@@ -209,29 +255,52 @@ static UIFont *indicatorFont = nil;
                                     NSParagraphStyleAttributeName: paragraphStyle}
                           context:nil];
     
-    int storyAuthorDateY = r.size.height - 18;
-    if (cell.isShort) {
-//        storyAuthorDateY += 13;
-    }
-    
-    // story author style
-    if (cell.isRead) {
-        textColor = UIColorFromRGB(0x959595);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
-    } else {
-        textColor = UIColorFromRGB(0xA6A8A2);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-    }
-    if (cell.highlighted || cell.selected) {
-        textColor = UIColorFromRGB(0x959595);
-    }
-    
-    [cell.storyAuthor
-     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width) / 2 - 10, 15.0)
-     withAttributes:@{NSFontAttributeName: font,
+    if (cell.storyContent) {
+        int storyContentWidth = rect.size.width;
+        if (cell.inDashboard) {
+            storyContentWidth -= leftMargin*2;
+        }
+        CGSize contentSize = [cell.storyContent
+                              boundingRectWithSize:CGSizeMake(storyContentWidth,
+                                                              cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                              options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                              attributes:@{NSFontAttributeName: font,
+                                           NSParagraphStyleAttributeName: paragraphStyle}
+                              context:nil].size;
+
+        int storyContentY = r.size.height - 18 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
+        if (cell.isShort) {
+            storyContentY = r.size.height - 12 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
+        }
+        
+        if (cell.isRead) {
+            textColor = UIColorFromRGB(0x848484);
+            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        } else {
+            textColor = UIColorFromRGB(0x404040);
+            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        }
+        if (cell.highlighted || cell.selected) {
+            if (cell.isRead) {
+                textColor = UIColorFromRGB(0x787878);
+            } else {
+                textColor = UIColorFromRGB(0x686868);
+            }
+        }
+        
+        [cell.storyContent
+         drawWithRect:CGRectMake(storyTitleX, storyContentY,
+                                 rect.size.width - storyTitleX + leftMargin, contentSize.height)
+         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+         attributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
-                      NSParagraphStyleAttributeName: paragraphStyle}];
+                      NSParagraphStyleAttributeName: paragraphStyle}
+         context:nil];
+    }
+    
     // story date
+    int storyAuthorDateY = r.size.height - 18;
+    
     if (cell.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
         font = [UIFont fontWithName:@"Helvetica" size:10];
@@ -250,13 +319,35 @@ static UIFont *indicatorFont = nil;
     
     paragraphStyle.alignment = NSTextAlignmentRight;
     NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
+    CGSize dateSize = [date sizeWithAttributes:@{NSFontAttributeName: font,
+                                                 NSForegroundColorAttributeName: textColor,
+                                                 NSParagraphStyleAttributeName: paragraphStyle}];
     [date
-     drawInRect:CGRectMake(leftMargin + (rect.size.width) / 2 - 10, storyAuthorDateY, (rect.size.width) / 2 + 10, 15.0)
+     drawInRect:CGRectMake(0, storyAuthorDateY, rect.size.width + leftMargin, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
-    // feed bar
     
+    // Story author
+    if (cell.isRead) {
+        textColor = UIColorFromRGB(0x959595);
+        font = [UIFont fontWithName:@"Helvetica" size:10];
+    } else {
+        textColor = UIColorFromRGB(0xA6A8A2);
+        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+    }
+    if (cell.highlighted || cell.selected) {
+        textColor = UIColorFromRGB(0x959595);
+    }
+    
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    [cell.storyAuthor
+     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, rect.size.width - dateSize.width - 12, 15.0)
+     withAttributes:@{NSFontAttributeName: font,
+                      NSForegroundColorAttributeName: textColor,
+                      NSParagraphStyleAttributeName: paragraphStyle}];
+
+    // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBarTopBorder CGColor]));
     if (cell.isRead) {
         CGContextSetAlpha(context, 0.15);
@@ -312,14 +403,6 @@ static UIFont *indicatorFont = nil;
         CGContextMoveToPoint(context, 0.0f, 0.5f);
         CGContextAddLineToPoint(context, cell.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
-    }
-    
-    // site favicon
-    if (cell.isRead && !cell.hasAlpha) {
-        if (cell.isRiverOrSocial) {
-            cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
-        }
-        cell.hasAlpha = YES;
     }
     
     // story indicator

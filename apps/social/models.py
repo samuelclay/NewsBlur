@@ -1399,7 +1399,7 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    'shared_date', 'story_guid', 'story_feed_id'],
+                    'shared_date', 'story_guid', 'story_feed_id', 'story_hash'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
@@ -1676,7 +1676,21 @@ class MSharedStory(mongo.Document):
             shared_story.publish_update_to_subscribers()
         
         return shared
-            
+
+    @staticmethod
+    def check_shared_story_hashes(user_id, story_hashes, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        pipeline = r.pipeline()
+        
+        for story_hash in story_hashes:
+            feed_id, guid_hash = MStory.split_story_hash(story_hash)
+            share_key = "S:%s:%s" % (feed_id, guid_hash)
+            pipeline.sismember(share_key, user_id)
+        shared_hashes = pipeline.execute()
+        
+        return [story_hash for s, story_hash in enumerate(story_hashes) if shared_hashes[s]]
+
     @classmethod
     def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1758,7 +1772,7 @@ class MSharedStory(mongo.Document):
             'shared_date': relative_timesince(self.shared_date),
             'date': self.shared_date,
             'replies': [reply.canonical() for reply in self.replies],
-            'liking_users': self.liking_users,
+            'liking_users': self.liking_users and list(self.liking_users),
             'source_user_id': self.source_user_id,
         }
         return comments
@@ -1924,10 +1938,11 @@ class MSharedStory(mongo.Document):
             if include_url and truncate:
                 message = truncate_chars(message, truncate - 18 - 30)
             feed = Feed.get_by_id(self.story_feed_id)
-            if truncate:
-                message += " (%s)" % truncate_chars(feed.feed_title, 18)
-            else:
-                message += " (%s)" % truncate_chars(feed.feed_title, 30)
+            if feed:
+                if truncate:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 18)
+                else:
+                    message += " (%s)" % truncate_chars(feed.feed_title, 30)
             if include_url:
                 message += " " + self.blurblog_permalink()
         elif include_url:
@@ -2553,8 +2568,18 @@ class MSocialServices(mongo.Document):
         if profile.photo_service != "twitter":
             return
         
-        api = self.twitter_api()
-        me = api.me()
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCSyncing Twitter profile photo...")
+        
+        try:
+            api = self.twitter_api()
+            me = api.me()
+        except tweepy.TweepError, e:
+            logging.user(user, "~FRException (%s): ~FCsetting to blank profile photo" % e)
+            self.twitter_picture_url = None
+            self.set_photo("nothing")
+            return
+
         self.twitter_picture_url = me.profile_image_url_https
         self.save()
         self.set_photo('twitter')

@@ -8,14 +8,16 @@ import struct
 import bson
 from bson.errors import InvalidBSON
 
-class MongoDumpMiddleware(object):
-    def __init__(self):
-        if not settings.DEBUG:
-            raise MiddlewareNotUsed()
-
+class MongoDumpMiddleware(object):    
+    def activated(self, request):
+        return (settings.DEBUG_QUERIES or 
+                (hasattr(request, 'activated_segments') and
+                 'db_profiler' in request.activated_segments))
+    
     def process_view(self, request, callback, callback_args, callback_kwargs):
+        if not self.activated(request): return
         self._used_msg_ids = []
-        if settings.DEBUG and not getattr(MongoClient, '_logging', False):
+        if not getattr(MongoClient, '_logging', False):
             # save old methods
             setattr(MongoClient, '_logging', True)
             # # save old methods
