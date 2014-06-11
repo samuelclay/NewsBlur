@@ -916,9 +916,18 @@ class RUserStory:
         return story_hashes
     
     @staticmethod
-    def get_read_stories(user_id, offset=0, limit=12):
+    def get_read_stories(user_id, offset=0, limit=12, order="newest"):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        story_hashes = r.lrange("lRS:%s" % user_id, offset, offset+limit)
+        key = "lRS:%s" % user_id
+        
+        if order == "oldest":
+            count = r.llen(key)
+            if offset >= count: return []
+            offset = max(0, count - (offset+limit))
+            story_hashes = r.lrange(key, offset, offset+limit)
+        elif order == "newest":
+            story_hashes = r.lrange(key, offset, offset+limit)
+        
         return story_hashes
         
     @classmethod

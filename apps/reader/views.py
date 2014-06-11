@@ -915,6 +915,7 @@ def load_read_stories(request):
     offset = int(request.REQUEST.get('offset', 0))
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
+    order  = request.REQUEST.get('order', 'newest')
     query  = request.REQUEST.get('query')
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
@@ -929,10 +930,11 @@ def load_read_stories(request):
         #     stories = []
         #     message = "You must be a premium subscriber to search."
     else:
-        story_hashes = RUserStory.get_read_stories(user.pk, offset, limit)
+        story_hashes = RUserStory.get_read_stories(user.pk, offset=offset, limit=limit, order=order)
         mstories = MStory.objects(story_hash__in=story_hashes)
         stories = Feed.format_stories(mstories)
-        stories = sorted(stories, key=lambda story: story_hashes.index(story['story_hash']))
+        stories = sorted(stories, key=lambda story: story_hashes.index(story['story_hash']),
+                         reverse=bool(order=="oldest"))
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
     

@@ -1679,6 +1679,13 @@
             
             this.model.fetch_read_stories(1, _.bind(this.post_open_read_stories, this), 
                                           NEWSBLUR.app.taskbar_info.show_stories_error, true);
+                                          
+            if (!options.silent) {
+                var url = "/read";
+                if (window.location.pathname != url) {
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
         },
         
         post_open_read_stories: function(data, first_load) {

@@ -614,7 +614,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/reader/read_stories', {
             page: page,
-            query: NEWSBLUR.reader.flags.search
+            query: NEWSBLUR.reader.flags.search,
+            order: this.view_setting('read', 'order')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

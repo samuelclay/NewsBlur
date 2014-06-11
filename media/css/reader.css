@@ -3864,7 +3864,7 @@ body {
 /* = Header - Read Stories = */
 /* ========================= */
 
-.NB-feeds-header-read-container {
+.NB-feeds-header-read-container.NB-block {
     display: block;
 }
 .NB-feeds-header-read {

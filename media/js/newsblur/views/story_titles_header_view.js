@@ -51,6 +51,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         } else if (NEWSBLUR.reader.active_feed == "read") {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting("read", "order") %>\
+                        </span>\
+                    </div>\
                     <div class="NB-read-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <div class="folder_title_text">Read Stories</div>\
@@ -221,7 +227,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
     
     open_options_popover: function(e) {
-        if (!this.showing_fake_folder) return;
+        if (!(this.showing_fake_folder ||
+              NEWSBLUR.reader.active_feed == "read" ||
+              NEWSBLUR.reader.flags['starred_view'])) return;
         
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
