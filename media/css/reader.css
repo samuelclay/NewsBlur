@@ -2094,10 +2094,10 @@ body {
     line-height: 1.5em;
 }
 .NB-line-spacing-l .NB-feed-story {
-    line-height: 1.7em;
+    line-height: 1.8em;
 }
 .NB-line-spacing-xl .NB-feed-story {
-    line-height: 1.9em;
+    line-height: 2.0em;
 }
 
 .NB-theme-sans-serif.NB-theme-size-xs .NB-feed-story {
@@ -2113,7 +2113,7 @@ body {
     font-size: 15px;    
 }
 .NB-theme-sans-serif.NB-theme-size-xl .NB-feed-story {
-    font-size: 17px;    
+    font-size: 18px;    
 }
 
 .NB-theme-gotham.NB-theme-size-xs .NB-feed-story {
@@ -2129,7 +2129,7 @@ body {
     font-size: 16px;    
 }
 .NB-theme-gotham.NB-theme-size-xl .NB-feed-story {
-    font-size: 18px;    
+    font-size: 19px;    
 }
 
 .NB-theme-sentinel.NB-theme-size-xs .NB-feed-story {
@@ -2145,7 +2145,7 @@ body {
     font-size: 16px;    
 }
 .NB-theme-sentinel.NB-theme-size-xl .NB-feed-story {
-    font-size: 18px;    
+    font-size: 19px;    
 }
 
 .NB-theme-whitney.NB-theme-size-xs .NB-feed-story {
@@ -2161,7 +2161,7 @@ body {
     font-size: 16px;    
 }
 .NB-theme-whitney.NB-theme-size-xl .NB-feed-story {
-    font-size: 18px;    
+    font-size: 19px;    
 }
 
 .NB-theme-chronicle.NB-theme-size-xs .NB-feed-story {
@@ -2177,7 +2177,7 @@ body {
     font-size: 16px;    
 }
 .NB-theme-chronicle.NB-theme-size-xl .NB-feed-story {
-    font-size: 18px;    
+    font-size: 19px;    
 }
 
 .NB-theme-serif.NB-theme-size-xs .NB-feed-story {
@@ -2193,7 +2193,7 @@ body {
     font-size: 16px;    
 }
 .NB-theme-serif.NB-theme-size-xl .NB-feed-story {
-    font-size: 18px;    
+    font-size: 19px;    
 }
 
 .NB-feed-stories {
