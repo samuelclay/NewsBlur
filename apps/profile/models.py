@@ -88,7 +88,7 @@ class Profile(models.Model):
         except DatabaseError:
             print " ---> Profile not saved. Table isn't there yet."
     
-    def delete_user(self, confirm=False):
+    def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print " ---> You must pass confirm=True to delete this user."
             return
@@ -119,8 +119,9 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting %s shared stories" % shared_stories.count())
         for story in shared_stories:
             try:
-                original_story = MStory.objects.get(story_hash=story.story_hash)
-                original_story.sync_redis()
+                if not fast:
+                    original_story = MStory.objects.get(story_hash=story.story_hash)
+                    original_story.sync_redis()
             except MStory.DoesNotExist:
                 pass
             story.delete()
