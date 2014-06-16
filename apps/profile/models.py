@@ -152,6 +152,14 @@ class Profile(models.Model):
         
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
+    
+    def check_if_spammer(self):
+        feed_opens = UserSubscription.objects.filter(user=self.user)\
+                     .aggregate(sum=Sum('feed_opens'))['sum']
+        feed_count = UserSubscription.objects.filter(user=self.user).count()
+        
+        if not feed_opens and not feed_count:
+            return True
         
     def activate_premium(self):
         from apps.profile.tasks import EmailNewPremium

@@ -9,6 +9,7 @@ import random
 import requests
 import HTMLParser
 from collections import defaultdict
+from pprint import pprint
 from BeautifulSoup import BeautifulSoup
 from mongoengine.queryset import Q
 from django.conf import settings
@@ -1486,7 +1487,30 @@ class MSharedStory(mongo.Document):
             socialsub.save()
 
         self.delete()
+    
+    @classmethod
+    def feed_quota(cls, user_id, feed_id, days=1, quota=1):
+        day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
+        shared_count = cls.objects.filter(shared_date__gte=day_ago, story_feed_id=feed_id).count()
 
+        return shared_count >= quota
+    
+    @classmethod
+    def count_potential_spammers(cls, days=1):
+        day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
+        stories = cls.objects.filter(shared_date__gte=day_ago)
+        shared = [{'u': s.user_id, 'f': s.story_feed_id} for s in stories]
+        ddusers = defaultdict(lambda: defaultdict(int))
+        for story in shared:
+            ddusers[story['u']][story['f']] += 1
+
+        users = {}
+        for user_id, feeds in ddusers.items():
+            users[user_id] = dict(feeds)
+
+        pprint(users)
+        return users
+        
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
         your_story = cls.objects.filter(story_feed_id=feed_id,
