@@ -2322,8 +2322,8 @@ body {
 }
 .NB-feed-story .NB-feed-story-content img {
     max-width: 100% !important;
-  width: auto !important;
-  height: auto !important;
+    width: auto;
+    height: auto;
   
   /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
