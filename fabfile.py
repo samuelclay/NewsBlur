@@ -1043,6 +1043,10 @@ def enable_celery_supervisor(queue=None):
     sudo('supervisorctl update')
 
 @parallel
+def copy_db_settings():
+    return copy_task_settings()
+    
+@parallel
 def copy_task_settings():
     server_hostname = run('hostname')
     if 'task' in server_hostname:
