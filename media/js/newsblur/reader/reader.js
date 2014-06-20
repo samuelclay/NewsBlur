@@ -921,7 +921,8 @@
         find_story_with_action_preference_on_open_feed: function() {
             var open_feed_action = this.model.preference('open_feed_action');
 
-            if (!this.active_story && open_feed_action == 'newest') {
+            if (!this.active_story && open_feed_action == 'newest' &&
+                !this.flags['feed_list_showing_starred']) {
                 this.show_next_unread_story();
             }
         },
