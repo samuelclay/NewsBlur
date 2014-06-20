@@ -175,6 +175,9 @@
 
     <style name="shareBarText.dark">
         <item name="android:textColor">@color/midgray</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">0</item>
     </style>
 
     <style name="commentsHeader">
