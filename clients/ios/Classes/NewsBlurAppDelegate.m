@@ -1534,6 +1534,10 @@
                (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
+                if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
+                    // Skip saved feeds which have fake unread counts.
+                    continue;
+                }
                 [counts addCounts:[self splitUnreadCountForFeed:feedId]];
             }
         }
