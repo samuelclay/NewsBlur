@@ -1,4 +1,4 @@
-from fabric.api import cd, env, local, parallel, serial
+from fabric.api import cd, lcd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
 from fabric.operations import prompt
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
@@ -676,6 +676,11 @@ def copy_app_settings():
         '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
+def assemble_certificates():
+    with lcd(os.path.join(env.SECRETS_PATH, 'certificates/comodo')):
+        local('pwd')
+        local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
+        
 def copy_certificates():
     cert_path = '%s/config/certificates/' % env.NEWSBLUR_PATH
     run('mkdir -p %s' % cert_path)
