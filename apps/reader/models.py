@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -416,10 +417,9 @@ class UserSubscription(models.Model):
         return feeds
     
     @classmethod
-    def recreate_destroyed_feed(cls, feed_id, skip=0):
+    def recreate_destroyed_feed(cls, new_feed_id, old_feed_id=None, skip=0):
         user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
         
-        new_feed_id = feed_id
         count = len(user_ids)
         
         for i, user_id in enumerate(user_ids):
@@ -445,7 +445,22 @@ class UserSubscription(models.Model):
                 usf.add_missing_feeds()
             except UserSubscriptionFolders.DoesNotExist:
                 print " ***> %s has no USF" % user.username
-
+                
+            # Move classifiers
+            if old_feed_id:
+                classifier_count = 0
+                for classifier_type in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierTitle):
+                    classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
+                    classifier_count += classifiers.count()
+                    for classifier in classifiers:
+                        classifier.feed_id = new_feed_id
+                        try:
+                            classifier.save()
+                        except NotUniqueError:
+                            continue
+                    if classifier_count:
+                        print " Moved %s classifiers for %s" % (classifier_count, user.username)
+    
     def trim_read_stories(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
