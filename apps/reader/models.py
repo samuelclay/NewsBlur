@@ -415,6 +415,37 @@ class UserSubscription(models.Model):
 
         return feeds
     
+    @classmethod
+    def recreate_destroyed_feed(cls, feed_id, skip=0):
+        user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
+        
+        new_feed_id = feed_id
+        count = len(user_ids)
+        
+        for i, user_id in enumerate(user_ids):
+            if i < skip: continue
+            if i % 1000 == 0:
+                print "\n\n ------------------------------------------------"
+                print "\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count))
+                print "\n ------------------------------------------------\n"
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                print " ***> %s has no account" % user_id
+                continue
+            us, created = UserSubscription.objects.get_or_create(user_id=user_id, feed_id=new_feed_id, defaults={
+                'needs_unread_recalc': True,
+                'active': True,
+                'is_trained': True
+            })
+            if not created:
+                print " ***> %s already subscribed" % user.username
+            try:
+                usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+                usf.add_missing_feeds()
+            except UserSubscriptionFolders.DoesNotExist:
+                print " ***> %s has no USF" % user.username
+
     def trim_read_stories(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
