@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -414,6 +415,51 @@ class UserSubscription(models.Model):
                 feeds[feed_id]['exception_code'] = sub.feed.exception_code
 
         return feeds
+    
+    @classmethod
+    def recreate_destroyed_feed(cls, new_feed_id, old_feed_id=None, skip=0):
+        user_ids = sorted([int(u) for u in open('users.txt').read().split('\n') if u])
+        
+        count = len(user_ids)
+        
+        for i, user_id in enumerate(user_ids):
+            if i < skip: continue
+            if i % 1000 == 0:
+                print "\n\n ------------------------------------------------"
+                print "\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count))
+                print "\n ------------------------------------------------\n"
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                print " ***> %s has no account" % user_id
+                continue
+            us, created = UserSubscription.objects.get_or_create(user_id=user_id, feed_id=new_feed_id, defaults={
+                'needs_unread_recalc': True,
+                'active': True,
+                'is_trained': True
+            })
+            if not created:
+                print " ***> %s already subscribed" % user.username
+            try:
+                usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+                usf.add_missing_feeds()
+            except UserSubscriptionFolders.DoesNotExist:
+                print " ***> %s has no USF" % user.username
+                
+            # Move classifiers
+            if old_feed_id:
+                classifier_count = 0
+                for classifier_type in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierTitle):
+                    classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
+                    classifier_count += classifiers.count()
+                    for classifier in classifiers:
+                        classifier.feed_id = new_feed_id
+                        try:
+                            classifier.save()
+                        except NotUniqueError:
+                            continue
+                    if classifier_count:
+                        print " Moved %s classifiers for %s" % (classifier_count, user.username)
     
     def trim_read_stories(self, r=None):
         if not r:
