@@ -141,8 +141,6 @@
     <string name="empty_list_view_no_stories">No stories to read</string>
     
     <string name="login_registration_register">Register</string>
-    <string name="login_google_reader">Google Reader</string>
-    <string name="login_add_sites_from_google_reader">Import your sites from Google Reader</string>
     <string name="add_sites">Add some sites</string>
     <string name="get_started">Let\'s get started</string>
     <string name="add_friends">Add your friends</string>

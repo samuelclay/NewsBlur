@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,9 +15,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.newsblur.R;
-import com.newsblur.activity.AddSites;
+import com.newsblur.activity.AddSocial;
 import com.newsblur.activity.Login;
-import com.newsblur.activity.LoginProgress;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.RegisterResponse;
 
@@ -76,7 +74,7 @@ public class RegisterProgressFragment extends Fragment {
 		next.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent i = new Intent(getActivity(), AddSites.class);
+				Intent i = new Intent(getActivity(), AddSocial.class);
 				startActivity(i);
 			}
 		});
