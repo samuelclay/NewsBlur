@@ -334,7 +334,7 @@ def api_saved_tag_list(request):
     tags = []
     
     for tag in starred_counts:
-        if tag['tag'] == "": continue
+        if not tag['tag'] or tag['tag'] == "": continue
         tags.append(dict(label="%s (%s %s)" % (tag['tag'], tag['count'], 
                                                'story' if tag['count'] == 1 else 'stories'),
                          value=tag['tag']))
