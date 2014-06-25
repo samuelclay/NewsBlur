@@ -514,6 +514,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
         if (feed_id == this.feed_id) {
             if (data.feeds) {
+                var river = _.any(['river:', 'social:'], function(prefix) { 
+                    return _.isString(feed_id) && _.string.startsWith(feed_id, prefix);
+                });
+                if (river) _.each(data.feeds, function(feed) { feed.temp = true; });
                 this.feeds.add(data.feeds);
             }
             if (data.classifiers) {
