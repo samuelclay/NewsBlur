@@ -567,11 +567,11 @@ class UserSubscription(models.Model):
         cutoff_date = cutoff_date - datetime.timedelta(seconds=1)
         story_hashes = self.get_stories(limit=500, order="newest", cutoff_date=cutoff_date,
                                         read_filter="unread", hashes_only=True)
-        data = self.mark_story_ids_as_read(story_hashes)
+        data = self.mark_story_ids_as_read(story_hashes, aggregated=True)
         return data
         
         
-    def mark_story_ids_as_read(self, story_hashes, request=None):
+    def mark_story_ids_as_read(self, story_hashes, request=None, aggregated=False):
         data = dict(code=0, payload=story_hashes)
         
         if not request:
@@ -587,7 +587,7 @@ class UserSubscription(models.Model):
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
         for story_hash in set(story_hashes):
-            RUserStory.mark_read(self.user_id, self.feed_id, story_hash)
+            RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
             
         return data
     
@@ -608,7 +608,7 @@ class UserSubscription(models.Model):
         
         # Mark stories as read only after the mark_read_date has been moved, otherwise
         # these would be ignored.
-        data = self.mark_story_ids_as_read(newer_stories, request=request)
+        data = self.mark_story_ids_as_read(newer_stories, request=request, aggregated=True)
         
         return data
         
@@ -877,7 +877,8 @@ class RUserStory:
         return feed_id, list(friend_ids)
         
     @classmethod
-    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
+    def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, 
+                  aggregated=False, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # if not r2:
@@ -904,10 +905,11 @@ class RUserStory:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
         
-        key = 'lRS:%s' % user_id
-        r.lpush(key, story_hash)
-        r.ltrim(key, 0, 100)
-        r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
+        if not aggregated:
+            key = 'lRS:%s' % user_id
+            r.lpush(key, story_hash)
+            r.ltrim(key, 0, 1000)
+            r.expire(key, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     @staticmethod
     def story_can_be_marked_read_by_user(story, user):

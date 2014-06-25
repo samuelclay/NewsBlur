@@ -1119,7 +1119,8 @@ class MSocialSubscription(mongo.Document):
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
             
-            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares)
+            RUserStory.mark_read(self.user_id, feed_id, story_hash, social_user_ids=friends_with_shares,
+                                 aggregated=mark_all_read)
             
             if self.user_id in friends_with_shares:
                 friends_with_shares.remove(self.user_id)
