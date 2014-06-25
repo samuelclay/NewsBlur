@@ -947,7 +947,8 @@ def load_read_stories(request):
     usersub_ids    = [us['feed__pk'] for us in usersub_ids]
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
-    unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    unsub_feeds    = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
+
     shared_stories = MSharedStory.objects(user_id=user.pk, 
                                           story_hash__in=story_hashes)\
                                  .only('story_hash', 'shared_date', 'comments')
@@ -959,7 +960,7 @@ def load_read_stories(request):
                                    .only('story_hash', 'starred_date')
     starred_stories = dict([(story.story_hash, story.starred_date) 
                             for story in starred_stories])
-
+    
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
