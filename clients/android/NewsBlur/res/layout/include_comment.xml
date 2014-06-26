@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/item_background"
+    style="?itemBackground"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -71,7 +71,7 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/comment_reply_icon"
             android:paddingBottom="3dp"
-            android:textColor="@color/darkgray"
+            style="?defaultText"
             android:textSize="12sp" />
 
         <ImageView
@@ -102,7 +102,7 @@
         	android:autoLink="web"
             android:layout_marginBottom="4dp"
             android:layout_toRightOf="@id/comment_user_image"
-            android:textColor="@color/darkgray"
+            style="?defaultText"
             android:textSize="14dp" />
 
         <TextView

@@ -1,0 +1,20 @@
+body {
+	background-color: #FFF;
+}
+
+a {
+	color: #405BA8;
+}
+
+a:visited {
+	color: #405BA8;
+}
+
+code {
+    background-color: #F2F2F2;
+}
+
+pre, blockquote {
+    background-color: #F2F2F2;
+    color: rgba(10, 12, 38, .8);
+}

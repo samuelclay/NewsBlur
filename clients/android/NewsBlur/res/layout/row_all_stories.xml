@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_folder_background" >
+    style="?selectorFolderBackground" >
 
     <ImageView
         android:id="@+id/row_everything_icon"
@@ -24,7 +24,7 @@
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
         android:text="@string/all_stories_row_title"
-        android:textColor="@color/folder_text"
+        style="?selectorRowFeedName"
         android:textSize="14dp"
         android:textStyle="bold" />
 
@@ -79,11 +79,11 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentTop="true"
-        android:background="@color/folder_border_top" />
+        style="?folderBorderTop" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/folder_border_bottom" />
+        style="?folderBorderBottom" />
 
 </RelativeLayout>

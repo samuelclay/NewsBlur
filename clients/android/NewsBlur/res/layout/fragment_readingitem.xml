@@ -3,7 +3,7 @@
     android:id="@+id/reading_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/item_background" >
+    style="?itemBackground" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,14 +24,14 @@
             android:id="@+id/share_bar_underline"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="@drawable/divider_light"
+            style="?divider"
             android:visibility="gone" />
 
         <com.newsblur.view.NewsblurWebview
             android:id="@+id/reading_webview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/item_background"
+            style="?itemBackground"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="12dp"
